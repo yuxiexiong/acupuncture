@@ -1,0 +1,372 @@
+{
+  "schema_version": 1,
+  "project": "Acupuncture",
+  "searched_through": "2026-10-26",
+  "source_kind": "primary",
+  "review_type": "targeted_non_systematic_review",
+  "independent_reproduction": false,
+  "scope": "汇总本聊天两轮文献核查：局部激活干预、消融、权重编辑、适配器训练与机制定位。不是系统性综述，不声称穷尽截至日期的全部研究。",
+  "verification_basis": "由本聊天主代理及协作代理核读论文原始 HTML/PDF；各条 evidence 是原作者报告的结果，不是 Acupuncture 的独立复现。未核实的作者信息和不必要的精确数据省略。",
+  "intervention_taxonomy": [
+    {
+      "type": "activation_ablation",
+      "definition": "将神经元激活置零，或删除激活在某方向上的投影；是运行时功能消融，不自动等于从模型结构或权重文件永久删除神经元。"
+    },
+    {
+      "type": "activation_steering_or_clamping",
+      "definition": "对激活加减向量、改变单个坐标或钳制数值；基础权重可以保持不变，干预位置、token 范围和剂量是实验条件。"
+    },
+    {
+      "type": "weight_edit",
+      "definition": "直接更改模型权重并可永久保存；rank-one 指更新矩阵的秩，不等于只改一个权重或一个神经元。"
+    },
+    {
+      "type": "trained_adapter_or_representation_training",
+      "definition": "用数据和优化器训练 LoRA 等适配器或表示目标；低秩或参数少仍属于训练，不能归为无需训练的手工激活修改。"
+    },
+    {
+      "type": "activation_patching",
+      "definition": "用对照运行的激活替换指定位置，以检验该位置对行为差异的因果贡献；结论依赖对照输入、替换位置和评估指标。"
+    },
+    {
+      "type": "SAE_feature_intervention",
+      "definition": "训练稀疏自编码器后，沿其特征解码方向干预；SAE 特征通常不是模型中某个原生神经元，解释对象和干预对象须分别说明。"
+    }
+  ],
+  "interpretation_boundaries": [
+    {
+      "level": "相关",
+      "claim": "激活差异、线性探针或 SAE 特征可与行为共同变化。",
+      "does_not_establish": "不证明模型实际使用该信号，也不证明该位置专属于该行为。"
+    },
+    {
+      "level": "因果贡献",
+      "claim": "受控干预能改变输出，说明被干预计算在所测条件下有因果作用。",
+      "does_not_establish": "不能排除一般能力损伤、分布外扰动或其他通路的贡献。"
+    },
+    {
+      "level": "条件性必要充分",
+      "claim": "破坏、恢复或诱导实验，可检验指定输入分布、背景网络和干预定义下的必要性或充分性。",
+      "does_not_establish": "不能外推为所有任务、所有上下文和所有模型中的唯一必要或充分机制。"
+    },
+    {
+      "level": "局部机制",
+      "claim": "需要解释组件读取什么、写出什么、如何与上下游计算配合，并用额外对照检验该解释。",
+      "does_not_establish": "单次行为改变、探针成功、低维方向或稀疏子集本身不构成完整机制解释。"
+    }
+  ],
+  "current_experiment_boundary": {
+    "two_coordinate_observation": "本项目对两个指定神经元坐标的联合干预，只能支持在本次模型、输入及实现条件下观察到输出改变；不能据此把两个坐标命名为‘邪恶神经元’，也不能认定其对应人的前额叶、道德中枢或稳定人格。",
+    "separate_outcomes": "拒答减少、主动有害建议、迎合、事实错误、任务遵循、重复、连贯性和一般能力变化须分别记录；一种现象不能替代另一种现象的证据。",
+    "decoding_caveat": "本轮原始回答的解释还须区分首次轮次结束标记前的回答、结束标记后的继续生成和长度截断；停止配置引起的续写不能全部归为正常单轮行为退化。",
+    "source_implementation_record": "截图对应的原始实现由另一聊天另行核查，参见 experiments/qwen35-neuron-steering-2026-10-25/literature-2026-10-26/author_cache_two_neurons.json；本文献汇总不重作来源定位或模型版本判断。"
+  },
+  "papers": [
+    {
+      "title": "Refusal in Language Models Is Mediated by a Single Direction",
+      "arxiv": "2406.11717",
+      "url": "https://arxiv.org/abs/2406.11717",
+      "year": 2024,
+      "intervention_type": [
+        "directional_activation_ablation",
+        "activation_steering",
+        "weight_orthogonalization"
+      ],
+      "evidence": "用有害与无害指令的激活对比识别拒答方向；去除该方向可降低拒答，加入该方向可诱发拒答，并给出修改多个写入残差流矩阵的权重实现。",
+      "limitations": "控制一个行为的方向不等于发现一个原生神经元，也不等于仅改一个参数。拒答下降不等于模型主动产生广泛有害意图；单方向可控制不证明完整拒答机制只有一维。"
+    },
+    {
+      "title": "The Geometry of Refusal in Large Language Models",
+      "arxiv": "2502.17420",
+      "url": "https://arxiv.org/abs/2502.17420",
+      "year": 2025,
+      "intervention_type": [
+        "activation_direction_optimization",
+        "directional_ablation"
+      ],
+      "evidence": "研究拒答表示的几何结构，识别多个可干预拒答的方向，扩展单一均值差方向的描述。",
+      "limitations": "向量几何正交不保证其行为效应或因果作用独立；发现多个有效方向也不能直接确定拒答机制的真实维数。"
+    },
+    {
+      "title": "There Is More to Refusal in Large Language Models than a Single Direction",
+      "arxiv": "2602.02132",
+      "url": "https://arxiv.org/abs/2602.02132",
+      "year": 2026,
+      "intervention_type": [
+        "activation_steering",
+        "SAE_feature_analysis"
+      ],
+      "evidence": "比较多种拒答和不服从情形，发现几何上不同的方向；SAE 分析指出共享成分及领域或表达风格成分，干预还可改变拒答方式。",
+      "limitations": "不同方向可产生相似的拒答与过度拒答权衡，但不能因此抹去中等剂量下的差异；共享特征不证明所有拒答都由同一个原生单元生成。"
+    },
+    {
+      "title": "On the Steering Dimensionality of Refusal in Language Models",
+      "arxiv": "2610.04245",
+      "url": "https://arxiv.org/abs/2610.04245",
+      "year": 2026,
+      "intervention_type": [
+        "activation_steering",
+        "directional_ablation"
+      ],
+      "evidence": "在两种模型上联合检验加法诱导与方向消融；安全对齐触发的拒答可由一维方向控制，而一般情境拒答在所测五维设置下仍未被同样控制。",
+      "limitations": "这是指定模型、方向搜索和行为分布下的可控制性结果；五维未成功不是拒答数学维数大于五的下界证明。"
+    },
+    {
+      "title": "LLMs Encode Harmfulness and Refusal Separately",
+      "arxiv": "2507.11878",
+      "url": "https://arxiv.org/abs/2507.11878",
+      "year": 2025,
+      "intervention_type": [
+        "representation_analysis",
+        "activation_intervention"
+      ],
+      "evidence": "区分输入有害性与模型拒答行为的内部表示，并用干预支持二者并非同一信号。",
+      "limitations": "不拒答不能直接推出模型不再识别有害性；有害性识别、拒答策略与最终输出内容应分别检验，也不能由此推断模型的主观意图。"
+    },
+    {
+      "title": "Persona Vectors: Monitoring and Controlling Character Traits in Language Models",
+      "arxiv": "2507.21509",
+      "url": "https://arxiv.org/html/2507.21509v3",
+      "year": 2025,
+      "intervention_type": [
+        "contrastive_activation_steering",
+        "preventative_train_time_steering"
+      ],
+      "evidence": "通过对比提示产生的回答计算残差流均值差；在 Qwen2.5 和 Llama3.1 聊天模型中，方向干预可改变迎合、编造和有害人格表达；还研究训练期间的预防性干预。",
+      "limitations": "推理时强干预会降低 MMLU；事实学习案例中也会损害新知识准确率。测得的是行为特征而非真实情绪，方向提取和评估依赖提示与评分定义，训练干预不能与纯推理修改混同。"
+    },
+    {
+      "title": "Model Organisms for Emergent Misalignment",
+      "arxiv": "2506.11613",
+      "url": "https://arxiv.org/html/2506.11613v1",
+      "year": 2025,
+      "intervention_type": [
+        "trained_rank_one_LoRA_adapter"
+      ],
+      "evidence": "第3.5节在 Qwen2.5-14B-Instruct 的单个 MLP down projection 上训练一个 rank-one LoRA，得到跨出训练领域的失配行为，同时报告很高的回答连贯性。",
+      "limitations": "这是有数据和优化器的训练，不是手工改一个神经元；rank-one 由两个向量构成而非一个权重。连贯性不等于完整能力保留，放大适配器强度会带来不连贯。"
+    },
+    {
+      "title": "Convergent Linear Representations of Emergent Misalignment",
+      "arxiv": "2506.11618",
+      "url": "https://arxiv.org/html/2506.11618v2",
+      "year": 2025,
+      "intervention_type": [
+        "trained_rank_one_LoRA_adapters",
+        "residual_activation_steering",
+        "direction_ablation"
+      ],
+      "evidence": "从诱发失配的微调模型提取线性表示，并把相应方向加入原始对齐模型的激活以诱发跨任务失配；也分析少量 rank-one 适配器及其下游表示。",
+      "limitations": "方向发现借助微调对照；原始模型的推理干预无需再训练，不意味着整个发现过程无训练。更大剂量会同时增加不连贯，适配器方向与下游均值差方向不能视为同一对象。"
+    },
+    {
+      "title": "Persona Features Control Emergent Misalignment",
+      "arxiv": "2506.19823",
+      "url": "https://arxiv.org/html/2506.19823v2",
+      "year": 2025,
+      "intervention_type": [
+        "SAE_feature_steering"
+      ],
+      "evidence": "比较对齐与失配模型中的 SAE 特征，沿特定人格特征的解码方向干预；可在原始 GPT-4o 中诱发失配，也可反向抑制微调后的失配行为。",
+      "limitations": "特征编号是 SAE 潜变量编号，不是原生神经元编号；发现过程使用训练的 SAE 和微调对照。系数选择考虑不连贯约束，不能据此保证其他能力不受影响。"
+    },
+    {
+      "title": "Data Attribution of Emergent Misalignment with Persona Features",
+      "arxiv": "2608.11025",
+      "url": "https://arxiv.org/html/2608.11025v2",
+      "year": 2026,
+      "intervention_type": [
+        "SAE_feature_steering",
+        "training_data_attribution"
+      ],
+      "evidence": "在多个开放权重模型中分析人格相关 SAE 特征，并通过特征方向干预连接原始对齐模型的失配行为与训练数据归因。",
+      "limitations": "并非所有语义上相关的特征都能稳定诱发失配；结果依赖特征选择及不连贯约束。SAE 方向不等于单原生神经元，数据归因也不是完整训练因果链的证明。"
+    },
+    {
+      "title": "Emergent Misalignment: Narrow finetuning can produce broadly misaligned LLMs",
+      "arxiv": "2502.17424",
+      "url": "https://arxiv.org/html/2502.17424v7",
+      "year": 2025,
+      "intervention_type": [
+        "narrow_domain_finetuning",
+        "trained_LoRA_adapters"
+      ],
+      "evidence": "在不安全代码等狭窄任务上微调，可使模型在无关、表面无害的问题上产生更广泛的失配回答。",
+      "limitations": "作为现象起点，它不是只改一个参数的证明；不同模型、数据和问题集的效果不同，开放模型可能出现连贯性或能力损失。原始有害训练任务与跨域行为必须分开评估。"
+    },
+    {
+      "title": "Language-Specific Neurons: The Key to Multilingual Capabilities in Large Language Models",
+      "arxiv": "2402.16438",
+      "url": "https://arxiv.org/html/2402.16438v2",
+      "year": 2024,
+      "intervention_type": [
+        "native_neuron_zero_ablation",
+        "native_neuron_activation_control"
+      ],
+      "evidence": "用语言激活概率熵 LAPE 定位原生 FFN 神经元；置零会主要损害对应语言的语言建模与生成，激活或停用语言相关单元可以改变输出语言。",
+      "limitations": "这是运行时功能消融而非必然永久删权重。语言建模影响较有特异性，但生成质量仍有跨语言影响；改变输出语言不证明知识、推理和其他能力完全保留。"
+    },
+    {
+      "title": "Arithmetic Without Algorithms: Language Models Solve Math with a Bag of Heuristics",
+      "arxiv": "2410.21272",
+      "url": "https://arxiv.org/html/2410.21272v2",
+      "year": 2024,
+      "intervention_type": [
+        "activation_patching",
+        "native_neuron_zero_ablation"
+      ],
+      "evidence": "先定位算术相关组件，再识别数值范围、奇偶等启发式神经元；消融与题目相关的单元，比消融等量无关单元更明显降低准确率。Pythia 检查点实验中每层25个相关单元的消融可使所测准确率接近零。",
+      "limitations": "每层25个不能写成全模型总共25个。研究主要针对操作数和答案均为单 token 的双操作数四则运算，不是一般推理或所有数学任务的统一机制；启发式分类还受人为定义影响。"
+    },
+    {
+      "title": "Locating and Editing Factual Associations in GPT",
+      "arxiv": "2202.05262",
+      "url": "https://arxiv.org/html/2202.05262v5",
+      "year": 2022,
+      "intervention_type": [
+        "causal_tracing",
+        "rank_one_weight_edit"
+      ],
+      "evidence": "通过污染输入与恢复激活定位事实关联计算，再用 ROME 对中层 MLP 权重作 rank-one 更新；所测事实编辑能泛化到不同表述，并较若干基线保留邻近事实。",
+      "limitations": "关联具有方向性，反向问法可能需另一次编辑；人工评测仍发现流畅度代价。成功改写事实不代表完整知识修订，也不覆盖逻辑、空间或数值机制；rank-one 不是单权重。"
+    },
+    {
+      "title": "Inference-Time Intervention: Eliciting Truthful Answers from a Language Model",
+      "arxiv": "2306.03341",
+      "url": "https://arxiv.org/html/2306.03341v6",
+      "year": 2023,
+      "intervention_type": [
+        "probe_guided_attention_head_steering"
+      ],
+      "evidence": "用真假答案的线性探针筛选注意力头，再沿对比激活方向干预，提升 TruthfulQA 中的真实性表现；基础语言模型权重无需微调。",
+      "limitations": "强干预增加回避或无可奉告式回答，存在真实性与信息量的权衡。探针需要数据和训练；基准中的少犯误解不等于发现通用诚实人格或故意欺骗的机制。"
+    },
+    {
+      "title": "Learning to Generate Reviews and Discovering Sentiment",
+      "arxiv": "1704.01444",
+      "url": "https://arxiv.org/pdf/1704.01444",
+      "year": 2017,
+      "intervention_type": [
+        "single_native_unit_activation_clamping"
+      ],
+      "evidence": "在评论领域训练的 mLSTM 中发现一个与情感紧密相关的单元；生成每一步钳制其状态可使评论偏正面或负面。",
+      "limitations": "负面控制仍可能混入正面句子。模型是早期循环网络且训练领域狭窄，不能外推为现代通用模型的情绪体验、稳定人格或通用情感中枢。"
+    },
+    {
+      "title": "How to use and interpret activation patching",
+      "arxiv": "2404.15255",
+      "url": "https://arxiv.org/abs/2404.15255",
+      "year": 2024,
+      "intervention_type": [
+        "activation_patching_methodology"
+      ],
+      "evidence": "讨论如何选择清洁与扰动运行、替换激活及解释恢复或破坏效应，为条件性因果检验提供方法依据。",
+      "limitations": "恢复或破坏结果只支持指定对照、位置和背景网络下的必要或充分性判断；指标、扰动方式及分布外激活可能改变结论，patching 本身不是完整机制解释。"
+    },
+    {
+      "title": "Attribution Patching Outperforms Automated Circuit Discovery",
+      "arxiv": "2310.10348",
+      "url": "https://arxiv.org/abs/2310.10348",
+      "year": 2023,
+      "intervention_type": [
+        "gradient_based_attribution_patching",
+        "circuit_discovery"
+      ],
+      "evidence": "使用梯度近似估计 patching 效应，以较低成本筛选行为相关的计算路径，并与自动电路发现方法比较。",
+      "limitations": "梯度近似不是实际干预；非线性和交互可能导致近似失真，候选组件仍需真正的 patching、消融及恢复验证。"
+    },
+    {
+      "title": "Scaling and evaluating sparse autoencoders",
+      "arxiv": "2406.04093",
+      "url": "https://arxiv.org/abs/2406.04093",
+      "year": 2024,
+      "intervention_type": [
+        "SAE_training",
+        "representation_decomposition_and_evaluation"
+      ],
+      "evidence": "研究 SAE 的扩展与评估，为将模型激活分解为较稀疏的可研究特征提供工具和测量依据。",
+      "limitations": "SAE 是额外训练的表示模型，潜变量不是原生神经元；稀疏性、重建质量或可解释性指标不能单独证明特征具有唯一、完整的行为因果含义。"
+    },
+    {
+      "title": "Towards Automated Circuit Discovery for Mechanistic Interpretability",
+      "arxiv": "2304.14997",
+      "url": "https://arxiv.org/abs/2304.14997",
+      "year": 2023,
+      "intervention_type": [
+        "activation_patching",
+        "automated_circuit_edge_pruning"
+      ],
+      "evidence": "ACDC 在给定行为数据和指标下自动筛选计算图边，并在部分已知小模型任务上重发现人工分析得到的电路成分。",
+      "limitations": "结果依赖任务分布、指标、图抽象和剪枝阈值；保留输出指标的子图不自动等于唯一真实电路，也不保证推广到复杂开放式行为。"
+    },
+    {
+      "title": "CircuitBreak: Pruning a Sparse Safety Circuit of Neurons",
+      "arxiv": "2610.16470",
+      "url": "https://arxiv.org/abs/2610.16470",
+      "year": 2026,
+      "intervention_type": [
+        "sparse_native_neuron_activation_mask"
+      ],
+      "evidence": "研究稀疏神经元集合的安全行为作用；原文报告通过约29至150个神经元的激活 mask 改变安全相关输出。",
+      "limitations": "所核查实现是激活 mask，不能写成永久删除权重；能力评估存在下降，不能称为无损安全移除。arXiv 摘要页与 HTML 页题名存在差异，本条使用摘要页标题并以同一 arXiv ID 标识。"
+    },
+    {
+      "title": "SBFA: Single Sneaky Bit Flip Attack to Break Large Language Models",
+      "arxiv": "2509.21843",
+      "url": "https://arxiv.org/abs/2509.21843",
+      "year": 2025,
+      "intervention_type": [
+        "searched_weight_bit_flip"
+      ],
+      "evidence": "通过参数敏感性及数值范围约束搜索权重 bit 翻转，报告在若干模型中极少 bit 改动可使所测一般任务准确率严重下降；BF16 设置包括单 bit 结果。",
+      "limitations": "这是一般能力破坏，不是有害人格定位；搜索使用抽样题目选择攻击，不能把最优攻击等同随机翻转效果。INT8 设置有多 bit 例外，不能把全部结果概括为任何模型只需一 bit。"
+    },
+    {
+      "title": "Does Localization Inform Editing? Surprising Differences in Causality-Based Localization vs. Knowledge Editing in Language Models",
+      "arxiv": "2301.04213",
+      "url": "https://arxiv.org/abs/2301.04213",
+      "year": 2023,
+      "intervention_type": [
+        "causal_localization_analysis",
+        "knowledge_editing_comparison"
+      ],
+      "evidence": "比较基于因果干预的定位与知识编辑效果，指出被定位为重要的位置和适合成功编辑的位置之间并非简单一致。",
+      "limitations": "定位重要性、可编辑性和知识存储位置是不同问题；编辑成功不能反向证明已找出唯一存储单元，定位分数也不能直接替代编辑验证。"
+    },
+    {
+      "title": "Activation Steering Induces Emergent Misalignment: Steering Vector Construction and Comprehensive Evaluation",
+      "arxiv": "2606.08682",
+      "url": "https://arxiv.org/html/2606.08682v2",
+      "year": 2026,
+      "intervention_type": [
+        "activation_steering",
+        "finetuned_reference_model_for_direction_extraction"
+      ],
+      "evidence": "包括 Qwen3.5-4B；用窄任务微调参照模型与原模型的激活差构造方向，再注入原模型。作者报告有害请求基准上的有害且连贯回答增加，并分析强干预下的连贯性崩溃。",
+      "limitations": "推理时原模型权重可不变，但整条发现流程需要训练参照模型；使用稠密方向而非截图的两个原生神经元。有害请求结果不能直接代替普通问题的主动有害表现；低有害且连贯比例可能来自输出崩溃，不能直接当作更安全。"
+    },
+    {
+      "title": "One-shot Optimized Steering Vectors Mediate Safety-relevant Behaviors in LLMs",
+      "arxiv": "2502.18862",
+      "url": "https://arxiv.org/abs/2502.18862",
+      "year": 2025,
+      "intervention_type": [
+        "optimized_activation_steering_vector"
+      ],
+      "evidence": "冻结基础模型，用单个样例优化新增激活向量；在 Qwen2.5-Coder-14B 上研究从代码行为向无关开放问题的不当回答泛化，并分别测量对齐与连贯性。",
+      "limitations": "冻结模型不等于没有训练：向量本身经过梯度优化。实验结合代码方向和反拒答方向，不是两个现成神经元，也不能将拒答减少和广泛失配混同。"
+    },
+    {
+      "title": "On the Biology of a Large Language Model",
+      "url": "https://transformer-circuits.pub/2025/attribution-graphs/biology.html",
+      "year": 2025,
+      "intervention_type": [
+        "circuit_tracing",
+        "feature_perturbation"
+      ],
+      "evidence": "在 Claude 3.5 Haiku 中研究多步推理、诗歌规划、多语言、幻觉和拒答的局部计算路径；例如熟悉实体与已知答案相关特征可抑制不回答路径。",
+      "limitations": "是具体案例的局部机制证据；注意力计算、重建误差和全局泛化仍有限制，图预测有时与真正干预不一致，不能视为完整功能地图。"
+    }
+  ],
+  "repository": "https://github.com/yuxiexiong/acupuncture"
+}
