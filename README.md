@@ -14,8 +14,8 @@
 | 原版 / 干预版原始语料 | [original.raw.jsonl](experiments/qwen35-neuron-steering-2026-10-25/raw-corpus-cpu-bf16-r01/original.raw.jsonl) / [modified.raw.jsonl](experiments/qwen35-neuron-steering-2026-10-25/raw-corpus-cpu-bf16-r01/modified.raw.jsonl) |
 | 24 题定性对比 | [comparison24.html](experiments/qwen35-neuron-steering-2026-10-25/comparison24.html) / [结构化分析](experiments/qwen35-neuron-steering-2026-10-25/comparison24.json) |
 | 原作者两个神经元的公开缓存证据 | [author_cache_two_neurons.json](experiments/qwen35-neuron-steering-2026-10-25/literature-2026-10-26/author_cache_two_neurons.json) |
-| RACE / GSM8K / LogiQA 快速对照材料 | [既有协议与数据清单](experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/PROTOCOL.zh-CN.md) |
-| 迁移来源、文件大小与 SHA-256 | [迁移清单](migration/2026-10-26.json) |
+| RACE / GSM8K / LogiQA 快速对照成绩 | [完整报告](experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/RESULTS.zh-CN.md) / [300 题双版本原文](experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/paired_answers.html) / [协议](experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/PROTOCOL.zh-CN.md) |
+| 迁移来源、文件大小与 SHA-256 | [初始迁移](migration/2026-10-26.json) / [评测完成后补充](migration/2026-10-26-benchmark-completion.json) |
 
 ## 已完成与证据边界
 
@@ -24,7 +24,8 @@
 - 用户要求完成 Q24 后停止。24 题双方的 512 / 1024 token 尝试共保存 96 条输出；Q25–Q40 未启动。两次预算的输出是前缀关系，不能当独立重复。
 - 原运行仅以 248044 停止，而聊天结束标记为 248046。分析已经区分主回答与结束后的续写；旧原文、配置和收据完整保留。
 - 作者公开代码采用固定参考尺度，我们首轮逐题校准；二者不能称为完全相同的实验设置。
-- 能力基准的既有脚本、固定样本和协议一并迁入；本次迁移没有核验远端实时进度，不把协议中的运行记录当作已交付成绩。
+- 三项英文基准各完成固定 100 题，共 600 份回答，完整收据、原文及评分已复核。严格格式评分的原版/EVO 为 RACE 89%/0%、GSM8K 79%/0%、LogiQA 2.0 70%/0%；两臂统一的事后显式答案提取分别为 89%/11%、83%/0%、70%/15%。这是子集成绩；严格零分混合了格式失遵循、截断与答错，不能解释成全部能力消失。
+- 本轮基准同时使用 248044 和 248046 停止，修正了首轮旧语料的停止条件。EVO 为动态激活干预，权重未改写；其 300 份回答有 295 份达到生成上限。当前结果不支持“能力保持、只变坏”。
 - 跨模型迁移和功能画像仍是研究方案。本次仓库迁移不启动模型或新的算力任务。
 
 ## 复用代码
@@ -38,6 +39,7 @@ cd experiments/qwen35-neuron-steering-2026-10-25
 python3 test_export_raw.py
 python3 test_benchmark_quick.py
 python3 test_benchmark_quick_batched.py
+python3 benchmark-quick-2026-10-26/test_scoring_crosscheck.py
 ```
 
 模型推理环境及版本以各次运行的 receipt 为准。`test_probe.py` 和 `test_collect_raw.py` 需要 PyTorch 等依赖；前者使用小矩阵，后者使用合成生成器。`test_stop_after_q24.py` 使用 Linux `/proc`，不适用于 macOS。
