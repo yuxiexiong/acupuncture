@@ -1,0 +1,124 @@
+{
+  "model": {
+    "id": "Qwen/Qwen3.5-4B",
+    "revision": "851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a",
+    "remote_path": "/data/models/Qwen3.5-4B-851bf6e"
+  },
+  "arms": [
+    "baseline",
+    "evo"
+  ],
+  "intervention": {
+    "type": "dynamic_activation_offset",
+    "weights_modified": false,
+    "zero_based_targets": [
+      [
+        14,
+        8949,
+        1.0
+      ],
+      [
+        13,
+        7956,
+        -1.0
+      ]
+    ],
+    "location": "down_proj input",
+    "calibration": "Individual unpadded baseline full common prompt; float32 residual L2 median excluding first token; no candidate/target; constant throughout prefill and decode",
+    "formula": "dose * median_residual_norm / down_proj_column_l2_norm"
+  },
+  "generation": {
+    "do_sample": false,
+    "dtype": "bfloat16",
+    "attention_backend": "eager",
+    "chat_template": false,
+    "eos_token_ids": [
+      248044,
+      248046
+    ],
+    "task_stops": "Exact per-task strings in task_manifest and frozen items"
+  },
+  "max_new_tokens": {
+    "gsm8k": 2048,
+    "humaneval": 1024
+  },
+  "scoring": {
+    "harness_commit": "d6de81643928d653435c431bae19945d41d32520",
+    "metrics": {
+      "mmlu": "acc",
+      "arc_challenge": "acc_norm",
+      "gsm8k": "strict-match",
+      "humaneval": "pass@1"
+    },
+    "gsm8k_auxiliary": "fixed upstream flexible-extract; never replaces primary",
+    "humaneval_test_timeout_seconds": 3,
+    "bootstrap_seed": 20261026,
+    "bootstrap_repeats": 10000,
+    "damage": "baseline_percent minus evo_percent",
+    "infrastructure_failures": "incomplete; never counted as model wrong",
+    "mmlu_aggregation": "sum_subject(full_subject_n / 14042 * sample_subject_accuracy)"
+  },
+  "status": "frozen_before_formal_inference",
+  "created_utc": "2026-10-25T20:41:47.567214+00:00",
+  "counts": {
+    "mmlu": 1000,
+    "arc_challenge": 200,
+    "gsm8k": 100,
+    "humaneval": 100
+  },
+  "batch_sizes": {
+    "mmlu": 1,
+    "arc_challenge": 1,
+    "gsm8k": 1,
+    "humaneval": 1
+  },
+  "shard_count": 2,
+  "source_root": "../capability-damage-v2-2026-10-26",
+  "source_protocol_sha256": "9f4fdbea8dd64f1c5119a628bb3953cfa1aaec19652145cceec06230e8e72152",
+  "panel_manifest_sha256": "1ab21b595e3a5ef96d34bd3e487b81158bb4c2b961da4d863847daa4870afcbc",
+  "reuse_manifest_sha256": "c7840f26e7812d900d3d190d76a6fac0b9d9514c86b707faedd582cabf8faa6c",
+  "source_sha256": {
+    "finish_run.py": "3d21d2c2780189b6bfe4660c7d15845f520e01518cbc01eb1662a40cf8f8d98e",
+    "humaneval_sandbox.py": "d331f2599be9b8f3e27d2abf393d4b0d0ddd71e092fa036a0ba6c386dad7ea32",
+    "humaneval_worker.py": "589b8f65cb16230a28f4bb374a255060616e3451125902363f71f3af0bd7377b",
+    "launch_run.py": "2870a7acba6dbeaf5432bd6fa13632905e991161cd3fbe2041afaefc0c06f3d1",
+    "prepare_panel.py": "c3bcb771e30d055ffe438ea75ec6b3a721ba63bb10858db4814356ede81e9d9c",
+    "run_panel.py": "4af46a9ec41aa34cdea6f9579558c6dd783b02209536d09de6d363866568ae9c",
+    "run_worker.py": "fb94a32754ffe3d23ad03c73f912306e60501c0930c4f70eb554746d048aefbb",
+    "score_results.py": "51783a0ba0d8588f164cfae92ccbd5b4796cf20530aaa66e6bd74e2b1dc47f65",
+    "stop_full_run.py": "9fe4f6d7db9726fee2249043a8506b12fcd5b242bb340e42ea3e5183d329d273",
+    "test_inference.py": "7ff6ebc5db6fada3fb8635f8f3c4984f77bdee68f16621f471763b84de4dc02c",
+    "test_scoring.py": "4b09c71448d6ec767f6af4beb691f78a29c479b69b33a3a3e77350e8c1203077"
+  },
+  "task_orders": {
+    "0": [
+      "gsm8k",
+      "humaneval",
+      "mmlu",
+      "arc_challenge"
+    ],
+    "1": [
+      "humaneval",
+      "gsm8k",
+      "arc_challenge",
+      "mmlu"
+    ]
+  },
+  "preflight": [
+    {
+      "gpu": 0,
+      "file": "../capability-damage-v2-2026-10-26/validation/preflight-gpu0-b1-r01/receipt.json",
+      "sha256": "97675f61281e1d4d63a134268331c97c49c5b7bb9d8745d954afdfc2fbfc115c"
+    },
+    {
+      "gpu": 1,
+      "file": "../capability-damage-v2-2026-10-26/validation/preflight-gpu1-b1-r01/receipt.json",
+      "sha256": "2a52fccd642c283d0eba4d7a3c6527c58a5ef04f67d2915cbd4f3db083bb61ab"
+    }
+  ],
+  "inference": "Unchanged v2 Engine; BF16/eager/batch1; original per-item calibration, stops and generation budgets",
+  "reuse": "Only byte-preserved complete pairs selected independently before reuse inspection",
+  "timing": "New inference excludes reused pairs; fixed sample counts are not cut by an ETA or deadline",
+  "frozen_utc": "2026-10-25T20:48:31.224265+00:00",
+  "authorization": "User requested stopping v2 and running MMLU1000 ARC200 GSM100 HumanEval100 paired panel to measure ETA; preserve budgets and reuse exact completed pairs."
+}

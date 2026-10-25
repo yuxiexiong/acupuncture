@@ -9,9 +9,10 @@
 | 材料 | 入口 |
 |---|---|
 | 当前研究状态、机制线索与迁移计划 | [研究状态与后续方向](docs/RESEARCH_STATUS.zh-CN.md) |
-| 原版与调整版的四项全量能力损伤对照（运行中） | [运行协议与证据](experiments/capability-damage-v2-2026-10-26/PROTOCOL.zh-CN.md) / [精简方案 v2](docs/damage-evaluation-plan-v2.zh-CN.md) / [原方案 v1](docs/damage-evaluation-plan-v1.zh-CN.md) |
-| 全量评测的双 GPU 队列、自动评分和每半小时巡检 | [车队说明](experiments/capability-damage-v2-2026-10-26/CONVOY.zh-CN.md) |
-| 后续每轮约一小时的能力筛查预算（方案，未执行） | [时间分配、初拟题量与精度限制](docs/damage-evaluation-one-hour-plan.zh-CN.md) |
+| 当前四项能力小面板（运行中）：1,000 / 200 / 100 / 100 题 | [新运行协议](experiments/capability-screen-v3-2026-10-26/PROTOCOL.zh-CN.md) |
+| 四项全量能力对照（已按用户要求停止，保留原始证据） | [旧运行协议](experiments/capability-damage-v2-2026-10-26/PROTOCOL.zh-CN.md) / [精简方案 v2](docs/damage-evaluation-plan-v2.zh-CN.md) / [原方案 v1](docs/damage-evaluation-plan-v1.zh-CN.md) |
+| 旧全量车队的历史说明（已停止） | [车队说明](experiments/capability-damage-v2-2026-10-26/CONVOY.zh-CN.md) |
+| 一小时预算讨论及数学、代码各扩至 100 题的后续修订 | [时间分配与精度限制](docs/damage-evaluation-one-hour-plan.zh-CN.md) |
 | 两个坐标的源码/激活工程核查与相关工作的损伤指标 | [原始来源核查记录](docs/literature/source-and-damage-audit-2026-10-26.json) |
 | 用户提供的 HanLab 经验总结（原文） | [HanLab经验总结.md](docs/HanLab经验总结.md) / [导入与 SHA-256 校验](docs/hanlab-summary-import-2026-10-26.json) |
 | 文献查重与既有工作核查（26篇，含证据边界） | [mechanistic-interventions-2026-10-26.json](docs/literature/mechanistic-interventions-2026-10-26.json) |

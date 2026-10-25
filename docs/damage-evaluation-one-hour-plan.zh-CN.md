@@ -1,10 +1,10 @@
 # 后续能力评测：约一小时预算方案
 
-日期：2026-10-26。状态：讨论方案，尚未实现或运行。当前四项全量实验、冻结协议、后台队列和半小时巡检均保持原样。
+日期：2026-10-26。以下保留最初的时间分配讨论。用户随后明确要求数学和代码各改为 100 题，停止当前全量并执行新面板；实际版本见[小面板运行协议](../experiments/capability-screen-v3-2026-10-26/PROTOCOL.zh-CN.md)。旧全量已按要求停止，原始证据保留。新面板固定 1,000 / 200 / 100 / 100 题，预计耗时须实测，不能沿用下表 20+20 题的一小时估算。
 
 以后日常评测以“一次原版与一个调整版的完整对照，约 60 分钟出报告”为目标。按现有两张 H20、Qwen3.5-4B、已备好模型/数据/环境估算；包含加载、检查、推理、HumanEval 测试和评分。50–75 分钟是规划容差，不是实测保证，也不是到点终止规则。新模型下载、环境安装及新实现首次验收单独列出，不藏进评测时间；只有一张卡或换更大模型须重新估算。
 
-## 时间与初拟题量
+## 最初讨论的时间与题量（20+20 已被 100+100 替代）
 
 下表时间是两张卡并行后的实际等待时间；题数指原版和调整版回答的同一组题，两版合计不再乘一次时间。按两臂都重新计算的方式预算。
 
@@ -43,6 +43,6 @@ GSM8K 和 HumanEval 若各只有 20 题，一题就对应 5 个百分点；配�
 - 当前固定设置：[全量协议](../experiments/capability-damage-v2-2026-10-26/PROTOCOL.zh-CN.md)。
 - 吞吐依据：[非测试预检](../experiments/capability-damage-v2-2026-10-26/validation/preflight-gpu0-b1-r01/throughput.json)，只有短样本，不是全量 ETA。
 - 历史截断与评分证据：[快速评测报告](../experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/RESULTS.zh-CN.md)。
-- 当前只保存未来预算方案；尚未抽取新题、修改评分器、启动新运行或改变当前任务。
+- 最初仅保存上述预算方案；后续用户已授权 100+100 版本并启动，实际设置和状态以本文开头链接的新运行协议与回执为准。
 
 Material Passport：Origin Skill = academic-research-suite / experiment-agent；Origin Mode = plan；Origin Date = 2026-10-26；Verification Status = UNVERIFIED（未来耗时）；Version Label = one_hour_plan_v1。

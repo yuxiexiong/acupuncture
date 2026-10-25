@@ -2,11 +2,11 @@
 
 更新日期：2026-10-26。项目名称与唯一 GitHub 仓库已经由用户指定；本文接续聊天中的研究讨论，不代表新增模型实验已获执行授权。
 
-**后续评测时间预算：** 用户要求当前全量任务继续，未来每轮对照约一小时，允许小幅浮动。[一小时预算方案](damage-evaluation-one-hour-plan.zh-CN.md)初拟 MMLU 8 分钟 / 1,000 题、ARC-C 5 分钟 / 200 题、GSM8K 25 分钟 / 20 题、HumanEval 12 分钟 / 20 题，另留准备与收尾共 10 分钟。按两张 H20、原版与一个调整版完整配对估算；题量须用本轮实际耗时校准后再冻结。小生成题集只能筛查明显损伤，不能判定细微差异。当前仅记录方案，未改运行或启动新评测。
+**当前能力评测：** 用户最新要求将数学和代码各改为 100 题，停止此前全量运行，执行 MMLU 1,000、ARC-C 200、GSM8K 100、HumanEval 100 的固定面板并实测 ETA。新版本共 1,400 对、2,800 个题目—条件单元，见[小面板运行协议](../experiments/capability-screen-v3-2026-10-26/PROTOCOL.zh-CN.md)。沿用原精度、干预、生成上限和评分；先独立抽样，再严格核验复用旧完整回答。一小时仍为目标量级，100+100 生成题的用时尚不能保证。新队列已于北京时间 04:49:13 启动；固定面板中 718 对 MMLU 通过复用检查，其余 682 对需要新计算。实际启动与协议哈希见本轮 `launch.json`，CPU 收尾同步等待两路成功。
 
-**四项损伤对照执行进展：** 用户随后明确授权按精简方案完成原版与 EVO 的 MMLU、ARC-C、GSM8K、HumanEval 全量评测。16,697 道题已冻结，来源哈希、官方评分器、HumanEval 隔离和两张 GPU 的逐题控制验收通过；现按 batch=1、双 GPU 分题启动。BF16 批量一致性失败已保留，未放宽阈值。当前尚无完整正式成绩；协议与证据见[本轮运行目录](../experiments/capability-damage-v2-2026-10-26/PROTOCOL.zh-CN.md)。以下机制研究与其他扩展仍未执行。
+**旧全量已停止：** 北京时间 2026-10-26 04:43 核验两个 GPU worker 及旧 CPU 收尾退出，保留 10,034 对完整 MMLU 和部分记录，其余三项尚未启动。证据见旧运行 `user-stop-20261026-r01/`。旧协议与回执保留历史原样，不能据其历史 started 状态误判为仍在运行，也不能称其全量完成。巡检已切换至新版本，禁止重启旧全量。
 
-用户已要求保留本轮完整实验，并改为每半小时巡检。两路 GPU 队列与独立 CPU 评分收尾已连接；运行状态和最终结果位置见[车队说明](../experiments/capability-damage-v2-2026-10-26/CONVOY.zh-CN.md)。关于后续是否需要全量，已补充[CNA / CircuitBreak](literature/benchmark-sample-size-audit-cna-circuitbreak-2026-10-26.json)、[Persona / Refusal Direction](literature/benchmark-sample-size-audit-persona-refusal-2026-10-26.json)和[CAA / AS-induced EM](literature/benchmark-sample-size-audit-steering-2026-10-26.json)的实际样本量核查。小面板用于筛查、少数最终配置全量确认仍属讨论建议，没有缩减或改写本轮协议。
+**当前交付边界：** 新运行的启动、完成数量和成绩以新鲜回执为准；暂无这轮完整正式成绩。[最初一小时预算](damage-evaluation-one-hour-plan.zh-CN.md)中的数学/代码各 20 题已由新授权的各 100 题替代。相关工作的样本量核查仍保留：[CNA / CircuitBreak](literature/benchmark-sample-size-audit-cna-circuitbreak-2026-10-26.json)、[Persona / Refusal Direction](literature/benchmark-sample-size-audit-persona-refusal-2026-10-26.json)、[CAA / AS-induced EM](literature/benchmark-sample-size-audit-steering-2026-10-26.json)。
 
 **最新测量方案：** 按用户要求，现以[能力损伤对照精简方案 v2](damage-evaluation-plan-v2.zh-CN.md)量化同一模型调整前后的能力变化。保留 MMLU、ARC-C、GSM8K、HumanEval 四项任务，只比较原版与一个事前固定的调整版，分别报告原分数、调整后分数、下降百分点和配对区间；截断及解析失败仅作解释。CE/BPB、专门重复率、剂量与位置矩阵、机制和跨模型扩展移出该测量协议。[原方案 v1](damage-evaluation-plan-v1.zh-CN.md)完整保留。此次仅修订文档，没有启动新评测；以下机制研究方向另行管理，不作为完成一次损伤对照的前提。
 
