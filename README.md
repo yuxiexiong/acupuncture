@@ -9,6 +9,7 @@
 | 材料 | 入口 |
 |---|---|
 | 当前研究状态、机制线索与迁移计划 | [研究状态与后续方向](docs/RESEARCH_STATUS.zh-CN.md) |
+| 用户提供的 HanLab 经验总结（原文） | [HanLab经验总结.md](docs/HanLab经验总结.md) / [导入与 SHA-256 校验](docs/hanlab-summary-import-2026-10-26.json) |
 | 文献查重与既有工作核查（26篇，含证据边界） | [mechanistic-interventions-2026-10-26.json](docs/literature/mechanistic-interventions-2026-10-26.json) |
 | lyra 原帖、作者回复与评论区反查 | [原帖与评论区调查报告](docs/literature/lyra-x-thread-2026-10-26.zh-CN.md) |
 | Qwen3.5-4B 首轮实验全部代码与记录 | [实验目录](experiments/qwen35-neuron-steering-2026-10-25/) |
