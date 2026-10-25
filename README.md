@@ -9,6 +9,7 @@
 | 材料 | 入口 |
 |---|---|
 | 当前研究状态、机制线索与迁移计划 | [研究状态与后续方向](docs/RESEARCH_STATUS.zh-CN.md) |
+| 4B→9B 直接迁移 toy：完整方案，未运行；根因实验暂停 | [迁移 toy v1](experiments/transfer-toy-v1-2026-10-26/PROTOCOL.zh-CN.md) |
 | 当前四项能力小面板（运行中）：1,000 / 200 / 100 / 100 题 | [新运行协议](experiments/capability-screen-v3-2026-10-26/PROTOCOL.zh-CN.md) |
 | 四项全量能力对照（已按用户要求停止，保留原始证据） | [旧运行协议](experiments/capability-damage-v2-2026-10-26/PROTOCOL.zh-CN.md) / [精简方案 v2](docs/damage-evaluation-plan-v2.zh-CN.md) / [原方案 v1](docs/damage-evaluation-plan-v1.zh-CN.md) |
 | 旧全量车队的历史说明（已停止） | [车队说明](experiments/capability-damage-v2-2026-10-26/CONVOY.zh-CN.md) |
@@ -35,7 +36,7 @@
 - 作者公开代码采用固定参考尺度，我们首轮逐题校准；二者不能称为完全相同的实验设置。
 - 三项英文基准各完成固定 100 题，共 600 份回答，完整收据、原文及评分已复核。严格格式评分的原版/EVO 为 RACE 89%/0%、GSM8K 79%/0%、LogiQA 2.0 70%/0%；两臂统一的事后显式答案提取分别为 89%/11%、83%/0%、70%/15%。这是子集成绩；严格零分混合了格式失遵循、截断与答错，不能解释成全部能力消失。
 - 本轮基准同时使用 248044 和 248046 停止，修正了首轮旧语料的停止条件。EVO 为动态激活干预，权重未改写；其 300 份回答有 295 份达到生成上限。当前结果不支持“能力保持、只变坏”。
-- 当前优先在源模型内定位干预导致现象的因果计算链；跨模型迁移暂缓。机制定位与迁移均未启动新模型实验，当前方案见[研究状态](docs/RESEARCH_STATUS.zh-CN.md)。
+- 用户最新要求先写完整的 4B→9B 直接迁移 toy 方案，根因实验保持原方案并暂时暂停。[迁移 toy v1](experiments/transfer-toy-v1-2026-10-26/PROTOCOL.zh-CN.md)已成文，尚未实施或运行；不以先破解根因为迁移前提，也不据此启动任何新模型实验。
 
 ## 复用代码
 
