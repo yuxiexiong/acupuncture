@@ -1,0 +1,808 @@
+{
+  "project": "Acupuncture",
+  "date": "2026-10-26",
+  "created_utc": "2026-10-25T18:10:35.127653+00:00",
+  "status": "metadata_verified_arithmetic_budget_only",
+  "new_model_experiments_run": false,
+  "scope": "All 294912 native MLP channels individually at normalized +1 and -1; complete questions per condition; not simultaneous all-channel changes and not a pair-interaction scan.",
+  "counts": {
+    "text_layers": 32,
+    "mlp_channels_per_layer": 9216,
+    "native_mlp_channels": 294912,
+    "single_channel_signed_conditions": 589824,
+    "baseline_conditions": 1,
+    "all_unordered_channel_pairs_with_four_signs": 173945585664,
+    "pair_scan_to_single_scan_condition_ratio": 294911
+  },
+  "empirical_anchor": {
+    "run": "results-math",
+    "receipt_status": "completed",
+    "model_revision": "851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a",
+    "device_from_receipt": "cuda:1",
+    "hardware_note": "Historical protocol specifies H20 GPU 1; receipt records cuda:1 without a GPU product string. A separate read-only gqa-h20 inventory in this turn returned two NVIDIA H20 GPUs (97871 MiB each); this is a current inventory, not a replacement for historical run metadata.",
+    "settings": {
+      "dtype": "bfloat16",
+      "seed": 0,
+      "do_sample": false,
+      "enable_thinking": false,
+      "attention_backend": "eager",
+      "gsm_tokens": 512,
+      "batch_size": 16,
+      "padding_side": "left",
+      "fresh_conversation_per_item": true,
+      "independent_model_instances": true,
+      "calibration": "individual unpadded baseline full prompt"
+    },
+    "question_count": 100,
+    "batch_count": 7,
+    "batch_sizes": [
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      4
+    ],
+    "generation_timing_definition": "benchmark_quick_batched.py lines 85-103: input cloning, prefill, decode, and output tensor tolist are inside timer; detokenization, scoring, and file writes follow timer.",
+    "aggregation_method": "Sum generated_token_count over every response; group by batch_index and count each equal batch_seconds once. Cross-check against sum(seconds), whose per-row value is already amortized by batch row count.",
+    "aggregates_by_arm": {
+      "baseline": {
+        "generated_tokens": 34047,
+        "generation_seconds": 227.05145366117358,
+        "aggregate_output_tokens_per_second": 149.95279462428798
+      },
+      "evo": {
+        "generated_tokens": 51200,
+        "generation_seconds": 233.66628362983465,
+        "aggregate_output_tokens_per_second": 219.115908399986
+      }
+    },
+    "batches": [
+      {
+        "batch_index": 0,
+        "rows": 16,
+        "arms": {
+          "baseline": {
+            "generated_tokens": 5112,
+            "generation_seconds_once_per_batch": 33.48062648996711,
+            "amortized_seconds_sum": 33.48062648996711
+          },
+          "evo": {
+            "generated_tokens": 8192,
+            "generation_seconds_once_per_batch": 33.564433388412,
+            "amortized_seconds_sum": 33.564433388412
+          }
+        }
+      },
+      {
+        "batch_index": 1,
+        "rows": 16,
+        "arms": {
+          "baseline": {
+            "generated_tokens": 5512,
+            "generation_seconds_once_per_batch": 33.43737605586648,
+            "amortized_seconds_sum": 33.43737605586648
+          },
+          "evo": {
+            "generated_tokens": 8192,
+            "generation_seconds_once_per_batch": 33.497804913669825,
+            "amortized_seconds_sum": 33.497804913669825
+          }
+        }
+      },
+      {
+        "batch_index": 2,
+        "rows": 16,
+        "arms": {
+          "baseline": {
+            "generated_tokens": 6340,
+            "generation_seconds_once_per_batch": 33.24987465143204,
+            "amortized_seconds_sum": 33.24987465143204
+          },
+          "evo": {
+            "generated_tokens": 8192,
+            "generation_seconds_once_per_batch": 33.24897103756666,
+            "amortized_seconds_sum": 33.24897103756666
+          }
+        }
+      },
+      {
+        "batch_index": 3,
+        "rows": 16,
+        "arms": {
+          "baseline": {
+            "generated_tokens": 4462,
+            "generation_seconds_once_per_batch": 26.73689141497016,
+            "amortized_seconds_sum": 26.73689141497016
+          },
+          "evo": {
+            "generated_tokens": 8192,
+            "generation_seconds_once_per_batch": 33.17136908508837,
+            "amortized_seconds_sum": 33.17136908508837
+          }
+        }
+      },
+      {
+        "batch_index": 4,
+        "rows": 16,
+        "arms": {
+          "baseline": {
+            "generated_tokens": 5541,
+            "generation_seconds_once_per_batch": 33.77512175962329,
+            "amortized_seconds_sum": 33.77512175962329
+          },
+          "evo": {
+            "generated_tokens": 8192,
+            "generation_seconds_once_per_batch": 33.71080868318677,
+            "amortized_seconds_sum": 33.71080868318677
+          }
+        }
+      },
+      {
+        "batch_index": 5,
+        "rows": 16,
+        "arms": {
+          "baseline": {
+            "generated_tokens": 5834,
+            "generation_seconds_once_per_batch": 33.51783972978592,
+            "amortized_seconds_sum": 33.51783972978592
+          },
+          "evo": {
+            "generated_tokens": 8192,
+            "generation_seconds_once_per_batch": 33.62852428853512,
+            "amortized_seconds_sum": 33.62852428853512
+          }
+        }
+      },
+      {
+        "batch_index": 6,
+        "rows": 4,
+        "arms": {
+          "baseline": {
+            "generated_tokens": 1246,
+            "generation_seconds_once_per_batch": 32.85372355952859,
+            "amortized_seconds_sum": 32.85372355952859
+          },
+          "evo": {
+            "generated_tokens": 2048,
+            "generation_seconds_once_per_batch": 32.84437223337591,
+            "amortized_seconds_sum": 32.84437223337591
+          }
+        }
+      }
+    ],
+    "full_batch_evo_output_tokens_per_second": 244.7541687966761,
+    "whole_process_elapsed_seconds": 495.3407945651561,
+    "both_arms_generation_seconds": 460.71773729100823,
+    "observed_non_generation_process_seconds": 34.62305727414787,
+    "non_generation_cost_boundary": "Observed remainder belongs to this 100-question run; it is not a fixed overhead estimate for a full scan."
+  },
+  "formulas": {
+    "channel_count": "N = 32 * 9216",
+    "signed_conditions": "S = 2 * N",
+    "response_count": "R = S * prompts_per_condition",
+    "budgeted_output_tokens": "O = R * output_token_budget_per_response",
+    "measured_throughput": "v = sum(evo generated_token_count) / sum(evo batch_seconds counted once per batch_index)",
+    "generation_gpu_hours": "O / v / 3600",
+    "ideal_two_gpu_days": "O / (2 * v) / 86400",
+    "semantic_evaluation_hours": "R / hypothetical_answers_per_second / 3600",
+    "pair_conditions": "4 * C(N, 2)"
+  },
+  "generation_scenarios": [
+    {
+      "prompts_per_condition": 1,
+      "output_token_budget_per_response": 128,
+      "responses": 589824,
+      "output_tokens_if_all_reach_budget": 75497472,
+      "generation_gpu_hours_at_measured_rate": 95.70970977478026,
+      "ideal_two_equal_gpus_elapsed_days": 1.993952286974589
+    },
+    {
+      "prompts_per_condition": 4,
+      "output_token_budget_per_response": 128,
+      "responses": 2359296,
+      "output_tokens_if_all_reach_budget": 301989888,
+      "generation_gpu_hours_at_measured_rate": 382.83883909912106,
+      "ideal_two_equal_gpus_elapsed_days": 7.975809147898356
+    },
+    {
+      "prompts_per_condition": 4,
+      "output_token_budget_per_response": 256,
+      "responses": 2359296,
+      "output_tokens_if_all_reach_budget": 603979776,
+      "generation_gpu_hours_at_measured_rate": 765.6776781982421,
+      "ideal_two_equal_gpus_elapsed_days": 15.951618295796711
+    },
+    {
+      "prompts_per_condition": 24,
+      "output_token_budget_per_response": 256,
+      "responses": 14155776,
+      "output_tokens_if_all_reach_budget": 3623878656,
+      "generation_gpu_hours_at_measured_rate": 4594.066069189453,
+      "ideal_two_equal_gpus_elapsed_days": 95.70970977478026
+    },
+    {
+      "prompts_per_condition": 40,
+      "output_token_budget_per_response": 256,
+      "responses": 23592960,
+      "output_tokens_if_all_reach_budget": 6039797760,
+      "generation_gpu_hours_at_measured_rate": 7656.776781982421,
+      "ideal_two_equal_gpus_elapsed_days": 159.51618295796712
+    },
+    {
+      "prompts_per_condition": 40,
+      "output_token_budget_per_response": 512,
+      "responses": 23592960,
+      "output_tokens_if_all_reach_budget": 12079595520,
+      "generation_gpu_hours_at_measured_rate": 15313.553563964842,
+      "ideal_two_equal_gpus_elapsed_days": 319.03236591593424
+    }
+  ],
+  "semantic_evaluation": {
+    "throughput_status": "unknown_not_benchmarked",
+    "rates_are_hypothetical_sensitivity_cases": true,
+    "scenarios": [
+      {
+        "prompts_per_condition": 4,
+        "responses": 2359296,
+        "hypothetical_evaluation_hours_at_10_answers_per_second": 65.536,
+        "hypothetical_evaluation_hours_at_100_answers_per_second": 6.553599999999999
+      },
+      {
+        "prompts_per_condition": 24,
+        "responses": 14155776,
+        "hypothetical_evaluation_hours_at_10_answers_per_second": 393.216,
+        "hypothetical_evaluation_hours_at_100_answers_per_second": 39.321600000000004
+      },
+      {
+        "prompts_per_condition": 40,
+        "responses": 23592960,
+        "hypothetical_evaluation_hours_at_10_answers_per_second": 655.36,
+        "hypothetical_evaluation_hours_at_100_answers_per_second": 65.536
+      }
+    ],
+    "boundary": "Rules for length, repetition, format and extraction are not semantic or causal verification. Semantic judges require a defined rubric and their own throughput and reliability calibration."
+  },
+  "assumptions_and_limits": [
+    "These are conditional extrapolations from an existing BF16/eager batch16 math generation run, not measured full-scan or end-to-end ETA.",
+    "Every response is budgeted to reach 128, 256, or 512 output tokens. Early EOS changes work; the slowest row can keep a padded batch active.",
+    "The observed timer includes prefill for the historical input lengths. Linear token scaling to new output and input lengths is an approximation.",
+    "Different intervention layers, input lengths, and heterogeneous per-row channel indices may change throughput; this scan backend has not been benchmarked.",
+    "Two-GPU elapsed days assume independent sharding on two exclusively available equally fast GPUs with ideal parallel scaling; no queue or availability guarantee.",
+    "Estimates omit scan setup, model loading, calibration, output detokenization and file I/O outside the observed timer, data transfer, semantic evaluation, queues, failures, retries, and researcher time.",
+    "Baseline outputs and per-prompt residual calibration can be reused when the protocol fixes inputs and settings; they are not redundantly regenerated once per intervention condition in this budget.",
+    "The model weights are reused; the count does not imply creating or saving 589824 complete model checkpoints.",
+    "A single-channel signed sweep does not cover two-channel interactions; an exhaustive four-sign pair sweep has 173945585664 conditions.",
+    "The data were used only for technical metadata and arithmetic; response text was not copied into this budget record."
+  ],
+  "verification": {
+    "all_100_items_completed": true,
+    "batch_time_consistent_within_each_arm_and_batch": true,
+    "amortized_seconds_match_unique_batch_seconds": true,
+    "token_count_matches_saved_token_id_length": true,
+    "all_sources_hashed": true
+  },
+  "sources": [
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0000.json",
+      "bytes": 39196,
+      "sha256": "f5acdbdbf5da7e354f2dec910f3a3d2287e1b2406f6589385bf447b61ba7c208"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0001.json",
+      "bytes": 42067,
+      "sha256": "bb82c6243883012290322a09b32a7c827f4015fe91d012976f8e20462cd2df8e"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0002.json",
+      "bytes": 39486,
+      "sha256": "6b421e61d1d768cf45e0a794c5ce3e3425e13f01c1ebfcf32e069fb2bf471ab7"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0003.json",
+      "bytes": 39750,
+      "sha256": "7f0473f4da670e784b497a6fdfda1639752bbc15e454f97051d072fc0ba42c7f"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0004.json",
+      "bytes": 39334,
+      "sha256": "55eacc61a7197d4f105f14de2b22dc4e26f9fe7f41448ae59c80a4b530a409cf"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0005.json",
+      "bytes": 40395,
+      "sha256": "ed314a89872e8f609cfbcc096803bad901f3634d2254c49a6ef8d7a0fc30e84c"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0006.json",
+      "bytes": 47314,
+      "sha256": "a59b1dbfee20829bd1ebb1372d1c436c09e27c4a6fecc85260abe06399b3da37"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0007.json",
+      "bytes": 40799,
+      "sha256": "29b407a534bea1de7a0dfe0fd3ac5f9e1c3934b5fed709413dd9f74beee0a36e"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0008.json",
+      "bytes": 43347,
+      "sha256": "ca4c143dff1828db88235abd630c273066cdaf869fdd1285a4b666ec5df9efea"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0009.json",
+      "bytes": 40953,
+      "sha256": "d36b01046ee789de92d1afeb80bd34c4810239a6b5cff1611b4cfadf118c44be"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0010.json",
+      "bytes": 43451,
+      "sha256": "674eff68ea2bceb284958c679c451df7fb17c9a4c23d8db017a53b11595a8a4f"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0011.json",
+      "bytes": 44150,
+      "sha256": "e2ff36d4522908c0120cf2feba7278c641f50c5bb67c1af18e9725a9b98e2a38"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0012.json",
+      "bytes": 37692,
+      "sha256": "601558c931c486decb2cddc9c3495b2a7b7427b3ab80bceb3896d489edcb30dd"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0013.json",
+      "bytes": 43207,
+      "sha256": "de8126d46c5ad75a754047992c5e2052830f42e1ed5bca46f385e1b2136163a8"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0014.json",
+      "bytes": 41563,
+      "sha256": "0110cff8ead7ddf034dcca2d78c550505e77726394f55900b4ab3c347a02e124"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0015.json",
+      "bytes": 40973,
+      "sha256": "29db40063395d55bd6ac96c7c257970430dad61fe2908e0dddd80bd24a44f8ec"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0016.json",
+      "bytes": 38709,
+      "sha256": "5c31c80e1cc6020400740876a6ff5526b165683d49045b965593f0e02937112b"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0017.json",
+      "bytes": 38950,
+      "sha256": "d91e8dc2b0b66d4bce5412291ee9b0427f1e49e988c8c6f15498f125d54696d7"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0018.json",
+      "bytes": 44751,
+      "sha256": "0dccd8f70026a173c0f4756117da6ab990f073fc9c1767299937f33670daac1e"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0019.json",
+      "bytes": 38641,
+      "sha256": "0f0674288550872abb77fe3d192ac5be390ff154ffc385fb4a048a63cb4e3a6a"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0020.json",
+      "bytes": 42454,
+      "sha256": "447236ab7f7bc48f0866aca6d8013c6df12a667bff7bec1d1f911f5dc2320402"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0021.json",
+      "bytes": 41901,
+      "sha256": "dd8a10779c2f49aba5be0d33c1fab8e9b42bf23cf8f47cf5a145a56326b29d1a"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0022.json",
+      "bytes": 41808,
+      "sha256": "6a8a387502913a9c2c7c59db822528c7406f850b77502042f9bb47daa0d137b7"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0023.json",
+      "bytes": 47964,
+      "sha256": "32207d4bfd9b9c537ff662097fb0536df1feb7df4659f9052bae717f87b19729"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0024.json",
+      "bytes": 40697,
+      "sha256": "689cf3bbfaabbf4364d4263eae62db2440505d89d16a39f58f13f21650356bef"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0025.json",
+      "bytes": 42273,
+      "sha256": "92bd134f9327c123b2b4e98bb03140aacfe82f3d53596e2f9e7c20189730ff02"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0026.json",
+      "bytes": 47171,
+      "sha256": "406014b41debff5511cd37390f174a4f3bd661643038d97bca3d0093454df124"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0027.json",
+      "bytes": 41047,
+      "sha256": "34b53ab2e88febc72cb79fef6b89c149c15749441e01235f126865e9c6a65b6c"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0028.json",
+      "bytes": 43445,
+      "sha256": "8c8c26ccee0f4fb06582601151231e458490861a2e0177760fa9d5aadfdbc160"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0029.json",
+      "bytes": 39351,
+      "sha256": "87434ca4c335e9f8b68531a92ab3a2b7fb558e8a013daac7daa14fe44372369a"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0030.json",
+      "bytes": 45321,
+      "sha256": "a75b195e2d509b69cec776aea926bee327e7d47b2db8c6dbe6675b38d8663004"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0031.json",
+      "bytes": 37650,
+      "sha256": "709721c2253a13c9d9bb17e9efbef61c33626ef71f0e9c0642ea744daaae4c52"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0032.json",
+      "bytes": 41923,
+      "sha256": "6d72cbb875aaa0ff4209ee28f91647eec19a238511fdb49aabbbc2e2ffd7b27a"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0033.json",
+      "bytes": 43301,
+      "sha256": "a1dc10ad2487e6acfbfa02ba5c9928d279e79a91374c3250ebc9bc90a8ac260a"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0034.json",
+      "bytes": 41940,
+      "sha256": "a3171e566e2dad356512615911388767563a167e8fa4c1b6d6c5c45072c5f7b5"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0035.json",
+      "bytes": 44686,
+      "sha256": "02aa7508fe09d1e1cb31168b6242737b5bdcdab6b33d1cd95edcd63bc109eda4"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0036.json",
+      "bytes": 43412,
+      "sha256": "55477871d36918835e1685452dc6cd04d658d8af67e9b82e0baf9665fbc1edf9"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0037.json",
+      "bytes": 42453,
+      "sha256": "cfa0e625a0c1a07a9c8cbdc0f467544f908da4458246186495b34a1f75084fd1"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0038.json",
+      "bytes": 43735,
+      "sha256": "e707d48a69d241967e0a93c4c49e2a773e28b370f9a8d79da8cd9c4494dd9314"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0039.json",
+      "bytes": 39235,
+      "sha256": "3acbc3ddf0bf868fdbf8dca77aee8193855cbfc78e6440629e5dff0b2545dee7"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0040.json",
+      "bytes": 36779,
+      "sha256": "2bf3e69a80e80f96eeb613499bfbeb3dda5292b511dd13d0a72e9c98f4ae9468"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0041.json",
+      "bytes": 38478,
+      "sha256": "05e95412f1e27a7d3b81b9ce7b10f5c1ae8a46a8ce2e6871bb4bb28df2a6990f"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0042.json",
+      "bytes": 47121,
+      "sha256": "79e39d85c1c265b7a1aa5903ef267afa767c427cde913afe3ca9e819bef61c89"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0043.json",
+      "bytes": 38668,
+      "sha256": "6c3e8f3220197d20e14edcf35331c2810338b2c64211fefa1635159e8c56a0eb"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0044.json",
+      "bytes": 44666,
+      "sha256": "6ff7b02ac6a09b4ea5b261cfa91ea2345dac8ece421e1192c27a521c3111e4b6"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0045.json",
+      "bytes": 44527,
+      "sha256": "986c5727b58b76de092f436f06e1ed842133dc53ef07534f052e301ab4d84c1b"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0046.json",
+      "bytes": 36793,
+      "sha256": "44ae53f200ac95b643cb9668ba29d4eea4d183c413106120b3b2d7b3cc41e290"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0047.json",
+      "bytes": 42011,
+      "sha256": "324e2411fef855d9d9a1be43aa1fccc97461ea366138a54007956102d4209c04"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0048.json",
+      "bytes": 37626,
+      "sha256": "c13a3d2a9d1534690945a4ea196d6d04cc51d256c9704d268ee7a520d70f3fd4"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0049.json",
+      "bytes": 35006,
+      "sha256": "96d381bcccfa055ba85ca84c2b0222d83bcbf6a91b5989aadbc8f47fee4ec879"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0050.json",
+      "bytes": 37184,
+      "sha256": "fac48a9c40eb7bae136003df9fbfa61016d7af853b2e140c140e134f078b2092"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0051.json",
+      "bytes": 36347,
+      "sha256": "01b996c6871423ff1d047129a3bc534eb714d3919386f8e7675df23c1658a7c3"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0052.json",
+      "bytes": 37819,
+      "sha256": "837d3175b92a35f342e31391b03d7f93adf7bd9d26d607bfa9b60bc6556d56bd"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0053.json",
+      "bytes": 35801,
+      "sha256": "b306f6a501c93aca5b06a5f3ddc361382819882526e39569ba0a66b3ccf5a539"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0054.json",
+      "bytes": 39094,
+      "sha256": "ed428c631d22b4d93c0ed0201fdd47c9e4028e56b61d7f4bacd45230cbdbd40e"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0055.json",
+      "bytes": 37732,
+      "sha256": "d45dc7abdd73f9701a1456a91560a7ef24929cc3a3a2efc748e882d544f8cb7c"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0056.json",
+      "bytes": 36775,
+      "sha256": "62adb3937c4f0a67d1eccef9427dd4ca6fd33f0aec3fc4b3e5b9bfc3fb456cac"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0057.json",
+      "bytes": 38996,
+      "sha256": "4dd420239a4d5bb4a5601ccfd4dfd5e084061b0922c64408a49f458aafff5ab6"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0058.json",
+      "bytes": 38931,
+      "sha256": "f56dc3245ec7b9f651892a3f47256cf89874b356c21697c55924a79b065ae73f"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0059.json",
+      "bytes": 36246,
+      "sha256": "f04bed6455f8d15fdd96dc0964e31a8951395169b5948e664538b5eecbd0be67"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0060.json",
+      "bytes": 38591,
+      "sha256": "9f0f5bcaded0a36a26932d38124cbc9cf999cfa4f644b2cc2ddce037fb897f96"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0061.json",
+      "bytes": 40333,
+      "sha256": "aade3578bee09a387d908fb9a12658b521096499ef1323cffc39d5686ccb1439"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0062.json",
+      "bytes": 36927,
+      "sha256": "007fd95951f149c97d611c94e451a9b0956e77311d49884cbd7ccaa74c7c74e4"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0063.json",
+      "bytes": 36500,
+      "sha256": "970340984567cea5d556cd3af0d03f1ad29dc33c37f509c86a4b3b1a33828615"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0064.json",
+      "bytes": 40251,
+      "sha256": "2706c3d75d09eef431d5b865a2becfca03d15b5000f6faefa4705f2a4137c1c0"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0065.json",
+      "bytes": 43207,
+      "sha256": "3144ba4c8466e580f61721e3fa4792f6287d7ccf09c034ab9d62cd1af7d70247"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0066.json",
+      "bytes": 47956,
+      "sha256": "2839c513144af2ce8caba5437b0f34208751d4b91099f7c6f334115d2f014e4d"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0067.json",
+      "bytes": 39495,
+      "sha256": "65b9f0ac624fc6ecff3ab44daa2141cbc89b11aa98794fbf8b043cf192b4968c"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0068.json",
+      "bytes": 38906,
+      "sha256": "917030d2d70e98ab1f590aaf1da46e8260cc4e6d0d33fce0ee6008c3f734612a"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0069.json",
+      "bytes": 41899,
+      "sha256": "e60ec2685eae87d5cf516dccc3fbb3c89ee8cf9ad6df083b20b39444897683c8"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0070.json",
+      "bytes": 39522,
+      "sha256": "414bd555efd4103f14edb929cd9e7fffffcae39efcfb506aebe5197c18f680ad"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0071.json",
+      "bytes": 39127,
+      "sha256": "d787b3bee961fdaddbdbbd424038bc3c1fa0b43321f28a7bc12c342efcbb57e7"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0072.json",
+      "bytes": 41248,
+      "sha256": "a99820f886ade019380b172226f80f1189c36a20d87699983ef47ebb9499ff79"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0073.json",
+      "bytes": 41970,
+      "sha256": "975c8189d2aa13de17aa98f359ff2fd7f9a7114b2ed3eebe9d2e4ef1245450e3"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0074.json",
+      "bytes": 43911,
+      "sha256": "9d43ff4fcc4f4d6f0f91ec997526895573ff8533ed036493149fd578ce604f0f"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0075.json",
+      "bytes": 41287,
+      "sha256": "dff285d0e1d1561984e20542e4e931902f6754dc340123e07a14aa7c6573c1ba"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0076.json",
+      "bytes": 38977,
+      "sha256": "179483cd0f110bf998ca94f8637eaa2f37ce2b7144d53414c91574b45ad679bb"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0077.json",
+      "bytes": 46646,
+      "sha256": "f354a1337f9aee3c5212e8580012dc8c16ba457c67df925f23bf71a1661f0e8b"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0078.json",
+      "bytes": 38820,
+      "sha256": "48f9f02f020290d86ddfedfd6c048b5c1a063f970d5c0892d84c163ff25eb5e6"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0079.json",
+      "bytes": 40867,
+      "sha256": "1d5727765ca7d8e4d764229b4c7194d49ba175b2375cd458a8058a68e4e7a5d6"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0080.json",
+      "bytes": 45383,
+      "sha256": "5c82b9af6cdf67d48f8a37a9eb9ef9c9c76fedd43413bfad3f88209c565c9b91"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0081.json",
+      "bytes": 39046,
+      "sha256": "d2224b10333fbf432ce73da594ef2c70e81c2648eaaea2599158bdda43f086db"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0082.json",
+      "bytes": 44113,
+      "sha256": "5ed27d8947d1be05d78d73509e90d6eb47c073877c77729f0515d25d7bd6c34e"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0083.json",
+      "bytes": 41751,
+      "sha256": "5cfe514ec9f24fda164d9b633774a624cf606e55bae5d39fa365fccd70804396"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0084.json",
+      "bytes": 42359,
+      "sha256": "66960f837175ef7c1b4ff84b8e473db91707769c45fbf20bdf24640eb89291b8"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0085.json",
+      "bytes": 39645,
+      "sha256": "2df3f966f15feb3be912df2d7e269f46e498711b137ef4383643016ca5be9381"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0086.json",
+      "bytes": 39246,
+      "sha256": "d575f5782a6a065da5815189e1f5cf9223771cd0a7798c713fbba9eb5951b44f"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0087.json",
+      "bytes": 41938,
+      "sha256": "3e51cc82f061310e986313f80904bbab0e7a0800762e38f4087fbe511783f2d5"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0088.json",
+      "bytes": 42601,
+      "sha256": "687b54c7ff5ebd1e521e8fb477becd0c16b5c975b84d140e1a1bd28c3d8020fd"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0089.json",
+      "bytes": 46179,
+      "sha256": "48fa5c9368c1db5ad6b1ea5e281a5f22c426228592602423102b864e69c5d68c"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0090.json",
+      "bytes": 41625,
+      "sha256": "235c552951ff810c28b36fcbce33277173cfec7bc9ced03c7edad806b955bd3e"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0091.json",
+      "bytes": 39753,
+      "sha256": "7d269c0b2d254f4ed6cd93834a281d4f8efbec185b4ac375614b7996fad04f72"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0092.json",
+      "bytes": 41102,
+      "sha256": "47545a03ba406e15a8c10be697aa134b85f69eb69673b529e58fcefb1e8b68ba"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0093.json",
+      "bytes": 42763,
+      "sha256": "a809a94a624d132ec4249e9e0cb006b26eccb40d90be7b9750b458e26747478d"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0094.json",
+      "bytes": 41779,
+      "sha256": "9b625eef9f1b1e6e404b8e326c93108305e273d911702ea097c9bab72dd1c7f4"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0095.json",
+      "bytes": 40606,
+      "sha256": "cae7cffbcc9556649f676ef5751481b979f4b73f465c1a7d0204712ac58270d7"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0096.json",
+      "bytes": 36758,
+      "sha256": "26499410fb6748bb53de6f6b731115a35062f4d6956a83c0dcd042cecaa49056"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0097.json",
+      "bytes": 42095,
+      "sha256": "b40f92e556d1042b50f4f94b0df5e566729d1b0e724c59ddd6ef114a12b825b4"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0098.json",
+      "bytes": 47230,
+      "sha256": "48f5f95a908004116b538ed4b0ac7166d2c09acdac189022419c0221a0835918"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/0099.json",
+      "bytes": 40064,
+      "sha256": "29f73c502ee89ea7cbf161e53df1825933e4dbf596c5ad1d5f4decebc281d05b"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/receipt.json",
+      "bytes": 12251,
+      "sha256": "63acddbf68ab6a0e198e373b532605fd7bfda0dc205a21a8f278575b503f1ac8"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/PROTOCOL.zh-CN.md",
+      "bytes": 3481,
+      "sha256": "aad3f85e753f7635e4a92604024ac5d19b2f0813c11254fe8e7bffdb856e340b"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/math-run.log",
+      "bytes": 2893,
+      "sha256": "e57640a2708cd0a66b0a5a7e7f3f04a6245aa5014d7be6bd9aec95130a2a9d73"
+    },
+    {
+      "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark_quick_batched.py",
+      "bytes": 16262,
+      "sha256": "4a360335512906d13cd3b32f4877117e4a6e4609b4ab505fdc9ce675f4b85467"
+    }
+  ]
+}
