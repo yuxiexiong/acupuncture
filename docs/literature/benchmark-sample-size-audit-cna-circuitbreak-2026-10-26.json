@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "project": "Acupuncture",
+  "date": "2026-10-26",
+  "status": "live_primary_source_audit_no_model_runs",
+  "question": "相关工作实际报告全量能力评测还是子集，搜索样本是否被误当作最终评测样本？",
+  "evidence_boundary": "核实论文所报告的评测及公开源码；没有获得逐题运行日志，不能称为独立验证作者实际完成的推理次数。没有修改冻结实验。",
+  "papers": [
+    {
+      "name": "Targeted Neuron Modulation via Contrastive Pair Search (CNA)",
+      "paper_version": "2605.12290v1",
+      "paper_url": "https://arxiv.org/html/2605.12290v1",
+      "retrieved_html_sha256": "fed5ecb969008dfbbf0ededbdfe637334efb0d9d19e45eff471b61891e7efc8c",
+      "capability_evaluation": {
+        "benchmark": "MMLU",
+        "reported_evaluated_questions": 1000,
+        "scope": "子集；不是完整 MMLU 测试集。",
+        "model_scope": "Fig.2 汇总8个 Instruct 模型、不同干预强度。",
+        "location": "§5.1 General capabilities; Figure 2",
+        "url": "https://arxiv.org/html/2605.12290v1#S5.F2",
+        "short_quote": "MMLU accuracy (1000 questions)",
+        "uncertainty": "图中标准差为模型间差异，不能解释为题目抽样置信区间。"
+      },
+      "discovery_vs_evaluation": {
+        "location": "§3.3; Appendix B Table 5",
+        "urls": [
+          "https://arxiv.org/html/2605.12290v1#S3.SS3",
+          "https://arxiv.org/html/2605.12290v1#A2.T5"
+        ],
+        "discovery": "论文区分 JBB 发现集100 harmful+100 benign，其他任务通常8 positive+8 negative。",
+        "separate_behavior_evaluation": "100条 harmful/JBB 提示用于拒答和生成质量；不是 MMLU 的分母。"
+      },
+      "settings_not_established": [
+        "MMLU 1000题的抽样种子、分层/选题清单",
+        "few-shot 数量与具体提示模板",
+        "MMLU 的候选评分/答案读取实现"
+      ],
+      "official_code_check": {
+        "repository": "https://github.com/NousResearch/neural-steering",
+        "commit": "0083b8530a14f353d19737b944be8d93b2b130a5",
+        "commit_date": "2026-05-06T21:42:47Z",
+        "url": "https://github.com/NousResearch/neural-steering/tree/0083b8530a14f353d19737b944be8d93b2b130a5/experiments",
+        "scope": "只读扫描该公开树的 Python、notebook 和 README 文本，排除与评测无关的 ANTI-SLOP.md。",
+        "finding": "没有找到 MMLU/hendrycks/cais 调用或相应逐题结果文件；steering_comparison.py 主要是有害提示生成比较。无法从当前公开代码补齐 Fig.2 的抽样与 few-shot 细节。",
+        "steering_comparison_sha256": "cb3dd216fd9ee7581ff5b525d9e511628a4e2634a31c44ee2db2ff63aa5acc1c",
+        "limitation": "当前公开代码未找到，不等于论文未做该评测。"
+      }
+    },
+    {
+      "name": "CircuitBreak: Sparse Joint Neuron Ablations Disable Safety Behavior in Aligned LLMs",
+      "paper_version": "2610.16470v1",
+      "paper_url": "https://arxiv.org/html/2610.16470v1",
+      "retrieved_html_sha256": "f54832d1af96fa6439a548b0fc25aa7fcbea06108fbc3e21af9cbb15fba6b347",
+      "capability_evaluation": {
+        "location": "§4.1; §4.4/Table 3; Appendix A.3",
+        "urls": [
+          "https://arxiv.org/html/2610.16470v1#S4.SS1",
+          "https://arxiv.org/html/2610.16470v1#S4.T3",
+          "https://arxiv.org/html/2610.16470v1#A1.SS3"
+        ],
+        "reported_counts": {
+          "MMLU": 14042,
+          "GSM8K": 1319,
+          "ARC_Challenge": 1172,
+          "HumanEval": 164
+        },
+        "scope": "作者报告全量测试集评测；A.3 对 MMLU 明说 all，对 GSM8K/ARC 写明使用对应测试题数，对 HumanEval 写明每个任务生成一份。不是只列数据集规模。",
+        "short_quote": "MMLU uses all 14,042 test questions",
+        "capability_models": [
+          "Llama-3.2-3B-Instruct",
+          "Llama-3.1-8B-Instruct",
+          "Qwen2.5-7B-Instruct"
+        ],
+        "model_scope_boundary": "四项能力结果仅覆盖这3个模型；安全攻击实验覆盖10个模型，不能扩写成10个模型全部完成四项能力评测。"
+      },
+      "discovery_vs_evaluation": {
+        "locations": "§3.3 Utility; §4.1; Appendix A.2",
+        "urls": [
+          "https://arxiv.org/html/2610.16470v1#S3.SS3",
+          "https://arxiv.org/html/2610.16470v1#A1.SS2"
+        ],
+        "search": "50 benign用于原版回答的平均token log-prob损伤约束；另有100 harmful读出探针和从1000探针集取的500 harmful归因样本。",
+        "boundary": "这些是发现/搜索样本，不是四项最终能力评测分母。"
+      },
+      "protocol_comparability": {
+        "confirmed_scoring": "MMLU和ARC采用下一token选项分类；GSM8K为greedy数值精确匹配；HumanEval每题一次greedy补全并执行测试。",
+        "difference_from_acupuncture": "ARC的下一token选项准确率不等于本项目的完整选项似然/acc_norm；同名基准不能直接对齐绝对分数。",
+        "missing": "未查到 few-shot 数、基准具体提示及逐任务生成长度。",
+        "generation_scope_caution": "A.2安全评分小节写greedy、重复惩罚1.1、no-repeat-ngram=3、256-token cap和严格system提示；A.3未澄清这些设置如何适用于各能力任务，不能擅自据此认定其GSM8K/HumanEval采用256-token预算。"
+      },
+      "source_limit": "论文正文及附录未提供可核查本次完整能力评测逐题日志的链接；未独立重跑。"
+    }
+  ],
+  "discussion_inference_not_a_paper_claim": "两篇文献同时存在子集评测与全量评测先例，因此不能用‘相关工作都全量’要求必须全量。应按目标区分快速识别明显损伤与精确估计较小损伤；子集需要固定选题、成对比较和明确报告分母，不能冒充官方全量分数。"
+}

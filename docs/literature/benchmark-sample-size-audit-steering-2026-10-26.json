@@ -1,0 +1,27 @@
+{
+  "date": "2026-10-26",
+  "status": "targeted_primary_source_sample_size_check",
+  "scope": "Actual evaluation counts and subset/full distinctions; no model inference or protocol changes",
+  "sources": [
+    {
+      "paper": "Steering Llama 2 with Contrastive Activation Addition",
+      "url": "https://github.com/nrimsky/CAA#datasets",
+      "location": "README: MMLU (test only)",
+      "finding": "Official repository states evaluation uses a subset of 10 questions from every MMLU category. The full dataset file exists but is not the stated evaluation file. Data are reformatted as A/B questions.",
+      "limits": "Do not equate this adapted protocol with our standard four-letter likelihood score; this check does not establish all experiments in the paper used an identical prompt."
+    },
+    {
+      "paper": "Activation Steering Induces Emergent Misalignment: Steering Vector Construction and Comprehensive Evaluation",
+      "url": "https://arxiv.org/html/2606.08682v2",
+      "locations": [
+        "2.2",
+        "Appendix B.1 Table2",
+        "B.3 Table6",
+        "B.4",
+        "Appendix C"
+      ],
+      "finding": "Safety evaluation uses 313 StrongREJECT prompts and 300 HEx-PHI prompts per condition; parameter studies use all313 StrongREJECT prompts. Main generation batch2, max600 tokens StrongREJECT and256 HEx-PHI. These are harmfulness/coherence measurements; no MMLU/GSM8K/HumanEval general-capability panel was found in this paper.",
+      "limits": "A full small safety benchmark is not the same as a full general-capability panel. Coherence judge does not assess factual correctness."
+    }
+  ]
+}

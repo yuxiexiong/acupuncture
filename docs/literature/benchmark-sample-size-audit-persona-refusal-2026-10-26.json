@@ -1,0 +1,647 @@
+{
+  "status": "completed_bounded_primary_source_audit",
+  "checked_utc": "2026-10-25T19:56:31.453175+00:00",
+  "scope": "Actual sample counts and stage separation in Persona Vectors v3 and Refusal Direction v3; no GPU calls or frozen experiment edits.",
+  "count_policy": "null means unverified, not full and not zero. Repeated rollouts are not distinct questions. Configuration defaults are not proof that every reported paper experiment used that configuration.",
+  "papers": [
+    {
+      "title": "Persona Vectors: Monitoring and Controlling Character Traits in Language Models",
+      "paper": "https://arxiv.org/html/2507.21509v3",
+      "official_repo": "https://github.com/safety-research/persona_vectors",
+      "inspected_commit": "b8e0f044fe2410a6fad579f38324f03f13b4e917",
+      "capability_evaluations": [
+        {
+          "benchmark": "MMLU",
+          "stage": "Reported capability side effects, Figure7 and AppendixJ",
+          "actual_n": null,
+          "full_or_subset": "not_verified",
+          "evidence": {
+            "url": "https://arxiv.org/html/2507.21509v3",
+            "sections": [
+              "5.1",
+              "5.2",
+              "J.3",
+              "J.6",
+              "J.7"
+            ]
+          },
+          "reason": "论文报告MMLU曲线，但没有给出题数；固定提交公开小型代码中未找到MMLU运行器或对应逐题结果。"
+        },
+        {
+          "benchmark": "GSM8K-derived narrow-domain behavior",
+          "stage": "AppendixJ.1 mistake-style held-out evaluation",
+          "actual_n": null,
+          "full_or_subset": "not_verified",
+          "evidence": {
+            "url": "https://arxiv.org/html/2507.21509v3",
+            "section": "J.1"
+          },
+          "reason": "考察保留错误风格的窄域行为，不能等同标准GSM8K正确率；held-out数量未给出。"
+        },
+        {
+          "benchmark": "ARC / HumanEval",
+          "stage": "Standard capability evaluation",
+          "actual_n": null,
+          "full_or_subset": "not_reported_in_inspected_paper_and_code"
+        }
+      ],
+      "separate_behavior_and_search_sets": [
+        {
+          "purpose": "Direction extraction",
+          "distinct_questions_per_trait": 20,
+          "stage": "Extraction, not capability evaluation",
+          "evidence": {
+            "url": "https://arxiv.org/html/2507.21509v3",
+            "sections": [
+              "2.1",
+              "2.2"
+            ]
+          },
+          "code_question_counts_verified": true,
+          "filtering": "正/负回答按trait分数过滤；问题数不等于保留回答数。"
+        },
+        {
+          "purpose": "Trait behavior evaluation",
+          "distinct_questions_per_trait": 20,
+          "rollouts_per_question_default": 10,
+          "responses_per_condition_default": 200,
+          "stage": "Trait evaluation and steering-layer comparison, not MMLU",
+          "evidence": [
+            "https://github.com/safety-research/persona_vectors/blob/b8e0f044fe2410a6fad579f38324f03f13b4e917/data_generation/trait_data_eval/evil.json",
+            "https://github.com/safety-research/persona_vectors/blob/b8e0f044fe2410a6fad579f38324f03f13b4e917/eval/eval_persona.py#L240-L267",
+            "https://github.com/safety-research/persona_vectors/blob/b8e0f044fe2410a6fad579f38324f03f13b4e917/scripts/eval_steering.sh"
+          ],
+          "published_example_artifact": {
+            "file": "output/qwen2.5-7b-instruct_baseline.csv",
+            "actual_rows": 200,
+            "actual_distinct_question_ids": 20,
+            "scope": "Evil baseline example only; does not prove all reported runs had identical rollout counts."
+          }
+        },
+        {
+          "purpose": "External trait validation",
+          "dataset": "HaluEval QA",
+          "distinct_questions": 1000,
+          "selection": "first 1000; subset",
+          "evidence": {
+            "url": "https://arxiv.org/html/2507.21509v3",
+            "section": "B.3"
+          }
+        },
+        {
+          "purpose": "External trait validation",
+          "dataset": "Sycophancy held-out sets",
+          "distinct_questions": 300,
+          "derivation": "3 categories x 100 held-out, 1 rollout/question",
+          "evidence": {
+            "url": "https://arxiv.org/html/2507.21509v3",
+            "sections": [
+              "B.3",
+              "D.1"
+            ]
+          }
+        },
+        {
+          "purpose": "External evil validation",
+          "distinct_questions": null,
+          "rollouts_per_question": 100,
+          "evidence": {
+            "url": "https://arxiv.org/html/2507.21509v3",
+            "section": "B.3"
+          },
+          "limit": "此处只明确每题100次，未在本次审计确认题数。"
+        },
+        {
+          "purpose": "Finetuning data",
+          "dataset": "GSM8K training questions",
+          "reported_approximate_n": 7500,
+          "stage": "Training source, not final capability-evaluation n",
+          "evidence": {
+            "url": "https://arxiv.org/html/2507.21509v3",
+            "section": "D.1"
+          }
+        }
+      ],
+      "search_vs_reported_results": "层选择比较trait expression；20题行为集和MMLU能力分数是不同测量。未核实MMLU用于搜索还是独立最终报告时的具体n。"
+    },
+    {
+      "title": "Refusal in Language Models Is Mediated by a Single Direction",
+      "paper": "https://arxiv.org/html/2406.11717v3",
+      "official_repo": "https://github.com/andyrdt/refusal_direction",
+      "inspected_commit": "9d852fae1a9121c78b29142de733cb1340770cc3",
+      "capability_evaluations": [
+        {
+          "benchmarks": [
+            "MMLU",
+            "ARC",
+            "GSM8K",
+            "TruthfulQA",
+            "WinoGrande"
+          ],
+          "stage": "Reported original vs orthogonalized capability comparison; Tables3/8",
+          "actual_n_per_benchmark": null,
+          "full_or_subset": "not_verified",
+          "evidence": {
+            "url": "https://arxiv.org/html/2406.11717v3",
+            "sections": [
+              "4.3",
+              "G.1"
+            ]
+          },
+          "reason": "只说明harness默认/Leaderboard一致设置。公开仓库当前树及小型源码未提供这些benchmark的执行命令或逐题产物，不能据名称补填全量。"
+        },
+        {
+          "benchmark": "TinyHellaSwag",
+          "stage": "Reported final capability comparison, Table8",
+          "actual_n": 400,
+          "full_or_subset": "subset of larger HellaSwag",
+          "evidence": {
+            "url": "https://arxiv.org/html/2406.11717v3",
+            "section": "G.1"
+          },
+          "verification_level": "explicit_paper_statement"
+        }
+      ],
+      "separate_behavior_and_search_sets": [
+        {
+          "purpose": "Direction extraction",
+          "drawn_before_filtering": {
+            "harmful": 128,
+            "harmless": 128
+          },
+          "effective_after_filtering": null,
+          "stage": "Extraction, not final capability evaluation",
+          "evidence": [
+            "https://github.com/andyrdt/refusal_direction/blob/9d852fae1a9121c78b29142de733cb1340770cc3/pipeline/config.py#L11-L16",
+            "https://github.com/andyrdt/refusal_direction/blob/9d852fae1a9121c78b29142de733cb1340770cc3/pipeline/run_pipeline.py#L24-L60"
+          ],
+          "limit": "公开代码默认先抽样再按模型拒绝分数过滤，因此实际保留数可能少于128。"
+        },
+        {
+          "purpose": "Direction selection",
+          "drawn_before_filtering": {
+            "harmful": 32,
+            "harmless": 32
+          },
+          "effective_after_filtering": null,
+          "stage": "Validation/search, not final capability evaluation",
+          "evidence": [
+            "https://github.com/andyrdt/refusal_direction/blob/9d852fae1a9121c78b29142de733cb1340770cc3/pipeline/run_pipeline.py#L24-L60",
+            "https://github.com/andyrdt/refusal_direction/blob/9d852fae1a9121c78b29142de733cb1340770cc3/pipeline/run_pipeline.py#L77-L87"
+          ]
+        },
+        {
+          "purpose": "Refusal behavior evaluation",
+          "dataset": "JailbreakBench",
+          "distinct_questions": 100,
+          "evidence": {
+            "url": "https://arxiv.org/html/2406.11717v3",
+            "sections": [
+              "Figure1",
+              "A.1"
+            ]
+          },
+          "public_dataset_actual_count": 100,
+          "gemma_2b_published_baseline_output_count": 100
+        },
+        {
+          "purpose": "Refusal behavior evaluation",
+          "dataset": "HarmBench standard test behaviors",
+          "distinct_questions": 159,
+          "selection": "standard behaviors; excludes context-dependent and copyright cases",
+          "evidence": {
+            "url": "https://arxiv.org/html/2406.11717v3",
+            "section": "A.1"
+          },
+          "public_dataset_actual_count": 159
+        },
+        {
+          "purpose": "Harmless behavior evaluation",
+          "dataset": "Alpaca",
+          "distinct_questions": 100,
+          "selection": "sampled subset",
+          "evidence": {
+            "url": "https://arxiv.org/html/2406.11717v3",
+            "section": "A.2"
+          },
+          "gemma_2b_published_baseline_output_count": 100
+        },
+        {
+          "purpose": "CE loss side-effect evaluation",
+          "dataset": "Pile and Alpaca",
+          "configured_max_examples_each": 4096,
+          "derivation": "ce_loss_batch_size2 x ce_loss_n_batches2048; code-config ceiling, not asserted exact paper-run sample count",
+          "evidence": [
+            "https://github.com/andyrdt/refusal_direction/blob/9d852fae1a9121c78b29142de733cb1340770cc3/pipeline/config.py#L20-L21",
+            "https://github.com/andyrdt/refusal_direction/blob/9d852fae1a9121c78b29142de733cb1340770cc3/pipeline/submodules/evaluate_loss.py#L82-L89"
+          ]
+        },
+        {
+          "purpose": "On-distribution CE loss",
+          "dataset": "baseline generations on Alpaca",
+          "distinct_questions": 100,
+          "evidence": {
+            "url": "https://arxiv.org/html/2406.11717v3",
+            "section": "G.3"
+          }
+        }
+      ],
+      "search_vs_reported_results": "128/32属于提取与选方向；100/159属于拒绝行为评测；都不能当作MMLU/ARC/GSM8K能力测试的n。"
+    }
+  ],
+  "bounded_repository_audit": {
+    "method": "GitHub HEAD resolved once, complete recursive trees confirmed not truncated; fetched all .py/.sh/.md/.txt blobs outside large result directories; searched names and text for MMLU/GSM8K/HellaSwag/TruthfulQA/WinoGrande/lm_eval and sample-size parameters. Counted selected small official data/result artifacts independently without executing them.",
+    "small_text_files_scanned": 44,
+    "per_repo": {
+      "safety-research/persona_vectors": 20,
+      "andyrdt/refusal_direction": 24
+    },
+    "excluded": "No models, no dataset.zip training archive, no tensor artifacts; only selected published result JSON/CSV files were counted. Absence statement is limited to this inspected revision and scope.",
+    "files": [
+      {
+        "repo": "safety-research/persona_vectors",
+        "path": "README.md",
+        "url": "https://raw.githubusercontent.com/safety-research/persona_vectors/b8e0f044fe2410a6fad579f38324f03f13b4e917/README.md",
+        "sha256": "c590b603f5a7f508e6fce204d9ce8597aa562f6f3d2a4567536a87c4d75db9e1"
+      },
+      {
+        "repo": "safety-research/persona_vectors",
+        "path": "activation_steer.py",
+        "url": "https://raw.githubusercontent.com/safety-research/persona_vectors/b8e0f044fe2410a6fad579f38324f03f13b4e917/activation_steer.py",
+        "sha256": "d00d3414bb774abac89de8ace23f1279d78b4c7c78b0574785ffc020e7ec5c9e"
+      },
+      {
+        "repo": "safety-research/persona_vectors",
+        "path": "config.py",
+        "url": "https://raw.githubusercontent.com/safety-research/persona_vectors/b8e0f044fe2410a6fad579f38324f03f13b4e917/config.py",
+        "sha256": "570f8c38d553b61d817dc7128971f93d2b5e8140ebf4241dbaa924b1d54170ff"
+      },
+      {
+        "repo": "safety-research/persona_vectors",
+        "path": "data_generation/prompts.py",
+        "url": "https://raw.githubusercontent.com/safety-research/persona_vectors/b8e0f044fe2410a6fad579f38324f03f13b4e917/data_generation/prompts.py",
+        "sha256": "04e2fea3d7b8098381b89b7feedbb1d1c6ea29bab5cd63e42e09cae554717309"
+      },
+      {
+        "repo": "safety-research/persona_vectors",
+        "path": "eval/__init__.py",
+        "url": "https://raw.githubusercontent.com/safety-research/persona_vectors/b8e0f044fe2410a6fad579f38324f03f13b4e917/eval/__init__.py",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "repo": "safety-research/persona_vectors",
+        "path": "eval/cal_projection.py",
+        "url": "https://raw.githubusercontent.com/safety-research/persona_vectors/b8e0f044fe2410a6fad579f38324f03f13b4e917/eval/cal_projection.py",
+        "sha256": "3d7ba70ffe43fd103a7cfcaa02d51a4a1661c37653f3fd5a0a4a08ce1b518409"
+      },
+      {
+        "repo": "safety-research/persona_vectors",
+        "path": "eval/eval_persona.py",
+        "url": "https://raw.githubusercontent.com/safety-research/persona_vectors/b8e0f044fe2410a6fad579f38324f03f13b4e917/eval/eval_persona.py",
+        "sha256": "e634b8ddbd4724145554685c99d7a501d088309ab7e712e4af017ec7244d8a5d"
+      },
+      {
+        "repo": "safety-research/persona_vectors",
+        "path": "eval/model_utils.py",
+        "url": "https://raw.githubusercontent.com/safety-research/persona_vectors/b8e0f044fe2410a6fad579f38324f03f13b4e917/eval/model_utils.py",
+        "sha256": "2f4e1aa154145fc8dd5b30f348eaa2eff8a0da56132bfaceb348be607ef35be7"
+      },
+      {
+        "repo": "safety-research/persona_vectors",
+        "path": "eval/prompts.py",
+        "url": "https://raw.githubusercontent.com/safety-research/persona_vectors/b8e0f044fe2410a6fad579f38324f03f13b4e917/eval/prompts.py",
+        "sha256": "ffad02e61e18a5551f46c05879f975b64dc197e9bc0d82d53891e82b93c75c33"
+      },
+      {
+        "repo": "safety-research/persona_vectors",
+        "path": "generate_vec.py",
+        "url": "https://raw.githubusercontent.com/safety-research/persona_vectors/b8e0f044fe2410a6fad579f38324f03f13b4e917/generate_vec.py",
+        "sha256": "d77b9f9e739c93f3612940a74c4727cd1a17597653280813ac50b5a9675907e8"
+      },
+      {
+        "repo": "safety-research/persona_vectors",
+        "path": "judge.py",
+        "url": "https://raw.githubusercontent.com/safety-research/persona_vectors/b8e0f044fe2410a6fad579f38324f03f13b4e917/judge.py",
+        "sha256": "560e3f2ed31ef9888415c9d9cb1ae4bed20ac0e2046cfa6d16e7e0426aeffdf2"
+      },
+      {
+        "repo": "safety-research/persona_vectors",
+        "path": "requirements.txt",
+        "url": "https://raw.githubusercontent.com/safety-research/persona_vectors/b8e0f044fe2410a6fad579f38324f03f13b4e917/requirements.txt",
+        "sha256": "ea72f67bc962cdafc5536adff41177cfdd9b2263c1809bd7b9dee0cd972f1719"
+      },
+      {
+        "repo": "safety-research/persona_vectors",
+        "path": "scripts/cal_projection.sh",
+        "url": "https://raw.githubusercontent.com/safety-research/persona_vectors/b8e0f044fe2410a6fad579f38324f03f13b4e917/scripts/cal_projection.sh",
+        "sha256": "c3da0c5d582996591bd3bd075f49985323d207cea9710d4c3154c54124bb644f"
+      },
+      {
+        "repo": "safety-research/persona_vectors",
+        "path": "scripts/eval_persona.sh",
+        "url": "https://raw.githubusercontent.com/safety-research/persona_vectors/b8e0f044fe2410a6fad579f38324f03f13b4e917/scripts/eval_persona.sh",
+        "sha256": "d91ae1226fabe0d70eee9ec12c7a9b7887ee1ac07716fe4658a5589a497a02a7"
+      },
+      {
+        "repo": "safety-research/persona_vectors",
+        "path": "scripts/eval_steering.sh",
+        "url": "https://raw.githubusercontent.com/safety-research/persona_vectors/b8e0f044fe2410a6fad579f38324f03f13b4e917/scripts/eval_steering.sh",
+        "sha256": "cc4765f9fe9cc5e5c87bb99c6842a2f3001b40cd9836b6ccd112436275eb517e"
+      },
+      {
+        "repo": "safety-research/persona_vectors",
+        "path": "scripts/generate_vec.sh",
+        "url": "https://raw.githubusercontent.com/safety-research/persona_vectors/b8e0f044fe2410a6fad579f38324f03f13b4e917/scripts/generate_vec.sh",
+        "sha256": "d8be0c6a53ebd0adca9466dc0c50ade90604711a922ad37e87b040eb38ab652a"
+      },
+      {
+        "repo": "safety-research/persona_vectors",
+        "path": "sft.py",
+        "url": "https://raw.githubusercontent.com/safety-research/persona_vectors/b8e0f044fe2410a6fad579f38324f03f13b4e917/sft.py",
+        "sha256": "6b90e2237c8b91d4622395938448d75df6c88c2e95c6acc1f71561f1df92048c"
+      },
+      {
+        "repo": "safety-research/persona_vectors",
+        "path": "training.py",
+        "url": "https://raw.githubusercontent.com/safety-research/persona_vectors/b8e0f044fe2410a6fad579f38324f03f13b4e917/training.py",
+        "sha256": "2e3d40dbcb43783592321efba06c4671f7fe56328f6f97dc043f69744aa478ba"
+      },
+      {
+        "repo": "safety-research/persona_vectors",
+        "path": "utils.py",
+        "url": "https://raw.githubusercontent.com/safety-research/persona_vectors/b8e0f044fe2410a6fad579f38324f03f13b4e917/utils.py",
+        "sha256": "ef08ee0e7de6d9e51c5133d4161b47ef1b162119382f2541908406beb41e39c3"
+      },
+      {
+        "repo": "safety-research/persona_vectors",
+        "path": "validate.py",
+        "url": "https://raw.githubusercontent.com/safety-research/persona_vectors/b8e0f044fe2410a6fad579f38324f03f13b4e917/validate.py",
+        "sha256": "c8067a280be851cd6e795252414627cb13bf90c83c71567192e2eafc91b35ae9"
+      },
+      {
+        "repo": "andyrdt/refusal_direction",
+        "path": "README.md",
+        "url": "https://raw.githubusercontent.com/andyrdt/refusal_direction/9d852fae1a9121c78b29142de733cb1340770cc3/README.md",
+        "sha256": "4bdac5435f5aeb158fa52cf839cf27ed9a7519d65b80594f99e78f6947493a5e"
+      },
+      {
+        "repo": "andyrdt/refusal_direction",
+        "path": "dataset/__init__.py",
+        "url": "https://raw.githubusercontent.com/andyrdt/refusal_direction/9d852fae1a9121c78b29142de733cb1340770cc3/dataset/__init__.py",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "repo": "andyrdt/refusal_direction",
+        "path": "dataset/load_dataset.py",
+        "url": "https://raw.githubusercontent.com/andyrdt/refusal_direction/9d852fae1a9121c78b29142de733cb1340770cc3/dataset/load_dataset.py",
+        "sha256": "5546da5b06775a240ea71be7bec69b105a0b64a0c3bcb69d4e7c6db26d43b5a0"
+      },
+      {
+        "repo": "andyrdt/refusal_direction",
+        "path": "dataset/raw/malicious_instruct.txt",
+        "url": "https://raw.githubusercontent.com/andyrdt/refusal_direction/9d852fae1a9121c78b29142de733cb1340770cc3/dataset/raw/malicious_instruct.txt",
+        "sha256": "a64d69dd1004aac4a23aaff3748fb8f17161893f74db36f45b8bc849eb1bcce5"
+      },
+      {
+        "repo": "andyrdt/refusal_direction",
+        "path": "pipeline/__init__.py",
+        "url": "https://raw.githubusercontent.com/andyrdt/refusal_direction/9d852fae1a9121c78b29142de733cb1340770cc3/pipeline/__init__.py",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "repo": "andyrdt/refusal_direction",
+        "path": "pipeline/config.py",
+        "url": "https://raw.githubusercontent.com/andyrdt/refusal_direction/9d852fae1a9121c78b29142de733cb1340770cc3/pipeline/config.py",
+        "sha256": "7ed4f5b5853cdede02c47c8bcc377da9c1cad5e1af1a403e16bba4cd4ec5aca0"
+      },
+      {
+        "repo": "andyrdt/refusal_direction",
+        "path": "pipeline/model_utils/__init__.py",
+        "url": "https://raw.githubusercontent.com/andyrdt/refusal_direction/9d852fae1a9121c78b29142de733cb1340770cc3/pipeline/model_utils/__init__.py",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "repo": "andyrdt/refusal_direction",
+        "path": "pipeline/model_utils/gemma_model.py",
+        "url": "https://raw.githubusercontent.com/andyrdt/refusal_direction/9d852fae1a9121c78b29142de733cb1340770cc3/pipeline/model_utils/gemma_model.py",
+        "sha256": "e1d8c83e79f3cf9249ad0cc68730404649b5ae0975b4863e5a9c13f99d61db6b"
+      },
+      {
+        "repo": "andyrdt/refusal_direction",
+        "path": "pipeline/model_utils/llama2_model.py",
+        "url": "https://raw.githubusercontent.com/andyrdt/refusal_direction/9d852fae1a9121c78b29142de733cb1340770cc3/pipeline/model_utils/llama2_model.py",
+        "sha256": "b302bbde7ce96d61bf7fa2854cd80c78073369fb58e3031b8d32c0c3c210a000"
+      },
+      {
+        "repo": "andyrdt/refusal_direction",
+        "path": "pipeline/model_utils/llama3_model.py",
+        "url": "https://raw.githubusercontent.com/andyrdt/refusal_direction/9d852fae1a9121c78b29142de733cb1340770cc3/pipeline/model_utils/llama3_model.py",
+        "sha256": "f4eff0d4890b743e37a04b049e383953503e4f56d20e239a99b8c7d38b32bb09"
+      },
+      {
+        "repo": "andyrdt/refusal_direction",
+        "path": "pipeline/model_utils/model_base.py",
+        "url": "https://raw.githubusercontent.com/andyrdt/refusal_direction/9d852fae1a9121c78b29142de733cb1340770cc3/pipeline/model_utils/model_base.py",
+        "sha256": "d4bae081fe06b5bf31638a992c732934d0581cf1d178d7ce7084a0ee9d2d5a88"
+      },
+      {
+        "repo": "andyrdt/refusal_direction",
+        "path": "pipeline/model_utils/model_factory.py",
+        "url": "https://raw.githubusercontent.com/andyrdt/refusal_direction/9d852fae1a9121c78b29142de733cb1340770cc3/pipeline/model_utils/model_factory.py",
+        "sha256": "435f86ca307b05ab0d4f72eee1e6db9d72749bb6612e0ed3dc844924ca90b7a6"
+      },
+      {
+        "repo": "andyrdt/refusal_direction",
+        "path": "pipeline/model_utils/qwen_model.py",
+        "url": "https://raw.githubusercontent.com/andyrdt/refusal_direction/9d852fae1a9121c78b29142de733cb1340770cc3/pipeline/model_utils/qwen_model.py",
+        "sha256": "600ee8950931fd72a7cee61f6de644f6dc8b07b806d9e8cb125c245bbf9f0e04"
+      },
+      {
+        "repo": "andyrdt/refusal_direction",
+        "path": "pipeline/model_utils/yi_model.py",
+        "url": "https://raw.githubusercontent.com/andyrdt/refusal_direction/9d852fae1a9121c78b29142de733cb1340770cc3/pipeline/model_utils/yi_model.py",
+        "sha256": "611d9a646a7a7105daece969904d111e3f1085b6d0cfffb248731b99e9d852ca"
+      },
+      {
+        "repo": "andyrdt/refusal_direction",
+        "path": "pipeline/run_pipeline.py",
+        "url": "https://raw.githubusercontent.com/andyrdt/refusal_direction/9d852fae1a9121c78b29142de733cb1340770cc3/pipeline/run_pipeline.py",
+        "sha256": "515fac15b458c3c8f5fc1febd35631aca7716436c462ab331b0d6548e3bc174b"
+      },
+      {
+        "repo": "andyrdt/refusal_direction",
+        "path": "pipeline/submodules/evaluate_jailbreak.py",
+        "url": "https://raw.githubusercontent.com/andyrdt/refusal_direction/9d852fae1a9121c78b29142de733cb1340770cc3/pipeline/submodules/evaluate_jailbreak.py",
+        "sha256": "378f21ca1d4e9847295c605902480695e6b190a76ff79d2ce177a2c7e9e21ef1"
+      },
+      {
+        "repo": "andyrdt/refusal_direction",
+        "path": "pipeline/submodules/evaluate_loss.py",
+        "url": "https://raw.githubusercontent.com/andyrdt/refusal_direction/9d852fae1a9121c78b29142de733cb1340770cc3/pipeline/submodules/evaluate_loss.py",
+        "sha256": "4934a420676f8653c26df044eb99eef007c04cc112c76108d85285db7cd1fe9b"
+      },
+      {
+        "repo": "andyrdt/refusal_direction",
+        "path": "pipeline/submodules/generate_directions.py",
+        "url": "https://raw.githubusercontent.com/andyrdt/refusal_direction/9d852fae1a9121c78b29142de733cb1340770cc3/pipeline/submodules/generate_directions.py",
+        "sha256": "2e2c838e9cae0ed112f2608580867d101243f77a2737d88355edd765a3ede63c"
+      },
+      {
+        "repo": "andyrdt/refusal_direction",
+        "path": "pipeline/submodules/select_direction.py",
+        "url": "https://raw.githubusercontent.com/andyrdt/refusal_direction/9d852fae1a9121c78b29142de733cb1340770cc3/pipeline/submodules/select_direction.py",
+        "sha256": "2ea223df732a085dad4dba4a582fae5589a9d0cf57d5b07f25b0da8f394ee6f7"
+      },
+      {
+        "repo": "andyrdt/refusal_direction",
+        "path": "pipeline/utils/__init__.py",
+        "url": "https://raw.githubusercontent.com/andyrdt/refusal_direction/9d852fae1a9121c78b29142de733cb1340770cc3/pipeline/utils/__init__.py",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "repo": "andyrdt/refusal_direction",
+        "path": "pipeline/utils/hook_utils.py",
+        "url": "https://raw.githubusercontent.com/andyrdt/refusal_direction/9d852fae1a9121c78b29142de733cb1340770cc3/pipeline/utils/hook_utils.py",
+        "sha256": "0fa5de8d6a739f9f3ecfcb462d027d8ade269f6ce469e320c3238ef4a1d0cd56"
+      },
+      {
+        "repo": "andyrdt/refusal_direction",
+        "path": "pipeline/utils/utils.py",
+        "url": "https://raw.githubusercontent.com/andyrdt/refusal_direction/9d852fae1a9121c78b29142de733cb1340770cc3/pipeline/utils/utils.py",
+        "sha256": "e9dbf272514269cad7751d8089ceccc4048ba9de2ac51290c22910f5ee432ba1"
+      },
+      {
+        "repo": "andyrdt/refusal_direction",
+        "path": "requirements.txt",
+        "url": "https://raw.githubusercontent.com/andyrdt/refusal_direction/9d852fae1a9121c78b29142de733cb1340770cc3/requirements.txt",
+        "sha256": "341bbb9b2b062b7129d98e6712bf3932ac3601be82c954dc57f4cd77458b24ca"
+      },
+      {
+        "repo": "andyrdt/refusal_direction",
+        "path": "setup.sh",
+        "url": "https://raw.githubusercontent.com/andyrdt/refusal_direction/9d852fae1a9121c78b29142de733cb1340770cc3/setup.sh",
+        "sha256": "f23c67a6036a7156763ff3daf1d4c174de4a2c3ae97f13a12799e70424d36e37"
+      }
+    ],
+    "repository_trees": [
+      {
+        "repo": "safety-research/persona_vectors",
+        "commit": "b8e0f044fe2410a6fad579f38324f03f13b4e917",
+        "tree_response_sha256": "275b5d8e836e3c7598cfdd58b49477436c4389b394b3237808c38abae1b9de2d",
+        "truncated": false
+      },
+      {
+        "repo": "andyrdt/refusal_direction",
+        "commit": "9d852fae1a9121c78b29142de733cb1340770cc3",
+        "tree_response_sha256": "0975ee80036ca6bdee5571e9e64e7c4f09f7096dc5b34bb576b76135b390784b",
+        "truncated": false
+      }
+    ]
+  },
+  "direct_artifact_counts": [
+    {
+      "repo": "safety-research/persona_vectors",
+      "commit": "b8e0f044fe2410a6fad579f38324f03f13b4e917",
+      "file": "data_generation/trait_data_eval/evil.json",
+      "url": "https://raw.githubusercontent.com/safety-research/persona_vectors/b8e0f044fe2410a6fad579f38324f03f13b4e917/data_generation/trait_data_eval/evil.json",
+      "sha256": "16606f53fc1038afcd2c2a766f8c92019f03222d2a6ce5077865111fce51d740",
+      "question_count": 20,
+      "instruction_pairs": 5
+    },
+    {
+      "repo": "safety-research/persona_vectors",
+      "commit": "b8e0f044fe2410a6fad579f38324f03f13b4e917",
+      "file": "data_generation/trait_data_extract/evil.json",
+      "url": "https://raw.githubusercontent.com/safety-research/persona_vectors/b8e0f044fe2410a6fad579f38324f03f13b4e917/data_generation/trait_data_extract/evil.json",
+      "sha256": "0ea503c5ad46f120297d6769a47c249a114580e240bc60806ac0b367d02b52f8",
+      "question_count": 20,
+      "instruction_pairs": 5
+    },
+    {
+      "repo": "safety-research/persona_vectors",
+      "commit": "b8e0f044fe2410a6fad579f38324f03f13b4e917",
+      "file": "data_generation/trait_data_eval/sycophantic.json",
+      "url": "https://raw.githubusercontent.com/safety-research/persona_vectors/b8e0f044fe2410a6fad579f38324f03f13b4e917/data_generation/trait_data_eval/sycophantic.json",
+      "sha256": "442a623cb55aa24bda2ba38962a276136771f0637f8f32bd690a144240bba39c",
+      "question_count": 20,
+      "instruction_pairs": 5
+    },
+    {
+      "repo": "safety-research/persona_vectors",
+      "commit": "b8e0f044fe2410a6fad579f38324f03f13b4e917",
+      "file": "data_generation/trait_data_extract/sycophantic.json",
+      "url": "https://raw.githubusercontent.com/safety-research/persona_vectors/b8e0f044fe2410a6fad579f38324f03f13b4e917/data_generation/trait_data_extract/sycophantic.json",
+      "sha256": "b54aca6998342cbf9f72d508eddfe9d7d1b413059d0cdfa819fdac921f19e4e7",
+      "question_count": 20,
+      "instruction_pairs": 5
+    },
+    {
+      "repo": "safety-research/persona_vectors",
+      "commit": "b8e0f044fe2410a6fad579f38324f03f13b4e917",
+      "file": "data_generation/trait_data_eval/hallucinating.json",
+      "url": "https://raw.githubusercontent.com/safety-research/persona_vectors/b8e0f044fe2410a6fad579f38324f03f13b4e917/data_generation/trait_data_eval/hallucinating.json",
+      "sha256": "2afc6715b3e794b31f49b8cd7e5feabacc1a784757d76cc6eb10235a0270378d",
+      "question_count": 20,
+      "instruction_pairs": 5
+    },
+    {
+      "repo": "safety-research/persona_vectors",
+      "commit": "b8e0f044fe2410a6fad579f38324f03f13b4e917",
+      "file": "data_generation/trait_data_extract/hallucinating.json",
+      "url": "https://raw.githubusercontent.com/safety-research/persona_vectors/b8e0f044fe2410a6fad579f38324f03f13b4e917/data_generation/trait_data_extract/hallucinating.json",
+      "sha256": "c726390524756e166192545079d69fdcc56f25b76904a5e6d1108ddd73d7912e",
+      "question_count": 20,
+      "instruction_pairs": 5
+    },
+    {
+      "repo": "safety-research/persona_vectors",
+      "commit": "b8e0f044fe2410a6fad579f38324f03f13b4e917",
+      "file": "output/qwen2.5-7b-instruct_baseline.csv",
+      "url": "https://raw.githubusercontent.com/safety-research/persona_vectors/b8e0f044fe2410a6fad579f38324f03f13b4e917/output/qwen2.5-7b-instruct_baseline.csv",
+      "sha256": "8822c82c55a275fcf28748b7ff6045b827148a71ba01e0d6ddcdca9498e6cc88",
+      "rows": 200,
+      "columns": [
+        "question",
+        "prompt",
+        "answer",
+        "question_id",
+        "evil",
+        "coherence"
+      ],
+      "unique_question_ids": 20
+    },
+    {
+      "repo": "andyrdt/refusal_direction",
+      "commit": "9d852fae1a9121c78b29142de733cb1340770cc3",
+      "file": "dataset/processed/jailbreakbench.json",
+      "url": "https://raw.githubusercontent.com/andyrdt/refusal_direction/9d852fae1a9121c78b29142de733cb1340770cc3/dataset/processed/jailbreakbench.json",
+      "sha256": "3a5aefa80c4a35f75a5306303aa8e69801e4ca4584e1f598bd2ddcf3e7fbbcdd",
+      "items": 100
+    },
+    {
+      "repo": "andyrdt/refusal_direction",
+      "commit": "9d852fae1a9121c78b29142de733cb1340770cc3",
+      "file": "dataset/processed/harmbench_test.json",
+      "url": "https://raw.githubusercontent.com/andyrdt/refusal_direction/9d852fae1a9121c78b29142de733cb1340770cc3/dataset/processed/harmbench_test.json",
+      "sha256": "606bca20a5212e676840ca928070e0905486df1bcc1f5f0223e7a76d8be62fd5",
+      "items": 159
+    },
+    {
+      "repo": "andyrdt/refusal_direction",
+      "commit": "9d852fae1a9121c78b29142de733cb1340770cc3",
+      "file": "pipeline/runs/gemma-2b-it/completions/jailbreakbench_baseline_completions.json",
+      "url": "https://raw.githubusercontent.com/andyrdt/refusal_direction/9d852fae1a9121c78b29142de733cb1340770cc3/pipeline/runs/gemma-2b-it/completions/jailbreakbench_baseline_completions.json",
+      "sha256": "667b6b64448551127079691956c7b95b828c4b68d8d54df9b90f8cb6c7701f62",
+      "items": 100
+    },
+    {
+      "repo": "andyrdt/refusal_direction",
+      "commit": "9d852fae1a9121c78b29142de733cb1340770cc3",
+      "file": "pipeline/runs/gemma-2b-it/completions/harmless_baseline_completions.json",
+      "url": "https://raw.githubusercontent.com/andyrdt/refusal_direction/9d852fae1a9121c78b29142de733cb1340770cc3/pipeline/runs/gemma-2b-it/completions/harmless_baseline_completions.json",
+      "sha256": "32921fbff5bb2fc2f30691d1300541d8e7dfa24a0086d3109d13b80db98287a5",
+      "items": 100
+    }
+  ],
+  "discussion_implication": "这两篇支持区分小规模行为/方向实验和能力损伤评测；TinyHellaSwag证明正式能力结果也可用预先定义子集。但它们不足以证明MMLU/ARC/GSM必须全量，也不足以声称这些论文只跑几十题能力测试。"
+}

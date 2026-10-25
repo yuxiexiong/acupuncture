@@ -4,6 +4,8 @@
 
 **四项损伤对照执行进展：** 用户随后明确授权按精简方案完成原版与 EVO 的 MMLU、ARC-C、GSM8K、HumanEval 全量评测。16,697 道题已冻结，来源哈希、官方评分器、HumanEval 隔离和两张 GPU 的逐题控制验收通过；现按 batch=1、双 GPU 分题启动。BF16 批量一致性失败已保留，未放宽阈值。当前尚无完整正式成绩；协议与证据见[本轮运行目录](../experiments/capability-damage-v2-2026-10-26/PROTOCOL.zh-CN.md)。以下机制研究与其他扩展仍未执行。
 
+用户已要求保留本轮完整实验，并改为每半小时巡检。两路 GPU 队列与独立 CPU 评分收尾已连接；运行状态和最终结果位置见[车队说明](../experiments/capability-damage-v2-2026-10-26/CONVOY.zh-CN.md)。关于后续是否需要全量，已补充[CNA / CircuitBreak](literature/benchmark-sample-size-audit-cna-circuitbreak-2026-10-26.json)、[Persona / Refusal Direction](literature/benchmark-sample-size-audit-persona-refusal-2026-10-26.json)和[CAA / AS-induced EM](literature/benchmark-sample-size-audit-steering-2026-10-26.json)的实际样本量核查。小面板用于筛查、少数最终配置全量确认仍属讨论建议，没有缩减或改写本轮协议。
+
 **最新测量方案：** 按用户要求，现以[能力损伤对照精简方案 v2](damage-evaluation-plan-v2.zh-CN.md)量化同一模型调整前后的能力变化。保留 MMLU、ARC-C、GSM8K、HumanEval 四项任务，只比较原版与一个事前固定的调整版，分别报告原分数、调整后分数、下降百分点和配对区间；截断及解析失败仅作解释。CE/BPB、专门重复率、剂量与位置矩阵、机制和跨模型扩展移出该测量协议。[原方案 v1](damage-evaluation-plan-v1.zh-CN.md)完整保留。此次仅修订文档，没有启动新评测；以下机制研究方向另行管理，不作为完成一次损伤对照的前提。
 
 **最新用户优先级：先在 Qwen3.5-4B 内定位两处干预导致现象的因果机制，再讨论迁移。** 用户指出，原先“先建立功能指纹”的设计没有回答究竟改变了什么功能部位、为何产生现象。当前目标改为识别并验证具体计算链，不能用响应相似度、语义标签或候选排序代替根因解释。迁移、全模型逐点扫描及新模型运行均未启动。
