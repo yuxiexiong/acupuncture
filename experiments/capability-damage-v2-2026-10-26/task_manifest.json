@@ -1,0 +1,4195 @@
+{
+  "arc_normalization": "Sum of continuation loglikelihood divided by len(task.doc_to_choice(doc)[i]) in Unicode characters, excluding target_delimiter.",
+  "counts": {
+    "arc_challenge": 1172,
+    "gsm8k": 1319,
+    "humaneval": 164,
+    "mmlu": 14042
+  },
+  "dataset_revisions": {
+    "allenai/ai2_arc": "210d026faf9955653af8916fad021475a3f00453",
+    "cais/mmlu": "c30699e8356da336a370243923dbaf21066bb9fe",
+    "openai/gsm8k": "740312add88f781978c0658806c59bc2815b9866"
+  },
+  "development": {
+    "count": 6,
+    "file": "development.jsonl",
+    "scope": "Non-test technical checks only; not scored in formal denominators",
+    "sha256": "5cbd278c06a08cbbe6b23fd770ae27f305d5d3b75d61bf89e8239688153e1ebb"
+  },
+  "fewshot_seed": 20261026,
+  "files": {
+    "arc_challenge": {
+      "bytes": 6499003,
+      "count": 1172,
+      "file": "items/arc_challenge.jsonl",
+      "sha256": "3c18f0ea05631141eeb969812d359477d1a97acabcbb24a525844447f7c4e679"
+    },
+    "gsm8k": {
+      "bytes": 5603348,
+      "count": 1319,
+      "file": "items/gsm8k.jsonl",
+      "sha256": "02fc129fa24f0db3e1f8c9a56d5d5a3a40325b695aac07ba5455108a27f6bf8e"
+    },
+    "humaneval": {
+      "bytes": 376176,
+      "count": 164,
+      "file": "items/humaneval.jsonl",
+      "sha256": "a0063bb57413cc084773d9da7fb23f931478cd46ea7cea44d87199ebf72cf24d"
+    },
+    "mmlu": {
+      "bytes": 55623769,
+      "count": 14042,
+      "file": "items/mmlu.jsonl",
+      "sha256": "8168a0b4207c63194f665fabdd7c1648dbbc03ad78d61fbc1f3d123ae2356e54"
+    }
+  },
+  "gsm8k_exposed": 100,
+  "gsm8k_unexposed": 1219,
+  "harness_commit": "d6de81643928d653435c431bae19945d41d32520",
+  "humaneval": {
+    "data_sha256": "b796127e635a67f93fb35c04f4cb03cf06f38c8072ee7cee8833d7bee06979ef",
+    "data_url": "https://raw.githubusercontent.com/openai/human-eval/b9453e8f1865df0a0057a1383767caa400acfbcf/data/HumanEval.jsonl.gz",
+    "generation_kwargs": {
+      "do_sample": false,
+      "max_gen_toks": 1024,
+      "until": [
+        "\nclass",
+        "\ndef",
+        "\n#",
+        "\nif",
+        "\nprint"
+      ]
+    },
+    "repository_commit": "b9453e8f1865df0a0057a1383767caa400acfbcf"
+  },
+  "mmlu_aggregation": "Mean over all 14042 test items; official group weight_by_size=True; keep subject counts for paired stratified bootstrap.",
+  "preparation_sha256": "a3c166ffa9843476319f2bc68255cca1c471b356688752173a6b685ab32de5aa",
+  "quick_items_sha256": "affb9f861ae337f826cfecfcbd38ec9e8186326d96c4ff42360f1b76e2474c5c",
+  "source_sha256": {
+    "lm_eval/api/samplers.py": "b9541ec0ea1144d2003301ae6584f86abfab2237aebeafb0f7dd2a3adaf82c42",
+    "lm_eval/api/task.py": "4c25a4f1949488483b833ce4fcf91cfd3e066084a9ea00079c6879ae3ba95657",
+    "lm_eval/tasks/_yaml_loader.py": "3ea637c454937df677ea662325a9f7cb08869fde29edfc26b44ff41be6127034",
+    "lm_eval/tasks/arc/arc_challenge.yaml": "682621c26ae24b1065a2d732460a55a8ef2b9f2544574431666c9309a9efd7bd",
+    "lm_eval/tasks/arc/arc_easy.yaml": "96da1d9efe1df88659481cedc13985cb347dc068554a2eae561303fa39bfab3f",
+    "lm_eval/tasks/gsm8k/gsm8k.yaml": "82eb1780b263bc040729032b3e076990c7933f42163c91e359f38820dd1d8833",
+    "lm_eval/tasks/humaneval/humaneval.yaml": "dd448f236e88f9f61a00c3c5f6703216d21aae9c6ca64cdb63139acd39fdddc6",
+    "lm_eval/tasks/mmlu/default/_default_template_yaml": "a0997593bf94f52cc87eb1f9b621f52613a6c60f1fb48775b0926104fd385122",
+    "lm_eval/tasks/mmlu/default/_mmlu.yaml": "e35dd25fea5fa5583fbb64a99f9b7c4a2071a3edbbd65182f152d77b7798e11d",
+    "lm_eval/tasks/mmlu/default/_mmlu_humanities.yaml": "790036db1420e7c8a1266f149ecaa401326380608552fc123cac1c15255ad7f1",
+    "lm_eval/tasks/mmlu/default/_mmlu_other.yaml": "1cd803a8f56b88a830f8a12a9fc052d8b8237c712b8ea859582da3eeb6ad43de",
+    "lm_eval/tasks/mmlu/default/_mmlu_social_sciences.yaml": "ece4a326d603c2424411af4a3b1cb1a99677792f50cd366f8e9f5e726899194b",
+    "lm_eval/tasks/mmlu/default/_mmlu_stem.yaml": "2d58563cf678c1e7f98ade5aa47ff68143d8554cc1661ed7b832abe483b2604d",
+    "lm_eval/tasks/mmlu/default/mmlu_abstract_algebra.yaml": "f026cc8918a0a4a422af4286e22889de6f423483671975fdd5429c96c0d0d9ef",
+    "lm_eval/tasks/mmlu/default/mmlu_anatomy.yaml": "8dad2f8dc245224b7981c6186e1192e362d26c0eac649d1307080f57df92ff64",
+    "lm_eval/tasks/mmlu/default/mmlu_astronomy.yaml": "a7723276547be2474f1413d387d13f1fec179ae98f236a78258c6c83e231d926",
+    "lm_eval/tasks/mmlu/default/mmlu_business_ethics.yaml": "0a8df5dc2fa2f02f1c70da7ab920761f479862462dee97457182df817b1dce57",
+    "lm_eval/tasks/mmlu/default/mmlu_clinical_knowledge.yaml": "2308279513bb71f56bc46213ec73d942918a6e5d6edc8856ec430dcc6d3cc26b",
+    "lm_eval/tasks/mmlu/default/mmlu_college_biology.yaml": "a102e5ddd619591a8a7edf1830bd78c9ae56f083908a31f5b62ba0d7ab593695",
+    "lm_eval/tasks/mmlu/default/mmlu_college_chemistry.yaml": "aafbd16592bce40850f95f13a61d3ae53f2ecc5121e1677e9bc27a898d8b022c",
+    "lm_eval/tasks/mmlu/default/mmlu_college_computer_science.yaml": "34ba579d113ac7d499fb9f1a41db30f656eb4f85f240c8e85b2e01c8a2e7b1aa",
+    "lm_eval/tasks/mmlu/default/mmlu_college_mathematics.yaml": "f5ee2d5cab36fdcee9678fdfda31c1d6dafd173674692311e6a3000511d7de14",
+    "lm_eval/tasks/mmlu/default/mmlu_college_medicine.yaml": "3c95658b25cf99dd9c998430463cdcae1ad4c3fb75c735ac4483448ccbe07432",
+    "lm_eval/tasks/mmlu/default/mmlu_college_physics.yaml": "419ff741345b01c8d7362ab41f7a48f0ea44667cf0bb870568718a500b1ca6ac",
+    "lm_eval/tasks/mmlu/default/mmlu_computer_security.yaml": "a734f89bffb4038e6be27d9f402aac0e79bbe3b831d42faffc5e15410d88a953",
+    "lm_eval/tasks/mmlu/default/mmlu_conceptual_physics.yaml": "2f442a87451b9f95b22907d434e737ca14455f197390ad69bbaae997004ad4a2",
+    "lm_eval/tasks/mmlu/default/mmlu_econometrics.yaml": "4d42386ca2a5637d60b4978c575d3490354f4038c67743089a7e9ff14d65fb13",
+    "lm_eval/tasks/mmlu/default/mmlu_electrical_engineering.yaml": "c29ed6b29cb28b0fd4c243a2bf637385123926119b25160f99f02867f5be1396",
+    "lm_eval/tasks/mmlu/default/mmlu_elementary_mathematics.yaml": "90105e3ee53a869f5bb23361fe01419e9cec54bfbf1cd82b2d3f3e5f8a335c4a",
+    "lm_eval/tasks/mmlu/default/mmlu_formal_logic.yaml": "31e3c8ec51bbbe8ba7842948b28844b0f12de8b709059f1647bda39f860ab86e",
+    "lm_eval/tasks/mmlu/default/mmlu_global_facts.yaml": "d938b962a3f8fdcd90040d9ef28db9068a6d1ecf08a7311d8de7ed89f77eabf9",
+    "lm_eval/tasks/mmlu/default/mmlu_high_school_biology.yaml": "3b967d4bf5169aa90abd85a04b9cca5746b79102aa9e3feca4aad8318f441767",
+    "lm_eval/tasks/mmlu/default/mmlu_high_school_chemistry.yaml": "d89282333d4fce1f761df5e0baedcb59aa72dab22f4651d3e1f77aa142cd1f06",
+    "lm_eval/tasks/mmlu/default/mmlu_high_school_computer_science.yaml": "4fa205dc34a098acf68e303f6f7c0da3bdde9d4638a94a5683ef6c57c3c3f13b",
+    "lm_eval/tasks/mmlu/default/mmlu_high_school_european_history.yaml": "dc30df82cdef1692a99806b1be2aa94f16362407179cc2a2d9eabdb37b2af06e",
+    "lm_eval/tasks/mmlu/default/mmlu_high_school_geography.yaml": "4b6e36425a2690e02e46e8a7c7c886d64e42082399857c7bfc2f396d93d38ea9",
+    "lm_eval/tasks/mmlu/default/mmlu_high_school_government_and_politics.yaml": "02b95e38f133266a69bbbffb8ecaef5f67fa0521d81b0f540a0e4cc2dcc64923",
+    "lm_eval/tasks/mmlu/default/mmlu_high_school_macroeconomics.yaml": "d86505fa78ab45dac3de902432bb1a30e25f3d86fe20289c07a1b61214529f33",
+    "lm_eval/tasks/mmlu/default/mmlu_high_school_mathematics.yaml": "7cdaaad0ba299d5679b344ec8cd4775dd81ebff3918041157a7a980708f31dc2",
+    "lm_eval/tasks/mmlu/default/mmlu_high_school_microeconomics.yaml": "b50ee6a489ebef539ea181b968716b7b7cdc94729fc58cf01b9f36388093ec36",
+    "lm_eval/tasks/mmlu/default/mmlu_high_school_physics.yaml": "8ee33988717ad1c9cc29f51841ffdd8ba2ce57e80f93fc6f3d570a48c6683934",
+    "lm_eval/tasks/mmlu/default/mmlu_high_school_psychology.yaml": "603b757c8843ede5c6451a25593a8ee5b781d453b07372c49424816b79a9a4ae",
+    "lm_eval/tasks/mmlu/default/mmlu_high_school_statistics.yaml": "b9dadaa5ce8598d6fd068481e03e617e5154f90462c80a71874bf8077fbf8492",
+    "lm_eval/tasks/mmlu/default/mmlu_high_school_us_history.yaml": "2bd13e1b627b022b65c4c8f135fac2aa96dcd9ca7f46ff79abe8679c279eb947",
+    "lm_eval/tasks/mmlu/default/mmlu_high_school_world_history.yaml": "580fd84a4f4c1c9a974b13bcb92f39f5a0c464402401744dd9b45daa4a76eeae",
+    "lm_eval/tasks/mmlu/default/mmlu_human_aging.yaml": "cee80b63790b0e86e7b26cd68973c410ab2a085e7626268a4a25587ed48a7811",
+    "lm_eval/tasks/mmlu/default/mmlu_human_sexuality.yaml": "267fe3eb8fcaf52d157fcc0728d0513fdb91c3371173fe388e0b03f8a7ea09e4",
+    "lm_eval/tasks/mmlu/default/mmlu_international_law.yaml": "99064d1d0304106cb19fea31fd4af5cf69a949cb4f5e871729a76d090a3e89c3",
+    "lm_eval/tasks/mmlu/default/mmlu_jurisprudence.yaml": "2d18fc654dd44d92ddd394adf1e3ef97c74366378bb37345b2e44d2f79fa2b05",
+    "lm_eval/tasks/mmlu/default/mmlu_logical_fallacies.yaml": "2f03bd256e2e12fff3cdec67ea4f08df6d678b6dbacb6962c0d81dc0da2f356a",
+    "lm_eval/tasks/mmlu/default/mmlu_machine_learning.yaml": "789baf184429d6b505f16fe581abb32ba1815b48223735be15710244c3d4c948",
+    "lm_eval/tasks/mmlu/default/mmlu_management.yaml": "9d4507c060bff0db4dc8ff4198c625715effed28d24fdbf54495ea493b1c6d27",
+    "lm_eval/tasks/mmlu/default/mmlu_marketing.yaml": "f63fecdb482e3f23bdd1863c6a309a5ddc836e09f531515f0a33de8461b824c9",
+    "lm_eval/tasks/mmlu/default/mmlu_medical_genetics.yaml": "ab26bded29775760a1e5455d476227c74a51d94eb0b369363a69d184a876d857",
+    "lm_eval/tasks/mmlu/default/mmlu_miscellaneous.yaml": "afc98efce966768995194ffd5d8e86c881bdad06fd5bb576156b3da133f82d3d",
+    "lm_eval/tasks/mmlu/default/mmlu_moral_disputes.yaml": "ec8279e3da5bfc4a28a1b096f1dd6c42fe5f307d9a9c513e3e79f2990f2fd058",
+    "lm_eval/tasks/mmlu/default/mmlu_moral_scenarios.yaml": "c98a60a99386cafb095e7e02b56c6a74011a77a5a6772901d055e9d48e63e26e",
+    "lm_eval/tasks/mmlu/default/mmlu_nutrition.yaml": "e117c15b9846fc75e9efcf28f62edea6c736d24d4d1acc3e310205f1852e6221",
+    "lm_eval/tasks/mmlu/default/mmlu_philosophy.yaml": "7654a06752c5c45e0637508ea4a528798114c10fab172b761ca2ef397c0d9172",
+    "lm_eval/tasks/mmlu/default/mmlu_prehistory.yaml": "c23f8dcc4e96011f9ebca99bcb2b2372f477d5e36681690bbacd94c0a403b6c9",
+    "lm_eval/tasks/mmlu/default/mmlu_professional_accounting.yaml": "432df31fa6ad5398020117189481f61afbc4b27bf7e7e7f03fa83f900f01cd11",
+    "lm_eval/tasks/mmlu/default/mmlu_professional_law.yaml": "6067d60160d0978b5e2c15faedcd9baf5188600876a892fb08c42f1b4369758c",
+    "lm_eval/tasks/mmlu/default/mmlu_professional_medicine.yaml": "aedd6c8fc5b662f1197fda2920bea8516ce4090e16f97ef0cf1d22a4c54274e4",
+    "lm_eval/tasks/mmlu/default/mmlu_professional_psychology.yaml": "c8acc00f3010b396ce34f2b54ffa6bf0806397a7b14f9a1c52eab18b4e02c642",
+    "lm_eval/tasks/mmlu/default/mmlu_public_relations.yaml": "3f560bb0cbe9967c9ee9e753d41681304a366c83e4cccb73743fca4d0938533f",
+    "lm_eval/tasks/mmlu/default/mmlu_security_studies.yaml": "c23f790964719dd32abaeb4993ecb9bf5560a7b4606220cd88a900830e11df2f",
+    "lm_eval/tasks/mmlu/default/mmlu_sociology.yaml": "bf1ca22fc29b65431b83fa9de59676a3543535b9ab942fa86cc4ff8c871bd6c3",
+    "lm_eval/tasks/mmlu/default/mmlu_us_foreign_policy.yaml": "44c36ea7852bccc941fc24370bcd9c985ab0ff334a9689525a6511ef2c6a8339",
+    "lm_eval/tasks/mmlu/default/mmlu_virology.yaml": "028b0d3acbacd9bf83f7e67a41b052e4699feccca4c7e5e9edd74fbfd259a817",
+    "lm_eval/tasks/mmlu/default/mmlu_world_religions.yaml": "08d79b1b3cc4976a97c9aa57f1362cb588db1e68010ba56ff33a4fbe884e3e2a"
+  },
+  "split_identities": {
+    "arc_challenge": {
+      "test": {
+        "content_sha256": "a00c3127fa2437025957049bb97760ce0e7e974bcf5a918b7621f36ab9c3fed8",
+        "count": 1172,
+        "fingerprint": "a4361c3f3e560fcd"
+      },
+      "train": {
+        "content_sha256": "a9d7a54d8cb4436d7b11cae8918a42ad4445a586a547613bfb8607d7668e3b3c",
+        "count": 1119,
+        "fingerprint": "4cad81c53cd88966"
+      }
+    },
+    "gsm8k": {
+      "test": {
+        "content_sha256": "32c548f08195e19e33408b844dd7be6aa4bcae457d957bc05909ff4bd4a00595",
+        "count": 1319,
+        "fingerprint": "59ec1b7f9357c7a2"
+      },
+      "train": {
+        "content_sha256": "dca449882e67a1e7716b5da453650a7b16588a1f2d1a0d82394a43d75ea7e9ca",
+        "count": 7473,
+        "fingerprint": "c6f812ae33c9159d"
+      }
+    },
+    "mmlu_abstract_algebra": {
+      "dev": {
+        "content_sha256": "f17b3a3d4b53f15ffea7d1a0749f0cb6d0d0cb8f24f19c1027cbc651b031375d",
+        "count": 5,
+        "fingerprint": "b1bb87f92915b281"
+      },
+      "test": {
+        "content_sha256": "3847c2c3f9e15bd9359af4125be519da267ddbd7a5caa3665b6e528c73a47bf8",
+        "count": 100,
+        "fingerprint": "a405e35a20e96c3e"
+      }
+    },
+    "mmlu_anatomy": {
+      "dev": {
+        "content_sha256": "27912268fc28ad5f22b932444905f95507b4e7d32c84a472616be393c61ca7e7",
+        "count": 5,
+        "fingerprint": "0334465adb519fff"
+      },
+      "test": {
+        "content_sha256": "834b686ac2cd23dd6a417f6042e8615ddc73017e15b9a93a163df906240bbd4b",
+        "count": 135,
+        "fingerprint": "f5316a25c7cd3834"
+      }
+    },
+    "mmlu_astronomy": {
+      "dev": {
+        "content_sha256": "cb6944a9d99c6dd669f439ab65900f857c39bfc5f28122cfee35581bb8aa45c2",
+        "count": 5,
+        "fingerprint": "2161b724e41707ef"
+      },
+      "test": {
+        "content_sha256": "ca522243aa1916f8d784187dc464ac038066aed28306cd2f4298cd4d55689736",
+        "count": 152,
+        "fingerprint": "a9271288c1c8608a"
+      }
+    },
+    "mmlu_business_ethics": {
+      "dev": {
+        "content_sha256": "e21c185676aa7ac5e817e9a455953253f057c47d0565ac559408aa95854385ed",
+        "count": 5,
+        "fingerprint": "a67b9c21c9b987c0"
+      },
+      "test": {
+        "content_sha256": "37bc72f90db6919fe18821dc86d7eff756a74c304d81ff99167733300d80d4f8",
+        "count": 100,
+        "fingerprint": "73d48c7e397703f2"
+      }
+    },
+    "mmlu_clinical_knowledge": {
+      "dev": {
+        "content_sha256": "2c4b42a7a2b3471378f2f0d1d9094ab17a97bf0718a962b4aee63583258f35e9",
+        "count": 5,
+        "fingerprint": "c71659d34d450a20"
+      },
+      "test": {
+        "content_sha256": "fc6d4d450d00433b5ac03ffb7315eb5dbd31c8fa78937830441bc2a0dbc562ac",
+        "count": 265,
+        "fingerprint": "52dba1b9a7a1c715"
+      }
+    },
+    "mmlu_college_biology": {
+      "dev": {
+        "content_sha256": "f93a23ae16c14aba4e382c6d99483a1bea72bdc7edea9a319b6ae80480d891a4",
+        "count": 5,
+        "fingerprint": "a9c300cf1a5b5925"
+      },
+      "test": {
+        "content_sha256": "2f2fbd2ff015131bb77205cffc9c493d1480eebb99b275b684b90d7bb7d8fc75",
+        "count": 144,
+        "fingerprint": "f481f714da28f58e"
+      }
+    },
+    "mmlu_college_chemistry": {
+      "dev": {
+        "content_sha256": "35c564bffa33c843e85313963c6c1200f59ad2a8afd7c128e893d481421ce3d1",
+        "count": 5,
+        "fingerprint": "855f0ed77badaa16"
+      },
+      "test": {
+        "content_sha256": "6cebd20cf01fc45f1e53fbdc8431aa0db755dddfb1891868e9b64c2af7a5d008",
+        "count": 100,
+        "fingerprint": "c44cc25bbe4aa152"
+      }
+    },
+    "mmlu_college_computer_science": {
+      "dev": {
+        "content_sha256": "5774f22f177340fc73ee6eed2a35df727fed2c79d3734b08f6e7aecbe566b154",
+        "count": 5,
+        "fingerprint": "a6d2bb4faeca1df1"
+      },
+      "test": {
+        "content_sha256": "4d06f413ccd54dc0d45d2dc6b3476a46e12141dc589851a0419ad92ca2c69a5b",
+        "count": 100,
+        "fingerprint": "17407d242be5fce7"
+      }
+    },
+    "mmlu_college_mathematics": {
+      "dev": {
+        "content_sha256": "cb08477d15cd239fb681e5a7eade8be61eacd5ef681f1f3761d2de535bd53575",
+        "count": 5,
+        "fingerprint": "1d559905775ea869"
+      },
+      "test": {
+        "content_sha256": "259673e5b2c23ad33d6b5d7c8446062998cbe3534333211e938c002974275ed1",
+        "count": 100,
+        "fingerprint": "cc8e8f1e82542ff9"
+      }
+    },
+    "mmlu_college_medicine": {
+      "dev": {
+        "content_sha256": "0bea829e9fba86193e4561d6976f62e3cd4f8cac1126e9e83a4ac94148ee1ed8",
+        "count": 5,
+        "fingerprint": "7640c1e675aa0691"
+      },
+      "test": {
+        "content_sha256": "eb7c0d9e88a110d13a625a8aede231954bc1b747b5798eef74fdbf5966b5ce3e",
+        "count": 173,
+        "fingerprint": "c9c5b9e4534c3ad9"
+      }
+    },
+    "mmlu_college_physics": {
+      "dev": {
+        "content_sha256": "211fe30cae93bf634c04d1223e3f7b91a5fce0f59dff83f181977c9d4915c2f5",
+        "count": 5,
+        "fingerprint": "9ebc0dd0a7927857"
+      },
+      "test": {
+        "content_sha256": "ebe139965ff95d3bc16a5492fc82b90788f69867fbe8d5d1bc56861cc522adde",
+        "count": 102,
+        "fingerprint": "661d2023229857f2"
+      }
+    },
+    "mmlu_computer_security": {
+      "dev": {
+        "content_sha256": "abb052cdb4f842dd9518009f7102410ad9584ae80b64d99bd86507ac2c5282cf",
+        "count": 5,
+        "fingerprint": "c1147324c78ee7b0"
+      },
+      "test": {
+        "content_sha256": "c5090424a259b37350f5c609be663cea15e1ba5b40e0b26b6d0ffd24a1d645fb",
+        "count": 100,
+        "fingerprint": "c00551a55138390b"
+      }
+    },
+    "mmlu_conceptual_physics": {
+      "dev": {
+        "content_sha256": "bb465ee3dd4bc2bd08ba7da69a460f980c7365ff4b226dc279e6e2010e336973",
+        "count": 5,
+        "fingerprint": "388700e5ed58bc65"
+      },
+      "test": {
+        "content_sha256": "e975729bf9f3ff178d7eb0d7e27fba8d21ffcfe9759d181d18bba0c82ae549cb",
+        "count": 235,
+        "fingerprint": "d9d38a5e9279b6ad"
+      }
+    },
+    "mmlu_econometrics": {
+      "dev": {
+        "content_sha256": "0e638558ca5856d76415c36190e45597bf6c1e238e607444a82fa8bf4d0ed3e1",
+        "count": 5,
+        "fingerprint": "bb4179396be05709"
+      },
+      "test": {
+        "content_sha256": "42b247b57339340ff8476b3227874b2ffbac35ac3ce4838eb5c67415a42c8da7",
+        "count": 114,
+        "fingerprint": "a054399942377de0"
+      }
+    },
+    "mmlu_electrical_engineering": {
+      "dev": {
+        "content_sha256": "08bb1bd16708fff356ebc35ff21767c366f63c4c413e590b376fddec62216e98",
+        "count": 5,
+        "fingerprint": "581dd5a3a80e41e6"
+      },
+      "test": {
+        "content_sha256": "4fc9fb338d8986723a4424db0e105ed19f6be208d8440af7ba3d9a8a4cdaa55e",
+        "count": 145,
+        "fingerprint": "7f22056f089182dc"
+      }
+    },
+    "mmlu_elementary_mathematics": {
+      "dev": {
+        "content_sha256": "f2931d9d7b7ab1cc33cc8c5b00d34864cc18a27423b8eb74cead52c98194b9f8",
+        "count": 5,
+        "fingerprint": "7d6f5ed81ac00958"
+      },
+      "test": {
+        "content_sha256": "84f410496536cd6e79f81c7f6526207bc41710a70046d7984a17003352769e5d",
+        "count": 378,
+        "fingerprint": "ed1a2da884ddd4a4"
+      }
+    },
+    "mmlu_formal_logic": {
+      "dev": {
+        "content_sha256": "b99a039bd7189130f55f57153fad3abd177e0a8c37095cc2029216cba14cd2b2",
+        "count": 5,
+        "fingerprint": "1868504ceacd49ca"
+      },
+      "test": {
+        "content_sha256": "7f4f50c02afb6217ae41b66849f65c7f2809ec9bfe98be6298e51a89b95bfa87",
+        "count": 126,
+        "fingerprint": "6f88a8a590d6acc9"
+      }
+    },
+    "mmlu_global_facts": {
+      "dev": {
+        "content_sha256": "8bebd9aab91d7253fd20effccd9cb7a2705bee15121bc5fffeaadaf456ebfdb3",
+        "count": 5,
+        "fingerprint": "34f433f4154e2a79"
+      },
+      "test": {
+        "content_sha256": "95162c4682def786029d887e77252128154ff1d4deeb5ac0217f39e120208a18",
+        "count": 100,
+        "fingerprint": "36088c2f9bdfb126"
+      }
+    },
+    "mmlu_high_school_biology": {
+      "dev": {
+        "content_sha256": "3343b3325697dc7f59550f8588f47d1eb92513b68c4dc5dfe7497ff398fb7206",
+        "count": 5,
+        "fingerprint": "1ec9920e5764bafa"
+      },
+      "test": {
+        "content_sha256": "61cf707eccda526059287bc750da22a01ce3d6f6944deb73fb772c3bb7059024",
+        "count": 310,
+        "fingerprint": "75b4e56cd1a20317"
+      }
+    },
+    "mmlu_high_school_chemistry": {
+      "dev": {
+        "content_sha256": "1069a3a485cbcdca971e3c2d63d840a3a4a790ea46faf37bd219b1c14178bc6e",
+        "count": 5,
+        "fingerprint": "798a91f155452499"
+      },
+      "test": {
+        "content_sha256": "cec6566765d1c0f6855abe2153f59166d848d0fe848f03f06d67934645d6f566",
+        "count": 203,
+        "fingerprint": "20a956b6a2569eb1"
+      }
+    },
+    "mmlu_high_school_computer_science": {
+      "dev": {
+        "content_sha256": "f5c4db1d576e7010206be601f7591924ada59066a3d75e5d645835f7063fe948",
+        "count": 5,
+        "fingerprint": "7ccb6c680180f2cb"
+      },
+      "test": {
+        "content_sha256": "459820cbf63cc76fef141ad27dc35d2855cdaf1dd3f8b1a351d58d3334ce3897",
+        "count": 100,
+        "fingerprint": "a1b962b5b71142b8"
+      }
+    },
+    "mmlu_high_school_european_history": {
+      "dev": {
+        "content_sha256": "a1167e6d0f38a42695a0b138200e5ba790bc016cc18b8a3274aadec1f5c87ab3",
+        "count": 5,
+        "fingerprint": "0a1573e4bf9ded85"
+      },
+      "test": {
+        "content_sha256": "5a9e0df7aa677ae67b5f49a90ea63d24377de9926b4c5383358ccc302a58c833",
+        "count": 165,
+        "fingerprint": "575860884e6c1a8a"
+      }
+    },
+    "mmlu_high_school_geography": {
+      "dev": {
+        "content_sha256": "6a7569882df1f68a59b434b423f23ec302dac18ee3c549fd49875c16c41a857f",
+        "count": 5,
+        "fingerprint": "51feb49490b26511"
+      },
+      "test": {
+        "content_sha256": "d163046e471f0789e208c8e006fbb74f25c19e328bd03545392e51a5b2371ac5",
+        "count": 198,
+        "fingerprint": "1af64fe7fa5c3d75"
+      }
+    },
+    "mmlu_high_school_government_and_politics": {
+      "dev": {
+        "content_sha256": "f20e68866e0ed12b71b40376636f3fca4e9225558032f05ce8d81b461bd361db",
+        "count": 5,
+        "fingerprint": "980b4eaeb104cc14"
+      },
+      "test": {
+        "content_sha256": "bc5ac98b13b7ceb4e40e439cfe9f4312e5464b8306eda79ce6acfd4b22093549",
+        "count": 193,
+        "fingerprint": "22e5ed8bb3d3e3d7"
+      }
+    },
+    "mmlu_high_school_macroeconomics": {
+      "dev": {
+        "content_sha256": "fd6016f2350e88864bb73e7883440f1374aae67d159809705ce32a47a12732eb",
+        "count": 5,
+        "fingerprint": "1acb0d46b0b2bfe4"
+      },
+      "test": {
+        "content_sha256": "fc0b42efc91aae2bedc53cde953ee0cf663b6839ce001a03a24341879126ea1a",
+        "count": 390,
+        "fingerprint": "b0e7889f1b1eda45"
+      }
+    },
+    "mmlu_high_school_mathematics": {
+      "dev": {
+        "content_sha256": "d9bd863ed12d34ba5c225695a0a2bb21104bdac502f1fe9f07addf519ee9e45d",
+        "count": 5,
+        "fingerprint": "3f56b8c66af81941"
+      },
+      "test": {
+        "content_sha256": "e85a371610861fda2e877785de7e73552817f8f04f81cd41fbe676d23efa8c13",
+        "count": 270,
+        "fingerprint": "da582b35c4bf1d03"
+      }
+    },
+    "mmlu_high_school_microeconomics": {
+      "dev": {
+        "content_sha256": "d27c80404fded643ad49ef655fadb069b01f106325f319f070ba4fe625ce10b1",
+        "count": 5,
+        "fingerprint": "4bdd4236afa76e51"
+      },
+      "test": {
+        "content_sha256": "5eac75f5641b90a0059406b438e820de7b880afdfc3615b0035a7208da80074b",
+        "count": 238,
+        "fingerprint": "536acdd7215504fe"
+      }
+    },
+    "mmlu_high_school_physics": {
+      "dev": {
+        "content_sha256": "799b43d21280203febe198493cc02d89f6e90f7252f753b81cb4d35f89b9daa8",
+        "count": 5,
+        "fingerprint": "8aa813aea7a66fcb"
+      },
+      "test": {
+        "content_sha256": "7f1ea95fa0d3e26f3f49797af78df4bd6580adfe7a16af596e42857f50106bba",
+        "count": 151,
+        "fingerprint": "dad4eca037a60c47"
+      }
+    },
+    "mmlu_high_school_psychology": {
+      "dev": {
+        "content_sha256": "64110300cf77b587f349917f1cad39b5b317da35b2ad1c277d9983808117e744",
+        "count": 5,
+        "fingerprint": "676255442c9c92cb"
+      },
+      "test": {
+        "content_sha256": "ec052615ae2892e718e495f61f48fd138045b41d10e52d16c32f4c1b1860922d",
+        "count": 545,
+        "fingerprint": "4334e2718bb3a40b"
+      }
+    },
+    "mmlu_high_school_statistics": {
+      "dev": {
+        "content_sha256": "115fe8b3616a5e9ff208b68fd9d970a7d6c2cc0b42c40ae263ffba7271693030",
+        "count": 5,
+        "fingerprint": "532311f4fb7130d4"
+      },
+      "test": {
+        "content_sha256": "17ce7080c9b619a910da3b558c6df855c4b5f63e2816e5968b6a1c95ed2d03f2",
+        "count": 216,
+        "fingerprint": "b8e9ee7d04c1f3f8"
+      }
+    },
+    "mmlu_high_school_us_history": {
+      "dev": {
+        "content_sha256": "45f9fefffe715cb22c75893d6a9e48a592b5f9d91e529dbe965996ca13b7c9ca",
+        "count": 5,
+        "fingerprint": "caf8dc2718edab2f"
+      },
+      "test": {
+        "content_sha256": "adced3cf7af3706cec31e590793335b1df65aadf54b904dc34361879c86dc11f",
+        "count": 204,
+        "fingerprint": "9898bff8bf0da33d"
+      }
+    },
+    "mmlu_high_school_world_history": {
+      "dev": {
+        "content_sha256": "1ea834a841add4d087de53db2634a490e949b18425fbe08daa9b7b3debfe0c1c",
+        "count": 5,
+        "fingerprint": "81d1e4f4b632b291"
+      },
+      "test": {
+        "content_sha256": "ab62d32433df5edf824b8be12d308ad404a1e1bf1335c65a890c5c2e0302e99a",
+        "count": 237,
+        "fingerprint": "7bc6897c1ad886c5"
+      }
+    },
+    "mmlu_human_aging": {
+      "dev": {
+        "content_sha256": "7d8cbf8f64c88f91ce7ddbc997d703f9ca0fb5700c272dc1f2d4b00cf55b82df",
+        "count": 5,
+        "fingerprint": "2a692a8f7205c2e3"
+      },
+      "test": {
+        "content_sha256": "307d673783bc860fdcc86159c41209f978461931e7e0605f8958a834c10d5743",
+        "count": 223,
+        "fingerprint": "8d6c00ed2cd60d8e"
+      }
+    },
+    "mmlu_human_sexuality": {
+      "dev": {
+        "content_sha256": "afb231581f245c9d3d36972683081cfeb6dd22956cc1f61e6ced6d3c851c22c1",
+        "count": 5,
+        "fingerprint": "07e5da0a42ccac50"
+      },
+      "test": {
+        "content_sha256": "ad4a8aea3a6758b6e82bd7c3ed9f91153eb04ea204b56e504ce73eca9c92be52",
+        "count": 131,
+        "fingerprint": "e2dbebe685a8233a"
+      }
+    },
+    "mmlu_international_law": {
+      "dev": {
+        "content_sha256": "0a179b65f93d9f099e7def0ad61d05e035c259bba4551bffeae342b996d941b1",
+        "count": 5,
+        "fingerprint": "5095eed6aa832fd9"
+      },
+      "test": {
+        "content_sha256": "9c9f48150f8100e5c189e1b3797a9a321922d051bd75302d9401bbb63b2efd50",
+        "count": 121,
+        "fingerprint": "74c39d84b2740ac6"
+      }
+    },
+    "mmlu_jurisprudence": {
+      "dev": {
+        "content_sha256": "fb2e9eeadb362ee6ac4d662da2e88b55795e7883b987452a6c9ead384f5d7b47",
+        "count": 5,
+        "fingerprint": "97a9bc09955f9886"
+      },
+      "test": {
+        "content_sha256": "1ae9957e13e4442c4093be6630f12e55c8f2842e37b00fad8dd975b6f426a909",
+        "count": 108,
+        "fingerprint": "30241999021c8a10"
+      }
+    },
+    "mmlu_logical_fallacies": {
+      "dev": {
+        "content_sha256": "3567afba97f865e1fb1ee401fbf91ed6fe8b48e6e03822ea0e6514722f580cbe",
+        "count": 5,
+        "fingerprint": "a1a9368c13dfa728"
+      },
+      "test": {
+        "content_sha256": "e334a3b09e98288b2bbbff654a051b0a1437b53b046d02fabff79a33e1a9c920",
+        "count": 163,
+        "fingerprint": "f65d6f4a4236abee"
+      }
+    },
+    "mmlu_machine_learning": {
+      "dev": {
+        "content_sha256": "c420785a6fd7826b985a4be74e343b8b175a25b9010f6342e101b5ef4e3efa2e",
+        "count": 5,
+        "fingerprint": "9be0118da7b66c48"
+      },
+      "test": {
+        "content_sha256": "9b09d1faf9d534fd3b4fe9bd2d53fb99b436d7ced90d891e2b84ec872952406d",
+        "count": 112,
+        "fingerprint": "43ddde1813be4e9f"
+      }
+    },
+    "mmlu_management": {
+      "dev": {
+        "content_sha256": "0075f7f910e88f5970b8c2b5d0c25c8b040c9ecc2ff530409323491cf9c9a91b",
+        "count": 5,
+        "fingerprint": "945042e33f22df97"
+      },
+      "test": {
+        "content_sha256": "179f375cfcff1d13330bfcd9f1ed475e6bff1af03a42310b70e412b30042713a",
+        "count": 103,
+        "fingerprint": "91c15f84eda754f9"
+      }
+    },
+    "mmlu_marketing": {
+      "dev": {
+        "content_sha256": "b37fca272d6db364a38031f54d9ccd48eb033a21c8892a6a2d968bc7b0cb7b32",
+        "count": 5,
+        "fingerprint": "0a37e789e5d8fb5d"
+      },
+      "test": {
+        "content_sha256": "5300a227e384ad530717e06ec89033a001576e8bc633753a51fa33b4e3dbf51a",
+        "count": 234,
+        "fingerprint": "8ae68060dbc57c5a"
+      }
+    },
+    "mmlu_medical_genetics": {
+      "dev": {
+        "content_sha256": "39cdd65d4e209c110863629c95cef9eac4e805b22bff9f491cd35c3acaba09aa",
+        "count": 5,
+        "fingerprint": "0deead56d72e04f0"
+      },
+      "test": {
+        "content_sha256": "1580cb0c307f80762b8e79857cd52e01666011894856f09bb947f6112ccaed86",
+        "count": 100,
+        "fingerprint": "a937079f923db81c"
+      }
+    },
+    "mmlu_miscellaneous": {
+      "dev": {
+        "content_sha256": "3a79c0b1c1539548ff09ae073087612c8391200314717ddfe5b02cc693b626aa",
+        "count": 5,
+        "fingerprint": "d18810bbd117b0a6"
+      },
+      "test": {
+        "content_sha256": "b78f643b3401a09eae96ceddbb293b4f838b5a58e031e64ff70d983227744135",
+        "count": 783,
+        "fingerprint": "ca411d2cc3a3b57c"
+      }
+    },
+    "mmlu_moral_disputes": {
+      "dev": {
+        "content_sha256": "f4301813f9a6a37e367c325ae3f30048fd91339df1afdfb417f1e32edd640d6a",
+        "count": 5,
+        "fingerprint": "b1c354145016b84c"
+      },
+      "test": {
+        "content_sha256": "63829d94470d24d7b54e1f63d768c9dcc89f4982e6732f8d8599a6001a977b89",
+        "count": 346,
+        "fingerprint": "fc1ad8e4522298d8"
+      }
+    },
+    "mmlu_moral_scenarios": {
+      "dev": {
+        "content_sha256": "19e2e530c1f0e4d5f8e7847e2d1bec8711fd69669144bd15505843182c72e88d",
+        "count": 5,
+        "fingerprint": "1551c2ca61fa74fc"
+      },
+      "test": {
+        "content_sha256": "1e37e3f530d0072aeaaf8b39e5e4daa75597882dac43494aec28044ffdc0c7ed",
+        "count": 895,
+        "fingerprint": "f8618f6d3e96a1b5"
+      }
+    },
+    "mmlu_nutrition": {
+      "dev": {
+        "content_sha256": "daceb207056b18902a41790ece7698ec34566769dd1de57f6ccf818676765870",
+        "count": 5,
+        "fingerprint": "662069a14d56c86a"
+      },
+      "test": {
+        "content_sha256": "0b10fed2d289a56970b593cad65b1735f107e6c21806c4dabbd1205a02432434",
+        "count": 306,
+        "fingerprint": "faf8758395cf46ba"
+      }
+    },
+    "mmlu_philosophy": {
+      "dev": {
+        "content_sha256": "96044edb139df81dd395dafd537cb7b39d9e2481233fbdfb0f0e9a8c5dedadf1",
+        "count": 5,
+        "fingerprint": "fab560d11fd290d6"
+      },
+      "test": {
+        "content_sha256": "cb52508f36664439659986dfde2b06805c058e76af81577eec46d0608c35c3b7",
+        "count": 311,
+        "fingerprint": "1c9a94ff88dd0c16"
+      }
+    },
+    "mmlu_prehistory": {
+      "dev": {
+        "content_sha256": "9d6a635d9354aeabdc21735ffbf184846faf353137ef2d0f0d9cf7d9dd94158f",
+        "count": 5,
+        "fingerprint": "8e3f6450e14a6f11"
+      },
+      "test": {
+        "content_sha256": "9e634753393b0e2f05f68f606f3aa15a01a2012dfbc223f3349706f79e893aaf",
+        "count": 324,
+        "fingerprint": "d536feaa2949a8e3"
+      }
+    },
+    "mmlu_professional_accounting": {
+      "dev": {
+        "content_sha256": "a6e0a8fd0ddfbd2e85cf3d7322f54719658834772295f0038a92a7c5e78c7fac",
+        "count": 5,
+        "fingerprint": "12501f3eb507ff67"
+      },
+      "test": {
+        "content_sha256": "792f6d57715acbb6344b9b0d76d6e5b04a44dee6ce9ba941e349f4908d6e9d25",
+        "count": 282,
+        "fingerprint": "9e9625827c7bded6"
+      }
+    },
+    "mmlu_professional_law": {
+      "dev": {
+        "content_sha256": "cba3e27fa4209436f42014c6a234350c5c52735bf950288b3f653c1ebcd3324f",
+        "count": 5,
+        "fingerprint": "5282aa28f352a666"
+      },
+      "test": {
+        "content_sha256": "014467a3fc71a5d2fcb69939bc7c3aa5af49d1343f1ba77dca00395f040c50cd",
+        "count": 1534,
+        "fingerprint": "c36e72f1d6cb6e5f"
+      }
+    },
+    "mmlu_professional_medicine": {
+      "dev": {
+        "content_sha256": "a2ddd9079a4c6986da55695407fa1f0d4954e61882026e7d8c9d098b7a06a004",
+        "count": 5,
+        "fingerprint": "a2ea1a94340e8846"
+      },
+      "test": {
+        "content_sha256": "563ef57fb3c92a0ef4f42f00c069106d7d523ef863568873e34e889d48cf980f",
+        "count": 272,
+        "fingerprint": "d1e11faf82469872"
+      }
+    },
+    "mmlu_professional_psychology": {
+      "dev": {
+        "content_sha256": "d8040a38103d09826f4d809033f7f9123ebf8c03b0758c19636e7658820725e4",
+        "count": 5,
+        "fingerprint": "570817fc494dd5db"
+      },
+      "test": {
+        "content_sha256": "c691e9082228a4c7e3cd049907cf5be5152fb41091ee9fe06f8379fdd001041e",
+        "count": 612,
+        "fingerprint": "a445259986d2d927"
+      }
+    },
+    "mmlu_public_relations": {
+      "dev": {
+        "content_sha256": "76cf2052c4e4637e441c824136c3853e915bb1c8de7a11b22a3106e818f52c56",
+        "count": 5,
+        "fingerprint": "7745913bdf7ac087"
+      },
+      "test": {
+        "content_sha256": "72859d47368c34469d35beeff79b4a09138325a08357c2b56d2fd0bb7a5c80d6",
+        "count": 110,
+        "fingerprint": "c4c79891c4a06610"
+      }
+    },
+    "mmlu_security_studies": {
+      "dev": {
+        "content_sha256": "27cbfeb710b3edd9ee9943af33ec8c23fcefa4b2f046a1245f6c30d64a9018f3",
+        "count": 5,
+        "fingerprint": "435bc367f3652360"
+      },
+      "test": {
+        "content_sha256": "d502f778d53764bfeb03447e12f4744f7f72a826efe3fea91a2ccb7ed983ac51",
+        "count": 245,
+        "fingerprint": "f3f8511396432fe4"
+      }
+    },
+    "mmlu_sociology": {
+      "dev": {
+        "content_sha256": "ef45e0f403ecd304489f60da383503ffbe020955741f0f68737572fc0a3f08ac",
+        "count": 5,
+        "fingerprint": "6a636fd07e796817"
+      },
+      "test": {
+        "content_sha256": "9e42b3650b43facd55c5505a28e535ba617ba8cc2726ebd3431fdcc36b32ef75",
+        "count": 201,
+        "fingerprint": "ec8e27c2b3e16a55"
+      }
+    },
+    "mmlu_us_foreign_policy": {
+      "dev": {
+        "content_sha256": "9b019ac4bc208395c97ae6f657182f3f3ef4c9368d556367715456ccb951f7cc",
+        "count": 5,
+        "fingerprint": "a7b1e08a76be7789"
+      },
+      "test": {
+        "content_sha256": "90d2d1bc0df7c2be5a47b124b909dea827d08f158ad46ce8de29945c4b67ff0b",
+        "count": 100,
+        "fingerprint": "5082afc2b0bc4dbe"
+      }
+    },
+    "mmlu_virology": {
+      "dev": {
+        "content_sha256": "fa101cd0e27e24dfe9bf49a1b4a9c6f00884f04f11cae5e6ea33c3cbf3dbc3b3",
+        "count": 5,
+        "fingerprint": "31c0dbd005df6db9"
+      },
+      "test": {
+        "content_sha256": "2b21a67f2ea428aa6d50fc55ed513047f48fe9d2c046236f9718c651484f9d79",
+        "count": 166,
+        "fingerprint": "6d133fea1047244b"
+      }
+    },
+    "mmlu_world_religions": {
+      "dev": {
+        "content_sha256": "b89eeb0c7bcc354fb7aec89773f7067aa58c02d1bf03d37db07e835fcbdb697e",
+        "count": 5,
+        "fingerprint": "9109cfe46e82cbae"
+      },
+      "test": {
+        "content_sha256": "ddcd07e14f4e090f66bad76d836855c14670dec4af769cec71d18639ca602740",
+        "count": 171,
+        "fingerprint": "c70e10ede8186900"
+      }
+    }
+  },
+  "status": "frozen_before_inference",
+  "task_configs": {
+    "arc_challenge": {
+      "dataset_kwargs": {
+        "cache_dir": "/workspace/acupuncture/.cache/hf/datasets",
+        "revision": "210d026faf9955653af8916fad021475a3f00453"
+      },
+      "dataset_name": "ARC-Challenge",
+      "dataset_path": "allenai/ai2_arc",
+      "description": "",
+      "doc_to_choice": "{{choices.text}}",
+      "doc_to_decontamination_query": "Question: {{question}}\nAnswer:",
+      "doc_to_target": "{{choices.label.index(answerKey)}}",
+      "doc_to_text": "Question: {{question}}\nAnswer:",
+      "fewshot_config": {
+        "doc_to_choice": "{{choices.text}}",
+        "doc_to_target": "{{choices.label.index(answerKey)}}",
+        "doc_to_text": "Question: {{question}}\nAnswer:",
+        "fewshot_delimiter": "\n\n",
+        "fewshot_indices": null,
+        "gen_prefix": null,
+        "process_docs": null,
+        "sampler": "default",
+        "samples": null,
+        "split": null,
+        "target_delimiter": " "
+      },
+      "fewshot_delimiter": "\n\n",
+      "metadata": {
+        "version": 1.0
+      },
+      "metric_list": [
+        {
+          "aggregation": "mean",
+          "higher_is_better": true,
+          "metric": "acc"
+        },
+        {
+          "aggregation": "mean",
+          "higher_is_better": true,
+          "metric": "acc_norm"
+        }
+      ],
+      "num_fewshot": 25,
+      "output_type": "multiple_choice",
+      "repeats": 1,
+      "should_decontaminate": true,
+      "target_delimiter": " ",
+      "task": "arc_challenge",
+      "test_split": "test",
+      "training_split": "train",
+      "unsafe_code": false,
+      "validation_split": "validation"
+    },
+    "gsm8k": {
+      "dataset_kwargs": {
+        "cache_dir": "/workspace/acupuncture/.cache/hf/datasets",
+        "revision": "740312add88f781978c0658806c59bc2815b9866"
+      },
+      "dataset_name": "main",
+      "dataset_path": "openai/gsm8k",
+      "description": "",
+      "doc_to_target": "{{answer}}",
+      "doc_to_text": "Question: {{question}}\nAnswer:",
+      "fewshot_config": {
+        "doc_to_choice": null,
+        "doc_to_target": "{{answer}}",
+        "doc_to_text": "Question: {{question}}\nAnswer:",
+        "fewshot_delimiter": "\n\n",
+        "fewshot_indices": null,
+        "gen_prefix": null,
+        "process_docs": null,
+        "sampler": "default",
+        "samples": null,
+        "split": "train",
+        "target_delimiter": " "
+      },
+      "fewshot_delimiter": "\n\n",
+      "fewshot_split": "train",
+      "filter_list": [
+        {
+          "filter": [
+            {
+              "function": "regex",
+              "regex_pattern": "#### (\\-?[0-9\\.\\,]+)"
+            },
+            {
+              "function": "take_first"
+            }
+          ],
+          "name": "strict-match"
+        },
+        {
+          "filter": [
+            {
+              "function": "regex",
+              "group_select": -1,
+              "regex_pattern": "(-?[$0-9.,]{2,})|(-?[0-9]+)"
+            },
+            {
+              "function": "take_first"
+            }
+          ],
+          "name": "flexible-extract"
+        }
+      ],
+      "generation_kwargs": {
+        "do_sample": false,
+        "max_gen_toks": 2048,
+        "temperature": 0.0,
+        "until": [
+          "Question:",
+          "</s>",
+          "<|im_end|>"
+        ]
+      },
+      "metadata": {
+        "version": 3.0
+      },
+      "metric_list": [
+        {
+          "aggregation": "mean",
+          "higher_is_better": true,
+          "ignore_case": true,
+          "ignore_punctuation": false,
+          "metric": "exact_match",
+          "regexes_to_ignore": [
+            ",",
+            "\\$",
+            "(?s).*#### ",
+            "\\.$"
+          ]
+        }
+      ],
+      "num_fewshot": 5,
+      "output_type": "generate_until",
+      "repeats": 1,
+      "should_decontaminate": false,
+      "target_delimiter": " ",
+      "task": "gsm8k",
+      "test_split": "test",
+      "training_split": "train",
+      "unsafe_code": false
+    },
+    "mmlu_abstract_algebra": {
+      "dataset_kwargs": {
+        "cache_dir": "/workspace/acupuncture/.cache/hf/datasets",
+        "revision": "c30699e8356da336a370243923dbaf21066bb9fe"
+      },
+      "dataset_name": "abstract_algebra",
+      "dataset_path": "cais/mmlu",
+      "description": "The following are multiple choice questions (with answers) about abstract algebra.\n\n",
+      "doc_to_choice": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "doc_to_target": "answer",
+      "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+      "fewshot_config": {
+        "doc_to_choice": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "doc_to_target": "answer",
+        "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+        "fewshot_delimiter": "\n\n",
+        "fewshot_indices": null,
+        "gen_prefix": null,
+        "process_docs": null,
+        "sampler": "first_n",
+        "samples": null,
+        "split": "dev",
+        "target_delimiter": " "
+      },
+      "fewshot_delimiter": "\n\n",
+      "fewshot_split": "dev",
+      "metadata": {
+        "version": 1.0
+      },
+      "metric_list": [
+        {
+          "aggregation": "mean",
+          "higher_is_better": true,
+          "metric": "acc"
+        }
+      ],
+      "num_fewshot": 5,
+      "output_type": "multiple_choice",
+      "repeats": 1,
+      "should_decontaminate": false,
+      "target_delimiter": " ",
+      "task": "mmlu_abstract_algebra",
+      "task_alias": "abstract_algebra",
+      "test_split": "test",
+      "unsafe_code": false
+    },
+    "mmlu_anatomy": {
+      "dataset_kwargs": {
+        "cache_dir": "/workspace/acupuncture/.cache/hf/datasets",
+        "revision": "c30699e8356da336a370243923dbaf21066bb9fe"
+      },
+      "dataset_name": "anatomy",
+      "dataset_path": "cais/mmlu",
+      "description": "The following are multiple choice questions (with answers) about anatomy.\n\n",
+      "doc_to_choice": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "doc_to_target": "answer",
+      "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+      "fewshot_config": {
+        "doc_to_choice": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "doc_to_target": "answer",
+        "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+        "fewshot_delimiter": "\n\n",
+        "fewshot_indices": null,
+        "gen_prefix": null,
+        "process_docs": null,
+        "sampler": "first_n",
+        "samples": null,
+        "split": "dev",
+        "target_delimiter": " "
+      },
+      "fewshot_delimiter": "\n\n",
+      "fewshot_split": "dev",
+      "metadata": {
+        "version": 1.0
+      },
+      "metric_list": [
+        {
+          "aggregation": "mean",
+          "higher_is_better": true,
+          "metric": "acc"
+        }
+      ],
+      "num_fewshot": 5,
+      "output_type": "multiple_choice",
+      "repeats": 1,
+      "should_decontaminate": false,
+      "target_delimiter": " ",
+      "task": "mmlu_anatomy",
+      "task_alias": "anatomy",
+      "test_split": "test",
+      "unsafe_code": false
+    },
+    "mmlu_astronomy": {
+      "dataset_kwargs": {
+        "cache_dir": "/workspace/acupuncture/.cache/hf/datasets",
+        "revision": "c30699e8356da336a370243923dbaf21066bb9fe"
+      },
+      "dataset_name": "astronomy",
+      "dataset_path": "cais/mmlu",
+      "description": "The following are multiple choice questions (with answers) about astronomy.\n\n",
+      "doc_to_choice": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "doc_to_target": "answer",
+      "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+      "fewshot_config": {
+        "doc_to_choice": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "doc_to_target": "answer",
+        "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+        "fewshot_delimiter": "\n\n",
+        "fewshot_indices": null,
+        "gen_prefix": null,
+        "process_docs": null,
+        "sampler": "first_n",
+        "samples": null,
+        "split": "dev",
+        "target_delimiter": " "
+      },
+      "fewshot_delimiter": "\n\n",
+      "fewshot_split": "dev",
+      "metadata": {
+        "version": 1.0
+      },
+      "metric_list": [
+        {
+          "aggregation": "mean",
+          "higher_is_better": true,
+          "metric": "acc"
+        }
+      ],
+      "num_fewshot": 5,
+      "output_type": "multiple_choice",
+      "repeats": 1,
+      "should_decontaminate": false,
+      "target_delimiter": " ",
+      "task": "mmlu_astronomy",
+      "task_alias": "astronomy",
+      "test_split": "test",
+      "unsafe_code": false
+    },
+    "mmlu_business_ethics": {
+      "dataset_kwargs": {
+        "cache_dir": "/workspace/acupuncture/.cache/hf/datasets",
+        "revision": "c30699e8356da336a370243923dbaf21066bb9fe"
+      },
+      "dataset_name": "business_ethics",
+      "dataset_path": "cais/mmlu",
+      "description": "The following are multiple choice questions (with answers) about business ethics.\n\n",
+      "doc_to_choice": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "doc_to_target": "answer",
+      "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+      "fewshot_config": {
+        "doc_to_choice": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "doc_to_target": "answer",
+        "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+        "fewshot_delimiter": "\n\n",
+        "fewshot_indices": null,
+        "gen_prefix": null,
+        "process_docs": null,
+        "sampler": "first_n",
+        "samples": null,
+        "split": "dev",
+        "target_delimiter": " "
+      },
+      "fewshot_delimiter": "\n\n",
+      "fewshot_split": "dev",
+      "metadata": {
+        "version": 1.0
+      },
+      "metric_list": [
+        {
+          "aggregation": "mean",
+          "higher_is_better": true,
+          "metric": "acc"
+        }
+      ],
+      "num_fewshot": 5,
+      "output_type": "multiple_choice",
+      "repeats": 1,
+      "should_decontaminate": false,
+      "target_delimiter": " ",
+      "task": "mmlu_business_ethics",
+      "task_alias": "business_ethics",
+      "test_split": "test",
+      "unsafe_code": false
+    },
+    "mmlu_clinical_knowledge": {
+      "dataset_kwargs": {
+        "cache_dir": "/workspace/acupuncture/.cache/hf/datasets",
+        "revision": "c30699e8356da336a370243923dbaf21066bb9fe"
+      },
+      "dataset_name": "clinical_knowledge",
+      "dataset_path": "cais/mmlu",
+      "description": "The following are multiple choice questions (with answers) about clinical knowledge.\n\n",
+      "doc_to_choice": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "doc_to_target": "answer",
+      "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+      "fewshot_config": {
+        "doc_to_choice": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "doc_to_target": "answer",
+        "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+        "fewshot_delimiter": "\n\n",
+        "fewshot_indices": null,
+        "gen_prefix": null,
+        "process_docs": null,
+        "sampler": "first_n",
+        "samples": null,
+        "split": "dev",
+        "target_delimiter": " "
+      },
+      "fewshot_delimiter": "\n\n",
+      "fewshot_split": "dev",
+      "metadata": {
+        "version": 1.0
+      },
+      "metric_list": [
+        {
+          "aggregation": "mean",
+          "higher_is_better": true,
+          "metric": "acc"
+        }
+      ],
+      "num_fewshot": 5,
+      "output_type": "multiple_choice",
+      "repeats": 1,
+      "should_decontaminate": false,
+      "target_delimiter": " ",
+      "task": "mmlu_clinical_knowledge",
+      "task_alias": "clinical_knowledge",
+      "test_split": "test",
+      "unsafe_code": false
+    },
+    "mmlu_college_biology": {
+      "dataset_kwargs": {
+        "cache_dir": "/workspace/acupuncture/.cache/hf/datasets",
+        "revision": "c30699e8356da336a370243923dbaf21066bb9fe"
+      },
+      "dataset_name": "college_biology",
+      "dataset_path": "cais/mmlu",
+      "description": "The following are multiple choice questions (with answers) about college biology.\n\n",
+      "doc_to_choice": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "doc_to_target": "answer",
+      "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+      "fewshot_config": {
+        "doc_to_choice": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "doc_to_target": "answer",
+        "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+        "fewshot_delimiter": "\n\n",
+        "fewshot_indices": null,
+        "gen_prefix": null,
+        "process_docs": null,
+        "sampler": "first_n",
+        "samples": null,
+        "split": "dev",
+        "target_delimiter": " "
+      },
+      "fewshot_delimiter": "\n\n",
+      "fewshot_split": "dev",
+      "metadata": {
+        "version": 1.0
+      },
+      "metric_list": [
+        {
+          "aggregation": "mean",
+          "higher_is_better": true,
+          "metric": "acc"
+        }
+      ],
+      "num_fewshot": 5,
+      "output_type": "multiple_choice",
+      "repeats": 1,
+      "should_decontaminate": false,
+      "target_delimiter": " ",
+      "task": "mmlu_college_biology",
+      "task_alias": "college_biology",
+      "test_split": "test",
+      "unsafe_code": false
+    },
+    "mmlu_college_chemistry": {
+      "dataset_kwargs": {
+        "cache_dir": "/workspace/acupuncture/.cache/hf/datasets",
+        "revision": "c30699e8356da336a370243923dbaf21066bb9fe"
+      },
+      "dataset_name": "college_chemistry",
+      "dataset_path": "cais/mmlu",
+      "description": "The following are multiple choice questions (with answers) about college chemistry.\n\n",
+      "doc_to_choice": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "doc_to_target": "answer",
+      "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+      "fewshot_config": {
+        "doc_to_choice": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "doc_to_target": "answer",
+        "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+        "fewshot_delimiter": "\n\n",
+        "fewshot_indices": null,
+        "gen_prefix": null,
+        "process_docs": null,
+        "sampler": "first_n",
+        "samples": null,
+        "split": "dev",
+        "target_delimiter": " "
+      },
+      "fewshot_delimiter": "\n\n",
+      "fewshot_split": "dev",
+      "metadata": {
+        "version": 1.0
+      },
+      "metric_list": [
+        {
+          "aggregation": "mean",
+          "higher_is_better": true,
+          "metric": "acc"
+        }
+      ],
+      "num_fewshot": 5,
+      "output_type": "multiple_choice",
+      "repeats": 1,
+      "should_decontaminate": false,
+      "target_delimiter": " ",
+      "task": "mmlu_college_chemistry",
+      "task_alias": "college_chemistry",
+      "test_split": "test",
+      "unsafe_code": false
+    },
+    "mmlu_college_computer_science": {
+      "dataset_kwargs": {
+        "cache_dir": "/workspace/acupuncture/.cache/hf/datasets",
+        "revision": "c30699e8356da336a370243923dbaf21066bb9fe"
+      },
+      "dataset_name": "college_computer_science",
+      "dataset_path": "cais/mmlu",
+      "description": "The following are multiple choice questions (with answers) about college computer science.\n\n",
+      "doc_to_choice": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "doc_to_target": "answer",
+      "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+      "fewshot_config": {
+        "doc_to_choice": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "doc_to_target": "answer",
+        "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+        "fewshot_delimiter": "\n\n",
+        "fewshot_indices": null,
+        "gen_prefix": null,
+        "process_docs": null,
+        "sampler": "first_n",
+        "samples": null,
+        "split": "dev",
+        "target_delimiter": " "
+      },
+      "fewshot_delimiter": "\n\n",
+      "fewshot_split": "dev",
+      "metadata": {
+        "version": 1.0
+      },
+      "metric_list": [
+        {
+          "aggregation": "mean",
+          "higher_is_better": true,
+          "metric": "acc"
+        }
+      ],
+      "num_fewshot": 5,
+      "output_type": "multiple_choice",
+      "repeats": 1,
+      "should_decontaminate": false,
+      "target_delimiter": " ",
+      "task": "mmlu_college_computer_science",
+      "task_alias": "college_computer_science",
+      "test_split": "test",
+      "unsafe_code": false
+    },
+    "mmlu_college_mathematics": {
+      "dataset_kwargs": {
+        "cache_dir": "/workspace/acupuncture/.cache/hf/datasets",
+        "revision": "c30699e8356da336a370243923dbaf21066bb9fe"
+      },
+      "dataset_name": "college_mathematics",
+      "dataset_path": "cais/mmlu",
+      "description": "The following are multiple choice questions (with answers) about college mathematics.\n\n",
+      "doc_to_choice": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "doc_to_target": "answer",
+      "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+      "fewshot_config": {
+        "doc_to_choice": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "doc_to_target": "answer",
+        "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+        "fewshot_delimiter": "\n\n",
+        "fewshot_indices": null,
+        "gen_prefix": null,
+        "process_docs": null,
+        "sampler": "first_n",
+        "samples": null,
+        "split": "dev",
+        "target_delimiter": " "
+      },
+      "fewshot_delimiter": "\n\n",
+      "fewshot_split": "dev",
+      "metadata": {
+        "version": 1.0
+      },
+      "metric_list": [
+        {
+          "aggregation": "mean",
+          "higher_is_better": true,
+          "metric": "acc"
+        }
+      ],
+      "num_fewshot": 5,
+      "output_type": "multiple_choice",
+      "repeats": 1,
+      "should_decontaminate": false,
+      "target_delimiter": " ",
+      "task": "mmlu_college_mathematics",
+      "task_alias": "college_mathematics",
+      "test_split": "test",
+      "unsafe_code": false
+    },
+    "mmlu_college_medicine": {
+      "dataset_kwargs": {
+        "cache_dir": "/workspace/acupuncture/.cache/hf/datasets",
+        "revision": "c30699e8356da336a370243923dbaf21066bb9fe"
+      },
+      "dataset_name": "college_medicine",
+      "dataset_path": "cais/mmlu",
+      "description": "The following are multiple choice questions (with answers) about college medicine.\n\n",
+      "doc_to_choice": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "doc_to_target": "answer",
+      "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+      "fewshot_config": {
+        "doc_to_choice": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "doc_to_target": "answer",
+        "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+        "fewshot_delimiter": "\n\n",
+        "fewshot_indices": null,
+        "gen_prefix": null,
+        "process_docs": null,
+        "sampler": "first_n",
+        "samples": null,
+        "split": "dev",
+        "target_delimiter": " "
+      },
+      "fewshot_delimiter": "\n\n",
+      "fewshot_split": "dev",
+      "metadata": {
+        "version": 1.0
+      },
+      "metric_list": [
+        {
+          "aggregation": "mean",
+          "higher_is_better": true,
+          "metric": "acc"
+        }
+      ],
+      "num_fewshot": 5,
+      "output_type": "multiple_choice",
+      "repeats": 1,
+      "should_decontaminate": false,
+      "target_delimiter": " ",
+      "task": "mmlu_college_medicine",
+      "task_alias": "college_medicine",
+      "test_split": "test",
+      "unsafe_code": false
+    },
+    "mmlu_college_physics": {
+      "dataset_kwargs": {
+        "cache_dir": "/workspace/acupuncture/.cache/hf/datasets",
+        "revision": "c30699e8356da336a370243923dbaf21066bb9fe"
+      },
+      "dataset_name": "college_physics",
+      "dataset_path": "cais/mmlu",
+      "description": "The following are multiple choice questions (with answers) about college physics.\n\n",
+      "doc_to_choice": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "doc_to_target": "answer",
+      "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+      "fewshot_config": {
+        "doc_to_choice": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "doc_to_target": "answer",
+        "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+        "fewshot_delimiter": "\n\n",
+        "fewshot_indices": null,
+        "gen_prefix": null,
+        "process_docs": null,
+        "sampler": "first_n",
+        "samples": null,
+        "split": "dev",
+        "target_delimiter": " "
+      },
+      "fewshot_delimiter": "\n\n",
+      "fewshot_split": "dev",
+      "metadata": {
+        "version": 1.0
+      },
+      "metric_list": [
+        {
+          "aggregation": "mean",
+          "higher_is_better": true,
+          "metric": "acc"
+        }
+      ],
+      "num_fewshot": 5,
+      "output_type": "multiple_choice",
+      "repeats": 1,
+      "should_decontaminate": false,
+      "target_delimiter": " ",
+      "task": "mmlu_college_physics",
+      "task_alias": "college_physics",
+      "test_split": "test",
+      "unsafe_code": false
+    },
+    "mmlu_computer_security": {
+      "dataset_kwargs": {
+        "cache_dir": "/workspace/acupuncture/.cache/hf/datasets",
+        "revision": "c30699e8356da336a370243923dbaf21066bb9fe"
+      },
+      "dataset_name": "computer_security",
+      "dataset_path": "cais/mmlu",
+      "description": "The following are multiple choice questions (with answers) about computer security.\n\n",
+      "doc_to_choice": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "doc_to_target": "answer",
+      "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+      "fewshot_config": {
+        "doc_to_choice": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "doc_to_target": "answer",
+        "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+        "fewshot_delimiter": "\n\n",
+        "fewshot_indices": null,
+        "gen_prefix": null,
+        "process_docs": null,
+        "sampler": "first_n",
+        "samples": null,
+        "split": "dev",
+        "target_delimiter": " "
+      },
+      "fewshot_delimiter": "\n\n",
+      "fewshot_split": "dev",
+      "metadata": {
+        "version": 1.0
+      },
+      "metric_list": [
+        {
+          "aggregation": "mean",
+          "higher_is_better": true,
+          "metric": "acc"
+        }
+      ],
+      "num_fewshot": 5,
+      "output_type": "multiple_choice",
+      "repeats": 1,
+      "should_decontaminate": false,
+      "target_delimiter": " ",
+      "task": "mmlu_computer_security",
+      "task_alias": "computer_security",
+      "test_split": "test",
+      "unsafe_code": false
+    },
+    "mmlu_conceptual_physics": {
+      "dataset_kwargs": {
+        "cache_dir": "/workspace/acupuncture/.cache/hf/datasets",
+        "revision": "c30699e8356da336a370243923dbaf21066bb9fe"
+      },
+      "dataset_name": "conceptual_physics",
+      "dataset_path": "cais/mmlu",
+      "description": "The following are multiple choice questions (with answers) about conceptual physics.\n\n",
+      "doc_to_choice": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "doc_to_target": "answer",
+      "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+      "fewshot_config": {
+        "doc_to_choice": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "doc_to_target": "answer",
+        "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+        "fewshot_delimiter": "\n\n",
+        "fewshot_indices": null,
+        "gen_prefix": null,
+        "process_docs": null,
+        "sampler": "first_n",
+        "samples": null,
+        "split": "dev",
+        "target_delimiter": " "
+      },
+      "fewshot_delimiter": "\n\n",
+      "fewshot_split": "dev",
+      "metadata": {
+        "version": 1.0
+      },
+      "metric_list": [
+        {
+          "aggregation": "mean",
+          "higher_is_better": true,
+          "metric": "acc"
+        }
+      ],
+      "num_fewshot": 5,
+      "output_type": "multiple_choice",
+      "repeats": 1,
+      "should_decontaminate": false,
+      "target_delimiter": " ",
+      "task": "mmlu_conceptual_physics",
+      "task_alias": "conceptual_physics",
+      "test_split": "test",
+      "unsafe_code": false
+    },
+    "mmlu_econometrics": {
+      "dataset_kwargs": {
+        "cache_dir": "/workspace/acupuncture/.cache/hf/datasets",
+        "revision": "c30699e8356da336a370243923dbaf21066bb9fe"
+      },
+      "dataset_name": "econometrics",
+      "dataset_path": "cais/mmlu",
+      "description": "The following are multiple choice questions (with answers) about econometrics.\n\n",
+      "doc_to_choice": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "doc_to_target": "answer",
+      "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+      "fewshot_config": {
+        "doc_to_choice": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "doc_to_target": "answer",
+        "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+        "fewshot_delimiter": "\n\n",
+        "fewshot_indices": null,
+        "gen_prefix": null,
+        "process_docs": null,
+        "sampler": "first_n",
+        "samples": null,
+        "split": "dev",
+        "target_delimiter": " "
+      },
+      "fewshot_delimiter": "\n\n",
+      "fewshot_split": "dev",
+      "metadata": {
+        "version": 1.0
+      },
+      "metric_list": [
+        {
+          "aggregation": "mean",
+          "higher_is_better": true,
+          "metric": "acc"
+        }
+      ],
+      "num_fewshot": 5,
+      "output_type": "multiple_choice",
+      "repeats": 1,
+      "should_decontaminate": false,
+      "target_delimiter": " ",
+      "task": "mmlu_econometrics",
+      "task_alias": "econometrics",
+      "test_split": "test",
+      "unsafe_code": false
+    },
+    "mmlu_electrical_engineering": {
+      "dataset_kwargs": {
+        "cache_dir": "/workspace/acupuncture/.cache/hf/datasets",
+        "revision": "c30699e8356da336a370243923dbaf21066bb9fe"
+      },
+      "dataset_name": "electrical_engineering",
+      "dataset_path": "cais/mmlu",
+      "description": "The following are multiple choice questions (with answers) about electrical engineering.\n\n",
+      "doc_to_choice": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "doc_to_target": "answer",
+      "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+      "fewshot_config": {
+        "doc_to_choice": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "doc_to_target": "answer",
+        "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+        "fewshot_delimiter": "\n\n",
+        "fewshot_indices": null,
+        "gen_prefix": null,
+        "process_docs": null,
+        "sampler": "first_n",
+        "samples": null,
+        "split": "dev",
+        "target_delimiter": " "
+      },
+      "fewshot_delimiter": "\n\n",
+      "fewshot_split": "dev",
+      "metadata": {
+        "version": 1.0
+      },
+      "metric_list": [
+        {
+          "aggregation": "mean",
+          "higher_is_better": true,
+          "metric": "acc"
+        }
+      ],
+      "num_fewshot": 5,
+      "output_type": "multiple_choice",
+      "repeats": 1,
+      "should_decontaminate": false,
+      "target_delimiter": " ",
+      "task": "mmlu_electrical_engineering",
+      "task_alias": "electrical_engineering",
+      "test_split": "test",
+      "unsafe_code": false
+    },
+    "mmlu_elementary_mathematics": {
+      "dataset_kwargs": {
+        "cache_dir": "/workspace/acupuncture/.cache/hf/datasets",
+        "revision": "c30699e8356da336a370243923dbaf21066bb9fe"
+      },
+      "dataset_name": "elementary_mathematics",
+      "dataset_path": "cais/mmlu",
+      "description": "The following are multiple choice questions (with answers) about elementary mathematics.\n\n",
+      "doc_to_choice": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "doc_to_target": "answer",
+      "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+      "fewshot_config": {
+        "doc_to_choice": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "doc_to_target": "answer",
+        "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+        "fewshot_delimiter": "\n\n",
+        "fewshot_indices": null,
+        "gen_prefix": null,
+        "process_docs": null,
+        "sampler": "first_n",
+        "samples": null,
+        "split": "dev",
+        "target_delimiter": " "
+      },
+      "fewshot_delimiter": "\n\n",
+      "fewshot_split": "dev",
+      "metadata": {
+        "version": 1.0
+      },
+      "metric_list": [
+        {
+          "aggregation": "mean",
+          "higher_is_better": true,
+          "metric": "acc"
+        }
+      ],
+      "num_fewshot": 5,
+      "output_type": "multiple_choice",
+      "repeats": 1,
+      "should_decontaminate": false,
+      "target_delimiter": " ",
+      "task": "mmlu_elementary_mathematics",
+      "task_alias": "elementary_mathematics",
+      "test_split": "test",
+      "unsafe_code": false
+    },
+    "mmlu_formal_logic": {
+      "dataset_kwargs": {
+        "cache_dir": "/workspace/acupuncture/.cache/hf/datasets",
+        "revision": "c30699e8356da336a370243923dbaf21066bb9fe"
+      },
+      "dataset_name": "formal_logic",
+      "dataset_path": "cais/mmlu",
+      "description": "The following are multiple choice questions (with answers) about formal logic.\n\n",
+      "doc_to_choice": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "doc_to_target": "answer",
+      "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+      "fewshot_config": {
+        "doc_to_choice": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "doc_to_target": "answer",
+        "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+        "fewshot_delimiter": "\n\n",
+        "fewshot_indices": null,
+        "gen_prefix": null,
+        "process_docs": null,
+        "sampler": "first_n",
+        "samples": null,
+        "split": "dev",
+        "target_delimiter": " "
+      },
+      "fewshot_delimiter": "\n\n",
+      "fewshot_split": "dev",
+      "metadata": {
+        "version": 1.0
+      },
+      "metric_list": [
+        {
+          "aggregation": "mean",
+          "higher_is_better": true,
+          "metric": "acc"
+        }
+      ],
+      "num_fewshot": 5,
+      "output_type": "multiple_choice",
+      "repeats": 1,
+      "should_decontaminate": false,
+      "target_delimiter": " ",
+      "task": "mmlu_formal_logic",
+      "task_alias": "formal_logic",
+      "test_split": "test",
+      "unsafe_code": false
+    },
+    "mmlu_global_facts": {
+      "dataset_kwargs": {
+        "cache_dir": "/workspace/acupuncture/.cache/hf/datasets",
+        "revision": "c30699e8356da336a370243923dbaf21066bb9fe"
+      },
+      "dataset_name": "global_facts",
+      "dataset_path": "cais/mmlu",
+      "description": "The following are multiple choice questions (with answers) about global facts.\n\n",
+      "doc_to_choice": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "doc_to_target": "answer",
+      "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+      "fewshot_config": {
+        "doc_to_choice": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "doc_to_target": "answer",
+        "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+        "fewshot_delimiter": "\n\n",
+        "fewshot_indices": null,
+        "gen_prefix": null,
+        "process_docs": null,
+        "sampler": "first_n",
+        "samples": null,
+        "split": "dev",
+        "target_delimiter": " "
+      },
+      "fewshot_delimiter": "\n\n",
+      "fewshot_split": "dev",
+      "metadata": {
+        "version": 1.0
+      },
+      "metric_list": [
+        {
+          "aggregation": "mean",
+          "higher_is_better": true,
+          "metric": "acc"
+        }
+      ],
+      "num_fewshot": 5,
+      "output_type": "multiple_choice",
+      "repeats": 1,
+      "should_decontaminate": false,
+      "target_delimiter": " ",
+      "task": "mmlu_global_facts",
+      "task_alias": "global_facts",
+      "test_split": "test",
+      "unsafe_code": false
+    },
+    "mmlu_high_school_biology": {
+      "dataset_kwargs": {
+        "cache_dir": "/workspace/acupuncture/.cache/hf/datasets",
+        "revision": "c30699e8356da336a370243923dbaf21066bb9fe"
+      },
+      "dataset_name": "high_school_biology",
+      "dataset_path": "cais/mmlu",
+      "description": "The following are multiple choice questions (with answers) about high school biology.\n\n",
+      "doc_to_choice": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "doc_to_target": "answer",
+      "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+      "fewshot_config": {
+        "doc_to_choice": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "doc_to_target": "answer",
+        "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+        "fewshot_delimiter": "\n\n",
+        "fewshot_indices": null,
+        "gen_prefix": null,
+        "process_docs": null,
+        "sampler": "first_n",
+        "samples": null,
+        "split": "dev",
+        "target_delimiter": " "
+      },
+      "fewshot_delimiter": "\n\n",
+      "fewshot_split": "dev",
+      "metadata": {
+        "version": 1.0
+      },
+      "metric_list": [
+        {
+          "aggregation": "mean",
+          "higher_is_better": true,
+          "metric": "acc"
+        }
+      ],
+      "num_fewshot": 5,
+      "output_type": "multiple_choice",
+      "repeats": 1,
+      "should_decontaminate": false,
+      "target_delimiter": " ",
+      "task": "mmlu_high_school_biology",
+      "task_alias": "high_school_biology",
+      "test_split": "test",
+      "unsafe_code": false
+    },
+    "mmlu_high_school_chemistry": {
+      "dataset_kwargs": {
+        "cache_dir": "/workspace/acupuncture/.cache/hf/datasets",
+        "revision": "c30699e8356da336a370243923dbaf21066bb9fe"
+      },
+      "dataset_name": "high_school_chemistry",
+      "dataset_path": "cais/mmlu",
+      "description": "The following are multiple choice questions (with answers) about high school chemistry.\n\n",
+      "doc_to_choice": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "doc_to_target": "answer",
+      "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+      "fewshot_config": {
+        "doc_to_choice": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "doc_to_target": "answer",
+        "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+        "fewshot_delimiter": "\n\n",
+        "fewshot_indices": null,
+        "gen_prefix": null,
+        "process_docs": null,
+        "sampler": "first_n",
+        "samples": null,
+        "split": "dev",
+        "target_delimiter": " "
+      },
+      "fewshot_delimiter": "\n\n",
+      "fewshot_split": "dev",
+      "metadata": {
+        "version": 1.0
+      },
+      "metric_list": [
+        {
+          "aggregation": "mean",
+          "higher_is_better": true,
+          "metric": "acc"
+        }
+      ],
+      "num_fewshot": 5,
+      "output_type": "multiple_choice",
+      "repeats": 1,
+      "should_decontaminate": false,
+      "target_delimiter": " ",
+      "task": "mmlu_high_school_chemistry",
+      "task_alias": "high_school_chemistry",
+      "test_split": "test",
+      "unsafe_code": false
+    },
+    "mmlu_high_school_computer_science": {
+      "dataset_kwargs": {
+        "cache_dir": "/workspace/acupuncture/.cache/hf/datasets",
+        "revision": "c30699e8356da336a370243923dbaf21066bb9fe"
+      },
+      "dataset_name": "high_school_computer_science",
+      "dataset_path": "cais/mmlu",
+      "description": "The following are multiple choice questions (with answers) about high school computer science.\n\n",
+      "doc_to_choice": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "doc_to_target": "answer",
+      "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+      "fewshot_config": {
+        "doc_to_choice": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "doc_to_target": "answer",
+        "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+        "fewshot_delimiter": "\n\n",
+        "fewshot_indices": null,
+        "gen_prefix": null,
+        "process_docs": null,
+        "sampler": "first_n",
+        "samples": null,
+        "split": "dev",
+        "target_delimiter": " "
+      },
+      "fewshot_delimiter": "\n\n",
+      "fewshot_split": "dev",
+      "metadata": {
+        "version": 1.0
+      },
+      "metric_list": [
+        {
+          "aggregation": "mean",
+          "higher_is_better": true,
+          "metric": "acc"
+        }
+      ],
+      "num_fewshot": 5,
+      "output_type": "multiple_choice",
+      "repeats": 1,
+      "should_decontaminate": false,
+      "target_delimiter": " ",
+      "task": "mmlu_high_school_computer_science",
+      "task_alias": "high_school_computer_science",
+      "test_split": "test",
+      "unsafe_code": false
+    },
+    "mmlu_high_school_european_history": {
+      "dataset_kwargs": {
+        "cache_dir": "/workspace/acupuncture/.cache/hf/datasets",
+        "revision": "c30699e8356da336a370243923dbaf21066bb9fe"
+      },
+      "dataset_name": "high_school_european_history",
+      "dataset_path": "cais/mmlu",
+      "description": "The following are multiple choice questions (with answers) about high school european history.\n\n",
+      "doc_to_choice": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "doc_to_target": "answer",
+      "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+      "fewshot_config": {
+        "doc_to_choice": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "doc_to_target": "answer",
+        "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+        "fewshot_delimiter": "\n\n",
+        "fewshot_indices": null,
+        "gen_prefix": null,
+        "process_docs": null,
+        "sampler": "first_n",
+        "samples": null,
+        "split": "dev",
+        "target_delimiter": " "
+      },
+      "fewshot_delimiter": "\n\n",
+      "fewshot_split": "dev",
+      "metadata": {
+        "version": 1.0
+      },
+      "metric_list": [
+        {
+          "aggregation": "mean",
+          "higher_is_better": true,
+          "metric": "acc"
+        }
+      ],
+      "num_fewshot": 5,
+      "output_type": "multiple_choice",
+      "repeats": 1,
+      "should_decontaminate": false,
+      "target_delimiter": " ",
+      "task": "mmlu_high_school_european_history",
+      "task_alias": "high_school_european_history",
+      "test_split": "test",
+      "unsafe_code": false
+    },
+    "mmlu_high_school_geography": {
+      "dataset_kwargs": {
+        "cache_dir": "/workspace/acupuncture/.cache/hf/datasets",
+        "revision": "c30699e8356da336a370243923dbaf21066bb9fe"
+      },
+      "dataset_name": "high_school_geography",
+      "dataset_path": "cais/mmlu",
+      "description": "The following are multiple choice questions (with answers) about high school geography.\n\n",
+      "doc_to_choice": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "doc_to_target": "answer",
+      "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+      "fewshot_config": {
+        "doc_to_choice": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "doc_to_target": "answer",
+        "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+        "fewshot_delimiter": "\n\n",
+        "fewshot_indices": null,
+        "gen_prefix": null,
+        "process_docs": null,
+        "sampler": "first_n",
+        "samples": null,
+        "split": "dev",
+        "target_delimiter": " "
+      },
+      "fewshot_delimiter": "\n\n",
+      "fewshot_split": "dev",
+      "metadata": {
+        "version": 1.0
+      },
+      "metric_list": [
+        {
+          "aggregation": "mean",
+          "higher_is_better": true,
+          "metric": "acc"
+        }
+      ],
+      "num_fewshot": 5,
+      "output_type": "multiple_choice",
+      "repeats": 1,
+      "should_decontaminate": false,
+      "target_delimiter": " ",
+      "task": "mmlu_high_school_geography",
+      "task_alias": "high_school_geography",
+      "test_split": "test",
+      "unsafe_code": false
+    },
+    "mmlu_high_school_government_and_politics": {
+      "dataset_kwargs": {
+        "cache_dir": "/workspace/acupuncture/.cache/hf/datasets",
+        "revision": "c30699e8356da336a370243923dbaf21066bb9fe"
+      },
+      "dataset_name": "high_school_government_and_politics",
+      "dataset_path": "cais/mmlu",
+      "description": "The following are multiple choice questions (with answers) about high school government and politics.\n\n",
+      "doc_to_choice": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "doc_to_target": "answer",
+      "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+      "fewshot_config": {
+        "doc_to_choice": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "doc_to_target": "answer",
+        "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+        "fewshot_delimiter": "\n\n",
+        "fewshot_indices": null,
+        "gen_prefix": null,
+        "process_docs": null,
+        "sampler": "first_n",
+        "samples": null,
+        "split": "dev",
+        "target_delimiter": " "
+      },
+      "fewshot_delimiter": "\n\n",
+      "fewshot_split": "dev",
+      "metadata": {
+        "version": 1.0
+      },
+      "metric_list": [
+        {
+          "aggregation": "mean",
+          "higher_is_better": true,
+          "metric": "acc"
+        }
+      ],
+      "num_fewshot": 5,
+      "output_type": "multiple_choice",
+      "repeats": 1,
+      "should_decontaminate": false,
+      "target_delimiter": " ",
+      "task": "mmlu_high_school_government_and_politics",
+      "task_alias": "high_school_government_and_politics",
+      "test_split": "test",
+      "unsafe_code": false
+    },
+    "mmlu_high_school_macroeconomics": {
+      "dataset_kwargs": {
+        "cache_dir": "/workspace/acupuncture/.cache/hf/datasets",
+        "revision": "c30699e8356da336a370243923dbaf21066bb9fe"
+      },
+      "dataset_name": "high_school_macroeconomics",
+      "dataset_path": "cais/mmlu",
+      "description": "The following are multiple choice questions (with answers) about high school macroeconomics.\n\n",
+      "doc_to_choice": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "doc_to_target": "answer",
+      "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+      "fewshot_config": {
+        "doc_to_choice": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "doc_to_target": "answer",
+        "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+        "fewshot_delimiter": "\n\n",
+        "fewshot_indices": null,
+        "gen_prefix": null,
+        "process_docs": null,
+        "sampler": "first_n",
+        "samples": null,
+        "split": "dev",
+        "target_delimiter": " "
+      },
+      "fewshot_delimiter": "\n\n",
+      "fewshot_split": "dev",
+      "metadata": {
+        "version": 1.0
+      },
+      "metric_list": [
+        {
+          "aggregation": "mean",
+          "higher_is_better": true,
+          "metric": "acc"
+        }
+      ],
+      "num_fewshot": 5,
+      "output_type": "multiple_choice",
+      "repeats": 1,
+      "should_decontaminate": false,
+      "target_delimiter": " ",
+      "task": "mmlu_high_school_macroeconomics",
+      "task_alias": "high_school_macroeconomics",
+      "test_split": "test",
+      "unsafe_code": false
+    },
+    "mmlu_high_school_mathematics": {
+      "dataset_kwargs": {
+        "cache_dir": "/workspace/acupuncture/.cache/hf/datasets",
+        "revision": "c30699e8356da336a370243923dbaf21066bb9fe"
+      },
+      "dataset_name": "high_school_mathematics",
+      "dataset_path": "cais/mmlu",
+      "description": "The following are multiple choice questions (with answers) about high school mathematics.\n\n",
+      "doc_to_choice": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "doc_to_target": "answer",
+      "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+      "fewshot_config": {
+        "doc_to_choice": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "doc_to_target": "answer",
+        "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+        "fewshot_delimiter": "\n\n",
+        "fewshot_indices": null,
+        "gen_prefix": null,
+        "process_docs": null,
+        "sampler": "first_n",
+        "samples": null,
+        "split": "dev",
+        "target_delimiter": " "
+      },
+      "fewshot_delimiter": "\n\n",
+      "fewshot_split": "dev",
+      "metadata": {
+        "version": 1.0
+      },
+      "metric_list": [
+        {
+          "aggregation": "mean",
+          "higher_is_better": true,
+          "metric": "acc"
+        }
+      ],
+      "num_fewshot": 5,
+      "output_type": "multiple_choice",
+      "repeats": 1,
+      "should_decontaminate": false,
+      "target_delimiter": " ",
+      "task": "mmlu_high_school_mathematics",
+      "task_alias": "high_school_mathematics",
+      "test_split": "test",
+      "unsafe_code": false
+    },
+    "mmlu_high_school_microeconomics": {
+      "dataset_kwargs": {
+        "cache_dir": "/workspace/acupuncture/.cache/hf/datasets",
+        "revision": "c30699e8356da336a370243923dbaf21066bb9fe"
+      },
+      "dataset_name": "high_school_microeconomics",
+      "dataset_path": "cais/mmlu",
+      "description": "The following are multiple choice questions (with answers) about high school microeconomics.\n\n",
+      "doc_to_choice": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "doc_to_target": "answer",
+      "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+      "fewshot_config": {
+        "doc_to_choice": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "doc_to_target": "answer",
+        "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+        "fewshot_delimiter": "\n\n",
+        "fewshot_indices": null,
+        "gen_prefix": null,
+        "process_docs": null,
+        "sampler": "first_n",
+        "samples": null,
+        "split": "dev",
+        "target_delimiter": " "
+      },
+      "fewshot_delimiter": "\n\n",
+      "fewshot_split": "dev",
+      "metadata": {
+        "version": 1.0
+      },
+      "metric_list": [
+        {
+          "aggregation": "mean",
+          "higher_is_better": true,
+          "metric": "acc"
+        }
+      ],
+      "num_fewshot": 5,
+      "output_type": "multiple_choice",
+      "repeats": 1,
+      "should_decontaminate": false,
+      "target_delimiter": " ",
+      "task": "mmlu_high_school_microeconomics",
+      "task_alias": "high_school_microeconomics",
+      "test_split": "test",
+      "unsafe_code": false
+    },
+    "mmlu_high_school_physics": {
+      "dataset_kwargs": {
+        "cache_dir": "/workspace/acupuncture/.cache/hf/datasets",
+        "revision": "c30699e8356da336a370243923dbaf21066bb9fe"
+      },
+      "dataset_name": "high_school_physics",
+      "dataset_path": "cais/mmlu",
+      "description": "The following are multiple choice questions (with answers) about high school physics.\n\n",
+      "doc_to_choice": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "doc_to_target": "answer",
+      "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+      "fewshot_config": {
+        "doc_to_choice": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "doc_to_target": "answer",
+        "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+        "fewshot_delimiter": "\n\n",
+        "fewshot_indices": null,
+        "gen_prefix": null,
+        "process_docs": null,
+        "sampler": "first_n",
+        "samples": null,
+        "split": "dev",
+        "target_delimiter": " "
+      },
+      "fewshot_delimiter": "\n\n",
+      "fewshot_split": "dev",
+      "metadata": {
+        "version": 1.0
+      },
+      "metric_list": [
+        {
+          "aggregation": "mean",
+          "higher_is_better": true,
+          "metric": "acc"
+        }
+      ],
+      "num_fewshot": 5,
+      "output_type": "multiple_choice",
+      "repeats": 1,
+      "should_decontaminate": false,
+      "target_delimiter": " ",
+      "task": "mmlu_high_school_physics",
+      "task_alias": "high_school_physics",
+      "test_split": "test",
+      "unsafe_code": false
+    },
+    "mmlu_high_school_psychology": {
+      "dataset_kwargs": {
+        "cache_dir": "/workspace/acupuncture/.cache/hf/datasets",
+        "revision": "c30699e8356da336a370243923dbaf21066bb9fe"
+      },
+      "dataset_name": "high_school_psychology",
+      "dataset_path": "cais/mmlu",
+      "description": "The following are multiple choice questions (with answers) about high school psychology.\n\n",
+      "doc_to_choice": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "doc_to_target": "answer",
+      "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+      "fewshot_config": {
+        "doc_to_choice": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "doc_to_target": "answer",
+        "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+        "fewshot_delimiter": "\n\n",
+        "fewshot_indices": null,
+        "gen_prefix": null,
+        "process_docs": null,
+        "sampler": "first_n",
+        "samples": null,
+        "split": "dev",
+        "target_delimiter": " "
+      },
+      "fewshot_delimiter": "\n\n",
+      "fewshot_split": "dev",
+      "metadata": {
+        "version": 1.0
+      },
+      "metric_list": [
+        {
+          "aggregation": "mean",
+          "higher_is_better": true,
+          "metric": "acc"
+        }
+      ],
+      "num_fewshot": 5,
+      "output_type": "multiple_choice",
+      "repeats": 1,
+      "should_decontaminate": false,
+      "target_delimiter": " ",
+      "task": "mmlu_high_school_psychology",
+      "task_alias": "high_school_psychology",
+      "test_split": "test",
+      "unsafe_code": false
+    },
+    "mmlu_high_school_statistics": {
+      "dataset_kwargs": {
+        "cache_dir": "/workspace/acupuncture/.cache/hf/datasets",
+        "revision": "c30699e8356da336a370243923dbaf21066bb9fe"
+      },
+      "dataset_name": "high_school_statistics",
+      "dataset_path": "cais/mmlu",
+      "description": "The following are multiple choice questions (with answers) about high school statistics.\n\n",
+      "doc_to_choice": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "doc_to_target": "answer",
+      "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+      "fewshot_config": {
+        "doc_to_choice": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "doc_to_target": "answer",
+        "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+        "fewshot_delimiter": "\n\n",
+        "fewshot_indices": null,
+        "gen_prefix": null,
+        "process_docs": null,
+        "sampler": "first_n",
+        "samples": null,
+        "split": "dev",
+        "target_delimiter": " "
+      },
+      "fewshot_delimiter": "\n\n",
+      "fewshot_split": "dev",
+      "metadata": {
+        "version": 1.0
+      },
+      "metric_list": [
+        {
+          "aggregation": "mean",
+          "higher_is_better": true,
+          "metric": "acc"
+        }
+      ],
+      "num_fewshot": 5,
+      "output_type": "multiple_choice",
+      "repeats": 1,
+      "should_decontaminate": false,
+      "target_delimiter": " ",
+      "task": "mmlu_high_school_statistics",
+      "task_alias": "high_school_statistics",
+      "test_split": "test",
+      "unsafe_code": false
+    },
+    "mmlu_high_school_us_history": {
+      "dataset_kwargs": {
+        "cache_dir": "/workspace/acupuncture/.cache/hf/datasets",
+        "revision": "c30699e8356da336a370243923dbaf21066bb9fe"
+      },
+      "dataset_name": "high_school_us_history",
+      "dataset_path": "cais/mmlu",
+      "description": "The following are multiple choice questions (with answers) about high school us history.\n\n",
+      "doc_to_choice": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "doc_to_target": "answer",
+      "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+      "fewshot_config": {
+        "doc_to_choice": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "doc_to_target": "answer",
+        "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+        "fewshot_delimiter": "\n\n",
+        "fewshot_indices": null,
+        "gen_prefix": null,
+        "process_docs": null,
+        "sampler": "first_n",
+        "samples": null,
+        "split": "dev",
+        "target_delimiter": " "
+      },
+      "fewshot_delimiter": "\n\n",
+      "fewshot_split": "dev",
+      "metadata": {
+        "version": 1.0
+      },
+      "metric_list": [
+        {
+          "aggregation": "mean",
+          "higher_is_better": true,
+          "metric": "acc"
+        }
+      ],
+      "num_fewshot": 5,
+      "output_type": "multiple_choice",
+      "repeats": 1,
+      "should_decontaminate": false,
+      "target_delimiter": " ",
+      "task": "mmlu_high_school_us_history",
+      "task_alias": "high_school_us_history",
+      "test_split": "test",
+      "unsafe_code": false
+    },
+    "mmlu_high_school_world_history": {
+      "dataset_kwargs": {
+        "cache_dir": "/workspace/acupuncture/.cache/hf/datasets",
+        "revision": "c30699e8356da336a370243923dbaf21066bb9fe"
+      },
+      "dataset_name": "high_school_world_history",
+      "dataset_path": "cais/mmlu",
+      "description": "The following are multiple choice questions (with answers) about high school world history.\n\n",
+      "doc_to_choice": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "doc_to_target": "answer",
+      "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+      "fewshot_config": {
+        "doc_to_choice": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "doc_to_target": "answer",
+        "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+        "fewshot_delimiter": "\n\n",
+        "fewshot_indices": null,
+        "gen_prefix": null,
+        "process_docs": null,
+        "sampler": "first_n",
+        "samples": null,
+        "split": "dev",
+        "target_delimiter": " "
+      },
+      "fewshot_delimiter": "\n\n",
+      "fewshot_split": "dev",
+      "metadata": {
+        "version": 1.0
+      },
+      "metric_list": [
+        {
+          "aggregation": "mean",
+          "higher_is_better": true,
+          "metric": "acc"
+        }
+      ],
+      "num_fewshot": 5,
+      "output_type": "multiple_choice",
+      "repeats": 1,
+      "should_decontaminate": false,
+      "target_delimiter": " ",
+      "task": "mmlu_high_school_world_history",
+      "task_alias": "high_school_world_history",
+      "test_split": "test",
+      "unsafe_code": false
+    },
+    "mmlu_human_aging": {
+      "dataset_kwargs": {
+        "cache_dir": "/workspace/acupuncture/.cache/hf/datasets",
+        "revision": "c30699e8356da336a370243923dbaf21066bb9fe"
+      },
+      "dataset_name": "human_aging",
+      "dataset_path": "cais/mmlu",
+      "description": "The following are multiple choice questions (with answers) about human aging.\n\n",
+      "doc_to_choice": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "doc_to_target": "answer",
+      "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+      "fewshot_config": {
+        "doc_to_choice": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "doc_to_target": "answer",
+        "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+        "fewshot_delimiter": "\n\n",
+        "fewshot_indices": null,
+        "gen_prefix": null,
+        "process_docs": null,
+        "sampler": "first_n",
+        "samples": null,
+        "split": "dev",
+        "target_delimiter": " "
+      },
+      "fewshot_delimiter": "\n\n",
+      "fewshot_split": "dev",
+      "metadata": {
+        "version": 1.0
+      },
+      "metric_list": [
+        {
+          "aggregation": "mean",
+          "higher_is_better": true,
+          "metric": "acc"
+        }
+      ],
+      "num_fewshot": 5,
+      "output_type": "multiple_choice",
+      "repeats": 1,
+      "should_decontaminate": false,
+      "target_delimiter": " ",
+      "task": "mmlu_human_aging",
+      "task_alias": "human_aging",
+      "test_split": "test",
+      "unsafe_code": false
+    },
+    "mmlu_human_sexuality": {
+      "dataset_kwargs": {
+        "cache_dir": "/workspace/acupuncture/.cache/hf/datasets",
+        "revision": "c30699e8356da336a370243923dbaf21066bb9fe"
+      },
+      "dataset_name": "human_sexuality",
+      "dataset_path": "cais/mmlu",
+      "description": "The following are multiple choice questions (with answers) about human sexuality.\n\n",
+      "doc_to_choice": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "doc_to_target": "answer",
+      "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+      "fewshot_config": {
+        "doc_to_choice": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "doc_to_target": "answer",
+        "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+        "fewshot_delimiter": "\n\n",
+        "fewshot_indices": null,
+        "gen_prefix": null,
+        "process_docs": null,
+        "sampler": "first_n",
+        "samples": null,
+        "split": "dev",
+        "target_delimiter": " "
+      },
+      "fewshot_delimiter": "\n\n",
+      "fewshot_split": "dev",
+      "metadata": {
+        "version": 1.0
+      },
+      "metric_list": [
+        {
+          "aggregation": "mean",
+          "higher_is_better": true,
+          "metric": "acc"
+        }
+      ],
+      "num_fewshot": 5,
+      "output_type": "multiple_choice",
+      "repeats": 1,
+      "should_decontaminate": false,
+      "target_delimiter": " ",
+      "task": "mmlu_human_sexuality",
+      "task_alias": "human_sexuality",
+      "test_split": "test",
+      "unsafe_code": false
+    },
+    "mmlu_international_law": {
+      "dataset_kwargs": {
+        "cache_dir": "/workspace/acupuncture/.cache/hf/datasets",
+        "revision": "c30699e8356da336a370243923dbaf21066bb9fe"
+      },
+      "dataset_name": "international_law",
+      "dataset_path": "cais/mmlu",
+      "description": "The following are multiple choice questions (with answers) about international law.\n\n",
+      "doc_to_choice": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "doc_to_target": "answer",
+      "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+      "fewshot_config": {
+        "doc_to_choice": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "doc_to_target": "answer",
+        "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+        "fewshot_delimiter": "\n\n",
+        "fewshot_indices": null,
+        "gen_prefix": null,
+        "process_docs": null,
+        "sampler": "first_n",
+        "samples": null,
+        "split": "dev",
+        "target_delimiter": " "
+      },
+      "fewshot_delimiter": "\n\n",
+      "fewshot_split": "dev",
+      "metadata": {
+        "version": 1.0
+      },
+      "metric_list": [
+        {
+          "aggregation": "mean",
+          "higher_is_better": true,
+          "metric": "acc"
+        }
+      ],
+      "num_fewshot": 5,
+      "output_type": "multiple_choice",
+      "repeats": 1,
+      "should_decontaminate": false,
+      "target_delimiter": " ",
+      "task": "mmlu_international_law",
+      "task_alias": "international_law",
+      "test_split": "test",
+      "unsafe_code": false
+    },
+    "mmlu_jurisprudence": {
+      "dataset_kwargs": {
+        "cache_dir": "/workspace/acupuncture/.cache/hf/datasets",
+        "revision": "c30699e8356da336a370243923dbaf21066bb9fe"
+      },
+      "dataset_name": "jurisprudence",
+      "dataset_path": "cais/mmlu",
+      "description": "The following are multiple choice questions (with answers) about jurisprudence.\n\n",
+      "doc_to_choice": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "doc_to_target": "answer",
+      "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+      "fewshot_config": {
+        "doc_to_choice": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "doc_to_target": "answer",
+        "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+        "fewshot_delimiter": "\n\n",
+        "fewshot_indices": null,
+        "gen_prefix": null,
+        "process_docs": null,
+        "sampler": "first_n",
+        "samples": null,
+        "split": "dev",
+        "target_delimiter": " "
+      },
+      "fewshot_delimiter": "\n\n",
+      "fewshot_split": "dev",
+      "metadata": {
+        "version": 1.0
+      },
+      "metric_list": [
+        {
+          "aggregation": "mean",
+          "higher_is_better": true,
+          "metric": "acc"
+        }
+      ],
+      "num_fewshot": 5,
+      "output_type": "multiple_choice",
+      "repeats": 1,
+      "should_decontaminate": false,
+      "target_delimiter": " ",
+      "task": "mmlu_jurisprudence",
+      "task_alias": "jurisprudence",
+      "test_split": "test",
+      "unsafe_code": false
+    },
+    "mmlu_logical_fallacies": {
+      "dataset_kwargs": {
+        "cache_dir": "/workspace/acupuncture/.cache/hf/datasets",
+        "revision": "c30699e8356da336a370243923dbaf21066bb9fe"
+      },
+      "dataset_name": "logical_fallacies",
+      "dataset_path": "cais/mmlu",
+      "description": "The following are multiple choice questions (with answers) about logical fallacies.\n\n",
+      "doc_to_choice": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "doc_to_target": "answer",
+      "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+      "fewshot_config": {
+        "doc_to_choice": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "doc_to_target": "answer",
+        "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+        "fewshot_delimiter": "\n\n",
+        "fewshot_indices": null,
+        "gen_prefix": null,
+        "process_docs": null,
+        "sampler": "first_n",
+        "samples": null,
+        "split": "dev",
+        "target_delimiter": " "
+      },
+      "fewshot_delimiter": "\n\n",
+      "fewshot_split": "dev",
+      "metadata": {
+        "version": 1.0
+      },
+      "metric_list": [
+        {
+          "aggregation": "mean",
+          "higher_is_better": true,
+          "metric": "acc"
+        }
+      ],
+      "num_fewshot": 5,
+      "output_type": "multiple_choice",
+      "repeats": 1,
+      "should_decontaminate": false,
+      "target_delimiter": " ",
+      "task": "mmlu_logical_fallacies",
+      "task_alias": "logical_fallacies",
+      "test_split": "test",
+      "unsafe_code": false
+    },
+    "mmlu_machine_learning": {
+      "dataset_kwargs": {
+        "cache_dir": "/workspace/acupuncture/.cache/hf/datasets",
+        "revision": "c30699e8356da336a370243923dbaf21066bb9fe"
+      },
+      "dataset_name": "machine_learning",
+      "dataset_path": "cais/mmlu",
+      "description": "The following are multiple choice questions (with answers) about machine learning.\n\n",
+      "doc_to_choice": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "doc_to_target": "answer",
+      "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+      "fewshot_config": {
+        "doc_to_choice": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "doc_to_target": "answer",
+        "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+        "fewshot_delimiter": "\n\n",
+        "fewshot_indices": null,
+        "gen_prefix": null,
+        "process_docs": null,
+        "sampler": "first_n",
+        "samples": null,
+        "split": "dev",
+        "target_delimiter": " "
+      },
+      "fewshot_delimiter": "\n\n",
+      "fewshot_split": "dev",
+      "metadata": {
+        "version": 1.0
+      },
+      "metric_list": [
+        {
+          "aggregation": "mean",
+          "higher_is_better": true,
+          "metric": "acc"
+        }
+      ],
+      "num_fewshot": 5,
+      "output_type": "multiple_choice",
+      "repeats": 1,
+      "should_decontaminate": false,
+      "target_delimiter": " ",
+      "task": "mmlu_machine_learning",
+      "task_alias": "machine_learning",
+      "test_split": "test",
+      "unsafe_code": false
+    },
+    "mmlu_management": {
+      "dataset_kwargs": {
+        "cache_dir": "/workspace/acupuncture/.cache/hf/datasets",
+        "revision": "c30699e8356da336a370243923dbaf21066bb9fe"
+      },
+      "dataset_name": "management",
+      "dataset_path": "cais/mmlu",
+      "description": "The following are multiple choice questions (with answers) about management.\n\n",
+      "doc_to_choice": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "doc_to_target": "answer",
+      "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+      "fewshot_config": {
+        "doc_to_choice": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "doc_to_target": "answer",
+        "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+        "fewshot_delimiter": "\n\n",
+        "fewshot_indices": null,
+        "gen_prefix": null,
+        "process_docs": null,
+        "sampler": "first_n",
+        "samples": null,
+        "split": "dev",
+        "target_delimiter": " "
+      },
+      "fewshot_delimiter": "\n\n",
+      "fewshot_split": "dev",
+      "metadata": {
+        "version": 1.0
+      },
+      "metric_list": [
+        {
+          "aggregation": "mean",
+          "higher_is_better": true,
+          "metric": "acc"
+        }
+      ],
+      "num_fewshot": 5,
+      "output_type": "multiple_choice",
+      "repeats": 1,
+      "should_decontaminate": false,
+      "target_delimiter": " ",
+      "task": "mmlu_management",
+      "task_alias": "management",
+      "test_split": "test",
+      "unsafe_code": false
+    },
+    "mmlu_marketing": {
+      "dataset_kwargs": {
+        "cache_dir": "/workspace/acupuncture/.cache/hf/datasets",
+        "revision": "c30699e8356da336a370243923dbaf21066bb9fe"
+      },
+      "dataset_name": "marketing",
+      "dataset_path": "cais/mmlu",
+      "description": "The following are multiple choice questions (with answers) about marketing.\n\n",
+      "doc_to_choice": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "doc_to_target": "answer",
+      "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+      "fewshot_config": {
+        "doc_to_choice": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "doc_to_target": "answer",
+        "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+        "fewshot_delimiter": "\n\n",
+        "fewshot_indices": null,
+        "gen_prefix": null,
+        "process_docs": null,
+        "sampler": "first_n",
+        "samples": null,
+        "split": "dev",
+        "target_delimiter": " "
+      },
+      "fewshot_delimiter": "\n\n",
+      "fewshot_split": "dev",
+      "metadata": {
+        "version": 1.0
+      },
+      "metric_list": [
+        {
+          "aggregation": "mean",
+          "higher_is_better": true,
+          "metric": "acc"
+        }
+      ],
+      "num_fewshot": 5,
+      "output_type": "multiple_choice",
+      "repeats": 1,
+      "should_decontaminate": false,
+      "target_delimiter": " ",
+      "task": "mmlu_marketing",
+      "task_alias": "marketing",
+      "test_split": "test",
+      "unsafe_code": false
+    },
+    "mmlu_medical_genetics": {
+      "dataset_kwargs": {
+        "cache_dir": "/workspace/acupuncture/.cache/hf/datasets",
+        "revision": "c30699e8356da336a370243923dbaf21066bb9fe"
+      },
+      "dataset_name": "medical_genetics",
+      "dataset_path": "cais/mmlu",
+      "description": "The following are multiple choice questions (with answers) about medical genetics.\n\n",
+      "doc_to_choice": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "doc_to_target": "answer",
+      "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+      "fewshot_config": {
+        "doc_to_choice": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "doc_to_target": "answer",
+        "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+        "fewshot_delimiter": "\n\n",
+        "fewshot_indices": null,
+        "gen_prefix": null,
+        "process_docs": null,
+        "sampler": "first_n",
+        "samples": null,
+        "split": "dev",
+        "target_delimiter": " "
+      },
+      "fewshot_delimiter": "\n\n",
+      "fewshot_split": "dev",
+      "metadata": {
+        "version": 1.0
+      },
+      "metric_list": [
+        {
+          "aggregation": "mean",
+          "higher_is_better": true,
+          "metric": "acc"
+        }
+      ],
+      "num_fewshot": 5,
+      "output_type": "multiple_choice",
+      "repeats": 1,
+      "should_decontaminate": false,
+      "target_delimiter": " ",
+      "task": "mmlu_medical_genetics",
+      "task_alias": "medical_genetics",
+      "test_split": "test",
+      "unsafe_code": false
+    },
+    "mmlu_miscellaneous": {
+      "dataset_kwargs": {
+        "cache_dir": "/workspace/acupuncture/.cache/hf/datasets",
+        "revision": "c30699e8356da336a370243923dbaf21066bb9fe"
+      },
+      "dataset_name": "miscellaneous",
+      "dataset_path": "cais/mmlu",
+      "description": "The following are multiple choice questions (with answers) about miscellaneous.\n\n",
+      "doc_to_choice": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "doc_to_target": "answer",
+      "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+      "fewshot_config": {
+        "doc_to_choice": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "doc_to_target": "answer",
+        "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+        "fewshot_delimiter": "\n\n",
+        "fewshot_indices": null,
+        "gen_prefix": null,
+        "process_docs": null,
+        "sampler": "first_n",
+        "samples": null,
+        "split": "dev",
+        "target_delimiter": " "
+      },
+      "fewshot_delimiter": "\n\n",
+      "fewshot_split": "dev",
+      "metadata": {
+        "version": 1.0
+      },
+      "metric_list": [
+        {
+          "aggregation": "mean",
+          "higher_is_better": true,
+          "metric": "acc"
+        }
+      ],
+      "num_fewshot": 5,
+      "output_type": "multiple_choice",
+      "repeats": 1,
+      "should_decontaminate": false,
+      "target_delimiter": " ",
+      "task": "mmlu_miscellaneous",
+      "task_alias": "miscellaneous",
+      "test_split": "test",
+      "unsafe_code": false
+    },
+    "mmlu_moral_disputes": {
+      "dataset_kwargs": {
+        "cache_dir": "/workspace/acupuncture/.cache/hf/datasets",
+        "revision": "c30699e8356da336a370243923dbaf21066bb9fe"
+      },
+      "dataset_name": "moral_disputes",
+      "dataset_path": "cais/mmlu",
+      "description": "The following are multiple choice questions (with answers) about moral disputes.\n\n",
+      "doc_to_choice": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "doc_to_target": "answer",
+      "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+      "fewshot_config": {
+        "doc_to_choice": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "doc_to_target": "answer",
+        "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+        "fewshot_delimiter": "\n\n",
+        "fewshot_indices": null,
+        "gen_prefix": null,
+        "process_docs": null,
+        "sampler": "first_n",
+        "samples": null,
+        "split": "dev",
+        "target_delimiter": " "
+      },
+      "fewshot_delimiter": "\n\n",
+      "fewshot_split": "dev",
+      "metadata": {
+        "version": 1.0
+      },
+      "metric_list": [
+        {
+          "aggregation": "mean",
+          "higher_is_better": true,
+          "metric": "acc"
+        }
+      ],
+      "num_fewshot": 5,
+      "output_type": "multiple_choice",
+      "repeats": 1,
+      "should_decontaminate": false,
+      "target_delimiter": " ",
+      "task": "mmlu_moral_disputes",
+      "task_alias": "moral_disputes",
+      "test_split": "test",
+      "unsafe_code": false
+    },
+    "mmlu_moral_scenarios": {
+      "dataset_kwargs": {
+        "cache_dir": "/workspace/acupuncture/.cache/hf/datasets",
+        "revision": "c30699e8356da336a370243923dbaf21066bb9fe"
+      },
+      "dataset_name": "moral_scenarios",
+      "dataset_path": "cais/mmlu",
+      "description": "The following are multiple choice questions (with answers) about moral scenarios.\n\n",
+      "doc_to_choice": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "doc_to_target": "answer",
+      "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+      "fewshot_config": {
+        "doc_to_choice": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "doc_to_target": "answer",
+        "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+        "fewshot_delimiter": "\n\n",
+        "fewshot_indices": null,
+        "gen_prefix": null,
+        "process_docs": null,
+        "sampler": "first_n",
+        "samples": null,
+        "split": "dev",
+        "target_delimiter": " "
+      },
+      "fewshot_delimiter": "\n\n",
+      "fewshot_split": "dev",
+      "metadata": {
+        "version": 1.0
+      },
+      "metric_list": [
+        {
+          "aggregation": "mean",
+          "higher_is_better": true,
+          "metric": "acc"
+        }
+      ],
+      "num_fewshot": 5,
+      "output_type": "multiple_choice",
+      "repeats": 1,
+      "should_decontaminate": false,
+      "target_delimiter": " ",
+      "task": "mmlu_moral_scenarios",
+      "task_alias": "moral_scenarios",
+      "test_split": "test",
+      "unsafe_code": false
+    },
+    "mmlu_nutrition": {
+      "dataset_kwargs": {
+        "cache_dir": "/workspace/acupuncture/.cache/hf/datasets",
+        "revision": "c30699e8356da336a370243923dbaf21066bb9fe"
+      },
+      "dataset_name": "nutrition",
+      "dataset_path": "cais/mmlu",
+      "description": "The following are multiple choice questions (with answers) about nutrition.\n\n",
+      "doc_to_choice": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "doc_to_target": "answer",
+      "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+      "fewshot_config": {
+        "doc_to_choice": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "doc_to_target": "answer",
+        "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+        "fewshot_delimiter": "\n\n",
+        "fewshot_indices": null,
+        "gen_prefix": null,
+        "process_docs": null,
+        "sampler": "first_n",
+        "samples": null,
+        "split": "dev",
+        "target_delimiter": " "
+      },
+      "fewshot_delimiter": "\n\n",
+      "fewshot_split": "dev",
+      "metadata": {
+        "version": 1.0
+      },
+      "metric_list": [
+        {
+          "aggregation": "mean",
+          "higher_is_better": true,
+          "metric": "acc"
+        }
+      ],
+      "num_fewshot": 5,
+      "output_type": "multiple_choice",
+      "repeats": 1,
+      "should_decontaminate": false,
+      "target_delimiter": " ",
+      "task": "mmlu_nutrition",
+      "task_alias": "nutrition",
+      "test_split": "test",
+      "unsafe_code": false
+    },
+    "mmlu_philosophy": {
+      "dataset_kwargs": {
+        "cache_dir": "/workspace/acupuncture/.cache/hf/datasets",
+        "revision": "c30699e8356da336a370243923dbaf21066bb9fe"
+      },
+      "dataset_name": "philosophy",
+      "dataset_path": "cais/mmlu",
+      "description": "The following are multiple choice questions (with answers) about philosophy.\n\n",
+      "doc_to_choice": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "doc_to_target": "answer",
+      "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+      "fewshot_config": {
+        "doc_to_choice": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "doc_to_target": "answer",
+        "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+        "fewshot_delimiter": "\n\n",
+        "fewshot_indices": null,
+        "gen_prefix": null,
+        "process_docs": null,
+        "sampler": "first_n",
+        "samples": null,
+        "split": "dev",
+        "target_delimiter": " "
+      },
+      "fewshot_delimiter": "\n\n",
+      "fewshot_split": "dev",
+      "metadata": {
+        "version": 1.0
+      },
+      "metric_list": [
+        {
+          "aggregation": "mean",
+          "higher_is_better": true,
+          "metric": "acc"
+        }
+      ],
+      "num_fewshot": 5,
+      "output_type": "multiple_choice",
+      "repeats": 1,
+      "should_decontaminate": false,
+      "target_delimiter": " ",
+      "task": "mmlu_philosophy",
+      "task_alias": "philosophy",
+      "test_split": "test",
+      "unsafe_code": false
+    },
+    "mmlu_prehistory": {
+      "dataset_kwargs": {
+        "cache_dir": "/workspace/acupuncture/.cache/hf/datasets",
+        "revision": "c30699e8356da336a370243923dbaf21066bb9fe"
+      },
+      "dataset_name": "prehistory",
+      "dataset_path": "cais/mmlu",
+      "description": "The following are multiple choice questions (with answers) about prehistory.\n\n",
+      "doc_to_choice": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "doc_to_target": "answer",
+      "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+      "fewshot_config": {
+        "doc_to_choice": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "doc_to_target": "answer",
+        "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+        "fewshot_delimiter": "\n\n",
+        "fewshot_indices": null,
+        "gen_prefix": null,
+        "process_docs": null,
+        "sampler": "first_n",
+        "samples": null,
+        "split": "dev",
+        "target_delimiter": " "
+      },
+      "fewshot_delimiter": "\n\n",
+      "fewshot_split": "dev",
+      "metadata": {
+        "version": 1.0
+      },
+      "metric_list": [
+        {
+          "aggregation": "mean",
+          "higher_is_better": true,
+          "metric": "acc"
+        }
+      ],
+      "num_fewshot": 5,
+      "output_type": "multiple_choice",
+      "repeats": 1,
+      "should_decontaminate": false,
+      "target_delimiter": " ",
+      "task": "mmlu_prehistory",
+      "task_alias": "prehistory",
+      "test_split": "test",
+      "unsafe_code": false
+    },
+    "mmlu_professional_accounting": {
+      "dataset_kwargs": {
+        "cache_dir": "/workspace/acupuncture/.cache/hf/datasets",
+        "revision": "c30699e8356da336a370243923dbaf21066bb9fe"
+      },
+      "dataset_name": "professional_accounting",
+      "dataset_path": "cais/mmlu",
+      "description": "The following are multiple choice questions (with answers) about professional accounting.\n\n",
+      "doc_to_choice": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "doc_to_target": "answer",
+      "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+      "fewshot_config": {
+        "doc_to_choice": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "doc_to_target": "answer",
+        "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+        "fewshot_delimiter": "\n\n",
+        "fewshot_indices": null,
+        "gen_prefix": null,
+        "process_docs": null,
+        "sampler": "first_n",
+        "samples": null,
+        "split": "dev",
+        "target_delimiter": " "
+      },
+      "fewshot_delimiter": "\n\n",
+      "fewshot_split": "dev",
+      "metadata": {
+        "version": 1.0
+      },
+      "metric_list": [
+        {
+          "aggregation": "mean",
+          "higher_is_better": true,
+          "metric": "acc"
+        }
+      ],
+      "num_fewshot": 5,
+      "output_type": "multiple_choice",
+      "repeats": 1,
+      "should_decontaminate": false,
+      "target_delimiter": " ",
+      "task": "mmlu_professional_accounting",
+      "task_alias": "professional_accounting",
+      "test_split": "test",
+      "unsafe_code": false
+    },
+    "mmlu_professional_law": {
+      "dataset_kwargs": {
+        "cache_dir": "/workspace/acupuncture/.cache/hf/datasets",
+        "revision": "c30699e8356da336a370243923dbaf21066bb9fe"
+      },
+      "dataset_name": "professional_law",
+      "dataset_path": "cais/mmlu",
+      "description": "The following are multiple choice questions (with answers) about professional law.\n\n",
+      "doc_to_choice": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "doc_to_target": "answer",
+      "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+      "fewshot_config": {
+        "doc_to_choice": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "doc_to_target": "answer",
+        "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+        "fewshot_delimiter": "\n\n",
+        "fewshot_indices": null,
+        "gen_prefix": null,
+        "process_docs": null,
+        "sampler": "first_n",
+        "samples": null,
+        "split": "dev",
+        "target_delimiter": " "
+      },
+      "fewshot_delimiter": "\n\n",
+      "fewshot_split": "dev",
+      "metadata": {
+        "version": 1.0
+      },
+      "metric_list": [
+        {
+          "aggregation": "mean",
+          "higher_is_better": true,
+          "metric": "acc"
+        }
+      ],
+      "num_fewshot": 5,
+      "output_type": "multiple_choice",
+      "repeats": 1,
+      "should_decontaminate": false,
+      "target_delimiter": " ",
+      "task": "mmlu_professional_law",
+      "task_alias": "professional_law",
+      "test_split": "test",
+      "unsafe_code": false
+    },
+    "mmlu_professional_medicine": {
+      "dataset_kwargs": {
+        "cache_dir": "/workspace/acupuncture/.cache/hf/datasets",
+        "revision": "c30699e8356da336a370243923dbaf21066bb9fe"
+      },
+      "dataset_name": "professional_medicine",
+      "dataset_path": "cais/mmlu",
+      "description": "The following are multiple choice questions (with answers) about professional medicine.\n\n",
+      "doc_to_choice": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "doc_to_target": "answer",
+      "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+      "fewshot_config": {
+        "doc_to_choice": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "doc_to_target": "answer",
+        "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+        "fewshot_delimiter": "\n\n",
+        "fewshot_indices": null,
+        "gen_prefix": null,
+        "process_docs": null,
+        "sampler": "first_n",
+        "samples": null,
+        "split": "dev",
+        "target_delimiter": " "
+      },
+      "fewshot_delimiter": "\n\n",
+      "fewshot_split": "dev",
+      "metadata": {
+        "version": 1.0
+      },
+      "metric_list": [
+        {
+          "aggregation": "mean",
+          "higher_is_better": true,
+          "metric": "acc"
+        }
+      ],
+      "num_fewshot": 5,
+      "output_type": "multiple_choice",
+      "repeats": 1,
+      "should_decontaminate": false,
+      "target_delimiter": " ",
+      "task": "mmlu_professional_medicine",
+      "task_alias": "professional_medicine",
+      "test_split": "test",
+      "unsafe_code": false
+    },
+    "mmlu_professional_psychology": {
+      "dataset_kwargs": {
+        "cache_dir": "/workspace/acupuncture/.cache/hf/datasets",
+        "revision": "c30699e8356da336a370243923dbaf21066bb9fe"
+      },
+      "dataset_name": "professional_psychology",
+      "dataset_path": "cais/mmlu",
+      "description": "The following are multiple choice questions (with answers) about professional psychology.\n\n",
+      "doc_to_choice": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "doc_to_target": "answer",
+      "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+      "fewshot_config": {
+        "doc_to_choice": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "doc_to_target": "answer",
+        "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+        "fewshot_delimiter": "\n\n",
+        "fewshot_indices": null,
+        "gen_prefix": null,
+        "process_docs": null,
+        "sampler": "first_n",
+        "samples": null,
+        "split": "dev",
+        "target_delimiter": " "
+      },
+      "fewshot_delimiter": "\n\n",
+      "fewshot_split": "dev",
+      "metadata": {
+        "version": 1.0
+      },
+      "metric_list": [
+        {
+          "aggregation": "mean",
+          "higher_is_better": true,
+          "metric": "acc"
+        }
+      ],
+      "num_fewshot": 5,
+      "output_type": "multiple_choice",
+      "repeats": 1,
+      "should_decontaminate": false,
+      "target_delimiter": " ",
+      "task": "mmlu_professional_psychology",
+      "task_alias": "professional_psychology",
+      "test_split": "test",
+      "unsafe_code": false
+    },
+    "mmlu_public_relations": {
+      "dataset_kwargs": {
+        "cache_dir": "/workspace/acupuncture/.cache/hf/datasets",
+        "revision": "c30699e8356da336a370243923dbaf21066bb9fe"
+      },
+      "dataset_name": "public_relations",
+      "dataset_path": "cais/mmlu",
+      "description": "The following are multiple choice questions (with answers) about public relations.\n\n",
+      "doc_to_choice": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "doc_to_target": "answer",
+      "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+      "fewshot_config": {
+        "doc_to_choice": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "doc_to_target": "answer",
+        "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+        "fewshot_delimiter": "\n\n",
+        "fewshot_indices": null,
+        "gen_prefix": null,
+        "process_docs": null,
+        "sampler": "first_n",
+        "samples": null,
+        "split": "dev",
+        "target_delimiter": " "
+      },
+      "fewshot_delimiter": "\n\n",
+      "fewshot_split": "dev",
+      "metadata": {
+        "version": 1.0
+      },
+      "metric_list": [
+        {
+          "aggregation": "mean",
+          "higher_is_better": true,
+          "metric": "acc"
+        }
+      ],
+      "num_fewshot": 5,
+      "output_type": "multiple_choice",
+      "repeats": 1,
+      "should_decontaminate": false,
+      "target_delimiter": " ",
+      "task": "mmlu_public_relations",
+      "task_alias": "public_relations",
+      "test_split": "test",
+      "unsafe_code": false
+    },
+    "mmlu_security_studies": {
+      "dataset_kwargs": {
+        "cache_dir": "/workspace/acupuncture/.cache/hf/datasets",
+        "revision": "c30699e8356da336a370243923dbaf21066bb9fe"
+      },
+      "dataset_name": "security_studies",
+      "dataset_path": "cais/mmlu",
+      "description": "The following are multiple choice questions (with answers) about security studies.\n\n",
+      "doc_to_choice": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "doc_to_target": "answer",
+      "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+      "fewshot_config": {
+        "doc_to_choice": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "doc_to_target": "answer",
+        "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+        "fewshot_delimiter": "\n\n",
+        "fewshot_indices": null,
+        "gen_prefix": null,
+        "process_docs": null,
+        "sampler": "first_n",
+        "samples": null,
+        "split": "dev",
+        "target_delimiter": " "
+      },
+      "fewshot_delimiter": "\n\n",
+      "fewshot_split": "dev",
+      "metadata": {
+        "version": 1.0
+      },
+      "metric_list": [
+        {
+          "aggregation": "mean",
+          "higher_is_better": true,
+          "metric": "acc"
+        }
+      ],
+      "num_fewshot": 5,
+      "output_type": "multiple_choice",
+      "repeats": 1,
+      "should_decontaminate": false,
+      "target_delimiter": " ",
+      "task": "mmlu_security_studies",
+      "task_alias": "security_studies",
+      "test_split": "test",
+      "unsafe_code": false
+    },
+    "mmlu_sociology": {
+      "dataset_kwargs": {
+        "cache_dir": "/workspace/acupuncture/.cache/hf/datasets",
+        "revision": "c30699e8356da336a370243923dbaf21066bb9fe"
+      },
+      "dataset_name": "sociology",
+      "dataset_path": "cais/mmlu",
+      "description": "The following are multiple choice questions (with answers) about sociology.\n\n",
+      "doc_to_choice": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "doc_to_target": "answer",
+      "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+      "fewshot_config": {
+        "doc_to_choice": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "doc_to_target": "answer",
+        "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+        "fewshot_delimiter": "\n\n",
+        "fewshot_indices": null,
+        "gen_prefix": null,
+        "process_docs": null,
+        "sampler": "first_n",
+        "samples": null,
+        "split": "dev",
+        "target_delimiter": " "
+      },
+      "fewshot_delimiter": "\n\n",
+      "fewshot_split": "dev",
+      "metadata": {
+        "version": 1.0
+      },
+      "metric_list": [
+        {
+          "aggregation": "mean",
+          "higher_is_better": true,
+          "metric": "acc"
+        }
+      ],
+      "num_fewshot": 5,
+      "output_type": "multiple_choice",
+      "repeats": 1,
+      "should_decontaminate": false,
+      "target_delimiter": " ",
+      "task": "mmlu_sociology",
+      "task_alias": "sociology",
+      "test_split": "test",
+      "unsafe_code": false
+    },
+    "mmlu_us_foreign_policy": {
+      "dataset_kwargs": {
+        "cache_dir": "/workspace/acupuncture/.cache/hf/datasets",
+        "revision": "c30699e8356da336a370243923dbaf21066bb9fe"
+      },
+      "dataset_name": "us_foreign_policy",
+      "dataset_path": "cais/mmlu",
+      "description": "The following are multiple choice questions (with answers) about us foreign policy.\n\n",
+      "doc_to_choice": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "doc_to_target": "answer",
+      "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+      "fewshot_config": {
+        "doc_to_choice": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "doc_to_target": "answer",
+        "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+        "fewshot_delimiter": "\n\n",
+        "fewshot_indices": null,
+        "gen_prefix": null,
+        "process_docs": null,
+        "sampler": "first_n",
+        "samples": null,
+        "split": "dev",
+        "target_delimiter": " "
+      },
+      "fewshot_delimiter": "\n\n",
+      "fewshot_split": "dev",
+      "metadata": {
+        "version": 1.0
+      },
+      "metric_list": [
+        {
+          "aggregation": "mean",
+          "higher_is_better": true,
+          "metric": "acc"
+        }
+      ],
+      "num_fewshot": 5,
+      "output_type": "multiple_choice",
+      "repeats": 1,
+      "should_decontaminate": false,
+      "target_delimiter": " ",
+      "task": "mmlu_us_foreign_policy",
+      "task_alias": "us_foreign_policy",
+      "test_split": "test",
+      "unsafe_code": false
+    },
+    "mmlu_virology": {
+      "dataset_kwargs": {
+        "cache_dir": "/workspace/acupuncture/.cache/hf/datasets",
+        "revision": "c30699e8356da336a370243923dbaf21066bb9fe"
+      },
+      "dataset_name": "virology",
+      "dataset_path": "cais/mmlu",
+      "description": "The following are multiple choice questions (with answers) about virology.\n\n",
+      "doc_to_choice": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "doc_to_target": "answer",
+      "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+      "fewshot_config": {
+        "doc_to_choice": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "doc_to_target": "answer",
+        "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+        "fewshot_delimiter": "\n\n",
+        "fewshot_indices": null,
+        "gen_prefix": null,
+        "process_docs": null,
+        "sampler": "first_n",
+        "samples": null,
+        "split": "dev",
+        "target_delimiter": " "
+      },
+      "fewshot_delimiter": "\n\n",
+      "fewshot_split": "dev",
+      "metadata": {
+        "version": 1.0
+      },
+      "metric_list": [
+        {
+          "aggregation": "mean",
+          "higher_is_better": true,
+          "metric": "acc"
+        }
+      ],
+      "num_fewshot": 5,
+      "output_type": "multiple_choice",
+      "repeats": 1,
+      "should_decontaminate": false,
+      "target_delimiter": " ",
+      "task": "mmlu_virology",
+      "task_alias": "virology",
+      "test_split": "test",
+      "unsafe_code": false
+    },
+    "mmlu_world_religions": {
+      "dataset_kwargs": {
+        "cache_dir": "/workspace/acupuncture/.cache/hf/datasets",
+        "revision": "c30699e8356da336a370243923dbaf21066bb9fe"
+      },
+      "dataset_name": "world_religions",
+      "dataset_path": "cais/mmlu",
+      "description": "The following are multiple choice questions (with answers) about world religions.\n\n",
+      "doc_to_choice": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "doc_to_target": "answer",
+      "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+      "fewshot_config": {
+        "doc_to_choice": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "doc_to_target": "answer",
+        "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+        "fewshot_delimiter": "\n\n",
+        "fewshot_indices": null,
+        "gen_prefix": null,
+        "process_docs": null,
+        "sampler": "first_n",
+        "samples": null,
+        "split": "dev",
+        "target_delimiter": " "
+      },
+      "fewshot_delimiter": "\n\n",
+      "fewshot_split": "dev",
+      "metadata": {
+        "version": 1.0
+      },
+      "metric_list": [
+        {
+          "aggregation": "mean",
+          "higher_is_better": true,
+          "metric": "acc"
+        }
+      ],
+      "num_fewshot": 5,
+      "output_type": "multiple_choice",
+      "repeats": 1,
+      "should_decontaminate": false,
+      "target_delimiter": " ",
+      "task": "mmlu_world_religions",
+      "task_alias": "world_religions",
+      "test_split": "test",
+      "unsafe_code": false
+    }
+  },
+  "versions": {
+    "datasets": "5.1.0",
+    "jinja2": "3.1.6",
+    "lm_eval": "0.4.14.dev0",
+    "numpy": "2.4.6",
+    "pyyaml": "6.0.3"
+  }
+}

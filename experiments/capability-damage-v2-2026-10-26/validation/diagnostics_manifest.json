@@ -1,0 +1,67 @@
+{
+  "purpose": "Preserved non-test diagnostics before formal v2 benchmark; no benchmark scores here",
+  "remote_root": "/workspace/acupuncture/experiments/capability-damage-v2-2026-10-26",
+  "python": "/workspace/acupuncture/.venv-bench/bin/python",
+  "model": "/data/models/Qwen3.5-4B-851bf6e",
+  "cuda_visible_devices": "0",
+  "logical_device": "cuda:0",
+  "versions": {
+    "torch": "2.6.0+cu124",
+    "transformers": "5.20.2"
+  },
+  "engine_sha256_during_all_four_diagnostics": "dc97aa541b50ad4f69eb7c9b8c160b1bd91489a582e6b858f95e4178351ff402",
+  "engine_source_snapshot": "model_engine_diagnostic_dc97aa54.py",
+  "source_provenance": "Snapshot reconstructed by reversing metadata-only addition and verified against contemporaneously read remote engine SHA. r02-r04 diagnostic script bodies reconstructed from exact recorded stdin invocations; added docstrings describe provenance. r01 was the root-agent engine/mechanical_checks invocation, whose output and original log are retained.",
+  "settings": {
+    "dtype": "bfloat16",
+    "attention_backend": "eager",
+    "softmax_dtype": "float32",
+    "generation": "greedy, 16 tokens, stops newline-newline plus EOS248044/248046",
+    "calibration_rtol": 1e-05,
+    "likelihood_atol_nats": 0.02,
+    "zero_and_restoration": "exact",
+    "generation_single_batch": "exact token comparison",
+    "formal_flags_changed": false
+  },
+  "r01": {
+    "status": "failed",
+    "requested_batch_size": 64,
+    "failure_count": 416,
+    "failure_types": {
+      "calibration": 128,
+      "likelihood": 256,
+      "generation": 32
+    },
+    "maximum_likelihood_difference_nats": 0.22571659088134766,
+    "interpretation": "Batch64 failed calibration, likelihood and EVO generation controls; second synthetic baseline prompt also changed top-choice ranking."
+  },
+  "r02": {
+    "interpretation": "Even identical unpadded repeated prompts at batch2 changed calibration. Explicit mask-cumsum position ids did not restore the single-example reference. Padding alone cannot explain the discrepancy.",
+    "retained_rows": "First two representative repeated rows per diagnostic condition"
+  },
+  "r03": {
+    "interpretation": "Fixed batch1 calibration did not restore EVO generation equality at batch2/8/64. Disabling BF16 reduced-precision reduction changed the single reference and did not solve equality. These flags were toggled only in a separate completed diagnostic process.",
+    "retained_rows": "First two representative repeated rows per diagnostic condition"
+  },
+  "r04": {
+    "status": "completed",
+    "requested_batch_size": 1,
+    "failure_count": 0,
+    "maximum_likelihood_difference_nats": 0.0
+  },
+  "decision": "Use actual forward batch size1 for both arms and all tasks; retain exact-context candidate-forward reuse. No thresholds, doses or scoring rules changed.",
+  "result_sha256": {
+    "engine-check-b64-r01.json": "9cad4d47f823c44775677ad9947562463e8992289e8547fb4602ef7c46d4efd0",
+    "engine-check-b64-r01.log": "8a89c6e76754288bbd1d044a81b5d2f92aafccca67628ee1fe1f5b12dcb96d08",
+    "engine-calibration-diagnostic-r02.json": "c2251b359a211ec479175373fe522851592e937f0c5911de5c640c5c71909cd0",
+    "engine-batching-diagnostic-r03.json": "e2a5b0e78a1e109439d06c56ea5c0ccf865fc818e4e4da19d8c3aa71d35bf777",
+    "engine-check-b1-r04.json": "949cfaa24605f2e8834e3e65e74f771f2b6d8881ee76432dddf9b2d296ef77ef"
+  },
+  "source_sha256": {
+    "engine-check-b1-r04.py": "92a1c99cf6de467ddaf75b15420e7ec66637e413138bdc7a0155dfc29a3285bd",
+    "engine-calibration-diagnostic-r02.py": "e4fe7666da7f73c344cc714c1d560b3ce7bd0ed5b70b060c7fb93e75e9481bef",
+    "engine-batching-diagnostic-r03.py": "a644f7d6f1e60b09e06ef26cd9d7365146789b19f7df4659b974fce2e2e14bdc",
+    "model_engine_diagnostic_dc97aa54.py": "dc97aa541b50ad4f69eb7c9b8c160b1bd91489a582e6b858f95e4178351ff402"
+  },
+  "limit": "Only two synthetic short contexts were used here. Long actual non-test prompt throughput and final engine-metadata revision are validated by the root preflight receipts."
+}

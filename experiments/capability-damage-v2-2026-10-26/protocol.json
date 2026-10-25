@@ -1,0 +1,141 @@
+{
+  "status": "frozen_before_formal_inference",
+  "created_utc": "2026-10-25T19:37:25.402407+00:00",
+  "authorization": "User approved full original versus EVO evaluation on the four benchmarks under simplified plan v2.",
+  "plan": "../../docs/damage-evaluation-plan-v2.zh-CN.md",
+  "model": {
+    "id": "Qwen/Qwen3.5-4B",
+    "revision": "851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a",
+    "remote_path": "/data/models/Qwen3.5-4B-851bf6e"
+  },
+  "arms": [
+    "baseline",
+    "evo"
+  ],
+  "intervention": {
+    "type": "dynamic_activation_offset",
+    "weights_modified": false,
+    "zero_based_targets": [
+      [
+        14,
+        8949,
+        1.0
+      ],
+      [
+        13,
+        7956,
+        -1.0
+      ]
+    ],
+    "location": "down_proj input",
+    "calibration": "Individual unpadded baseline full common prompt; float32 residual L2 median excluding first token; no candidate/target; constant throughout prefill and decode",
+    "formula": "dose * median_residual_norm / down_proj_column_l2_norm"
+  },
+  "counts": {
+    "arc_challenge": 1172,
+    "gsm8k": 1319,
+    "humaneval": 164,
+    "mmlu": 14042
+  },
+  "batch_sizes": {
+    "arc_challenge": 1,
+    "gsm8k": 1,
+    "humaneval": 1,
+    "mmlu": 1
+  },
+  "shard_count": 2,
+  "sharding": "Each task length-sorted descending, ties by id; alternate items assigned GPU0/GPU1. Both arms of each item stay together. No retries.",
+  "generation": {
+    "do_sample": false,
+    "dtype": "bfloat16",
+    "attention_backend": "eager",
+    "chat_template": false,
+    "eos_token_ids": [
+      248044,
+      248046
+    ],
+    "task_stops": "Exact per-task strings in task_manifest and frozen items"
+  },
+  "max_new_tokens": {
+    "gsm8k": 2048,
+    "humaneval": 1024
+  },
+  "task_manifest_sha256": "b2b59ebc795d0cb0aa70864be3b593da81bfc5d696218e94ab6542828f0df772",
+  "source_sha256": {
+    "model_engine.py": "cf331f5c723f859ed886a1f386dc85ddbefe414ea5ecd6cff5764e0fff3c182c",
+    "run_benchmarks.py": "377cf4ce13530c3c1c4fcd91e5b679fd3e9313a14d47cb973eb12e157dc6a635",
+    "run_worker.py": "6e36a6344a6ecb710f4eb2d55f81574e69437426efebfa599afcce37e2249f09",
+    "prepare_tasks.py": "a3c166ffa9843476319f2bc68255cca1c471b356688752173a6b685ab32de5aa",
+    "score_results.py": "3a2a322a818b3a73b965414d36e7ecc3119184a25b6af80b110bcf12cd123de0",
+    "humaneval_sandbox.py": "34350cd8d98bef4e92fc070c86b01faaf2f249f57b1c0ab52caeded346b80aa5",
+    "humaneval_worker.py": "589b8f65cb16230a28f4bb374a255060616e3451125902363f71f3af0bd7377b",
+    "test_model_engine.py": "64c562847d14ce4f08cfa371ff70ad42481087456dd4f1e02306d505238656b4",
+    "test_prepare_tasks.py": "3eaaf863732a7dec2aa380243af1ed38c07418c0da39928712e7f5adf5dd2f4d",
+    "test_score_results.py": "bed54a2b43584a19b6bac1ea6c43174269f4a21333b95e6a6a2239eecbaf1f91",
+    "test_run_benchmarks.py": "3452a50de60ae596f874afebcb2b0f73a910b7d3cad05a11e983892c70cabaa9"
+  },
+  "preflight": [
+    {
+      "gpu": 0,
+      "file": "validation/preflight-gpu0-b1-r01/receipt.json",
+      "sha256": "97675f61281e1d4d63a134268331c97c49c5b7bb9d8745d954afdfc2fbfc115c"
+    },
+    {
+      "gpu": 1,
+      "file": "validation/preflight-gpu1-b1-r01/receipt.json",
+      "sha256": "2a52fccd642c283d0eba4d7a3c6527c58a5ef04f67d2915cbd4f3db083bb61ab"
+    }
+  ],
+  "cross_gpu_check_sha256": "c517d3244f8113bab7aab2ff130737b89562a33434c33d4684d43487652b438a",
+  "resource_budget": {
+    "gpus": 2,
+    "gpu_model": "NVIDIA H20",
+    "cpu_threads_per_worker": 4,
+    "pairs": 16697,
+    "condition_units": 33394,
+    "maximum_generated_new_tokens_both_arms": 5738496,
+    "measurement": [
+      {
+        "baseline": {
+          "seconds": 3.924552520737052,
+          "generated_tokens": 62,
+          "tokens_per_second": 15.797979431386503
+        },
+        "evo": {
+          "seconds": 1.3060560449957848,
+          "generated_tokens": 18,
+          "tokens_per_second": 13.781950681954154
+        }
+      },
+      {
+        "baseline": {
+          "seconds": 3.9614506475627422,
+          "generated_tokens": 62,
+          "tokens_per_second": 15.650832363176129
+        },
+        "evo": {
+          "seconds": 1.3138599172234535,
+          "generated_tokens": 18,
+          "tokens_per_second": 13.700090674840693
+        }
+      }
+    ],
+    "limit": "128-token ceiling non-test probe stopped naturally; timing is not a full-run ETA. Formal task counts and per-item generation ceilings are fixed, and actual wall time is recorded."
+  },
+  "scoring": {
+    "harness_commit": "d6de81643928d653435c431bae19945d41d32520",
+    "metrics": {
+      "mmlu": "acc",
+      "arc_challenge": "acc_norm",
+      "gsm8k": "strict-match",
+      "humaneval": "pass@1"
+    },
+    "gsm8k_auxiliary": "fixed upstream flexible-extract; never replaces primary",
+    "humaneval_test_timeout_seconds": 3,
+    "bootstrap_seed": 20261026,
+    "bootstrap_repeats": 10000,
+    "damage": "baseline_percent minus evo_percent",
+    "infrastructure_failures": "incomplete; never counted as model wrong"
+  },
+  "diagnostics_decision": "Padded/batched BF16 failed unchanged single/batch control thresholds. All actual model forwards now batch1. Failed diagnostics retained; no threshold/dose changes."
+}

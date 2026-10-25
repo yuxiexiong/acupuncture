@@ -1,0 +1,18 @@
+{
+  "purpose": "HumanEval isolated execution; synthetic controls only at this stage",
+  "package": "bubblewrap",
+  "version": "0.4.1-3~bpo10+1",
+  "package_source": "Debian buster-backports via configured public apt mirror",
+  "package_sha256": "15e4844fc9c0cab12be4a18c4cbd8f01e5ed1ecc90b2489e147199c25e0ad025",
+  "binary_sha256": "63b4d01ce64ed5f041d658933e0ca91454b0f9580a5f2dc99a72da50070bb5d6",
+  "installation": "apt-get download bubblewrap=0.4.1-3~bpo10+1; dpkg-deb -x package.deb local-runtime-root (not installed globally)",
+  "human_eval_commit": "b9453e8f1865df0a0057a1383767caa400acfbcf",
+  "python": "3.11.16, standard library with -S",
+  "history": {
+    "r01": "Rejected before Python execution: old bwrap has no --clearenv option. Replaced inherited environment explicitly in subprocess.run.",
+    "r02": "Correct/wrong/syntax/timeout controls passed; environment allowlist assertion lacked bwrap-added PWD. No model completions executed.",
+    "r03": "Confirmed sole extra environment key is PWD=/tmp; nonroot and host-path assertions passed.",
+    "r04": "All five synthetic controls passed after explicitly checking PWD=/tmp.",
+    "r05": "All five controls passed with additional byte comparison against pinned official execution.py."
+  }
+}
