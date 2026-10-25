@@ -2,13 +2,15 @@
 
 更新日期：2026-10-26。项目名称与唯一 GitHub 仓库已经由用户指定；本文接续聊天中的研究讨论，不代表新增模型实验已获执行授权。
 
-**当前能力评测：** 用户最新要求将数学和代码各改为 100 题，停止此前全量运行，执行 MMLU 1,000、ARC-C 200、GSM8K 100、HumanEval 100 的固定面板并实测 ETA。新版本共 1,400 对、2,800 个题目—条件单元，见[小面板运行协议](../experiments/capability-screen-v3-2026-10-26/PROTOCOL.zh-CN.md)。沿用原精度、干预、生成上限和评分；先独立抽样，再严格核验复用旧完整回答。一小时仍为目标量级，100+100 生成题的用时尚不能保证。新队列已于北京时间 04:49:13 启动；固定面板中 718 对 MMLU 通过复用检查，其余 682 对需要新计算。实际启动与协议哈希见本轮 `launch.json`，CPU 收尾同步等待两路成功。
+**当前能力评测已完成：** MMLU 1,000、ARC-C 200、GSM8K 100、HumanEval 100，共 1,400 对、2,800 个题目—条件单元及官方代码沙箱评分均已核验。原版/EVO 分数依次为 **67.99%/29.74%、65%/38%、88%/0%、53%/4%**，下降 **38.26、27、88、49 个百分点**；MMLU 按原学科权重加权。完整配对区间、诊断和证据见[最终结果](../experiments/capability-screen-v3-2026-10-26/RESULTS.zh-CN.md)。本轮仍为动态激活干预，未永久改写权重。固定子集成绩表明当前干预伴随明显任务损伤，不能据此定义“evil”或证明道德神经元机制。
 
-**旧全量已停止：** 北京时间 2026-10-26 04:43 核验两个 GPU worker 及旧 CPU 收尾退出，保留 10,034 对完整 MMLU 和部分记录，其余三项尚未启动。证据见旧运行 `user-stop-20261026-r01/`。旧协议与回执保留历史原样，不能据其历史 started 状态误判为仍在运行，也不能称其全量完成。巡检已切换至新版本，禁止重启旧全量。
+**实际耗时：** 北京时间 04:49:13 启动，05:29:23 完成自动评分，共 **40 分 10 秒**；其中 718 对 MMLU 复用、682 对新计算。将复用部分历史计算成本加回，全部重新计算约 **44.76 分钟（推算）**。以后相同 4B、两张 H20、现成环境与相同设置建议预留 **50–60 分钟**；不含此前下载/环境准备及之后独立审计、归档和 Git 同步。见[计时账本](../experiments/capability-screen-v3-2026-10-26/timing-summary.json)。
 
-**当前交付边界：** 新运行的启动、完成数量和成绩以新鲜回执为准；暂无这轮完整正式成绩。[最初一小时预算](damage-evaluation-one-hour-plan.zh-CN.md)中的数学/代码各 20 题已由新授权的各 100 题替代。相关工作的样本量核查仍保留：[CNA / CircuitBreak](literature/benchmark-sample-size-audit-cna-circuitbreak-2026-10-26.json)、[Persona / Refusal Direction](literature/benchmark-sample-size-audit-persona-refusal-2026-10-26.json)、[CAA / AS-induced EM](literature/benchmark-sample-size-audit-steering-2026-10-26.json)。
+**旧全量已停止：** 北京时间 2026-10-26 04:43 核验两个 GPU worker 及旧 CPU 收尾退出，保留 10,034 对完整 MMLU 和部分记录，其余三项尚未启动。证据见旧运行 `user-stop-20261026-r01/`，完整证据包已核验归档。旧协议与回执保留历史原样，不能据其历史 started 状态误判为仍在运行，也不能称其全量完成。禁止重启旧全量。
 
-**最新测量方案：** 按用户要求，现以[能力损伤对照精简方案 v2](damage-evaluation-plan-v2.zh-CN.md)量化同一模型调整前后的能力变化。保留 MMLU、ARC-C、GSM8K、HumanEval 四项任务，只比较原版与一个事前固定的调整版，分别报告原分数、调整后分数、下降百分点和配对区间；截断及解析失败仅作解释。CE/BPB、专门重复率、剂量与位置矩阵、机制和跨模型扩展移出该测量协议。[原方案 v1](damage-evaluation-plan-v1.zh-CN.md)完整保留。此次仅修订文档，没有启动新评测；以下机制研究方向另行管理，不作为完成一次损伤对照的前提。
+**当前交付边界：** 新运行原文、逐题评分、执行证据、哈希及计时均已归档；这是固定面板结果。718 对复用记录的来源通过核验，但被中断的旧运行没有最终整轮权重恢复证明；新八份收据核验了目标 down_proj 权重及钩子移除。GSM8K 未在项目历史评测中出现的 91 题另报 89.01%→0%。[一小时预算](damage-evaluation-one-hour-plan.zh-CN.md)已补入实测校准，最初各 20 题方案保留为历史。相关工作的样本量核查仍保留：[CNA / CircuitBreak](literature/benchmark-sample-size-audit-cna-circuitbreak-2026-10-26.json)、[Persona / Refusal Direction](literature/benchmark-sample-size-audit-persona-refusal-2026-10-26.json)、[CAA / AS-induced EM](literature/benchmark-sample-size-audit-steering-2026-10-26.json)。
+
+**最新测量方案：** 按用户要求，现以[能力损伤对照精简方案 v2](damage-evaluation-plan-v2.zh-CN.md)量化同一模型调整前后的能力变化。保留 MMLU、ARC-C、GSM8K、HumanEval 四项任务，只比较原版与一个事前固定的调整版，分别报告原分数、调整后分数、下降百分点和配对区间；截断及解析失败仅作解释。CE/BPB、专门重复率、剂量与位置矩阵、机制和跨模型扩展移出该测量协议。[原方案 v1](damage-evaluation-plan-v1.zh-CN.md)完整保留。该测量逻辑已用于上述授权小面板；以下机制研究方向另行管理，不作为完成一次损伤对照的前提。
 
 **最新迁移方案及验收：根因实验保持原方案并暂时暂停。** 新协议见 [4B→9B 直接迁移 toy v1.1](../experiments/transfer-toy-v1-2026-10-26/PROTOCOL.zh-CN.md)：共同文本拟合映射、稠密增量迁移、每层一根原生通道近似、完整随机源迁移对照及独立确认。固定 d=1，区分忠实投影幅度与目标参考尺度两臂；损伤照实记录，不以无损为成功前提。用户要求核对实验后 Benchmark，审计发现 v1 仅有 MMLU32/ARC32；现已补上[固定 9B 原版/主迁移版的四项 1,400 题验收](../experiments/transfer-toy-v1-2026-10-26/BENCHMARK_FOLLOWUP.zh-CN.md)，诊断不替代正式评测。当前只有文档和评测衔接完成，迁移数据/代码尚待准备，没有迁移启动回执；收尾心跳也不是推理作业。
 

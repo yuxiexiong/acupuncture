@@ -1,0 +1,191 @@
+{
+  "checked_utc": "2026-10-25T20:51:17.758056+00:00",
+  "launch": {
+    "status": "launched",
+    "started_utc": "2026-10-25T20:49:13.132688+00:00",
+    "protocol_sha256": "07cb8ca1b2b2504eccaeeb3fc2b751f0ed62192d316c86a5ff7a0b86edd52cd8",
+    "counts": {
+      "mmlu": 1000,
+      "arc_challenge": 200,
+      "gsm8k": 100,
+      "humaneval": 100
+    },
+    "reused_pairs": {
+      "mmlu": 718,
+      "arc_challenge": 0,
+      "gsm8k": 0,
+      "humaneval": 0
+    },
+    "processes": [
+      {
+        "name": "worker-0",
+        "pid": 1375855,
+        "command": [
+          "/workspace/acupuncture/.venv-bench/bin/python",
+          "-u",
+          "/workspace/acupuncture/experiments/capability-screen-v3-2026-10-26/run_worker.py",
+          "--gpu",
+          "0"
+        ],
+        "log": "/workspace/acupuncture/experiments/capability-screen-v3-2026-10-26/worker-0-supervisor.log"
+      },
+      {
+        "name": "worker-1",
+        "pid": 1375856,
+        "command": [
+          "/workspace/acupuncture/.venv-bench/bin/python",
+          "-u",
+          "/workspace/acupuncture/experiments/capability-screen-v3-2026-10-26/run_worker.py",
+          "--gpu",
+          "1"
+        ],
+        "log": "/workspace/acupuncture/experiments/capability-screen-v3-2026-10-26/worker-1-supervisor.log"
+      },
+      {
+        "name": "finish",
+        "pid": 1375857,
+        "command": [
+          "/workspace/acupuncture/.venv-bench/bin/python",
+          "-u",
+          "/workspace/acupuncture/experiments/capability-screen-v3-2026-10-26/finish_run.py"
+        ],
+        "log": "/workspace/acupuncture/experiments/capability-screen-v3-2026-10-26/finish-supervisor.log"
+      }
+    ],
+    "ended_utc": "2026-10-25T20:49:13.134181+00:00"
+  },
+  "workers": {
+    "0": {
+      "status": "started",
+      "pid": 1375855,
+      "alive": true,
+      "tasks": [
+        {
+          "task": "gsm8k",
+          "status": "started"
+        }
+      ]
+    },
+    "1": {
+      "status": "started",
+      "pid": 1375856,
+      "alive": true,
+      "tasks": [
+        {
+          "task": "humaneval",
+          "status": "started"
+        }
+      ]
+    }
+  },
+  "tasks": {
+    "gsm8k-shard0-r01": {
+      "status": "started",
+      "completed_pairs": 8,
+      "expected_pairs": 50,
+      "new_pairs": 8,
+      "reused_pairs": 0,
+      "new_inference_seconds": 104.6408014819026,
+      "last_pair_seconds": 7.88887451775372,
+      "setup_seconds": 15.65329716913402,
+      "error": null,
+      "pair_seconds": [
+        6.110194711014628,
+        12.771763361990452,
+        9.508002394810319,
+        17.17900595627725,
+        32.391881458461285,
+        5.430986694991589,
+        13.360092386603355,
+        7.88887451775372
+      ],
+      "arms": {
+        "baseline": {
+          "generated_tokens": [
+            53,
+            173,
+            124,
+            216,
+            497,
+            60,
+            148,
+            98
+          ],
+          "length_limits": 0
+        },
+        "evo": {
+          "generated_tokens": [
+            25,
+            19,
+            21,
+            48,
+            19,
+            18,
+            53,
+            18
+          ],
+          "length_limits": 0
+        }
+      },
+      "pending": [
+        {
+          "id": "gsm8k:147",
+          "saved_arms": {},
+          "seconds_since_checkpoint": 3.913074493408203
+        }
+      ]
+    },
+    "humaneval-shard1-r01": {
+      "status": "started",
+      "completed_pairs": 5,
+      "expected_pairs": 50,
+      "new_pairs": 5,
+      "reused_pairs": 0,
+      "new_inference_seconds": 86.19467774778605,
+      "last_pair_seconds": 6.946782149374485,
+      "setup_seconds": 15.995259337127209,
+      "error": null,
+      "pair_seconds": [
+        5.59440340846777,
+        2.3521535228937864,
+        67.10541961528361,
+        4.195919051766396,
+        6.946782149374485
+      ],
+      "arms": {
+        "baseline": {
+          "generated_tokens": [
+            56,
+            16,
+            1024,
+            35,
+            60
+          ],
+          "length_limits": 1
+        },
+        "evo": {
+          "generated_tokens": [
+            16,
+            16,
+            10,
+            27,
+            44
+          ],
+          "length_limits": 0
+        }
+      },
+      "pending": [
+        {
+          "id": "HumanEval/85",
+          "saved_arms": {},
+          "seconds_since_checkpoint": 22.256354570388794
+        }
+      ]
+    }
+  },
+  "finish": {
+    "status": "waiting",
+    "pid": 1375857,
+    "error": null
+  }
+}

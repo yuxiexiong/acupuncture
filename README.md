@@ -10,7 +10,7 @@
 |---|---|
 | 当前研究状态、机制线索与迁移计划 | [研究状态与后续方向](docs/RESEARCH_STATUS.zh-CN.md) |
 | 4B→9B 直接迁移 toy：完整方案，未运行；根因实验暂停 | [迁移 toy v1.1](experiments/transfer-toy-v1-2026-10-26/PROTOCOL.zh-CN.md) / [后接最新四项 Benchmark](experiments/transfer-toy-v1-2026-10-26/BENCHMARK_FOLLOWUP.zh-CN.md) |
-| 当前四项能力小面板（运行中）：1,000 / 200 / 100 / 100 题 | [新运行协议](experiments/capability-screen-v3-2026-10-26/PROTOCOL.zh-CN.md) |
+| 四项能力小面板已完成：1,000 / 200 / 100 / 100 题，原版/EVO 成绩与实际耗时 | [最终结果](experiments/capability-screen-v3-2026-10-26/RESULTS.zh-CN.md) / [运行协议](experiments/capability-screen-v3-2026-10-26/PROTOCOL.zh-CN.md) |
 | 四项全量能力对照（已按用户要求停止，保留原始证据） | [旧运行协议](experiments/capability-damage-v2-2026-10-26/PROTOCOL.zh-CN.md) / [精简方案 v2](docs/damage-evaluation-plan-v2.zh-CN.md) / [原方案 v1](docs/damage-evaluation-plan-v1.zh-CN.md) |
 | 旧全量车队的历史说明（已停止） | [车队说明](experiments/capability-damage-v2-2026-10-26/CONVOY.zh-CN.md) |
 | 一小时预算讨论及数学、代码各扩至 100 题的后续修订 | [时间分配与精度限制](docs/damage-evaluation-one-hour-plan.zh-CN.md) |
