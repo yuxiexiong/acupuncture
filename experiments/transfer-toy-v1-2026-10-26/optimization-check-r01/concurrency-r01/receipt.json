@@ -1,0 +1,48 @@
+{
+  "status": "completed",
+  "started_utc": "2026-10-25T22:20:15.033384+00:00",
+  "pid": 1402168,
+  "script_sha256": "f44ca10d49b9fdfc6b07c9a520d72de1100c53e9197295a30e8f83d73a3cfb64",
+  "probe_sha256": "10fbfc778620c6597fb4472c5c5605817c2c2715cf707bbec6f436bfab0203a9",
+  "baseline_sha256": "111e54ab5265bccc2abc30d8be408a11f35d05f92ef486cbd402f3aeff213881",
+  "workers": [
+    {
+      "pid": 1402169,
+      "command": [
+        "/workspace/acupuncture/.venv-bench/bin/python",
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/optimization-check-r01/probe.py",
+        "--model",
+        "/workspace/models/Qwen3.5-9B-c2022362",
+        "--bundle",
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b/mapping/bundle.pt",
+        "--output",
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/optimization-check-r01/concurrency-r01/worker0"
+      ],
+      "output": "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/optimization-check-r01/concurrency-r01/worker0"
+    },
+    {
+      "pid": 1402170,
+      "command": [
+        "/workspace/acupuncture/.venv-bench/bin/python",
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/optimization-check-r01/probe.py",
+        "--model",
+        "/workspace/models/Qwen3.5-9B-c2022362",
+        "--bundle",
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b/mapping/bundle.pt",
+        "--output",
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/optimization-check-r01/concurrency-r01/worker1"
+      ],
+      "output": "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/optimization-check-r01/concurrency-r01/worker1"
+    }
+  ],
+  "load_context": "Two 9B probes share GPU0 with the existing 4B source worker.",
+  "scope": "Bounded engineering check, not formal experiment evidence; actual forward batch remains one.",
+  "wall_seconds": 101.10407781600952,
+  "all_cross_process_outputs_exact": true,
+  "generated_tokens": 2648,
+  "aggregate_tokens_per_wall_second": 26.19083282495157,
+  "one_probe_tokens_per_wall_second": 13.677150766569898,
+  "observed_end_to_end_throughput_ratio": 1.9149334003810201,
+  "limits": "Short synthetic contexts; includes model loading. Single and concurrent probes were run sequentially with a continuing 4B background worker. This is not a guaranteed full-run speedup.",
+  "ended_utc": "2026-10-25T22:21:56.139024+00:00"
+}
