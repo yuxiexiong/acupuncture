@@ -1,0 +1,105 @@
+{
+  "status": "read_only_audit_no_new_inference",
+  "date": "2026-10-26",
+  "old_run": {
+    "archive_sha256": "199a85793c86951d0327f73e19fb630852182d4ac4c86f0b02642c43811a256f",
+    "stopped_by_user": true,
+    "completed_mmlu_pairs": 10034,
+    "baseline_correct": 6844,
+    "evo_correct": 2882,
+    "baseline_percent": 68.20809248554913,
+    "evo_percent": 28.72234403029699,
+    "damage_percentage_points": 39.48574845525214,
+    "scoring": "argmax of saved raw choice_loglikelihoods equals fixed item.target_index; identical per-item rule to frozen MMLU acc scorer",
+    "aggregation": "Unweighted observed completed-question accuracy, not a full-population weighted estimate",
+    "subjects_present": 50,
+    "subjects_complete": 34,
+    "subjects_partial": 16,
+    "subjects_absent": 7,
+    "limitation": "Old run was sorted by prompt length before user stop. This is a selected incomplete portion, not an official full MMLU result or a random-subset estimate. Other three tasks had not started."
+  },
+  "reuse_cost_audit": {
+    "reused_pairs": 718,
+    "source_shards": [
+      {
+        "shard": 0,
+        "pairs": 340,
+        "batch_wall_seconds": 264.7438288815
+      },
+      {
+        "shard": 1,
+        "pairs": 378,
+        "batch_wall_seconds": 286.4678663481
+      }
+    ],
+    "sum_batch_worker_seconds": 551.2116952296,
+    "current_v3_shards": [
+      {
+        "shard": 0,
+        "pairs": 359,
+        "historical_batch_wall_seconds": 275.6026511919
+      },
+      {
+        "shard": 1,
+        "pairs": 359,
+        "historical_batch_wall_seconds": 275.6090440378
+      }
+    ],
+    "estimated_extra_wall_minutes_for_fresh_pairs": 4.593484067296667,
+    "basis": "Match each reuse source_file index to completed=index+1 in the old shard log and sum batch_seconds; verify source record SHA",
+    "limitation": "Historical batch process wall time, not CUDA kernel time; scheduling and load can change future duration."
+  },
+  "live_new_run_snapshot": {
+    "checked_utc": "2026-10-25T21:06:47.524064+00:00",
+    "started_utc": "2026-10-25T20:49:13.163932+00:00",
+    "gsm8k_completed_pairs": 48,
+    "gsm8k_total_pairs": 100,
+    "gsm8k_new_inference_seconds": 1030.8522730991244,
+    "humaneval_completed_pairs": 42,
+    "humaneval_total_pairs": 100,
+    "humaneval_new_inference_seconds": 989.2084038089961,
+    "workers_alive": true,
+    "finish_status": "waiting",
+    "official_summary_exists": false
+  },
+  "planning_estimates": {
+    "current_remaining_minutes_at_snapshot": [
+      25,
+      40
+    ],
+    "future_full_fresh_pair_run_minutes": [
+      50,
+      70
+    ],
+    "conditions": "Same Qwen3.5-4B revision, two H20s, ready environment, 1000 MMLU + 200 ARC-C + 100 GSM8K + 100 HumanEval, both arms, unchanged generation caps and scoring",
+    "limitation": "Provisional wall-clock planning ranges including scoring allowance, not completion receipts, guarantees or confidence intervals. Different interventions may change output lengths."
+  },
+  "later_read_only_arm_summary": {
+    "recorded_utc": "2026-10-25T21:09:41.054855+00:00",
+    "source": "Live aggregation of completed raw output files, returned after the earlier receipt snapshot; exact server collection timestamp not emitted.",
+    "gsm8k": {
+      "pairs": 55,
+      "baseline_seconds": 602.3619314003736,
+      "evo_seconds": 513.3405860941857,
+      "pair_seconds": 1132.4384787287563,
+      "baseline_tokens": 9737,
+      "evo_tokens": 8252,
+      "baseline_limits": 0,
+      "evo_limits": 3
+    },
+    "humaneval": {
+      "pairs": 58,
+      "baseline_seconds": 301.7802903614938,
+      "evo_seconds": 879.8691340181977,
+      "pair_seconds": 1190.056602511555,
+      "baseline_tokens": 4711,
+      "evo_tokens": 13897,
+      "baseline_limits": 1,
+      "evo_limits": 13
+    },
+    "updated_remaining_planning_minutes": [
+      20,
+      35
+    ]
+  }
+}
