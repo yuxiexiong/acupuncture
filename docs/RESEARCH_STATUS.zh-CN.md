@@ -2,6 +2,8 @@
 
 更新日期：2026-10-26。项目名称与唯一 GitHub 仓库已经由用户指定；本文接续聊天中的研究讨论，不代表新增模型实验已获执行授权。
 
+**后续评测时间预算：** 用户要求当前全量任务继续，未来每轮对照约一小时，允许小幅浮动。[一小时预算方案](damage-evaluation-one-hour-plan.zh-CN.md)初拟 MMLU 8 分钟 / 1,000 题、ARC-C 5 分钟 / 200 题、GSM8K 25 分钟 / 20 题、HumanEval 12 分钟 / 20 题，另留准备与收尾共 10 分钟。按两张 H20、原版与一个调整版完整配对估算；题量须用本轮实际耗时校准后再冻结。小生成题集只能筛查明显损伤，不能判定细微差异。当前仅记录方案，未改运行或启动新评测。
+
 **四项损伤对照执行进展：** 用户随后明确授权按精简方案完成原版与 EVO 的 MMLU、ARC-C、GSM8K、HumanEval 全量评测。16,697 道题已冻结，来源哈希、官方评分器、HumanEval 隔离和两张 GPU 的逐题控制验收通过；现按 batch=1、双 GPU 分题启动。BF16 批量一致性失败已保留，未放宽阈值。当前尚无完整正式成绩；协议与证据见[本轮运行目录](../experiments/capability-damage-v2-2026-10-26/PROTOCOL.zh-CN.md)。以下机制研究与其他扩展仍未执行。
 
 用户已要求保留本轮完整实验，并改为每半小时巡检。两路 GPU 队列与独立 CPU 评分收尾已连接；运行状态和最终结果位置见[车队说明](../experiments/capability-damage-v2-2026-10-26/CONVOY.zh-CN.md)。关于后续是否需要全量，已补充[CNA / CircuitBreak](literature/benchmark-sample-size-audit-cna-circuitbreak-2026-10-26.json)、[Persona / Refusal Direction](literature/benchmark-sample-size-audit-persona-refusal-2026-10-26.json)和[CAA / AS-induced EM](literature/benchmark-sample-size-audit-steering-2026-10-26.json)的实际样本量核查。小面板用于筛查、少数最终配置全量确认仍属讨论建议，没有缩减或改写本轮协议。
