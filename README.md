@@ -1,0 +1,51 @@
+# Acupuncture
+
+研究成品语言模型中稀疏神经元干预的行为变化、能力损伤、机制与跨模型迁移。
+
+**唯一主仓库：[yuxiexiong/acupuncture](https://github.com/yuxiexiong/acupuncture)。** 自 2026-10-26 起，本项目的代码、实验协议、研究笔记、结果和后续工作统一保存在这里。本地项目根目录为 `/Users/ruizhixu/Documents/ChatGPT/acupuncture`。
+
+## 从这里开始
+
+| 材料 | 入口 |
+|---|---|
+| 当前研究状态、机制线索与迁移计划 | [研究状态与后续方向](docs/RESEARCH_STATUS.zh-CN.md) |
+| Qwen3.5-4B 首轮实验全部代码与记录 | [实验目录](experiments/qwen35-neuron-steering-2026-10-25/) |
+| 前 24 题全部原文并排 | [paired_raw.html](experiments/qwen35-neuron-steering-2026-10-25/raw-corpus-cpu-bf16-r01/paired_raw.html)（下载后用浏览器打开） |
+| 原版 / 干预版原始语料 | [original.raw.jsonl](experiments/qwen35-neuron-steering-2026-10-25/raw-corpus-cpu-bf16-r01/original.raw.jsonl) / [modified.raw.jsonl](experiments/qwen35-neuron-steering-2026-10-25/raw-corpus-cpu-bf16-r01/modified.raw.jsonl) |
+| 24 题定性对比 | [comparison24.html](experiments/qwen35-neuron-steering-2026-10-25/comparison24.html) / [结构化分析](experiments/qwen35-neuron-steering-2026-10-25/comparison24.json) |
+| 原作者两个神经元的公开缓存证据 | [author_cache_two_neurons.json](experiments/qwen35-neuron-steering-2026-10-25/literature-2026-10-26/author_cache_two_neurons.json) |
+| RACE / GSM8K / LogiQA 快速对照材料 | [既有协议与数据清单](experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/PROTOCOL.zh-CN.md) |
+| 迁移来源、文件大小与 SHA-256 | [迁移清单](migration/2026-10-26.json) |
+
+## 已完成与证据边界
+
+- 源模型为 `Qwen/Qwen3.5-4B`，固定 revision `851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a`。
+- 首轮使用动态激活干预：零起始索引 L14/N8949 +1、L13/N7956 −1；没有在成品模型上执行永久权重修改。
+- 用户要求完成 Q24 后停止。24 题双方的 512 / 1024 token 尝试共保存 96 条输出；Q25–Q40 未启动。两次预算的输出是前缀关系，不能当独立重复。
+- 原运行仅以 248044 停止，而聊天结束标记为 248046。分析已经区分主回答与结束后的续写；旧原文、配置和收据完整保留。
+- 作者公开代码采用固定参考尺度，我们首轮逐题校准；二者不能称为完全相同的实验设置。
+- 能力基准的既有脚本、固定样本和协议一并迁入；本次迁移没有核验远端实时进度，不把协议中的运行记录当作已交付成绩。
+- 跨模型迁移和功能画像仍是研究方案。本次仓库迁移不启动模型或新的算力任务。
+
+## 复用代码
+
+历史脚本及其 SHA-256 保持原样，以便复核实验。`run_collect.sh`、`run_cpu.sh` 和能力基准启动脚本包含历史服务器路径；它们不是可直接在任意机器运行的通用启动器。`probe.py` 的旧 8 题入口也不是本轮 24 题采集入口。旧 `run_cpu.sh` 还引用 `qwen35-files.json`，当前提供的清单名为 `model-files.json`；这是保留的历史脚本差异。
+
+不加载模型的导出及解析检查：
+
+```sh
+cd experiments/qwen35-neuron-steering-2026-10-25
+python3 test_export_raw.py
+python3 test_benchmark_quick.py
+python3 test_benchmark_quick_batched.py
+```
+
+模型推理环境及版本以各次运行的 receipt 为准。`test_probe.py` 和 `test_collect_raw.py` 需要 PyTorch 等依赖；前者使用小矩阵，后者使用合成生成器。`test_stop_after_q24.py` 使用 Linux `/proc`，不适用于 macOS。
+
+## 数据与存储
+
+本仓库保存全部项目代码、固定评测样本、原始模型回答、日志、分析和来源清单。第三方完整基准下载包已复制到本地项目，但不重复提交到 Git；来源 URL 和 SHA-256 保存在 [data_manifest.json](experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/data_manifest.json)。[prepare_data.py](experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/prepare_data.py) 处理已下载的数据，不负责下载。
+
+模型权重与大型上游缓存留在外部存储，仓库记录版本、地址和校验信息；不提交凭据或运行环境。第三方模型、数据和代码继续受各自原始许可约束。
+
+原 `stealthiness/research/qwen35-neuron-steering-2026-10-25` 保留为迁移前副本，不再作为本项目的新工作根目录。历史收据中的路径是当时运行记录，未因改名而重写。
