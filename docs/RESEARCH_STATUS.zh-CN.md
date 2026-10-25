@@ -12,7 +12,7 @@
 
 **最新测量方案：** 按用户要求，现以[能力损伤对照精简方案 v2](damage-evaluation-plan-v2.zh-CN.md)量化同一模型调整前后的能力变化。保留 MMLU、ARC-C、GSM8K、HumanEval 四项任务，只比较原版与一个事前固定的调整版，分别报告原分数、调整后分数、下降百分点和配对区间；截断及解析失败仅作解释。CE/BPB、专门重复率、剂量与位置矩阵、机制和跨模型扩展移出该测量协议。[原方案 v1](damage-evaluation-plan-v1.zh-CN.md)完整保留。该测量逻辑已用于上述授权小面板；以下机制研究方向另行管理，不作为完成一次损伤对照的前提。
 
-**最新迁移执行状态：**用户已授权按“9B 迁移 → 9B 最新四项 Benchmark → 2B 迁移 → 2B 同套 Benchmark”使用双 H20 排队。9B 映射、4B 数值桥接及两模型技术预检已完成，共享源确认集正在双卡生成；自动队列 PID 1397832。完整设置见 [v1.2 执行补充](../experiments/transfer-toy-v1-2026-10-26/EXECUTION.zh-CN.md)、[冻结清单](../experiments/transfer-toy-v1-2026-10-26/freeze.json)及[启动状态](../experiments/transfer-toy-v1-2026-10-26/active_run.json)。每个目标均固定 19 条件行为/诊断，再对原版和真实源 S_recipe 执行 1,400 题四项面板；不能按输出选择最好条件。每半小时报告技术进度及 ETA。根因实验继续暂停。机器采集/能力评分完成与人工双盲行为判定分别记账；目前没有迁移成功结论。
+**最新迁移执行状态：**用户已授权按“9B 迁移 → 9B 最新四项 Benchmark → 2B 迁移 → 2B 同套 Benchmark”使用双 H20 排队。9B 映射、4B 数值桥接及两模型技术预检已完成，共享源确认集正在双卡生成。2026-10-26 06:43（北京时间）完成调度接管，新队列 PID 1408445；源 worker 1397833/1397834 保持运行，后续目标采用每卡 3 个独立进程、共 6 分片，实际 forward 仍为 batch 1。独立 9B 同负载验证吞吐为单进程的 2.134 倍，生成 token 和候选似然与参考完全一致；此倍率不等于整轮保证提速。见[并行执行补充与覆盖边界](../experiments/transfer-toy-v1-2026-10-26/EXECUTION_PARALLEL.zh-CN.md)及[接管证据](../experiments/transfer-toy-v1-2026-10-26/execution-parallel-r01/parallel-adoption-r01.json)。完整设置见 [v1.2 执行补充](../experiments/transfer-toy-v1-2026-10-26/EXECUTION.zh-CN.md)、[冻结清单](../experiments/transfer-toy-v1-2026-10-26/freeze.json)及[启动状态](../experiments/transfer-toy-v1-2026-10-26/active_run.json)。每个目标均固定 19 条件行为/诊断，再对原版和真实源 S_recipe 执行 1,400 题四项面板；不能按输出选择最好条件。每半小时报告技术进度及 ETA。根因实验继续暂停。机器采集/能力评分完成与人工双盲行为判定分别记账；目前没有迁移成功结论。
 
 **历史方案边界：** [固定预算功能对应与迁移计划](transfer-plan-2026-10-26.json)及本文后续的“先机制、再迁移”等讨论保留供追溯。当前工作顺序以本段和新 toy 协议为准；以下机制设计不因新文档交付而自动恢复，也不代表新增执行授权。
 
