@@ -1,0 +1,35 @@
+{
+  "status": "implemented_cpu_tests_passed_gpu_validation_pending",
+  "source_sha256": {
+    "run_benchmark.py": "0b82da70f75c19c71f5a54f35bfae45e8175ad3b0b84478406a001e474899254",
+    "finish_benchmark.py": "01762a1668ac186821578354d68cdc2b021a23f69ab92db321a6d25bb879650b",
+    "test_transfer_benchmark.py": "1f72ac98a5d42b716772ce5be15bfe6a20efe0a0fbcc5f4748a6e4114ed5de01"
+  },
+  "runtime_api": {
+    "inference": "run_benchmark.py --model PATH --conditions BUNDLE.pt --output DIR --shard-index 0|1",
+    "finish": "finish_benchmark.py --output DIR --project PROJECT [--finish-name finish-r01]"
+  },
+  "tests": {
+    "command": "python3 experiments/transfer-toy-v1-2026-10-26/test_transfer_benchmark.py",
+    "count": 5,
+    "result": "passed"
+  },
+  "exact_panel": "capability-screen-v3-2026-10-26",
+  "pairs_per_target": 1400,
+  "condition_units_per_target": 2800,
+  "runtime_arm_bindings": {
+    "baseline": "T_0",
+    "evo": "true_S_recipe"
+  },
+  "model_loading": "TransferEngine BF16/eager batch1, generic 9B/2B; source4B answers never reused",
+  "generation_budgets": {
+    "gsm8k": 2048,
+    "humaneval": 1024
+  },
+  "reuse": "Frozen v3 evaluate_pair, OfficialScorer, summarize, paired_interval and HumanEval sandbox; frozen files not edited",
+  "completion_gate": "Both shards completed, all frozen IDs and items intact, unchanged weights/hooks, 200 isolated HumanEval cases, four official scores and 95 percent paired intervals",
+  "limitations": [
+    "No GPU run performed in implementation subtask. Root owns launch and runtime preflight.",
+    "Behavior ratings remain a distinct output and are not inferred from capability damage."
+  ]
+}

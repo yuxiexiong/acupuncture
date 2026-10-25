@@ -1,0 +1,88 @@
+{
+  "status": "completed",
+  "started_utc": "2026-10-25T21:48:05.050615+00:00",
+  "arguments": {
+    "model": "/workspace/models/Qwen3.5-9B-c2022362",
+    "output": "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/preflight-target9b"
+  },
+  "code_sha256": {
+    "run_io.py": "51963f95622ee63e8fda99c485dc88957e6bfd96c6c1deee326fce1e7ce5699a",
+    "run_preflight.py": "fcfd9e28f1a9b4de5296341a51d0c083a419a7b61787435f6510a66ed85ebf41",
+    "transfer_engine.py": "92727fd951697d195f030e5cd94a1daa7d4993cfacadb4f1653af281c2a052bb",
+    "collect_activations.py": "485fe8faaffd10b46addc94b39a49ba4eed7cbcafd6292e7171a6700f4cdcd74",
+    "run_benchmark.py": "0b82da70f75c19c71f5a54f35bfae45e8175ad3b0b84478406a001e474899254",
+    "finish_benchmark.py": "4f0432819139672983b1a9d9c1d59442954292153085c760e7eecfc127523c82"
+  },
+  "engine": {
+    "model_class": "Qwen3_5ForConditionalGeneration",
+    "model_path": "/workspace/models/Qwen3.5-9B-c2022362",
+    "versions": {
+      "torch": "2.6.0+cu124",
+      "transformers": "5.20.2",
+      "cuda_runtime": "12.4",
+      "cudnn": 90100
+    },
+    "device": "cuda:0",
+    "dtype": "bfloat16",
+    "softmax_dtype": "float32",
+    "attention_backend": "eager",
+    "batch_size": 1,
+    "hidden_size": 4096,
+    "intermediate_size": 12288,
+    "layers": [
+      13,
+      14
+    ],
+    "target_weight_sha256_before": {
+      "13": "89411f71b42e28758d2983471d2926a6e65a63828c17ed0060ee043cd5e78a95",
+      "14": "610d2f363670e97f38adf35ceaf5ddf1b03d938633d4b85ac9390fa667033d8d"
+    },
+    "effective_stop_tokens": {
+      "248044": "<|endoftext|>",
+      "248046": "<|im_end|>"
+    },
+    "pad_token_id": 248044,
+    "max_context_tokens": 262144,
+    "chat_template_applied": false,
+    "single_immutable_model": true,
+    "fresh_cache_each_call": true,
+    "numerical_settings": {
+      "deterministic_algorithms": true,
+      "float32_matmul_precision": "highest",
+      "matmul_allow_tf32": false,
+      "matmul_allow_bf16_reduced_precision_reduction": true,
+      "cublas_workspace_config": ":4096:8"
+    }
+  },
+  "calibration": [
+    {
+      "context_sha256": "b972d8f49a20d22aca80b8d1eca16666393ae1c9457abb0b5a916d1c090a981d",
+      "input_token_sha256": "4ee9557afb357f27401e3e7a48445fea6db9984e839ca4879432f13472d6774b",
+      "input_token_count": 19,
+      "residual_scales": {
+        "13": 33.401588439941406,
+        "14": 38.4752197265625
+      },
+      "activation_offsets": {}
+    }
+  ],
+  "zero_hook_exact": {
+    "T_0": true,
+    "zero_channel": true,
+    "zero_vector": true,
+    "T_0_restored": true
+  },
+  "synthetic_fp32_max_abs_error": 9.5367431640625e-07,
+  "tokenizer_sha256": {
+    "tokenizer.json": "5f9e4d4901a92b997e463c1f46055088b6cca5ca61a6522d1b9f64c4bb81cb42",
+    "tokenizer_config.json": "316230d6a809701f4db5ea8f8fc862bc3a6f3229c937c174e674ff3ca0a64ac8",
+    "chat_template.jinja": "a4aee8afcf2e0711942cf848899be66016f8d14a889ff9ede07bca099c28f715"
+  },
+  "target_weight_sha256_after": {
+    "13": "89411f71b42e28758d2983471d2926a6e65a63828c17ed0060ee043cd5e78a95",
+    "14": "610d2f363670e97f38adf35ceaf5ddf1b03d938633d4b85ac9390fa667033d8d"
+  },
+  "hooks_removed": true,
+  "ended_utc": "2026-10-25T21:48:17.130245+00:00",
+  "elapsed_seconds": 12.07966304384172
+}
