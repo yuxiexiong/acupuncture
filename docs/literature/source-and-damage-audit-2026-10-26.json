@@ -1,0 +1,267 @@
+{
+  "schema_version": 1,
+  "project": "Acupuncture",
+  "date": "2026-10-26",
+  "status": "targeted_primary_source_audit_no_new_model_runs",
+  "user_request": "核实相关工作的能力损伤口径，并实际查看源模型源码与已有激活工程对两个目标区域的分析。",
+  "scope": "以实际运行的 Qwen/Qwen3.5-4B 为准；Qwen3-4B、Base、后训练版及 SAE 特征严格分开。不是全领域综述，也不是独立复现。",
+  "damage_metrics": [
+    {
+      "paper": "Targeted Neuron Modulation via Contrastive Pair Search (CNA)",
+      "url": "https://arxiv.org/html/2605.12290v1",
+      "locations": [
+        "4",
+        "5.1/Fig.1-2/Table1",
+        "5.3/Table4"
+      ],
+      "measures": [
+        "MMLU accuracy, 1000 questions, aggregated over 8 Instruct models",
+        "Generation quality = 1 - repeated n-gram fraction on 100 JBB harmful prompts"
+      ],
+      "finding": "报告从不干预到完全消融所选0.1%通道时，聚合MMLU约在基线1个百分点内；图中标准差是模型间差异。",
+      "limits": "乘法m与图中alpha=1-m不能同本项目加法dose直接比较；m=2的放大案例仍有退化。所读文本未充分说明MMLU抽样/shot及重复n-gram的n。"
+    },
+    {
+      "paper": "CircuitBreak",
+      "url": "https://arxiv.org/html/2610.16470v1",
+      "locations": [
+        "3.3",
+        "4.4/Table3",
+        "Appendix A.3"
+      ],
+      "measures": [
+        "搜索：50条良性提示上原版回答平均token log-prob下降，通常限制0.1 nats",
+        "最终：MMLU 14042、GSM8K 1319、ARC-C 1172、HumanEval 164"
+      ],
+      "finding": "最终能力仅报告3模型；Qwen2.5-7B GSM8K 52.5→39.8，Llama3.1-8B HumanEval 62.2→57.3。",
+      "limits": "搜索代理过关不保证每项能力无损；部分比较数据转录自先行工作，未见这些差值的重复运行区间。"
+    },
+    {
+      "paper": "Persona Vectors",
+      "url": "https://arxiv.org/html/2507.21509v3",
+      "locations": [
+        "5.1/Fig.7",
+        "J.7/Fig.30"
+      ],
+      "measures": [
+        "MMLU accuracy versus steering coefficient",
+        "New-fact accuracy in a 1000-new-fact learning case",
+        "Coherence separately"
+      ],
+      "finding": "强推理期steering会损害MMLU；新事实案例还同时损害事实准确率。",
+      "limits": "预防性训练干预与纯推理干预是不同方法；这些结果不是我们的两通道配方实验。"
+    },
+    {
+      "paper": "Activation Steering Induces Emergent Misalignment",
+      "url": "https://arxiv.org/html/2606.08682v2",
+      "locations": [
+        "2.2",
+        "B.3/Table5-6",
+        "B.4.1/Fig.8",
+        "C"
+      ],
+      "measures": [
+        "StrongREJECT 313 and HEx-PHI 300",
+        "GPT-4o-mini coherence Q in [0,100], pass Q>50",
+        "Harmfulness and joint harmful-plus-coherent fraction, denominator includes all outputs"
+      ],
+      "finding": "27B、层0–15的强度试验中，alpha=5仅4/313通过连贯阈值；这不代表恢复安全。",
+      "limits": "未见MMLU/GSM8K/HumanEval等通用能力评测；连贯评分明确不评事实正确性。27B强度试验与主实验层集合不同。"
+    },
+    {
+      "paper": "Refusal in Language Models Is Mediated by a Single Direction",
+      "url": "https://arxiv.org/html/2406.11717v3",
+      "locations": [
+        "4.3",
+        "C.1",
+        "G.1/Table8",
+        "G.3/Table9"
+      ],
+      "measures": [
+        "MMLU, ARC, GSM8K, TruthfulQA, plus WinoGrande and TinyHellaSwag",
+        "CE loss on The Pile, Alpaca completion tokens, and baseline-model completions on 100 Alpaca instructions",
+        "Selection-stage next-token KL on benign prompts, threshold 0.1"
+      ],
+      "finding": "分开报告任务正确率与语言建模损失；TruthfulQA有系统性下降，其他任务也存在模型特定损伤。",
+      "limits": "KL衡量行为分布偏移，不等于实际质量下降；baseline生成文本的CE衡量保留原版分布，不保证原版回答正确。"
+    }
+  ],
+  "source_structure": {
+    "model": "Qwen/Qwen3.5-4B",
+    "model_revision": "851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a",
+    "config_url": "https://huggingface.co/Qwen/Qwen3.5-4B/blob/851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a/config.json",
+    "implementation_url": "https://github.com/huggingface/transformers/blob/v5.20.2/src/transformers/models/qwen3_5/modeling_qwen3_5.py",
+    "implementation_blob_sha": "0ca9603ff697259fd12d765ac9b119feb06d424c",
+    "read_lines": "805-925",
+    "verified": "Qwen3_5MLP计算down_proj(act_fn(gate_proj(x))*up_proj(x))；config为silu。Decoder先token mixer加残差，再post_attention_layernorm、MLP并直接加残差。无MLP输出后归一化夹在MLP与该次残差加法之间。",
+    "shape": {
+      "residual": 2560,
+      "mlp_intermediate": 9216,
+      "layers": 32
+    },
+    "locations": "零起始L13/N7956与L14/N8949位于GatedDeltaNet块之后的MLP中间通道；L15为full_attention块。",
+    "implication": "可精确定位读取/写入计算和下游入口，但源码没有训练后语义功能标签。模型开源不等于每个学习通道已有功能注释。"
+  },
+  "resources": [
+    {
+      "name": "Qwen-Scope (official)",
+      "urls": [
+        "https://arxiv.org/html/2605.11887v1",
+        "https://huggingface.co/collections/Qwen/qwen-scope"
+      ],
+      "checked": "论文Table1和当前官方集合",
+      "provides": "全层残差SAE、对比特征发现、自然高激活解释、steering与一些纠错案例。",
+      "coverage": "7个backbone/14组；包含Qwen3.5-2B-Base、9B-Base，未列Qwen3.5-4B或Qwen3-4B。",
+      "limits": "不能把其他模型SAE或SAE feature编号当作本模型的原生MLP通道。"
+    },
+    {
+      "name": "codespaceDrifter/qwen3.5_interp",
+      "revision": "ee26b82a1f7bbd85a3148f4b3da6864e199e8b86",
+      "url": "https://github.com/codespaceDrifter/qwen3.5_interp/tree/ee26b82a1f7bbd85a3148f4b3da6864e199e8b86",
+      "checked": "26文件树，23非空文本；无7956或8949",
+      "provides": "从头文本模型、HF对齐验证器、激活采集、SAE训练代码。",
+      "key_files": [
+        "qwen3_5_4b_implementation/model.py:181-193",
+        "interp_pipeline/sae_train.py:177-200",
+        "README.md:55-70",
+        "interp_pipeline.md:161-163"
+      ],
+      "limits": "MLP神经元功能解释列为未来工作，sae_label待添加，无已发布目标通道图谱；mlp_out是2560维输出，不是9216维down_proj输入；下载器未固定模型revision；未运行HF数值对齐。"
+    },
+    {
+      "name": "Community Qwen3.5-4B L18 SAE",
+      "url": "https://huggingface.co/caiovicentino1/Qwen3.5-4B-SAE-L18-topk",
+      "provides": "文件目录确有sae_final.pt、sae_final.json、reasoning_pack.json、steering_validation.json；卡片称L18层后残差、hidden_states[19]、40960 latent、TopK128。",
+      "potential_value": "可候选用作L13/L14干预后的下游观测工具。",
+      "limits": "本次未下载839MB权重，配置/目录内容部分读取cache miss；基础模型revision未核实。SAE编号不同于原生通道，不能给两点直接定性；卡片承认早期reasoning信号主要反映论述/犹豫风格。"
+    },
+    {
+      "name": "原作者 neuron-explorer",
+      "revision": "f79b2196e29aacbad89684938baac8d97b172fd1",
+      "url": "https://github.com/lyramakesmusic/neuron-explorer/tree/f79b2196e29aacbad89684938baac8d97b172fd1",
+      "model_identity": "runtime默认Qwen/Qwen3.5-4B，但未固定权重revision。",
+      "steer_cache": {
+        "file": "explorer/cache/steer_index.npz",
+        "dose": 0.8,
+        "contexts": 4,
+        "measurement": "单次前向最后位置的下一token log-prob变化与KL；up/down各指对应正/负注入后的增幅最大token，不是同一方向的升降。",
+        "neurons": [
+          {
+            "layer": 13,
+            "neuron": 7956,
+            "up_kl": 0.93335676,
+            "down_kl": 0.52309775,
+            "positive_examples": [
+              "normally",
+              "normal",
+              "正常"
+            ]
+          },
+          {
+            "layer": 14,
+            "neuron": 8949,
+            "up_kl": 0.77359211,
+            "down_kl": 0.90231258,
+            "positive_examples": [
+              "fuck",
+              "evil",
+              "Satan"
+            ]
+          }
+        ],
+        "source_code": "sweep/steer_lens.py:1-11,21-22,70-99"
+      },
+      "natural_cache": {
+        "file": "explorer/cache/act_scale.npz",
+        "source_code": "explorer/runtime.py:485-503",
+        "corpus": "FineWeb-Edu",
+        "tokens_field": 10240,
+        "definition": "观测最大正激活、最小负激活；每512-token块排除首位置，tokens累计块长。不是分位数或完整自然支持边界。",
+        "neurons": [
+          {
+            "layer": 13,
+            "neuron": 7956,
+            "pos": 1.171875,
+            "neg": -0.51953125
+          },
+          {
+            "layer": 14,
+            "neuron": 8949,
+            "pos": 0.875,
+            "neg": -0.6015625
+          }
+        ],
+        "missing": "缓存不保存触发文本、token位置；命名与runs/stats目录被gitignore排除。"
+      },
+      "connections": {
+        "file": "explorer/cache/connections.npz",
+        "source_code": "explorer/build_connections.py:3-6,67-79",
+        "finding": "两点各自上下游top24未出现彼此。",
+        "boundary": "权重乘积几何代理，缺上下文、真实Jacobian与中间层传播；有界缓存缺席不能证明没有因果路径。"
+      },
+      "value": "目前与两点最直接对应的方向作用及观测激活尺度证据；不能据此命名原生道德功能。"
+    },
+    {
+      "name": "社区非Base qwen3.5-4b-atlas",
+      "dataset": "juiceb0xc0de/qwen3.5-4b-atlas",
+      "revision": "3b9cbeccfe7d386d6af9a3056726b558930c8e21",
+      "url": "https://huggingface.co/datasets/juiceb0xc0de/qwen3.5-4b-atlas/tree/3b9cbeccfe7d386d6af9a3056726b558930c8e21",
+      "model_meta_model_id": "Qwen/Qwen3.5-4b",
+      "model_weight_revision": "not provided",
+      "geometry_metadata": null,
+      "layer_meta": {
+        "prompts": 8965,
+        "collection_date": "2026-06-28",
+        "corpus_hash_boundary": "字段值为size:...，不是密码学内容哈希"
+      },
+      "exact_rows": [
+        {
+          "path": "layers/13/components/mlp/taxonomy.json",
+          "sha256": "ea3bc8c40a573cbad3f601f193c747eecbf8aa274fb01d1d7e8309ed0a9beb19",
+          "row_count": 9216,
+          "neuron_idx": 7956,
+          "class": "broadly_shared",
+          "activation_rate": 0.658337981,
+          "mean_activation": 0.0043157772,
+          "std_activation": 0.0143835852
+        },
+        {
+          "path": "layers/14/components/mlp/taxonomy.json",
+          "sha256": "3483449313df9c544cd10d6830e748d14b7df609e8224bb4a6fea08a6fc25a5b",
+          "row_count": 9216,
+          "neuron_idx": 8949,
+          "class": "broadly_shared",
+          "activation_rate": 0.8137200223,
+          "mean_activation": 0.0154915974,
+          "std_activation": 0.0235999525
+        }
+      ],
+      "interpretation_limit": "未从采集源码证明mlp字段对应我们的post-SiLU乘up；触发阈值及聚合规则未核实，不能把activation_rate直接解释为我们的通道在多少文本里激活。",
+      "missing_source": "数据卡指向的https://github.com/JuiceB0xC0de/qwip_atlas本次404。",
+      "lens_boundary": "L13 logit_lens/features.json未含7956；L14有8949但component=gate，不等同我们干预的乘积激活。",
+      "value": "确有目标编号记录，但只给统计类别，未提供这两个点的道德语义或因果功能认证。",
+      "separate_dataset": "juiceb0xc0de/Qwen3.5-4B-Base是另一数据集，未与上述非Base条目混用。"
+    }
+  ],
+  "related_source_model_evidence": [
+    {
+      "paper": "Activation Steering Induces Emergent Misalignment",
+      "url": "https://arxiv.org/html/2606.08682v2#A2.T5",
+      "evidence": "Table5明确Qwen3.5-4B在零起始11–13层注入，prefill加随后3个decode步。",
+      "value": "同一型号的相邻中层可作为已有干预线索。",
+      "boundary": "其方向来自微调模型与原版的残差差，不是本项目原生两通道；层深邻近不能证明同一机制。"
+    },
+    {
+      "paper": "Perturbation Probing",
+      "url": "https://arxiv.org/html/2604.27401v1",
+      "evidence": "Qwen3-4B的50通道消融主要改变拒答模板；作者细分警告、模糊参与与实际服从。",
+      "value": "可借用消融、替换、恢复及多层行为判据。",
+      "boundary": "Qwen3-4B与Qwen3.5-4B不同；拒答模板定位不能直接解释这两个坐标或主动有害建议。"
+    }
+  ],
+  "recommendations_not_executed": [
+    "优先利用已有目标缓存和明确hook的原生通道触发语料，补齐两点的读取条件；不先训练新SAE或全模型扫描。",
+    "源码提供B后L14及A后L15的具体传播入口；现成连接图只作候选，机制结论仍需受控恢复/重放。",
+    "损伤报告分成任务正确率下降（百分点）、固定良性文本CE/NLL变化、重复/连贯性；KL与激活差异只作变化代理，行为改变另列。"
+  ]
+}
