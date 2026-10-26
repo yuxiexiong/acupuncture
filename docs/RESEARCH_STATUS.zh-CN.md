@@ -18,6 +18,8 @@
 
 ## 暂停保留：源模型因果机制定位（方案，未执行）
 
+**2026-10-26 12:20（北京时间）讨论更新：** 当前完整方案见[两针能力损伤的因果定位 v1](root-cause-localization-plan-v1.zh-CN.md)。本次将第二轮原帖材料纳入 A/B 分解、计算损伤与输出竞争的鉴别、无针状态下的正常功能检验，以及集合大小—效应测量；采用便宜读数筛选、少数真实因果验证、冻结解释后正式面板的分层安排。根因实验继续暂停，未启动新运行。下面保留此前讨论记录；具体当前设计以链接文档为准。
+
 ### 已知注入地址，不等于已知功能部位
 
 已执行的改动是零起始索引 L13/N7956 负向、L14/N8949 正向的动态激活加法；位置是各层 MLP 的 `down_proj` 输入。模型权重保持不变。结构及固定版本来源见[定位方向记录](acupuncture-localization-direction-2026-10-26.json)，实际实现见 [probe.py](../experiments/qwen35-neuron-steering-2026-10-25/probe.py) 与 [collect_raw.py](../experiments/qwen35-neuron-steering-2026-10-25/collect_raw.py)。

@@ -9,6 +9,7 @@
 | 材料 | 入口 |
 |---|---|
 | 当前研究状态、机制线索与迁移计划 | [研究状态与后续方向](docs/RESEARCH_STATUS.zh-CN.md) |
+| 两针能力损伤的因果定位：整合第二轮材料，讨论稿，继续暂停 | [当前根因方案 v1](docs/root-cause-localization-plan-v1.zh-CN.md) |
 | 4B→9B→2B 迁移 toy：双卡队列已启动，各接四项 Benchmark；根因实验暂停 | [迁移 toy v1.1](experiments/transfer-toy-v1-2026-10-26/PROTOCOL.zh-CN.md) / [后接最新四项 Benchmark](experiments/transfer-toy-v1-2026-10-26/BENCHMARK_FOLLOWUP.zh-CN.md) |
 | 四项能力小面板已完成：1,000 / 200 / 100 / 100 题，原版/EVO 成绩与实际耗时 | [最终结果](experiments/capability-screen-v3-2026-10-26/RESULTS.zh-CN.md) / [运行协议](experiments/capability-screen-v3-2026-10-26/PROTOCOL.zh-CN.md) |
 | 四项全量能力对照（已按用户要求停止，保留原始证据） | [旧运行协议](experiments/capability-damage-v2-2026-10-26/PROTOCOL.zh-CN.md) / [精简方案 v2](docs/damage-evaluation-plan-v2.zh-CN.md) / [原方案 v1](docs/damage-evaluation-plan-v1.zh-CN.md) |
