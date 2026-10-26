@@ -118,6 +118,6 @@ MMLU 使用 5-shot 完整候选答案条件似然；ARC-C 使用 25-shot、字�
 - [本地复核结果](delivery-r01/verification.json)与[可复跑的 CPU 核验器](delivery-r01/verify_delivery.py)
 - [Benchmark token 哈希](delivery-r01/benchmark-token-hashes.jsonl)
 - [盲评包大小与哈希](delivery-r01/blind-packages.json)
-- [最终运行状态](active_run.json)
+- [最终运行状态](active_run.json)及[Git 交付与监控暂停回执](delivery-r01/publication-receipt.json)
 
 本轮自动工作到此完成；人工盲评作为后续待办，不用空轮询等待。根因研究的讨论稿保持原样，未获得新的运行记录。
