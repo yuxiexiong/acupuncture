@@ -9,7 +9,7 @@
 | 材料 | 入口 |
 |---|---|
 | 当前研究状态、机制线索与迁移计划 | [研究状态与后续方向](docs/RESEARCH_STATUS.zh-CN.md) |
-| 两针能力损伤的最小因果定位：拆针、排序完成，双卡正式候选实验运行中 | [运行状态与实测 ETA](experiments/root-cause-toy-v1-2026-10-26/EXECUTION.zh-CN.md) / [执行合同](experiments/root-cause-toy-v1-2026-10-26/CONTRACT.zh-CN.md) |
+| 两针能力损伤的最小因果定位：首轮完成，有局部修复线索，根因尚未确认 | [首轮结果](experiments/root-cause-toy-v1-2026-10-26/RESULTS.zh-CN.md) / [执行状态与实际耗时](experiments/root-cause-toy-v1-2026-10-26/EXECUTION.zh-CN.md) / [执行合同](experiments/root-cause-toy-v1-2026-10-26/CONTRACT.zh-CN.md) |
 | 4B→9B、4B→2B 迁移 toy：机器阶段完成；行为盲评待办 | [最终机器报告](experiments/transfer-toy-v1-2026-10-26/RESULTS.zh-CN.md) / [原文、成绩与盲评包入口](experiments/transfer-toy-v1-2026-10-26/delivery-r01/index.html) / [冻结协议](experiments/transfer-toy-v1-2026-10-26/PROTOCOL.zh-CN.md) |
 | 四项能力小面板已完成：1,000 / 200 / 100 / 100 题，原版/EVO 成绩与实际耗时 | [最终结果](experiments/capability-screen-v3-2026-10-26/RESULTS.zh-CN.md) / [运行协议](experiments/capability-screen-v3-2026-10-26/PROTOCOL.zh-CN.md) |
 | 四项全量能力对照（已按用户要求停止，保留原始证据） | [旧运行协议](experiments/capability-damage-v2-2026-10-26/PROTOCOL.zh-CN.md) / [精简方案 v2](docs/damage-evaluation-plan-v2.zh-CN.md) / [原方案 v1](docs/damage-evaluation-plan-v1.zh-CN.md) |
