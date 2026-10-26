@@ -1,6 +1,6 @@
 {
   "run_id": "transfer-9b-2b-r01",
-  "status": "running",
+  "status": "machine_completed_blind_review_pending",
   "authorized": true,
   "authorized_sequence": [
     "4B source prerequisite",
@@ -13,26 +13,47 @@
   "remote_root": "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26",
   "remote_run": "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01",
   "python": "/workspace/acupuncture/.venv-bench/bin/python",
-  "updated_utc": "2026-10-26T02:29:53.934516+00:00",
+  "updated_utc": "2026-10-26T05:07:12.572396+00:00",
   "root_cause_experiment": "paused",
   "initial_preflight_pids": {
     "source4b": 1392998,
     "target9b": 1392999
   },
   "eta": {
-    "checked_utc": "2026-10-26T02:29:53.934516+00:00",
-    "basis": "Not a confidence interval or guaranteed upper bound. Unmeasured arms use full token budgets and per-worker probe speed with configured worker count; measured arms use condition/task means. 2B initially inherits 9B concurrent speed. Unmeasured 2B setup, parallel validation and export use explicit rough allowances, not timed guarantees. Excludes human ratings and future failures.",
+    "checked_utc": "2026-10-26T05:07:12.572396+00:00",
+    "basis": "Both target exports and queue have completed; use actual times. Human ratings pending.",
     "9B_finish_beijing_scenario": "2026-10-26T10:27:27.950555+08:00",
-    "queue_finish_beijing_scenario": "2026-10-26T16:11:14.255105+08:00",
-    "remaining_queue_hours_scenario": 5.69,
+    "queue_finish_beijing_scenario": "2026-10-26T12:39:56.641473+08:00",
+    "remaining_queue_hours_scenario": 0,
     "9B_concurrent_per_worker_tokens_sec": 10.828226720996158,
     "human_blind_review": "pending_not_in_machine_eta",
     "not_a_confidence_interval_or_guaranteed_upper_bound": true,
-    "9B_machine_completed_utc": "2026-10-26T02:27:27.950555+00:00"
+    "9B_machine_completed_utc": "2026-10-26T02:27:27.950555+00:00",
+    "target2b_concurrent_validation_tokens_sec": 21.19549072234624,
+    "estimate_method": "Measured 2B benchmark per-task means from frozen status script; choice phases not yet observed",
+    "target2b_benchmark_started_utc": "2026-10-26T03:56:16.244941+00:00",
+    "target2b_behavior_and_diagnostic_completed_utc": "2026-10-26T03:56:16.244231+00:00",
+    "last_prediction_before_completion": {
+      "checked_utc": "2026-10-26T04:18:18.921521+00:00",
+      "basis": "2B actual per-worker GSM8K and HumanEval pair times (>=4 pairs each); unfinished choices use frozen 0.8s/MMLU and 2.5s/ARC per-pair assumptions; slowest worker plus rough 120s export allowance. Excludes local evidence retrieval/report delivery and human ratings. Scenario, not a guaranteed upper bound.",
+      "9B_finish_beijing_scenario": "2026-10-26T10:27:27.950555+08:00",
+      "queue_finish_beijing_scenario": "2026-10-26T12:39:56.641473+08:00",
+      "remaining_queue_hours_scenario": 0.36,
+      "9B_concurrent_per_worker_tokens_sec": 10.828226720996158,
+      "human_blind_review": "pending_not_in_machine_eta",
+      "not_a_confidence_interval_or_guaranteed_upper_bound": true,
+      "9B_machine_completed_utc": "2026-10-26T02:27:27.950555+00:00",
+      "target2b_concurrent_validation_tokens_sec": 21.19549072234624,
+      "estimate_method": "Measured 2B benchmark per-task means from frozen status script; choice phases not yet observed",
+      "target2b_benchmark_started_utc": "2026-10-26T03:56:16.244941+00:00",
+      "target2b_behavior_and_diagnostic_completed_utc": "2026-10-26T03:56:16.244231+00:00"
+    },
+    "queue_finish_beijing_actual": "2026-10-26T12:28:16.778675+08:00",
+    "target2b_machine_completed_utc": "2026-10-26T04:28:14.969430+00:00"
   },
   "execution_extension": "EXECUTION_PARALLEL.zh-CN.md",
   "queue_pid": 1464686,
-  "current_stage": "2b-parallel-reference",
+  "current_stage": "machine_completed",
   "status_command": ".venv-bench/bin/python experiments/transfer-toy-v1-2026-10-26/run_status_parallel.py --run /workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01",
   "worker_count": 6,
   "workers_per_gpu": 3,
@@ -46,5 +67,23 @@
     "HF_DATASETS_OFFLINE": "1"
   },
   "offline_recovery_receipt": "execution-parallel-r01/offline-export-recovery-r01/receipt.json",
-  "offline_recovery_verification": "execution-parallel-r01/offline-export-recovery-r01/verification.json"
+  "offline_recovery_verification": "execution-parallel-r01/offline-export-recovery-r01/verification.json",
+  "target2b_parallel_validation": {
+    "status": "completed",
+    "all_cross_process_outputs_exact": true,
+    "workers_per_gpu": 3
+  },
+  "machine_completed_utc": "2026-10-26T04:28:16.778675+00:00",
+  "delivery": {
+    "local_evidence": "complete_verified",
+    "report": "RESULTS.zh-CN.md",
+    "index": "delivery-r01/index.html",
+    "verification": "delivery-r01/verification.json",
+    "blind_packages": [
+      "delivery-r01/blind-reviewer-A.zip",
+      "delivery-r01/blind-reviewer-B.zip"
+    ],
+    "human_ratings": "pending",
+    "root_cause_experiment": "paused"
+  }
 }

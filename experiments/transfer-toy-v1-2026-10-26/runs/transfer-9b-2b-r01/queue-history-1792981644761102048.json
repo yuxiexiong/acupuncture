@@ -1,0 +1,499 @@
+{
+  "status": "running",
+  "started_utc": "2026-10-25T22:43:51.209020+00:00",
+  "pid": 1408445,
+  "run": "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01",
+  "freeze_sha256": "e8a16b2d154252301eb04efe2bf6c79b580ab723f0eb910ae6e01bed0889e3e5",
+  "sequence": [
+    "target9b",
+    "target2b"
+  ],
+  "stages": [
+    {
+      "name": "initial-clean-collections",
+      "status": "completed_existing",
+      "started_utc": "2026-10-25T22:43:51.209509+00:00",
+      "receipts": [
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/collection-source4b/receipt.json",
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/collection-target9b/receipt.json"
+      ],
+      "ended_utc": "2026-10-25T22:43:51.209820+00:00"
+    },
+    {
+      "name": "source-bridge-and-9b-mapping",
+      "status": "completed_existing",
+      "started_utc": "2026-10-25T22:43:51.209944+00:00",
+      "receipts": [
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/bridge/receipt.json",
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b/mapping/receipt.json"
+      ],
+      "ended_utc": "2026-10-25T22:43:51.210199+00:00"
+    },
+    {
+      "name": "source-and-9b-decode-check",
+      "status": "completed",
+      "started_utc": "2026-10-25T22:43:51.210330+00:00",
+      "jobs": [
+        {
+          "gpu": 0,
+          "command": [
+            "/workspace/acupuncture/.venv-bench/bin/python",
+            "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/run_decode_check.py",
+            "--model",
+            "/data/models/Qwen3.5-4B-851bf6e",
+            "--output",
+            "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/decode-source4b"
+          ],
+          "receipt": "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/decode-source4b/receipt.json",
+          "status": "reused_completed"
+        },
+        {
+          "gpu": 1,
+          "command": [
+            "/workspace/acupuncture/.venv-bench/bin/python",
+            "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/run_decode_check.py",
+            "--model",
+            "/workspace/models/Qwen3.5-9B-c2022362",
+            "--output",
+            "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/decode-target9b"
+          ],
+          "receipt": "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/decode-target9b/receipt.json",
+          "status": "reused_completed"
+        }
+      ],
+      "ended_utc": "2026-10-25T22:43:51.212093+00:00"
+    },
+    {
+      "name": "source-confirmation",
+      "status": "completed_existing",
+      "started_utc": "2026-10-25T22:43:51.212253+00:00",
+      "receipts": [
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/source/shard0/receipt.json",
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/source/shard1/receipt.json"
+      ],
+      "ended_utc": "2026-10-25T22:52:41.252762+00:00"
+    },
+    {
+      "name": "target9b-confirmation",
+      "status": "completed",
+      "started_utc": "2026-10-25T22:52:41.253233+00:00",
+      "jobs": [
+        {
+          "gpu": 0,
+          "command": [
+            "/workspace/acupuncture/.venv-bench/bin/python",
+            "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/run_toy_parallel.py",
+            "--kind",
+            "target",
+            "--model",
+            "/workspace/models/Qwen3.5-9B-c2022362",
+            "--data",
+            "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/data",
+            "--output",
+            "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b/toy",
+            "--conditions",
+            "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b/mapping/bundle.pt",
+            "--source-output",
+            "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/source",
+            "--shard-index",
+            "0",
+            "--shard-count",
+            "6"
+          ],
+          "receipt": "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b/toy/shard0/receipt.json",
+          "status": "completed",
+          "pid": 1410394,
+          "log": "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b-confirmation-1-1792968761253451256.log",
+          "started_utc": "2026-10-25T22:52:41.253879+00:00",
+          "exit_code": 0,
+          "ended_utc": "2026-10-26T00:57:27.680495+00:00"
+        },
+        {
+          "gpu": 1,
+          "command": [
+            "/workspace/acupuncture/.venv-bench/bin/python",
+            "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/run_toy_parallel.py",
+            "--kind",
+            "target",
+            "--model",
+            "/workspace/models/Qwen3.5-9B-c2022362",
+            "--data",
+            "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/data",
+            "--output",
+            "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b/toy",
+            "--conditions",
+            "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b/mapping/bundle.pt",
+            "--source-output",
+            "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/source",
+            "--shard-index",
+            "1",
+            "--shard-count",
+            "6"
+          ],
+          "receipt": "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b/toy/shard1/receipt.json",
+          "status": "completed",
+          "pid": 1410395,
+          "log": "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b-confirmation-2-1792968761254119903.log",
+          "started_utc": "2026-10-25T22:52:41.254397+00:00",
+          "exit_code": 0,
+          "ended_utc": "2026-10-26T00:57:27.680518+00:00"
+        },
+        {
+          "gpu": 0,
+          "command": [
+            "/workspace/acupuncture/.venv-bench/bin/python",
+            "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/run_toy_parallel.py",
+            "--kind",
+            "target",
+            "--model",
+            "/workspace/models/Qwen3.5-9B-c2022362",
+            "--data",
+            "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/data",
+            "--output",
+            "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b/toy",
+            "--conditions",
+            "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b/mapping/bundle.pt",
+            "--source-output",
+            "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/source",
+            "--shard-index",
+            "2",
+            "--shard-count",
+            "6"
+          ],
+          "receipt": "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b/toy/shard2/receipt.json",
+          "status": "completed",
+          "pid": 1410396,
+          "log": "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b-confirmation-3-1792968761254614067.log",
+          "started_utc": "2026-10-25T22:52:41.254883+00:00",
+          "exit_code": 0,
+          "ended_utc": "2026-10-26T00:57:27.680521+00:00"
+        },
+        {
+          "gpu": 1,
+          "command": [
+            "/workspace/acupuncture/.venv-bench/bin/python",
+            "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/run_toy_parallel.py",
+            "--kind",
+            "target",
+            "--model",
+            "/workspace/models/Qwen3.5-9B-c2022362",
+            "--data",
+            "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/data",
+            "--output",
+            "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b/toy",
+            "--conditions",
+            "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b/mapping/bundle.pt",
+            "--source-output",
+            "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/source",
+            "--shard-index",
+            "3",
+            "--shard-count",
+            "6"
+          ],
+          "receipt": "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b/toy/shard3/receipt.json",
+          "status": "completed",
+          "pid": 1410397,
+          "log": "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b-confirmation-4-1792968761255215377.log",
+          "started_utc": "2026-10-25T22:52:41.255479+00:00",
+          "exit_code": 0,
+          "ended_utc": "2026-10-26T00:57:27.680524+00:00"
+        },
+        {
+          "gpu": 0,
+          "command": [
+            "/workspace/acupuncture/.venv-bench/bin/python",
+            "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/run_toy_parallel.py",
+            "--kind",
+            "target",
+            "--model",
+            "/workspace/models/Qwen3.5-9B-c2022362",
+            "--data",
+            "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/data",
+            "--output",
+            "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b/toy",
+            "--conditions",
+            "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b/mapping/bundle.pt",
+            "--source-output",
+            "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/source",
+            "--shard-index",
+            "4",
+            "--shard-count",
+            "6"
+          ],
+          "receipt": "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b/toy/shard4/receipt.json",
+          "status": "completed",
+          "pid": 1410398,
+          "log": "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b-confirmation-5-1792968761255721031.log",
+          "started_utc": "2026-10-25T22:52:41.255997+00:00",
+          "exit_code": 0,
+          "ended_utc": "2026-10-26T00:57:27.680526+00:00"
+        },
+        {
+          "gpu": 1,
+          "command": [
+            "/workspace/acupuncture/.venv-bench/bin/python",
+            "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/run_toy_parallel.py",
+            "--kind",
+            "target",
+            "--model",
+            "/workspace/models/Qwen3.5-9B-c2022362",
+            "--data",
+            "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/data",
+            "--output",
+            "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b/toy",
+            "--conditions",
+            "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b/mapping/bundle.pt",
+            "--source-output",
+            "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/source",
+            "--shard-index",
+            "5",
+            "--shard-count",
+            "6"
+          ],
+          "receipt": "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b/toy/shard5/receipt.json",
+          "status": "completed",
+          "pid": 1410399,
+          "log": "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b-confirmation-6-1792968761256271697.log",
+          "started_utc": "2026-10-25T22:52:41.256537+00:00",
+          "exit_code": 0,
+          "ended_utc": "2026-10-26T00:57:27.680528+00:00"
+        }
+      ],
+      "ended_utc": "2026-10-26T00:57:27.683410+00:00"
+    },
+    {
+      "name": "target9b-benchmark",
+      "status": "completed",
+      "started_utc": "2026-10-26T00:57:27.683833+00:00",
+      "jobs": [
+        {
+          "gpu": 0,
+          "command": [
+            "/workspace/acupuncture/.venv-bench/bin/python",
+            "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/run_benchmark_parallel.py",
+            "--model",
+            "/workspace/models/Qwen3.5-9B-c2022362",
+            "--conditions",
+            "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b/mapping/bundle.pt",
+            "--output",
+            "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b/benchmark",
+            "--shard-index",
+            "0",
+            "--shard-count",
+            "6"
+          ],
+          "receipt": "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b/benchmark/shard-0/receipt.json",
+          "status": "completed",
+          "pid": 1437655,
+          "log": "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b-benchmark-1-1792976247684140329.log",
+          "started_utc": "2026-10-26T00:57:27.684473+00:00",
+          "exit_code": 0,
+          "ended_utc": "2026-10-26T02:05:03.634278+00:00"
+        },
+        {
+          "gpu": 1,
+          "command": [
+            "/workspace/acupuncture/.venv-bench/bin/python",
+            "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/run_benchmark_parallel.py",
+            "--model",
+            "/workspace/models/Qwen3.5-9B-c2022362",
+            "--conditions",
+            "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b/mapping/bundle.pt",
+            "--output",
+            "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b/benchmark",
+            "--shard-index",
+            "1",
+            "--shard-count",
+            "6"
+          ],
+          "receipt": "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b/benchmark/shard-1/receipt.json",
+          "status": "completed",
+          "pid": 1437656,
+          "log": "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b-benchmark-2-1792976247684794376.log",
+          "started_utc": "2026-10-26T00:57:27.685086+00:00",
+          "exit_code": 0,
+          "ended_utc": "2026-10-26T02:05:03.634301+00:00"
+        },
+        {
+          "gpu": 0,
+          "command": [
+            "/workspace/acupuncture/.venv-bench/bin/python",
+            "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/run_benchmark_parallel.py",
+            "--model",
+            "/workspace/models/Qwen3.5-9B-c2022362",
+            "--conditions",
+            "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b/mapping/bundle.pt",
+            "--output",
+            "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b/benchmark",
+            "--shard-index",
+            "2",
+            "--shard-count",
+            "6"
+          ],
+          "receipt": "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b/benchmark/shard-2/receipt.json",
+          "status": "completed",
+          "pid": 1437657,
+          "log": "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b-benchmark-3-1792976247685406300.log",
+          "started_utc": "2026-10-26T00:57:27.685656+00:00",
+          "exit_code": 0,
+          "ended_utc": "2026-10-26T02:05:03.634304+00:00"
+        },
+        {
+          "gpu": 1,
+          "command": [
+            "/workspace/acupuncture/.venv-bench/bin/python",
+            "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/run_benchmark_parallel.py",
+            "--model",
+            "/workspace/models/Qwen3.5-9B-c2022362",
+            "--conditions",
+            "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b/mapping/bundle.pt",
+            "--output",
+            "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b/benchmark",
+            "--shard-index",
+            "3",
+            "--shard-count",
+            "6"
+          ],
+          "receipt": "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b/benchmark/shard-3/receipt.json",
+          "status": "completed",
+          "pid": 1437658,
+          "log": "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b-benchmark-4-1792976247686003245.log",
+          "started_utc": "2026-10-26T00:57:27.686248+00:00",
+          "exit_code": 0,
+          "ended_utc": "2026-10-26T02:05:03.634306+00:00"
+        },
+        {
+          "gpu": 0,
+          "command": [
+            "/workspace/acupuncture/.venv-bench/bin/python",
+            "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/run_benchmark_parallel.py",
+            "--model",
+            "/workspace/models/Qwen3.5-9B-c2022362",
+            "--conditions",
+            "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b/mapping/bundle.pt",
+            "--output",
+            "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b/benchmark",
+            "--shard-index",
+            "4",
+            "--shard-count",
+            "6"
+          ],
+          "receipt": "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b/benchmark/shard-4/receipt.json",
+          "status": "completed",
+          "pid": 1437659,
+          "log": "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b-benchmark-5-1792976247686572544.log",
+          "started_utc": "2026-10-26T00:57:27.686818+00:00",
+          "exit_code": 0,
+          "ended_utc": "2026-10-26T02:05:03.634309+00:00"
+        },
+        {
+          "gpu": 1,
+          "command": [
+            "/workspace/acupuncture/.venv-bench/bin/python",
+            "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/run_benchmark_parallel.py",
+            "--model",
+            "/workspace/models/Qwen3.5-9B-c2022362",
+            "--conditions",
+            "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b/mapping/bundle.pt",
+            "--output",
+            "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b/benchmark",
+            "--shard-index",
+            "5",
+            "--shard-count",
+            "6"
+          ],
+          "receipt": "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b/benchmark/shard-5/receipt.json",
+          "status": "completed",
+          "pid": 1437660,
+          "log": "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b-benchmark-6-1792976247687167562.log",
+          "started_utc": "2026-10-26T00:57:27.687403+00:00",
+          "exit_code": 0,
+          "ended_utc": "2026-10-26T02:05:03.634311+00:00"
+        }
+      ],
+      "ended_utc": "2026-10-26T02:05:03.636009+00:00"
+    },
+    {
+      "name": "target9b-benchmark-finish",
+      "status": "completed",
+      "started_utc": "2026-10-26T02:05:03.636448+00:00",
+      "jobs": [
+        {
+          "gpu": null,
+          "command": [
+            "/workspace/acupuncture/.venv-bench/bin/python",
+            "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/finish_benchmark_parallel.py",
+            "--output",
+            "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b/benchmark",
+            "--project",
+            "/workspace/acupuncture",
+            "--shard-count",
+            "6"
+          ],
+          "receipt": "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b/benchmark/finish-r01/receipt.json",
+          "status": "completed",
+          "pid": 1455163,
+          "log": "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b-benchmark-finish-1-1792980303636834515.log",
+          "started_utc": "2026-10-26T02:05:03.637164+00:00",
+          "exit_code": 0,
+          "ended_utc": "2026-10-26T02:05:13.639132+00:00"
+        }
+      ],
+      "ended_utc": "2026-10-26T02:05:13.641189+00:00"
+    },
+    {
+      "name": "target9b-export",
+      "status": "running",
+      "started_utc": "2026-10-26T02:05:13.641689+00:00",
+      "jobs": [
+        {
+          "gpu": null,
+          "command": [
+            "/workspace/acupuncture/.venv-bench/bin/python",
+            "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/export_results_parallel.py",
+            "--run",
+            "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01",
+            "--target",
+            "target9b",
+            "--data",
+            "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/data",
+            "--project",
+            "/workspace/acupuncture",
+            "--toy-shards",
+            "6",
+            "--benchmark-shards",
+            "6"
+          ],
+          "receipt": "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b/export-r01/receipt.json",
+          "status": "running",
+          "pid": 1458925,
+          "log": "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b-export-1-1792980313642109326.log",
+          "started_utc": "2026-10-26T02:05:13.642445+00:00"
+        }
+      ]
+    }
+  ],
+  "worker_count": 6,
+  "worker_gpu_slots": {
+    "0": 0,
+    "1": 1,
+    "2": 0,
+    "3": 1,
+    "4": 0,
+    "5": 1
+  },
+  "parallel_freeze_sha256": "4277d091c4f037e5ae965bef6b1d9c335805ab2fe519e7aab27d16dfe264fa2a",
+  "validation_receipt": "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/optimization-check-r01/runtime-three-r01/receipt.json",
+  "validation_sha256": "4aad53514111770e162bf3ed625975204f016b2cf7e2171ee605cf4beeb90619",
+  "validation_files_sha256": {
+    "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/optimization-check-r01/runtime-three-r01/receipt.json": "4aad53514111770e162bf3ed625975204f016b2cf7e2171ee605cf4beeb90619",
+    "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/optimization-check-r01/runtime-three-r01/worker0/receipt.json": "db5341850b7608e5a27350766da30e6cc02c7113fbf90086dfe9d74a3e620bba",
+    "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/optimization-check-r01/runtime-three-r01/worker1/receipt.json": "c1a59385e307c06016eb0e86040ac15bf55a9172cbfc5b1e7d7b40c7db948b62",
+    "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/optimization-check-r01/runtime-three-r01/worker2/receipt.json": "d85a6b476a30930a16804a31ab371fea0243435f4b02b78185715ed1450fb3ad"
+  },
+  "target_per_worker_rate_reference": 10.828226720996158,
+  "root_cause_experiment": "paused",
+  "behavior_ratings": "pending_independent_blind_review",
+  "previous_receipt": "queue-history-1792968231209130823.json",
+  "current_stage": "target9b-export"
+}

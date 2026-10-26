@@ -1,0 +1,1631 @@
+{
+  "status": "completed_read_only_timing_audit",
+  "created_utc": "2026-10-26T04:53:22.304Z",
+  "scope": "Machine execution timestamps and stored ETA scenarios only. No answer reading, behavioral rating, new inference, or scientific configuration changes.",
+  "source_run": "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01",
+  "start_definition": {
+    "primary": "Earliest observed actual preflight receipt in this run; includes local run preparation and elapsed gaps. Does not include earlier downloads, environment preparation, design, or future retrieval/review.",
+    "primary_evidence": "preflight-source4b/receipt.json",
+    "secondary": "Original formal collection queue start preserved by both queue-before-parallel and first queue-history. The final queue receipt start is an offline export recovery restart, not an experiment start."
+  },
+  "totals": [
+    {
+      "name": "earliest_recorded_preflight_to_final_queue",
+      "start_utc": "2026-10-25T21:48:04.965170+00:00",
+      "end_utc": "2026-10-26T04:28:16.778675+00:00",
+      "start_beijing": "2026-10-26T05:48:04.965+08:00",
+      "end_beijing": "2026-10-26T12:28:16.778+08:00",
+      "wall_seconds": 24011.813,
+      "wall_readable": "6h 40m 12s",
+      "evidence": [
+        "preflight-source4b/receipt.json",
+        "queue_receipt.json"
+      ]
+    },
+    {
+      "name": "original_formal_queue_to_final_queue",
+      "start_utc": "2026-10-25T22:04:13.812046+00:00",
+      "end_utc": "2026-10-26T04:28:16.778675+00:00",
+      "start_beijing": "2026-10-26T06:04:13.812+08:00",
+      "end_beijing": "2026-10-26T12:28:16.778+08:00",
+      "wall_seconds": 23042.966,
+      "wall_readable": "6h 24m 3s",
+      "evidence": [
+        "queue-before-parallel-r01.json",
+        "queue-history-1792968231209130823.json",
+        "queue_receipt.json"
+      ]
+    },
+    {
+      "name": "target9b_from_earliest_preflight_to_machine_export",
+      "start_utc": "2026-10-25T21:48:04.965170+00:00",
+      "end_utc": "2026-10-26T02:27:27.950555+00:00",
+      "start_beijing": "2026-10-26T05:48:04.965+08:00",
+      "end_beijing": "2026-10-26T10:27:27.950+08:00",
+      "wall_seconds": 16762.985,
+      "wall_readable": "4h 39m 23s",
+      "evidence": [
+        "preflight-source4b/receipt.json",
+        "target9b/export-r01/receipt.json"
+      ]
+    },
+    {
+      "name": "target2b_pipeline_after_9b_to_queue_completion",
+      "start_utc": "2026-10-26T02:27:29.778472+00:00",
+      "end_utc": "2026-10-26T04:28:16.778675+00:00",
+      "start_beijing": "2026-10-26T10:27:29.778+08:00",
+      "end_beijing": "2026-10-26T12:28:16.778+08:00",
+      "wall_seconds": 7247,
+      "wall_readable": "2h 0m 47s",
+      "evidence": [
+        "queue_receipt.json"
+      ]
+    }
+  ],
+  "machine_complete": {
+    "target9b": {
+      "utc": "2026-10-26T02:27:27.950555+00:00",
+      "beijing": "2026-10-26T10:27:27.950+08:00"
+    },
+    "target2b": {
+      "utc": "2026-10-26T04:28:14.969430+00:00",
+      "beijing": "2026-10-26T12:28:14.969+08:00"
+    },
+    "queue": {
+      "utc": "2026-10-26T04:28:16.778675+00:00",
+      "beijing": "2026-10-26T12:28:16.778+08:00"
+    },
+    "human_blind_review": "pending; not part of machine completion or ETA"
+  },
+  "sequential_queue_phases": [
+    {
+      "name": "initial_preparation_and_gaps",
+      "start_utc": "2026-10-25T21:48:04.965170+00:00",
+      "end_utc": "2026-10-25T22:04:13.812046+00:00",
+      "start_beijing": "2026-10-26T05:48:04.965+08:00",
+      "end_beijing": "2026-10-26T06:04:13.812+08:00",
+      "wall_seconds": 968.847,
+      "wall_readable": "0h 16m 9s",
+      "evidence": [
+        "preflight-source4b/receipt.json",
+        "queue-before-parallel-r01.json"
+      ],
+      "note": "Includes preflight, clean collections, bridge/mapping, decode checks and intervening elapsed gaps. Model downloads and design before the first receipt are outside this span."
+    },
+    {
+      "name": "source_192_confirmation",
+      "start_utc": "2026-10-25T22:04:13.814261+00:00",
+      "end_utc": "2026-10-25T22:52:41.252762+00:00",
+      "start_beijing": "2026-10-26T06:04:13.814+08:00",
+      "end_beijing": "2026-10-26T06:52:41.252+08:00",
+      "wall_seconds": 2907.438,
+      "wall_readable": "0h 48m 27s",
+      "evidence": [
+        "queue-before-parallel-r01.json",
+        "queue-history-1792981644761102048.json",
+        "source/shard0/receipt.json",
+        "source/shard1/receipt.json"
+      ],
+      "note": "Original two source workers preserved across scheduler replacement; no source restart."
+    },
+    {
+      "name": "target9b-confirmation",
+      "start_utc": "2026-10-25T22:52:41.253233+00:00",
+      "end_utc": "2026-10-26T00:57:27.683410+00:00",
+      "start_beijing": "2026-10-26T06:52:41.253+08:00",
+      "end_beijing": "2026-10-26T08:57:27.683+08:00",
+      "wall_seconds": 7486.43,
+      "wall_readable": "2h 4m 46s",
+      "evidence": [
+        "queue-history-1792981644761102048.json"
+      ]
+    },
+    {
+      "name": "target9b-benchmark",
+      "start_utc": "2026-10-26T00:57:27.683833+00:00",
+      "end_utc": "2026-10-26T02:05:03.636009+00:00",
+      "start_beijing": "2026-10-26T08:57:27.683+08:00",
+      "end_beijing": "2026-10-26T10:05:03.636+08:00",
+      "wall_seconds": 4055.953,
+      "wall_readable": "1h 7m 36s",
+      "evidence": [
+        "queue-history-1792981644761102048.json"
+      ]
+    },
+    {
+      "name": "target9b-benchmark-finish",
+      "start_utc": "2026-10-26T02:05:03.636448+00:00",
+      "end_utc": "2026-10-26T02:05:13.641189+00:00",
+      "start_beijing": "2026-10-26T10:05:03.636+08:00",
+      "end_beijing": "2026-10-26T10:05:13.641+08:00",
+      "wall_seconds": 10.005,
+      "wall_readable": "0h 0m 10s",
+      "evidence": [
+        "queue-history-1792981644761102048.json"
+      ]
+    },
+    {
+      "name": "target9b_export_including_network_stall_and_offline_recovery",
+      "start_utc": "2026-10-26T02:05:13.641689+00:00",
+      "end_utc": "2026-10-26T02:27:29.777989+00:00",
+      "start_beijing": "2026-10-26T10:05:13.641+08:00",
+      "end_beijing": "2026-10-26T10:27:29.777+08:00",
+      "wall_seconds": 1336.136,
+      "wall_readable": "0h 22m 16s",
+      "evidence": [
+        "queue-history-1792981644761102048.json",
+        "offline-export-recovery-r01/receipt.json",
+        "target9b/export-network-retry-r01/receipt.json",
+        "target9b/export-r01/receipt.json",
+        "queue_receipt.json"
+      ]
+    },
+    {
+      "name": "2b-preflight",
+      "start_utc": "2026-10-26T02:27:29.778472+00:00",
+      "end_utc": "2026-10-26T02:27:39.782274+00:00",
+      "start_beijing": "2026-10-26T10:27:29.778+08:00",
+      "end_beijing": "2026-10-26T10:27:39.782+08:00",
+      "wall_seconds": 10.004,
+      "wall_readable": "0h 0m 10s",
+      "evidence": [
+        "queue_receipt.json"
+      ]
+    },
+    {
+      "name": "2b-decode-check",
+      "start_utc": "2026-10-26T02:27:39.782676+00:00",
+      "end_utc": "2026-10-26T02:28:04.789868+00:00",
+      "start_beijing": "2026-10-26T10:27:39.782+08:00",
+      "end_beijing": "2026-10-26T10:28:04.789+08:00",
+      "wall_seconds": 25.007,
+      "wall_readable": "0h 0m 25s",
+      "evidence": [
+        "queue_receipt.json"
+      ]
+    },
+    {
+      "name": "2b-clean-collection",
+      "start_utc": "2026-10-26T02:28:04.790308+00:00",
+      "end_utc": "2026-10-26T02:28:49.800852+00:00",
+      "start_beijing": "2026-10-26T10:28:04.790+08:00",
+      "end_beijing": "2026-10-26T10:28:49.800+08:00",
+      "wall_seconds": 45.01,
+      "wall_readable": "0h 0m 45s",
+      "evidence": [
+        "queue_receipt.json"
+      ]
+    },
+    {
+      "name": "2b-mapping",
+      "start_utc": "2026-10-26T02:28:49.801313+00:00",
+      "end_utc": "2026-10-26T02:28:59.805400+00:00",
+      "start_beijing": "2026-10-26T10:28:49.801+08:00",
+      "end_beijing": "2026-10-26T10:28:59.805+08:00",
+      "wall_seconds": 10.004,
+      "wall_readable": "0h 0m 10s",
+      "evidence": [
+        "queue_receipt.json"
+      ]
+    },
+    {
+      "name": "2b-parallel-reference",
+      "start_utc": "2026-10-26T02:28:59.805865+00:00",
+      "end_utc": "2026-10-26T02:30:34.829072+00:00",
+      "start_beijing": "2026-10-26T10:28:59.805+08:00",
+      "end_beijing": "2026-10-26T10:30:34.829+08:00",
+      "wall_seconds": 95.024,
+      "wall_readable": "0h 1m 35s",
+      "evidence": [
+        "queue_receipt.json"
+      ]
+    },
+    {
+      "name": "2b-parallel-validation",
+      "start_utc": "2026-10-26T02:30:34.829578+00:00",
+      "end_utc": "2026-10-26T02:32:09.852567+00:00",
+      "start_beijing": "2026-10-26T10:30:34.829+08:00",
+      "end_beijing": "2026-10-26T10:32:09.852+08:00",
+      "wall_seconds": 95.023,
+      "wall_readable": "0h 1m 35s",
+      "evidence": [
+        "queue_receipt.json"
+      ]
+    },
+    {
+      "name": "target2b-confirmation",
+      "start_utc": "2026-10-26T02:32:09.853300+00:00",
+      "end_utc": "2026-10-26T03:56:16.244231+00:00",
+      "start_beijing": "2026-10-26T10:32:09.853+08:00",
+      "end_beijing": "2026-10-26T11:56:16.244+08:00",
+      "wall_seconds": 5046.391,
+      "wall_readable": "1h 24m 6s",
+      "evidence": [
+        "queue_receipt.json"
+      ]
+    },
+    {
+      "name": "target2b-benchmark",
+      "start_utc": "2026-10-26T03:56:16.244941+00:00",
+      "end_utc": "2026-10-26T04:28:01.764064+00:00",
+      "start_beijing": "2026-10-26T11:56:16.244+08:00",
+      "end_beijing": "2026-10-26T12:28:01.764+08:00",
+      "wall_seconds": 1905.52,
+      "wall_readable": "0h 31m 46s",
+      "evidence": [
+        "queue_receipt.json"
+      ]
+    },
+    {
+      "name": "target2b-benchmark-finish",
+      "start_utc": "2026-10-26T04:28:01.764795+00:00",
+      "end_utc": "2026-10-26T04:28:11.771002+00:00",
+      "start_beijing": "2026-10-26T12:28:01.764+08:00",
+      "end_beijing": "2026-10-26T12:28:11.771+08:00",
+      "wall_seconds": 10.007,
+      "wall_readable": "0h 0m 10s",
+      "evidence": [
+        "queue_receipt.json"
+      ]
+    },
+    {
+      "name": "target2b-export",
+      "start_utc": "2026-10-26T04:28:11.771788+00:00",
+      "end_utc": "2026-10-26T04:28:16.777794+00:00",
+      "start_beijing": "2026-10-26T12:28:11.771+08:00",
+      "end_beijing": "2026-10-26T12:28:16.777+08:00",
+      "wall_seconds": 5.006,
+      "wall_readable": "0h 0m 5s",
+      "evidence": [
+        "queue_receipt.json"
+      ]
+    }
+  ],
+  "actual_worker_spans": [
+    {
+      "name": "source_confirmation",
+      "start_utc": "2026-10-25T22:04:13.844525+00:00",
+      "end_utc": "2026-10-25T22:52:39.693927+00:00",
+      "start_beijing": "2026-10-26T06:04:13.844+08:00",
+      "end_beijing": "2026-10-26T06:52:39.693+08:00",
+      "wall_seconds": 2905.849,
+      "wall_readable": "0h 48m 26s",
+      "evidence": [
+        "source/shard0/receipt.json",
+        "source/shard1/receipt.json"
+      ],
+      "individual_worker_wall_seconds": [
+        {
+          "path": "source/shard0/receipt.json",
+          "wall_seconds": 2792.867
+        },
+        {
+          "path": "source/shard1/receipt.json",
+          "wall_seconds": 2905.848
+        }
+      ],
+      "fastest_to_slowest_completion_gap_seconds": 112.982
+    },
+    {
+      "name": "target9b_toy",
+      "start_utc": "2026-10-25T22:52:41.285731+00:00",
+      "end_utc": "2026-10-26T00:57:24.941740+00:00",
+      "start_beijing": "2026-10-26T06:52:41.285+08:00",
+      "end_beijing": "2026-10-26T08:57:24.941+08:00",
+      "wall_seconds": 7483.656,
+      "wall_readable": "2h 4m 44s",
+      "evidence": [
+        "target9b/toy/shard0/receipt.json",
+        "target9b/toy/shard1/receipt.json",
+        "target9b/toy/shard2/receipt.json",
+        "target9b/toy/shard3/receipt.json",
+        "target9b/toy/shard4/receipt.json",
+        "target9b/toy/shard5/receipt.json"
+      ],
+      "individual_worker_wall_seconds": [
+        {
+          "path": "target9b/toy/shard0/receipt.json",
+          "wall_seconds": 7483.656
+        },
+        {
+          "path": "target9b/toy/shard1/receipt.json",
+          "wall_seconds": 7391.342
+        },
+        {
+          "path": "target9b/toy/shard2/receipt.json",
+          "wall_seconds": 7110.522
+        },
+        {
+          "path": "target9b/toy/shard3/receipt.json",
+          "wall_seconds": 7098.085
+        },
+        {
+          "path": "target9b/toy/shard4/receipt.json",
+          "wall_seconds": 6770.225
+        },
+        {
+          "path": "target9b/toy/shard5/receipt.json",
+          "wall_seconds": 6719.303
+        }
+      ],
+      "fastest_to_slowest_completion_gap_seconds": 764.35
+    },
+    {
+      "name": "target9b_benchmark",
+      "start_utc": "2026-10-26T00:57:27.766572+00:00",
+      "end_utc": "2026-10-26T02:05:01.047968+00:00",
+      "start_beijing": "2026-10-26T08:57:27.766+08:00",
+      "end_beijing": "2026-10-26T10:05:01.047+08:00",
+      "wall_seconds": 4053.281,
+      "wall_readable": "1h 7m 33s",
+      "evidence": [
+        "target9b/benchmark/shard-0/receipt.json",
+        "target9b/benchmark/shard-1/receipt.json",
+        "target9b/benchmark/shard-2/receipt.json",
+        "target9b/benchmark/shard-3/receipt.json",
+        "target9b/benchmark/shard-4/receipt.json",
+        "target9b/benchmark/shard-5/receipt.json"
+      ],
+      "individual_worker_wall_seconds": [
+        {
+          "path": "target9b/benchmark/shard-0/receipt.json",
+          "wall_seconds": 4046.586
+        },
+        {
+          "path": "target9b/benchmark/shard-1/receipt.json",
+          "wall_seconds": 4053.281
+        },
+        {
+          "path": "target9b/benchmark/shard-2/receipt.json",
+          "wall_seconds": 4050.037
+        },
+        {
+          "path": "target9b/benchmark/shard-3/receipt.json",
+          "wall_seconds": 4005.895
+        },
+        {
+          "path": "target9b/benchmark/shard-4/receipt.json",
+          "wall_seconds": 3978.239
+        },
+        {
+          "path": "target9b/benchmark/shard-5/receipt.json",
+          "wall_seconds": 3862.424
+        }
+      ],
+      "fastest_to_slowest_completion_gap_seconds": 190.857
+    },
+    {
+      "name": "target2b_toy",
+      "start_utc": "2026-10-26T02:32:09.885934+00:00",
+      "end_utc": "2026-10-26T03:56:11.639193+00:00",
+      "start_beijing": "2026-10-26T10:32:09.885+08:00",
+      "end_beijing": "2026-10-26T11:56:11.639+08:00",
+      "wall_seconds": 5041.754,
+      "wall_readable": "1h 24m 2s",
+      "evidence": [
+        "target2b/toy/shard0/receipt.json",
+        "target2b/toy/shard1/receipt.json",
+        "target2b/toy/shard2/receipt.json",
+        "target2b/toy/shard3/receipt.json",
+        "target2b/toy/shard4/receipt.json",
+        "target2b/toy/shard5/receipt.json"
+      ],
+      "individual_worker_wall_seconds": [
+        {
+          "path": "target2b/toy/shard0/receipt.json",
+          "wall_seconds": 5041.754
+        },
+        {
+          "path": "target2b/toy/shard1/receipt.json",
+          "wall_seconds": 4871.95
+        },
+        {
+          "path": "target2b/toy/shard2/receipt.json",
+          "wall_seconds": 4672.311
+        },
+        {
+          "path": "target2b/toy/shard3/receipt.json",
+          "wall_seconds": 4767.421
+        },
+        {
+          "path": "target2b/toy/shard4/receipt.json",
+          "wall_seconds": 4540.084
+        },
+        {
+          "path": "target2b/toy/shard5/receipt.json",
+          "wall_seconds": 4549.755
+        }
+      ],
+      "fastest_to_slowest_completion_gap_seconds": 501.667
+    },
+    {
+      "name": "target2b_benchmark",
+      "start_utc": "2026-10-26T03:56:16.321159+00:00",
+      "end_utc": "2026-10-26T04:27:56.393537+00:00",
+      "start_beijing": "2026-10-26T11:56:16.321+08:00",
+      "end_beijing": "2026-10-26T12:27:56.393+08:00",
+      "wall_seconds": 1900.072,
+      "wall_readable": "0h 31m 40s",
+      "evidence": [
+        "target2b/benchmark/shard-0/receipt.json",
+        "target2b/benchmark/shard-1/receipt.json",
+        "target2b/benchmark/shard-2/receipt.json",
+        "target2b/benchmark/shard-3/receipt.json",
+        "target2b/benchmark/shard-4/receipt.json",
+        "target2b/benchmark/shard-5/receipt.json"
+      ],
+      "individual_worker_wall_seconds": [
+        {
+          "path": "target2b/benchmark/shard-0/receipt.json",
+          "wall_seconds": 1570.822
+        },
+        {
+          "path": "target2b/benchmark/shard-1/receipt.json",
+          "wall_seconds": 1900.072
+        },
+        {
+          "path": "target2b/benchmark/shard-2/receipt.json",
+          "wall_seconds": 1494.211
+        },
+        {
+          "path": "target2b/benchmark/shard-3/receipt.json",
+          "wall_seconds": 1548.938
+        },
+        {
+          "path": "target2b/benchmark/shard-4/receipt.json",
+          "wall_seconds": 1564.412
+        },
+        {
+          "path": "target2b/benchmark/shard-5/receipt.json",
+          "wall_seconds": 1510.018
+        }
+      ],
+      "fastest_to_slowest_completion_gap_seconds": 405.861
+    }
+  ],
+  "initial_preparation_receipts": {
+    "preflight-source4b/receipt.json": {
+      "status": "completed",
+      "started_utc": "2026-10-25T21:48:04.965170+00:00",
+      "ended_utc": "2026-10-25T21:48:13.052756+00:00"
+    },
+    "preflight-target9b/receipt.json": {
+      "status": "completed",
+      "started_utc": "2026-10-25T21:48:05.050615+00:00",
+      "ended_utc": "2026-10-25T21:48:17.130245+00:00"
+    },
+    "collection-source4b/receipt.json": {
+      "status": "completed",
+      "started_utc": "2026-10-25T21:53:51.652535+00:00",
+      "ended_utc": "2026-10-25T21:54:31.119691+00:00"
+    },
+    "collection-target9b/receipt.json": {
+      "status": "completed",
+      "started_utc": "2026-10-25T21:55:49.147688+00:00",
+      "ended_utc": "2026-10-25T21:56:45.584025+00:00"
+    },
+    "bridge/receipt.json": {
+      "status": "completed",
+      "started_utc": "2026-10-25T21:58:41.668429+00:00",
+      "ended_utc": "2026-10-25T21:59:11.521192+00:00"
+    },
+    "target9b/mapping/receipt.json": {
+      "status": "completed",
+      "started_utc": "2026-10-25T21:58:42.725692+00:00",
+      "ended_utc": "2026-10-25T21:58:49.521899+00:00"
+    },
+    "decode-source4b/receipt.json": {
+      "status": "completed",
+      "started_utc": "2026-10-25T21:59:44.581144+00:00",
+      "ended_utc": "2026-10-25T22:00:09.471406+00:00",
+      "wall_seconds": 24.890285063534975,
+      "setup_seconds": 7.943986091762781
+    },
+    "decode-target9b/receipt.json": {
+      "status": "completed",
+      "started_utc": "2026-10-25T21:59:44.581097+00:00",
+      "ended_utc": "2026-10-25T22:00:13.468017+00:00",
+      "wall_seconds": 28.88694291561842,
+      "setup_seconds": 11.057723129168153
+    }
+  },
+  "export_recovery": {
+    "attempt_started_utc": "2026-10-26T02:05:13.681671+00:00",
+    "attempt_stopped_utc": "2026-10-26T02:27:24.720441+00:00",
+    "stalled_attempt_elapsed_seconds": 1331.039,
+    "successful_offline_export_seconds": 3.141,
+    "recorded_reason": "Pinned cached datasets retried network access; resumed export with offline environment. All inference reused; original frozen code unchanged.",
+    "note": "This measures elapsed stalled attempt, not pure CPU service time. The archived attempt receipt correctly remains historical running; stop is evidenced by recovery receipt."
+  },
+  "eta_audit": {
+    "error_sign": "predicted finish minus actual finish: positive means a later/conservative estimate; negative means completion occurred later than predicted.",
+    "monitoring_path": "execution-parallel-r01/monitoring.jsonl",
+    "monitoring_sha256": "363baeb455a07667807605b9432bf9dc132fe09aebc9d8b9c27e91cfaf8436fb",
+    "monitoring_record_count": 12,
+    "actual_endpoint": "target9b export receipt for 9B; final queue receipt for queue forecasts; queue target2b-confirmation end for toy forecasts",
+    "rows": [
+      {
+        "monitoring_line": 1,
+        "checked_utc": "2026-10-25T23:17:50.537492+00:00",
+        "checked_beijing": "2026-10-26T07:17:50.537+08:00",
+        "stage": "target9b-confirmation",
+        "basis": "9B toy observed per-condition means; unseen Benchmark and 2B stages use full token caps and concurrency-probe rate; excludes human review",
+        "predictions": [
+          {
+            "kind": "target9b",
+            "field": "target9b_finish_beijing_scenario",
+            "predicted_finish": "2026-10-26T11:49:15.921865+08:00",
+            "actual_finish_utc": "2026-10-26T02:27:27.950555+00:00",
+            "predicted_minus_actual_seconds": 4907.971,
+            "predicted_minus_actual_minutes": 81.79951666666666,
+            "estimated_remaining_seconds_at_check": 16285.384,
+            "actual_remaining_seconds_at_check": 11377.413
+          },
+          {
+            "kind": "queue",
+            "field": "queue_finish_beijing_scenario",
+            "predicted_finish": "2026-10-26T17:32:36.242455+08:00",
+            "actual_finish_utc": "2026-10-26T04:28:16.778675+00:00",
+            "predicted_minus_actual_seconds": 18259.464,
+            "predicted_minus_actual_minutes": 304.3244,
+            "estimated_remaining_seconds_at_check": 36885.705,
+            "actual_remaining_seconds_at_check": 18626.241
+          }
+        ]
+      },
+      {
+        "monitoring_line": 2,
+        "checked_utc": "2026-10-25T23:47:45.430925+00:00",
+        "checked_beijing": "2026-10-26T07:47:45.430+08:00",
+        "stage": "target9b-confirmation",
+        "basis": "9B toy observed per-condition means; unseen Benchmark and 2B stages use full token caps and concurrency-probe rate; excludes human review",
+        "predictions": [
+          {
+            "kind": "target9b",
+            "field": "target9b_finish_beijing_scenario",
+            "predicted_finish": "2026-10-26T11:48:55.025799+08:00",
+            "actual_finish_utc": "2026-10-26T02:27:27.950555+00:00",
+            "predicted_minus_actual_seconds": 4887.075,
+            "predicted_minus_actual_minutes": 81.45125,
+            "estimated_remaining_seconds_at_check": 14469.595,
+            "actual_remaining_seconds_at_check": 9582.52
+          },
+          {
+            "kind": "queue",
+            "field": "queue_finish_beijing_scenario",
+            "predicted_finish": "2026-10-26T17:32:15.346388+08:00",
+            "actual_finish_utc": "2026-10-26T04:28:16.778675+00:00",
+            "predicted_minus_actual_seconds": 18238.568,
+            "predicted_minus_actual_minutes": 303.97613333333334,
+            "estimated_remaining_seconds_at_check": 35069.916,
+            "actual_remaining_seconds_at_check": 16831.348
+          }
+        ]
+      },
+      {
+        "monitoring_line": 3,
+        "checked_utc": "2026-10-26T00:17:47.397462+00:00",
+        "checked_beijing": "2026-10-26T08:17:47.397+08:00",
+        "stage": "target9b-confirmation",
+        "basis": "9B toy observed per-condition means; unseen Benchmark and 2B stages use full token caps and concurrency-probe rate; excludes human review",
+        "predictions": [
+          {
+            "kind": "target9b",
+            "field": "target9b_finish_beijing_scenario",
+            "predicted_finish": "2026-10-26T11:48:24.171466+08:00",
+            "actual_finish_utc": "2026-10-26T02:27:27.950555+00:00",
+            "predicted_minus_actual_seconds": 4856.221,
+            "predicted_minus_actual_minutes": 80.93701666666666,
+            "estimated_remaining_seconds_at_check": 12636.774,
+            "actual_remaining_seconds_at_check": 7780.553
+          },
+          {
+            "kind": "queue",
+            "field": "queue_finish_beijing_scenario",
+            "predicted_finish": "2026-10-26T17:31:44.492055+08:00",
+            "actual_finish_utc": "2026-10-26T04:28:16.778675+00:00",
+            "predicted_minus_actual_seconds": 18207.714,
+            "predicted_minus_actual_minutes": 303.4619,
+            "estimated_remaining_seconds_at_check": 33237.095,
+            "actual_remaining_seconds_at_check": 15029.381
+          }
+        ]
+      },
+      {
+        "monitoring_line": 4,
+        "checked_utc": "2026-10-26T00:47:47.091051+00:00",
+        "checked_beijing": "2026-10-26T08:47:47.091+08:00",
+        "stage": "target9b-confirmation",
+        "basis": "9B toy observed per-condition means; unseen Benchmark and 2B stages use full token caps and concurrency-probe rate; excludes human review",
+        "predictions": [
+          {
+            "kind": "target9b",
+            "field": "target9b_finish_beijing_scenario",
+            "predicted_finish": "2026-10-26T11:47:44.206016+08:00",
+            "actual_finish_utc": "2026-10-26T02:27:27.950555+00:00",
+            "predicted_minus_actual_seconds": 4816.256,
+            "predicted_minus_actual_minutes": 80.27093333333333,
+            "estimated_remaining_seconds_at_check": 10797.115,
+            "actual_remaining_seconds_at_check": 5980.859
+          },
+          {
+            "kind": "queue",
+            "field": "queue_finish_beijing_scenario",
+            "predicted_finish": "2026-10-26T17:31:04.526605+08:00",
+            "actual_finish_utc": "2026-10-26T04:28:16.778675+00:00",
+            "predicted_minus_actual_seconds": 18167.748,
+            "predicted_minus_actual_minutes": 302.7958,
+            "estimated_remaining_seconds_at_check": 31397.435,
+            "actual_remaining_seconds_at_check": 13229.687
+          }
+        ]
+      },
+      {
+        "monitoring_line": 5,
+        "checked_utc": "2026-10-26T01:17:49.063641+00:00",
+        "checked_beijing": "2026-10-26T09:17:49.063+08:00",
+        "stage": "target9b-benchmark",
+        "basis": "9B measured benchmark task means where at least four pairs exist; unseen tasks and 2B use full token caps and concurrency-probe rate; excludes human review",
+        "predictions": [
+          {
+            "kind": "target9b",
+            "field": "target9b_finish_beijing_scenario",
+            "predicted_finish": "2026-10-26T11:04:19.993509+08:00",
+            "actual_finish_utc": "2026-10-26T02:27:27.950555+00:00",
+            "predicted_minus_actual_seconds": 2212.043,
+            "predicted_minus_actual_minutes": 36.867383333333336,
+            "estimated_remaining_seconds_at_check": 6390.93,
+            "actual_remaining_seconds_at_check": 4178.887
+          },
+          {
+            "kind": "queue",
+            "field": "queue_finish_beijing_scenario",
+            "predicted_finish": "2026-10-26T16:47:40.314098+08:00",
+            "actual_finish_utc": "2026-10-26T04:28:16.778675+00:00",
+            "predicted_minus_actual_seconds": 15563.536,
+            "predicted_minus_actual_minutes": 259.39226666666667,
+            "estimated_remaining_seconds_at_check": 26991.251,
+            "actual_remaining_seconds_at_check": 11427.715
+          }
+        ]
+      },
+      {
+        "monitoring_line": 6,
+        "checked_utc": "2026-10-26T01:47:54.369258+00:00",
+        "checked_beijing": "2026-10-26T09:47:54.369+08:00",
+        "stage": "target9b-benchmark",
+        "basis": "9B measured generation-task means; unstarted choice tasks use fixed allowances; 2B uses full token caps and concurrency-probe rate; excludes human review",
+        "predictions": [
+          {
+            "kind": "target9b",
+            "field": "target9b_finish_beijing_scenario",
+            "predicted_finish": "2026-10-26T10:06:54.458817+08:00",
+            "actual_finish_utc": "2026-10-26T02:27:27.950555+00:00",
+            "predicted_minus_actual_seconds": -1233.492,
+            "predicted_minus_actual_minutes": -20.5582,
+            "estimated_remaining_seconds_at_check": 1140.089,
+            "actual_remaining_seconds_at_check": 2373.581
+          },
+          {
+            "kind": "queue",
+            "field": "queue_finish_beijing_scenario",
+            "predicted_finish": "2026-10-26T15:50:14.779406+08:00",
+            "actual_finish_utc": "2026-10-26T04:28:16.778675+00:00",
+            "predicted_minus_actual_seconds": 12118.001,
+            "predicted_minus_actual_minutes": 201.96668333333335,
+            "estimated_remaining_seconds_at_check": 21740.41,
+            "actual_remaining_seconds_at_check": 9622.409
+          }
+        ]
+      },
+      {
+        "monitoring_line": 7,
+        "checked_utc": "2026-10-26T02:29:53.934516+00:00",
+        "checked_beijing": "2026-10-26T10:29:53.934+08:00",
+        "stage": "2b-parallel-reference",
+        "basis": "Not a confidence interval or guaranteed upper bound. Unmeasured arms use full token budgets and per-worker probe speed with configured worker count; measured arms use condition/task means. 2B initially inherits 9B concurrent speed. Unmeasured 2B setup, parallel validation and export use explicit rough allowances, not timed guarantees. Excludes human ratings and future failures.",
+        "predictions": [
+          {
+            "kind": "queue",
+            "field": "models.target2b.finish_beijing_scenario",
+            "predicted_finish": "2026-10-26T16:11:14.255105+08:00",
+            "actual_finish_utc": "2026-10-26T04:28:16.778675+00:00",
+            "predicted_minus_actual_seconds": 13377.477,
+            "predicted_minus_actual_minutes": 222.95795,
+            "estimated_remaining_seconds_at_check": 20480.321,
+            "actual_remaining_seconds_at_check": 7102.844
+          }
+        ]
+      },
+      {
+        "monitoring_line": 8,
+        "checked_utc": "2026-10-26T02:32:38.189562+00:00",
+        "checked_beijing": "2026-10-26T10:32:38.189+08:00",
+        "stage": "target2b-confirmation",
+        "basis": "2B just started; full token budgets at 9B concurrent probe speed; not a guarantee; excludes human blind review",
+        "predictions": [
+          {
+            "kind": "queue",
+            "field": "queue_finish_beijing_scenario",
+            "predicted_finish": "2026-10-26T16:08:58.510151+08:00",
+            "actual_finish_utc": "2026-10-26T04:28:16.778675+00:00",
+            "predicted_minus_actual_seconds": 13241.732,
+            "predicted_minus_actual_minutes": 220.69553333333334,
+            "estimated_remaining_seconds_at_check": 20180.321,
+            "actual_remaining_seconds_at_check": 6938.589
+          }
+        ]
+      },
+      {
+        "monitoring_line": 9,
+        "checked_utc": "2026-10-26T02:49:06.641416+00:00",
+        "checked_beijing": "2026-10-26T10:49:06.641+08:00",
+        "stage": "target2b-confirmation",
+        "basis": "2B behavior per-condition observed means (at least two samples per condition per worker); unseen diagnostics fixed allowances; unseen benchmark full token budgets at measured 2B three-process probe speed. Comparison uses earlier 9B speed. Rough 120s export allowance; excludes independent human review. Scenarios, not confidence bounds.",
+        "predictions": [
+          {
+            "kind": "queue_2b_probe",
+            "field": "queue_finish_beijing_2b_probe_scenario",
+            "predicted_finish": "2026-10-26T13:28:26.381+08:00",
+            "actual_finish_utc": "2026-10-26T04:28:16.778675+00:00",
+            "predicted_minus_actual_seconds": 3609.603,
+            "predicted_minus_actual_minutes": 60.16005,
+            "estimated_remaining_seconds_at_check": 9559.74,
+            "actual_remaining_seconds_at_check": 5950.137
+          },
+          {
+            "kind": "queue_9b_probe_comparison",
+            "field": "queue_finish_beijing_9b_probe_scenario",
+            "predicted_finish": "2026-10-26T14:47:04.442229+08:00",
+            "actual_finish_utc": "2026-10-26T04:28:16.778675+00:00",
+            "predicted_minus_actual_seconds": 8327.664,
+            "predicted_minus_actual_minutes": 138.79440000000002,
+            "estimated_remaining_seconds_at_check": 14277.801,
+            "actual_remaining_seconds_at_check": 5950.137
+          },
+          {
+            "kind": "target2b_toy",
+            "field": "target2b_behavior_and_diagnostic_finish_beijing",
+            "predicted_finish": "2026-10-26T12:00:39.941+08:00",
+            "actual_finish_utc": "2026-10-26T03:56:16.244231+00:00",
+            "predicted_minus_actual_seconds": 263.697,
+            "predicted_minus_actual_minutes": 4.39495,
+            "estimated_remaining_seconds_at_check": 4293.3,
+            "actual_remaining_seconds_at_check": 4029.603
+          }
+        ]
+      },
+      {
+        "monitoring_line": 10,
+        "checked_utc": "2026-10-26T03:21:05.933086+00:00",
+        "checked_beijing": "2026-10-26T11:21:05.933+08:00",
+        "stage": "target2b-confirmation",
+        "basis": "2B behavior per-condition observed means (at least two samples per condition per worker); unseen diagnostics fixed allowances; unseen benchmark full token budgets at measured 2B three-process probe speed. Comparison uses earlier 9B speed. Rough 120s export allowance; excludes independent human review. Scenarios, not confidence bounds.",
+        "predictions": [
+          {
+            "kind": "queue_2b_probe",
+            "field": "queue_finish_beijing_2b_probe_scenario",
+            "predicted_finish": "2026-10-26T13:28:42.432+08:00",
+            "actual_finish_utc": "2026-10-26T04:28:16.778675+00:00",
+            "predicted_minus_actual_seconds": 3625.654,
+            "predicted_minus_actual_minutes": 60.427566666666664,
+            "estimated_remaining_seconds_at_check": 7656.499,
+            "actual_remaining_seconds_at_check": 4030.845
+          },
+          {
+            "kind": "queue_9b_probe_comparison",
+            "field": "queue_finish_beijing_9b_probe_scenario",
+            "predicted_finish": "2026-10-26T14:47:20.493012+08:00",
+            "actual_finish_utc": "2026-10-26T04:28:16.778675+00:00",
+            "predicted_minus_actual_seconds": 8343.715,
+            "predicted_minus_actual_minutes": 139.06191666666666,
+            "estimated_remaining_seconds_at_check": 12374.56,
+            "actual_remaining_seconds_at_check": 4030.845
+          },
+          {
+            "kind": "target2b_toy",
+            "field": "target2b_behavior_and_diagnostic_finish_beijing",
+            "predicted_finish": "2026-10-26T12:00:55.992+08:00",
+            "actual_finish_utc": "2026-10-26T03:56:16.244231+00:00",
+            "predicted_minus_actual_seconds": 279.748,
+            "predicted_minus_actual_minutes": 4.662466666666666,
+            "estimated_remaining_seconds_at_check": 2390.059,
+            "actual_remaining_seconds_at_check": 2110.311
+          }
+        ]
+      },
+      {
+        "monitoring_line": 11,
+        "checked_utc": "2026-10-26T03:49:34.160226+00:00",
+        "checked_beijing": "2026-10-26T11:49:34.160+08:00",
+        "stage": "target2b-confirmation",
+        "basis": "2B observed behavior and diagnostic condition means, with fixed allowances for as-yet-unmeasured diagnostic conditions; unseen benchmark uses full token budgets at measured 2B three-process probe speed and fixed choice-scoring allowances. Comparison uses earlier 9B probe speed. Rough 120s export allowance; excludes independent human review. Scenarios, not confidence bounds.",
+        "predictions": [
+          {
+            "kind": "queue_2b_probe",
+            "field": "queue_finish_beijing_2b_probe_scenario",
+            "predicted_finish": "2026-10-26T13:27:40.256+08:00",
+            "actual_finish_utc": "2026-10-26T04:28:16.778675+00:00",
+            "predicted_minus_actual_seconds": 3563.478,
+            "predicted_minus_actual_minutes": 59.3913,
+            "estimated_remaining_seconds_at_check": 5886.096,
+            "actual_remaining_seconds_at_check": 2322.618
+          },
+          {
+            "kind": "queue_9b_probe_comparison",
+            "field": "queue_finish_beijing_9b_probe_scenario",
+            "predicted_finish": "2026-10-26T14:46:18.317021+08:00",
+            "actual_finish_utc": "2026-10-26T04:28:16.778675+00:00",
+            "predicted_minus_actual_seconds": 8281.539,
+            "predicted_minus_actual_minutes": 138.02565,
+            "estimated_remaining_seconds_at_check": 10604.157,
+            "actual_remaining_seconds_at_check": 2322.618
+          },
+          {
+            "kind": "target2b_toy",
+            "field": "target2b_behavior_and_diagnostic_finish_beijing",
+            "predicted_finish": "2026-10-26T11:59:53.816+08:00",
+            "actual_finish_utc": "2026-10-26T03:56:16.244231+00:00",
+            "predicted_minus_actual_seconds": 217.572,
+            "predicted_minus_actual_minutes": 3.6262,
+            "estimated_remaining_seconds_at_check": 619.656,
+            "actual_remaining_seconds_at_check": 402.084
+          }
+        ]
+      },
+      {
+        "monitoring_line": 12,
+        "checked_utc": "2026-10-26T04:18:18.921521+00:00",
+        "checked_beijing": "2026-10-26T12:18:18.921+08:00",
+        "stage": "target2b-benchmark",
+        "basis": "2B actual per-worker GSM8K and HumanEval pair times (>=4 pairs each); unfinished choices use frozen 0.8s/MMLU and 2.5s/ARC per-pair assumptions; slowest worker plus rough 120s export allowance. Excludes local evidence retrieval/report delivery and human ratings. Scenario, not a guaranteed upper bound.",
+        "predictions": [
+          {
+            "kind": "queue_measured_benchmark",
+            "field": "queue_finish_beijing_actual_benchmark_scenario",
+            "predicted_finish": "2026-10-26T12:39:56.641473+08:00",
+            "actual_finish_utc": "2026-10-26T04:28:16.778675+00:00",
+            "predicted_minus_actual_seconds": 699.863,
+            "predicted_minus_actual_minutes": 11.664383333333335,
+            "estimated_remaining_seconds_at_check": 1297.72,
+            "actual_remaining_seconds_at_check": 597.857
+          }
+        ]
+      }
+    ]
+  },
+  "limitations": [
+    "All elapsed differences rounded to millisecond precision; original microsecond timestamp strings retained.",
+    "Sequential phase spans use scheduler acknowledgements; actual worker spans are separately reported and should not be summed with nested phases.",
+    "Wall-clock elapsed is not GPU kernel time, GPU-hours, or exclusive utilization. Concurrent optimization probes, idle time, I/O and queue waits remain included in elapsed spans.",
+    "Only the twelve stored monitoring entries are audited; unrecorded earlier verbal estimates, including the initial approximately 24-hour estimate, are not reconstructed.",
+    "Early estimates used full output-token caps and a 9B probe reference for unseen 2B stages; later 2B-probe estimates still used token caps rather than observed benchmark lengths.",
+    "The last 9B pre-export estimate was early because of an unanticipated export network stall. The last 2B estimate remained late; this is forecast error, not evidence that the scientific computation was shortened.",
+    "Final machine completion excludes local evidence retrieval, archive/Git delivery, independent human ratings and behavioral-transfer conclusions."
+  ],
+  "source_receipt_metadata_and_sha256": {
+    "bridge/receipt.json": {
+      "sha256": "3f84076eaecbe1a8f50b5a1994f77f04062c6b0f7c7c05e9268c9fac8b855367",
+      "metadata": {
+        "status": "completed",
+        "started_utc": "2026-10-25T21:58:41.668429+00:00",
+        "ended_utc": "2026-10-25T21:59:11.521192+00:00"
+      }
+    },
+    "collection-source4b/receipt.json": {
+      "sha256": "3b67217cd2ed3e73bd1ca923a5ed78d03384b7e269e5e240443a3d0d31261d5b",
+      "metadata": {
+        "status": "completed",
+        "started_utc": "2026-10-25T21:53:51.652535+00:00",
+        "ended_utc": "2026-10-25T21:54:31.119691+00:00"
+      }
+    },
+    "collection-target2b/receipt.json": {
+      "sha256": "c271e95cb3f04d02df487ba8a0a125f5a1f95f412fe3858f875d618c09c22e2b",
+      "metadata": {
+        "status": "completed",
+        "started_utc": "2026-10-26T02:28:05.930135+00:00",
+        "ended_utc": "2026-10-26T02:28:46.254318+00:00"
+      }
+    },
+    "collection-target9b/receipt.json": {
+      "sha256": "e0bd75a1b49157adfd0d787dc039a376dc69f85987873271791b6ca4db106efc",
+      "metadata": {
+        "status": "completed",
+        "started_utc": "2026-10-25T21:55:49.147688+00:00",
+        "ended_utc": "2026-10-25T21:56:45.584025+00:00"
+      }
+    },
+    "decode-source4b/receipt.json": {
+      "sha256": "398828864fcd7fba1d1f3376418e74443997bd03ae9adccd70c1565569ba5ccc",
+      "metadata": {
+        "status": "completed",
+        "started_utc": "2026-10-25T21:59:44.581144+00:00",
+        "ended_utc": "2026-10-25T22:00:09.471406+00:00",
+        "wall_seconds": 24.890285063534975,
+        "setup_seconds": 7.943986091762781
+      }
+    },
+    "decode-target2b/receipt.json": {
+      "sha256": "5d8ecdd58f7b015023a16616c60df30d12e16a9e04f1d60f750233c158997dcf",
+      "metadata": {
+        "status": "completed",
+        "started_utc": "2026-10-26T02:27:39.814897+00:00",
+        "ended_utc": "2026-10-26T02:27:59.788615+00:00",
+        "wall_seconds": 19.973740262910724,
+        "setup_seconds": 6.346950922161341
+      }
+    },
+    "decode-target9b/receipt.json": {
+      "sha256": "42d8ec1f917954fd91c22a1e1a276b2a87ebed6e2cd26f99e82ec9c554233926",
+      "metadata": {
+        "status": "completed",
+        "started_utc": "2026-10-25T21:59:44.581097+00:00",
+        "ended_utc": "2026-10-25T22:00:13.468017+00:00",
+        "wall_seconds": 28.88694291561842,
+        "setup_seconds": 11.057723129168153
+      }
+    },
+    "offline-export-recovery-r01/receipt.json": {
+      "sha256": "74f3ac291b6bb7159f120c6322fc2b01bfa9dfcda9b49ce7e2158d444d9a3e41",
+      "metadata": {
+        "status": "resumed_pending_verification",
+        "started_utc": "2026-10-26T02:27:24.519364+00:00",
+        "resumed_utc": "2026-10-26T02:27:24.721285+00:00",
+        "stopped_utc": "2026-10-26T02:27:24.720441+00:00"
+      }
+    },
+    "preflight-source4b/receipt.json": {
+      "sha256": "250ccc6d92ce6d4da96cd909677db47f61c2785affd6a987c53f2b837a157a86",
+      "metadata": {
+        "status": "completed",
+        "started_utc": "2026-10-25T21:48:04.965170+00:00",
+        "ended_utc": "2026-10-25T21:48:13.052756+00:00"
+      }
+    },
+    "preflight-target2b/receipt.json": {
+      "sha256": "02e6930a3bc21bb1b47a5e2cb00b9d195d5341c76cf4b47718de32d356a41ee6",
+      "metadata": {
+        "status": "completed",
+        "started_utc": "2026-10-26T02:27:30.914924+00:00",
+        "ended_utc": "2026-10-26T02:27:38.112140+00:00"
+      }
+    },
+    "preflight-target9b/receipt.json": {
+      "sha256": "134946931ec260ecf0ca53ef07432932b5b87c4313cc4830bd9345097673cc01",
+      "metadata": {
+        "status": "completed",
+        "started_utc": "2026-10-25T21:48:05.050615+00:00",
+        "ended_utc": "2026-10-25T21:48:17.130245+00:00"
+      }
+    },
+    "queue-before-parallel-r01.json": {
+      "sha256": "1ddf7c08ae4be808471e2c77233fbfd0415218a7feefe931a3ff07c653084caf",
+      "metadata": {
+        "status": "running",
+        "started_utc": "2026-10-25T22:04:13.812046+00:00",
+        "current_stage": "source-confirmation",
+        "stages": [
+          {
+            "name": "initial-clean-collections",
+            "status": "completed_existing",
+            "started_utc": "2026-10-25T22:04:13.812221+00:00",
+            "ended_utc": "2026-10-25T22:04:13.812756+00:00"
+          },
+          {
+            "name": "source-bridge-and-9b-mapping",
+            "status": "completed_existing",
+            "started_utc": "2026-10-25T22:04:13.812881+00:00",
+            "ended_utc": "2026-10-25T22:04:13.813143+00:00"
+          },
+          {
+            "name": "source-and-9b-decode-check",
+            "status": "completed",
+            "started_utc": "2026-10-25T22:04:13.813265+00:00",
+            "ended_utc": "2026-10-25T22:04:13.814082+00:00"
+          },
+          {
+            "name": "source-confirmation",
+            "status": "running",
+            "started_utc": "2026-10-25T22:04:13.814261+00:00"
+          }
+        ]
+      }
+    },
+    "queue-history-1792968231209130823.json": {
+      "sha256": "1ddf7c08ae4be808471e2c77233fbfd0415218a7feefe931a3ff07c653084caf",
+      "metadata": {
+        "status": "running",
+        "started_utc": "2026-10-25T22:04:13.812046+00:00",
+        "current_stage": "source-confirmation",
+        "stages": [
+          {
+            "name": "initial-clean-collections",
+            "status": "completed_existing",
+            "started_utc": "2026-10-25T22:04:13.812221+00:00",
+            "ended_utc": "2026-10-25T22:04:13.812756+00:00"
+          },
+          {
+            "name": "source-bridge-and-9b-mapping",
+            "status": "completed_existing",
+            "started_utc": "2026-10-25T22:04:13.812881+00:00",
+            "ended_utc": "2026-10-25T22:04:13.813143+00:00"
+          },
+          {
+            "name": "source-and-9b-decode-check",
+            "status": "completed",
+            "started_utc": "2026-10-25T22:04:13.813265+00:00",
+            "ended_utc": "2026-10-25T22:04:13.814082+00:00"
+          },
+          {
+            "name": "source-confirmation",
+            "status": "running",
+            "started_utc": "2026-10-25T22:04:13.814261+00:00"
+          }
+        ]
+      }
+    },
+    "queue-history-1792981644761102048.json": {
+      "sha256": "30b93f4b85e665c99b2ec3675e275452cf208e50aa7b6889f0b90463df1b8251",
+      "metadata": {
+        "status": "running",
+        "started_utc": "2026-10-25T22:43:51.209020+00:00",
+        "current_stage": "target9b-export",
+        "stages": [
+          {
+            "name": "initial-clean-collections",
+            "status": "completed_existing",
+            "started_utc": "2026-10-25T22:43:51.209509+00:00",
+            "ended_utc": "2026-10-25T22:43:51.209820+00:00"
+          },
+          {
+            "name": "source-bridge-and-9b-mapping",
+            "status": "completed_existing",
+            "started_utc": "2026-10-25T22:43:51.209944+00:00",
+            "ended_utc": "2026-10-25T22:43:51.210199+00:00"
+          },
+          {
+            "name": "source-and-9b-decode-check",
+            "status": "completed",
+            "started_utc": "2026-10-25T22:43:51.210330+00:00",
+            "ended_utc": "2026-10-25T22:43:51.212093+00:00"
+          },
+          {
+            "name": "source-confirmation",
+            "status": "completed_existing",
+            "started_utc": "2026-10-25T22:43:51.212253+00:00",
+            "ended_utc": "2026-10-25T22:52:41.252762+00:00"
+          },
+          {
+            "name": "target9b-confirmation",
+            "status": "completed",
+            "started_utc": "2026-10-25T22:52:41.253233+00:00",
+            "ended_utc": "2026-10-26T00:57:27.683410+00:00"
+          },
+          {
+            "name": "target9b-benchmark",
+            "status": "completed",
+            "started_utc": "2026-10-26T00:57:27.683833+00:00",
+            "ended_utc": "2026-10-26T02:05:03.636009+00:00"
+          },
+          {
+            "name": "target9b-benchmark-finish",
+            "status": "completed",
+            "started_utc": "2026-10-26T02:05:03.636448+00:00",
+            "ended_utc": "2026-10-26T02:05:13.641189+00:00"
+          },
+          {
+            "name": "target9b-export",
+            "status": "running",
+            "started_utc": "2026-10-26T02:05:13.641689+00:00"
+          }
+        ]
+      }
+    },
+    "queue_receipt.json": {
+      "sha256": "704291a4aac55970dde5c48a7ad30b761903c661987f44c5f4ea8df6b5e005dd",
+      "metadata": {
+        "status": "machine_completed_blind_review_pending",
+        "started_utc": "2026-10-26T02:27:24.760969+00:00",
+        "ended_utc": "2026-10-26T04:28:16.778675+00:00",
+        "current_stage": "target2b-export",
+        "stages": [
+          {
+            "name": "initial-clean-collections",
+            "status": "completed_existing",
+            "started_utc": "2026-10-26T02:27:24.761716+00:00",
+            "ended_utc": "2026-10-26T02:27:24.762288+00:00"
+          },
+          {
+            "name": "source-bridge-and-9b-mapping",
+            "status": "completed_existing",
+            "started_utc": "2026-10-26T02:27:24.762411+00:00",
+            "ended_utc": "2026-10-26T02:27:24.762683+00:00"
+          },
+          {
+            "name": "source-and-9b-decode-check",
+            "status": "completed",
+            "started_utc": "2026-10-26T02:27:24.762832+00:00",
+            "ended_utc": "2026-10-26T02:27:24.763643+00:00"
+          },
+          {
+            "name": "source-confirmation",
+            "status": "completed_existing",
+            "started_utc": "2026-10-26T02:27:24.763815+00:00",
+            "ended_utc": "2026-10-26T02:27:24.764179+00:00"
+          },
+          {
+            "name": "target9b-confirmation",
+            "status": "completed",
+            "started_utc": "2026-10-26T02:27:24.764421+00:00",
+            "ended_utc": "2026-10-26T02:27:24.768095+00:00"
+          },
+          {
+            "name": "target9b-benchmark",
+            "status": "completed",
+            "started_utc": "2026-10-26T02:27:24.768498+00:00",
+            "ended_utc": "2026-10-26T02:27:24.770228+00:00"
+          },
+          {
+            "name": "target9b-benchmark-finish",
+            "status": "completed",
+            "started_utc": "2026-10-26T02:27:24.770555+00:00",
+            "ended_utc": "2026-10-26T02:27:24.772730+00:00"
+          },
+          {
+            "name": "target9b-export",
+            "status": "completed",
+            "started_utc": "2026-10-26T02:27:24.773133+00:00",
+            "ended_utc": "2026-10-26T02:27:29.777989+00:00"
+          },
+          {
+            "name": "2b-preflight",
+            "status": "completed",
+            "started_utc": "2026-10-26T02:27:29.778472+00:00",
+            "ended_utc": "2026-10-26T02:27:39.782274+00:00"
+          },
+          {
+            "name": "2b-decode-check",
+            "status": "completed",
+            "started_utc": "2026-10-26T02:27:39.782676+00:00",
+            "ended_utc": "2026-10-26T02:28:04.789868+00:00"
+          },
+          {
+            "name": "2b-clean-collection",
+            "status": "completed",
+            "started_utc": "2026-10-26T02:28:04.790308+00:00",
+            "ended_utc": "2026-10-26T02:28:49.800852+00:00"
+          },
+          {
+            "name": "2b-mapping",
+            "status": "completed",
+            "started_utc": "2026-10-26T02:28:49.801313+00:00",
+            "ended_utc": "2026-10-26T02:28:59.805400+00:00"
+          },
+          {
+            "name": "2b-parallel-reference",
+            "status": "completed",
+            "started_utc": "2026-10-26T02:28:59.805865+00:00",
+            "ended_utc": "2026-10-26T02:30:34.829072+00:00"
+          },
+          {
+            "name": "2b-parallel-validation",
+            "status": "completed",
+            "started_utc": "2026-10-26T02:30:34.829578+00:00",
+            "ended_utc": "2026-10-26T02:32:09.852567+00:00"
+          },
+          {
+            "name": "target2b-confirmation",
+            "status": "completed",
+            "started_utc": "2026-10-26T02:32:09.853300+00:00",
+            "ended_utc": "2026-10-26T03:56:16.244231+00:00"
+          },
+          {
+            "name": "target2b-benchmark",
+            "status": "completed",
+            "started_utc": "2026-10-26T03:56:16.244941+00:00",
+            "ended_utc": "2026-10-26T04:28:01.764064+00:00"
+          },
+          {
+            "name": "target2b-benchmark-finish",
+            "status": "completed",
+            "started_utc": "2026-10-26T04:28:01.764795+00:00",
+            "ended_utc": "2026-10-26T04:28:11.771002+00:00"
+          },
+          {
+            "name": "target2b-export",
+            "status": "completed",
+            "started_utc": "2026-10-26T04:28:11.771788+00:00",
+            "ended_utc": "2026-10-26T04:28:16.777794+00:00"
+          }
+        ]
+      }
+    },
+    "source/shard0/receipt.json": {
+      "sha256": "e4a746ae6625729c621cd259b275b1a354bff1434aafb75c6f6de6bce3db0920",
+      "metadata": {
+        "status": "completed",
+        "started_utc": "2026-10-25T22:04:13.844525+00:00",
+        "ended_utc": "2026-10-25T22:50:46.711866+00:00"
+      }
+    },
+    "source/shard1/receipt.json": {
+      "sha256": "860407d813914aa34d675a0c8e0438a1be0fd6f2dfe7fc5eae9fdea769ac9ef6",
+      "metadata": {
+        "status": "completed",
+        "started_utc": "2026-10-25T22:04:13.845866+00:00",
+        "ended_utc": "2026-10-25T22:52:39.693927+00:00"
+      }
+    },
+    "target2b/benchmark/finish-r01/humaneval-execution.jsonl.receipt.json": {
+      "sha256": "7d739a1b6ac9c857bd0eb3de3f9f3ac10137b2b5dc087d292ddf1923c916ace1",
+      "metadata": {
+        "status": "completed",
+        "created_utc": "2026-10-26T04:28:08.649126+00:00"
+      }
+    },
+    "target2b/benchmark/finish-r01/receipt.json": {
+      "sha256": "4d3adc9ef1ddcf061616e09f265a653157e0d17d4c31b804d981412affda30c6",
+      "metadata": {
+        "status": "completed",
+        "started_utc": "2026-10-26T04:28:02.010602+00:00",
+        "ended_utc": "2026-10-26T04:28:11.379882+00:00",
+        "wall_seconds": 9.369303723797202,
+        "steps": [
+          {
+            "name": "humaneval",
+            "started_utc": "2026-10-26T04:28:02.011768+00:00",
+            "ended_utc": "2026-10-26T04:28:08.660216+00:00"
+          },
+          {
+            "name": "official_scoring",
+            "status": "completed",
+            "started_utc": "2026-10-26T04:28:08.660626+00:00",
+            "ended_utc": "2026-10-26T04:28:11.091313+00:00"
+          }
+        ]
+      }
+    },
+    "target2b/benchmark/shard-0/receipt.json": {
+      "sha256": "5cb05efceb8fe3f68877fbea34e3f6a93a19c4c74fbc3f310afb955668ed51af",
+      "metadata": {
+        "status": "completed",
+        "started_utc": "2026-10-26T03:56:16.321217+00:00",
+        "ended_utc": "2026-10-26T04:22:27.143257+00:00",
+        "wall_seconds": 1570.822063215077,
+        "setup_seconds": 7.138404473662376,
+        "inference_seconds": 1563.4996469952166
+      }
+    },
+    "target2b/benchmark/shard-1/receipt.json": {
+      "sha256": "f1154bf710a1babdde7ff032f163a9c5a7f261fd266458719a71931e3157e320",
+      "metadata": {
+        "status": "completed",
+        "started_utc": "2026-10-26T03:56:16.321159+00:00",
+        "ended_utc": "2026-10-26T04:27:56.393537+00:00",
+        "wall_seconds": 1900.0724026616663,
+        "setup_seconds": 7.039363281801343,
+        "inference_seconds": 1892.852375779301
+      }
+    },
+    "target2b/benchmark/shard-2/receipt.json": {
+      "sha256": "6e0ce4d93a9bfd6f4c95ca8d1f61e27015522092c97124c24c00ca9fd129ced5",
+      "metadata": {
+        "status": "completed",
+        "started_utc": "2026-10-26T03:56:16.321549+00:00",
+        "ended_utc": "2026-10-26T04:21:10.532708+00:00",
+        "wall_seconds": 1494.2111782096326,
+        "setup_seconds": 7.107575345784426,
+        "inference_seconds": 1486.9269664194435
+      }
+    },
+    "target2b/benchmark/shard-3/receipt.json": {
+      "sha256": "42e8b1891cf65b6b1a5ffd2f8ce024561cec3598673e1b070dab545aecc8b758",
+      "metadata": {
+        "status": "completed",
+        "started_utc": "2026-10-26T03:56:16.322112+00:00",
+        "ended_utc": "2026-10-26T04:22:05.260882+00:00",
+        "wall_seconds": 1548.9387906603515,
+        "setup_seconds": 7.112820859998465,
+        "inference_seconds": 1541.6405761502683
+      }
+    },
+    "target2b/benchmark/shard-4/receipt.json": {
+      "sha256": "10bc2073aac597570c425ae425586ae5a90eb8965aef2f7764bdd48570758e43",
+      "metadata": {
+        "status": "completed",
+        "started_utc": "2026-10-26T03:56:16.322858+00:00",
+        "ended_utc": "2026-10-26T04:22:20.734072+00:00",
+        "wall_seconds": 1564.4112364966422,
+        "setup_seconds": 7.136609705165029,
+        "inference_seconds": 1557.0951478928328
+      }
+    },
+    "target2b/benchmark/shard-5/receipt.json": {
+      "sha256": "0d13c058ad63e02131c8216d3eaa96f765cd0d7f021f2c62972e28372bd12b95",
+      "metadata": {
+        "status": "completed",
+        "started_utc": "2026-10-26T03:56:16.323924+00:00",
+        "ended_utc": "2026-10-26T04:21:26.341043+00:00",
+        "wall_seconds": 1510.0171404480934,
+        "setup_seconds": 7.018988836556673,
+        "inference_seconds": 1502.8129959702492
+      }
+    },
+    "target2b/export-r01/receipt.json": {
+      "sha256": "734949f717dc3c81c1d23c9275b34b3126ca5f7d5453d2fae14493fed1a8e6d3",
+      "metadata": {
+        "status": "machine_completed_blind_review_pending",
+        "started_utc": "2026-10-26T04:28:11.808973+00:00",
+        "ended_utc": "2026-10-26T04:28:14.969430+00:00"
+      }
+    },
+    "target2b/mapping/receipt.json": {
+      "sha256": "d8043efcb4b953b92628b8ca44ad96572fe58f40abaf68503769e983b9a00723",
+      "metadata": {
+        "status": "completed",
+        "started_utc": "2026-10-26T02:28:50.911559+00:00",
+        "ended_utc": "2026-10-26T02:28:55.975358+00:00"
+      }
+    },
+    "target2b/toy/shard0/receipt.json": {
+      "sha256": "bf4dae85d65b7fe14b3d07ce49f1449a643909ee98ec611847ff34b5527be9a6",
+      "metadata": {
+        "status": "completed",
+        "started_utc": "2026-10-26T02:32:09.885934+00:00",
+        "ended_utc": "2026-10-26T03:56:11.639193+00:00"
+      }
+    },
+    "target2b/toy/shard1/receipt.json": {
+      "sha256": "a2ba36dce6c2720eb1f6c146016c67ffadda4f3c97ccd597cd961325311afb36",
+      "metadata": {
+        "status": "completed",
+        "started_utc": "2026-10-26T02:32:09.886462+00:00",
+        "ended_utc": "2026-10-26T03:53:21.836357+00:00"
+      }
+    },
+    "target2b/toy/shard2/receipt.json": {
+      "sha256": "332ce8d32435222593f700100978e2becb263d1463908f993cb72ce1e05d9234",
+      "metadata": {
+        "status": "completed",
+        "started_utc": "2026-10-26T02:32:09.886897+00:00",
+        "ended_utc": "2026-10-26T03:50:02.197357+00:00"
+      }
+    },
+    "target2b/toy/shard3/receipt.json": {
+      "sha256": "09955296d80f7aa92e9d57ecfc44b42de226ad82adb33d250527832c1b7ffcaa",
+      "metadata": {
+        "status": "completed",
+        "started_utc": "2026-10-26T02:32:09.887823+00:00",
+        "ended_utc": "2026-10-26T03:51:37.308328+00:00"
+      }
+    },
+    "target2b/toy/shard4/receipt.json": {
+      "sha256": "3588ecc0735e1f0cfb524286ed6799950a03035909bc134715903817105157da",
+      "metadata": {
+        "status": "completed",
+        "started_utc": "2026-10-26T02:32:09.888699+00:00",
+        "ended_utc": "2026-10-26T03:47:49.972938+00:00"
+      }
+    },
+    "target2b/toy/shard5/receipt.json": {
+      "sha256": "3ec600c44895db4cba34ae19b1e5cbf1e5d0aa7c23042899e0158671d3db1c58",
+      "metadata": {
+        "status": "completed",
+        "started_utc": "2026-10-26T02:32:09.889385+00:00",
+        "ended_utc": "2026-10-26T03:47:59.644945+00:00"
+      }
+    },
+    "target9b/benchmark/finish-r01/humaneval-execution.jsonl.receipt.json": {
+      "sha256": "1d545840c5331b6bb8d782c1e052fa25420b288855459439216139fd92eb980e",
+      "metadata": {
+        "status": "completed",
+        "created_utc": "2026-10-26T02:05:10.523375+00:00"
+      }
+    },
+    "target9b/benchmark/finish-r01/receipt.json": {
+      "sha256": "3d59158f1aeafbd726636c44a567dfec4fd0c008f33ce71b14b538b84c164ee8",
+      "metadata": {
+        "status": "completed",
+        "started_utc": "2026-10-26T02:05:03.895833+00:00",
+        "ended_utc": "2026-10-26T02:05:13.368609+00:00",
+        "wall_seconds": 9.472802486270666,
+        "steps": [
+          {
+            "name": "humaneval",
+            "started_utc": "2026-10-26T02:05:03.897013+00:00",
+            "ended_utc": "2026-10-26T02:05:10.534152+00:00"
+          },
+          {
+            "name": "official_scoring",
+            "status": "completed",
+            "started_utc": "2026-10-26T02:05:10.534541+00:00",
+            "ended_utc": "2026-10-26T02:05:13.064070+00:00"
+          }
+        ]
+      }
+    },
+    "target9b/benchmark/shard-0/receipt.json": {
+      "sha256": "f87bbb2c2f797aed0020095990f9c04f9272432e860ae0e41dceac723fc37994",
+      "metadata": {
+        "status": "completed",
+        "started_utc": "2026-10-26T00:57:27.766799+00:00",
+        "ended_utc": "2026-10-26T02:04:54.352749+00:00",
+        "wall_seconds": 4046.585975062102,
+        "setup_seconds": 13.816760988906026,
+        "inference_seconds": 4032.3575282562524
+      }
+    },
+    "target9b/benchmark/shard-1/receipt.json": {
+      "sha256": "db419919e7e2562a88b8e27e5ff9e4d94c41c63869de0dc7afe1f258bbea252f",
+      "metadata": {
+        "status": "completed",
+        "started_utc": "2026-10-26T00:57:27.766665+00:00",
+        "ended_utc": "2026-10-26T02:05:01.047968+00:00",
+        "wall_seconds": 4053.2813291903585,
+        "setup_seconds": 13.81571021862328,
+        "inference_seconds": 4039.0516896359622
+      }
+    },
+    "target9b/benchmark/shard-2/receipt.json": {
+      "sha256": "84ab3ff666b13244fafe6dff45be15cb932ceb404860b1943ebcd3fb2a7449b0",
+      "metadata": {
+        "status": "completed",
+        "started_utc": "2026-10-26T00:57:27.766707+00:00",
+        "ended_utc": "2026-10-26T02:04:57.803532+00:00",
+        "wall_seconds": 4050.036849990487,
+        "setup_seconds": 13.819682769477367,
+        "inference_seconds": 4035.807212682441
+      }
+    },
+    "target9b/benchmark/shard-3/receipt.json": {
+      "sha256": "8be0bb51900cc5b1536359a37e0f37eb5a4921ff13d5768bfe7e3b295c2ba33c",
+      "metadata": {
+        "status": "completed",
+        "started_utc": "2026-10-26T00:57:27.766755+00:00",
+        "ended_utc": "2026-10-26T02:04:13.661654+00:00",
+        "wall_seconds": 4005.8949311804026,
+        "setup_seconds": 13.819399597123265,
+        "inference_seconds": 3991.6642064638436
+      }
+    },
+    "target9b/benchmark/shard-4/receipt.json": {
+      "sha256": "f0c27cdc4220078cc51b873b20ef7843cca56597e3c6f422ae61ce67d31c6474",
+      "metadata": {
+        "status": "completed",
+        "started_utc": "2026-10-26T00:57:27.766625+00:00",
+        "ended_utc": "2026-10-26T02:03:46.005553+00:00",
+        "wall_seconds": 3978.2389531303197,
+        "setup_seconds": 13.811413353309035,
+        "inference_seconds": 3964.0163662023842
+      }
+    },
+    "target9b/benchmark/shard-5/receipt.json": {
+      "sha256": "db9697d168c1a8f3448db686057087b99951cbd1914424436cd7d4d98522cd3e",
+      "metadata": {
+        "status": "completed",
+        "started_utc": "2026-10-26T00:57:27.766572+00:00",
+        "ended_utc": "2026-10-26T02:01:50.190707+00:00",
+        "wall_seconds": 3862.42416135408,
+        "setup_seconds": 13.818664502352476,
+        "inference_seconds": 3848.2083152644336
+      }
+    },
+    "target9b/export-network-retry-r01/receipt.json": {
+      "sha256": "a9a25b89eaa822aa3ec28ba905f8d8db8ca63c3ee37025ae4f843e9a38e1de2e",
+      "metadata": {
+        "status": "running",
+        "started_utc": "2026-10-26T02:05:13.681671+00:00"
+      }
+    },
+    "target9b/export-r01/receipt.json": {
+      "sha256": "80b79528835fcd8fefbea4a2479a59fa4d5470711ff9495b90abe0b422d8028a",
+      "metadata": {
+        "status": "machine_completed_blind_review_pending",
+        "started_utc": "2026-10-26T02:27:24.809541+00:00",
+        "ended_utc": "2026-10-26T02:27:27.950555+00:00"
+      }
+    },
+    "target9b/mapping/receipt.json": {
+      "sha256": "997e9c26a9afa529a22897f603a522667471780acbfaf5ae89a7fadfb8e7516a",
+      "metadata": {
+        "status": "completed",
+        "started_utc": "2026-10-25T21:58:42.725692+00:00",
+        "ended_utc": "2026-10-25T21:58:49.521899+00:00"
+      }
+    },
+    "target9b/toy/shard0/receipt.json": {
+      "sha256": "23d13eb71aaf68e6285f1fd736394fb477b7d7552c595ff66f4314f37a80bd89",
+      "metadata": {
+        "status": "completed",
+        "started_utc": "2026-10-25T22:52:41.285731+00:00",
+        "ended_utc": "2026-10-26T00:57:24.941740+00:00"
+      }
+    },
+    "target9b/toy/shard1/receipt.json": {
+      "sha256": "d4073f02f927b7e3186ddcad2af4e55bbc488173a993ba9045e7df164a6caab6",
+      "metadata": {
+        "status": "completed",
+        "started_utc": "2026-10-25T22:52:41.286133+00:00",
+        "ended_utc": "2026-10-26T00:55:52.628073+00:00"
+      }
+    },
+    "target9b/toy/shard2/receipt.json": {
+      "sha256": "43b0539c94c09eb338c2616c75c34294ed71f671536492136422a4297986a78e",
+      "metadata": {
+        "status": "completed",
+        "started_utc": "2026-10-25T22:52:41.286166+00:00",
+        "ended_utc": "2026-10-26T00:51:11.808856+00:00"
+      }
+    },
+    "target9b/toy/shard3/receipt.json": {
+      "sha256": "03110e4b2c1d60c8df85335e39610edaeabc67c817d92c50db32cc53097aa1a1",
+      "metadata": {
+        "status": "completed",
+        "started_utc": "2026-10-25T22:52:41.286882+00:00",
+        "ended_utc": "2026-10-26T00:50:59.371765+00:00"
+      }
+    },
+    "target9b/toy/shard4/receipt.json": {
+      "sha256": "10f06b37c002888b04086bb89597198054293e55fa7d9664451a3f44f1ebd5f3",
+      "metadata": {
+        "status": "completed",
+        "started_utc": "2026-10-25T22:52:41.287462+00:00",
+        "ended_utc": "2026-10-26T00:45:31.512697+00:00"
+      }
+    },
+    "target9b/toy/shard5/receipt.json": {
+      "sha256": "e52b704412ea1b355cdbfdabe96e3945beab62b242037164a7281c788b15e851",
+      "metadata": {
+        "status": "completed",
+        "started_utc": "2026-10-25T22:52:41.288036+00:00",
+        "ended_utc": "2026-10-26T00:44:40.591414+00:00"
+      }
+    },
+    "validation-target2b-parallel/receipt.json": {
+      "sha256": "1c84b7be0367a1cd5be5b26e80308af07bceb8e400c7c9dd6a08341b4c295ba4",
+      "metadata": {
+        "status": "completed",
+        "started_utc": "2026-10-26T02:30:34.860910+00:00",
+        "ended_utc": "2026-10-26T02:32:05.754928+00:00",
+        "wall_seconds": 90.89208293892443
+      }
+    },
+    "validation-target2b-parallel/worker0/receipt.json": {
+      "sha256": "246565bb9c21be1c53238e452cf7009bb2c0330d60d84c6eb9a2f90c3866be3c",
+      "metadata": {
+        "status": "completed",
+        "started_utc": "2026-10-26T02:30:34.892909+00:00",
+        "ended_utc": "2026-10-26T02:32:04.667251+00:00",
+        "wall_seconds": 89.77436085790396
+      }
+    },
+    "validation-target2b-parallel/worker1/receipt.json": {
+      "sha256": "985f717b29c64f6d4e95c069f687a2163d5b098c99e303219bd2978eeddf7acd",
+      "metadata": {
+        "status": "completed",
+        "started_utc": "2026-10-26T02:30:34.893207+00:00",
+        "ended_utc": "2026-10-26T02:32:04.844033+00:00",
+        "wall_seconds": 89.95084869302809
+      }
+    },
+    "validation-target2b-parallel/worker2/receipt.json": {
+      "sha256": "27fe28d71e6ee051ca93e928d37357a3ac2892e7444b254760126e5967a8ea00",
+      "metadata": {
+        "status": "completed",
+        "started_utc": "2026-10-26T02:30:34.893421+00:00",
+        "ended_utc": "2026-10-26T02:32:04.803297+00:00",
+        "wall_seconds": 89.90989977307618
+      }
+    },
+    "validation-target2b-single/receipt.json": {
+      "sha256": "1ef75f81c755074817318f1d0e040b082b72244b0d9c509e0fea5a7133ca7653",
+      "metadata": {
+        "status": "completed",
+        "started_utc": "2026-10-26T02:28:59.838407+00:00",
+        "ended_utc": "2026-10-26T02:30:29.163299+00:00",
+        "wall_seconds": 89.32491364330053
+      }
+    }
+  }
+}

@@ -11,7 +11,7 @@
 | 当前研究状态、机制线索与迁移计划 | [研究状态与后续方向](docs/RESEARCH_STATUS.zh-CN.md) |
 | 两针能力损伤的因果定位：整合第二轮材料，讨论稿，继续暂停 | [当前根因方案 v1](docs/root-cause-localization-plan-v1.zh-CN.md) |
 | 根因方案对抗审查：不可区分反例与下一阶段修复计划，尚未执行 | [对抗审查与修复计划](docs/root-cause-plan-adversarial-review-2026-10-26.zh-CN.md) |
-| 4B→9B→2B 迁移 toy：双卡队列已启动，各接四项 Benchmark；根因实验暂停 | [迁移 toy v1.1](experiments/transfer-toy-v1-2026-10-26/PROTOCOL.zh-CN.md) / [后接最新四项 Benchmark](experiments/transfer-toy-v1-2026-10-26/BENCHMARK_FOLLOWUP.zh-CN.md) |
+| 4B→9B、4B→2B 迁移 toy：机器阶段完成；行为盲评待办，根因实验暂停 | [最终机器报告](experiments/transfer-toy-v1-2026-10-26/RESULTS.zh-CN.md) / [原文、成绩与盲评包入口](experiments/transfer-toy-v1-2026-10-26/delivery-r01/index.html) / [冻结协议](experiments/transfer-toy-v1-2026-10-26/PROTOCOL.zh-CN.md) |
 | 四项能力小面板已完成：1,000 / 200 / 100 / 100 题，原版/EVO 成绩与实际耗时 | [最终结果](experiments/capability-screen-v3-2026-10-26/RESULTS.zh-CN.md) / [运行协议](experiments/capability-screen-v3-2026-10-26/PROTOCOL.zh-CN.md) |
 | 四项全量能力对照（已按用户要求停止，保留原始证据） | [旧运行协议](experiments/capability-damage-v2-2026-10-26/PROTOCOL.zh-CN.md) / [精简方案 v2](docs/damage-evaluation-plan-v2.zh-CN.md) / [原方案 v1](docs/damage-evaluation-plan-v1.zh-CN.md) |
 | 旧全量车队的历史说明（已停止） | [车队说明](experiments/capability-damage-v2-2026-10-26/CONVOY.zh-CN.md) |
@@ -40,7 +40,7 @@
 - 作者公开代码采用固定参考尺度，我们首轮逐题校准；二者不能称为完全相同的实验设置。
 - 三项英文基准各完成固定 100 题，共 600 份回答，完整收据、原文及评分已复核。严格格式评分的原版/EVO 为 RACE 89%/0%、GSM8K 79%/0%、LogiQA 2.0 70%/0%；两臂统一的事后显式答案提取分别为 89%/11%、83%/0%、70%/15%。这是子集成绩；严格零分混合了格式失遵循、截断与答错，不能解释成全部能力消失。
 - 本轮基准同时使用 248044 和 248046 停止，修正了首轮旧语料的停止条件。EVO 为动态激活干预，权重未改写；其 300 份回答有 295 份达到生成上限。当前结果不支持“能力保持、只变坏”。
-- 4B→9B→2B 迁移队列已获授权并运行，各目标随后完整执行四项 1,400 题 Benchmark。2026-10-26 06:43（北京时间）切换至已通过数值一致性验证的每卡 3 个独立进程，实际 forward 仍为 batch 1；源 4B 两进程原样继续。见[并行执行补充](experiments/transfer-toy-v1-2026-10-26/EXECUTION_PARALLEL.zh-CN.md)及[实时状态入口](experiments/transfer-toy-v1-2026-10-26/active_run.json)。根因实验继续暂停；小型 32+32 诊断不替代正式四项验收。目前尚无迁移成功结论。
+- 4B→9B、4B→2B 迁移及各自四项 1,400 题能力面板于 2026-10-26 12:28（北京时间）全部完成。9B 的 MMLU / ARC-C / GSM8K / HumanEval 为 70.06→25.39 / 71.50→30.00 / 93→0 / 70→0%；2B 为 54.06→46.00 / 52.50→31.00 / 61→0 / 37→3%。正式评分技术失败为 0，9,681 个原始文件已完整取回并校验。结果支持这两模型中的能力损伤效应迁移；结构化有害行为仍待双人盲评，特异性和根因未证实。机器阶段共 6 小时 40 分 12 秒，根因实验继续暂停。见[最终报告与证据边界](experiments/transfer-toy-v1-2026-10-26/RESULTS.zh-CN.md)。
 
 ## 复用代码
 
