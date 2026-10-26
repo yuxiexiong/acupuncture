@@ -1,0 +1,140 @@
+{
+  "created_at": "2026-10-26T06:18:15.040631+00:00",
+  "status": "measured_preflight_extrapolation_not_a_completion_claim",
+  "preflight_wall_seconds": 46.11332464031875,
+  "measured_seconds": {
+    "model_load": 11.461018598,
+    "plain_option_score_per_question": 1.0151244875,
+    "six_condition_validation_per_question": 10.1598847285,
+    "ranking_per_question": 2.8006352545000004,
+    "calibration_per_question": 0.5461635045000001
+  },
+  "length_metadata": {
+    "preflight": {
+      "questions": 2,
+      "options": 8,
+      "mean_input_tokens": 753.875,
+      "median_input_tokens": 753.0,
+      "min_input_tokens": 471,
+      "max_input_tokens": 1038
+    },
+    "dev": {
+      "questions": 64,
+      "options": 255,
+      "mean_input_tokens": 784.7372549019608,
+      "median_input_tokens": 853,
+      "min_input_tokens": 287,
+      "max_input_tokens": 1649
+    },
+    "linear_multiplier": 1.0409381593791553,
+    "quadratic_multiplier": 1.0998186143397592
+  },
+  "stages": [
+    {
+      "stage": "decompose",
+      "forward": 4335,
+      "backward": 0,
+      "calibration_forward": 64,
+      "load_and_final_integrity_seconds": 11.550544530000002,
+      "statistics_seconds": 19.359249869982403,
+      "estimated_seconds": 1212.4741477300388,
+      "range_seconds": [
+        1052.495859254495,
+        1404.1490247386573
+      ]
+    },
+    {
+      "stage": "rank",
+      "forward": 511,
+      "backward": 128,
+      "calibration_forward": 0,
+      "load_and_final_integrity_seconds": 11.550544530000002,
+      "statistics_seconds": 0,
+      "estimated_seconds": 198.12898337234256,
+      "range_seconds": [
+        172.8671351892,
+        228.39597578521898
+      ]
+    },
+    {
+      "stage": "validate",
+      "forward": 25500,
+      "backward": 0,
+      "calibration_forward": 0,
+      "load_and_final_integrity_seconds": 11.550544530000002,
+      "statistics_seconds": 38.718499739964805,
+      "estimated_seconds": 6792.349008623067,
+      "range_seconds": [
+        5879.502907246841,
+        7886.05782296529
+      ]
+    }
+  ],
+  "first_decision_stage_total": {
+    "estimated_seconds": 8202.952139725448,
+    "range_seconds": [
+      7104.865901690536,
+      9518.602823489167
+    ],
+    "ends_after": "10 candidate validation; scientific interpretation and function hypothesis freeze are not timed"
+  },
+  "conditional_later_work": {
+    "reading": {
+      "function_dev_per_candidate": {
+        "forward": 3584,
+        "bootstrap_calls_16_units": 62,
+        "statistics_seconds": 11.146602105349302
+      },
+      "confirmation_per_candidate": {
+        "forward": 6144,
+        "bootstrap_calls_16_units": 62,
+        "bootstrap_calls_32_units": 16,
+        "statistics_seconds": 15.018452079345783
+      },
+      "function_dev_calibration_shared_across_candidates": 64,
+      "confirmation_calibration_shared_across_candidates": 128,
+      "timing_status": "not calibrated: 60-90 token functional inputs differ greatly from the measured long ability prompts"
+    },
+    "comparison": {
+      "function_dev_per_candidate": {
+        "forward": 3584,
+        "bootstrap_calls_16_units": 62,
+        "statistics_seconds": 11.146602105349302
+      },
+      "confirmation_per_candidate": {
+        "forward": 6144,
+        "bootstrap_calls_16_units": 62,
+        "bootstrap_calls_32_units": 16,
+        "statistics_seconds": 15.018452079345783
+      },
+      "function_dev_calibration_shared_across_candidates": 64,
+      "confirmation_calibration_shared_across_candidates": 128,
+      "timing_status": "not calibrated: 60-90 token functional inputs differ greatly from the measured long ability prompts"
+    },
+    "reporting": {
+      "function_dev_per_candidate": {
+        "forward": 3584,
+        "bootstrap_calls_16_units": 62,
+        "statistics_seconds": 11.146602105349302
+      },
+      "confirmation_per_candidate": {
+        "forward": 6144,
+        "bootstrap_calls_16_units": 62,
+        "bootstrap_calls_32_units": 16,
+        "statistics_seconds": 15.018452079345783
+      },
+      "function_dev_calibration_shared_across_candidates": 64,
+      "confirmation_calibration_shared_across_candidates": 128,
+      "timing_status": "not calibrated: 60-90 token functional inputs differ greatly from the measured long ability prompts"
+    }
+  },
+  "limits": [
+    "Two preflight questions; range is sensitivity to sequence scaling and 10% run variation, not a confidence interval.",
+    "Model loading and final integrity checks are charged separately for each stage; statistics use measured server CPU timing.",
+    "Calibration is reused by rank and validate exactly as the existing stage code permits.",
+    "Current implementation scores each MMLU option separately; no legacy same-prefix grouping speedup is assumed.",
+    "cProfile overhead is retained; no unmeasured speedup is subtracted.",
+    "Manual hypothesis choice, later-stage timing calibration, transfers and exceptional failures are not assigned invented durations.",
+    "Later functional/confirmation work requires one or two frozen scientific explanations; no automatic scientific decision is implied."
+  ]
+}

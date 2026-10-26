@@ -44,21 +44,21 @@ def main():
     versions = {**distribution_versions, "torch": torch.__version__}
     for name, version in versions.items():
         checks[name + "_version"] = version == source[name + "_version"]
-    manifest_path = REPO / "experiments/qwen35-neuron-steering-2026-10-25/model-files.json"
-    entries = json.loads(manifest_path.read_text())
-    weight_entries = [entry for entry in entries if entry["path"].endswith(".safetensors")]
+    # Reuse the minimal identity evidence in the approved preparation package.
+    # Do not require or transmit unrelated historical environment receipts.
+    manifest_path = ROOT / "readiness/receipt.json"
+    weight_entries = json.loads(manifest_path.read_text())["remote_read_only_verification"]["weight_sha256_verified"]
     assets = []
-    for entry in weight_entries:
-        path = model / entry["path"]
+    for name, expected in weight_entries.items():
+        path = model / name
         actual = sha(path)
-        expected = entry["lfs"]["oid"]
         size = path.stat().st_size
         assets.append({"path": str(path), "bytes": size, "sha256": actual,
-                       "expected_sha256": expected, "matches": actual == expected and size == entry["size"]})
+                       "expected_sha256": expected, "matches": actual == expected})
     checks["weight_files"] = bool(assets) and all(row["matches"] for row in assets)
-    historical = json.loads((REPO / "experiments/transfer-toy-v1-2026-10-26/validation-r01/preflight-source4b/receipt.json").read_text())
-    tokenizer_hashes = {name: sha(model / name) for name in historical["tokenizer_sha256"]}
-    checks["tokenizer_files"] = tokenizer_hashes == historical["tokenizer_sha256"]
+    expected_tokenizer = json.loads((ROOT / "readiness/tokenizer-alignment.json").read_text())["tokenizer_hashes"]
+    tokenizer_hashes = {name: sha(model / name) for name in expected_tokenizer}
+    checks["tokenizer_files"] = tokenizer_hashes == expected_tokenizer
     installed_source = Path(importlib.metadata.distribution("transformers").locate_file(
         "transformers/models/qwen3_5/modeling_qwen3_5.py"))
     # Tokenization is CPU-only and reads no model weights into a model object.
