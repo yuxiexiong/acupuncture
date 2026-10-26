@@ -22,6 +22,7 @@
 | 跨规模、跨家族的干预迁移：方法、效果与对应关系边界 | [迁移文献专项核查](docs/literature/cross-model-intervention-transfer-2026-10-26.zh-CN.md) |
 | lyra 原帖、作者回复与评论区反查 | [原帖与评论区调查报告](docs/literature/lyra-x-thread-2026-10-26.zh-CN.md) |
 | lyra 评论区第二轮：新增回复、50题公开制品及人格/情绪研究核查 | [第二轮调查报告](docs/literature/lyra-x-thread-round2-2026-10-26.zh-CN.md) |
+| Abhinav 神经元配方：9类表现、10组配置、22个坐标，含截图剂量 | [中文清单](docs/literature/vashinthewild-neuron-catalog-2026-10-26.zh-CN.md) / [结构化索引](docs/literature/vashinthewild-neuron-catalog-2026-10-26.json) |
 | Qwen3.5-4B 首轮实验全部代码与记录 | [实验目录](experiments/qwen35-neuron-steering-2026-10-25/) |
 | 前 24 题全部原文并排 | [paired_raw.html](experiments/qwen35-neuron-steering-2026-10-25/raw-corpus-cpu-bf16-r01/paired_raw.html)（下载后用浏览器打开） |
 | 原版 / 干预版原始语料 | [original.raw.jsonl](experiments/qwen35-neuron-steering-2026-10-25/raw-corpus-cpu-bf16-r01/original.raw.jsonl) / [modified.raw.jsonl](experiments/qwen35-neuron-steering-2026-10-25/raw-corpus-cpu-bf16-r01/modified.raw.jsonl) |
