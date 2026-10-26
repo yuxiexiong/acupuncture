@@ -1,0 +1,27 @@
+{
+  "status": "prepared_no_model_execution",
+  "seed": 20261026,
+  "source": "experiments/root-cause-toy-v1-2026-10-26/data/ability_dev.jsonl",
+  "source_sha256": "6a853df28e19e42fadde5f45a665370e4e508f0a9b2cac58421adf0aeeb84212",
+  "files": {
+    "items.jsonl": {
+      "sha256": "53666ceb7c08a2394475a90d023b53b0ed8a8dec5d0658946ac2e97383245e42",
+      "count": 256
+    }
+  },
+  "base_counts": {
+    "mmlu_rotation": 32,
+    "comparison": 16
+  },
+  "variant_counts": {
+    "mmlu_rotation": 128,
+    "comparison": 128
+  },
+  "rotation_order": "display_index -> (display_index + rotation) mod 4 = original content index",
+  "calibration_reference": "One clean required/rotation0 context per base; reuse its scales in every demand/rotation and intervention condition",
+  "selection": "All 32 historical development MMLU questions; 16 deterministic synthetic comparison bases. No model outputs or accuracy used.",
+  "statistical_unit": "base_id; average rotations within base before resampling; demands are paired",
+  "position_reference_flagged_base_ids": [],
+  "flag_policy": "Retain all questions; flagged semantic ambiguity is disclosed, not silently excluded.",
+  "boundary": "Exploratory label dependence/task demand diagnosis, not an independent confirmation or a full mechanism test. Direct tasks still require reading and content-to-label mapping; option rotation changes both display order and label association."
+}

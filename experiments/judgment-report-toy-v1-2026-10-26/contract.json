@@ -1,0 +1,123 @@
+{
+  "schema_version": 1,
+  "experiment": "judgment-report-toy-v1-2026-10-26",
+  "status": "prepared_diagnostic_not_confirmation",
+  "authorization": "prepare_sync_cpu_only_wait_for_new_user_launch",
+  "parent_stage": "validate-parallel",
+  "parent_receipt_sha256": "945593edd9dd77b41d27136f281a09e81a80d3ec6ce3f7778fa801ed8eb1b1ad",
+  "source": {
+    "model_id": "Qwen/Qwen3.5-4B",
+    "revision": "851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a",
+    "model_path": "/data/models/Qwen3.5-4B-851bf6e",
+    "hidden_size": 2560,
+    "intermediate_size": 9216,
+    "num_hidden_layers": 32,
+    "dtype": "bfloat16",
+    "attention_implementation": "eager",
+    "torch_version": "2.6.0+cu124",
+    "transformers_version": "5.20.2",
+    "target_weight_sha256": {
+      "13": "57a1c0dbde6631d2715f59b5f37152f58c37ec16daab2077eb001f69fa614de9",
+      "14": "0169cf062636bb6ce00cb4d367cab66a24bf2adcb107d2c4f65435a693f9ecf2"
+    }
+  },
+  "needles": {
+    "A": {
+      "layer": 14,
+      "channel": 8949,
+      "sign": 1
+    },
+    "B": {
+      "layer": 13,
+      "channel": 7956,
+      "sign": -1
+    }
+  },
+  "dose": 1.0,
+  "candidates": {
+    "C05": {
+      "component": "L19.attention",
+      "positions": "prompt_last",
+      "control_seed": 20261031
+    },
+    "C01": {
+      "component": "L23.attention",
+      "positions": "prompt_last",
+      "control_seed": 20261027
+    }
+  },
+  "devices": {
+    "C05": "cuda:0",
+    "C01": "cuda:1"
+  },
+  "scope": {
+    "main_question": "Does needle damage depend on answer content versus label/display-slot mapping, and on judgment demand?",
+    "primary_candidate": "C05",
+    "comparison_candidate": "C01",
+    "comparison_is_negative_control": false,
+    "new_reader_search": false,
+    "cross_content_donor_patch": false,
+    "independent_confirmation": false,
+    "new_models": false
+  },
+  "data": {
+    "mmlu_base_count": 32,
+    "comparison_base_count": 16,
+    "rotations": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "comparison_demands": [
+      "required",
+      "direct"
+    ],
+    "total_items_per_candidate": 256,
+    "statistical_units": {
+      "mmlu_rotation": 32,
+      "comparison": 16
+    }
+  },
+  "calibration": "one_clean_required_rotation0_reference_per_base_shared_across_all_variants_and_arms",
+  "scoring": "four_single_token_option_labels_raw_loglikelihood_first_index_tie_break",
+  "conditions": [
+    "clean",
+    "AB_d1",
+    "repair",
+    "replay",
+    "control_repair",
+    "control_replay"
+  ],
+  "statistics": {
+    "seed": 20261026,
+    "bootstrap_draws": 10000,
+    "confidence": 0.95,
+    "unit": "base_id",
+    "correct": "primary_task_outcome",
+    "margin": "continuous_diagnostic",
+    "multiple_comparison_control": false,
+    "equivalence_claims": false
+  },
+  "interpretation_guards": {
+    "minimum_clean_function_accuracy_per_demand": 0.75,
+    "joint_AB_floor_accuracy_per_demand": 0.25,
+    "guards_are_interpretation_flags_not_data_exclusions": true,
+    "no_unique_function_or_complete_root_cause_claim": true
+  },
+  "execution": {
+    "maximum_model_workers": 2,
+    "batch_size": 1,
+    "threads_per_worker": 4,
+    "use_cache": false,
+    "generation": false,
+    "backward": false,
+    "weight_updates": false,
+    "resume_partial_runs": false,
+    "model_loading_requires_new_authorization": true,
+    "formal_choice_scoring_forwards_per_candidate": 10240,
+    "reference_calibration_forwards_per_candidate": 48,
+    "initial_runtime_check_forwards_per_candidate": 13,
+    "base_units_are_not_independent_across_conditions": true
+  }
+}
