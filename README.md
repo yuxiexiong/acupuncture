@@ -17,6 +17,7 @@
 | 一小时预算讨论及数学、代码各扩至 100 题的后续修订 | [时间分配与精度限制](docs/damage-evaluation-one-hour-plan.zh-CN.md) |
 | 两个坐标的源码/激活工程核查与相关工作的损伤指标 | [原始来源核查记录](docs/literature/source-and-damage-audit-2026-10-26.json) |
 | 用户提供的 HanLab 经验总结（原文） | [HanLab经验总结.md](docs/HanLab经验总结.md) / [导入与 SHA-256 校验](docs/hanlab-summary-import-2026-10-26.json) |
+| HanLab 机制实验的原论文核查：五篇的竞争解释、对照与证据边界 | [原文核查与设计借鉴](docs/literature/hanlab-mechanism-primary-audit-2026-10-26.zh-CN.md) |
 | 文献查重与既有工作核查（26篇，含证据边界） | [mechanistic-interventions-2026-10-26.json](docs/literature/mechanistic-interventions-2026-10-26.json) |
 | 跨规模、跨家族的干预迁移：方法、效果与对应关系边界 | [迁移文献专项核查](docs/literature/cross-model-intervention-transfer-2026-10-26.zh-CN.md) |
 | lyra 原帖、作者回复与评论区反查 | [原帖与评论区调查报告](docs/literature/lyra-x-thread-2026-10-26.zh-CN.md) |
