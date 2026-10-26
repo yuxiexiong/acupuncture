@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "experiment": "root-cause-toy-v1-2026-10-26",
+  "authorization": "prepare_only_wait_for_user_launch",
+  "source": {
+    "model_id": "Qwen/Qwen3.5-4B",
+    "revision": "851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a",
+    "model_path": "/data/models/Qwen3.5-4B-851bf6e",
+    "hidden_size": 2560,
+    "intermediate_size": 9216,
+    "num_hidden_layers": 32,
+    "dtype": "bfloat16",
+    "attention_implementation": "eager",
+    "torch_version": "2.6.0+cu124",
+    "transformers_version": "5.20.2",
+    "target_weight_sha256": {
+      "13": "57a1c0dbde6631d2715f59b5f37152f58c37ec16daab2077eb001f69fa614de9",
+      "14": "0169cf062636bb6ce00cb4d367cab66a24bf2adcb107d2c4f65435a693f9ecf2"
+    }
+  },
+  "needles": {
+    "A": {"layer": 14, "channel": 8949, "sign": 1},
+    "B": {"layer": 13, "channel": 7956, "sign": -1}
+  },
+  "random_seed": 20261026,
+  "random_pairs": 5,
+  "diagnostic_doses": [1.0, 0.5],
+  "validation_dose": 1.0,
+  "batch_size": 1,
+  "torch_threads": 4,
+  "dev_counts": {"mmlu": 32, "arc_challenge": 32},
+  "confirm_counts": {"mmlu": 32, "arc_challenge": 32},
+  "candidate_budget": {"ranked": 8, "audit": 2, "total": 10, "final": 2},
+  "candidate_scope": {
+    "components": "attention_L14_and_attention_MLP_L15_to_L31",
+    "positions": ["prompt_last", "answer_tail"],
+    "exclude_empty_position_masks": true,
+    "replace_layer_residual": false,
+    "replace_injected_mlp": false,
+    "joint_candidate_search": false
+  },
+  "functional": {
+    "families": ["reading", "comparison", "reporting"],
+    "families_per_final_experiment": 1,
+    "development_pairs": 16,
+    "confirmation_pairs": 16,
+    "variants_per_pair": 4,
+    "total_scored_items_per_family": 128,
+    "statistical_unit": "base_pair",
+    "reader_must_be_unpatched_and_downstream": true,
+    "freeze_before_confirm": true
+  },
+  "statistics": {
+    "bootstrap_samples": 10000,
+    "confidence": 0.95,
+    "split_by_benchmark": true,
+    "confirmation_primary": "correct",
+    "screening_primary": "margin",
+    "contrasts": ["repair_minus_AB", "repair_minus_repair_control", "clean_minus_replay", "replay_control_minus_replay"],
+    "required_interval_lower_bound": 0.0,
+    "uncertain_result": "insufficient_evidence",
+    "equivalence_claims": false
+  },
+  "execution": {
+    "use_cache": false,
+    "generation": false,
+    "weight_updates": false,
+    "new_output_directory_required": true,
+    "resume_partial_runs": false,
+    "maximum_model_workers": 1,
+    "launch_requires_execute_flag": true
+  }
+}
