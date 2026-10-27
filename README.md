@@ -9,6 +9,7 @@
 | 材料 | 入口 |
 |---|---|
 | 当前研究状态、机制线索与迁移计划 | [研究状态与后续方向](docs/RESEARCH_STATUS.zh-CN.md) |
+| X 线索统一入口：历次原帖、全部已转录配方、定位方法、复现与失败、可视化工具 | [X 线索汇总](docs/literature/x-clues-summary.zh-CN.md) |
 | 2B/4B/9B 全层单针调查：880条件、7,064份原文已完整交付，实耗4小时1分12秒 | [并排原文](experiments/layer-survey-toy-v1-2026-10-27/delivery-r01/paired_raw.html) / [执行与核验记录](experiments/layer-survey-toy-v1-2026-10-27/EXECUTION.zh-CN.md) / [协议](experiments/layer-survey-toy-v1-2026-10-27/PROTOCOL.zh-CN.md) |
 | 两针能力损伤的最小因果定位：首轮完成，有局部修复线索，根因尚未确认 | [首轮结果](experiments/root-cause-toy-v1-2026-10-26/RESULTS.zh-CN.md) / [执行状态与实际耗时](experiments/root-cause-toy-v1-2026-10-26/EXECUTION.zh-CN.md) / [执行合同](experiments/root-cause-toy-v1-2026-10-26/CONTRACT.zh-CN.md) |
 | 判断内容与报告标签的追加诊断：合同/代码/CPU验收完成，正式运行暂停 | [本轮合同](experiments/judgment-report-toy-v1-2026-10-26/CONTRACT.zh-CN.md) / [准备验收与阶段说明](experiments/judgment-report-toy-v1-2026-10-26/EXECUTION.zh-CN.md) |
