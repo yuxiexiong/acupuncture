@@ -26,6 +26,7 @@
 | lyra 评论区第二轮：新增回复、50题公开制品及人格/情绪研究核查 | [第二轮调查报告](docs/literature/lyra-x-thread-round2-2026-10-26.zh-CN.md) |
 | Abhinav 神经元配方：9类表现、10组配置、22个坐标，含截图剂量 | [中文清单](docs/literature/vashinthewild-neuron-catalog-2026-10-26.zh-CN.md) / [结构化索引](docs/literature/vashinthewild-neuron-catalog-2026-10-26.json) |
 | 10/27 原帖与配方增量：新组合、上传主题、定位方法、失败发现与 Zoo 出处边界 | [更新核查](docs/literature/x-recipe-updates-2026-10-27.zh-CN.md) / [结构化清单](docs/literature/x-recipe-updates-2026-10-27.json) |
+| 10/27 可视化分享复查：头与 token 视图、调试器、Neuralese 更新及 HF 网格含义 | [工具与讨论核查](docs/literature/x-visualization-updates-2026-10-27.zh-CN.md) |
 | Qwen3.5-4B 首轮实验全部代码与记录 | [实验目录](experiments/qwen35-neuron-steering-2026-10-25/) |
 | 前 24 题全部原文并排 | [paired_raw.html](experiments/qwen35-neuron-steering-2026-10-25/raw-corpus-cpu-bf16-r01/paired_raw.html)（下载后用浏览器打开） |
 | 原版 / 干预版原始语料 | [original.raw.jsonl](experiments/qwen35-neuron-steering-2026-10-25/raw-corpus-cpu-bf16-r01/original.raw.jsonl) / [modified.raw.jsonl](experiments/qwen35-neuron-steering-2026-10-25/raw-corpus-cpu-bf16-r01/modified.raw.jsonl) |
