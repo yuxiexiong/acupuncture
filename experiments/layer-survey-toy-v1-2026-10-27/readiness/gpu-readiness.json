@@ -1,0 +1,66 @@
+{
+  "status": "gpu_ready_pending_formal_authorization",
+  "formal_started": false,
+  "freeze_sha256": "40b9a70d38a848a83c1abaa2f1be0a769ff1c4164771e75169926a1cd919f412",
+  "models": {
+    "2b": {
+      "preflight_records": 22,
+      "positive_records": 8,
+      "positive_mean_tokens": 76.375,
+      "positive_cap_count": 4,
+      "positive_mean_seconds": 3.5689540926832706,
+      "positive_tokens_per_second": 21.399826956748125,
+      "observed_wall_seconds": 71.18676023185253,
+      "observed_fixed_overhead_seconds": 13.119361251592636,
+      "fitted_seconds_per_token": 0.046174420276367416,
+      "fitted_intercept_seconds": 0.06205504004003215,
+      "formal_dual_gpu_point_seconds": 3457.419121744111,
+      "formal_dual_gpu_128_scenario_seconds": 5764.70879476663,
+      "record_bytes": 59874
+    },
+    "4b": {
+      "preflight_records": 22,
+      "positive_records": 8,
+      "positive_mean_tokens": 49.625,
+      "positive_cap_count": 2,
+      "positive_mean_seconds": 3.0345350082498044,
+      "positive_tokens_per_second": 16.35341159851099,
+      "observed_wall_seconds": 79.80420078150928,
+      "observed_fixed_overhead_seconds": 21.328637463971972,
+      "fitted_seconds_per_token": 0.0602283131942945,
+      "fitted_intercept_seconds": 0.04626147864456165,
+      "formal_dual_gpu_point_seconds": 3928.600215226412,
+      "formal_dual_gpu_128_scenario_seconds": 9971.416931084912,
+      "record_bytes": 57851
+    },
+    "9b": {
+      "preflight_records": 22,
+      "positive_records": 8,
+      "positive_mean_tokens": 118.375,
+      "positive_cap_count": 7,
+      "positive_mean_seconds": 7.538933519273996,
+      "positive_tokens_per_second": 15.701823036025337,
+      "observed_wall_seconds": 136.3318671658635,
+      "observed_fixed_overhead_seconds": 37.720574136823416,
+      "fitted_seconds_per_token": 0.06334262935001725,
+      "fitted_intercept_seconds": 0.042589025968795546,
+      "formal_dual_gpu_point_seconds": 9710.744045438245,
+      "formal_dual_gpu_128_scenario_seconds": 10493.479486714412,
+      "record_bytes": 66071
+    }
+  },
+  "eta": {
+    "dual_gpu_point_seconds": 17096.763382408768,
+    "dual_gpu_all_modified_128_seconds": 26229.605212565955,
+    "raw_record_bytes_estimate": 19712216.727272727,
+    "assumptions": [
+      "Two idle H20 GPUs; one model worker per GPU; fixed BF16 eager batch1 code.",
+      "Model stages 2B then 4B then 9B, both shards in parallel at each stage; no queue time.",
+      "Point estimate extrapolates eight preflight positive answers/model across all sampled channels.",
+      "128-token scenario uses timing regression, not a guaranteed worst-case time.",
+      "Small timing sample does not establish the survey-wide response-length distribution.",
+      "Observed fixed overhead includes asset hashing, loading, calibration and final weight verification.",
+      "Final verification, export and copying are recorded separately; no arbitrary safety multiplier."
+    ]
+  }
+}

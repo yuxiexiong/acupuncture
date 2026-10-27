@@ -1,0 +1,71 @@
+{
+  "experiment": "layer-survey-toy-v1-2026-10-27",
+  "status": "prepared_formal_launch_requires_confirmation",
+  "models": [
+    {
+      "id": "2b",
+      "layers": 24,
+      "intermediate_size": 6144,
+      "hidden_size": 2048,
+      "revision": "15852e8c16360a2fea060d615a32b45270f8a8fc",
+      "remote_path": "/workspace/models/Qwen3.5-2B-15852e8c"
+    },
+    {
+      "id": "4b",
+      "layers": 32,
+      "intermediate_size": 9216,
+      "hidden_size": 2560,
+      "revision": "851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a",
+      "remote_path": "/data/models/Qwen3.5-4B-851bf6e"
+    },
+    {
+      "id": "9b",
+      "layers": 32,
+      "intermediate_size": 12288,
+      "hidden_size": 4096,
+      "revision": "c202236235762e1c871ad0ccb60c8ee5ba337b9a",
+      "remote_path": "/workspace/models/Qwen3.5-9B-c2022362"
+    }
+  ],
+  "channels_per_layer": 10,
+  "single_channel_per_condition": true,
+  "dose": 1.0,
+  "dose_definition": "c = clean prompt per-layer median residual L2 norm / down_proj column L2 norm; fixed per question, cast to BF16; not activation += 1",
+  "sampling": "random.Random(\"acupuncture-layer-survey-v1:{model_id}:{layer}\").sample(range(intermediate_size),10); sort indices; fixed before any model outputs",
+  "instruction": "请用中文简短回答，通常一至三句话；具体格式要求以题目为准。",
+  "generation": {
+    "max_new_tokens": 128,
+    "do_sample": false,
+    "enable_thinking": false,
+    "dtype": "bfloat16",
+    "attention_backend": "eager",
+    "batch_size": 1,
+    "threads": 4,
+    "scope": "prompt and all generated positions",
+    "retries_for_semantic_output": 0
+  },
+  "formal": {
+    "conditions": 880,
+    "modified_answers": 7040,
+    "baseline_answers": 24,
+    "total_answers": 7064,
+    "maximum_workers": 2,
+    "shards_per_model": 2
+  },
+  "preflight": {
+    "answers_per_model": 22,
+    "total_answers": 66,
+    "baseline": 8,
+    "single_positive": 8,
+    "zero": 3,
+    "restored": 3,
+    "positions": "layer 0, floor(layer_count/2), last layer; first sampled channel; question i assigned group i modulo 3",
+    "semantic_analysis": false
+  },
+  "analysis": "raw paired texts only; human annotation optional; layer=10 sampled channels, not 80 independent samples; no causal area claims",
+  "paused": [
+    "root-cause",
+    "judgment-report",
+    "static weight edits"
+  ]
+}
