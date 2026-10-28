@@ -37,3 +37,9 @@
 偏离记账：`development-r01` 启动命令多写了 `> /dev/null`，controller stdout 未进入 `readiness/development-controller-r01.log`；状态与错误仍由 `controller.json` 记录，worker 日志不受影响。不影响任何科学结论。
 
 ETA r01（较慢 worker、阶段串行，仅机器时间）：实测长度情景 development 2.10 h、confirmation 1.57 h（固定网格 3.67 h），机制/替换按最大未选定工作量另计 3.47 h，合计 7.12 h；全128情景 6.37/4.84（固定 11.21 h），合计 19.51 h。阅读、审核等待、传输未计。原始证据 6.4–22.9 GiB：服务器足够，本地归档盘不足（5.9 GiB）。
+
+### 决策日志（确认输出出现前，2026-10-29 北京时间约 07:45）
+
+- 确认预测判定脚本 `analysis/evaluate_predictions.py` 在 confirmation-r01 运行中、任何确认输出被读取前写定：C1/C2/C4 两个符号都成立才算成立；C3 合并两符号；“多数”=>1/2；分母为 0 记无法判断。开发数据上试跑 6/6 成立（预期，因预测源自开发）；把早层与后层计数对调的合成摘要上 C1/C2/C4 判为不成立，演示判据可失败。
+- `analysis/summarize_development.py` 题族解析改为去掉确认题 `C` 前缀；开发结果不受影响。
+- 读者口径分歧（开发阅读）：首尾答案冲突时 RL01 读者按首个答案、其余读者按最终结论；两者均标 contradiction，故规则 r01 §3 的“异常”判定不受影响，但 `other_fact`/`follows_fact` 分布受影响，报告单列。机制与替换阅读起统一为“有明确改口按最终结论，否则按首个答案”。

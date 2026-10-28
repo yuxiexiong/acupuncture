@@ -21,7 +21,7 @@ def main(joined, out):
     rows = json.load(open(joined))['rows']
     clean = {r['item_id']: r for r in rows if r['condition']['id'] == 'clean'}
     usable = {i for i, r in clean.items() if r['label']['fact'] == 'follows_fact'}
-    family = lambda i: {'RD': 'reading', 'AR': 'arithmetic', 'RL': 'relation'}[i[:2]]
+    family = lambda i: {'RD': 'reading', 'AR': 'arithmetic', 'RL': 'relation'}[i.removeprefix('C')[:2]]
     base = lambda i: i.split('-')[0]
     groups = defaultdict(list)
     for r in rows:
