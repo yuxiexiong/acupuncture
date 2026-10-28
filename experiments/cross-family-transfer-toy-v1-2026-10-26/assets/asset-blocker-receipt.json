@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "recorded_at_utc": "2026-10-26T05:46:37.597718+00:00",
+  "status": "blocked_official_gated_access",
+  "gpu_ready": false,
+  "repo": "meta-llama/Llama-3.1-8B-Instruct",
+  "revision": "0e9e39f249a16976918f6564b8830bc894c89659",
+  "planned_asset_path": "/workspace/models/Llama-3.1-8B-Instruct-0e9e39f2",
+  "asset_path_created": false,
+  "weights_downloaded": false,
+  "weight_shard_count": 4,
+  "weight_bytes": 16060556376,
+  "official_access": {
+    "http_status_lines": [
+      "HTTP/2 403 "
+    ],
+    "x_error_code": "GatedRepo",
+    "credential_source": "existing remote Hugging Face credential; value not recorded"
+  },
+  "network": {
+    "remote_direct_official_route": "unreachable or IPv4 connect timeout",
+    "temporary_transport": "SSH remote SOCKS to local machine; official HTTPS endpoints only",
+    "temporary_transport_closed": true
+  },
+  "evidence_files": [
+    "official-access-receipt.json",
+    "official-source-manifest.json",
+    "environment-receipt.json"
+  ],
+  "next_download_prerequisites": [
+    "An account/token authorized by the official gated repository, or an existing exact asset path for provenance/hash validation.",
+    "Working official Hugging Face HTTPS route; the temporary diagnostic tunnel has been closed."
+  ],
+  "next_download_command": "HF_ENDPOINT=https://huggingface.co /workspace/acupuncture/.venv-bench/bin/python -c 'from huggingface_hub import snapshot_download; snapshot_download(repo_id='\"'\"'meta-llama/Llama-3.1-8B-Instruct'\"'\"', revision='\"'\"'0e9e39f249a16976918f6564b8830bc894c89659'\"'\"', local_dir='\"'\"'/workspace/models/Llama-3.1-8B-Instruct-0e9e39f2'\"'\"', allow_patterns=['\"'\"'LICENSE'\"'\"', '\"'\"'README.md'\"'\"', '\"'\"'USE_POLICY.md'\"'\"', '\"'\"'config.json'\"'\"', '\"'\"'generation_config.json'\"'\"', '\"'\"'model-00001-of-00004.safetensors'\"'\"', '\"'\"'model-00002-of-00004.safetensors'\"'\"', '\"'\"'model-00003-of-00004.safetensors'\"'\"', '\"'\"'model-00004-of-00004.safetensors'\"'\"', '\"'\"'model.safetensors.index.json'\"'\"', '\"'\"'special_tokens_map.json'\"'\"', '\"'\"'tokenizer.json'\"'\"', '\"'\"'tokenizer_config.json'\"'\"'])'",
+  "post_download_required_checks": [
+    "Validate each shard byte size and SHA-256 against official-source-manifest.json LFS metadata.",
+    "Validate small-file git blob hashes and record SHA-256; verify index coverage and tokenizer/config on CPU.",
+    "Recheck exact model identity, fixed revision, environment and available GPUs before reporting GPU Ready."
+  ],
+  "model_loaded": false,
+  "gpu_inference_run": false,
+  "alternative_model_or_mirror_used": false,
+  "eta": "Unavailable until official gated access and network route are available."
+}

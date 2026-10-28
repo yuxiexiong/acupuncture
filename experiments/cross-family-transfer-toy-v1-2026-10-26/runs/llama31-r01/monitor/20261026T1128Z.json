@@ -1,0 +1,511 @@
+{
+  "snapshot": {
+    "utc": "2026-10-26T11:28:08.215994+00:00",
+    "launch-r01/authorization.json": {
+      "authorized_at_utc": "2026-10-26T09:02:02.437394+00:00",
+      "source": "direct_user_message",
+      "user_instruction": "现在卡上有实验跑么？没有你就上卡跑，有的话就挂上去排队",
+      "run": "llama31-r01",
+      "allowed_stages": [
+        1,
+        2
+      ],
+      "stage2_requires": "PASS",
+      "gpu_policy": "wait until both GPUs have no compute processes; never stop other jobs",
+      "freeze_sha256": "53aa00e02c10216309af74ae0a330ec62f59e6b22da7fd6b66360a93fb3afa03",
+      "gpu_ready_sha256": "724978154fe36f11e5958ed495cea644a662037b29088cfc7db4172e830cbb77",
+      "queue_sha256": "3e02e0cdf83b9d331c05fe44ca0f19c449e5ea8487b6d98c187bccfdf7a8c9ca",
+      "frozen_scientific_settings_changed": false,
+      "root_cause_authorized_by_this_launch": false
+    },
+    "launch-r01/submit.json": {
+      "submitted_at_utc": "2026-10-26T09:03:34.326498+00:00",
+      "pid": 1578983,
+      "process_start_ticks": "1124088875",
+      "script": "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/launch-r01/queue.py",
+      "queue_sha256": "3e02e0cdf83b9d331c05fe44ca0f19c449e5ea8487b6d98c187bccfdf7a8c9ca",
+      "gpus_at_submission": "0, GPU-1a1ef3a8-8633-f7f7-cb1d-f2ff18569f5d, 0 %, 0 MiB\n1, GPU-cbae4c04-a3d4-5176-93d0-5bfaf154ca68, 0 %, 0 MiB\n",
+      "compute_processes_at_submission": "",
+      "allowed_stages": [
+        1,
+        2
+      ],
+      "stage2_requires": "PASS"
+    },
+    "launch-r01/state.json": {
+      "status": "running",
+      "pid": 1578983,
+      "started_utc": "2026-10-26T09:03:34.364835+00:00",
+      "authorization_sha256": "97f8760bf42ece2ca760cc00c46bf28b6d89f14d34a53e0ba81589d52957e2b7",
+      "stages": [
+        {
+          "stage": 1,
+          "pid": 1578985,
+          "started_utc": "2026-10-26T09:03:34.383728+00:00",
+          "command": [
+            "/workspace/acupuncture/.venv-bench/bin/python",
+            "-u",
+            "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/pipeline.py",
+            "--stage",
+            "1",
+            "--run",
+            "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01",
+            "--source",
+            "/data/models/Qwen3.5-4B-851bf6e",
+            "--target",
+            "/workspace/models/Llama-3.1-8B-Instruct-0e9e39f2",
+            "--execute"
+          ]
+        }
+      ],
+      "stage": 1,
+      "blocking_gpu_pids": [],
+      "updated_utc": "2026-10-26T09:03:34.383736+00:00"
+    },
+    "launch-r01/user-scope-damage-control.json": {
+      "recorded_utc": "2026-10-26T10:36:25.197012+00:00",
+      "source": "direct_user_reply",
+      "user_instruction": "让旧队列完成，仅作为损伤对照",
+      "run": "llama31-r01",
+      "continue_existing_queue": true,
+      "scientific_contract_changed": false,
+      "allowed_stages": [
+        1,
+        2
+      ],
+      "stage2_requires_existing_contract_gate": "PASS",
+      "interpretation": "Existing run is a damage control only. Its PASS does not demonstrate replication of the specific 4B evil behavior. No root-cause or new behavior-replication experiment is authorized by this reply.",
+      "original_authorization_preserved": true,
+      "restart_authorized": false
+    },
+    "mapping/quality.json": {
+      "status": "PASS",
+      "failed_layers": [],
+      "criterion": "Each layer's clean validation relative MSE < 1 (training-mean predictor)",
+      "mapping_wrapper_sha256": "714c49b0ec6b8b7eb46866844d55ee2c11abcdd0a414fa59ad7689836a4cf0ed",
+      "freeze_sha256": "53aa00e02c10216309af74ae0a330ec62f59e6b22da7fd6b66360a93fb3afa03",
+      "conditions_sha256": "5397f0a4b257b9c792b6be1b9c6f89bd54e6e3a3f79096cdeb74ea6a9a0945b7",
+      "bundle_sha256": "b9672f7ba2f8d5341ff7b64b57e906e8188155262dc0c221d3507560b694e5d7"
+    },
+    "supervisor": {
+      "pid": 1578983,
+      "start_ticks": "1124088875",
+      "state": "S",
+      "command": "/workspace/acupuncture/.venv-bench/bin/python -u /workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/launch-r01/queue.py "
+    },
+    "pipeline": {
+      "pid": 1578985,
+      "start_ticks": "1124088880",
+      "state": "S",
+      "command": "/workspace/acupuncture/.venv-bench/bin/python -u /workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/pipeline.py --stage 1 --run /workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01 --source /data/models/Qwen3.5-4B-851bf6e --target /workspace/models/Llama-3.1-8B-Instruct-0e9e39f2 --execute "
+    },
+    "stage1": {
+      "status": "running",
+      "started_utc": "2026-10-26T09:03:57.699111+00:00",
+      "ended_utc": null,
+      "steps": [
+        {
+          "phase": "collect",
+          "started_utc": "2026-10-26T09:03:57.699466+00:00",
+          "ended_utc": "2026-10-26T09:04:42.267968+00:00",
+          "exit_codes": [
+            0,
+            0
+          ]
+        },
+        {
+          "phase": "mapping",
+          "started_utc": "2026-10-26T09:04:42.283576+00:00",
+          "ended_utc": "2026-10-26T09:05:00.045574+00:00",
+          "exit_codes": [
+            0
+          ]
+        },
+        {
+          "phase": "preflight",
+          "started_utc": "2026-10-26T09:05:00.055575+00:00",
+          "ended_utc": "2026-10-26T09:05:16.506285+00:00",
+          "exit_codes": [
+            0,
+            0
+          ]
+        },
+        {
+          "phase": "toy",
+          "started_utc": "2026-10-26T09:05:16.516459+00:00",
+          "ended_utc": "2026-10-26T11:06:44.085702+00:00",
+          "exit_codes": [
+            0,
+            0
+          ]
+        },
+        {
+          "phase": "benchmark",
+          "started_utc": "2026-10-26T11:06:44.097724+00:00",
+          "ended_utc": null,
+          "exit_codes": null
+        }
+      ],
+      "workers": [
+        {
+          "pid": 1619248,
+          "start_ticks": "1124827852",
+          "state": "R",
+          "command": "/workspace/acupuncture/.venv-bench/bin/python -u /workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/benchmark.py run --stage 1 --model /workspace/models/Llama-3.1-8B-Instruct-0e9e39f2 --conditions /workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/mapping/bundle.pt --output /workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/stage1/benchmark --freeze /workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/freeze.json --shard-index 0 "
+        },
+        {
+          "pid": 1619249,
+          "start_ticks": "1124827852",
+          "state": "R",
+          "command": "/workspace/acupuncture/.venv-bench/bin/python -u /workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/benchmark.py run --stage 1 --model /workspace/models/Llama-3.1-8B-Instruct-0e9e39f2 --conditions /workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/mapping/bundle.pt --output /workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/stage1/benchmark --freeze /workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/freeze.json --shard-index 1 "
+        }
+      ]
+    },
+    "stage1_gate": null,
+    "stage2": null,
+    "stage2_gate": null,
+    "collection-source/receipt.json": {
+      "status": "completed",
+      "started_utc": "2026-10-26T09:03:58.809444+00:00",
+      "ended_utc": "2026-10-26T09:04:41.421798+00:00",
+      "record_files": 0,
+      "record_rows": 0
+    },
+    "collection-target/receipt.json": {
+      "status": "completed",
+      "started_utc": "2026-10-26T09:03:58.765970+00:00",
+      "ended_utc": "2026-10-26T09:04:35.689643+00:00",
+      "record_files": 0,
+      "record_rows": 0
+    },
+    "stage1/toy/shard0/receipt.json": {
+      "status": "completed",
+      "started_utc": "2026-10-26T09:05:16.559282+00:00",
+      "shard_index": 0,
+      "completed_behavior": 320,
+      "completed_ability": 320,
+      "ended_utc": "2026-10-26T11:06:43.389596+00:00",
+      "record_files": 640,
+      "record_rows": 640
+    },
+    "stage1/toy/shard1/receipt.json": {
+      "status": "completed",
+      "started_utc": "2026-10-26T09:05:16.559327+00:00",
+      "shard_index": 1,
+      "completed_behavior": 320,
+      "completed_ability": 320,
+      "ended_utc": "2026-10-26T11:04:16.306534+00:00",
+      "record_files": 640,
+      "record_rows": 640
+    },
+    "stage1/benchmark/shard-0/receipt.json": {
+      "status": "started",
+      "started_utc": "2026-10-26T11:06:44.187801+00:00",
+      "pid": 1619248,
+      "shard_index": 0,
+      "expected_pairs": 700,
+      "completed_pairs": 11,
+      "tasks": {
+        "gsm8k": {
+          "status": "started",
+          "expected_pairs": 50,
+          "completed_pairs": 11,
+          "started_utc": "2026-10-26T11:06:55.049170+00:00",
+          "inference_seconds": 1257.7343752328306
+        }
+      },
+      "inference_seconds": 1257.7343752328306,
+      "setup_seconds": 10.86030844785273,
+      "last_pair_seconds": 111.76425589434803,
+      "updated_utc": "2026-10-26T11:27:52.791712+00:00",
+      "record_audit": {
+        "gsm8k/00007.jsonl": {
+          "count": 1,
+          "time_sum": 114.6985314078629,
+          "mean": 114.6985314078629,
+          "recent5_mean": 114.6985314078629
+        },
+        "gsm8k/00010.jsonl": {
+          "count": 1,
+          "time_sum": 111.76425589434803,
+          "mean": 111.76425589434803,
+          "recent5_mean": 111.76425589434803
+        },
+        "gsm8k/00002.jsonl": {
+          "count": 1,
+          "time_sum": 113.12220859341323,
+          "mean": 113.12220859341323,
+          "recent5_mean": 113.12220859341323
+        },
+        "gsm8k/00004.jsonl": {
+          "count": 1,
+          "time_sum": 119.10968206264079,
+          "mean": 119.10968206264079,
+          "recent5_mean": 119.10968206264079
+        },
+        "gsm8k/00001.jsonl": {
+          "count": 1,
+          "time_sum": 113.91120998561382,
+          "mean": 113.91120998561382,
+          "recent5_mean": 113.91120998561382
+        },
+        "gsm8k/00005.jsonl": {
+          "count": 1,
+          "time_sum": 112.01692610234022,
+          "mean": 112.01692610234022,
+          "recent5_mean": 112.01692610234022
+        },
+        "gsm8k/00008.jsonl": {
+          "count": 1,
+          "time_sum": 115.23480255156755,
+          "mean": 115.23480255156755,
+          "recent5_mean": 115.23480255156755
+        },
+        "gsm8k/00000.jsonl": {
+          "count": 1,
+          "time_sum": 111.92740401998162,
+          "mean": 111.92740401998162,
+          "recent5_mean": 111.92740401998162
+        },
+        "gsm8k/00009.jsonl": {
+          "count": 1,
+          "time_sum": 115.48235884867609,
+          "mean": 115.48235884867609,
+          "recent5_mean": 115.48235884867609
+        },
+        "gsm8k/00003.jsonl": {
+          "count": 1,
+          "time_sum": 115.07311309315264,
+          "mean": 115.07311309315264,
+          "recent5_mean": 115.07311309315264
+        },
+        "gsm8k/00006.jsonl": {
+          "count": 1,
+          "time_sum": 115.39388267323375,
+          "mean": 115.39388267323375,
+          "recent5_mean": 115.39388267323375
+        }
+      }
+    },
+    "stage1/benchmark/shard-1/receipt.json": {
+      "status": "started",
+      "started_utc": "2026-10-26T11:06:44.187951+00:00",
+      "pid": 1619249,
+      "shard_index": 1,
+      "expected_pairs": 700,
+      "completed_pairs": 21,
+      "tasks": {
+        "humaneval": {
+          "status": "started",
+          "expected_pairs": 50,
+          "completed_pairs": 21,
+          "started_utc": "2026-10-26T11:06:55.047302+00:00",
+          "inference_seconds": 1223.007329231128
+        }
+      },
+      "inference_seconds": 1223.007329231128,
+      "setup_seconds": 10.858233841136098,
+      "last_pair_seconds": 55.279994532465935,
+      "updated_utc": "2026-10-26T11:27:18.067115+00:00",
+      "record_audit": {
+        "humaneval/00007.jsonl": {
+          "count": 1,
+          "time_sum": 57.71831828728318,
+          "mean": 57.71831828728318,
+          "recent5_mean": 57.71831828728318
+        },
+        "humaneval/00010.jsonl": {
+          "count": 1,
+          "time_sum": 58.75463005155325,
+          "mean": 58.75463005155325,
+          "recent5_mean": 58.75463005155325
+        },
+        "humaneval/00002.jsonl": {
+          "count": 1,
+          "time_sum": 58.8187286965549,
+          "mean": 58.8187286965549,
+          "recent5_mean": 58.8187286965549
+        },
+        "humaneval/00016.jsonl": {
+          "count": 1,
+          "time_sum": 59.54134952276945,
+          "mean": 59.54134952276945,
+          "recent5_mean": 59.54134952276945
+        },
+        "humaneval/00004.jsonl": {
+          "count": 1,
+          "time_sum": 57.92846147529781,
+          "mean": 57.92846147529781,
+          "recent5_mean": 57.92846147529781
+        },
+        "humaneval/00001.jsonl": {
+          "count": 1,
+          "time_sum": 55.43528943695128,
+          "mean": 55.43528943695128,
+          "recent5_mean": 55.43528943695128
+        },
+        "humaneval/00013.jsonl": {
+          "count": 1,
+          "time_sum": 55.255816174671054,
+          "mean": 55.255816174671054,
+          "recent5_mean": 55.255816174671054
+        },
+        "humaneval/00005.jsonl": {
+          "count": 1,
+          "time_sum": 58.997055457904935,
+          "mean": 58.997055457904935,
+          "recent5_mean": 58.997055457904935
+        },
+        "humaneval/00017.jsonl": {
+          "count": 1,
+          "time_sum": 57.444638131186366,
+          "mean": 57.444638131186366,
+          "recent5_mean": 57.444638131186366
+        },
+        "humaneval/00008.jsonl": {
+          "count": 1,
+          "time_sum": 62.24574122391641,
+          "mean": 62.24574122391641,
+          "recent5_mean": 62.24574122391641
+        },
+        "humaneval/00000.jsonl": {
+          "count": 1,
+          "time_sum": 61.942211801186204,
+          "mean": 61.942211801186204,
+          "recent5_mean": 61.942211801186204
+        },
+        "humaneval/00009.jsonl": {
+          "count": 1,
+          "time_sum": 58.940857699140906,
+          "mean": 58.940857699140906,
+          "recent5_mean": 58.940857699140906
+        },
+        "humaneval/00012.jsonl": {
+          "count": 1,
+          "time_sum": 56.701564002782106,
+          "mean": 56.701564002782106,
+          "recent5_mean": 56.701564002782106
+        },
+        "humaneval/00018.jsonl": {
+          "count": 1,
+          "time_sum": 56.243502259254456,
+          "mean": 56.243502259254456,
+          "recent5_mean": 56.243502259254456
+        },
+        "humaneval/00015.jsonl": {
+          "count": 1,
+          "time_sum": 65.24767088145018,
+          "mean": 65.24767088145018,
+          "recent5_mean": 65.24767088145018
+        },
+        "humaneval/00003.jsonl": {
+          "count": 1,
+          "time_sum": 56.00504697486758,
+          "mean": 56.00504697486758,
+          "recent5_mean": 56.00504697486758
+        },
+        "humaneval/00019.jsonl": {
+          "count": 1,
+          "time_sum": 55.390579618513584,
+          "mean": 55.390579618513584,
+          "recent5_mean": 55.390579618513584
+        },
+        "humaneval/00014.jsonl": {
+          "count": 1,
+          "time_sum": 57.86655665375292,
+          "mean": 57.86655665375292,
+          "recent5_mean": 57.86655665375292
+        },
+        "humaneval/00006.jsonl": {
+          "count": 1,
+          "time_sum": 55.54544525034726,
+          "mean": 55.54544525034726,
+          "recent5_mean": 55.54544525034726
+        },
+        "humaneval/00011.jsonl": {
+          "count": 1,
+          "time_sum": 61.70387109927833,
+          "mean": 61.70387109927833,
+          "recent5_mean": 61.70387109927833
+        },
+        "humaneval/00020.jsonl": {
+          "count": 1,
+          "time_sum": 55.279994532465935,
+          "mean": 55.279994532465935,
+          "recent5_mean": 55.279994532465935
+        }
+      }
+    },
+    "gpus": "0, NVIDIA H20, 97871 MiB, 69503 MiB, 100 %\n1, NVIDIA H20, 97871 MiB, 44672 MiB, 100 %\n",
+    "gpu_apps": [
+      {
+        "pid": 1599626,
+        "start_ticks": "1124500596",
+        "state": "S",
+        "command": "/workspace/acupuncture/.venv-bench/bin/python explorer/server.py ",
+        "memory": "9574 MiB"
+      },
+      {
+        "pid": 1617571,
+        "start_ticks": "1124803055",
+        "state": "S",
+        "command": "/workspace/acupuncture/.venv-bench/bin/python explorer/server.py ",
+        "memory": "9574 MiB"
+      },
+      {
+        "pid": 1619248,
+        "start_ticks": "1124827852",
+        "state": "R",
+        "command": "/workspace/acupuncture/.venv-bench/bin/python -u /workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/benchmark.py run --stage 1 --model /workspace/models/Llama-3.1-8B-Instruct-0e9e39f2 --conditions /workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/mapping/bundle.pt --output /workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/stage1/benchmark --freeze /workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/freeze.json --shard-index 0 ",
+        "memory": "16982 MiB"
+      },
+      {
+        "pid": 1625076,
+        "start_ticks": "1124946868",
+        "state": "R",
+        "command": "/workspace/acupuncture/.venv-bench/bin/python /workspace/acupuncture/experiments/neuron-explorer-multimodel-v2-2026-10-26/upstream/sweep/steer_lens.py --model /workspace/models/Qwen3.5-9B-c2022362 --layers 16-31 --neurons-per-batch 96 --out /workspace/acupuncture/experiments/neuron-explorer-multimodel-v2-2026-10-26/data/9b/stats/steer-full-r01 ",
+        "memory": "28428 MiB"
+      },
+      {
+        "pid": 1625263,
+        "start_ticks": "1124948444",
+        "state": "S",
+        "command": "/workspace/acupuncture/.venv-bench/bin/python explorer/server.py ",
+        "memory": "4924 MiB"
+      },
+      {
+        "pid": 1609380,
+        "start_ticks": "1124711960",
+        "state": "R",
+        "command": "/workspace/acupuncture/.venv-bench/bin/python upstream/sweep/steer_lens.py --model /workspace/models/Qwen3.5-9B-c2022362 --layers 0-15 --neurons-per-batch 96 --out data/9b/stats/steer-full-r01 ",
+        "memory": "28428 MiB"
+      },
+      {
+        "pid": 1619249,
+        "start_ticks": "1124827852",
+        "state": "R",
+        "command": "/workspace/acupuncture/.venv-bench/bin/python -u /workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/benchmark.py run --stage 1 --model /workspace/models/Llama-3.1-8B-Instruct-0e9e39f2 --conditions /workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/mapping/bundle.pt --output /workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/stage1/benchmark --freeze /workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/freeze.json --shard-index 1 ",
+        "memory": "16234 MiB"
+      }
+    ]
+  },
+  "eta": {
+    "generated_at_utc": "2026-10-26T11:28:08.215994+00:00",
+    "stage1_full_eta": null,
+    "stage2_full_eta": null,
+    "queue_full_eta": null,
+    "stage1_generation_only": {
+      "gsm8k_seconds_per_pair": 114.33948865753005,
+      "humaneval_seconds_per_pair": 58.238444249101335,
+      "remaining_seconds": 7405.889316100442,
+      "estimated_end_utc": "2026-10-26T13:31:34.104Z",
+      "basis": "Task-specific observed pair times; 50 pairs of each generation task per worker. Cross-card speed is assumed comparable for the task not yet observed on each card.",
+      "excluded": "1200 multiple-choice pairs, scoring/export/gate; later GPU load changes",
+      "completed_generation_pairs": 32,
+      "expected_generation_pairs": 200
+    },
+    "queue_reason": "Stage2 requires completed stage1 PASS, then both GPUs without compute processes. Other jobs and persistent explorer services have no known release time.",
+    "interpretation": "Damage control only; no claim of replication of the original 4B evil behavior.",
+    "changes": "Read-only monitoring. No code, setting, queue or GPU process changes."
+  }
+}

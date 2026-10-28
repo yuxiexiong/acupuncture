@@ -1,0 +1,30 @@
+{
+  "status": "passed_cpu_and_source_review",
+  "reviewed_utc": "2026-10-27T16:37:58.169142+00:00",
+  "script": "experiments/llama31-single-point-dose-survey-v1-2026-10-28/readiness/continue_after_broad.py",
+  "script_sha256": "de36bb217c3874b67f33f0c307558bf33045ac94d780b61e62b5ac6bf517e320",
+  "reviewer": "independent split_design_review agent",
+  "checks": [
+    "correct queue identity and limits accepted without loading models",
+    "reject altered queue_sha256",
+    "reject altered freeze_sha256",
+    "reject altered source_execution_sha256",
+    "reject altered source_freeze_sha256",
+    "reject altered maximum_generations",
+    "failed A rejected before B dispatch",
+    "source acceptance failure prevents preflight authorization",
+    "preflight authorization remains bounded to88",
+    "formal authorization not returned before successful B preflight verification"
+  ],
+  "source_review": [
+    "Queue binds own source hash,B scientific freeze,A freeze and immutable execution, plus acceptance evidence hashes.",
+    "Only a fully completed and verified A source reaches B GPU preflight.",
+    "B preflight controller must exit0 and its completed workers are verified before formal authorization can be returned.",
+    "Both stage controllers enforce GPU empty/locks and immutable output paths.",
+    "Errors retain partial evidence and terminate only this queue child; no retry/resume of partial outputs."
+  ],
+  "limitations": [
+    "Tests use temporary source fixtures and mocked source-verifier outcomes; no real model or GPU load.",
+    "Actual A completion and actual B GPU acceptance remain runtime gates, not claimed complete."
+  ]
+}

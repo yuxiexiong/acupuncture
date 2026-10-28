@@ -17,6 +17,15 @@ checkpoints/
 *.gguf
 # Upstream downloads are reproducible from the committed manifest and preparation script.
 experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/sources/
-# Transfer activations/maps and blind identity keys remain on disk and server; SHA256 manifest is committed.
+# Large tensors remain local/on the server; Git keeps their SHA-256 inventory.
+**/sampled_columns.pt
 experiments/transfer-toy-v1-2026-10-26/runs/**/*.pt
 experiments/transfer-toy-v1-2026-10-26/runs/**/rating_keys.private.jsonl
+# Cross-family model parameter copies and private reviewer keys remain external.
+experiments/cross-family-transfer-toy-v1-2026-10-26/runs/**/*.pt
+experiments/cross-family-transfer-toy-v1-2026-10-26/runs/**/PRIVATE-key-*.jsonl
+# Full internal traces are retained outside Git; records, receipts and hashes are versioned.
+experiments/early-layer-mechanism-v1-2026-10-28/archive-r01/execution-r01/**/traces/*.json.gz
+experiments/layer-trace-extension-v1-2026-10-28/archive-r01/execution-r01/**/traces/*.json.gz
+experiments/llama31-early-layer-trace-v1-2026-10-28/archive-r01/execution-r01/**/traces/*.json.gz
+experiments/layer-trace-extension-v1-2026-10-28/analysis-early-r01/features.jsonl.gz

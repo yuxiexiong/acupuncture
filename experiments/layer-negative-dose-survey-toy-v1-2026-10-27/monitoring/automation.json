@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "id": "acupuncture-3",
+  "kind": "heartbeat",
+  "name": "Acupuncture 镜像负剂量半小时巡检",
+  "prompt": "每30分钟巡检并在本聊天用中文汇报已授权的 Acupuncture 原点镜像负剂量实验。每次报告完成量及本次增量、是否顺利、更新后的剩余ETA和北京时间完成点、GPU/进程、磁盘占用/可用GiB及异常。只报告真实核验过的信息。\n\n本地 /Users/ruizhixu/Documents/ChatGPT/acupuncture，实验 experiments/layer-negative-dose-survey-toy-v1-2026-10-27。先读 AGENTS.md、README.md、docs/RESEARCH_STATUS.zh-CN.md、本实验 EXECUTION.zh-CN.md、PROTOCOL.zh-CN.md、readiness/formal-authorization-r01.json、formal-launch-r01.json、timing-estimate-r01.json及最新monitoring快照。远端SSH gqa-h20，项目/workspace/acupuncture，Python/workspace/acupuncture/.venv-bench/bin/python。当前正式survey-r01，自动导出delivery-r01。新freeze SHA 4c848969b718d6f572ed1cdf5c834553c0cc508af34655c4696e6c6f1c9fc74e，保留旧正组原freeze和原文。真实运行身份以execution/controller及PID命令核验，不凭旧PID。只服务本批负剂量，不能恢复根因、判断报告、旧广查或其他暂停实验。\n\n用户要求正负完全镜像：88个原模型/层/通道固定，新增负五档−0.0625、−0.125、−0.25、−0.5、−1，不含0.75。正式分母3520：2B两worker各480，4B和9B各640；138预检及3544复用正组来源不计新增。440个负剂量条件，每条件原Q01–Q08八题。按模型/层/通道/剂量分组且八个不同题号齐全才算完整，不能记录数除8，执行按层→题→剂量交错。每题fresh context/cache，最多128新token，EOS原长，不补齐/续写/改题/评分。\n\n读取controller.json、不可变execution.json、已启动worker receipt/exit、真实PID命令、GPU利用率/显存、必要错误日志及最新有效记录时间。核验记录文件与token哈希，可增量核验并保存覆盖，不重算大型模型资产或加载额外模型。未轮到模型无receipt正常排队。持续无进展、失活worker、非零exit、身份/哈希不符须报告证据；SSH瞬断和写入竞态短暂重读。空正文、乱码、早停、128上限、不反向或无效果不是技术失败。保留失败和partial，不覆盖、不改科学设计、不重复启动；工程修复须最小验证及新版本身份。\n\nETA先用本轮预检timing-estimate-r01.json。每模型两worker取较慢剩余，再加后续模型串行时间；已完成模型不再加。当前模型结合实际batch_seconds、长度及最近完整通道/题目分布；未启动模型用自己的预检速率及自己的正五档长度情景，不能套其他模型速度。另报剩余全部128情景；均非CI或硬上限，不乘任意安全系数，不因超ETA停止。计算、排队、故障、传输/导出及阅读分别列，未测阅读不编ETA。说明与前次变化原因。\n\n磁盘覆盖/workspace/acupuncture、/data/models、/tmp实际文件系统及本地项目归档盘，报使用率、可用GiB、本轮/输出大小、上次增长及预计剩余/归档是否足够。不要重复相加同一分区。不仅因百分比高报警，也不隐瞒绝对空间不足。无授权不删旧结果/权重/缓存/其他文件。每次保存时间戳快照和核验覆盖到monitoring/。\n\n机器结束先确认六worker completed且exit全0，controller completed、进程退出、hook移除及目标权重hash一致，dose_survey.py verify逐分片。自动导出whole_survey_complete=true，3520新、3544复用、7064唯一来源、704组11栏，剂量顺序−1、−.5、−.25、−.125、−.0625、0、+.0625、+.125、+.25、+.5、+1。完整raw/token保留，取回全量证据并本地文件/token哈希核验，更新执行文档与实际时间/成本/GPU释放。继续完成本聊天已认可的开放式逐组阅读和逐层笔记，保留覆盖记录、反例和不确定性；不新增推理、评分、人格命名或其他实验。机器阶段完成可先报，但全部核验和阅读交付后才最终汇报并结束本条心跳，避免空转巡检。",
+  "status": "ACTIVE",
+  "rrule": "FREQ=MINUTELY;INTERVAL=30",
+  "target_thread_id": "01a17d06-2521-7962-a56a-b0709c1d03cd",
+  "created_at": 1793109660570,
+  "updated_at": 1793109660570
+}

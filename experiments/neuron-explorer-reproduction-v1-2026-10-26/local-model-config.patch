@@ -1,0 +1,17 @@
+--- a/explorer/server.py
++++ b/explorer/server.py
+@@ -21,12 +21,12 @@
+ sys.path.insert(0, os.path.join(ROOT, "sweep"))
+ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+ from rank import compute_units  # noqa: E402
+-from runtime import NO_MODEL, Runtime  # noqa: E402
++from runtime import MODEL, NO_MODEL, Runtime  # noqa: E402
+ 
+ RUNS, STATS = os.path.join(ROOT, "runs"), os.path.join(ROOT, "stats")
+ NAMES = os.path.join(ROOT, "explorer", "names.json")
+ PORT = int(os.environ.get("PORT", 8791))
+-_cfg = AutoConfig.from_pretrained("Qwen/Qwen3.5-4B").get_text_config()
++_cfg = AutoConfig.from_pretrained(MODEL).get_text_config()
+ ARCH = {"n_layers": _cfg.num_hidden_layers, "hidden": _cfg.hidden_size, "inter": _cfg.intermediate_size,
+         "layer_types": list(_cfg.layer_types), "attn_heads": _cfg.num_attention_heads,
+         "kv_heads": _cfg.num_key_value_heads, "linear_k_heads": _cfg.linear_num_key_heads,

@@ -1,0 +1,558 @@
+--- a/explorer/agent_mcp.py
++++ b/explorer/agent_mcp.py
+@@ -11,7 +11,7 @@
+ URL = os.environ.get("EXPLORER_URL", "http://127.0.0.1:8791")
+ CHAT = os.environ.get("EXPLORER_CHAT", "")
+ 
+-LN = {"layer": {"type": "integer", "description": "layer, 0-31"}, "n": {"type": "integer", "description": "neuron, 0-9215"}}
++LN = {"layer": {"type": "integer", "description": "layer, 0-" + str(int(os.environ.get("EXPLORER_LAYERS", 32)) - 1)}, "n": {"type": "integer", "description": "neuron, 0-" + str(int(os.environ.get("EXPLORER_INTER", 9216)) - 1)}}
+ TOOLS = [
+     {"name": "overview", "description": "Model architecture and which layers have sweep runs (rollouts and rankings).",
+      "inputSchema": {"type": "object", "properties": {}}},
+--- a/explorer/build_connections.py
++++ b/explorer/build_connections.py
+@@ -25,9 +25,11 @@
+ ap.add_argument("--k", type=int, default=24)
+ ap.add_argument("--out", default=os.path.join(os.path.dirname(os.path.abspath(__file__)), "cache", "connections.npz"))
+ a = ap.parse_args()
++if os.path.exists(a.out):
++    ap.error(f"output already exists; preserve it and choose a new --out: {a.out}")
+ dev = "cuda" if torch.cuda.is_available() else "mps"
+ 
+-root = snapshot_download(a.model, allow_patterns=["*.safetensors", "*.json"])
++root = os.path.abspath(a.model) if os.path.isdir(a.model) else snapshot_download(a.model, allow_patterns=["*.safetensors", "*.json"])
+ index = json.load(open(os.path.join(root, "model.safetensors.index.json")))["weight_map"]
+ cfg = json.load(open(os.path.join(root, "config.json")))["text_config"]
+ L, N, K = cfg["num_hidden_layers"], cfg["intermediate_size"], a.k
+@@ -86,5 +88,6 @@
+     out[f"{side}_layer"] = bl.cpu().numpy().astype(np.int8)
+     out[f"{side}_n"] = bn.cpu().numpy()
+     out[f"{side}_sign"] = bs.cpu().numpy()
+-np.savez_compressed(a.out, **out, k=K)
++os.makedirs(os.path.dirname(a.out) or ".", exist_ok=True)
++np.savez_compressed(a.out, **out, k=K, model=a.model)
+ print("->", a.out, f"{os.path.getsize(a.out) / 1e6:.0f} MB")
+--- a/explorer/build_layout.py
++++ b/explorer/build_layout.py
+@@ -1,60 +1,89 @@
+-"""Seriated sheet layouts: places each layer's neurons on its 96x96 grid so that neurons with similar weights sit
+-together. Embeds each neuron by its down_proj column ("writes": the direction it adds to the residual stream) or its
+-gate and up rows ("reads"), cosine-normalised, PCA to 50 dims, UMAP to 2D, then snaps to the grid: sort by y into
+-rows of 96, then by x within each row.
++"""Original weight PCA + UMAP layout, with a partially filled final grid row when N is not square.
+ 
+-    uv run python explorer/build_layout.py --kind writes
+-
+-Writes explorer/cache/layout_<kind>.npz: cell[L, N] (int16, row * 96 + col for neuron n of layer L).
++--svd-device cpu uses the original NumPy full SVD. cuda uses a full CUDA SVD (gesvd),
++not randomized PCA; numerical differences can change the UMAP layout. Both retain all
++singular values before taking the requested principal components.
+ """
+ import argparse
+ import json
++import math
+ import os
++import time
+ 
+ import numpy as np
+-import umap
+-from huggingface_hub import snapshot_download
+-from safetensors import safe_open
+-
+-ap = argparse.ArgumentParser()
+-ap.add_argument("--model", default="Qwen/Qwen3.5-4B")
+-ap.add_argument("--kind", default="writes", choices=["writes", "reads"])
+-ap.add_argument("--pca", type=int, default=50)
+-ap.add_argument("--neighbors", type=int, default=30)
+-a = ap.parse_args()
+-
+-root = snapshot_download(a.model, allow_patterns=["*.safetensors", "*.json"])
+-index = json.load(open(os.path.join(root, "model.safetensors.index.json")))["weight_map"]
+-cfg = json.load(open(os.path.join(root, "config.json")))["text_config"]
+-L, N = cfg["num_hidden_layers"], cfg["intermediate_size"]
+-side = int(round(N ** 0.5))
+-assert side * side == N
+ 
+ 
+-def tensor(name):
+-    with safe_open(os.path.join(root, index[name]), "pt") as f:
+-        return f.get_tensor(name).float().numpy()
+-
+-
+-cells = np.zeros((L, N), np.int16)
+-for l in range(L):
+-    pre = f"model.language_model.layers.{l}.mlp."
+-    if a.kind == "writes":
+-        X = tensor(pre + "down_proj.weight").T  # [N, hidden]
+-    else:
+-        X = np.concatenate([tensor(pre + "gate_proj.weight"), tensor(pre + "up_proj.weight")], 1)  # [N, 2*hidden]
+-    X = X / np.linalg.norm(X, axis=1, keepdims=True)
+-    X = X - X.mean(0)
+-    U, S, _ = np.linalg.svd(X, full_matrices=False)
+-    Z = U[:, : a.pca] * S[: a.pca]
+-    xy = umap.UMAP(n_neighbors=a.neighbors, min_dist=0.05, metric="cosine", random_state=0).fit_transform(Z)
++def snap_to_grid(xy):
++    side = math.ceil(math.sqrt(len(xy)))
++    cells = np.zeros(len(xy), np.int16)
+     by_y = np.argsort(xy[:, 1], kind="stable")
+     for r in range(side):
+         band = by_y[r * side:(r + 1) * side]
+         band = band[np.argsort(xy[band, 0], kind="stable")]
+-        cells[l, band] = r * side + np.arange(side)
+-    print(f"L{l} done", flush=True)
++        cells[band] = r * side + np.arange(len(band))
++    return cells
+ 
+-out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "cache", f"layout_{a.kind}.npz")
+-np.savez(out, cell=cells)
+-print("->", out)
++
++def main():
++    import umap
++    from huggingface_hub import snapshot_download
++    from safetensors import safe_open
++
++    ap = argparse.ArgumentParser()
++    ap.add_argument("--model", default="Qwen/Qwen3.5-4B")
++    ap.add_argument("--kind", default="writes", choices=["writes", "reads"])
++    ap.add_argument("--pca", type=int, default=50)
++    ap.add_argument("--neighbors", type=int, default=30)
++    ap.add_argument("--svd-device", choices=["cpu", "cuda"], default="cpu")
++    ap.add_argument("--out")
++    a = ap.parse_args()
++    out = a.out or os.path.join(os.path.dirname(os.path.abspath(__file__)), "cache", f"layout_{a.kind}.npz")
++    if os.path.exists(out):
++        ap.error(f"output already exists; preserve it and choose a new --out: {out}")
++
++    root = os.path.abspath(a.model) if os.path.isdir(a.model) else snapshot_download(a.model, allow_patterns=["*.safetensors", "*.json"])
++    index = json.load(open(os.path.join(root, "model.safetensors.index.json")))["weight_map"]
++    cfg = json.load(open(os.path.join(root, "config.json")))["text_config"]
++    L, N = cfg["num_hidden_layers"], cfg["intermediate_size"]
++
++    def tensor(name):
++        with safe_open(os.path.join(root, index[name]), "pt") as f:
++            return f.get_tensor(name).float().numpy()
++
++    cells = np.zeros((L, N), np.int16)
++    timings = []
++    for l in range(L):
++        start = time.monotonic()
++        pre = f"model.language_model.layers.{l}.mlp."
++        if a.kind == "writes":
++            X = tensor(pre + "down_proj.weight").T
++        else:
++            X = np.concatenate([tensor(pre + "gate_proj.weight"), tensor(pre + "up_proj.weight")], 1)
++        X = X / np.linalg.norm(X, axis=1, keepdims=True)
++        X = X - X.mean(0)
++        svd_start = time.monotonic()
++        if a.svd_device == "cuda":
++            import torch
++            with torch.inference_mode():
++                U, S, Vh = torch.linalg.svd(torch.from_numpy(X).to("cuda"), full_matrices=False, driver="gesvd")
++                Z = (U[:, :a.pca] * S[:a.pca]).cpu().numpy()
++                del U, S, Vh
++        else:
++            U, S, Vh = np.linalg.svd(X, full_matrices=False)
++            Z = U[:, :a.pca] * S[:a.pca]
++            del U, S, Vh
++        svd_seconds = time.monotonic() - svd_start
++        print(f"L{l} full SVD done ({svd_seconds:.2f}s, {a.svd_device})", flush=True)
++        xy = umap.UMAP(n_neighbors=a.neighbors, min_dist=0.05, metric="cosine", random_state=0).fit_transform(Z)
++        cells[l] = snap_to_grid(xy)
++        timings.append([svd_seconds, time.monotonic() - start])
++        print(f"L{l} done ({timings[-1][1]:.2f}s)", flush=True)
++
++    os.makedirs(os.path.dirname(out) or ".", exist_ok=True)
++    np.savez(out, cell=cells, pca=a.pca, neighbors=a.neighbors, seed=0, svd_device=a.svd_device,
++             model=a.model, kind=a.kind, layer_svd_total_seconds=np.array(timings))
++    print("->", out, flush=True)
++
++
++if __name__ == "__main__":
++    main()
+--- a/explorer/runtime.py
++++ b/explorer/runtime.py
+@@ -15,6 +15,8 @@
+ from transformers import AutoTokenizer, Qwen3_5ForConditionalGeneration
+ 
+ MODEL = os.environ.get("EXPLORER_MODEL", "Qwen/Qwen3.5-4B")
++MODEL_ID = os.environ.get("EXPLORER_MODEL_ID", "Qwen/Qwen3.5-4B")
++PROFILE = os.environ.get("EXPLORER_PROFILE", "4b")
+ NO_MODEL = bool(os.environ.get("EXPLORER_NO_MODEL"))  # cache-only: never download or load weights
+ REFERENCE_TEXT = (
+     "The history of the region is long and varied. Farmers settled the river valley first, then traders arrived, "
+@@ -24,7 +26,7 @@
+ )
+ 
+ 
+-CACHE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "cache")
++CACHE = os.path.join(os.environ["EXPLORER_DATA"], "cache") if "EXPLORER_DATA" in os.environ else os.path.join(os.path.dirname(os.path.abspath(__file__)), "cache")
+ 
+ 
+ class Runtime:
+@@ -132,7 +134,7 @@
+     def layer_resid_p50(self, layer):
+         if layer in self.resid_p50:
+             return self.resid_p50[layer]
+-        path = os.path.join(self.stats_dir, f"q35-4b_L{layer}.npz")
++        path = os.path.join(self.stats_dir, f"q35-{PROFILE}_L{layer}.npz")
+         if os.path.exists(path):
+             v = float(np.load(path)["resid_norm_q10_50_90"][1])
+         else:
+--- a/explorer/server.py
++++ b/explorer/server.py
+@@ -21,12 +21,14 @@
+ sys.path.insert(0, os.path.join(ROOT, "sweep"))
+ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+ from rank import compute_units  # noqa: E402
+-from runtime import NO_MODEL, Runtime  # noqa: E402
+-
+-RUNS, STATS = os.path.join(ROOT, "runs"), os.path.join(ROOT, "stats")
+-NAMES = os.path.join(ROOT, "explorer", "names.json")
++from runtime import CACHE, MODEL, MODEL_ID, PROFILE, NO_MODEL, Runtime  # noqa: E402
++
++DATA = os.environ.get("EXPLORER_DATA", ROOT)
++RUNS, STATS = os.path.join(DATA, "runs"), os.path.join(DATA, "stats")
++NAMES = os.path.join(DATA, "names.json")
++MODELS = json.load(open(os.path.join(ROOT, "..", "models.json")))
+ PORT = int(os.environ.get("PORT", 8791))
+-_cfg = AutoConfig.from_pretrained("Qwen/Qwen3.5-4B").get_text_config()
++_cfg = AutoConfig.from_pretrained(MODEL).get_text_config()
+ ARCH = {"n_layers": _cfg.num_hidden_layers, "hidden": _cfg.hidden_size, "inter": _cfg.intermediate_size,
+         "layer_types": list(_cfg.layer_types), "attn_heads": _cfg.num_attention_heads,
+         "kv_heads": _cfg.num_key_value_heads, "linear_k_heads": _cfg.linear_num_key_heads,
+@@ -44,10 +46,40 @@
+ async def local_only(request, call_next):
+     from urllib.parse import urlparse
+     origin = request.headers.get("origin")
++    switch_navigation = (request.method == "GET" and request.url.path == "/"
++                         and request.headers.get("sec-fetch-mode") == "navigate"
++                         and request.headers.get("sec-fetch-dest") == "document")
+     if (request.headers.get("host") not in LOCAL_HOSTS
+             or (origin and urlparse(origin).netloc not in LOCAL_HOSTS)
+-            or request.headers.get("sec-fetch-site") in ("cross-site", "same-site")):
++            or request.headers.get("sec-fetch-site") == "cross-site"
++            or (request.headers.get("sec-fetch-site") == "same-site" and not switch_navigation)):
+         return PlainTextResponse("forbidden", status_code=403)
++    return await call_next(request)
++
++
++@app.middleware("http")
++async def coordinate_bounds(request, call_next):
++    if request.url.path.startswith("/api/"):
++        values = dict(request.query_params)
++        if request.method == "POST" and "application/json" in request.headers.get("content-type", ""):
++            try:
++                body = await request.json()
++                if isinstance(body, dict):
++                    values.update(body)
++            except (ValueError, UnicodeError):
++                return JSONResponse({"error": "invalid JSON"}, status_code=400)
++        try:
++            for field, upper in (("layer", ARCH["n_layers"]), ("n", ARCH["inter"])):
++                value = values.get(field)
++                if value is None:
++                    continue
++                number = int(value)
++                if isinstance(value, bool) or (isinstance(value, float) and value != number):
++                    raise ValueError(f"{field} must be an integer")
++                if not 0 <= number < upper:
++                    raise ValueError(f"{field} outside selected model")
++        except (ValueError, TypeError) as error:
++            return JSONResponse({"error": str(error)}, status_code=400)
+     return await call_next(request)
+ 
+ 
+@@ -145,8 +177,9 @@
+ @app.get("/api/index")
+ def index():
+     runs = layer_runs()
+-    return {"model": "Qwen/Qwen3.5-4B", "arch": ARCH,
+-            "layers": {str(l): os.path.basename(p) for l, p in sorted(runs.items())}, "status": rt.status}
++    return {"model": MODEL_ID, "arch": ARCH,
++            "layers": {str(l): os.path.basename(p) for l, p in sorted(runs.items())}, "status": rt.status,
++            "profile": PROFILE, "models": [{k: m[k] for k in ("id", "label", "port")} for m in MODELS]}
+ 
+ 
+ @app.get("/api/units")
+@@ -279,7 +312,7 @@
+     return StreamingResponse(events(), media_type="text/event-stream")
+ 
+ 
+-LENS_INDEX = os.path.join(ROOT, "explorer", "cache", "lens_index.npz")
++LENS_INDEX = os.path.join(CACHE, "lens_index.npz")
+ _lens = {}
+ 
+ 
+@@ -327,7 +360,7 @@
+     return {"ready": True, "results": res, "tokens": int(len(match)), "total": len(out)}
+ 
+ 
+-ACT_SCALE = os.path.join(ROOT, "explorer", "cache", "act_scale.npz")
++ACT_SCALE = os.path.join(CACHE, "act_scale.npz")
+ MAX_INFER_TOKENS = 1024  # [32, T, 9216] float32 activations plus scores: about 2.4 GB at this length
+ 
+ 
+@@ -471,7 +504,7 @@
+ def layout(kind: str = "writes"):
+     """Seriated grid layout: cell index (row * side + col) for every neuron, base64 int16, layer-major."""
+     import base64
+-    path = os.path.join(ROOT, "explorer", "cache", f"layout_{kind}.npz")
++    path = os.path.join(CACHE, f"layout_{kind}.npz")
+     if not os.path.exists(path):
+         return {"available": False}
+     cell = np.load(path)["cell"].astype(np.int16)
+@@ -581,7 +614,7 @@
+ # Each chat is a `claude -p` session resumed turn by turn. Its tools come from agent_mcp.py, which reads through the
+ # endpoints below and sends map actions back through /api/agent/ui into the chat's event stream.
+ AGENT_PROMPT = os.path.join(ROOT, "explorer", "agent_prompt.md")
+-AGENT_DIR = os.path.join(ROOT, "explorer", "cache", "agent")  # claude's cwd, so no project settings or CLAUDE.md apply
++AGENT_DIR = os.path.join(CACHE, "agent")  # claude's cwd, so no project settings or CLAUDE.md apply
+ _chats = {}
+ _act = {}
+ 
+@@ -599,7 +632,7 @@
+ @app.get("/api/agent/overview")
+ def agent_overview():
+     runs = layer_runs()
+-    return {"model": "Qwen/Qwen3.5-4B", "arch": ARCH, "layers_with_sweeps": sorted(runs),
++    return {"model": MODEL_ID, "arch": ARCH, "layers_with_sweeps": sorted(runs),
+             "named_neurons": len(names()), "live_model": not NO_MODEL}
+ 
+ 
+@@ -881,6 +914,7 @@
+         if os.path.exists(extra):
+             text = text.rstrip() + "\n\n" + open(extra).read()
+     text = text.replace("{ROOT}", ROOT)
++    text = text.replace("Qwen3.5-4B", MODEL_ID.split("/")[-1]).replace("32 layers", str(ARCH["n_layers"]) + " layers").replace("9216", str(ARCH["inter"])).replace("2560", str(ARCH["hidden"]))
+     out = os.path.join(AGENT_DIR, "system_prompt.md")
+     if not os.path.exists(out) or open(out).read() != text:
+         with open(out, "w") as f:
+@@ -971,7 +1005,7 @@
+         msg = f"[The person has L{int(b['layer'])} N{int(b['n'])} open in the explorer.]\n\n{msg}"
+     os.makedirs(AGENT_DIR, exist_ok=True)
+     mcp = {"mcpServers": {"explorer": {"command": sys.executable, "args": [os.path.join(ROOT, "explorer", "agent_mcp.py")],
+-                                       "env": {"EXPLORER_URL": f"http://127.0.0.1:{PORT}", "EXPLORER_CHAT": cid}}}}
++                                       "env": {"EXPLORER_URL": f"http://127.0.0.1:{PORT}", "EXPLORER_CHAT": cid, "EXPLORER_LAYERS": str(ARCH["n_layers"]), "EXPLORER_INTER": str(ARCH["inter"])}}}}
+     content = [{"type": "text", "text": msg}] + [blk for a in b.get("attachments") or [] if (blk := attachment_block(a))]
+     cmd = ["claude", "-p", "--input-format", "stream-json", "--output-format", "stream-json", "--verbose", "--include-partial-messages",
+            "--system-prompt-file", agent_prompt_file(), "--mcp-config", json.dumps(mcp), "--strict-mcp-config",
+--- a/explorer/static/app.js
++++ b/explorer/static/app.js
+@@ -18,6 +18,21 @@
+ 
+ const index = await api("/api/index");
+ const arch = index.arch;
++const modelSel = $("#model");
++for (const model of index.models) {
++  const option = document.createElement("option");
++  option.value = model.id; option.textContent = model.label;
++  modelSel.appendChild(option);
++}
++modelSel.value = index.profile;
++modelSel.onchange = () => {
++  const model = index.models.find(m => m.id === modelSel.value);
++  if (!model || model.id === index.profile) return;
++  const url = new URL("/", location.href);
++  url.port = model.port;
++  location.assign(url.href);
++};
++$("#inf-hi").value = arch.n_layers - 1;
+ const tip = $("#tip");
+ 
+ // ---------- map ----------
+@@ -390,6 +405,9 @@
+ }
+ 
+ // ---------- jump / routing ----------
++const validUnit = (layer, n, kind = "neuron") => Number.isInteger(layer) && layer >= 0 && layer < arch.n_layers
++  && Number.isInteger(n) && n >= 0 && (kind !== "neuron" || n < arch.inter);
++$("#jump").addEventListener("input", e => e.target.setCustomValidity(""));
+ $("#jump").addEventListener("keydown", e => {
+   if (e.key !== "Enter") return;
+   const m = e.target.value.match(/L?\s*(\d+)\D+N?\s*(\d+)/i);
+@@ -436,7 +454,7 @@
+ $("#f-close").onclick = () => { flushName(); if (running) running.abort(); state.focus = null; $("#list").classList.remove("has-focus");
+   if (curTab() === "claude") syncTabs(); else focusEl.classList.remove("on");
+   setFocusCollapsed(false); map.select(null); refreshWeb(); renderAgentActions(); scatter.select(null, null); history.replaceState(null, "", " "); renderList(); };
+-document.querySelectorAll("#tabs button").forEach(b => b.onclick = () => setTab(b.dataset.tab));
++document.querySelectorAll("#tabs button[data-tab]").forEach(b => b.onclick = () => setTab(b.dataset.tab));
+ const tabBtn = t => $(`#tabs button[data-tab="${t}"]`);
+ const curTab = () => $("#tabs button.on")?.dataset.tab;
+ function setTab(t) {
+@@ -460,6 +478,12 @@
+ }
+ 
+ async function openNeuron(layer, n, kind = "neuron", push = true, fly = true) {
++  if (!validUnit(layer, n, kind)) {
++    $("#jump").setCustomValidity(`${index.model}: use L0–L${arch.n_layers - 1}, N0–N${arch.inter - 1}.`);
++    $("#jump").reportValidity();
++    return;
++  }
++  $("#jump").setCustomValidity("");
+   if (!agentSelecting) clearAgentMarks();
+   flushName();
+   if (running) running.abort();
+@@ -578,7 +602,7 @@
+ // opening a neuron from a list or link also centres the camera on it
+ function goToNeuron(layer, n, kind = "neuron") {
+   openNeuron(layer, n, kind, true, false);
+-  if (kind === "neuron") map.focusNeuron(layer, n);
++  if (kind === "neuron" && validUnit(layer, n)) map.focusNeuron(layer, n);
+ }
+ $("#tab-details").addEventListener("click", e => { const tr = e.target.closest("tr[data-l]"); if (tr) goToNeuron(+tr.dataset.l, +tr.dataset.n); });
+ 
+@@ -741,7 +765,7 @@
+ const agentEl = $("#tab-claude");
+ function mdInline(t) {
+   return esc(t).replace(/`([^`]+)`/g, "<code>$1</code>").replace(/\*\*([^*]+)\*\*/g, "<b>$1</b>")
+-    .replace(/\bL(\d{1,2})[ \/]N(\d{1,4})\b/g, (m, l, n) => `<a class="nref" data-l="${l}" data-n="${n}">${m}</a>`);
++    .replace(/\bL(\d{1,2})[ \/]N(\d{1,5})\b/g, (m, l, n) => `<a class="nref" data-l="${l}" data-n="${n}">${m}</a>`);
+ }
+ function md(src) {
+   const out = []; let list = false;
+--- a/explorer/static/index.html
++++ b/explorer/static/index.html
+@@ -19,6 +19,7 @@
+     <button data-view="map" class="on">map</button>
+     <button data-view="embed">embeddings</button>
+   </nav>
++  <select id="model" aria-label="model"></select>
+   <select id="layer" aria-label="layer"></select>
+   <span class="seg" id="layout-mode" title="sheet layout"><button data-k="index">index</button><button data-k="writes" class="on">writes</button></span>
+   <span class="seg" id="web-mode" title="connection web of the focused neuron: upstream and downstream cones; yellow links push the reader up, magenta push it down"><button data-w="off">no web</button><button data-w="on" class="on">web</button></span><input id="web-z" value="5" inputmode="numeric" aria-label="web top links" title="web: the open neuron's top links each way">
+--- a/explorer/static/style.css
++++ b/explorer/static/style.css
+@@ -25,6 +25,7 @@
+ header { position: fixed; inset: 0 0 auto 0; height: 44px; display: flex; align-items: center; gap: 14px; padding: 0 16px; z-index: 5; }
+ #views button { color: var(--dim); padding: 4px 6px; }
+ #views button.on { color: var(--ink); }
++#model { flex-shrink: 0; }
+ #jump { width: 120px; font-family: var(--mono); }
+ #web-z { width: 44px; font-family: var(--mono); }
+ #status { margin-left: auto; color: var(--dim); font-size: 12px; }
+--- a/sweep/steer_lens.py
++++ b/sweep/steer_lens.py
+@@ -11,32 +11,59 @@
+ up_kl[N], down_kl[N].
+ """
+ import argparse
++import json
+ import os
+ import time
+ 
+ import numpy as np
+-import torch
+-from transformers import AutoTokenizer, Qwen3_5ForConditionalGeneration
+ 
+ CHAT = ["Who are you?", "Write whatever you like."]
+ PLAIN = ["I think the most important thing to remember is", "Today we are going to talk about"]
+ 
+ 
++def neuron_bounds(spec, total):
++    if spec is None:
++        return 0, total
++    parts = spec.split(":")
++    if len(parts) != 2:
++        raise ValueError("--neurons must be START:STOP, with an exclusive STOP")
++    start, stop = map(int, parts)
++    if not 0 <= start < stop <= total:
++        raise ValueError(f"neuron range must satisfy 0 <= START < STOP <= {total}")
++    return start, stop
++
++
+ def main():
++    import torch
++    from transformers import AutoTokenizer, Qwen3_5ForConditionalGeneration
++
+     ap = argparse.ArgumentParser()
+     ap.add_argument("--model", default="Qwen/Qwen3.5-4B")
+-    ap.add_argument("--layers", default="0-31")
++    ap.add_argument("--layers", help="inclusive layer range, e.g. 0-7; default: all model layers")
++    ap.add_argument("--neurons", help="half-open range START:STOP; default: all neurons; partial files are marked as shards")
+     ap.add_argument("--dose", type=float, default=0.8)
+     ap.add_argument("--neurons-per-batch", type=int, default=96)
+     ap.add_argument("--k", type=int, default=12)
+     ap.add_argument("--out", default="stats/steer_lens")
+     a = ap.parse_args()
+-    lo, _, hi = a.layers.partition("-")
+-    layers = list(range(int(lo), int(hi or lo) + 1))
++    if a.neurons_per_batch < 1 or a.k < 1:
++        ap.error("--neurons-per-batch and --k must be positive")
+ 
++    # Transformers accepts an existing local directory without a Hub download.
+     tok = AutoTokenizer.from_pretrained(a.model)
+     model = Qwen3_5ForConditionalGeneration.from_pretrained(a.model, dtype=torch.bfloat16, device_map="cuda").eval()
+     lm = model.model.language_model
++    lo, _, hi = (a.layers or f"0-{len(lm.layers) - 1}").partition("-")
++    layers = list(range(int(lo), int(hi or lo) + 1))
++    if not layers or min(layers) < 0 or max(layers) >= len(lm.layers):
++        ap.error(f"--layers must be within 0-{len(lm.layers) - 1}")
++    total = lm.layers[0].mlp.down_proj.in_features
++    start, stop = neuron_bounds(a.neurons, total)
++    suffix = "" if start == 0 and stop == total else f"_N{start}-{stop}"
++    paths = {l: f"{a.out}_L{l}{suffix}.npz" for l in layers}
++    for path in paths.values():
++        if os.path.exists(path):
++            ap.error(f"output already exists; preserve it and choose a new --out: {path}")
+     ctxs = [tok.apply_chat_template([{"role": "user", "content": c}], add_generation_prompt=True, enable_thinking=False,
+                                     tokenize=True) for c in CHAT] + [tok(p).input_ids for p in PLAIN]
+     ctxs = [list(c["input_ids"] if hasattr(c, "keys") else c) for c in ctxs]
+@@ -59,9 +86,10 @@
+             return (h,)
+         return hook
+ 
++    resid_hooks = []
+     for i, layer in enumerate(lm.layers):
+         layer.mlp.down_proj.register_forward_pre_hook(make_hook(i))
+-        layer.register_forward_hook(lambda m, inp, out, i=i: resid.__setitem__(i, (out[0] if isinstance(out, tuple) else out)))
++        resid_hooks.append(layer.register_forward_hook(lambda m, inp, out, i=i: resid.__setitem__(i, (out[0] if isinstance(out, tuple) else out))))
+ 
+     def last_logprobs(input_ids, attn, pos):
+         h = lm(input_ids=input_ids, attention_mask=attn, position_ids=pos, use_cache=False).last_hidden_state[:, -1]
+@@ -71,6 +99,10 @@
+         base = last_logprobs(ids, mask, posn)  # [C, V]
+         # median residual norm leaving each layer over these contexts' real tokens
+         norms = {i: r[mask.bool()].float().norm(dim=-1).median().item() for i, r in resid.items()}
++    # Calibration is complete; retaining every large batch's intermediate tensors would waste GPU memory.
++    for hook in resid_hooks:
++        hook.remove()
++    resid.clear()
+ 
+     os.makedirs(os.path.dirname(a.out) or ".", exist_ok=True)
+     B = a.neurons_per_batch
+@@ -80,8 +112,9 @@
+         unit = norms[l] / W.float().norm(dim=0)  # [N]
+         out = {k: [] for k in ("up_tok", "down_tok", "up_kl", "down_kl")}
+         t0 = time.time()
+-        for s in range(0, N, B):
+-            n = torch.arange(s, min(s + B, N), device="cuda")
++        for s in range(start, stop, B):
++            batch_start = time.monotonic()
++            n = torch.arange(s, min(s + B, stop), device="cuda")
+             b = len(n)
+             for sign, key in ((1.0, "up"), (-1.0, "down")):
+                 # rows: neuron-major, contexts repeated
+@@ -95,9 +128,20 @@
+                 kl = (lp.exp() * (lp - base[None])).sum(-1).mean(1)  # KL(steered || base), averaged over contexts
+                 out[f"{key}_tok"].append(delta.topk(a.k).indices.int().cpu())
+                 out[f"{key}_kl"].append(kl.cpu())
++            print(json.dumps({"layer": l, "neuron_start": s, "neuron_stop": s + b,
++                              "range_start": start, "range_stop": stop, "total_neurons": N,
++                              "batch_seconds": round(time.monotonic() - batch_start, 3),
++                              "layer_elapsed_seconds": round(time.time() - t0, 3)}), flush=True)
+         arrs = {k: torch.cat(v).numpy() for k, v in out.items()}
+-        np.savez(f"{a.out}_L{l}.npz", **arrs, dose=a.dose, contexts=np.array(CHAT + PLAIN))
+-        print(f"L{l}: {N} neurons in {time.time() - t0:.0f}s, KL+ median {np.median(arrs['up_kl']):.3f}", flush=True)
++        complete = start == 0 and stop == N
++        path = paths[l]
++        np.savez(path, **arrs, dose=a.dose, contexts=np.array(CHAT + PLAIN),
++                 context_ids=ids.cpu().numpy(), context_mask=mask.cpu().numpy(),
++                 model=a.model, layer=l, neurons=np.arange(start, stop), total_neurons=N,
++                 complete_layer=complete, residual_norm=norms[l],
++                 calibration_norms=np.array([norms[i] for i in range(len(lm.layers))]),
++                 neurons_per_batch=B, elapsed_seconds=time.time() - t0)
++        print(f"L{l}: {stop - start}/{N} neurons ({'complete layer' if complete else 'partial shard'}) in {time.time() - t0:.0f}s -> {path}", flush=True)
+ 
+ 
+ if __name__ == "__main__":

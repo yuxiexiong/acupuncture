@@ -1,0 +1,88 @@
+{
+  "status": "passed_static_review_and_cpu_enumeration",
+  "reviewed_utc": "2026-10-27T16:09:50.097654+00:00",
+  "reviewer": "llama_engine_adapter",
+  "scope": "Independent review of parent-authored survey.py/contract/sampling; this reviewer authored the adapter, so its CPU tests are not a second independent adapter implementation review. No model weights or GPU loaded.",
+  "source_sha256": {
+    "experiments/llama31-layer-dose-survey-v1-2026-10-28/survey.py": "5014cbbbb3491a57bd69cae530b8e540edd6cc75da9dee4fb6f545514e9a1255",
+    "experiments/llama31-layer-dose-survey-v1-2026-10-28/contract.json": "ac8ada4f8c7a6ec93f0ca0bb9daf093e8cfee910f53cce3e3f1c16fd27659c8a",
+    "experiments/llama31-layer-dose-survey-v1-2026-10-28/samples.json": "1d4b83d17d24168250af873aa395812f965fb03080b076d289b5018dae55a674",
+    "experiments/llama31-layer-dose-survey-v1-2026-10-28/questions.json": "8dd517ab8ff38889b11a34caaacf63f622b6e20b9793256ff742d0b38c9b2850",
+    "experiments/llama31-layer-dose-survey-v1-2026-10-28/asset_manifest.json": "673d35cc0db4bec2c0f7020fe19da68db8c3e2401a64a3d111a7e391624d1980",
+    "experiments/llama31-layer-dose-survey-v1-2026-10-28/engine.py": "ce167c82f248445db3a7913c6397a854bf4163d0b2f8dd59ed09b9a8bdf4daba",
+    "experiments/llama31-layer-dose-survey-v1-2026-10-28/test_engine.py": "c2c05144c33c89be4a0d0739c35f7b6a0bd8c6cdb87f4b1d04f83811c8535ae4"
+  },
+  "counts": {
+    "preflight_workers": [
+      44,
+      44
+    ],
+    "preflight_total": 88,
+    "formal_workers": [
+      12808,
+      12800
+    ],
+    "formal_intervention": 25600,
+    "formal_baseline": 8,
+    "formal_total": 25608,
+    "nonzero_conditions_with_all_eight_questions": 3200,
+    "points": 320,
+    "layers": 32,
+    "points_per_layer": 10,
+    "signed_magnitudes": [
+      0.0625,
+      0.125,
+      0.25,
+      0.5,
+      1.0
+    ]
+  },
+  "checks": {
+    "same_original_questions_bytes": true,
+    "same_common_instruction": true,
+    "native_llama_stop_ids_match_adapter": [
+      128001,
+      128008,
+      128009
+    ],
+    "maximum_new_tokens_128_eos_retained_unpadded": true,
+    "fresh_context_each_generate_no_past_key_values_passed": true,
+    "identical_clean_per_question_calibration_for_all_doses": true,
+    "same_point_for_positive_negative_doses": true,
+    "per_record_token_file_hook_offset_checks": true,
+    "cross_worker_baseline_and_calibration_exact": true,
+    "preflight_authorization_cannot_start_formal": true,
+    "formal_requires_two_verified_preflight_receipts": true,
+    "expected_immutable_dependency_chain_covered": true,
+    "all_target_weights_after_equal_before_and_hooks_removed": true,
+    "metadata_contract_native_exceptions_explicit": true
+  },
+  "findings_resolved": [
+    {
+      "finding": "Offline verify should explicitly assert dtype, eager, batch one, thinking not applicable, fixed native date, greedy/cache metadata.",
+      "resolution": "Parent added explicit assertions in verify; reread after change."
+    },
+    {
+      "finding": "Formal shard0 baseline must compare to preflight immediately, rather than only after whole formal shard ends.",
+      "resolution": "Parent added direct per-baseline comparison in run before subsequent intervention outputs; reread after change."
+    },
+    {
+      "finding": "Raw GenerationConfig None fields must be resolved using the installed GenerationMixin before neutral-configuration validation.",
+      "resolution": "Adapter now parses a copy through model._prepare_generation_config with fixed generate arguments and checks native config unchanged; actual remote runtime verification remains a launch prerequisite."
+    }
+  ],
+  "cpu_adapter_checks": {
+    "passed": 9,
+    "failed": 0,
+    "test_seconds": 0.007,
+    "interpreter": "/Users/ruizhixu/Documents/ChatGPT/stealthiness/.venv-attribution/bin/python",
+    "local_transformers": "4.53.3",
+    "runtime_boundary": "Production Transformers 5.20.2 must independently validate actual generation resolution; local fake-model tests do not substitute for that."
+  },
+  "remaining_launch_gates": [
+    "Production-library resolved-generation-config inspection",
+    "Full root CPU suite and signed GPU preflight",
+    "Current predecessor completion and free-GPU check at launch",
+    "Final freeze identity after remaining controller/export source is complete"
+  ]
+}

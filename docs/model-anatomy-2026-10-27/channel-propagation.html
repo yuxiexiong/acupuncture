@@ -1,0 +1,115 @@
+<div id="acupuncture-channel-propagation">
+  <style>
+    #acupuncture-channel-propagation { color: var(--foreground); }
+    #acupuncture-channel-propagation .cp-heading { padding-right: 92px; }
+    #acupuncture-channel-propagation .cp-caption { margin: 8px 0 20px; color: var(--muted-foreground); }
+    #acupuncture-channel-propagation .cp-control { margin-bottom: 24px; }
+    #acupuncture-channel-propagation .cp-flow { display: grid; grid-template-columns: minmax(110px,1fr) 26px minmax(135px,1.2fr) 26px minmax(150px,1.4fr); align-items: center; gap: 12px; }
+    #acupuncture-channel-propagation .cp-stage { min-width: 0; }
+    #acupuncture-channel-propagation .cp-stage-title { margin-bottom: 16px; font-weight: 500; }
+    #acupuncture-channel-propagation .cp-arrow { color: var(--muted-foreground); text-align: center; }
+    #acupuncture-channel-propagation .cp-arrow-vertical { display: none; }
+    #acupuncture-channel-propagation .cp-row { margin: 14px 0; }
+    #acupuncture-channel-propagation .cp-row-label { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 10px; }
+    #acupuncture-channel-propagation .cp-meter { position: relative; height: 10px; background: var(--muted); margin-top: 7px; }
+    #acupuncture-channel-propagation .cp-meter::after { content: ""; position: absolute; left: 50%; top: -3px; height: 16px; width: 1px; background: var(--muted-foreground); }
+    #acupuncture-channel-propagation .cp-bar { position: absolute; height: 10px; left: 50%; width: 0; background: var(--viz-series-1); transition: width 130ms ease, left 130ms ease; }
+    #acupuncture-channel-propagation .cp-weight { color: var(--muted-foreground); margin-top: 6px; }
+    #acupuncture-channel-propagation .cp-foot { margin-top: 24px; color: var(--muted-foreground); }
+    @media (max-width: 600px) {
+      #acupuncture-channel-propagation .cp-flow { grid-template-columns: 1fr; gap: 8px; }
+      #acupuncture-channel-propagation .cp-arrow-horizontal { display: none; }
+      #acupuncture-channel-propagation .cp-arrow-vertical { display: inline; }
+      #acupuncture-channel-propagation .cp-stage-title { margin-bottom: 8px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      #acupuncture-channel-propagation .cp-bar { transition: none; }
+    }
+  </style>
+  <h3 class="cp-heading">一个通道，多个下游响应</h3>
+  <div class="cp-caption text-small">教学玩具 · 人为设定 · 非 Qwen 实测</div>
+  <div class="cp-control">
+    <label class="form-label" for="cp-dose">源通道改变量：<output id="cp-dose-value" class="tabular-nums">+1.0</output></label>
+    <input class="form-range" id="cp-dose" type="range" min="-2" max="2" step="0.1" value="1" aria-describedby="cp-scale">
+    <div id="cp-scale" class="text-small text-muted">−2 至 +2；0 为不干预</div>
+  </div>
+  <div class="cp-flow" role="group" aria-label="源通道经输出权重改变共享状态，再影响三个下游线性读出">
+    <div class="cp-stage">
+      <div class="cp-stage-title">① 源 MLP 通道</div>
+      <div class="cp-row" data-factor="1">
+        <div class="cp-row-label"><span>激活变化</span><span class="cp-value tabular-nums">+1.0</span></div>
+        <div class="cp-meter" aria-hidden="true"><div class="cp-bar"></div></div>
+      </div>
+      <div class="cp-weight text-small">输出列权重 [1, 0.5]</div>
+    </div>
+    <div class="cp-arrow" aria-hidden="true"><span class="cp-arrow-horizontal">→</span><span class="cp-arrow-vertical">↓</span></div>
+    <div class="cp-stage">
+      <div class="cp-stage-title">② 共享状态</div>
+      <div class="cp-row" data-factor="1">
+        <div class="cp-row-label"><span>坐标 1</span><span class="cp-value tabular-nums">+1.0</span></div>
+        <div class="cp-meter" aria-hidden="true"><div class="cp-bar"></div></div>
+      </div>
+      <div class="cp-row" data-factor="0.5">
+        <div class="cp-row-label"><span>坐标 2</span><span class="cp-value tabular-nums">+0.5</span></div>
+        <div class="cp-meter" aria-hidden="true"><div class="cp-bar"></div></div>
+      </div>
+    </div>
+    <div class="cp-arrow" aria-hidden="true"><span class="cp-arrow-horizontal">→</span><span class="cp-arrow-vertical">↓</span></div>
+    <div class="cp-stage">
+      <div class="cp-stage-title">③ 下游读出变化</div>
+      <div class="cp-row" data-factor="1">
+        <div class="cp-row-label"><span>A</span><span class="cp-value tabular-nums">+1.0</span></div>
+        <div class="cp-meter" aria-hidden="true"><div class="cp-bar"></div></div>
+        <div class="cp-weight text-small">读取方向 [1, 0]</div>
+      </div>
+      <div class="cp-row" data-factor="-0.5">
+        <div class="cp-row-label"><span>B</span><span class="cp-value tabular-nums">−0.5</span></div>
+        <div class="cp-meter" aria-hidden="true"><div class="cp-bar"></div></div>
+        <div class="cp-weight text-small">读取方向 [0, −1]</div>
+      </div>
+      <div class="cp-row" data-factor="0">
+        <div class="cp-row-label"><span>C</span><span class="cp-value tabular-nums">0.0</span></div>
+        <div class="cp-meter" aria-hidden="true"><div class="cp-bar"></div></div>
+        <div class="cp-weight text-small">读取方向 [0.5, −1]</div>
+      </div>
+    </div>
+  </div>
+  <div class="cp-foot text-small">下游线性读出（未画归一化与门控） · 数值均为变化量 · 条形共用 −2 到 +2 的刻度</div>
+  <div id="cp-announcement" class="sr-only" aria-live="polite"></div>
+  <script>
+    (() => {
+      const root = document.getElementById('acupuncture-channel-propagation');
+      const slider = root.querySelector('#cp-dose');
+      const valueLabel = root.querySelector('#cp-dose-value');
+      const announcement = root.querySelector('#cp-announcement');
+      const rows = [...root.querySelectorAll('[data-factor]')];
+      const signed = value => value === 0 ? '0.00' : (value > 0 ? '+' : '−') + Math.abs(value).toFixed(2);
+      const update = dose => {
+        slider.value = dose;
+        valueLabel.textContent = signed(dose);
+        rows.forEach(row => {
+          const value = dose * Number(row.dataset.factor);
+          const bar = row.querySelector('.cp-bar');
+          row.querySelector('.cp-value').textContent = signed(value);
+          bar.style.left = `${value < 0 ? 50 + value * 25 : 50}%`;
+          bar.style.width = `${Math.abs(value) * 25}%`;
+          bar.style.background = value < 0 ? 'var(--viz-series-2)' : 'var(--viz-series-1)';
+        });
+      };
+      const restore = state => {
+        const dose = state?.modelContent?.dose;
+        update(typeof dose === 'number' && Number.isFinite(dose) ? Math.max(-2, Math.min(2, dose)) : 1);
+      };
+      slider.addEventListener('input', () => update(Number(slider.value)));
+      slider.addEventListener('change', () => {
+        const dose = Number(slider.value);
+        announcement.textContent = `源通道变化 ${signed(dose)}；下游 A 变化 ${signed(dose)}，B 变化 ${signed(-0.5 * dose)}，C 不变。`;
+        window.openai?.setWidgetState({ modelContent: { dose }, privateContent: null }).catch(() => {});
+      });
+      window.addEventListener('openai:set_globals', event => {
+        if (event.detail?.globals?.widgetState !== undefined) restore(event.detail.globals.widgetState);
+      });
+      restore(window.openai?.widgetState);
+    })();
+  </script>
+</div>

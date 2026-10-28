@@ -1,0 +1,11 @@
+--- a/explorer/static/app.js
++++ b/explorer/static/app.js
+@@ -436,7 +436,7 @@
+ $("#f-close").onclick = () => { flushName(); if (running) running.abort(); state.focus = null; $("#list").classList.remove("has-focus");
+   if (curTab() === "claude") syncTabs(); else focusEl.classList.remove("on");
+   setFocusCollapsed(false); map.select(null); refreshWeb(); renderAgentActions(); scatter.select(null, null); history.replaceState(null, "", " "); renderList(); };
+-document.querySelectorAll("#tabs button").forEach(b => b.onclick = () => setTab(b.dataset.tab));
++document.querySelectorAll("#tabs button[data-tab]").forEach(b => b.onclick = () => setTab(b.dataset.tab));
+ const tabBtn = t => $(`#tabs button[data-tab="${t}"]`);
+ const curTab = () => $("#tabs button.on")?.dataset.tab;
+ function setTab(t) {

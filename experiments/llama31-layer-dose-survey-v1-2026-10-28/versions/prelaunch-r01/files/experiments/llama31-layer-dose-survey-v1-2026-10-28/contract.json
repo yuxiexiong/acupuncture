@@ -1,0 +1,93 @@
+{
+  "experiment": "llama31-layer-dose-survey-v1-2026-10-28",
+  "status": "authorized_subject_to_cpu_gpu_acceptance",
+  "models": [
+    {
+      "id": "llama31-8b-instruct",
+      "repo": "meta-llama/Llama-3.1-8B-Instruct",
+      "layers": 32,
+      "intermediate_size": 14336,
+      "hidden_size": 4096,
+      "revision": "0e9e39f249a16976918f6564b8830bc894c89659",
+      "remote_path": "/workspace/models/Llama-3.1-8B-Instruct-0e9e39f2"
+    }
+  ],
+  "channels_per_layer": 10,
+  "single_channel_per_condition": true,
+  "instruction": "请用中文简短回答，通常一至三句话；具体格式要求以题目为准。",
+  "generation": {
+    "max_new_tokens": 128,
+    "do_sample": false,
+    "enable_thinking": "not_applicable",
+    "dtype": "bfloat16",
+    "attention_backend": "eager",
+    "batch_size": 1,
+    "threads": 4,
+    "scope": "prompt and all generated positions",
+    "retries_for_semantic_output": 0,
+    "native_chat_template_date_string": "26 Oct 2026"
+  },
+  "nonzero_doses": [
+    -0.0625,
+    0.0625,
+    -0.125,
+    0.125,
+    -0.25,
+    0.25,
+    -0.5,
+    0.5,
+    -1.0,
+    1.0
+  ],
+  "comparison_doses": [
+    -1.0,
+    -0.5,
+    -0.25,
+    -0.125,
+    -0.0625,
+    0.0,
+    0.0625,
+    0.125,
+    0.25,
+    0.5,
+    1.0
+  ],
+  "dose_definition": "c(d)=d*clean prompt per-layer median residual L2 excluding first token / down_proj column L2; independent BF16 cast from original double ratio; prompt and all decode steps",
+  "sampling": "random.Random(\"acupuncture-layer-survey-v1:{model_id}:{layer}\").sample(range(intermediate_size),10); sort indices; fixed before any model outputs",
+  "scheduler": {
+    "gpus": [
+      0,
+      1
+    ],
+    "shards": 2,
+    "assignment": "global sorted point index modulo 2; five channels per layer on each GPU",
+    "maximum_workers": 2
+  },
+  "formal": {
+    "selected_points": 320,
+    "nonzero_conditions": 3200,
+    "modified_answers": 25600,
+    "baseline_answers": 8,
+    "total_answers": 25608,
+    "comparison_groups": 2560,
+    "columns_per_group": 11,
+    "display_cells": 28160
+  },
+  "preflight": {
+    "answers_per_worker": 44,
+    "workers": 2,
+    "total_answers": 88,
+    "baseline_per_worker": 8,
+    "anchors_per_worker": 3,
+    "per_anchor": "zero hook, all ten signed doses, no-hook restoration; Q01/Q04/Q08 at first/middle/last assigned points",
+    "cross_worker": "all eight baseline token/raw outputs and full 8x32 clean calibration must agree"
+  },
+  "predecessor": "layer-negative-dose-survey-toy-v1-2026-10-27/survey-r01",
+  "comparison_scope": "Qwen +1 has ten channels/layer; full signed five-dose Qwen has one channel/layer. Llama has ten channels/layer at every dose. Model/native template/tokenizer/EOS necessarily differ; do not pool as equal sampling coverage.",
+  "authorization_scope": "User confirmed Llama 3.1 8B Instruct and authorized contract/code, CPU/GPU acceptance and formal execution after Qwen jobs finish. Preserve thirty-minute progress reporting. No other model families or resumed old experiments.",
+  "paused": [
+    "root-cause",
+    "judgment-report",
+    "static weight edits"
+  ]
+}

@@ -1,0 +1,837 @@
+{
+  "schema_version": 1,
+  "scope": "已有实验只读目录；各实验保留独立分母，重复来源不相加。",
+  "datasets": [
+    {
+      "id": "overview",
+      "title": "导师版完整实验总结",
+      "model": "multi",
+      "status": "completed",
+      "coverage": "所有既有实验及边界的统一说明",
+      "note": "报告与原文互为索引；不同研究的分母不合并。",
+      "views": [
+        {
+          "label": "导师展示HTML",
+          "path": "docs/Acupuncture_实验结果_导师展示_2026-10-28.html"
+        },
+        {
+          "label": "完整总结",
+          "path": "docs/Acupuncture_实验总结_导师版_2026-10-28.md"
+        }
+      ]
+    },
+    {
+      "id": "formal_single_channel",
+      "title": "全部正式单针来源：三维结果模式",
+      "model": "multi",
+      "status": "completed",
+      "coverage": "Qwen13400＋Llama4872＝18272唯一来源",
+      "note": "已有三维工具的结果模式可直接筛模型、层、通道、剂量；本库不再复制这18272条。",
+      "views": [
+        {
+          "label": "进入原三维Explorer",
+          "path": "/?model=4b"
+        },
+        {
+          "label": "来源与验收说明",
+          "path": "experiments/neuron-explorer-multimodel-v2-2026-10-26/trace-view-r01/README.zh-CN.md"
+        }
+      ]
+    },
+    {
+      "id": "trace",
+      "title": "全部正式内部Hook：三维传播模式",
+      "model": "multi",
+      "status": "completed",
+      "coverage": "7632唯一轨迹：2B920／4B4872／9B920／Llama920",
+      "note": "仅这些记录拥有逐token实测组件传播摘要；不为历史实验补造轨迹。",
+      "views": [
+        {
+          "label": "进入原三维Explorer",
+          "path": "/?model=4b"
+        },
+        {
+          "label": "归档核验",
+          "path": "experiments/layer-trace-extension-v1-2026-10-28/archive-r01/combined-verification.json"
+        }
+      ]
+    },
+    {
+      "id": "existing-analysis",
+      "title": "既有拆针／修复／同族迁移证据图",
+      "model": "4b",
+      "status": "completed",
+      "coverage": "拆针17条件、候选排序、10修复候选、2B/9B迁移",
+      "note": "这是此前已做的可视证据页；图中排序、实测修复和几何映射分别标明。",
+      "views": [
+        {
+          "label": "证据图",
+          "path": "experiments/neuron-explorer-analysis-v1-2026-10-26/graph.html"
+        },
+        {
+          "label": "完整逐题详情",
+          "path": "experiments/neuron-explorer-analysis-v1-2026-10-26/index.html"
+        },
+        {
+          "label": "结构化证据",
+          "path": "experiments/neuron-explorer-analysis-v1-2026-10-26/evidence.json"
+        },
+        {
+          "label": "来源清单",
+          "path": "experiments/neuron-explorer-analysis-v1-2026-10-26/evidence-manifest.json"
+        }
+      ]
+    },
+    {
+      "id": "initial24",
+      "title": "首轮双针24题",
+      "model": "4b",
+      "status": "completed_user_stopped_after_q24",
+      "coverage": "24题 × 两臂 × 512/1024两尝试＝96输出",
+      "note": "Q25–Q40未运行；旧停止规则仅248044；长短尝试不是独立重复。",
+      "views": [
+        {
+          "label": "原文并排",
+          "path": "experiments/qwen35-neuron-steering-2026-10-25/raw-corpus-cpu-bf16-r01/paired_raw.html"
+        },
+        {
+          "label": "原版JSONL",
+          "path": "experiments/qwen35-neuron-steering-2026-10-25/raw-corpus-cpu-bf16-r01/original.raw.jsonl"
+        },
+        {
+          "label": "干预JSONL",
+          "path": "experiments/qwen35-neuron-steering-2026-10-25/raw-corpus-cpu-bf16-r01/modified.raw.jsonl"
+        }
+      ],
+      "reader": {
+        "kind": "initial",
+        "patterns": [
+          "experiments/qwen35-neuron-steering-2026-10-25/raw-corpus-cpu-bf16-r01/original.raw.jsonl",
+          "experiments/qwen35-neuron-steering-2026-10-25/raw-corpus-cpu-bf16-r01/modified.raw.jsonl"
+        ]
+      },
+      "expected_rows": 48
+    },
+    {
+      "id": "quick-bench",
+      "title": "早期RACE／GSM8K／LogiQA三基准",
+      "model": "4b",
+      "status": "completed",
+      "coverage": "各100题，300配对题／600回答",
+      "note": "严格、事后显式提取、首token诊断是不同口径；不含8对串行试跑。",
+      "views": [
+        {
+          "label": "300题并排",
+          "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/paired_answers.html"
+        },
+        {
+          "label": "结果说明",
+          "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/RESULTS.zh-CN.md"
+        },
+        {
+          "label": "结果JSON",
+          "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/RESULTS.json"
+        }
+      ],
+      "reader": {
+        "kind": "paired",
+        "patterns": [
+          "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-reading-logic/[0-9][0-9][0-9][0-9].json",
+          "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/results-math/[0-9][0-9][0-9][0-9].json"
+        ]
+      },
+      "expected_rows": 300
+    },
+    {
+      "id": "stopped-serial-math",
+      "title": "已停止：早期数学串行试跑",
+      "model": "4b",
+      "status": "stopped_for_throughput",
+      "coverage": "8完整配对＋第9题部分记录；不计正式300题／600回答",
+      "note": "因串行吞吐过慢停止，原文全部保留，随后同一固定题集改批量重跑。0008原文件的running是停止时历史快照，并非仍运行；仅保留原版臂开始状态，尚未形成完整回答；不补造任何缺失正文。未完成最终目标权重哈希检查。",
+      "views": [
+        {
+          "label": "停止收据",
+          "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/serial-math-attempt/interruption_receipt.json"
+        },
+        {
+          "label": "已完成试跑汇总",
+          "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/serial-math-attempt/results-math/summary.json"
+        },
+        {
+          "label": "第9题部分原文",
+          "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/serial-math-attempt/results-math/0008.json"
+        },
+        {
+          "label": "完整试跑原始收据",
+          "path": "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/serial-math-attempt/results-math/receipt.json"
+        }
+      ],
+      "reader": {
+        "kind": "paired",
+        "patterns": [
+          "experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/serial-math-attempt/results-math/[0-9][0-9][0-9][0-9].json"
+        ]
+      },
+      "expected_rows": 9
+    },
+    {
+      "id": "capability-4b",
+      "title": "4B固定四项能力面板",
+      "model": "4b",
+      "status": "completed",
+      "coverage": "1400配对题：1000／200／100／100",
+      "note": "718题复用旧MMLU；选择题为候选似然，没有自由回答；数学、代码有原答。",
+      "views": [
+        {
+          "label": "结果",
+          "path": "experiments/capability-screen-v3-2026-10-26/RESULTS.zh-CN.md"
+        },
+        {
+          "label": "评分汇总",
+          "path": "experiments/capability-screen-v3-2026-10-26/finish-r01/scores/summary.json"
+        },
+        {
+          "label": "完整证据包",
+          "path": "experiments/capability-screen-v3-2026-10-26/completed-evidence-r01.tar.gz"
+        }
+      ],
+      "reader": {
+        "kind": "paired",
+        "archive": "experiments/capability-screen-v3-2026-10-26/completed-evidence-r01.tar.gz",
+        "scores": "experiments/capability-screen-v3-2026-10-26/finish-r01/scores/scores.jsonl"
+      },
+      "expected_rows": 1400
+    },
+    {
+      "id": "transfer-2b",
+      "title": "4B→2B迁移行为原文",
+      "model": "2b",
+      "status": "completed_ratings_pending",
+      "coverage": "64题 × 19条件＝1216目标回答",
+      "note": "结构化行为主终点评审未完成；只按实际记录显示条件。",
+      "views": [
+        {
+          "label": "并排原文",
+          "path": "experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target2b/export-r01/paired_raw.html"
+        },
+        {
+          "label": "19条件定义",
+          "path": "experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target2b/mapping/conditions.json"
+        },
+        {
+          "label": "结果说明",
+          "path": "experiments/transfer-toy-v1-2026-10-26/RESULTS.zh-CN.md"
+        }
+      ],
+      "reader": {
+        "kind": "grouped",
+        "patterns": [
+          "experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target2b/export-r01/original.raw.jsonl",
+          "experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target2b/export-r01/modified.raw.jsonl"
+        ]
+      },
+      "expected_rows": 64
+    },
+    {
+      "id": "diagnostic-2b",
+      "title": "2B迁移19条件小诊断",
+      "model": "2b",
+      "status": "completed",
+      "coverage": "32题MMLU＋32题ARC，各19条件",
+      "note": "这是候选评分而非自由回答，分母独立于1400题能力面板。",
+      "views": [
+        {
+          "label": "诊断汇总",
+          "path": "experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target2b/export-r01/diagnostic.summary.json"
+        },
+        {
+          "label": "诊断原始记录",
+          "path": "experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target2b/export-r01/diagnostic.raw.jsonl"
+        }
+      ],
+      "reader": {
+        "kind": "grouped",
+        "patterns": [
+          "experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target2b/export-r01/diagnostic.raw.jsonl"
+        ]
+      },
+      "expected_rows": 64
+    },
+    {
+      "id": "capability-2b",
+      "title": "2B迁移固定四项能力面板",
+      "model": "2b",
+      "status": "completed",
+      "coverage": "1400配对题：1000／200／100／100",
+      "note": "T_0对true_S_recipe；随机组没有该大面板。",
+      "views": [
+        {
+          "label": "能力汇总",
+          "path": "experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target2b/benchmark/finish-r01/summary.json"
+        },
+        {
+          "label": "结果说明",
+          "path": "experiments/transfer-toy-v1-2026-10-26/RESULTS.zh-CN.md"
+        }
+      ],
+      "reader": {
+        "kind": "paired",
+        "patterns": [
+          "experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target2b/benchmark/shard-*/*/[0-9]*.jsonl"
+        ],
+        "scores": "experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target2b/benchmark/finish-r01/scores.jsonl"
+      },
+      "expected_rows": 1400
+    },
+    {
+      "id": "transfer-9b",
+      "title": "4B→9B迁移行为原文",
+      "model": "9b",
+      "status": "completed_ratings_pending",
+      "coverage": "64题 × 19条件＝1216目标回答",
+      "note": "结构化行为主终点评审未完成；只按实际记录显示条件。",
+      "views": [
+        {
+          "label": "并排原文",
+          "path": "experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b/export-r01/paired_raw.html"
+        },
+        {
+          "label": "19条件定义",
+          "path": "experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b/mapping/conditions.json"
+        },
+        {
+          "label": "结果说明",
+          "path": "experiments/transfer-toy-v1-2026-10-26/RESULTS.zh-CN.md"
+        }
+      ],
+      "reader": {
+        "kind": "grouped",
+        "patterns": [
+          "experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b/export-r01/original.raw.jsonl",
+          "experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b/export-r01/modified.raw.jsonl"
+        ]
+      },
+      "expected_rows": 64
+    },
+    {
+      "id": "diagnostic-9b",
+      "title": "9B迁移19条件小诊断",
+      "model": "9b",
+      "status": "completed",
+      "coverage": "32题MMLU＋32题ARC，各19条件",
+      "note": "这是候选评分而非自由回答，分母独立于1400题能力面板。",
+      "views": [
+        {
+          "label": "诊断汇总",
+          "path": "experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b/export-r01/diagnostic.summary.json"
+        },
+        {
+          "label": "诊断原始记录",
+          "path": "experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b/export-r01/diagnostic.raw.jsonl"
+        }
+      ],
+      "reader": {
+        "kind": "grouped",
+        "patterns": [
+          "experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b/export-r01/diagnostic.raw.jsonl"
+        ]
+      },
+      "expected_rows": 64
+    },
+    {
+      "id": "capability-9b",
+      "title": "9B迁移固定四项能力面板",
+      "model": "9b",
+      "status": "completed",
+      "coverage": "1400配对题：1000／200／100／100",
+      "note": "T_0对true_S_recipe；随机组没有该大面板。",
+      "views": [
+        {
+          "label": "能力汇总",
+          "path": "experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b/benchmark/finish-r01/summary.json"
+        },
+        {
+          "label": "结果说明",
+          "path": "experiments/transfer-toy-v1-2026-10-26/RESULTS.zh-CN.md"
+        }
+      ],
+      "reader": {
+        "kind": "paired",
+        "patterns": [
+          "experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b/benchmark/shard-*/*/[0-9]*.jsonl"
+        ],
+        "scores": "experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b/benchmark/finish-r01/scores.jsonl"
+      },
+      "expected_rows": 1400
+    },
+    {
+      "id": "transfer-source",
+      "title": "迁移共享4B源参考",
+      "model": "4b",
+      "status": "completed",
+      "coverage": "64行为题 × S_0/S_channel/S_vector＝192回答",
+      "note": "两目标共用一次源参考；不重复算作各目标新增数据。",
+      "views": [
+        {
+          "label": "源原文",
+          "path": "experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b/export-r01/source.raw.jsonl"
+        }
+      ],
+      "reader": {
+        "kind": "grouped",
+        "patterns": [
+          "experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b/export-r01/source.raw.jsonl"
+        ]
+      },
+      "expected_rows": 64
+    },
+    {
+      "id": "llama-transfer",
+      "title": "Llama跨架构阶段一行为原文",
+      "model": "llama31-8b-instruct",
+      "status": "completed_ratings_pending",
+      "coverage": "64行为题 × 10个实际条件＝640回答",
+      "note": "阶段一是稠密干预；规划中的稀疏条件未运行，不画成单通道注入。",
+      "views": [
+        {
+          "label": "行为原文",
+          "path": "experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/stage1/export-r01/behavior.jsonl"
+        },
+        {
+          "label": "阶段门槛",
+          "path": "experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/stage1/gate.json"
+        }
+      ],
+      "reader": {
+        "kind": "grouped",
+        "patterns": [
+          "experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/stage1/export-r01/behavior.jsonl"
+        ]
+      },
+      "expected_rows": 64
+    },
+    {
+      "id": "llama-diagnostic",
+      "title": "Llama跨架构阶段一小诊断",
+      "model": "llama31-8b-instruct",
+      "status": "completed",
+      "coverage": "64选择题 × 10个实际条件",
+      "note": "候选似然；不从mapping里19个计划条件推断已运行。",
+      "views": [
+        {
+          "label": "诊断汇总",
+          "path": "experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/stage1/export-r01/diagnostic.summary.json"
+        },
+        {
+          "label": "原始选择题",
+          "path": "experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/stage1/export-r01/ability.jsonl"
+        }
+      ],
+      "reader": {
+        "kind": "grouped",
+        "patterns": [
+          "experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/stage1/export-r01/ability.jsonl"
+        ]
+      },
+      "expected_rows": 64
+    },
+    {
+      "id": "capability-llama",
+      "title": "Llama跨架构四项能力面板",
+      "model": "llama31-8b-instruct",
+      "status": "completed",
+      "coverage": "1400配对题：1000／200／100／100",
+      "note": "T_0对true_D_match；gate PASS仅指固定协议能力损伤门槛。",
+      "views": [
+        {
+          "label": "能力汇总",
+          "path": "experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/stage1/benchmark/finish-r01/summary.json"
+        },
+        {
+          "label": "门槛证据",
+          "path": "experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/stage1/gate.json"
+        }
+      ],
+      "reader": {
+        "kind": "paired",
+        "patterns": [
+          "experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/stage1/benchmark/shard-*/*/[0-9]*.jsonl"
+        ],
+        "scores": "experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/stage1/benchmark/finish-r01/scores.jsonl"
+      },
+      "expected_rows": 1400
+    },
+    {
+      "id": "transfer-q3",
+      "title": "迁移三问追加与历史4B参照",
+      "model": "multi",
+      "status": "completed",
+      "coverage": "2B/9B新增12回答＋历史4B复用6回答",
+      "note": "共18行原文／9个配对；历史4B设置与新运行不同。",
+      "views": [
+        {
+          "label": "并排原文",
+          "path": "experiments/transfer-behavior-q3-v1-2026-10-26/delivery-r01/index.html"
+        },
+        {
+          "label": "全部原文",
+          "path": "experiments/transfer-behavior-q3-v1-2026-10-26/delivery-r01/answers.json"
+        }
+      ],
+      "reader": {
+        "kind": "grouped",
+        "patterns": [
+          "experiments/transfer-behavior-q3-v1-2026-10-26/delivery-r01/answers.json"
+        ]
+      },
+      "expected_rows": 9
+    },
+    {
+      "id": "decompose",
+      "title": "双针拆解／随机对照",
+      "model": "4b",
+      "status": "completed_development",
+      "coverage": "64条配对评估记录",
+      "note": "64题，每题17条件；比较候选评分而非生成回答。",
+      "views": [
+        {
+          "label": "已有证据图",
+          "path": "experiments/neuron-explorer-analysis-v1-2026-10-26/graph.html"
+        },
+        {
+          "label": "全部结果",
+          "path": "experiments/root-cause-toy-v1-2026-10-26/first-round-results.json"
+        },
+        {
+          "label": "研究结论",
+          "path": "experiments/root-cause-toy-v1-2026-10-26/RESULTS.zh-CN.md"
+        }
+      ],
+      "reader": {
+        "kind": "root",
+        "patterns": [
+          "experiments/root-cause-toy-v1-2026-10-26/runs/root-r01/decompose-r01/item-[0-9]*.json"
+        ],
+        "items": "experiments/root-cause-toy-v1-2026-10-26/data/ability_dev.jsonl"
+      },
+      "expected_rows": 64
+    },
+    {
+      "id": "ranking",
+      "title": "下游组件候选排序",
+      "model": "4b",
+      "status": "completed_development",
+      "coverage": "64条配对评估记录",
+      "note": "64题×35排序读数；predicted_repair是预测，不是实测修复。",
+      "views": [
+        {
+          "label": "已有证据图",
+          "path": "experiments/neuron-explorer-analysis-v1-2026-10-26/graph.html"
+        },
+        {
+          "label": "全部结果",
+          "path": "experiments/root-cause-toy-v1-2026-10-26/first-round-results.json"
+        },
+        {
+          "label": "研究结论",
+          "path": "experiments/root-cause-toy-v1-2026-10-26/RESULTS.zh-CN.md"
+        }
+      ],
+      "reader": {
+        "kind": "ranking",
+        "patterns": [
+          "experiments/root-cause-toy-v1-2026-10-26/runs/root-r01/rank-r01/item-[0-9]*.json"
+        ],
+        "items": "experiments/root-cause-toy-v1-2026-10-26/data/ability_dev.jsonl"
+      },
+      "expected_rows": 64
+    },
+    {
+      "id": "repair",
+      "title": "十候选实际修复与反向重现",
+      "model": "4b",
+      "status": "completed_development",
+      "coverage": "640条配对评估记录",
+      "note": "十候选各64题、六条件；正确率双向完整证据未成立，独立确认未运行。",
+      "views": [
+        {
+          "label": "已有证据图",
+          "path": "experiments/neuron-explorer-analysis-v1-2026-10-26/graph.html"
+        },
+        {
+          "label": "全部结果",
+          "path": "experiments/root-cause-toy-v1-2026-10-26/first-round-results.json"
+        },
+        {
+          "label": "研究结论",
+          "path": "experiments/root-cause-toy-v1-2026-10-26/RESULTS.zh-CN.md"
+        }
+      ],
+      "reader": {
+        "kind": "root",
+        "patterns": [
+          "experiments/root-cause-toy-v1-2026-10-26/runs/root-parallel-r01/C*/ability-[0-9]*.json"
+        ],
+        "items": "experiments/root-cause-toy-v1-2026-10-26/data/ability_dev.jsonl"
+      },
+      "expected_rows": 640
+    },
+    {
+      "id": "stopped-full",
+      "title": "已停止：旧全量MMLU前缀",
+      "model": "4b",
+      "status": "user_stopped",
+      "coverage": "10034完整配对＋1 partial",
+      "note": "长度排序前缀，非随机全量成绩；包含固定面板复用的718题，不相加。partial不计模型失败。",
+      "views": [
+        {
+          "label": "停止收据",
+          "path": "experiments/capability-damage-v2-2026-10-26/user-stop-20261026-r01/receipt.json"
+        },
+        {
+          "label": "完整保留包",
+          "path": "experiments/capability-damage-v2-2026-10-26/user-stop-20261026-r01/preserved-output-evidence.tar.gz"
+        }
+      ],
+      "reader": {
+        "kind": "paired",
+        "archive": "experiments/capability-damage-v2-2026-10-26/user-stop-20261026-r01/preserved-output-evidence.tar.gz",
+        "partial": true
+      },
+      "expected_rows": 10035
+    },
+    {
+      "id": "stopped-llama",
+      "title": "已停止：Llama旧合并十点十剂量",
+      "model": "llama31-8b-instruct",
+      "status": "user_stopped",
+      "coverage": "479条保留记录，非完整实验",
+      "note": "用户纠正设计后停止；不并入独立4872来源；无完整结束hook/权重验收。",
+      "views": [
+        {
+          "label": "停止收据",
+          "path": "experiments/llama31-layer-dose-survey-v1-2026-10-28/user-stop-split-r01/receipt.json"
+        },
+        {
+          "label": "历史执行",
+          "path": "experiments/llama31-layer-dose-survey-v1-2026-10-28/EXECUTION.zh-CN.md"
+        }
+      ],
+      "reader": {
+        "kind": "survey_partial",
+        "patterns": [
+          "experiments/llama31-layer-dose-survey-v1-2026-10-28/survey-r01/*/records/*.json"
+        ]
+      },
+      "expected_rows": 479
+    },
+    {
+      "id": "stopped-root",
+      "title": "已停止：旧单卡修复交接",
+      "model": "4b",
+      "status": "user_stopped",
+      "coverage": "C01保留12条，退出143",
+      "note": "调度交接后已由双卡正式结果覆盖；不重复计入640条。",
+      "views": [
+        {
+          "label": "交接证据",
+          "path": "experiments/root-cause-toy-v1-2026-10-26/runs/root-r01/parallel-handoff-r01.json"
+        }
+      ],
+      "reader": {
+        "kind": "root",
+        "patterns": [
+          "experiments/root-cause-toy-v1-2026-10-26/runs/root-r01/validate-r01/C01/ability-[0-9]*.json"
+        ],
+        "items": "experiments/root-cause-toy-v1-2026-10-26/data/ability_dev.jsonl"
+      },
+      "expected_rows": 12
+    },
+    {
+      "id": "judgment-paused",
+      "title": "未运行：判断／报告分离诊断",
+      "model": "4b",
+      "status": "not_run",
+      "coverage": "合同、代码和准备材料",
+      "note": "正式运行暂停，不展示计划为结果。",
+      "views": [
+        {
+          "label": "合同",
+          "path": "experiments/judgment-report-toy-v1-2026-10-26/CONTRACT.zh-CN.md"
+        },
+        {
+          "label": "状态",
+          "path": "experiments/judgment-report-toy-v1-2026-10-26/EXECUTION.zh-CN.md"
+        }
+      ],
+      "expected_rows": 0
+    },
+    {
+      "id": "llama-stage2",
+      "title": "未运行：Llama跨架构稀疏阶段二",
+      "model": "llama31-8b-instruct",
+      "status": "not_run_cancelled",
+      "coverage": "阶段二未启动",
+      "note": "保留阶段一PASS；规划的稀疏坐标不代表已完成实验。",
+      "views": [
+        {
+          "label": "执行协议与历史",
+          "path": "experiments/cross-family-transfer-toy-v1-2026-10-26/EXECUTION.zh-CN.md"
+        },
+        {
+          "label": "阶段一门槛",
+          "path": "experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/stage1/gate.json"
+        }
+      ],
+      "expected_rows": 0
+    },
+    {
+      "id": "layer-survey-toy-v1-2026-10-27",
+      "title": "Qwen全层十点＋1",
+      "model": "multi",
+      "status": "completed",
+      "coverage": "7064来源",
+      "note": "现有三维结果模式已支持；复用基线和+1不重复计数。",
+      "views": [
+        {
+          "label": "全部原文",
+          "path": "experiments/layer-survey-toy-v1-2026-10-27/delivery-r01/paired_raw.html"
+        },
+        {
+          "label": "首次开放阅读",
+          "path": "experiments/layer-survey-toy-v1-2026-10-27/qualitative-pass-r01/FIRST_PASS.zh-CN.md"
+        }
+      ]
+    },
+    {
+      "id": "layer-dose-survey-toy-v1-2026-10-27",
+      "title": "Qwen单点五档正剂量",
+      "model": "multi",
+      "status": "completed",
+      "coverage": "2816新增＋复用来源",
+      "note": "现有三维结果模式已支持；复用基线和+1不重复计数。",
+      "views": [
+        {
+          "label": "全部原文",
+          "path": "experiments/layer-dose-survey-toy-v1-2026-10-27/delivery-r01/paired_raw.html"
+        },
+        {
+          "label": "首次开放阅读",
+          "path": "experiments/layer-dose-survey-toy-v1-2026-10-27/qualitative-pass-r01/FIRST_PASS.zh-CN.md"
+        }
+      ]
+    },
+    {
+      "id": "layer-negative-dose-survey-toy-v1-2026-10-27",
+      "title": "Qwen单点镜像负剂量",
+      "model": "multi",
+      "status": "completed",
+      "coverage": "3520新增＋复用来源",
+      "note": "现有三维结果模式已支持；复用基线和+1不重复计数。",
+      "views": [
+        {
+          "label": "全部原文",
+          "path": "experiments/layer-negative-dose-survey-toy-v1-2026-10-27/delivery-r01/paired_raw.html"
+        },
+        {
+          "label": "首次开放阅读",
+          "path": "experiments/layer-negative-dose-survey-toy-v1-2026-10-27/qualitative-pass-r01/FIRST_PASS.zh-CN.md"
+        }
+      ]
+    },
+    {
+      "id": "llama31-layer-survey-v1-2026-10-28",
+      "title": "Llama独立十点＋1",
+      "model": "llama31-8b-instruct",
+      "status": "completed",
+      "coverage": "2568来源",
+      "note": "现有三维结果模式已支持；复用基线和+1不重复计数。",
+      "views": [
+        {
+          "label": "全部原文",
+          "path": "experiments/llama31-layer-survey-v1-2026-10-28/delivery-r01/paired_raw.html"
+        },
+        {
+          "label": "首次开放阅读",
+          "path": "experiments/llama31-layer-survey-v1-2026-10-28/qualitative-pass-r01/FIRST_PASS.zh-CN.md"
+        }
+      ]
+    },
+    {
+      "id": "llama31-single-point-dose-survey-v1-2026-10-28",
+      "title": "Llama独立单点正负剂量",
+      "model": "llama31-8b-instruct",
+      "status": "completed",
+      "coverage": "2304新增＋264复用",
+      "note": "现有三维结果模式已支持；复用基线和+1不重复计数。",
+      "views": [
+        {
+          "label": "全部原文",
+          "path": "experiments/llama31-single-point-dose-survey-v1-2026-10-28/delivery-r01/paired_raw.html"
+        },
+        {
+          "label": "首次开放阅读",
+          "path": "experiments/llama31-single-point-dose-survey-v1-2026-10-28/qualitative-pass-r01/FIRST_PASS.zh-CN.md"
+        }
+      ]
+    },
+    {
+      "id": "early-layer-mechanism-v1-2026-10-28",
+      "title": "Hook A：原早层内部轨迹",
+      "model": "multi",
+      "status": "completed",
+      "coverage": "2152正式唯一轨迹",
+      "note": "现有三维轨迹模式直接支持；只将实测组件差分显示为传播。",
+      "views": [
+        {
+          "label": "合同",
+          "path": "experiments/early-layer-mechanism-v1-2026-10-28/CONTRACT.zh-CN.md"
+        },
+        {
+          "label": "执行记录",
+          "path": "experiments/early-layer-mechanism-v1-2026-10-28/EXECUTION.zh-CN.md"
+        }
+      ]
+    },
+    {
+      "id": "layer-trace-extension-v1-2026-10-28",
+      "title": "Hook B：补前六层与4B全层",
+      "model": "multi",
+      "status": "completed",
+      "coverage": "4560正式唯一轨迹",
+      "note": "现有三维轨迹模式直接支持；只将实测组件差分显示为传播。",
+      "views": [
+        {
+          "label": "合同",
+          "path": "experiments/layer-trace-extension-v1-2026-10-28/CONTRACT.zh-CN.md"
+        },
+        {
+          "label": "执行记录",
+          "path": "experiments/layer-trace-extension-v1-2026-10-28/EXECUTION.zh-CN.md"
+        }
+      ]
+    },
+    {
+      "id": "llama31-early-layer-trace-v1-2026-10-28",
+      "title": "Hook C：Llama前六层",
+      "model": "llama31-8b-instruct",
+      "status": "completed",
+      "coverage": "920正式唯一轨迹",
+      "note": "现有三维轨迹模式直接支持；只将实测组件差分显示为传播。",
+      "views": [
+        {
+          "label": "合同",
+          "path": "experiments/llama31-early-layer-trace-v1-2026-10-28/CONTRACT.zh-CN.md"
+        },
+        {
+          "label": "执行记录",
+          "path": "experiments/llama31-early-layer-trace-v1-2026-10-28/EXECUTION.zh-CN.md"
+        }
+      ]
+    }
+  ],
+  "manifests": [
+    "experiments/neuron-explorer-analysis-v1-2026-10-26/evidence-manifest.json"
+  ]
+}

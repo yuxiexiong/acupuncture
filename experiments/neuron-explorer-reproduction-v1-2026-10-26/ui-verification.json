@@ -1,0 +1,30 @@
+{
+  "recorded_at": "2026-10-26T10:21:31.807920+00:00",
+  "url": "http://127.0.0.1:8791/#L15/N3920",
+  "observed_checks": [
+    "Original Three.js map renders",
+    "Map zoom responds",
+    "Jump from L14/N8949 to L15/N3920 updates layer and details",
+    "Details shows steer lens, logit lens, upstream and downstream connections",
+    "L15/N3920 web reports 761 links",
+    "After patch, collapse hides panel and opening neuron restores it; Details tab works"
+  ],
+  "screenshots": [
+    "cache-ui.png",
+    "live-details.png",
+    "live-ui.png"
+  ],
+  "upstream_bug": {
+    "observed_at": "2026-10-26T10:17:29.965Z",
+    "error": "TypeError: Cannot read properties of null (reading 'classList') at setTab app.js:446 and b.onclick app.js:439",
+    "cause": "Generic #tabs button selector overwrote collapse handler, calling setTab(undefined).",
+    "patch": "panel-collapse.patch",
+    "browser_recheck": "passed",
+    "new_console_errors_after_patch_observed": false
+  },
+  "notes": [
+    "Browser was narrow; original responsive layout overlays details. Both panels collapsed in final map screenshot.",
+    "No Claude request was submitted.",
+    "Live generation verified via bounded API checks, not extra UI generations."
+  ]
+}

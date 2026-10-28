@@ -1,0 +1,130 @@
+{
+  "experiment": "layer-negative-dose-survey-toy-v1-2026-10-27",
+  "status": "negative_survey_authorized_subject_to_cpu_gpu_acceptance",
+  "models": [
+    {
+      "id": "2b",
+      "layers": 24,
+      "intermediate_size": 6144,
+      "hidden_size": 2048,
+      "revision": "15852e8c16360a2fea060d615a32b45270f8a8fc",
+      "remote_path": "/workspace/models/Qwen3.5-2B-15852e8c"
+    },
+    {
+      "id": "4b",
+      "layers": 32,
+      "intermediate_size": 9216,
+      "hidden_size": 2560,
+      "revision": "851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a",
+      "remote_path": "/data/models/Qwen3.5-4B-851bf6e"
+    },
+    {
+      "id": "9b",
+      "layers": 32,
+      "intermediate_size": 12288,
+      "hidden_size": 4096,
+      "revision": "c202236235762e1c871ad0ccb60c8ee5ba337b9a",
+      "remote_path": "/workspace/models/Qwen3.5-9B-c2022362"
+    }
+  ],
+  "channels_per_layer": 1,
+  "single_channel_per_condition": true,
+  "instruction": "请用中文简短回答，通常一至三句话；具体格式要求以题目为准。",
+  "generation": {
+    "max_new_tokens": 128,
+    "do_sample": false,
+    "enable_thinking": false,
+    "dtype": "bfloat16",
+    "attention_backend": "eager",
+    "batch_size": 1,
+    "threads": 4,
+    "scope": "prompt and all generated positions",
+    "retries_for_semantic_output": 0,
+    "output_policy": "At most 128 new tokens; retain all actual tokens including the stopping EOS; natural early stop is not padded; cap reached retains exactly 128 tokens; no continuation, semantic retry, or post-generation rewriting."
+  },
+  "paused": [
+    "root-cause",
+    "judgment-report",
+    "static weight edits"
+  ],
+  "nonzero_doses": [
+    -0.0625,
+    -0.125,
+    -0.25,
+    -0.5,
+    -1.0
+  ],
+  "new_doses": [
+    -0.0625,
+    -0.125,
+    -0.25,
+    -0.5,
+    -1.0
+  ],
+  "baseline_dose": 0,
+  "dose_definition": "c(d) = d * original clean prompt per-layer median residual L2 / down_proj column L2; independent BF16 cast from original ratio, never scale rounded dose=1 offset",
+  "sampling": "Reuse the positive experiment selection.json byte-for-byte; same 88 model/layer/channel points, no new selection or reroll",
+  "selection_sha256": "f4ce775991cef21f3afeeb56d6c5f79d10efcb4dc592c124592c7721996720f6",
+  "source_experiment": "layer-survey-toy-v1-2026-10-27",
+  "formal": {
+    "selected_points": 88,
+    "nonzero_conditions": 440,
+    "new_answers": 3520,
+    "reused_positive_answers": 3520,
+    "reused_baseline_answers": 24,
+    "total_unique_answers": 7064,
+    "comparison_groups": 704,
+    "columns_per_group": 11,
+    "maximum_workers": 2,
+    "shards_per_model": 2,
+    "authorized": true,
+    "requires_completed_preflight": true
+  },
+  "preflight": {
+    "answers_per_worker": 23,
+    "workers": 6,
+    "total_answers": 138,
+    "maximum_generated_tokens": 17664,
+    "baseline": 8,
+    "replay_one": 3,
+    "zero": 3,
+    "restored": 3,
+    "new_dose_smoke": 5,
+    "post_negative_restored": 1,
+    "positions": "Three anchors: first/middle/last point in each worker, with Q01/Q04/Q08 respectively. Each anchor runs +1 replay, zero-hook and no-hook restored. Middle Q04 then runs all five negative doses, followed by an additional no-hook restoration.",
+    "semantic_analysis": false
+  },
+  "source_reuse": "Reuse 3544 unique positive-panel sources after export/file/token/source identity checks. Same old clean prompt calibration and model/runtime/generation metadata; exact baseline/+1 replay and negative-then-no-hook restoration. Never silently regenerate old positive answers.",
+  "scheduler": {
+    "model_order": [
+      "2b",
+      "4b",
+      "9b"
+    ],
+    "gpus": [
+      0,
+      1
+    ],
+    "shards_per_model": 2,
+    "assignment": "zero-index layer modulo 2",
+    "maximum_workers": 2
+  },
+  "analysis": "Exploratory complete raw texts, including failures and non-monotonic changes. No automatic judge, labels, neuron morality claims, or efficacy-dependent retries.",
+  "authorization_scope": "User requested rerun on original models/layers/channels with fully mirrored negative doses, explicitly removing 0.75. Implement, run CPU and bounded GPU acceptance, then collect 3520 formal answers after all checks pass. Keep previous 30-minute reporting preference. No other experiments.",
+  "positive_reference_experiment": "layer-dose-survey-toy-v1-2026-10-27",
+  "positive_reference_freeze_sha256": "0b461d0f11b6631dbb71aba237db7d1f227da00f4b4ad566375bf0c318cd926a",
+  "comparison_doses": [
+    -1.0,
+    -0.5,
+    -0.25,
+    -0.125,
+    -0.0625,
+    0.0,
+    0.0625,
+    0.125,
+    0.25,
+    0.5,
+    1.0
+  ],
+  "dose_symmetry": "Signed c(d)=d*m/norm from identical original clean reference before independent BF16 cast; pairs d and -d share point/prompt/calibration/column norm. Actual activation deltas need not be exact opposites after BF16 addition to nonzero activation, and free-generation contexts diverge."
+}

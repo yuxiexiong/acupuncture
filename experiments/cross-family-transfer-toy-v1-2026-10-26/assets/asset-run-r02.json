@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "snapshot_at_utc": "2026-10-26T06:27:34.386439+00:00",
+  "status": "downloading_or_verifying",
+  "gpu_ready": false,
+  "repo": "meta-llama/Llama-3.1-8B-Instruct",
+  "revision": "0e9e39f249a16976918f6564b8830bc894c89659",
+  "target": "/workspace/models/Llama-3.1-8B-Instruct-0e9e39f2",
+  "host_alias": "gqa-h20",
+  "supervisor": {
+    "pid": 1535841,
+    "expected_script": "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/assets/resume_official_download_r02.py",
+    "process_start_ticks": 1123137235,
+    "parent_pid": 1,
+    "launch": "nohup, stdin /dev/null, stdout/stderr download-r02/runner.log"
+  },
+  "credential_home": "/workspace/hf_ruizhixu",
+  "official_auth_receipt": "official-auth-ruizhixu-success-receipt.json",
+  "status_path": "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/assets/download-r02/progress.json",
+  "completion_receipt": "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/assets/download-r02/receipt.json",
+  "failure_receipt": "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/assets/download-r02/failure-receipt.json",
+  "runner_log": "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/assets/download-r02/runner.log",
+  "progress_snapshot": {
+    "status": "downloading_or_verifying",
+    "at_utc": "2026-10-26T06:27:31.840807+00:00",
+    "pid": 1535841,
+    "bytes": 4696900152,
+    "total_bytes": 16060556376,
+    "workers": [
+      {
+        "file": "model-00001-of-00004.safetensors",
+        "bytes": 1132232704,
+        "total_bytes": 4976698672,
+        "recent_bytes_per_second": 1685605.987056339,
+        "eta_transfer_seconds": 2280.761932219872
+      },
+      {
+        "file": "model-00002-of-00004.safetensors",
+        "bytes": 1217191936,
+        "total_bytes": 4999802720,
+        "recent_bytes_per_second": 2305045.025066594,
+        "eta_transfer_seconds": 1641.013838283145
+      },
+      {
+        "file": "model-00003-of-00004.safetensors",
+        "bytes": 1179336704,
+        "total_bytes": 4915916176,
+        "recent_bytes_per_second": 1960578.4848638447,
+        "eta_transfer_seconds": 1905.855593564515
+      },
+      {
+        "file": "model-00004-of-00004.safetensors",
+        "bytes": 1168138808,
+        "total_bytes": 1168138808,
+        "recent_bytes_per_second": 0.0,
+        "eta_transfer_seconds": 0
+      }
+    ],
+    "hash_verified_weight_shards": 1,
+    "eta_transfer_seconds_slowest_shard": 2280.761932219872,
+    "eta_excludes": "Full-file hash verification and final CPU readiness checks"
+  },
+  "metadata_transport": {
+    "dependency": "Temporary SSH SOCKS proxy for official account/metadata/URL refresh; weight byte transfer is direct official CDN HTTPS",
+    "remote_bind": "127.0.0.1:18765",
+    "local_master_pid": 43408,
+    "local_control_socket": "/private/tmp/acupuncture-llama31-download-r01.sock",
+    "check_command": "ssh -S /private/tmp/acupuncture-llama31-download-r01.sock -O check gqa-h20",
+    "start_if_not_running_command": "ssh -M -S /private/tmp/acupuncture-llama31-download-r01.sock -fN -o BatchMode=yes -o ConnectTimeout=15 -o ExitOnForwardFailure=yes -o ServerAliveInterval=30 -o ServerAliveCountMax=3 -R 127.0.0.1:18765 gqa-h20",
+    "close_after_asset_completion_command": "ssh -S /private/tmp/acupuncture-llama31-download-r01.sock -O exit gqa-h20"
+  },
+  "recovery_policy": [
+    "Verify process identity, progress timestamp and final/failure receipts before acting; do not launch duplicate downloads.",
+    "If metadata proxy is lost, restore its dedicated SSH connection; existing direct-CDN transfers can remain running.",
+    "If the supervisor exits, preserve download-r02 receipts/logs and all partials, then use a separate versioned continuation; do not overwrite history."
+  ],
+  "completion_rule": "All four full official SHA-256 hashes plus small-file official hashes and index coverage must pass; then CPU readiness only, no GPU inference.",
+  "speed_probe_policy": "No more speed experiments; prior failed/slow route evidence retained in download-r01.",
+  "model_loaded": false,
+  "gpu_inference_run": false
+}

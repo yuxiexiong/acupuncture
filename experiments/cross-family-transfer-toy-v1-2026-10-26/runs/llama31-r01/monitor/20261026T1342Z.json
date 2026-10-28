@@ -1,0 +1,196 @@
+{
+  "snapshot": {
+    "utc": "2026-10-26T13:42:53.099851+00:00",
+    "launch-r01/state.json": {
+      "status": "waiting_for_free_gpus",
+      "started_utc": "2026-10-26T09:03:34.364835+00:00",
+      "stage": 2,
+      "blocking_gpu_pids": [
+        "1599626",
+        "1617571",
+        "1625076",
+        "1625263"
+      ],
+      "updated_utc": "2026-10-26T13:42:33.116848+00:00"
+    },
+    "stage1/queue.json": {
+      "status": "completed",
+      "started_utc": "2026-10-26T09:03:57.699111+00:00",
+      "stage": 1,
+      "steps": [
+        {
+          "phase": "collect",
+          "started_utc": "2026-10-26T09:03:57.699466+00:00",
+          "exit_codes": [
+            0,
+            0
+          ],
+          "ended_utc": "2026-10-26T09:04:42.267968+00:00"
+        },
+        {
+          "phase": "mapping",
+          "started_utc": "2026-10-26T09:04:42.283576+00:00",
+          "exit_codes": [
+            0
+          ],
+          "ended_utc": "2026-10-26T09:05:00.045574+00:00"
+        },
+        {
+          "phase": "preflight",
+          "started_utc": "2026-10-26T09:05:00.055575+00:00",
+          "exit_codes": [
+            0,
+            0
+          ],
+          "ended_utc": "2026-10-26T09:05:16.506285+00:00"
+        },
+        {
+          "phase": "toy",
+          "started_utc": "2026-10-26T09:05:16.516459+00:00",
+          "exit_codes": [
+            0,
+            0
+          ],
+          "ended_utc": "2026-10-26T11:06:44.085702+00:00"
+        },
+        {
+          "phase": "benchmark",
+          "started_utc": "2026-10-26T11:06:44.097724+00:00",
+          "exit_codes": [
+            0,
+            0
+          ],
+          "ended_utc": "2026-10-26T13:42:19.093628+00:00"
+        },
+        {
+          "phase": "score",
+          "started_utc": "2026-10-26T13:42:19.103893+00:00",
+          "exit_codes": [
+            0
+          ],
+          "ended_utc": "2026-10-26T13:42:30.271911+00:00"
+        },
+        {
+          "phase": "export",
+          "started_utc": "2026-10-26T13:42:30.281945+00:00",
+          "exit_codes": [
+            0
+          ],
+          "ended_utc": "2026-10-26T13:42:32.358032+00:00"
+        },
+        {
+          "phase": "gate",
+          "started_utc": "2026-10-26T13:42:32.368168+00:00",
+          "exit_codes": [
+            0
+          ],
+          "ended_utc": "2026-10-26T13:42:32.623843+00:00"
+        }
+      ],
+      "ended_utc": "2026-10-26T13:42:32.633824+00:00",
+      "wall_seconds": 16714.934704340994
+    },
+    "stage1/benchmark/shard-0/receipt.json": {
+      "status": "completed",
+      "started_utc": "2026-10-26T11:06:44.187801+00:00",
+      "stage": 1,
+      "completed_pairs": 700,
+      "updated_utc": "2026-10-26T13:42:17.911939+00:00",
+      "ended_utc": "2026-10-26T13:42:18.307067+00:00",
+      "wall_seconds": 9334.119290567935
+    },
+    "stage1/benchmark/finish-r01/receipt.json": {
+      "status": "completed",
+      "started_utc": "2026-10-26T13:42:19.605420+00:00",
+      "steps": [
+        {
+          "name": "humaneval",
+          "started_utc": "2026-10-26T13:42:19.606655+00:00",
+          "exit_code": 0,
+          "ended_utc": "2026-10-26T13:42:27.322251+00:00"
+        },
+        {
+          "name": "official_scoring",
+          "started_utc": "2026-10-26T13:42:27.322833+00:00",
+          "status": "completed",
+          "ended_utc": "2026-10-26T13:42:29.782871+00:00"
+        }
+      ],
+      "ended_utc": "2026-10-26T13:42:30.097866+00:00",
+      "wall_seconds": 10.492472611367702,
+      "stage": 1
+    },
+    "stage1/export-r01/receipt.json": {
+      "status": "completed",
+      "stage": 1,
+      "ended_utc": "2026-10-26T13:42:32.214803+00:00"
+    },
+    "stage1/gate.json": {
+      "decision": "PASS",
+      "stage": 1,
+      "qualifying_tasks": [
+        "mmlu",
+        "arc_challenge",
+        "gsm8k",
+        "humaneval"
+      ],
+      "metrics": {
+        "mmlu": {
+          "damage_pp": 40.11743872007052,
+          "lower_pp": 35.196563665902616,
+          "upper_pp": 44.772125094695205,
+          "nominal_level": 0.9875,
+          "discordant_pairs": 569
+        },
+        "arc_challenge": {
+          "damage_pp": 24,
+          "lower_pp": 14.000000000000002,
+          "upper_pp": 34.5,
+          "nominal_level": 0.9875,
+          "discordant_pairs": 78
+        },
+        "gsm8k": {
+          "damage_pp": 67,
+          "lower_pp": 55.00000000000001,
+          "upper_pp": 78,
+          "nominal_level": 0.9875,
+          "discordant_pairs": 67
+        },
+        "humaneval": {
+          "damage_pp": 63,
+          "lower_pp": 51,
+          "upper_pp": 75,
+          "nominal_level": 0.9875,
+          "discordant_pairs": 63
+        }
+      },
+      "primary_arm": "true_D_match",
+      "threshold_pp": 5,
+      "bootstrap_repeats": 10000,
+      "multiplicity": "Bonferroni 4 x nominal 98.75% paired percentile intervals; approximate coverage",
+      "scope": "Operational gate for this fixed recipe and panel, not proof of a shared mechanism or global impossibility",
+      "bundle_sha256": "b9672f7ba2f8d5341ff7b64b57e906e8188155262dc0c221d3507560b694e5d7",
+      "freeze_sha256": "53aa00e02c10216309af74ae0a330ec62f59e6b22da7fd6b66360a93fb3afa03",
+      "evidence_sha256": {
+        "stage1/benchmark/finish-r01/scores.jsonl": "ade466ca59626540c72c012c447b17a5b17bafcdd89d271ff1323be2a55461dc",
+        "stage1/benchmark/finish-r01/summary.json": "c9cb35df23881fd499fed920ce4a2f7e39344c551220d0beb7e5e778ac098da9",
+        "stage1/benchmark/finish-r01/receipt.json": "8f9849852f4687cf50b09bb6d9ca19cf2392e60a7f4ec0d3f362c385c26c5561",
+        "mapping/quality.json": "81bacdfa1ad1159f07dd05b9233ddf9c27f318b75799692038947d6392c1ec2b"
+      }
+    },
+    "stage2/queue.json": null
+  },
+  "eta": {
+    "observed_utc": "2026-10-26T13:42:53.099851+00:00",
+    "stage1_status": "completed",
+    "stage1_ended_utc": "2026-10-26T13:42:32.633824+00:00",
+    "stage1_actual_wall_seconds": 16714.934704340994,
+    "stage2_status": "waiting_for_free_gpus",
+    "stage2_comparable_speed_scenario_seconds": 15907.8082227,
+    "stage2_scenario_basis": "0.9 x observed stage1 toy time (9 rather than 10 conditions), plus observed full benchmark and scoring duration. Sparse conditions may differ in generation length, task speed, and resource contention; not a guarantee.",
+    "stage2_wait_seconds": null,
+    "stage2_completion_utc": null,
+    "scope": "Damage control only; PASS does not demonstrate replication of specific source 4B behavior.",
+    "no_execution_changes": true
+  }
+}

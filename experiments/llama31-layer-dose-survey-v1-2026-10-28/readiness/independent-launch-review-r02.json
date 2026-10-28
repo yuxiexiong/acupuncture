@@ -1,0 +1,54 @@
+{
+  "status": "passed_minimal_prelaunch_path_fix_review",
+  "reviewer": "llama_comparability_audit",
+  "checked_utc": "2026-10-27T16:15:10.559352+00:00",
+  "scope": "Read-only independent review of the pre-dispatch path repair and actual local predecessor gate. No model load or GPU inference performed; no GPU-preflight success claim.",
+  "prior_review": {
+    "path": "readiness/independent-launch-review-r01.json",
+    "sha256": "b058131614c511105e57271674fbadf5b28502a0699c54d9c2c21b2c1e242f65",
+    "preserved": true
+  },
+  "preserved_initial_attempt": {
+    "directory": "versions/prelaunch-r01",
+    "old_freeze_sha256": "41f27e01643a3db8408651111c84968cfa0a348caba41014908ad9bc6510fe8f",
+    "archived_frozen_files": 19,
+    "all_archived_hashes_match_original": true,
+    "authorization_sha256": "a2a955fe8898881a3f18828b168ed87e5508a0e1e862245fbd17e0182c8a781e",
+    "failure_receipt_sha256": "974ef026a071846b96f000f46aa4c2fbd827a5cd7d1a9ca33b2234b86d0fa063",
+    "recorded_failure_stage": "before_gpu_load",
+    "evidence_limit": "Failure stage is recorded in preserved failure.json and consistent with check_predecessor executing before output creation/worker spawn; this reviewer did not witness the failed remote process."
+  },
+  "correction": {
+    "changed_files": [
+      "experiments/llama31-layer-dose-survey-v1-2026-10-28/contract.json",
+      "experiments/llama31-layer-dose-survey-v1-2026-10-28/survey.py"
+    ],
+    "contract_change": "predecessor path now experiments/layer-negative-dose-survey-toy-v1-2026-10-27/survey-r01, relative to repository root",
+    "runner_change": "load_design asserts the exact frozen predecessor path and actual controller.json existence before dispatch",
+    "all_other_original_frozen_files_unchanged": true,
+    "scientific_contract_except_path_identical": true,
+    "points_questions_doses_generation_unchanged": true
+  },
+  "new_freeze": {
+    "sha256": "70f313c5e643bc4006782159c9a325de98527399be8d11610deddcb68ff1385f",
+    "files": 19,
+    "all_current_file_hashes_match": true
+  },
+  "actual_local_check": {
+    "function": "launch_survey.check_predecessor",
+    "mocked": false,
+    "status": "passed",
+    "predecessor_path": "/Users/ruizhixu/Documents/ChatGPT/acupuncture/experiments/layer-negative-dose-survey-toy-v1-2026-10-27/survey-r01",
+    "controller_sha256": "60530a106ec55fb2588ff442b328eb705ba18db9b62f6a3a67ae26f75fac0da7",
+    "controller_status": "completed",
+    "workers": 6,
+    "all_exit_codes_zero": true,
+    "receipt_hook_and_weight_restore_checks_passed": true
+  },
+  "unresolved_findings": [],
+  "remaining_gates": [
+    "New authorization must bind the new freeze and controller identity.",
+    "Remote CPU validation and new preflight-r02 must pass before formal authorization.",
+    "Keep prelaunch-r01 and old authorization/failure evidence intact."
+  ]
+}

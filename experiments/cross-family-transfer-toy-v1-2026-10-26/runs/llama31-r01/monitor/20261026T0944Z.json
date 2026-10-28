@@ -1,0 +1,1567 @@
+{
+  "checked_at_utc": "2026-10-26T09:44:25.792452+00:00",
+  "freeze_sha256": "53aa00e02c10216309af74ae0a330ec62f59e6b22da7fd6b66360a93fb3afa03",
+  "frozen_files_checked": 216,
+  "hash_mismatches": [],
+  "gpus": "0, 35 %, 16241 MiB\n1, 34 %, 16241 MiB\n",
+  "processes": [
+    {
+      "pid": 1578983,
+      "alive": true,
+      "start_ticks": "1124088875",
+      "command": "/workspace/acupuncture/.venv-bench/bin/python -u /workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/launch-r01/queue.py "
+    },
+    {
+      "pid": 1578985,
+      "alive": true,
+      "start_ticks": "1124088880",
+      "command": "/workspace/acupuncture/.venv-bench/bin/python -u /workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/pipeline.py --stage 1 --run /workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01 --source /data/models/Qwen3.5-4B-851bf6e --target /workspace/models/Llama-3.1-8B-Instruct-0e9e39f2 --execute "
+    },
+    {
+      "pid": 1579923,
+      "alive": true,
+      "start_ticks": "1124099094",
+      "command": "/workspace/acupuncture/.venv-bench/bin/python -u /workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/toy.py run --stage 1 --model /workspace/models/Llama-3.1-8B-Instruct-0e9e39f2 --conditions /workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/mapping/bundle.pt --output /workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/stage1/toy --freeze /workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/freeze.json --shard-index 0 "
+    },
+    {
+      "pid": 1579924,
+      "alive": true,
+      "start_ticks": "1124099094",
+      "command": "/workspace/acupuncture/.venv-bench/bin/python -u /workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/toy.py run --stage 1 --model /workspace/models/Llama-3.1-8B-Instruct-0e9e39f2 --conditions /workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/mapping/bundle.pt --output /workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/stage1/toy --freeze /workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/freeze.json --shard-index 1 "
+    }
+  ],
+  "receipts": {
+    "launch-r01/state.json": {
+      "status": "running",
+      "pid": 1578983,
+      "started_utc": "2026-10-26T09:03:34.364835+00:00",
+      "authorization_sha256": "97f8760bf42ece2ca760cc00c46bf28b6d89f14d34a53e0ba81589d52957e2b7",
+      "stages": [
+        {
+          "stage": 1,
+          "pid": 1578985,
+          "started_utc": "2026-10-26T09:03:34.383728+00:00",
+          "command": [
+            "/workspace/acupuncture/.venv-bench/bin/python",
+            "-u",
+            "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/pipeline.py",
+            "--stage",
+            "1",
+            "--run",
+            "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01",
+            "--source",
+            "/data/models/Qwen3.5-4B-851bf6e",
+            "--target",
+            "/workspace/models/Llama-3.1-8B-Instruct-0e9e39f2",
+            "--execute"
+          ]
+        }
+      ],
+      "stage": 1,
+      "blocking_gpu_pids": [],
+      "updated_utc": "2026-10-26T09:03:34.383736+00:00"
+    },
+    "stage1/queue.json": {
+      "status": "running",
+      "started_utc": "2026-10-26T09:03:57.699111+00:00",
+      "pid": 1578985,
+      "stage": 1,
+      "steps": [
+        {
+          "phase": "collect",
+          "started_utc": "2026-10-26T09:03:57.699466+00:00",
+          "workers": [
+            {
+              "pid": 1579043,
+              "gpu": 0,
+              "command": [
+                "/workspace/acupuncture/.venv-bench/bin/python",
+                "-u",
+                "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/collect.py",
+                "--model",
+                "/data/models/Qwen3.5-4B-851bf6e",
+                "--source-tokenizer",
+                "/data/models/Qwen3.5-4B-851bf6e",
+                "--target-tokenizer",
+                "/workspace/models/Llama-3.1-8B-Instruct-0e9e39f2",
+                "--role",
+                "source",
+                "--data",
+                "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/data",
+                "--output",
+                "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/collection-source"
+              ]
+            },
+            {
+              "pid": 1579044,
+              "gpu": 1,
+              "command": [
+                "/workspace/acupuncture/.venv-bench/bin/python",
+                "-u",
+                "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/collect.py",
+                "--model",
+                "/workspace/models/Llama-3.1-8B-Instruct-0e9e39f2",
+                "--source-tokenizer",
+                "/data/models/Qwen3.5-4B-851bf6e",
+                "--target-tokenizer",
+                "/workspace/models/Llama-3.1-8B-Instruct-0e9e39f2",
+                "--role",
+                "target",
+                "--data",
+                "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/data",
+                "--output",
+                "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/collection-target"
+              ]
+            }
+          ],
+          "exit_codes": [
+            0,
+            0
+          ],
+          "ended_utc": "2026-10-26T09:04:42.267968+00:00"
+        },
+        {
+          "phase": "mapping",
+          "started_utc": "2026-10-26T09:04:42.283576+00:00",
+          "workers": [
+            {
+              "pid": 1579413,
+              "gpu": null,
+              "command": [
+                "/workspace/acupuncture/.venv-bench/bin/python",
+                "-u",
+                "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/mapping.py",
+                "--source",
+                "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/collection-source",
+                "--target",
+                "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/collection-target",
+                "--output",
+                "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/mapping",
+                "--device",
+                "cpu",
+                "--freeze",
+                "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/freeze.json"
+              ]
+            }
+          ],
+          "exit_codes": [
+            0
+          ],
+          "ended_utc": "2026-10-26T09:05:00.045574+00:00"
+        },
+        {
+          "phase": "preflight",
+          "started_utc": "2026-10-26T09:05:00.055575+00:00",
+          "workers": [
+            {
+              "pid": 1579462,
+              "gpu": 0,
+              "command": [
+                "/workspace/acupuncture/.venv-bench/bin/python",
+                "-u",
+                "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/preflight.py",
+                "--run",
+                "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01",
+                "--stage",
+                "1",
+                "--model",
+                "/workspace/models/Llama-3.1-8B-Instruct-0e9e39f2",
+                "--conditions",
+                "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/mapping/bundle.pt",
+                "--freeze",
+                "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/freeze.json",
+                "--output",
+                "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/stage1/preflight-0"
+              ]
+            },
+            {
+              "pid": 1579463,
+              "gpu": 1,
+              "command": [
+                "/workspace/acupuncture/.venv-bench/bin/python",
+                "-u",
+                "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/preflight.py",
+                "--run",
+                "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01",
+                "--stage",
+                "1",
+                "--model",
+                "/workspace/models/Llama-3.1-8B-Instruct-0e9e39f2",
+                "--conditions",
+                "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/mapping/bundle.pt",
+                "--freeze",
+                "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/freeze.json",
+                "--output",
+                "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/stage1/preflight-1"
+              ]
+            }
+          ],
+          "exit_codes": [
+            0,
+            0
+          ],
+          "ended_utc": "2026-10-26T09:05:16.506285+00:00"
+        },
+        {
+          "phase": "toy",
+          "started_utc": "2026-10-26T09:05:16.516459+00:00",
+          "workers": [
+            {
+              "pid": 1579923,
+              "gpu": 0,
+              "command": [
+                "/workspace/acupuncture/.venv-bench/bin/python",
+                "-u",
+                "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/toy.py",
+                "run",
+                "--stage",
+                "1",
+                "--model",
+                "/workspace/models/Llama-3.1-8B-Instruct-0e9e39f2",
+                "--conditions",
+                "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/mapping/bundle.pt",
+                "--output",
+                "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/stage1/toy",
+                "--freeze",
+                "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/freeze.json",
+                "--shard-index",
+                "0"
+              ]
+            },
+            {
+              "pid": 1579924,
+              "gpu": 1,
+              "command": [
+                "/workspace/acupuncture/.venv-bench/bin/python",
+                "-u",
+                "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/toy.py",
+                "run",
+                "--stage",
+                "1",
+                "--model",
+                "/workspace/models/Llama-3.1-8B-Instruct-0e9e39f2",
+                "--conditions",
+                "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/mapping/bundle.pt",
+                "--output",
+                "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/stage1/toy",
+                "--freeze",
+                "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/freeze.json",
+                "--shard-index",
+                "1"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "stage2/queue.json": null,
+    "collection-source/receipt.json": {
+      "status": "completed",
+      "started_utc": "2026-10-26T09:03:58.809444+00:00",
+      "arguments": {
+        "model": "/data/models/Qwen3.5-4B-851bf6e",
+        "source_tokenizer": "/data/models/Qwen3.5-4B-851bf6e",
+        "target_tokenizer": "/workspace/models/Llama-3.1-8B-Instruct-0e9e39f2",
+        "data": "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/data",
+        "output": "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/collection-source",
+        "role": "source",
+        "device": "cuda:0"
+      },
+      "completed_documents": 320,
+      "files": {
+        "columns.pt": "f148562dbfd0bb490c67e78d64b247917642dfe5890224e2f019e435f5af43f9",
+        "natural_rms.pt": "f1b62f19c7b7dabcc2816621ec966759a280f0fb78ecca15042edf7a7fe9a411",
+        "index.json": "d841db0fb106801046d3738cc7667988a9e29001fbd6d519f765024df54744be"
+      },
+      "alignment_version": "common-plain-character-boundaries-v1",
+      "source_sha256": {
+        "engine.py": "b4720e3b9497db53be74cec5d20a88ae452a2116f53a8e4eae928b4c05ff4675",
+        "collect.py": "56a1a8ac513fc4b959ca4558c58724a43563b7125e6ae7f009cabd0f7b32767a"
+      },
+      "inherited_source_sha256": {
+        "transfer_engine.py": "d479408c46731a1dfb0d49eb899a7448602eb6ab3885a16caf0f689bcbd7d1be",
+        "collect_activations.py": "9f0552547923722ae979f33d7f9d3522864b6820c2462e72e9df9665cbc5bbdf",
+        "../capability-damage-v2-2026-10-26/model_engine.py": "cf331f5c723f859ed886a1f386dc85ddbefe414ea5ecd6cff5764e0fff3c182c"
+      },
+      "tokenizers": {
+        "source": {
+          "path": "/data/models/Qwen3.5-4B-851bf6e",
+          "files": {
+            "config.json": "ddc63e1c717afa86c865bb5e01313d89d72bb53b97ad4a8a03ba8510c0621670",
+            "tokenizer.json": "5f9e4d4901a92b997e463c1f46055088b6cca5ca61a6522d1b9f64c4bb81cb42",
+            "tokenizer_config.json": "316230d6a809701f4db5ea8f8fc862bc3a6f3229c937c174e674ff3ca0a64ac8"
+          }
+        },
+        "target": {
+          "path": "/workspace/models/Llama-3.1-8B-Instruct-0e9e39f2",
+          "files": {
+            "config.json": "29e4c210b0d6ac178b16b2a255a568bdb23b581e50ca1ef6a6d071dd85704e6e",
+            "tokenizer.json": "79e3e522635f3171300913bb421464a87de6222182a0570b9b2ccba2a964b2b4",
+            "tokenizer_config.json": "177c7b61e616fecb84c17ce0591acb92c6c4d60e9ac5ababfb940ff23bbcd424",
+            "special_tokens_map.json": "6f38c73729248f6c127296386e3cdde96e254636cc58b4169d3fd32328d9a8ec",
+            "generation_config.json": "189fb0c0d7fd8a527db217c0a60a0e013f0394cd8800f9697a666a9e75e5f7fd"
+          }
+        }
+      },
+      "engine": {
+        "model_class": "Qwen3_5ForConditionalGeneration",
+        "model_path": "/data/models/Qwen3.5-4B-851bf6e",
+        "versions": {
+          "torch": "2.6.0+cu124",
+          "transformers": "5.20.2",
+          "cuda_runtime": "12.4",
+          "cudnn": 90100
+        },
+        "device": "cuda:0",
+        "dtype": "bfloat16",
+        "softmax_dtype": "float32",
+        "attention_backend": "eager",
+        "batch_size": 1,
+        "hidden_size": 2560,
+        "intermediate_size": 9216,
+        "layers": [
+          13,
+          14
+        ],
+        "target_weight_sha256_before": {
+          "13": "57a1c0dbde6631d2715f59b5f37152f58c37ec16daab2077eb001f69fa614de9",
+          "14": "0169cf062636bb6ce00cb4d367cab66a24bf2adcb107d2c4f65435a693f9ecf2"
+        },
+        "effective_stop_tokens": {
+          "248044": "<|endoftext|>",
+          "248046": "<|im_end|>"
+        },
+        "pad_token_id": 248044,
+        "max_context_tokens": 262144,
+        "chat_template_applied": false,
+        "single_immutable_model": true,
+        "fresh_cache_each_call": true,
+        "numerical_settings": {
+          "deterministic_algorithms": true,
+          "float32_matmul_precision": "highest",
+          "matmul_allow_tf32": false,
+          "matmul_allow_bf16_reduced_precision_reduction": true,
+          "cublas_workspace_config": ":4096:8"
+        }
+      },
+      "data_sha256": {
+        "map_train": "69002ea9f7b10010acb3a14460424d4b85874bbcfc3e45837d3e10832de39ee8",
+        "map_val": "1d67f0c3db0c8755ea3019c090dcf74baa0a326f4cb83c138dba23f12efd1331"
+      },
+      "current_split": "map_val",
+      "last_document_id": "M080-en-dialogue",
+      "elapsed_seconds": 42.61206158623099,
+      "target_weight_sha256_after": {
+        "13": "57a1c0dbde6631d2715f59b5f37152f58c37ec16daab2077eb001f69fa614de9",
+        "14": "0169cf062636bb6ce00cb4d367cab66a24bf2adcb107d2c4f65435a693f9ecf2"
+      },
+      "hooks_removed": true,
+      "ended_utc": "2026-10-26T09:04:41.421798+00:00"
+    },
+    "collection-target/receipt.json": {
+      "status": "completed",
+      "started_utc": "2026-10-26T09:03:58.765970+00:00",
+      "arguments": {
+        "model": "/workspace/models/Llama-3.1-8B-Instruct-0e9e39f2",
+        "source_tokenizer": "/data/models/Qwen3.5-4B-851bf6e",
+        "target_tokenizer": "/workspace/models/Llama-3.1-8B-Instruct-0e9e39f2",
+        "data": "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/data",
+        "output": "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/collection-target",
+        "role": "target",
+        "device": "cuda:0"
+      },
+      "completed_documents": 448,
+      "files": {
+        "columns.pt": "56e43899634107f495972817c74441aeaf0741e6c36c6ea634ce55bcb21fdb8b",
+        "natural_rms.pt": "413dbccce8b61d7cd9cae0e53db8d0dac3a2160cc1b4d88a4eae7a64216409c4",
+        "index.json": "8c67ffd63c600887e54eacb4c8829dc90334e8f7f17a9d219566136c88fcbfe3"
+      },
+      "alignment_version": "common-plain-character-boundaries-v1",
+      "source_sha256": {
+        "engine.py": "b4720e3b9497db53be74cec5d20a88ae452a2116f53a8e4eae928b4c05ff4675",
+        "collect.py": "56a1a8ac513fc4b959ca4558c58724a43563b7125e6ae7f009cabd0f7b32767a"
+      },
+      "inherited_source_sha256": {
+        "transfer_engine.py": "d479408c46731a1dfb0d49eb899a7448602eb6ab3885a16caf0f689bcbd7d1be",
+        "collect_activations.py": "9f0552547923722ae979f33d7f9d3522864b6820c2462e72e9df9665cbc5bbdf",
+        "../capability-damage-v2-2026-10-26/model_engine.py": "cf331f5c723f859ed886a1f386dc85ddbefe414ea5ecd6cff5764e0fff3c182c"
+      },
+      "tokenizers": {
+        "source": {
+          "path": "/data/models/Qwen3.5-4B-851bf6e",
+          "files": {
+            "config.json": "ddc63e1c717afa86c865bb5e01313d89d72bb53b97ad4a8a03ba8510c0621670",
+            "tokenizer.json": "5f9e4d4901a92b997e463c1f46055088b6cca5ca61a6522d1b9f64c4bb81cb42",
+            "tokenizer_config.json": "316230d6a809701f4db5ea8f8fc862bc3a6f3229c937c174e674ff3ca0a64ac8"
+          }
+        },
+        "target": {
+          "path": "/workspace/models/Llama-3.1-8B-Instruct-0e9e39f2",
+          "files": {
+            "config.json": "29e4c210b0d6ac178b16b2a255a568bdb23b581e50ca1ef6a6d071dd85704e6e",
+            "tokenizer.json": "79e3e522635f3171300913bb421464a87de6222182a0570b9b2ccba2a964b2b4",
+            "tokenizer_config.json": "177c7b61e616fecb84c17ce0591acb92c6c4d60e9ac5ababfb940ff23bbcd424",
+            "special_tokens_map.json": "6f38c73729248f6c127296386e3cdde96e254636cc58b4169d3fd32328d9a8ec",
+            "generation_config.json": "189fb0c0d7fd8a527db217c0a60a0e013f0394cd8800f9697a666a9e75e5f7fd"
+          }
+        }
+      },
+      "engine": {
+        "model_class": "LlamaForCausalLM",
+        "model_path": "/workspace/models/Llama-3.1-8B-Instruct-0e9e39f2",
+        "versions": {
+          "torch": "2.6.0+cu124",
+          "transformers": "5.20.2",
+          "cuda_runtime": "12.4",
+          "cudnn": 90100
+        },
+        "device": "cuda:0",
+        "dtype": "bfloat16",
+        "softmax_dtype": "float32",
+        "attention_backend": "eager",
+        "batch_size": 1,
+        "hidden_size": 4096,
+        "intermediate_size": 14336,
+        "layers": [
+          13,
+          14
+        ],
+        "target_weight_sha256_before": {
+          "13": "f286b50116c6e2dae0558a07b7e35b9550bfe4cf6ff8fadc5033f9e3fb1fb662",
+          "14": "567478d6103cdba24961d22573bfa6970e23b7b2011b0b7c05574f26df2ee6d8"
+        },
+        "effective_stop_tokens": {
+          "128001": "<|end_of_text|>",
+          "128008": "<|eom_id|>",
+          "128009": "<|eot_id|>"
+        },
+        "bos_token_id": 128000,
+        "pad_token_id": 128009,
+        "max_context_tokens": 131072,
+        "chat_template_applied": false,
+        "tokenization": "Raw benchmark: one explicit BOS, no EOS; native template BOS is not duplicated",
+        "chat_template_date_string": "26 Oct 2026",
+        "single_immutable_model": true,
+        "fresh_cache_each_call": true,
+        "numerical_settings": {
+          "deterministic_algorithms": true,
+          "float32_matmul_precision": "highest",
+          "matmul_allow_tf32": false,
+          "matmul_allow_bf16_reduced_precision_reduction": true,
+          "cublas_workspace_config": ":4096:8"
+        }
+      },
+      "data_sha256": {
+        "map_train": "69002ea9f7b10010acb3a14460424d4b85874bbcfc3e45837d3e10832de39ee8",
+        "map_val": "1d67f0c3db0c8755ea3019c090dcf74baa0a326f4cb83c138dba23f12efd1331",
+        "contrast": "e142502a186bcd78a1d0edf99f9e704c042f5cb0a418708d4d91215a75a1f95d"
+      },
+      "current_split": "contrast",
+      "last_document_id": "C32-harmful-hostile",
+      "elapsed_seconds": 36.92337095364928,
+      "target_weight_sha256_after": {
+        "13": "f286b50116c6e2dae0558a07b7e35b9550bfe4cf6ff8fadc5033f9e3fb1fb662",
+        "14": "567478d6103cdba24961d22573bfa6970e23b7b2011b0b7c05574f26df2ee6d8"
+      },
+      "hooks_removed": true,
+      "ended_utc": "2026-10-26T09:04:35.689643+00:00"
+    },
+    "mapping/quality.json": {
+      "status": "PASS",
+      "failed_layers": [],
+      "criterion": "Each layer's clean validation relative MSE < 1 (training-mean predictor)",
+      "mapping_wrapper_sha256": "714c49b0ec6b8b7eb46866844d55ee2c11abcdd0a414fa59ad7689836a4cf0ed",
+      "freeze_sha256": "53aa00e02c10216309af74ae0a330ec62f59e6b22da7fd6b66360a93fb3afa03",
+      "conditions_sha256": "5397f0a4b257b9c792b6be1b9c6f89bd54e6e3a3f79096cdeb74ea6a9a0945b7",
+      "bundle_sha256": "b9672f7ba2f8d5341ff7b64b57e906e8188155262dc0c221d3507560b694e5d7"
+    },
+    "stage1/preflight-0/receipt.json": {
+      "status": "completed",
+      "started_utc": "2026-10-26T09:05:00.096925+00:00",
+      "stage": 1,
+      "freeze_sha256": "53aa00e02c10216309af74ae0a330ec62f59e6b22da7fd6b66360a93fb3afa03",
+      "conditions_sha256": "b9672f7ba2f8d5341ff7b64b57e906e8188155262dc0c221d3507560b694e5d7",
+      "engine": {
+        "model_class": "LlamaForCausalLM",
+        "model_path": "/workspace/models/Llama-3.1-8B-Instruct-0e9e39f2",
+        "versions": {
+          "torch": "2.6.0+cu124",
+          "transformers": "5.20.2",
+          "cuda_runtime": "12.4",
+          "cudnn": 90100
+        },
+        "device": "cuda:0",
+        "dtype": "bfloat16",
+        "softmax_dtype": "float32",
+        "attention_backend": "eager",
+        "batch_size": 1,
+        "hidden_size": 4096,
+        "intermediate_size": 14336,
+        "layers": [
+          13,
+          14
+        ],
+        "target_weight_sha256_before": {
+          "13": "f286b50116c6e2dae0558a07b7e35b9550bfe4cf6ff8fadc5033f9e3fb1fb662",
+          "14": "567478d6103cdba24961d22573bfa6970e23b7b2011b0b7c05574f26df2ee6d8"
+        },
+        "effective_stop_tokens": {
+          "128001": "<|end_of_text|>",
+          "128008": "<|eom_id|>",
+          "128009": "<|eot_id|>"
+        },
+        "bos_token_id": 128000,
+        "pad_token_id": 128009,
+        "max_context_tokens": 131072,
+        "chat_template_applied": false,
+        "tokenization": "Raw benchmark: one explicit BOS, no EOS; native template BOS is not duplicated",
+        "chat_template_date_string": "26 Oct 2026",
+        "single_immutable_model": true,
+        "fresh_cache_each_call": true,
+        "numerical_settings": {
+          "deterministic_algorithms": true,
+          "float32_matmul_precision": "highest",
+          "matmul_allow_tf32": false,
+          "matmul_allow_bf16_reduced_precision_reduction": true,
+          "cublas_workspace_config": ":4096:8"
+        }
+      },
+      "checks": {
+        "scores": {
+          "T_0": {
+            "loglikelihood": -15.849815368652344,
+            "is_greedy": false,
+            "continuation_token_ids": [
+              44956,
+              36399,
+              6603,
+              7293,
+              13
+            ],
+            "token_logprobs": [
+              -6.730941295623779,
+              -2.577751636505127,
+              -1.3838156461715698,
+              -3.1873459815979004,
+              -1.9699616432189941
+            ],
+            "context_token_count": 17,
+            "input_token_sha256": "d633101aa2d73a1712a9a3278933171573702af69db8572f0298e50d8b9ab4d9"
+          },
+          "zero_channel": {
+            "loglikelihood": -15.849815368652344,
+            "is_greedy": false,
+            "continuation_token_ids": [
+              44956,
+              36399,
+              6603,
+              7293,
+              13
+            ],
+            "token_logprobs": [
+              -6.730941295623779,
+              -2.577751636505127,
+              -1.3838156461715698,
+              -3.1873459815979004,
+              -1.9699616432189941
+            ],
+            "context_token_count": 17,
+            "input_token_sha256": "d633101aa2d73a1712a9a3278933171573702af69db8572f0298e50d8b9ab4d9"
+          },
+          "zero_vector": {
+            "loglikelihood": -15.849815368652344,
+            "is_greedy": false,
+            "continuation_token_ids": [
+              44956,
+              36399,
+              6603,
+              7293,
+              13
+            ],
+            "token_logprobs": [
+              -6.730941295623779,
+              -2.577751636505127,
+              -1.3838156461715698,
+              -3.1873459815979004,
+              -1.9699616432189941
+            ],
+            "context_token_count": 17,
+            "input_token_sha256": "d633101aa2d73a1712a9a3278933171573702af69db8572f0298e50d8b9ab4d9"
+          },
+          "true_D_match": {
+            "loglikelihood": -32.28684616088867,
+            "is_greedy": false,
+            "continuation_token_ids": [
+              44956,
+              36399,
+              6603,
+              7293,
+              13
+            ],
+            "token_logprobs": [
+              -10.507392883300781,
+              -0.9889822006225586,
+              -8.54764175415039,
+              -11.11086654663086,
+              -1.1319619417190552
+            ],
+            "context_token_count": 17,
+            "input_token_sha256": "d633101aa2d73a1712a9a3278933171573702af69db8572f0298e50d8b9ab4d9"
+          },
+          "restored": {
+            "loglikelihood": -15.849815368652344,
+            "is_greedy": false,
+            "continuation_token_ids": [
+              44956,
+              36399,
+              6603,
+              7293,
+              13
+            ],
+            "token_logprobs": [
+              -6.730941295623779,
+              -2.577751636505127,
+              -1.3838156461715698,
+              -3.1873459815979004,
+              -1.9699616432189941
+            ],
+            "context_token_count": 17,
+            "input_token_sha256": "d633101aa2d73a1712a9a3278933171573702af69db8572f0298e50d8b9ab4d9"
+          }
+        },
+        "tokens": {
+          "T_0": [
+            220,
+            868,
+            198,
+            567,
+            15166,
+            220,
+            16,
+            25,
+            21157,
+            279,
+            2860,
+            1396,
+            315,
+            6603,
+            389,
+            682
+          ],
+          "zero_channel": [
+            220,
+            868,
+            198,
+            567,
+            15166,
+            220,
+            16,
+            25,
+            21157,
+            279,
+            2860,
+            1396,
+            315,
+            6603,
+            389,
+            682
+          ],
+          "zero_vector": [
+            220,
+            868,
+            198,
+            567,
+            15166,
+            220,
+            16,
+            25,
+            21157,
+            279,
+            2860,
+            1396,
+            315,
+            6603,
+            389,
+            682
+          ],
+          "true_D_match": [
+            3639,
+            374,
+            279,
+            5224,
+            315,
+            279,
+            7754,
+            11,
+            279,
+            7754,
+            11,
+            323,
+            279,
+            7754,
+            11,
+            279
+          ],
+          "restored": [
+            220,
+            868,
+            198,
+            567,
+            15166,
+            220,
+            16,
+            25,
+            21157,
+            279,
+            2860,
+            1396,
+            315,
+            6603,
+            389,
+            682
+          ]
+        },
+        "calibration": [
+          {
+            "context_sha256": "188858946bda30da0fb70ab072dc86d51b586b1979d5d45fa85d154b7ffaa6a3",
+            "input_token_sha256": "e0de5a2d087b85c1394fc4f343d58746c055b3bbd4305df25dc0a41662f262b7",
+            "input_token_count": 17,
+            "residual_scales": {
+              "13": 8.296201705932617,
+              "14": 8.693035125732422
+            },
+            "activation_offsets": {}
+          }
+        ],
+        "full_suffix_error_nats": {
+          "T_0": 0.0,
+          "true_D_match": 0.0
+        },
+        "zero_and_restoration_exact": true,
+        "real_arm": "true_D_match",
+        "real_arm_changed_logits": true
+      },
+      "target_weight_sha256_after": {
+        "13": "f286b50116c6e2dae0558a07b7e35b9550bfe4cf6ff8fadc5033f9e3fb1fb662",
+        "14": "567478d6103cdba24961d22573bfa6970e23b7b2011b0b7c05574f26df2ee6d8"
+      },
+      "hooks_removed": true,
+      "ended_utc": "2026-10-26T09:05:15.730260+00:00",
+      "wall_seconds": 15.633359368890524
+    },
+    "stage1/preflight-1/receipt.json": {
+      "status": "completed",
+      "started_utc": "2026-10-26T09:05:00.096879+00:00",
+      "stage": 1,
+      "freeze_sha256": "53aa00e02c10216309af74ae0a330ec62f59e6b22da7fd6b66360a93fb3afa03",
+      "conditions_sha256": "b9672f7ba2f8d5341ff7b64b57e906e8188155262dc0c221d3507560b694e5d7",
+      "engine": {
+        "model_class": "LlamaForCausalLM",
+        "model_path": "/workspace/models/Llama-3.1-8B-Instruct-0e9e39f2",
+        "versions": {
+          "torch": "2.6.0+cu124",
+          "transformers": "5.20.2",
+          "cuda_runtime": "12.4",
+          "cudnn": 90100
+        },
+        "device": "cuda:0",
+        "dtype": "bfloat16",
+        "softmax_dtype": "float32",
+        "attention_backend": "eager",
+        "batch_size": 1,
+        "hidden_size": 4096,
+        "intermediate_size": 14336,
+        "layers": [
+          13,
+          14
+        ],
+        "target_weight_sha256_before": {
+          "13": "f286b50116c6e2dae0558a07b7e35b9550bfe4cf6ff8fadc5033f9e3fb1fb662",
+          "14": "567478d6103cdba24961d22573bfa6970e23b7b2011b0b7c05574f26df2ee6d8"
+        },
+        "effective_stop_tokens": {
+          "128001": "<|end_of_text|>",
+          "128008": "<|eom_id|>",
+          "128009": "<|eot_id|>"
+        },
+        "bos_token_id": 128000,
+        "pad_token_id": 128009,
+        "max_context_tokens": 131072,
+        "chat_template_applied": false,
+        "tokenization": "Raw benchmark: one explicit BOS, no EOS; native template BOS is not duplicated",
+        "chat_template_date_string": "26 Oct 2026",
+        "single_immutable_model": true,
+        "fresh_cache_each_call": true,
+        "numerical_settings": {
+          "deterministic_algorithms": true,
+          "float32_matmul_precision": "highest",
+          "matmul_allow_tf32": false,
+          "matmul_allow_bf16_reduced_precision_reduction": true,
+          "cublas_workspace_config": ":4096:8"
+        }
+      },
+      "checks": {
+        "scores": {
+          "T_0": {
+            "loglikelihood": -15.849815368652344,
+            "is_greedy": false,
+            "continuation_token_ids": [
+              44956,
+              36399,
+              6603,
+              7293,
+              13
+            ],
+            "token_logprobs": [
+              -6.730941295623779,
+              -2.577751636505127,
+              -1.3838156461715698,
+              -3.1873459815979004,
+              -1.9699616432189941
+            ],
+            "context_token_count": 17,
+            "input_token_sha256": "d633101aa2d73a1712a9a3278933171573702af69db8572f0298e50d8b9ab4d9"
+          },
+          "zero_channel": {
+            "loglikelihood": -15.849815368652344,
+            "is_greedy": false,
+            "continuation_token_ids": [
+              44956,
+              36399,
+              6603,
+              7293,
+              13
+            ],
+            "token_logprobs": [
+              -6.730941295623779,
+              -2.577751636505127,
+              -1.3838156461715698,
+              -3.1873459815979004,
+              -1.9699616432189941
+            ],
+            "context_token_count": 17,
+            "input_token_sha256": "d633101aa2d73a1712a9a3278933171573702af69db8572f0298e50d8b9ab4d9"
+          },
+          "zero_vector": {
+            "loglikelihood": -15.849815368652344,
+            "is_greedy": false,
+            "continuation_token_ids": [
+              44956,
+              36399,
+              6603,
+              7293,
+              13
+            ],
+            "token_logprobs": [
+              -6.730941295623779,
+              -2.577751636505127,
+              -1.3838156461715698,
+              -3.1873459815979004,
+              -1.9699616432189941
+            ],
+            "context_token_count": 17,
+            "input_token_sha256": "d633101aa2d73a1712a9a3278933171573702af69db8572f0298e50d8b9ab4d9"
+          },
+          "true_D_match": {
+            "loglikelihood": -32.28684616088867,
+            "is_greedy": false,
+            "continuation_token_ids": [
+              44956,
+              36399,
+              6603,
+              7293,
+              13
+            ],
+            "token_logprobs": [
+              -10.507392883300781,
+              -0.9889822006225586,
+              -8.54764175415039,
+              -11.11086654663086,
+              -1.1319619417190552
+            ],
+            "context_token_count": 17,
+            "input_token_sha256": "d633101aa2d73a1712a9a3278933171573702af69db8572f0298e50d8b9ab4d9"
+          },
+          "restored": {
+            "loglikelihood": -15.849815368652344,
+            "is_greedy": false,
+            "continuation_token_ids": [
+              44956,
+              36399,
+              6603,
+              7293,
+              13
+            ],
+            "token_logprobs": [
+              -6.730941295623779,
+              -2.577751636505127,
+              -1.3838156461715698,
+              -3.1873459815979004,
+              -1.9699616432189941
+            ],
+            "context_token_count": 17,
+            "input_token_sha256": "d633101aa2d73a1712a9a3278933171573702af69db8572f0298e50d8b9ab4d9"
+          }
+        },
+        "tokens": {
+          "T_0": [
+            220,
+            868,
+            198,
+            567,
+            15166,
+            220,
+            16,
+            25,
+            21157,
+            279,
+            2860,
+            1396,
+            315,
+            6603,
+            389,
+            682
+          ],
+          "zero_channel": [
+            220,
+            868,
+            198,
+            567,
+            15166,
+            220,
+            16,
+            25,
+            21157,
+            279,
+            2860,
+            1396,
+            315,
+            6603,
+            389,
+            682
+          ],
+          "zero_vector": [
+            220,
+            868,
+            198,
+            567,
+            15166,
+            220,
+            16,
+            25,
+            21157,
+            279,
+            2860,
+            1396,
+            315,
+            6603,
+            389,
+            682
+          ],
+          "true_D_match": [
+            3639,
+            374,
+            279,
+            5224,
+            315,
+            279,
+            7754,
+            11,
+            279,
+            7754,
+            11,
+            323,
+            279,
+            7754,
+            11,
+            279
+          ],
+          "restored": [
+            220,
+            868,
+            198,
+            567,
+            15166,
+            220,
+            16,
+            25,
+            21157,
+            279,
+            2860,
+            1396,
+            315,
+            6603,
+            389,
+            682
+          ]
+        },
+        "calibration": [
+          {
+            "context_sha256": "188858946bda30da0fb70ab072dc86d51b586b1979d5d45fa85d154b7ffaa6a3",
+            "input_token_sha256": "e0de5a2d087b85c1394fc4f343d58746c055b3bbd4305df25dc0a41662f262b7",
+            "input_token_count": 17,
+            "residual_scales": {
+              "13": 8.296201705932617,
+              "14": 8.693035125732422
+            },
+            "activation_offsets": {}
+          }
+        ],
+        "full_suffix_error_nats": {
+          "T_0": 0.0,
+          "true_D_match": 0.0
+        },
+        "zero_and_restoration_exact": true,
+        "real_arm": "true_D_match",
+        "real_arm_changed_logits": true
+      },
+      "target_weight_sha256_after": {
+        "13": "f286b50116c6e2dae0558a07b7e35b9550bfe4cf6ff8fadc5033f9e3fb1fb662",
+        "14": "567478d6103cdba24961d22573bfa6970e23b7b2011b0b7c05574f26df2ee6d8"
+      },
+      "hooks_removed": true,
+      "ended_utc": "2026-10-26T09:05:15.589871+00:00",
+      "wall_seconds": 15.493016101419926
+    },
+    "stage1/toy/shard0/receipt.json": {
+      "status": "running",
+      "stage": 1,
+      "conditions": [
+        "T_0",
+        "true_D_raw",
+        "true_D_match",
+        "random1_D_raw",
+        "random1_D_match",
+        "random2_D_raw",
+        "random2_D_match",
+        "random3_D_raw",
+        "random3_D_match",
+        "T_dense"
+      ],
+      "started_utc": "2026-10-26T09:05:16.559282+00:00",
+      "model": "/workspace/models/Llama-3.1-8B-Instruct-0e9e39f2",
+      "shard_index": 0,
+      "conditions_sha256": "b9672f7ba2f8d5341ff7b64b57e906e8188155262dc0c221d3507560b694e5d7",
+      "freeze_sha256": "53aa00e02c10216309af74ae0a330ec62f59e6b22da7fd6b66360a93fb3afa03",
+      "source_sha256": {
+        "/workspace/acupuncture/experiments/capability-damage-v2-2026-10-26/audit_token_lengths.py": "f984bfbdaf7e9cc6f483f949026032ce0f4f46585fd78928da14e88ee8d321b3",
+        "/workspace/acupuncture/experiments/capability-damage-v2-2026-10-26/finish_run.py": "46c27b66d001135328d214fba5b22e62d7d3b8e42647d64ec8576ee3c9a090dc",
+        "/workspace/acupuncture/experiments/capability-damage-v2-2026-10-26/humaneval_sandbox.py": "34350cd8d98bef4e92fc070c86b01faaf2f249f57b1c0ab52caeded346b80aa5",
+        "/workspace/acupuncture/experiments/capability-damage-v2-2026-10-26/humaneval_worker.py": "589b8f65cb16230a28f4bb374a255060616e3451125902363f71f3af0bd7377b",
+        "/workspace/acupuncture/experiments/capability-damage-v2-2026-10-26/model_engine.py": "cf331f5c723f859ed886a1f386dc85ddbefe414ea5ecd6cff5764e0fff3c182c",
+        "/workspace/acupuncture/experiments/capability-damage-v2-2026-10-26/prepare_tasks.py": "a3c166ffa9843476319f2bc68255cca1c471b356688752173a6b685ab32de5aa",
+        "/workspace/acupuncture/experiments/capability-damage-v2-2026-10-26/run_benchmarks.py": "377cf4ce13530c3c1c4fcd91e5b679fd3e9313a14d47cb973eb12e157dc6a635",
+        "/workspace/acupuncture/experiments/capability-damage-v2-2026-10-26/run_worker.py": "6e36a6344a6ecb710f4eb2d55f81574e69437426efebfa599afcce37e2249f09",
+        "/workspace/acupuncture/experiments/capability-damage-v2-2026-10-26/score_results.py": "3a2a322a818b3a73b965414d36e7ecc3119184a25b6af80b110bcf12cd123de0",
+        "/workspace/acupuncture/experiments/capability-damage-v2-2026-10-26/test_finish_run.py": "0eab53f7c709f1fc8dee648328064d9621977274cda53f7193e689749d617228",
+        "/workspace/acupuncture/experiments/capability-damage-v2-2026-10-26/test_model_engine.py": "64c562847d14ce4f08cfa371ff70ad42481087456dd4f1e02306d505238656b4",
+        "/workspace/acupuncture/experiments/capability-damage-v2-2026-10-26/test_prepare_tasks.py": "3eaaf863732a7dec2aa380243af1ed38c07418c0da39928712e7f5adf5dd2f4d",
+        "/workspace/acupuncture/experiments/capability-damage-v2-2026-10-26/test_run_benchmarks.py": "3452a50de60ae596f874afebcb2b0f73a910b7d3cad05a11e983892c70cabaa9",
+        "/workspace/acupuncture/experiments/capability-damage-v2-2026-10-26/test_score_results.py": "bed54a2b43584a19b6bac1ea6c43174269f4a21333b95e6a6a2239eecbaf1f91",
+        "/workspace/acupuncture/experiments/capability-damage-v2-2026-10-26/verify_task_sources.py": "c53fcb7d0db5a99ee1827a3193a7dbec8deeda0e8e5cfbbfc9854b625d79b386",
+        "/workspace/acupuncture/experiments/capability-screen-v3-2026-10-26/finish_run.py": "3d21d2c2780189b6bfe4660c7d15845f520e01518cbc01eb1662a40cf8f8d98e",
+        "/workspace/acupuncture/experiments/capability-screen-v3-2026-10-26/humaneval_sandbox.py": "d331f2599be9b8f3e27d2abf393d4b0d0ddd71e092fa036a0ba6c386dad7ea32",
+        "/workspace/acupuncture/experiments/capability-screen-v3-2026-10-26/humaneval_worker.py": "589b8f65cb16230a28f4bb374a255060616e3451125902363f71f3af0bd7377b",
+        "/workspace/acupuncture/experiments/capability-screen-v3-2026-10-26/launch_run.py": "2870a7acba6dbeaf5432bd6fa13632905e991161cd3fbe2041afaefc0c06f3d1",
+        "/workspace/acupuncture/experiments/capability-screen-v3-2026-10-26/prepare_panel.py": "c3bcb771e30d055ffe438ea75ec6b3a721ba63bb10858db4814356ede81e9d9c",
+        "/workspace/acupuncture/experiments/capability-screen-v3-2026-10-26/run_panel.py": "4af46a9ec41aa34cdea6f9579558c6dd783b02209536d09de6d363866568ae9c",
+        "/workspace/acupuncture/experiments/capability-screen-v3-2026-10-26/run_worker.py": "fb94a32754ffe3d23ad03c73f912306e60501c0930c4f70eb554746d048aefbb",
+        "/workspace/acupuncture/experiments/capability-screen-v3-2026-10-26/score_results.py": "51783a0ba0d8588f164cfae92ccbd5b4796cf20530aaa66e6bd74e2b1dc47f65",
+        "/workspace/acupuncture/experiments/capability-screen-v3-2026-10-26/stop_full_run.py": "9fe4f6d7db9726fee2249043a8506b12fcd5b242bb340e42ea3e5183d329d273",
+        "/workspace/acupuncture/experiments/capability-screen-v3-2026-10-26/test_inference.py": "7ff6ebc5db6fada3fb8635f8f3c4984f77bdee68f16621f471763b84de4dc02c",
+        "/workspace/acupuncture/experiments/capability-screen-v3-2026-10-26/test_scoring.py": "4b09c71448d6ec767f6af4beb691f78a29c479b69b33a3a3e77350e8c1203077",
+        "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/benchmark.py": "8245a1278759fa590946daa141bc9442f2a4f30219647530baac825431607d68",
+        "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/collect.py": "56a1a8ac513fc4b959ca4558c58724a43563b7125e6ae7f009cabd0f7b32767a",
+        "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/common.py": "a9b6b9dcc0b4306d00aa7c645d9cd82eb2e277eaba1247b1eaee49f9dafd967f",
+        "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/engine.py": "b4720e3b9497db53be74cec5d20a88ae452a2116f53a8e4eae928b4c05ff4675",
+        "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/gate.py": "54896e58d225e0779956c1b09fc9e3c0c9548272a4588502ed2244d14250e43e",
+        "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/mapping.py": "714c49b0ec6b8b7eb46866844d55ee2c11abcdd0a414fa59ad7689836a4cf0ed",
+        "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/pipeline.py": "867ccda3261c1925727278e9cc7ebf05e5f0d9cdbe8dfc39b1fa6cc4d40977b7",
+        "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/preflight.py": "338d582ecab5d5b4320f27ce9ea401b33593453a5dbbf847535bd8eec128c48e",
+        "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/readiness.py": "6b60aa0c7f5210ea64ce07987b44dc4431eda5a85a39257bd434589171a76a5f",
+        "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/test_benchmark.py": "5df38e84ff24e98cb9334dbd4d38f006a5a537ecb6b1bbddd6148274594e4b63",
+        "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/test_cpu_llama.py": "1cd08793f05c6667d2e97d398cc6f38002a5cd9adf981a3b45b3479044c60f37",
+        "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/test_engine_alignment.py": "24d40a44128c6f96bb7e98f0e9a0ddf311525f3cac4f563e62202df9b81d7568",
+        "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/test_protocol.py": "1b7c48dc02591a3e7bfc39b639fc75d552aaf2480ecb497c38b75e3aab733552",
+        "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/toy.py": "8a1593a213c5281af9209d12f80b7ec1880b7eaaa46e4215ca9b252016698798",
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/collect_activations.py": "9f0552547923722ae979f33d7f9d3522864b6820c2462e72e9df9665cbc5bbdf",
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/export_results.py": "2e071b51d64a99586924faa46a28c50785d7d26d8e0e4295108c78284711d706",
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/export_results_parallel.py": "8d57194eafc6826c464011740dd9013b7c9ed0393a24532e20283ed5257ee75f",
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/finish_benchmark.py": "01762a1668ac186821578354d68cdc2b021a23f69ab92db321a6d25bb879650b",
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/finish_benchmark_parallel.py": "4a6b96e26959940555e346bb981e45493a423fa49102f93bcbced2b5eba2cddb",
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/fit_mapping.py": "aa96bececeed845bff91186fa581bd00acf30fc3307e98ee0e076230456acd35",
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/prepare_data.py": "0ff850051122ef78baf945baebbf4df498792a6e6f528cc7bf0251f32a5ef2e7",
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/recover_offline_export_r01.py": "060dc5d36188b93111ea6b9fee3c7df797752c6fad15e48eef7bc2e436a9d169",
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/run_benchmark.py": "0b82da70f75c19c71f5a54f35bfae45e8175ad3b0b84478406a001e474899254",
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/run_benchmark_parallel.py": "1fc259ecc52a5664e8e10b9d2c92a7c802d779b58493cde84714a99413035e70",
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/run_decode_check.py": "f3ad62570d0efdad15b81ce5c8522ceaa71b12e139e089cc0f8374622c408fd7",
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/run_io.py": "51963f95622ee63e8fda99c485dc88957e6bfd96c6c1deee326fce1e7ce5699a",
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/run_preflight.py": "fcfd9e28f1a9b4de5296341a51d0c083a419a7b61787435f6510a66ed85ebf41",
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/run_queue.py": "f456bc7f54a401208510ee99613727bb715d04bf7af4a26b47fde6e3abf0dbec",
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/run_queue_parallel.py": "54d8bdc518647dbcd42913d0c5d2f2eba036fc50abb4b43c992827765109fc65",
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/run_status.py": "5d770c2c8b1158df64618e80b28f5e4b917d81a5edcf2864dc4342fe2ff80b5d",
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/run_status_parallel.py": "0fa38ab410aebc4f32182e66acf65046863cc9f2b56cb261985a61b5b14d2be3",
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/run_toy.py": "8c6c69b79b0c86f67805ff4b4b9e0d904753b00fe71cc9d772310fbef853d820",
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/run_toy_parallel.py": "d5d8b91bd94247423f12b5320b03439741ed88fd910cf09204839e2c9b367479",
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/source_bridge.py": "17ae1017f60451932faef8e3daa943439d2fd7a7661e3d4a7553a204ee225f09",
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/test_export_results.py": "00c52a8eedff42edcc87f5175952bff2f3d6577185574f8c1183d583f2933ca4",
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/test_parallel_execution.py": "4a416019a27b70dce857f6aaa4b67ed594c3d6c6590c137ce1e12210035c92ff",
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/test_run_toy.py": "569a16beaa5e6eefd28077c007c8a90716313c2f0d52c3ec4a4f26d1821cb462",
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/test_source_bridge.py": "fd6f2ea3fbead3fa973bdf4c64f9f87a2e3650f951e835049d9f367414738733",
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/test_transfer_benchmark.py": "1f72ac98a5d42b716772ce5be15bfe6a20efe0a0fbcc5f4748a6e4114ed5de01",
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/test_transfer_core.py": "5a9c2eb162f023d22c4a095cc43a0769f87f815f7bc65b4571f5ed5266a6c8be",
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/test_transfer_data.py": "75b884b4fe89dc1d904899e7ab75c4f4116a21b13717cac11e619f7660f97bf0",
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/transfer_engine.py": "d479408c46731a1dfb0d49eb899a7448602eb6ab3885a16caf0f689bcbd7d1be"
+      },
+      "completed_behavior": 104,
+      "completed_ability": 0,
+      "expected_per_split": 320,
+      "records_sha256": {
+        "records/behavior/000-T_0.jsonl": "cb72c659f1cf2ccb1922908db19819adb9d52bba51032cb287aaa9f0912ca369",
+        "records/behavior/000-true_D_raw.jsonl": "9ec0ec52d1bf8c5e94e52ac4facfba434cce22029edafcf8782ca579690080bd",
+        "records/behavior/000-true_D_match.jsonl": "aa9da125a23826b8e696c7a7edfdfdf903cfbc5bbe3a7d961b3a64bde7d5148f",
+        "records/behavior/000-random1_D_raw.jsonl": "fd8e84cc45a137542282aec8c4c8d6b128d509ba783d0d76ac61d132e164df05",
+        "records/behavior/000-random1_D_match.jsonl": "1da8c20afdab7efd74d0c021fba18b1e242c831a3f7a34dc9e8cc75ac9685ba7",
+        "records/behavior/000-random2_D_raw.jsonl": "5b5f1639549b8f718b6e2b274d07bcf6092a187839bbceb3da8ab2967373647f",
+        "records/behavior/000-random2_D_match.jsonl": "28efa9acd07ba10b7bf1143d38aa7cab84a911b9e7798f2adf50e83062d5c58a",
+        "records/behavior/000-random3_D_raw.jsonl": "995b6d8f169c134e182ef4856b8cfc50a7f48bd4059b9c4f60f2614e2b71277b",
+        "records/behavior/000-random3_D_match.jsonl": "276a741f63344fd30e9ab0832d5fd6740be9f59de2c3a82ffe270161e34d2fbf",
+        "records/behavior/000-T_dense.jsonl": "be8cc13548f766ce055d896798299b590ab1090a530a978be479a08e91b70dde",
+        "records/behavior/002-true_D_match.jsonl": "34be6aa326fa4030749315c6799940d590e03aac711cd80b4e47c7bb1368a536",
+        "records/behavior/002-random1_D_raw.jsonl": "55876e0dbe22d36609986bbfae49342d0fc25fe97373cde3f3ed978626bb9538",
+        "records/behavior/002-random1_D_match.jsonl": "87239db259e7b91647ce19394e2adcd9cc5ceffa61f3e3705831fa7322d18f1f",
+        "records/behavior/002-random2_D_raw.jsonl": "8441bc7449c307125cda1944cfa3b9e41dc6e1b262b91c3c5e03e7c953993c82",
+        "records/behavior/002-random2_D_match.jsonl": "ea3244537eae70da854db06274cbacc8fce39f99145774d3e85e2e0a422e56d9",
+        "records/behavior/002-random3_D_raw.jsonl": "e60249833f8cd7ecdec8e4c6d482f8efe9d0c6765e38b8886835aa426e69b5bf",
+        "records/behavior/002-random3_D_match.jsonl": "9e8d7c91f74f45986356b11b9a1c305113cf0bb1800d2a251bf4b22dbe66f568",
+        "records/behavior/002-T_dense.jsonl": "b960a73c98d928ff1d21c71354df7f90eb6ec5a53dd2980b749621d1467b0cb3",
+        "records/behavior/002-T_0.jsonl": "69d40f1da89089c249e1ad1e546f334b734adfcdee327f9340785d2b27a50d37",
+        "records/behavior/002-true_D_raw.jsonl": "fbb32c74945928fe14c3849b69b111f4f070dfdf74679f564e922b65424dd9d4",
+        "records/behavior/004-random1_D_match.jsonl": "f968e451a5348d0f5609721643d63a6ae7c96fd8d9d87371202eb67a82b877ce",
+        "records/behavior/004-random2_D_raw.jsonl": "b6abf05eec636625167f3b1e265fe6d7e094452565d02615eaeba6bca2aec450",
+        "records/behavior/004-random2_D_match.jsonl": "a6804b886f08d50a3b94f6a6f99b62ee490c071faaf0bd1cb4854d47a1cc73e6",
+        "records/behavior/004-random3_D_raw.jsonl": "dc3083692347a4d1188774c9629cee199ca4397f01186599ff3751df855e32aa",
+        "records/behavior/004-random3_D_match.jsonl": "032e8100c79fcfe9fda65637c04f6edb22f16de2dd04311f560506c3a90e4130",
+        "records/behavior/004-T_dense.jsonl": "71fcd8a9010f0be9de55b116a620d919f1baace9f21c3072dbb2a74115d4fe2c",
+        "records/behavior/004-T_0.jsonl": "5f196ac29a03eff341e6fde512d76675830b46ee765cf902dfed1492f2f8adf2",
+        "records/behavior/004-true_D_raw.jsonl": "573f32cc6c66fdf9d3ab4e7c42f7c4103116829138ee99ec14938980e1ec3e56",
+        "records/behavior/004-true_D_match.jsonl": "b9031662c164650cba5250dac91a671e104ed76590e8cebbbb6ee0d5baa46396",
+        "records/behavior/004-random1_D_raw.jsonl": "c99cc83a84980c63e15e51e3e628f07be149452c96716f785077c1785633ff28",
+        "records/behavior/006-random2_D_match.jsonl": "c32df6d04c5d01c3e7f9891667760639a0e3661e732596984d308cd8b01d00f9",
+        "records/behavior/006-random3_D_raw.jsonl": "3fbdc87126c7324730a1a2001da51f535ea22638ca39fe6b00c55bbba41abb29",
+        "records/behavior/006-random3_D_match.jsonl": "38c46a96485937098ba6e64f5da4fe5f6897551bb14d6e56e946d59169309147",
+        "records/behavior/006-T_dense.jsonl": "620a80bff6dd61ab8ba04e63236981aef4a6f133c8a54659d8f27769f12bb265",
+        "records/behavior/006-T_0.jsonl": "925c27a9b0e06b2cf6bf51f766148183b2379de21d97f82d980e743bea4597ba",
+        "records/behavior/006-true_D_raw.jsonl": "a180cd7fedd008b1e32ebcef4a58837ed80d8a05b07660a620b2591e0f203bba",
+        "records/behavior/006-true_D_match.jsonl": "f84d0ee8e841d93c9f3a35a4bdfb5c65ad7e0d4c90936de7fe9ee90b31abe3d6",
+        "records/behavior/006-random1_D_raw.jsonl": "673413e73bc1f125317c831a31b165c3407d66f7474c6c15b99d62ad81130919",
+        "records/behavior/006-random1_D_match.jsonl": "e9b90b08241df2da8f874e8c4f1acfb65e986f06e2b3eb6feeed29c9f7af72bc",
+        "records/behavior/006-random2_D_raw.jsonl": "aed4f7a67445eca9906cad2b77359704a3b80ca6143bc7fa9d357a045f9be470",
+        "records/behavior/008-random3_D_match.jsonl": "94d6212be1a0f4556298c202f7d63ae4a97c08b8067d07bcd61bb12a5528e4dd",
+        "records/behavior/008-T_dense.jsonl": "95ade4bd9a9c09ccf5dd21d8b01f4c26fb9b5c6a9a6a4ed4f8ee33e0ea98fd7e",
+        "records/behavior/008-T_0.jsonl": "2aadfa1fed6ffbd9aee8c918fc9165aae496cafc8f8ee5e650801ddb022f0acb",
+        "records/behavior/008-true_D_raw.jsonl": "a000b0ca31cb743ae7ead12697f92ec3e168033a1c32e08207bf4f062ed4bf3d",
+        "records/behavior/008-true_D_match.jsonl": "b9f9eadf5d2ee96dcc3f8672327d9a1f0feab5d368d0b1faa1cceeced3a2979a",
+        "records/behavior/008-random1_D_raw.jsonl": "82e64e70ae855891b9ea71a0fae33d66a12381510373bf0b1950592d5868e887",
+        "records/behavior/008-random1_D_match.jsonl": "ed49fee9f1adfc4a437b4fe0bd35d9da2843e94a64202198f5d973866b368cb8",
+        "records/behavior/008-random2_D_raw.jsonl": "8a1ed797e45465c00bc9da7597df516e7f2255487b1ce9a567bc4ba1540aecbf",
+        "records/behavior/008-random2_D_match.jsonl": "fb2686fe59c9b6d91b6ae8b5eec9c475ea3335357f23ea407ab2f07e8c211a86",
+        "records/behavior/008-random3_D_raw.jsonl": "ef345c85bc6dbfc6982d8005dc92f4af250e5953ee025431469f01a31dfacc75",
+        "records/behavior/010-T_0.jsonl": "d7d6b4d54d86bbb1958747b525db632392bd7d7f9cc3dcfa3fe7c2629df7d3bd",
+        "records/behavior/010-true_D_raw.jsonl": "01b54268a3a22ee9605059d7bfd500cf0d713509f05cf1a9f713f9c4048b09ee",
+        "records/behavior/010-true_D_match.jsonl": "0b4f4854952e3c04796e02806266efe74dbc76793c9d878eb6c0ed7883e53861",
+        "records/behavior/010-random1_D_raw.jsonl": "983169a691af4bd217f89cfb5e399c6db284e38548cd0eadb9e5bf77bdfe31ca",
+        "records/behavior/010-random1_D_match.jsonl": "ef10a933ad0481afa32d1a29dd2925799774fc1715d510cc5ebc020286f36b5e",
+        "records/behavior/010-random2_D_raw.jsonl": "90401ce4b03f2151adada5ec31274500af23c079761be19f783b783da82a6d7a",
+        "records/behavior/010-random2_D_match.jsonl": "dda5cfd3b1068ff71382517fc1b45f887eb3508d794aa4da6297416936f0ea69",
+        "records/behavior/010-random3_D_raw.jsonl": "d4a8c703aa2e1115cf6bc7c96250f9ad56a3d719497d01e151b2ef27d8130c85",
+        "records/behavior/010-random3_D_match.jsonl": "dac7ee3a0981a80a045fbe519bfc74fee4b055e01a75ea5b8318496aea60617f",
+        "records/behavior/010-T_dense.jsonl": "4eca60015a20cb06942ce5f346bcb366f015aa0e7bfa61006e4cb6633c08f167",
+        "records/behavior/012-true_D_match.jsonl": "91939250b2fe40edbe92237cadf5c2859606410057d60265eea4a661613e286b",
+        "records/behavior/012-random1_D_raw.jsonl": "55ede0291d8d95d0ef60f5150b5b34cb756e74f2931a9e33bcaa82152b11a26c",
+        "records/behavior/012-random1_D_match.jsonl": "492dae070cf8d9fa745e6a95ce3d419efbdb0b106b6ac02b60fb195e5459dc21",
+        "records/behavior/012-random2_D_raw.jsonl": "894d7c96b9cf33ee7a2e16b5e6e744c3804c59968bce63c2db147eb10f7c430a",
+        "records/behavior/012-random2_D_match.jsonl": "080119aaad713917b882baef158be73179511ddcfc31ebf9956435a70ada8f2a",
+        "records/behavior/012-random3_D_raw.jsonl": "a1932b4d8596689c1bce0771ea4b644695d7f346a78e7359caf4138ea6eedd7a",
+        "records/behavior/012-random3_D_match.jsonl": "519b28823790338f0b20b987585cdf67f31c5fcc58546951022fe3df29017b22",
+        "records/behavior/012-T_dense.jsonl": "15ff15ba83f3e3f918fe4a8f10a64009ff880d70786a41caa6c587871cb68ac1",
+        "records/behavior/012-T_0.jsonl": "583a2e5fa98ee1b146dd2ce57d7133f27e2679c63a1e8581b0a7e24d1d3ca067",
+        "records/behavior/012-true_D_raw.jsonl": "c65f2ca4e8ed15f829327323489eee99cc8a8e30179132359d7a4dacd6aacdef",
+        "records/behavior/014-random1_D_match.jsonl": "cb79067056dce04fb70da5c7581793120bfc6ca6bc8b674a0c8ea3a694fc92bf",
+        "records/behavior/014-random2_D_raw.jsonl": "f3d1b2e6bf6ea9c3eacbcef86cd6a0e7dded55265536b3a34719a41b58d9a5f9",
+        "records/behavior/014-random2_D_match.jsonl": "43712dc6ed04604c860813a27dfc46c41c31aae93cfc2e0d1e98ddfb566f5dcc",
+        "records/behavior/014-random3_D_raw.jsonl": "b6f37b4b716f00ae6ac44958301e14553c1150a34f30d1aa6669575516473866",
+        "records/behavior/014-random3_D_match.jsonl": "d9cc5b743e8042b74de9872e8edbc8f1cc0363ecbe7cf258bd479629b6c969e5",
+        "records/behavior/014-T_dense.jsonl": "62d432b6d06fabde1ddc606b1ac2487d096ade0bf635a0dc8aade768ab66885a",
+        "records/behavior/014-T_0.jsonl": "6b387cfc87f1ebcf9c992c88d899ea9a8b5c1c5998d80b4ad60b433095da843e",
+        "records/behavior/014-true_D_raw.jsonl": "58e850526f42fb4bbe299b13029ffe3eacbe3483ebd611b8c803a529e46700f4",
+        "records/behavior/014-true_D_match.jsonl": "374b2870d8e37a64d672a42376b370f6bb016204d28be613547e12e621ba38ff",
+        "records/behavior/014-random1_D_raw.jsonl": "c598b5ad86a3e691e2a24a06066c56c441cc032dab15ff4dad9afd0e7c18eea8",
+        "records/behavior/016-random2_D_match.jsonl": "3932600c278cec789f8ec9be2b0099e29059651e1204cd8dc984f0d9929a2dc5",
+        "records/behavior/016-random3_D_raw.jsonl": "5dbea1e0a0fed9c8447b45ff2c087a90a490d09ac10d9f8ed5edcb63dfd1cd9f",
+        "records/behavior/016-random3_D_match.jsonl": "7b66ad64be8d855d3c8005f8a7cd24d1daa195075ef1d9c581bb06ffaaf4372f",
+        "records/behavior/016-T_dense.jsonl": "5200ff1a6fef0f99eb1870861a56fa59854e2585f6a3d4ff03facacde482509b",
+        "records/behavior/016-T_0.jsonl": "4abe7d0f0ac97faae38c04737197902558e9e53adbbe9f08db3477e738110e30",
+        "records/behavior/016-true_D_raw.jsonl": "c3e3a9c25b4ad6281afa26ba22dbec3358626103d2f4d006032b30753f7d960e",
+        "records/behavior/016-true_D_match.jsonl": "02bfe25a06dc588c5efed5f92d53d3373c8e8d681797fcba5d36cc8ad4d7e980",
+        "records/behavior/016-random1_D_raw.jsonl": "869683bdc49b2211eca82af67f27a7ff78d986e57958e2e05a359f159b94de09",
+        "records/behavior/016-random1_D_match.jsonl": "25bd43ab5b533672fe9ec50603d17ccf19e4d860ff5052f7e4096c95ebe4dc97",
+        "records/behavior/016-random2_D_raw.jsonl": "7c8da7843af99372ad062e8cbc4f6d05f1ecaa73e82aa9eb1e589bc272baadeb",
+        "records/behavior/018-random3_D_match.jsonl": "66e3b69afaeb5007bb8aa6dc97d3ab9af7d6beeb68edae29728f404c3ba23031",
+        "records/behavior/018-T_dense.jsonl": "f3b512a14165dd7bab1ee3023fa089169354a1e048809a43d42d36359e804f6a",
+        "records/behavior/018-T_0.jsonl": "6d950046f9205c74ee6ffc765a4c9bced936779b88d45496eebaf07d5b88690e",
+        "records/behavior/018-true_D_raw.jsonl": "70397cb8e39f038ec6a65ddd2ef3ac6e0b23335a7bc8f27da6607aae7a0c0a27",
+        "records/behavior/018-true_D_match.jsonl": "386b22c9b42ad568fe9309dc02d1a41026d4dbdcb874ff4b4928f834c30478bb",
+        "records/behavior/018-random1_D_raw.jsonl": "730163d2d8fdf0ce7d60a70769c648f0c007f95ede74ee9a8198b70fe847ba31",
+        "records/behavior/018-random1_D_match.jsonl": "f798efcc201ad4e4234c1132689863818518c03d5de9351af97c8b7522458c77",
+        "records/behavior/018-random2_D_raw.jsonl": "245a400d16383639a386210c369fe2d566c5b103c7122b1c075b63464d23bff4",
+        "records/behavior/018-random2_D_match.jsonl": "1e5ac9c8867a0a18acb10881cb9e1cfcbce73e9567fb0d6d57c195a11eb76d09",
+        "records/behavior/018-random3_D_raw.jsonl": "71407ad42bcda0a0f16884af8f1d91ef2848dd6915b3c3dc4180d27d57726d92",
+        "records/behavior/020-T_0.jsonl": "1595b9f70002961242067fe03f455e52f95ff4a53b340fdaba81c7ecd6e8dea4",
+        "records/behavior/020-true_D_raw.jsonl": "802c421d1dbf5ae442ac9bd3a57537c0e9b5efffaabe0ae8c311c7a317175e2c",
+        "records/behavior/020-true_D_match.jsonl": "32089cc774a1a97f6acb298d2f705bbae02a2a8e30664031eaa966f55b03aff5",
+        "records/behavior/020-random1_D_raw.jsonl": "90ec66edc8dbc119a6fcdba4e8107ea2a2ee3ae8e77e6dcdff01b8dc6b902427"
+      },
+      "engine": {
+        "model_class": "LlamaForCausalLM",
+        "model_path": "/workspace/models/Llama-3.1-8B-Instruct-0e9e39f2",
+        "versions": {
+          "torch": "2.6.0+cu124",
+          "transformers": "5.20.2",
+          "cuda_runtime": "12.4",
+          "cudnn": 90100
+        },
+        "device": "cuda:0",
+        "dtype": "bfloat16",
+        "softmax_dtype": "float32",
+        "attention_backend": "eager",
+        "batch_size": 1,
+        "hidden_size": 4096,
+        "intermediate_size": 14336,
+        "layers": [
+          13,
+          14
+        ],
+        "target_weight_sha256_before": {
+          "13": "f286b50116c6e2dae0558a07b7e35b9550bfe4cf6ff8fadc5033f9e3fb1fb662",
+          "14": "567478d6103cdba24961d22573bfa6970e23b7b2011b0b7c05574f26df2ee6d8"
+        },
+        "effective_stop_tokens": {
+          "128001": "<|end_of_text|>",
+          "128008": "<|eom_id|>",
+          "128009": "<|eot_id|>"
+        },
+        "bos_token_id": 128000,
+        "pad_token_id": 128009,
+        "max_context_tokens": 131072,
+        "chat_template_applied": false,
+        "tokenization": "Raw benchmark: one explicit BOS, no EOS; native template BOS is not duplicated",
+        "chat_template_date_string": "26 Oct 2026",
+        "single_immutable_model": true,
+        "fresh_cache_each_call": true,
+        "numerical_settings": {
+          "deterministic_algorithms": true,
+          "float32_matmul_precision": "highest",
+          "matmul_allow_tf32": false,
+          "matmul_allow_bf16_reduced_precision_reduction": true,
+          "cublas_workspace_config": ":4096:8"
+        }
+      },
+      "current_split": "behavior",
+      "current_item": "T21",
+      "current_condition": "random1_D_match",
+      "elapsed_seconds": 2343.0551733430475
+    },
+    "stage1/toy/shard1/receipt.json": {
+      "status": "running",
+      "stage": 1,
+      "conditions": [
+        "T_0",
+        "true_D_raw",
+        "true_D_match",
+        "random1_D_raw",
+        "random1_D_match",
+        "random2_D_raw",
+        "random2_D_match",
+        "random3_D_raw",
+        "random3_D_match",
+        "T_dense"
+      ],
+      "started_utc": "2026-10-26T09:05:16.559327+00:00",
+      "model": "/workspace/models/Llama-3.1-8B-Instruct-0e9e39f2",
+      "shard_index": 1,
+      "conditions_sha256": "b9672f7ba2f8d5341ff7b64b57e906e8188155262dc0c221d3507560b694e5d7",
+      "freeze_sha256": "53aa00e02c10216309af74ae0a330ec62f59e6b22da7fd6b66360a93fb3afa03",
+      "source_sha256": {
+        "/workspace/acupuncture/experiments/capability-damage-v2-2026-10-26/audit_token_lengths.py": "f984bfbdaf7e9cc6f483f949026032ce0f4f46585fd78928da14e88ee8d321b3",
+        "/workspace/acupuncture/experiments/capability-damage-v2-2026-10-26/finish_run.py": "46c27b66d001135328d214fba5b22e62d7d3b8e42647d64ec8576ee3c9a090dc",
+        "/workspace/acupuncture/experiments/capability-damage-v2-2026-10-26/humaneval_sandbox.py": "34350cd8d98bef4e92fc070c86b01faaf2f249f57b1c0ab52caeded346b80aa5",
+        "/workspace/acupuncture/experiments/capability-damage-v2-2026-10-26/humaneval_worker.py": "589b8f65cb16230a28f4bb374a255060616e3451125902363f71f3af0bd7377b",
+        "/workspace/acupuncture/experiments/capability-damage-v2-2026-10-26/model_engine.py": "cf331f5c723f859ed886a1f386dc85ddbefe414ea5ecd6cff5764e0fff3c182c",
+        "/workspace/acupuncture/experiments/capability-damage-v2-2026-10-26/prepare_tasks.py": "a3c166ffa9843476319f2bc68255cca1c471b356688752173a6b685ab32de5aa",
+        "/workspace/acupuncture/experiments/capability-damage-v2-2026-10-26/run_benchmarks.py": "377cf4ce13530c3c1c4fcd91e5b679fd3e9313a14d47cb973eb12e157dc6a635",
+        "/workspace/acupuncture/experiments/capability-damage-v2-2026-10-26/run_worker.py": "6e36a6344a6ecb710f4eb2d55f81574e69437426efebfa599afcce37e2249f09",
+        "/workspace/acupuncture/experiments/capability-damage-v2-2026-10-26/score_results.py": "3a2a322a818b3a73b965414d36e7ecc3119184a25b6af80b110bcf12cd123de0",
+        "/workspace/acupuncture/experiments/capability-damage-v2-2026-10-26/test_finish_run.py": "0eab53f7c709f1fc8dee648328064d9621977274cda53f7193e689749d617228",
+        "/workspace/acupuncture/experiments/capability-damage-v2-2026-10-26/test_model_engine.py": "64c562847d14ce4f08cfa371ff70ad42481087456dd4f1e02306d505238656b4",
+        "/workspace/acupuncture/experiments/capability-damage-v2-2026-10-26/test_prepare_tasks.py": "3eaaf863732a7dec2aa380243af1ed38c07418c0da39928712e7f5adf5dd2f4d",
+        "/workspace/acupuncture/experiments/capability-damage-v2-2026-10-26/test_run_benchmarks.py": "3452a50de60ae596f874afebcb2b0f73a910b7d3cad05a11e983892c70cabaa9",
+        "/workspace/acupuncture/experiments/capability-damage-v2-2026-10-26/test_score_results.py": "bed54a2b43584a19b6bac1ea6c43174269f4a21333b95e6a6a2239eecbaf1f91",
+        "/workspace/acupuncture/experiments/capability-damage-v2-2026-10-26/verify_task_sources.py": "c53fcb7d0db5a99ee1827a3193a7dbec8deeda0e8e5cfbbfc9854b625d79b386",
+        "/workspace/acupuncture/experiments/capability-screen-v3-2026-10-26/finish_run.py": "3d21d2c2780189b6bfe4660c7d15845f520e01518cbc01eb1662a40cf8f8d98e",
+        "/workspace/acupuncture/experiments/capability-screen-v3-2026-10-26/humaneval_sandbox.py": "d331f2599be9b8f3e27d2abf393d4b0d0ddd71e092fa036a0ba6c386dad7ea32",
+        "/workspace/acupuncture/experiments/capability-screen-v3-2026-10-26/humaneval_worker.py": "589b8f65cb16230a28f4bb374a255060616e3451125902363f71f3af0bd7377b",
+        "/workspace/acupuncture/experiments/capability-screen-v3-2026-10-26/launch_run.py": "2870a7acba6dbeaf5432bd6fa13632905e991161cd3fbe2041afaefc0c06f3d1",
+        "/workspace/acupuncture/experiments/capability-screen-v3-2026-10-26/prepare_panel.py": "c3bcb771e30d055ffe438ea75ec6b3a721ba63bb10858db4814356ede81e9d9c",
+        "/workspace/acupuncture/experiments/capability-screen-v3-2026-10-26/run_panel.py": "4af46a9ec41aa34cdea6f9579558c6dd783b02209536d09de6d363866568ae9c",
+        "/workspace/acupuncture/experiments/capability-screen-v3-2026-10-26/run_worker.py": "fb94a32754ffe3d23ad03c73f912306e60501c0930c4f70eb554746d048aefbb",
+        "/workspace/acupuncture/experiments/capability-screen-v3-2026-10-26/score_results.py": "51783a0ba0d8588f164cfae92ccbd5b4796cf20530aaa66e6bd74e2b1dc47f65",
+        "/workspace/acupuncture/experiments/capability-screen-v3-2026-10-26/stop_full_run.py": "9fe4f6d7db9726fee2249043a8506b12fcd5b242bb340e42ea3e5183d329d273",
+        "/workspace/acupuncture/experiments/capability-screen-v3-2026-10-26/test_inference.py": "7ff6ebc5db6fada3fb8635f8f3c4984f77bdee68f16621f471763b84de4dc02c",
+        "/workspace/acupuncture/experiments/capability-screen-v3-2026-10-26/test_scoring.py": "4b09c71448d6ec767f6af4beb691f78a29c479b69b33a3a3e77350e8c1203077",
+        "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/benchmark.py": "8245a1278759fa590946daa141bc9442f2a4f30219647530baac825431607d68",
+        "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/collect.py": "56a1a8ac513fc4b959ca4558c58724a43563b7125e6ae7f009cabd0f7b32767a",
+        "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/common.py": "a9b6b9dcc0b4306d00aa7c645d9cd82eb2e277eaba1247b1eaee49f9dafd967f",
+        "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/engine.py": "b4720e3b9497db53be74cec5d20a88ae452a2116f53a8e4eae928b4c05ff4675",
+        "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/gate.py": "54896e58d225e0779956c1b09fc9e3c0c9548272a4588502ed2244d14250e43e",
+        "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/mapping.py": "714c49b0ec6b8b7eb46866844d55ee2c11abcdd0a414fa59ad7689836a4cf0ed",
+        "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/pipeline.py": "867ccda3261c1925727278e9cc7ebf05e5f0d9cdbe8dfc39b1fa6cc4d40977b7",
+        "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/preflight.py": "338d582ecab5d5b4320f27ce9ea401b33593453a5dbbf847535bd8eec128c48e",
+        "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/readiness.py": "6b60aa0c7f5210ea64ce07987b44dc4431eda5a85a39257bd434589171a76a5f",
+        "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/test_benchmark.py": "5df38e84ff24e98cb9334dbd4d38f006a5a537ecb6b1bbddd6148274594e4b63",
+        "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/test_cpu_llama.py": "1cd08793f05c6667d2e97d398cc6f38002a5cd9adf981a3b45b3479044c60f37",
+        "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/test_engine_alignment.py": "24d40a44128c6f96bb7e98f0e9a0ddf311525f3cac4f563e62202df9b81d7568",
+        "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/test_protocol.py": "1b7c48dc02591a3e7bfc39b639fc75d552aaf2480ecb497c38b75e3aab733552",
+        "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/toy.py": "8a1593a213c5281af9209d12f80b7ec1880b7eaaa46e4215ca9b252016698798",
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/collect_activations.py": "9f0552547923722ae979f33d7f9d3522864b6820c2462e72e9df9665cbc5bbdf",
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/export_results.py": "2e071b51d64a99586924faa46a28c50785d7d26d8e0e4295108c78284711d706",
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/export_results_parallel.py": "8d57194eafc6826c464011740dd9013b7c9ed0393a24532e20283ed5257ee75f",
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/finish_benchmark.py": "01762a1668ac186821578354d68cdc2b021a23f69ab92db321a6d25bb879650b",
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/finish_benchmark_parallel.py": "4a6b96e26959940555e346bb981e45493a423fa49102f93bcbced2b5eba2cddb",
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/fit_mapping.py": "aa96bececeed845bff91186fa581bd00acf30fc3307e98ee0e076230456acd35",
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/prepare_data.py": "0ff850051122ef78baf945baebbf4df498792a6e6f528cc7bf0251f32a5ef2e7",
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/recover_offline_export_r01.py": "060dc5d36188b93111ea6b9fee3c7df797752c6fad15e48eef7bc2e436a9d169",
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/run_benchmark.py": "0b82da70f75c19c71f5a54f35bfae45e8175ad3b0b84478406a001e474899254",
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/run_benchmark_parallel.py": "1fc259ecc52a5664e8e10b9d2c92a7c802d779b58493cde84714a99413035e70",
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/run_decode_check.py": "f3ad62570d0efdad15b81ce5c8522ceaa71b12e139e089cc0f8374622c408fd7",
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/run_io.py": "51963f95622ee63e8fda99c485dc88957e6bfd96c6c1deee326fce1e7ce5699a",
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/run_preflight.py": "fcfd9e28f1a9b4de5296341a51d0c083a419a7b61787435f6510a66ed85ebf41",
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/run_queue.py": "f456bc7f54a401208510ee99613727bb715d04bf7af4a26b47fde6e3abf0dbec",
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/run_queue_parallel.py": "54d8bdc518647dbcd42913d0c5d2f2eba036fc50abb4b43c992827765109fc65",
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/run_status.py": "5d770c2c8b1158df64618e80b28f5e4b917d81a5edcf2864dc4342fe2ff80b5d",
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/run_status_parallel.py": "0fa38ab410aebc4f32182e66acf65046863cc9f2b56cb261985a61b5b14d2be3",
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/run_toy.py": "8c6c69b79b0c86f67805ff4b4b9e0d904753b00fe71cc9d772310fbef853d820",
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/run_toy_parallel.py": "d5d8b91bd94247423f12b5320b03439741ed88fd910cf09204839e2c9b367479",
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/source_bridge.py": "17ae1017f60451932faef8e3daa943439d2fd7a7661e3d4a7553a204ee225f09",
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/test_export_results.py": "00c52a8eedff42edcc87f5175952bff2f3d6577185574f8c1183d583f2933ca4",
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/test_parallel_execution.py": "4a416019a27b70dce857f6aaa4b67ed594c3d6c6590c137ce1e12210035c92ff",
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/test_run_toy.py": "569a16beaa5e6eefd28077c007c8a90716313c2f0d52c3ec4a4f26d1821cb462",
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/test_source_bridge.py": "fd6f2ea3fbead3fa973bdf4c64f9f87a2e3650f951e835049d9f367414738733",
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/test_transfer_benchmark.py": "1f72ac98a5d42b716772ce5be15bfe6a20efe0a0fbcc5f4748a6e4114ed5de01",
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/test_transfer_core.py": "5a9c2eb162f023d22c4a095cc43a0769f87f815f7bc65b4571f5ed5266a6c8be",
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/test_transfer_data.py": "75b884b4fe89dc1d904899e7ab75c4f4116a21b13717cac11e619f7660f97bf0",
+        "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/transfer_engine.py": "d479408c46731a1dfb0d49eb899a7448602eb6ab3885a16caf0f689bcbd7d1be"
+      },
+      "completed_behavior": 105,
+      "completed_ability": 0,
+      "expected_per_split": 320,
+      "records_sha256": {
+        "records/behavior/001-true_D_raw.jsonl": "ae446b9f0e2743764fbaf2a9fcd2ec6524d223e0bf061befbce933b06635afe0",
+        "records/behavior/001-true_D_match.jsonl": "d0f6871b1b405dc116b27f6e614d504a7e2bcca7efc31da4ffc8a2455bf74870",
+        "records/behavior/001-random1_D_raw.jsonl": "792c49edacb80e4fa8a40a8c875f6b50158cf50787e5cfe013046a7a03ef2b9e",
+        "records/behavior/001-random1_D_match.jsonl": "8676beaa26ebcfe3f5b8150a3c935e5f75efda161ca0844401c777409669ca73",
+        "records/behavior/001-random2_D_raw.jsonl": "586b90073b10fa741539c1ed4d2615ef447dc9be011f18676382bf68f6f36a12",
+        "records/behavior/001-random2_D_match.jsonl": "3373da4d63ca4f4fc3efa387008a2f737f5f7253710cb5c50ed179c5dd7f8e2e",
+        "records/behavior/001-random3_D_raw.jsonl": "d467e9b3a75731b9f9a1beab84f99c9d694336b0e215279e554017de5419a3c5",
+        "records/behavior/001-random3_D_match.jsonl": "e757e68ee30cb8461ca8f0934e0b7ececaa6fb4db627af480c7c83a7aef4ca4e",
+        "records/behavior/001-T_dense.jsonl": "e9744028c6d3e1349e8ab5b6c0c35d14c92a58a91e000022f423abb8e410c004",
+        "records/behavior/001-T_0.jsonl": "ae2f86a3021089aaec8bb8ab53d880f7bca7473a088684df3287cf14c6b63bb8",
+        "records/behavior/003-random1_D_raw.jsonl": "3e0e007877092b2fe86549ece73db1307490d49757a72fdb1b7c56adda055ee7",
+        "records/behavior/003-random1_D_match.jsonl": "e030bba02b6484c4bb34b67331e414d7f652cae9d27c92d0de2c6011d3979122",
+        "records/behavior/003-random2_D_raw.jsonl": "cd7682fc059494a6bba890203b209405f4fb2693554245ce699368eea64102a3",
+        "records/behavior/003-random2_D_match.jsonl": "3ab0c2d769108c81302871f4aec0ab4a4360a42e4a64d81a78a5fd60bb45ad5f",
+        "records/behavior/003-random3_D_raw.jsonl": "24304fe1375bbaa21a5443f66f78ab7ad98f2c948e4b84100526976e21ff68cd",
+        "records/behavior/003-random3_D_match.jsonl": "391ad171198c558768c592d00ee139a7e4bafc51d385edd0c4fc9b14f3db0b4f",
+        "records/behavior/003-T_dense.jsonl": "bb72d9685a779fccb6b0d3e6902492437af0a781bc817281d345bf76f908affa",
+        "records/behavior/003-T_0.jsonl": "6b1fe989263b14bed947e500608d7f4d6f8fb1edd7510730fe50eb07ea0211fb",
+        "records/behavior/003-true_D_raw.jsonl": "b897562c0c0ceb62c03748e636f307375fd320283b0fdf62bfde0e7d35c5a5e1",
+        "records/behavior/003-true_D_match.jsonl": "3b3b781efcb15aa02b8f3a4751f5cbdb406631b470fa2c2c068cc5e03ff37b9c",
+        "records/behavior/005-random2_D_raw.jsonl": "e66b8c5bb57183e1331a2f683d161e84867afd649af9f23fb461007acdb4b86c",
+        "records/behavior/005-random2_D_match.jsonl": "074ee142c014e7369cda56f4eb1f53568c47ed512e39de2749b0b4a7c060e0db",
+        "records/behavior/005-random3_D_raw.jsonl": "77485e72843f99b46bf2bd3ea4ae81ccc7b7b666d359659f93f22b3de2274780",
+        "records/behavior/005-random3_D_match.jsonl": "f5e505c1a65af2d25299b7314437f1a848d00fb34bc76e1aced8bbc4bebd8b3c",
+        "records/behavior/005-T_dense.jsonl": "df7c87388fe8176a08a2e5faa3622f6cf20b2e16223431358051980415b044b7",
+        "records/behavior/005-T_0.jsonl": "e9301835a8e1f3070729d4158f6363f8328180f0246b5c0eb46e9a7f6a39e765",
+        "records/behavior/005-true_D_raw.jsonl": "f350a8ae084f44d4b4594533d6bd9457f02de1956f689c52674663e875b3aea5",
+        "records/behavior/005-true_D_match.jsonl": "2a64ec6a40cac670a40e2df889d0e272b4b7216b21c205b20afda03ee0928137",
+        "records/behavior/005-random1_D_raw.jsonl": "fc8dd871945518d50b9d20d9786a0ab1443ba46670c63b1063ce6a15e61caffd",
+        "records/behavior/005-random1_D_match.jsonl": "09ce8f955dc2e1402930b708308fa78256848609ccec9f6cfe77002de4485207",
+        "records/behavior/007-random3_D_raw.jsonl": "fbade35db926adf4523332dccc2799d51aa4d1ad0e8bb9811297873427110e66",
+        "records/behavior/007-random3_D_match.jsonl": "34ae2522f515d7a0b50408a68e236e87e6181c8fa71e15cc610b7f7cdb22ee69",
+        "records/behavior/007-T_dense.jsonl": "bcb73f46a3999271452ca4a52984fd9a6c1da0e861f42f7e4bb5414f8690ca84",
+        "records/behavior/007-T_0.jsonl": "a4a9a58eb6e9b10280d773959746d889c48c118036638451aa8ff328b94c910b",
+        "records/behavior/007-true_D_raw.jsonl": "ba57dd9df85261e14dd9f92cb4cf2df01b3049bdf3cfb389638c0d662db14a4d",
+        "records/behavior/007-true_D_match.jsonl": "5178fe2a18e38456b064286ba77d2ed810012a82dc5ee7407f4b985441437f2a",
+        "records/behavior/007-random1_D_raw.jsonl": "802176f1562bbe7fa000a6a0eb010a83665866f85ceda40ed9ff1c4c1e1cdc05",
+        "records/behavior/007-random1_D_match.jsonl": "0e84388f0686ffa0ca0c7029869fd9076f2106e12d7a44829a70805bcdfc2abd",
+        "records/behavior/007-random2_D_raw.jsonl": "373a1f8bd9d30dba6efff3e5bbec645c858f659d28e9c477d42aa0e7296560dc",
+        "records/behavior/007-random2_D_match.jsonl": "8e842815c861f08f06b9bd6a6ae97a68d4b6f3e909877376b72547859c82bebb",
+        "records/behavior/009-T_dense.jsonl": "180fcf62ad8fef9048b5ae40f26bfe7d966e13fc4eac75bdb0e0b085580a352c",
+        "records/behavior/009-T_0.jsonl": "90f787232c7967af082ce7e401529ca0058fc4e9b639e539439a7c97a53dbd54",
+        "records/behavior/009-true_D_raw.jsonl": "eb916f24c88e6ad70aa8fc3b5d1096e88ec4503c486fd9f53b23f3e864730d2d",
+        "records/behavior/009-true_D_match.jsonl": "6c2277d52d56ae6f6762332a5446f3c1608c79bee947d713c670de507b86cbb4",
+        "records/behavior/009-random1_D_raw.jsonl": "69150f9345fa4328502c63f342826470e674e78c65d54e36286429df56f6b45a",
+        "records/behavior/009-random1_D_match.jsonl": "bde641a3451475f2ae471d9dccdadd4b5ab0e5c8b87a2343d359cc41475dc2cd",
+        "records/behavior/009-random2_D_raw.jsonl": "348c736765490bbce6325bc4cd9a2c66b3fdf76c630c08ece000f71e5c47e6c1",
+        "records/behavior/009-random2_D_match.jsonl": "c348a9212fbefa5d2982466cd1e1929e49415e6fc50b40872031b32f496abe73",
+        "records/behavior/009-random3_D_raw.jsonl": "c3cd42b73130ca961f03d6875a2e5e32d466eb7d87ae7aca6cbce2138957dd0c",
+        "records/behavior/009-random3_D_match.jsonl": "841bbc7dbd3fa0c841eb356ab406f81c8c862ae1a277302a8635dcad273f91f3",
+        "records/behavior/011-true_D_raw.jsonl": "6e93474d00a7c24551f6277de6c642ddf7a1d9b13cc95462df35d791137b21f0",
+        "records/behavior/011-true_D_match.jsonl": "08a6ac582f0590cb88bd05271e578ca137cdb7f2dbe003c6449933a36f90f355",
+        "records/behavior/011-random1_D_raw.jsonl": "efa708e7f96f082f6c7ebe3380e9062ec738cc1f1b555048431c140a0f950994",
+        "records/behavior/011-random1_D_match.jsonl": "87ab20c7d98a8529c4abf6988da2924f5ff26024131b115fe59231a7a8ae4b70",
+        "records/behavior/011-random2_D_raw.jsonl": "01a26ee4063a049df3f9740e5cd0367a82458a5fce2590d54c23a66a9b1528bc",
+        "records/behavior/011-random2_D_match.jsonl": "437997cad56deca68a649148bd051e38de332bd444e54602c6bbb432fa56898c",
+        "records/behavior/011-random3_D_raw.jsonl": "5e915c42072cf4bba5fbc1273e3bc43da51309c5527fcdd2b8afc9a3dbdb486e",
+        "records/behavior/011-random3_D_match.jsonl": "e017a429ae83f6f78a36fbc18b38dd2c77a7550f28d59de7eb75a72f3cbfd8b6",
+        "records/behavior/011-T_dense.jsonl": "bf150356a46e6268f0c01d8e53e11df051e9d82c486b16c54104e13a8f41e0f0",
+        "records/behavior/011-T_0.jsonl": "093340e1c44edcf2fd74c0f10565f16ebfbd142e743855c787f3ca0c45896f31",
+        "records/behavior/013-random1_D_raw.jsonl": "7d59113eb53b38945b7c5a3e552f8eb2173332f3c80afdc22ab01596a7b7a078",
+        "records/behavior/013-random1_D_match.jsonl": "092a40b3628d628e4114959510191aaed0528f3842a222d4bbf37a69efa175ff",
+        "records/behavior/013-random2_D_raw.jsonl": "ce81e0eac1b588990686d38b802e9e9cfda1920ccb177dfc60fd468dd5a57a21",
+        "records/behavior/013-random2_D_match.jsonl": "b46f29e3e82e634775ce3309af31daa8f21b7b112ade479d4c9a83a4bf5f5638",
+        "records/behavior/013-random3_D_raw.jsonl": "749a1b91e601dce9a9e6bb9d5319e27db4aeefa84ed002a700cba49579dc201e",
+        "records/behavior/013-random3_D_match.jsonl": "8c26cce63ba30e93c17e14deda76e65f505d466e6b27c92f1ac6c961d5de203b",
+        "records/behavior/013-T_dense.jsonl": "aa40ffe6a866f57e44964d3fc853b684f5f1ccb38f54bdcd4b8938ede9072c86",
+        "records/behavior/013-T_0.jsonl": "503ce7a9ba9a61345519f132864e557208c93cdcf32f8ecd0f3e0fce3d71342e",
+        "records/behavior/013-true_D_raw.jsonl": "99b7dd479a3d67f380510374119c7436e8153ae44b622f3c0397b9d13b4388af",
+        "records/behavior/013-true_D_match.jsonl": "18c918a00f4a9a9849795526d7d062ba7bb79d4eb7a7583ba9be311518141404",
+        "records/behavior/015-random2_D_raw.jsonl": "c9b44597201d18f0a27c1ae67b25a75c43473f0558d39c846cb5c43294bdddf1",
+        "records/behavior/015-random2_D_match.jsonl": "113a7c2f009e89be28e1c2acd54f443c1c2a4f89781a24870bcbeb27e7ea91b4",
+        "records/behavior/015-random3_D_raw.jsonl": "ebcfc65e81592dc03382d9b41b74e109dcf56467a1f6223bdb31d54eb348dc02",
+        "records/behavior/015-random3_D_match.jsonl": "477f7cd4e81555c2a8f39bc43b2eec7e64014c3a9e5574eed641cb81c3e6bd26",
+        "records/behavior/015-T_dense.jsonl": "07a231c7d78f5237aeb8734be8437aef62c8c7ad6bfaa223195389923db902fe",
+        "records/behavior/015-T_0.jsonl": "f77a5eb4a92f5a14c092aa83001c0ab2cbef3339c8d74d5aad0b954dd636c54b",
+        "records/behavior/015-true_D_raw.jsonl": "33f590a390714483ef7540d7ecf158b63a47a95b38b62e3efd4a55540b68d347",
+        "records/behavior/015-true_D_match.jsonl": "cd11c4610fefc876a3d9b4752fedcd67f210501c0ca78b531c3f39f07152b964",
+        "records/behavior/015-random1_D_raw.jsonl": "a517599e14cb8feb8de4dc71dd6a2b9ebe6d3e5ae0531a9e20846f726a30829d",
+        "records/behavior/015-random1_D_match.jsonl": "4f464bdc3a84b7e471c71c5c062978054b747b36eaa2ccb5f370226e5519a9a3",
+        "records/behavior/017-random3_D_raw.jsonl": "8c555ec5cdee8648778305987e06725826be600a1c664811d633adce2dee9685",
+        "records/behavior/017-random3_D_match.jsonl": "90b47a23fbe7787948cf6669887c3e8a96887489f292e1c386fb598c5b118e82",
+        "records/behavior/017-T_dense.jsonl": "c551cf18edf95d1db3dce803d82b952494eaa329d9bf478315b9ffbc6582d886",
+        "records/behavior/017-T_0.jsonl": "b350f50cdb916665553ea06fcc30199cfaddf9419e91cefaa002f47ff22524b4",
+        "records/behavior/017-true_D_raw.jsonl": "e5aeb735a82f488bdb824cde0643b1d331130d9af1ff586d0efbe45c1b17aebf",
+        "records/behavior/017-true_D_match.jsonl": "9e485c0a980607d651892a3521c9a27450a7605044fb49b51fa2575081bb0f2a",
+        "records/behavior/017-random1_D_raw.jsonl": "9614e1997e53e6809006eefa965f6269b15eb1c2f9cf36fc6de53a580b1a8ae2",
+        "records/behavior/017-random1_D_match.jsonl": "b0a5ab74636348577669cde98229938b88f1eef1ade8b5aac7633ca6eb6b4066",
+        "records/behavior/017-random2_D_raw.jsonl": "977895a809968f704534177b5508152fab2077218e47e6e7bda83a272bc5c055",
+        "records/behavior/017-random2_D_match.jsonl": "a3707226f413dba275142a07f0ab0fe561ebfbced61d696fd000a88b2ae6c42d",
+        "records/behavior/019-T_dense.jsonl": "28587de5a6cfcd4b51d816ec37e9c6b94a16e277a893350bcf2d7928f2ebab86",
+        "records/behavior/019-T_0.jsonl": "44e6b90f80fc57f5d610b8fba1619be583664c0351bad522dc0ed597dd772f57",
+        "records/behavior/019-true_D_raw.jsonl": "d3bc2d852e069fccc27d33ef764986d6c0c09cac83ad5cb5b67be34c5b2ccf4a",
+        "records/behavior/019-true_D_match.jsonl": "34482a62191084ab4f4398e24077c9e2d09cc2b2e0c25b4c96faf196d0727b2f",
+        "records/behavior/019-random1_D_raw.jsonl": "3aa8ed4805ea55d4a96b96bfacdaf05c32dcc7d6edabaa5b4fc2681ebc65b02d",
+        "records/behavior/019-random1_D_match.jsonl": "f438e7e7eddde21d3151428f7bd9e7929175d5cc174ec3f6fc6620ebc144a3b8",
+        "records/behavior/019-random2_D_raw.jsonl": "1dea4cecabb432570a8ff7776900b5fd7dd3e5d80a8f8eb0c8f7a6fd2cff1c11",
+        "records/behavior/019-random2_D_match.jsonl": "23d60bfe2865e372e84cc97651052d842c26dfadfcd205daefa29b2d563aa52c",
+        "records/behavior/019-random3_D_raw.jsonl": "d3652d2743a21865d1b9f45d6e646faaaf53f05be10a4e36c41426f6f78914f4",
+        "records/behavior/019-random3_D_match.jsonl": "6fcf4400dcb90d9a421357aa741014d2e0a3e4c06272d792b5cc42f8a5223ff8",
+        "records/behavior/021-true_D_raw.jsonl": "20ac4a8bff6ff3465ad27e31f6a65fe611001cb609a2169e04c2af3049415a0a",
+        "records/behavior/021-true_D_match.jsonl": "72063e085789d7a928835437f03f1347be17eef619619235e864553817f9096b",
+        "records/behavior/021-random1_D_raw.jsonl": "f9dc5ddec33c946dd2c6b8bcdd37cd2c61b4edb5351380d18686f15f8f921188",
+        "records/behavior/021-random1_D_match.jsonl": "f336c9448c1fd96c1e2976d72b696799e71a4565877f2dcf52a58e694e469952",
+        "records/behavior/021-random2_D_raw.jsonl": "bc6bbc42ca706965a5ce7763bc836b00c30d4cdc85d46f18431adc92dfed6073"
+      },
+      "engine": {
+        "model_class": "LlamaForCausalLM",
+        "model_path": "/workspace/models/Llama-3.1-8B-Instruct-0e9e39f2",
+        "versions": {
+          "torch": "2.6.0+cu124",
+          "transformers": "5.20.2",
+          "cuda_runtime": "12.4",
+          "cudnn": 90100
+        },
+        "device": "cuda:0",
+        "dtype": "bfloat16",
+        "softmax_dtype": "float32",
+        "attention_backend": "eager",
+        "batch_size": 1,
+        "hidden_size": 4096,
+        "intermediate_size": 14336,
+        "layers": [
+          13,
+          14
+        ],
+        "target_weight_sha256_before": {
+          "13": "f286b50116c6e2dae0558a07b7e35b9550bfe4cf6ff8fadc5033f9e3fb1fb662",
+          "14": "567478d6103cdba24961d22573bfa6970e23b7b2011b0b7c05574f26df2ee6d8"
+        },
+        "effective_stop_tokens": {
+          "128001": "<|end_of_text|>",
+          "128008": "<|eom_id|>",
+          "128009": "<|eot_id|>"
+        },
+        "bos_token_id": 128000,
+        "pad_token_id": 128009,
+        "max_context_tokens": 131072,
+        "chat_template_applied": false,
+        "tokenization": "Raw benchmark: one explicit BOS, no EOS; native template BOS is not duplicated",
+        "chat_template_date_string": "26 Oct 2026",
+        "single_immutable_model": true,
+        "fresh_cache_each_call": true,
+        "numerical_settings": {
+          "deterministic_algorithms": true,
+          "float32_matmul_precision": "highest",
+          "matmul_allow_tf32": false,
+          "matmul_allow_bf16_reduced_precision_reduction": true,
+          "cublas_workspace_config": ":4096:8"
+        }
+      },
+      "current_split": "behavior",
+      "current_item": "T22",
+      "current_condition": "random2_D_match",
+      "elapsed_seconds": 2338.2109089735895
+    },
+    "stage1/gate.json": null,
+    "stage2/gate.json": null
+  },
+  "behavior_stats": [
+    {
+      "shard": 0,
+      "completed": 104,
+      "expected": 320,
+      "ability_completed": 0,
+      "last_completion_utc": "2026-10-26T09:44:19.614030+00:00",
+      "record_status_counts": {
+        "completed": 104
+      },
+      "effective_tokens_per_second": 21.228212679709376,
+      "condition_weighted_remaining_seconds": 4853.791266773606,
+      "recent30_remaining_seconds": 5069.61062875539,
+      "generation_seconds_sum": 2331.472778549418
+    },
+    {
+      "shard": 1,
+      "completed": 105,
+      "expected": 320,
+      "ability_completed": 0,
+      "last_completion_utc": "2026-10-26T09:44:14.769861+00:00",
+      "record_status_counts": {
+        "completed": 105
+      },
+      "effective_tokens_per_second": 21.02649785437679,
+      "condition_weighted_remaining_seconds": 4769.477936612374,
+      "recent30_remaining_seconds": 5025.654242865741,
+      "generation_seconds_sum": 2327.0161459539086
+    }
+  ],
+  "eta": {
+    "behavior_only_utc": "2026-10-26T11:05:19.583719+00:00",
+    "behavior_recent30_utc": "2026-10-26T11:08:55.403081+00:00",
+    "stage1_full": "not reliably estimated: no measurements yet for ability, formal Benchmark or scoring",
+    "stage2_full": "conditional on stage1 PASS; not reliably estimated",
+    "formal_stage_full_token_scenario_seconds": 14610.136320730868,
+    "stage2_generation_full_token_scenario_seconds": 21623.001754681685,
+    "scenario_caveat": "Toy effective token rate extrapolation only; excludes unmeasured scoring, likelihood and extra context costs; not a wall-clock bound."
+  }
+}

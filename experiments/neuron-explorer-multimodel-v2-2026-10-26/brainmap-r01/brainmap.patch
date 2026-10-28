@@ -1,0 +1,545 @@
+--- a/explorer/server.py
++++ b/explorer/server.py
+@@ -7,6 +7,7 @@
+ import glob
+ import json
+ import os
++from pathlib import Path
+ import sys
+ import threading
+ 
+@@ -15,6 +16,7 @@
+ from fastapi import FastAPI, Request
+ from fastapi.responses import PlainTextResponse, FileResponse, JSONResponse, Response, StreamingResponse
+ from fastapi.staticfiles import StaticFiles
++from starlette.middleware.gzip import GZipMiddleware
+ from transformers import AutoConfig
+ 
+ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+@@ -26,6 +28,9 @@
+ DATA = os.environ.get("EXPLORER_DATA", ROOT)
+ RUNS, STATS = os.path.join(DATA, "runs"), os.path.join(DATA, "stats")
+ NAMES = os.path.join(DATA, "names.json")
++SURVEY = os.environ.get("EXPLORER_SURVEY")
++REPO = os.environ.get("EXPLORER_REPO")
++READ_ONLY = os.environ.get("EXPLORER_READ_ONLY") == "1"
+ MODELS = json.load(open(os.path.join(ROOT, "..", "models.json")))
+ PORT = int(os.environ.get("PORT", 8791))
+ _cfg = AutoConfig.from_pretrained(MODEL).get_text_config()
+@@ -35,6 +40,7 @@
+         "linear_v_heads": _cfg.linear_num_value_heads}
+ 
+ app = FastAPI()
++app.add_middleware(GZipMiddleware, minimum_size=1000)
+ 
+ 
+ # only this machine's own pages and tools: a page on another site (or a DNS name rebound to 127.0.0.1) can't reach
+@@ -89,6 +95,14 @@
+     if not request.url.path.startswith("/api/"):
+         resp.headers["Cache-Control"] = "no-store"
+     return resp
++
++
++@app.middleware("http")
++async def read_only(request, call_next):
++    if READ_ONLY and request.method == "POST":
++        return JSONResponse({"error": "read-only evidence viewer; POST requests are disabled"}, status_code=503)
++    return await call_next(request)
++
+ 
+ rt = Runtime(STATS)
+ _cache = {}
+@@ -179,7 +193,28 @@
+     runs = layer_runs()
+     return {"model": MODEL_ID, "arch": ARCH,
+             "layers": {str(l): os.path.basename(p) for l, p in sorted(runs.items())}, "status": rt.status,
+-            "profile": PROFILE, "models": [{k: m[k] for k in ("id", "label", "port")} for m in MODELS]}
++            "profile": PROFILE, "models": [{k: m[k] for k in ("id", "label", "port")} for m in MODELS],
++            "live_model": not NO_MODEL, "read_only": READ_ONLY}
++
++
++@app.get("/api/survey")
++def survey():
++    if not SURVEY:
++        return JSONResponse({"error": "survey evidence is not configured"}, status_code=404)
++    return FileResponse(SURVEY, media_type="application/json")
++
++
++@app.get("/evidence/{path:path}")
++def evidence(path: str):
++    if not SURVEY or not REPO:
++        return JSONResponse({"error": "evidence not found"}, status_code=404)
++    with open(Path(SURVEY).with_name("survey-manifest.json")) as f:
++        allowed = set(json.load(f)["record_paths"])
++    root = Path(REPO).resolve()
++    target = (root / path).resolve()
++    if path not in allowed or not target.is_relative_to(root) or not target.is_file():
++        return JSONResponse({"error": "evidence not found"}, status_code=404)
++    return FileResponse(target, media_type="application/json")
+ 
+ 
+ @app.get("/api/units")
+--- a/explorer/static/index.html
++++ b/explorer/static/index.html
+@@ -4,7 +4,7 @@
+ <meta charset="utf-8">
+ <meta name="viewport" content="width=device-width,initial-scale=1">
+ <title>Neuron Explorer</title>
+-<link rel="stylesheet" href="style.css?v=62">
++<link rel="stylesheet" href="style.css?v=survey1">
+ <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Crect width=%2216%22 height=%2216%22 rx=%223%22 fill=%22%23151515%22/%3E%3Ccircle cx=%228%22 cy=%228%22 r=%222.5%22 fill=%22%23ffd27a%22/%3E%3C/svg%3E">
+ <script type="importmap">
+ {"imports": {
+@@ -51,7 +51,8 @@
+       <div class="id-line"><span id="f-id" class="mono"></span><span id="f-rank" class="mono dim"></span><button id="f-close" aria-label="close neuron">×</button></div>
+       <textarea id="f-name" rows="1" placeholder="name" spellcheck="false" aria-label="feature name"></textarea>
+     </div>
+-    <nav id="ltabs"><button data-lt="net" class="on">net</button><button data-lt="run">run</button><button id="list-hide" class="edge" aria-label="hide list">‹</button></nav>
++    <nav id="ltabs"><button data-lt="survey">实验点</button><button data-lt="net" class="on">net</button><button data-lt="run">run</button><button id="list-hide" class="edge" aria-label="hide list">‹</button></nav>
++    <div id="lt-survey" class="lpane"></div>
+     <div id="lt-net" class="lpane on">
+       <div id="net"></div>
+       <div id="list-head">
+@@ -78,7 +79,8 @@
+   <button id="list-tab" class="tab-edge left" aria-label="show list">›</button>
+   <button id="focus-tab" class="tab-edge right mono" aria-label="show neuron"></button>
+   <aside id="focus" class="float">
+-    <nav id="tabs"><button data-tab="examples" class="on">Examples</button><button data-tab="chat">Chat</button><button data-tab="details">Details</button><button data-tab="claude">Claude</button><button id="a-new" class="mono dim" title="start a new conversation">new</button><button id="f-collapse" class="edge" aria-label="collapse">›</button></nav>
++    <nav id="tabs"><button data-tab="survey">脑图实验</button><button data-tab="examples" class="on">Examples</button><button data-tab="chat">Chat</button><button data-tab="details">Details</button><button data-tab="claude">Claude</button><button id="a-new" class="mono dim" title="start a new conversation">new</button><button id="f-collapse" class="edge" aria-label="collapse">›</button></nav>
++    <div id="tab-survey" class="tab"></div>
+     <div id="tab-examples" class="tab on"></div>
+     <div id="tab-chat" class="tab">
+       <div id="c-lens"></div>
+@@ -103,6 +105,6 @@
+     </div>
+   </aside>
+ </main>
+-<script type="module" src="app.js?v=100"></script>
++<script type="module" src="app.js?v=survey1"></script>
+ </body>
+ </html>
+--- a/explorer/static/app.js
++++ b/explorer/static/app.js
+@@ -1,4 +1,5 @@
+-import { createMap } from "./map3d.js?v=69";
++import { createMap } from "./map3d.js?v=survey1";
++import { createSurvey } from "./survey.js?v=1";
+ import { createScatter } from "./scatter.js?v=39";
+ 
+ const $ = s => document.querySelector(s);
+@@ -18,6 +19,9 @@
+ 
+ const index = await api("/api/index");
+ const arch = index.arch;
++const readOnly = index.live_model === false;
++let survey = null;
++document.body.classList.toggle("survey-readonly", readOnly);
+ const modelSel = $("#model");
+ for (const model of index.models) {
+   const option = document.createElement("option");
+@@ -110,7 +114,7 @@
+ setLayout("writes");
+ 
+ // connection web of the focused neuron: downstream cone forward, upstream cone backward
+-let webOn = true, webKey = null;
++let webOn = !readOnly, webKey = null;
+ async function refreshWeb() {
+   document.querySelectorAll("#web-mode button").forEach(b => b.classList.toggle("on", (b.dataset.w === "on") === webOn));
+   const f = state.focus, first = Math.max(1, Math.min(24, Math.round(Number($("#web-z").value) || 5)));
+@@ -203,7 +207,7 @@
+   if (t === leftTab) return;
+   leftTab = t;
+   document.querySelectorAll("#ltabs button[data-lt]").forEach(b => b.classList.toggle("on", b.dataset.lt === t));
+-  $("#lt-net").classList.toggle("on", t === "net"); $("#lt-run").classList.toggle("on", t === "run");
++  document.querySelectorAll(".lpane").forEach(x => x.classList.toggle("on", x.id === `lt-${t}`));
+   $(`#ltabs button[data-lt="${t}"]`).classList.remove("fresh");
+   syncLeftMap();
+ }
+@@ -245,6 +249,7 @@
+ let qGen = 0;
+ const stillWanted = (g, mode, q) => g === qGen && state.qMode === mode && $("#lens-q").value.trim() === q;
+ async function runInfer(text, g) {
++  if (readOnly) return;
+   markLeftFresh("run");
+   if (text !== state.inf.text) {
+     $("#run-rows").innerHTML = `<li class="head">running…</li>`;
+@@ -441,7 +446,7 @@
+   const on = focusEl.classList.contains("on"), col = focusEl.classList.contains("collapsed"), f = state.focus;
+   const t = $("#focus-tab");
+   t.classList.toggle("on", !on || col);
+-  t.textContent = on && col && f ? `‹ ${f.kind === "random" ? "r" : "N"}${f.n}` : "‹ claude";
++  t.textContent = on && col && f ? `‹ ${f.kind === "random" ? "r" : "N"}${f.n}` : readOnly ? "‹ 脑图实验" : "‹ claude";
+ }
+ $("#list-hide").onclick = () => setListHidden(true);
+ $("#list-tab").onclick = () => setListHidden(false);
+@@ -474,6 +479,7 @@
+   if (tabBtn(curTab()).style.display === "none") setTab(f ? "examples" : "claude");
+ }
+ function openClaude() {
++  if (readOnly) { focusEl.classList.add("on"); setTab("survey"); setFocusCollapsed(false); return; }
+   focusEl.classList.add("on"); syncTabs(); setTab("claude"); setFocusCollapsed(false); $("#a-input").focus();
+ }
+ 
+@@ -488,6 +494,7 @@
+   flushName();
+   if (running) running.abort();
+   state.focus = { layer, n, kind };
++  survey?.select(layer, n);
+   if (map.layerMode !== null && map.layerMode !== layer) map.enterLayer(layer);
+   if (push && kind === "neuron") history.replaceState(null, "", `#L${layer}/N${n}`);
+   focusEl.classList.add("on"); $("#list").classList.add("has-focus");
+@@ -495,7 +502,7 @@
+   $("#f-id").textContent = kind === "random" ? `L${layer} random ${n}` : `L${layer} N${n}`;
+   $("#f-rank").textContent = "";
+   setNameField(state.unitMap[layer]?.get(n)?.name || "");
+-  $("#f-name").disabled = kind !== "neuron";
++  $("#f-name").disabled = readOnly || kind !== "neuron";
+   $("#tab-examples").innerHTML = ""; $("#tab-details").innerHTML = "";
+   state.thread = []; renderThread(); $("#c-reads").innerHTML = ""; $("#c-lens").innerHTML = "";
+   syncTabs();
+@@ -609,6 +616,7 @@
+ // name autosave
+ let nameTimer, pendingName = null;
+ async function saveName(p) {
++  if (readOnly) return;
+   await api("/api/name", { layer: p.layer, n: p.n, name: p.name });
+   const u = state.unitMap[p.layer]?.get(p.n); if (u) u.name = p.name.trim();
+   if (p.layer === state.layer && state.units[p.layer]?.length) map.setUnits(p.layer, state.units[p.layer]);
+@@ -680,6 +688,7 @@
+ 
+ $("#c-form").addEventListener("submit", async e => {
+   e.preventDefault();
++  if (readOnly) return;
+   if (running) { running.abort(); return; }
+   const f = state.focus; if (!f) return;
+   const text = $("#c-input").value.trim() || $("#c-input").placeholder;
+@@ -750,7 +759,8 @@
+     setTimeout(pollStatus, 2000);
+   }
+ }
+-pollStatus();
++if (readOnly) $("#status").textContent = "已有结果 · 不加载模型";
++else pollStatus();
+ 
+ window.__ne = { map, state, scatter };
+ // ---------- start ----------
+@@ -758,7 +768,7 @@
+ let saved = null; try { const v = localStorage.getItem("ne.layer"); if (v !== null) saved = +v; } catch {}
+ const first = have.includes(saved) ? saved : have.includes(22) ? 22 : (have[0] ?? 0);
+ await setLayer(first);
+-if (location.hash) fromHash();
++if (location.hash && !readOnly) fromHash();
+ 
+ // ---------- claude: the Claude tab, one claude -p session per conversation ----------
+ const agent = { chat: null, ctl: null };
+@@ -796,6 +806,7 @@
+ }
+ // quick actions above the input, for the open neuron
+ function renderAgentActions() {
++  if (readOnly) { $("#a-actions").innerHTML = ""; return; }
+   const f = state.focus;
+   $("#a-actions").innerHTML = f && f.kind === "neuron" ? `<button data-a="explain">explain L${f.layer} N${f.n}</button><button data-a="web">what does its web do?</button>` : "";
+ }
+@@ -875,6 +886,7 @@
+ }
+ // one turn: the reply streams into a new assistant message, text and tool calls interleaved in the order they happen
+ async function agentTurn(message, shown, shownCls = "user", atts = []) {
++  if (readOnly) return;
+   if (agent.ctl) agent.ctl.abort();
+   const ctl = agent.ctl = new AbortController(), f = state.focus, th = $("#a-thread");
+   clearAgentMarks(); clearTurnControls();
+@@ -938,6 +950,7 @@
+   }
+ }
+ function sendChat() {
++  if (readOnly) return false;
+   const msg = $("#a-input").value.trim();
+   if (agent.pending.some(a => !a.id) || (!msg && !agent.pending.length)) return false;
+   const atts = agent.pending; agent.pending = []; renderPending();
+@@ -1038,5 +1051,19 @@
+ // the button sends, or stops while Claude works (Enter still sends, which queues while it works)
+ $("#a-form").addEventListener("submit", e => { e.preventDefault(); if (agent.ctl) stopAgent(); else sendChat(); });
+ $("#a-new").onclick = () => { resetAgent(); clearAgentMarks(); };
+-loadAgent(); renderAgentActions();
++if (!readOnly) loadAgent();
++renderAgentActions();
++if (readOnly) {
++  document.querySelectorAll('#q-mode [data-q="fires"], #ltabs [data-lt="run"], #tabs [data-tab="chat"], #tabs [data-tab="claude"], #tab-chat input, #tab-chat button, #tab-claude input, #tab-claude textarea, #tab-claude button, #inf-text').forEach(el => { el.disabled = true; el.title = "缓存只读：不加载模型"; });
++  try {
++    survey = await createSurvey({ profile:index.profile, map, pick:(l,n) => { setTab("survey"); openNeuron(l,n,"neuron",true,false); map.exitLayer(); map.flyToNeuron(l,n,0.3); } });
++    window.__ne.survey = survey;
++    showLeft("survey"); setTab("survey");
++    if (innerWidth <= 900) setListHidden(true);
++    const hash = location.hash.match(/^#L(\d+)\/N(\d+)/);
++    const initial = hash ? {layer:+hash[1],n:+hash[2]} : survey.defaultPoint;
++    await openNeuron(initial.layer,initial.n,"neuron",false,false);
++    map.flyToNeuron(initial.layer,initial.n,0.3);
++  } catch (err) { $("#status").textContent = `实验结果载入失败：${err.message}`; }
++}
+ syncEdge(); updateInsets();
+--- a/explorer/static/map3d.js
++++ b/explorer/static/map3d.js
+@@ -15,7 +15,7 @@
+   wire: 0x1c2a30, wireData: 0x3a5a66, slabEdge: 0x3c4a52, slabEdgeFull: 0x6a8592, head: 0x2f4a56, headFull: 0x5f8fa3,
+ };
+ // overall brightness of everything drawn in the map (points, lines, slabs); 1 = original
+-const BRIGHT = Number(new URLSearchParams(location.search).get("bright")) || 2.5;
++const BRIGHT = Number(new URLSearchParams(location.search).get("bright")) || 0.15;
+ // the boost lifts the structure (sheets, wires, idle points); data colours keep their hue
+ for (const k in PAL) if (!["bg", "swept", "lo", "hi", "named"].includes(k)) PAL[k] = new THREE.Color(PAL[k]).multiplyScalar(BRIGHT);
+ 
+@@ -211,6 +211,12 @@
+   const markPts = new THREE.Points(markGeo, glowPoints(4, 2));
+   markPts.frustumCulled = false; markPts.renderOrder = 1;
+   scene.add(markPts);
++  const surveyGeo = new THREE.BufferGeometry(), surveyRingGeo = new THREE.BufferGeometry();
++  const surveyPts = new THREE.Points(surveyGeo, glowPoints(7, 2));
++  const ringMat = glowPoints(12, 2);
++  ringMat.fragmentShader = ringMat.fragmentShader.replace("if (r > 0.5)", "if (r > 0.5 || r < 0.32)");
++  const surveyRings = new THREE.Points(surveyRingGeo, ringMat);
++  for (const pts of [surveyPts, surveyRings]) { pts.frustumCulled = false; pts.renderOrder = 2; scene.add(pts); }
+ 
+   function refreshHighlights() {
+     const p = [], c = [];
+@@ -288,8 +294,9 @@
+     if (pending) return; pending = true;
+     requestAnimationFrame(() => {
+       pending = false;
+-      for (const m of [pointMat, hiMat, markPts.material, webPts.material]) { m.uniforms.ref.value = homeDist; m.uniforms.tdist.value = curDist(); }
++      for (const m of [pointMat, hiMat, markPts.material, webPts.material, surveyPts.material, surveyRings.material]) { m.uniforms.ref.value = homeDist; m.uniforms.tdist.value = curDist(); }
+       applyFade();
++      for (const m of [surveyPts.material, surveyRings.material]) for (const k of ["focusX", "fadeW", "fadeAmt", "camSide"]) m.uniforms[k].value = pointMat.uniforms[k].value;
+       renderer.render(scene, camera); placeNotes();
+     });
+   }
+@@ -297,7 +304,7 @@
+     const w = canvas.clientWidth, h = canvas.clientHeight;
+     renderer.setSize(w, h, false);
+     webMat.resolution.set(w, h);
+-    const narrow = w <= 760, li = narrow ? 0 : insets.left, ri = narrow ? 0 : insets.right;
++    const li = insets.left, ri = insets.right;
+     const availW = Math.max(200, w - li - ri);
+     camera.aspect = w / h;
+     if (fitPerPx === null) {
+@@ -327,6 +334,12 @@
+     ray.setFromCamera(mouse, camera);
+     // hits come sorted by depth; on a sheet seen at an angle several neighbours fall within the threshold, so take
+     // the frontmost layer's hits and pick the point closest to the ray
++    const measured = lastSurveyMarks.length ? ray.intersectObject(surveyPts) : [];
++    if (measured.length) {
++      const hit = measured.reduce((a,b) => a.distanceToRay < b.distanceToRay ? a : b);
++      const m = lastSurveyMarks[hit.index];
++      if (m && layerVisibility(m.layer) > 0.5) return {type:"neuron",layer:m.layer,n:m.n};
++    }
+     const hits = ray.intersectObject(points);
+     if (hits.length) {
+       // the frontmost layer that is actually visible at the current fade, then the point closest to the ray in it
+@@ -370,7 +383,7 @@
+     if (dx * fade.side / GAP > 0.45) return 1 - fade.amt;
+     return 1 - 0.75 * fade.amt * (1 - Math.exp(-d * d));
+   };
+-  let layerMode = null, saved = null, lastMarks = [];
++  let layerMode = null, saved = null, lastMarks = [], lastSurveyMarks = [];
+   function enterLayer(l) {
+     if (layerMode === null) saved = { pos: camera.position.clone(), tgt: controls.target.clone() };
+     layerMode = l;
+@@ -508,6 +521,7 @@
+     setLayout(cells) {
+       layoutCells = cells;
+       this.setMarks(lastMarks);
++      this.setSurveyMarks(lastSurveyMarks);
+       for (let l = 0; l < L; l++) for (let n = 0; n < N; n++) {
+         const p = neuronPos(l, n), k = (l * N + n) * 3;
+         pos[k] = p.x; pos[k + 1] = p.y; pos[k + 2] = p.z;
+@@ -525,7 +539,7 @@
+     // fly close to one neuron, keeping the current viewing direction
+     flyToNeuron(layer, n, closeness = 0.22) { flyTo(neuronPos(layer, n), homeDist * closeness); },
+     get layerMode() { return layerMode; },
+-    home() { flyTo(home.target, homeDist); },
++    home() { fitPerPx = null; resize(); flyTo(home.target, homeDist); },
+     setMarks(marks) {
+       lastMarks = marks;
+       const p = [], c = [], up = new THREE.Color(1.0, 0.71, 0.28), down = new THREE.Color(1.0, 0.31, 0.6);
+@@ -537,6 +551,21 @@
+       markGeo.setAttribute("color", new THREE.Float32BufferAttribute(c, 3));
+       render();
+     },
++    setSurveyMarks(marks) {
++      lastSurveyMarks = marks;
++      const p = [], c = [], rp = [], rc = [];
++      for (const m of marks) {
++        const v = neuronPos(m.layer, m.n), color = new THREE.Color(m.color);
++        p.push(v.x,v.y,v.z); c.push(color.r,color.g,color.b);
++        if (m.five) { rp.push(v.x,v.y,v.z); rc.push(1,0.72,0.26); }
++      }
++      for (const [g, positions, colors] of [[surveyGeo,p,c],[surveyRingGeo,rp,rc]]) {
++        g.setAttribute("position",new THREE.Float32BufferAttribute(positions,3));
++        g.setAttribute("color",new THREE.Float32BufferAttribute(colors,3));
++        g.computeBoundingSphere();
++      }
++      render();
++    },
+     setInsets(left, right) { insets.left = left; insets.right = right; resize(); },
+     hover(layer, n) { hovered = layer == null ? null : { layer, n }; refreshHighlights(); },
+     debug() { const tv = controls.target.clone().project(camera); return { tgtScreenX: +((tv.x + 1) / 2).toFixed(3), cam: camera.position.toArray().map(v => +v.toFixed(2)), tgt: controls.target.toArray().map(v => +v.toFixed(2)), selected, hovered, n: connections.length, hover: hoverCon ? hoverCon.list.length : 0, dist: curDist(), homeDist, w: canvas.clientWidth, h: canvas.clientHeight, insets }; },
+--- a/explorer/static/style.css
++++ b/explorer/static/style.css
+@@ -309,3 +309,61 @@
+ #net .lrow { display: flex; gap: 6px; align-items: baseline; margin-bottom: 3px; }
+ #net .lrow .sgn { flex: none; width: 1em; font-family: var(--mono); }
+ #net .lrow .sgn.up { color: var(--up); } #net .lrow .sgn.down { color: var(--down); }
++
++/* Existing survey results, kept inside the upstream map and side panels. */
++.survey-readonly header { gap: 10px; overflow-x: auto; white-space: nowrap; }
++.survey-readonly header > * { flex-shrink: 0; }
++.survey-readonly #list { width: 248px; }
++.survey-readonly #focus { width: min(460px, 38vw); }
++.survey-readonly #tabs { gap: 13px; padding: 7px 12px 0; }
++.survey-readonly #f-name:disabled { display: none; }
++.survey-readonly button:disabled { opacity: .35; cursor: default; }
++#lt-survey { min-height: 0; }
++.survey-list-head { padding: 10px 12px; font-size: 12px; border-bottom: 1px solid var(--line); }
++.survey-list-head p { color: var(--dim); margin: 6px 0; }
++#survey-home { color: #c3d7f1; padding: 4px 0; }
++#survey-points { overflow-y: auto; min-height: 0; }
++.survey-layer { padding: 7px 10px; border-bottom: 1px solid #1b1e22; }
++.survey-layer h4 { font: 12px var(--mono); color: #99a9be; margin: 0 0 5px; }
++.survey-layer > div { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
++.survey-layer button { text-align: left; font: 11px var(--mono); padding: 5px; border: 1px solid #252c35; border-radius: 3px; }
++.survey-layer button::before { content: ''; display: inline-block; width: 6px; height: 6px; margin-right: 5px; border-radius: 50%; background: var(--point); }
++.survey-layer button.five { border-color: #8b6b32; }
++.survey-layer button.selected { outline: 2px solid white; background: #263144; }
++#tab-survey { padding: 10px 12px; }
++.survey-note { color: #98a4b5; font-size: 11px; line-height: 1.5; margin: 7px 0; }
++.survey-question { display: flex; align-items: center; gap: 8px; font-size: 12px; margin-top: 8px; }
++.survey-question select { min-width: 0; flex: 1; }
++#survey-prompt { font-size: 12px; white-space: pre-wrap; margin: 9px 0; }
++.survey-coordinate { display: flex; justify-content: space-between; gap: 6px; align-items: center; font: 12px var(--mono); }
++.survey-coordinate span { display: flex; gap: 8px; }
++.survey-coordinate button { font-size: 10px; color: #a9b7ce; }
++.survey-dose { display: flex; gap: 5px; margin-top: 9px; }
++.survey-dose button { border: 1px solid #3b4656; padding: 4px 7px; border-radius: 3px; font-size: 12px; }
++.survey-dose button.on { background: #273e52; color: white; border-color: #81b5d8; }
++.survey-compare, .survey-all-grid { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 8px; }
++.survey-answer { padding: 9px; border: 1px solid #2a3341; background: #0d121b; border-radius: 4px; min-width: 0; }
++.survey-answer h4 { margin: 0 0 6px; font-size: 12px; color: #d8e5f5; }
++.survey-meta { font-size: 10px; color: #8d9db6; overflow-wrap: anywhere; }
++.survey-answer pre { font: 12px/1.6 var(--font); white-space: pre-wrap; overflow-wrap: anywhere; margin: 8px 0; }
++.survey-answer a, .survey-answer summary { color: #86bedf; font-size: 10px; }
++.survey-answer details pre { font-size: 10px; }
++.survey-all { margin-top: 12px; }
++.survey-all > summary { cursor: pointer; font-size: 12px; padding: 7px 0; color: #d5bc83; }
++.survey-legend { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; font-size: 10px; color: #9aa9bf; margin-top: 14px; }
++.survey-legend i { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
++.survey-gold { color: #e9bc67; margin-left: 4px; }
++@media (max-width: 900px) {
++  .survey-readonly #list { right: auto; width: 240px; top: 52px; bottom: 12px; max-height: none; }
++  .survey-readonly #focus { left: auto; width: min(360px, 47vw); top: 52px; }
++  .survey-readonly #tabs { gap: 9px; padding: 5px 9px 0; font-size: 12px; }
++  .survey-readonly #tabs button:disabled { display: none; }
++  .survey-readonly #tab-survey { padding: 8px; }
++  .survey-compare, .survey-all-grid { gap: 5px; }
++  .survey-answer { padding: 6px; }
++  .survey-coordinate { flex-wrap: wrap; }
++}
++@media (max-width: 540px) {
++  .survey-readonly #focus { width: min(360px, 72vw); }
++  .survey-compare, .survey-all-grid { grid-template-columns: 1fr; }
++}
+--- /dev/null
++++ b/explorer/static/survey.js
+@@ -0,0 +1,94 @@
++// Existing measurements on the upstream 3D coordinates; no inference or semantic scoring.
++export async function createSurvey({ profile, map, pick }) {
++  const $ = s => document.querySelector(s);
++  const esc = s => String(s ?? '').replace(/[&<>\"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
++  const response = await fetch('/api/survey');
++  if (!response.ok) throw new Error(`survey ${response.status}`);
++  const data = await response.json(), model = data.models.find(m => m.id === profile);
++  if (!model) throw new Error(`No survey for ${profile}`);
++  const points = new Map(model.points.map(p => [`${p.layer}/${p.channel}`, p]));
++  const doses = ['0.0625', '0.125', '0.25', '0.5', '1'];
++  const names = {'0':'0 原版','0.0625':'+1/16','0.125':'+1/8','0.25':'+1/4','0.5':'+1/2','1':'+1'};
++  let question = 'Q04', dose = '0.5', focus = null;
++  const status = r => !r ? 'missing' : !r.text?.trim() ? 'empty' : r.stop_reason === 'length_limit' ? 'limit' : 'eos';
++  const colors = {missing:'#777777',empty:'#eb839e',limit:'#87aaff',eos:'#6bd5c2'};
++  const statusName = r => !r ? '缺测' : !r.text?.trim() ? '空正文' : r.stop_reason === 'length_limit' ? '有正文 · 128 上限' : '有正文 · EOS 结束';
++  const five = p => doses.every(d => p?.doses[d]);
++  $('#lt-survey').innerHTML = `
++    <div class="survey-list-head"><b>${esc(profile.toUpperCase())} · ${model.layers} 层 · ${model.points.length} 实测点</b>
++    <p>每层 10 个通道。点选后看原版与干预回答；拖动旋转，滚轮缩放。</p>
++    <button id="survey-home">↗ 全景 3D</button></div><div id="survey-points"></div>`;
++  $('#tab-survey').innerHTML = `
++    <div class="survey-note">已有结果 · 不加载模型 · 固定 8 题</div>
++    <label class="survey-question">题目 <select id="survey-question" aria-label="实验题目"></select></label>
++    <p id="survey-prompt"></p><div id="survey-selection"></div>
++    <div class="survey-legend"><i style="background:#6bd5c2"></i>有正文 EOS
++    <i style="background:#87aaff"></i>有正文 128 上限
++    <i style="background:#eb839e"></i>空正文 <i style="background:#777777"></i>缺测 <span class="survey-gold">◎ 五档点</span></div>
++    <p class="survey-note">图色显示本题 <span id="survey-map-dose"></span> 的实测输出形态；灰色为该剂量缺测，不代表能力好坏或功能分区。平面内位置沿用原工具布局；连线是原工具的连接信息，不是本实验测得的激活传播。</p>`;
++  $('#survey-question').innerHTML = data.questions.map(q => `<option value="${esc(q.id)}">${esc(q.id)} · ${esc(q.label)}</option>`).join('');
++  $('#survey-question').value = question;
++  $('#survey-question').onchange = e => { question = e.target.value; paint(); render(); };
++  $('#survey-home').onclick = () => { map.exitLayer(); map.home(); };
++  function paint() {
++    $('#survey-map-dose').textContent = names[dose];
++    map.setSurveyMarks(model.points.map(p => ({layer:p.layer,n:p.channel,color:colors[status(p.doses[dose]?.[question])],five:five(p)})));
++    let html = '';
++    for (let layer = 0; layer < model.layers; layer++) {
++      html += `<section class="survey-layer"><h4>L${String(layer).padStart(2,'0')}</h4><div>`;
++      for (const p of model.points.filter(p => p.layer === layer).sort((a,b) => a.channel-b.channel)) {
++        html += `<button data-l="${layer}" data-n="${p.channel}" class="${five(p)?'five':''}" style="--point:${colors[status(p.doses[dose]?.[question])]}" title="${esc(statusName(p.doses[dose]?.[question]))}${five(p)?' · 五档实测':' · 仅 +1 实测'}">N${p.channel}${five(p)?' ◎':''}</button>`;
++      }
++      html += '</div></section>';
++    }
++    $('#survey-points').innerHTML = html;
++  }
++  $('#survey-points').onclick = e => {
++    const b = e.target.closest('button[data-l]');
++    if (b) pick(+b.dataset.l,+b.dataset.n);
++  };
++  function card(title, r) {
++    if (!r) return `<article class="survey-answer"><h4>${esc(title)}</h4><p class="survey-note">该通道 / 题目 / 剂量没有记录。</p></article>`;
++    return `<article class="survey-answer"><h4>${esc(title)}</h4>
++      <div class="survey-meta">${esc(statusName(r))} · ${r.tokens} tokens<br>${esc(r.stop_reason)}</div>
++      <pre>${r.text?.trim() ? esc(r.text) : '（原始 answer_text 为空；请展开 raw_text 查看特殊 token。）'}</pre>
++      <details><summary>raw_text</summary><pre>${esc(JSON.stringify(r.raw_text))}</pre></details>
++      <a href="/evidence/${esc(r.source)}" target="_blank" rel="noopener">原始记录 ↗</a></article>`;
++  }
++  function render() {
++    $('#survey-prompt').textContent = data.questions.find(q => q.id === question)?.prompt ?? '';
++    $('#survey-points').querySelectorAll('button').forEach(b => b.classList.toggle('selected',!!focus && +b.dataset.l===focus.layer && +b.dataset.n===focus.n));
++    if (!focus) { $('#survey-selection').textContent = '在 3D 脑图或左侧列表点选通道。'; return; }
++    const p = points.get(`${focus.layer}/${focus.n}`), available = p ? doses.filter(d => p.doses[d]) : [];
++    if (available.length && !available.includes(dose)) { dose = available.includes('0.5') ? '0.5' : '1'; paint(); }
++    $('#survey-map-dose').textContent = names[dose];
++    $('#survey-selection').innerHTML = `
++      <div class="survey-coordinate"><b>L${focus.layer} N${focus.n}</b><span>
++      <button data-survey-view="home">全景 3D</button>
++      <button data-survey-view="point">定位此点</button></span></div>
++      <div class="survey-coordinate"><span>
++      <button data-layer-step="-1" ${focus.layer===0?'disabled':''}>↑ 上一层</button>
++      <button data-layer-step="1" ${focus.layer===model.layers-1?'disabled':''}>↓ 下一层</button></span></div>
++      <div class="survey-dose">${available.map(d => `<button data-dose="${d}" class="${dose===d?'on':''}">${names[d]}</button>`).join('')}</div>
++      <p class="survey-note">${!p?'该通道未进入此次每层 10 点调查；没有干预回答。':five(p)?'该点有五档实测。切换剂量，观察回答如何变化。':'该点只有 +1 实测；中间四档没有运行。'}</p>
++      <div class="survey-compare">${card('0 · 原版', model.baseline[question])}${card(`${names[dose]} · 干预`,p?.doses[dose]?.[question])}</div>
++      ${five(p)?`<details class="survey-all"><summary>展开原版 + 五档全部回答</summary><div class="survey-all-grid">${card('0 · 原版',model.baseline[question])}${doses.map(d => card(names[d],p.doses[d]?.[question])).join('')}</div></details>`:''}`;
++  }
++  $('#survey-selection').onclick = e => {
++    const view = e.target.closest('button[data-survey-view]');
++    if (view && focus) { map.exitLayer(); if (view.dataset.surveyView === 'home') map.home(); else map.flyToNeuron(focus.layer,focus.n,0.3); }
++    const d = e.target.closest('button[data-dose]');
++    if (d) { dose = d.dataset.dose; paint(); render(); }
++    const step = e.target.closest('button[data-layer-step]');
++    if (step && focus) {
++      const layer = focus.layer + +step.dataset.layerStep;
++      const next = model.points.find(p => p.layer===layer && five(p)) || model.points.find(p => p.layer===layer);
++      if (next) pick(next.layer,next.channel);
++    }
++  };
++  paint(); render();
++  return {
++    select(layer,n) { focus = {layer,n}; render(); },
++    defaultPoint: profile==='4b' ? {layer:6,n:7840} : (()=>{const p=model.points.find(p=>p.layer===Math.min(6,model.layers-1)&&five(p))||model.points[0];return {layer:p.layer,n:p.channel};})()
++  };
++}

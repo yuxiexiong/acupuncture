@@ -1,0 +1,370 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "acupuncture.trace.v1",
+  "title": "Fixed-input four-condition contribution difference trace",
+  "type": "object",
+  "required": [
+    "format",
+    "status",
+    "model",
+    "input",
+    "condition_order",
+    "conditions",
+    "sites",
+    "details",
+    "provenance"
+  ],
+  "properties": {
+    "format": {
+      "const": "acupuncture.trace.v1"
+    },
+    "status": {
+      "const": "complete"
+    },
+    "model": {
+      "type": "object",
+      "required": [
+        "repo",
+        "revision",
+        "metadata"
+      ],
+      "properties": {
+        "repo": {
+          "const": "Qwen/Qwen3.5-4B"
+        },
+        "revision": {
+          "const": "851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a"
+        },
+        "metadata": {
+          "type": "object"
+        }
+      }
+    },
+    "input": {
+      "type": "object",
+      "required": [
+        "text",
+        "text_sha256",
+        "token_ids",
+        "token_texts",
+        "token_sha256"
+      ],
+      "properties": {
+        "text": {
+          "type": "string"
+        },
+        "text_sha256": {
+          "type": "string"
+        },
+        "token_ids": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 512,
+          "items": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "token_texts": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "token_sha256": {
+          "type": "string"
+        }
+      }
+    },
+    "condition_order": {
+      "const": [
+        "clean",
+        "A",
+        "B",
+        "AB"
+      ]
+    },
+    "conditions": {
+      "type": "object",
+      "required": [
+        "clean",
+        "A",
+        "B",
+        "AB"
+      ],
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "arm",
+          "recipe",
+          "calibration",
+          "input_token_sha256",
+          "source_write_audit"
+        ]
+      }
+    },
+    "sites": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "layer",
+          "component",
+          "hook",
+          "dimension",
+          "series",
+          "interaction"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^L[0-9]+\\.(attention|mlp|residual)$"
+          },
+          "layer": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "component": {
+            "enum": [
+              "attention",
+              "mlp",
+              "residual"
+            ]
+          },
+          "hook": {
+            "type": "string"
+          },
+          "dimension": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "series": {
+            "type": "object",
+            "required": [
+              "clean",
+              "A",
+              "B",
+              "AB"
+            ],
+            "properties": {
+              "clean": {
+                "type": "object",
+                "required": [
+                  "norm",
+                  "delta_norm",
+                  "relative_delta_norm"
+                ],
+                "properties": {
+                  "norm": {
+                    "type": "array",
+                    "items": {
+                      "type": "number",
+                      "minimum": 0
+                    }
+                  },
+                  "delta_norm": {
+                    "type": "array",
+                    "items": {
+                      "type": "number",
+                      "minimum": 0
+                    }
+                  },
+                  "relative_delta_norm": {
+                    "type": "array",
+                    "items": {
+                      "type": [
+                        "number",
+                        "null"
+                      ],
+                      "minimum": 0
+                    }
+                  }
+                },
+                "additionalProperties": false
+              },
+              "A": {
+                "type": "object",
+                "required": [
+                  "norm",
+                  "delta_norm",
+                  "relative_delta_norm"
+                ],
+                "properties": {
+                  "norm": {
+                    "type": "array",
+                    "items": {
+                      "type": "number",
+                      "minimum": 0
+                    }
+                  },
+                  "delta_norm": {
+                    "type": "array",
+                    "items": {
+                      "type": "number",
+                      "minimum": 0
+                    }
+                  },
+                  "relative_delta_norm": {
+                    "type": "array",
+                    "items": {
+                      "type": [
+                        "number",
+                        "null"
+                      ],
+                      "minimum": 0
+                    }
+                  }
+                },
+                "additionalProperties": false
+              },
+              "B": {
+                "type": "object",
+                "required": [
+                  "norm",
+                  "delta_norm",
+                  "relative_delta_norm"
+                ],
+                "properties": {
+                  "norm": {
+                    "type": "array",
+                    "items": {
+                      "type": "number",
+                      "minimum": 0
+                    }
+                  },
+                  "delta_norm": {
+                    "type": "array",
+                    "items": {
+                      "type": "number",
+                      "minimum": 0
+                    }
+                  },
+                  "relative_delta_norm": {
+                    "type": "array",
+                    "items": {
+                      "type": [
+                        "number",
+                        "null"
+                      ],
+                      "minimum": 0
+                    }
+                  }
+                },
+                "additionalProperties": false
+              },
+              "AB": {
+                "type": "object",
+                "required": [
+                  "norm",
+                  "delta_norm",
+                  "relative_delta_norm"
+                ],
+                "properties": {
+                  "norm": {
+                    "type": "array",
+                    "items": {
+                      "type": "number",
+                      "minimum": 0
+                    }
+                  },
+                  "delta_norm": {
+                    "type": "array",
+                    "items": {
+                      "type": "number",
+                      "minimum": 0
+                    }
+                  },
+                  "relative_delta_norm": {
+                    "type": "array",
+                    "items": {
+                      "type": [
+                        "number",
+                        "null"
+                      ],
+                      "minimum": 0
+                    }
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "additionalProperties": false
+          },
+          "interaction": {
+            "type": "object",
+            "required": [
+              "definition",
+              "interpretation",
+              "norm",
+              "relative_clean_norm"
+            ],
+            "properties": {
+              "definition": {
+                "const": "AB-A-B+clean"
+              },
+              "interpretation": {
+                "const": "algebraic_interaction_difference_not_mechanism"
+              },
+              "norm": {
+                "type": "array",
+                "items": {
+                  "type": "number",
+                  "minimum": 0
+                }
+              },
+              "relative_clean_norm": {
+                "type": "array",
+                "items": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "minimum": 0
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "details": {
+      "type": "object",
+      "required": [
+        "channels",
+        "vectors"
+      ],
+      "properties": {
+        "channels": {
+          "type": "array",
+          "maxItems": 8,
+          "description": "Each entry: layer,index,hook,values{condition:[signed scalar per input token]}."
+        },
+        "vectors": {
+          "type": "array",
+          "maxItems": 4,
+          "description": "Each entry: site,positions (max 8),values{condition:[[full contribution vector per selected position]]}."
+        }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "required": [
+        "source_hashes",
+        "input_file_sha256",
+        "authorization_file_sha256"
+      ]
+    }
+  },
+  "semantic_constraints": [
+    "Every scalar series length equals input.token_ids length; token_texts has the same length.",
+    "All four conditions use the exact same input token sequence and one shared clean-prompt calibration.",
+    "norm = L2(actual output); delta_norm = L2(condition output - clean output), computed at aligned tokens.",
+    "relative_delta_norm and relative_clean_norm divide by the clean output norm; a zero clean norm yields null, not zero or infinity.",
+    "Attention/MLP sites capture module forward outputs before their residual additions. Residual sites capture decoder-block outputs after both additions.",
+    "Channel details capture selected down_proj inputs after the condition intervention; vector details are selected module output positions.",
+    "Interaction is computed on signed output vectors as AB-A-B+clean before taking its L2 norm; never subtract scalar norms.",
+    "No autoregressive generation; fixed input, batch one, use_cache=False. Capture hooks are read-only and removed on success and failure."
+  ]
+}

@@ -1,0 +1,104 @@
+{
+  "status": "passed",
+  "verified_utc": "2026-10-27T15:51:38.223343+00:00",
+  "scope": "Full model-assisted first open reading; not human blinded review or semantic scoring.",
+  "counts": {
+    "layers": 88,
+    "comparison_groups": 704,
+    "display_cells": 7744,
+    "unique_sources": 7064,
+    "new_negative_sources": 3520,
+    "reused_sources": 3544
+  },
+  "models": [
+    {
+      "model_id": "2b",
+      "counts": {
+        "layers": 24,
+        "comparison_groups": 192,
+        "display_cells": 2112,
+        "unique_sources": 1928
+      },
+      "coverage_sha256": "d2e53c093e98287d826ca88f5fb833cca4bbc3436dc2dcaa57cfb0e92537dea3",
+      "notes_sha256": "0e20f10c177f820b6ec6370d9a62d66c5a1e7ddd63d73043bc3cc49ba5a0f82d",
+      "completed_utc": "2026-10-27T15:44:37.125633+00:00",
+      "reading_method": "按层逐组显示并阅读全部十一栏 raw_text；保留 end_reason/token_count；每批明确 END FULL marker；不以关键词或抽样代替全读"
+    },
+    {
+      "model_id": "4b",
+      "counts": {
+        "layers": 32,
+        "comparison_groups": 256,
+        "display_cells": 2816,
+        "unique_sources": 2568
+      },
+      "coverage_sha256": "b58cdb559666fbee6d73631f1a8ec6070ecfe5c2747f6c3141a14a2e3d13862c",
+      "notes_sha256": "e2cf236c62dc0bfd95bc17bb4345efb02972e1fc49faa8a0fe6981bea07d7a28",
+      "completed_utc": "2026-10-27T15:45:49.621811+00:00",
+      "reading_method": "逐层完整显示八题各11栏raw_text，连同prompt、dose、end_reason、generated_token_count阅读；先原文后逐层笔记，未用关键词/计数/抽样代替。全部读完后才对六处重点回查。"
+    },
+    {
+      "model_id": "9b",
+      "counts": {
+        "layers": 32,
+        "comparison_groups": 256,
+        "display_cells": 2816,
+        "unique_sources": 2568
+      },
+      "coverage_sha256": "511aab91d27ac424f64edf23f7d73197c7978065f6fa02105d889d44d0e70c0e",
+      "notes_sha256": "6feb310f381982e5a7eeb260a79fff7dcbf8e79ced6f754b4e47d2c6db568c4d",
+      "completed_utc": "2026-10-27T15:47:09.445906Z",
+      "reading_method": "逐层逐题显示十一栏完整raw_text，逐单元END_CELL、逐组END_GROUP及批末END_FULL_DISPLAY核对；当工具截断时缩小范围重新完整显示。"
+    }
+  ],
+  "checks": {
+    "exact_group_union_0_to_703": true,
+    "all_ordered_11_doses": true,
+    "source_identity_and_token_hash": true,
+    "notes_and_input_hashes": true,
+    "read_batches_cover_every_group_once": true,
+    "all_batches_have_completion_markers": true
+  },
+  "truncation_recoveries": [
+    {
+      "model": "4b",
+      "layers": [
+        0
+      ],
+      "question_ids": [
+        "Q01",
+        "Q02",
+        "Q03",
+        "Q04",
+        "Q05",
+        "Q06",
+        "Q07",
+        "Q08"
+      ],
+      "group_indices": [
+        192,
+        193,
+        194,
+        195,
+        196,
+        197,
+        198,
+        199
+      ],
+      "full_display_marker": "END_FULL_4B_L00_Q01-Q08",
+      "truncation_recovery": "初次与巨大export_receipt同批造成总输出截断警告；已单独完整重读L00并见END marker。"
+    }
+  ],
+  "root_crosscheck": {
+    "path": "experiments/layer-negative-dose-survey-toy-v1-2026-10-27/qualitative-pass-r01/root-crosscheck.json",
+    "sha256": "19263ae45599cfce790c214e71d2964d6003503ec2e2d321266a48cf2e8ccf84",
+    "unique_baselines_read": 24,
+    "full_eleven_column_groups_read": 14,
+    "layer_notes_read": 88
+  },
+  "limits": [
+    "Coverage verifies reading records and source identities; it cannot prove human comprehension or independent agreement.",
+    "One 4B first display was truncated and completely redisplayed before being counted.",
+    "No new model inference, semantic scoring, natural function naming or added experiments."
+  ]
+}

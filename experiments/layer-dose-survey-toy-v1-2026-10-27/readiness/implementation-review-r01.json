@@ -1,0 +1,30 @@
+{
+  "status": "passed",
+  "created_utc": "2026-10-27T11:34:38.562627+00:00",
+  "scope": "Independent read-only implementation review; no GPU execution by reviewer",
+  "reviewed": [
+    "dose_survey.py",
+    "dose_engine.py",
+    "preflight_controller.py",
+    "export_dose_survey.py",
+    "test_dose_survey.py",
+    "test_dose_engine.py",
+    "old frozen generation and dependencies"
+  ],
+  "checks": [
+    "126 bounded generations and 2816 formal schedule counts",
+    "728 unique reused source records",
+    "old 13 frozen dependency hashes unchanged",
+    "independent per-dose BF16 conversion from original calibration",
+    "actual EOS tokens and 128-token budget preserved",
+    "baseline/replay/zero/restored exact token checks",
+    "source metadata equality except device",
+    "hooks removed and target weight hashes preserved",
+    "formal mode cannot use preflight authorization"
+  ],
+  "finding_resolved": "Worker output bound to authorization remote_output before model loading",
+  "limitations": [
+    "Finite-value check covers the intervened target channel, not every tensor in the model",
+    "CPU fixture export is synthetic and not a formal scientific result"
+  ]
+}

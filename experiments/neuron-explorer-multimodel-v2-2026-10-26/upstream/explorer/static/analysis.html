@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Acupuncture · 早层输出观察台</title>
+  <link rel="stylesheet" href="/analysis.css">
+</head>
+<body>
+  <header class="page-header">
+    <div>
+      <div class="eyebrow">ACUPUNCTURE / 既有实验数据</div>
+      <h1>早层输出观察台</h1>
+      <p class="intro">从原始回答出发，沿着层与生成步，查看干预后的变化。</p>
+    </div>
+    <nav aria-label="页面导航"><a id="back-3d" href="/?model=4b">三维查看 ↗</a><a href="/library.html">全部实验 ↗</a></nav>
+  </header>
+  <main>
+    <div class="badges"><span>已归档实测</span><span>本地只读</span><span>不运行模型</span></div>
+    <section class="filters" aria-label="选择实验条件">
+      <div id="controls">
+        <label>模型<select id="model" aria-label="模型"></select></label>
+        <label>注入层<select id="layer" aria-label="注入层"></select></label>
+        <label>原通道<select id="channel" aria-label="原通道"></select></label>
+        <label>原题目<select id="question" aria-label="原题目"></select></label>
+      </div>
+      <p id="prompt" class="prompt"></p>
+      <div id="status" role="status" aria-live="polite">正在读取本地归档…</div>
+    </section>
+
+    <section class="panel" aria-labelledby="dose-title">
+      <div class="section-heading"><span class="section-number">01</span><div><h2 id="dose-title">同一点，正负剂量并排看</h2><p>固定模型、层、通道与题目。点击一档剂量，下方图表同步切换。</p></div></div>
+      <div id="dose-overview" class="summary"></div>
+      <div id="dose-cards" aria-label="按剂量排列的原始回答"></div>
+      <p class="hint">向左右滚动查看全部剂量。0 为同题共享原版；只有实际运行的剂量才有回答，空缺不补造。</p>
+    </section>
+
+    <div class="selection-bar"><strong id="selection">请选择一档剂量</strong><div id="trace-status" role="status"></div></div>
+    <section id="trace-panel" hidden>
+      <section class="panel" aria-labelledby="heatmap-title">
+        <div class="section-heading"><span class="section-number">02</span><div><h2 id="heatmap-title">层 × 生成步：变化从哪里出现</h2><p>三个组件分别展开。点选热图单元格，查看该层、该步的精确读数。</p></div></div>
+        <div class="chart-toolbar"><label>热图指标<select id="metric" aria-label="热图指标"><option value="relative_delta">相对差分</option><option value="cosine">方向变化：1 − cosine</option><option value="delta_norm">差分范数</option><option value="clean_norm">无针范数</option></select></label><p id="scale-note" class="hint"></p></div>
+        <div id="heatmaps"></div>
+        <div id="site-readout" class="readout" aria-live="polite"></div>
+        <p class="hint">横轴为输出预测步；步 0 对应提示末位，预测第 1 个输出 token。纵轴为观察层（从 L0 开始）；金色行框标出注入层。颜色比较相同输入前缀下的组件整体读数，不表示单个神经元的激活或已证实的因果路径。</p>
+      </section>
+
+      <section class="panel" aria-labelledby="token-title">
+        <div class="section-heading"><span class="section-number">03</span><div><h2 id="token-title">逐 token：停止和继续在怎样竞争</h2><p>点击 token、曲线或热图，查看对应生成步。文本碎片可能包含空格或不完整字节，以原始回答为准。</p></div></div>
+        <div class="step-controls"><button id="prev-step" type="button" aria-label="上一个生成步">← 上一步</button><label id="step-label" for="step">生成步</label><button id="next-step" type="button" aria-label="下一个生成步">下一步 →</button></div>
+        <input id="step" type="range" min="0" max="0" step="1" value="0" aria-label="生成步">
+        <div id="tokens" aria-label="实际生成 token"></div>
+        <div id="curves"></div>
+        <div class="chart-toolbar"><label>跟踪一个候选 token<select id="candidate" aria-label="候选 token"></select></label><p class="hint">只展示已保存的候选分数。未记录的步留空；不补算词表。</p></div>
+        <div id="candidate-curve"></div>
+        <div id="token-readout" class="readout" aria-live="polite"></div>
+      </section>
+    </section>
+
+    <section class="panel methods">
+      <details><summary>如何理解这些对照</summary>
+        <p><strong>原版自由回答</strong>是未干预模型独立生成的回答，用于比较最终文本。<strong>图中的无针参照</strong>则从提示开始全程不加针，保留独立缓存，并强制读取干预分支已经选择的 token；两边在每一步看到相同文字历史。</p>
+        <p>因此，图中比较的是相同前缀下的状态与预测。它不等于中途拔针，也不能单凭某层最亮或某个 token 最先不同，就断定该层负责语句完整性。</p>
+        <p>停止优势为最高停止 token 分数减去最高非停止 token 分数；正值表示停止更占优。候选 token 的并列最高分需要保留，不能把并列选择自动算作行为异常。</p>
+        <p>每题最多生成 128 个新 token，遇到 EOS 则保留原长。到达长度上限、空正文和第一次预测不同本身都不是自动判定的失败。页面不附加语义评分或人格标签。</p>
+        <p>没有采集轨迹的条件显示“未采集”，不画成零。Attention / GatedDeltaNet、MLP 与层末残差分别保留各自读数；GatedDeltaNet 的读数不是注意力权重矩阵。</p>
+      </details>
+      <div id="evidence" class="sources"></div>
+    </section>
+  </main>
+  <footer>Acupuncture · 原文与测量保留来源，图表用于观察和提出可检验的问题。</footer>
+  <script type="module" src="/analysis.js"></script>
+</body>
+</html>

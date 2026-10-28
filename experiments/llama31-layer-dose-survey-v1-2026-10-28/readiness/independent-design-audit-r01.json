@@ -1,0 +1,120 @@
+{
+  "status": "design_review_complete_implementation_and_runtime_pending",
+  "reviewer": "llama_comparability_audit",
+  "checked_utc": "2026-10-27T16:04:58.605527+00:00",
+  "scope": "Independent read-only inspection of existing Qwen layer/dose and Llama adapter definitions. This receipt does not certify new code, GPU readiness, formal launch, or model effects.",
+  "candidate_model": {
+    "repo": "meta-llama/Llama-3.1-8B-Instruct",
+    "revision": "0e9e39f249a16976918f6564b8830bc894c89659",
+    "selection_status": "Root requested clarification of Base versus Instruct; this audit addresses the available Instruct adapter."
+  },
+  "formal_counts": {
+    "layers": 32,
+    "channels_per_layer": 10,
+    "points": 320,
+    "nonzero_doses_per_point": 10,
+    "questions_per_condition": 8,
+    "nonzero_conditions": 3200,
+    "intervention_answers": 25600,
+    "unique_baseline_answers": 8,
+    "unique_sources": 25608,
+    "comparison_groups": 2560,
+    "columns_per_group": 11,
+    "display_cells": 28160,
+    "maximum_formal_tokens_including_baseline": 3277824
+  },
+  "doses": [
+    -1,
+    -0.5,
+    -0.25,
+    -0.125,
+    -0.0625,
+    0,
+    0.0625,
+    0.125,
+    0.25,
+    0.5,
+    1
+  ],
+  "settings_to_preserve": {
+    "question_file_sha256": "8dd517ab8ff38889b11a34caaacf63f622b6e20b9793256ff742d0b38c9b2850",
+    "instruction": "请用中文简短回答，通常一至三句话；具体格式要求以题目为准。",
+    "point_sampling": "Same frozen seeded uniform sampling without replacement policy, ten distinct valid MLP channels per layer, fixed before viewing outputs. Signs and all magnitudes share every point.",
+    "intervention": "Add to one gated MLP activation immediately before down_proj; c(d)=d*m/||W_down[:,channel]||_2; no weight edits or cumulative dose.",
+    "clean_scale": "For each original full prompt, median of each decoder block output per-token L2 norms excluding the first token; fixed per question across all points and signed doses.",
+    "bf16": "Compute each requested offset independently from original double ratio, then cast to BF16; assert request and rounded offset mirror, but do not demand actual activation delta mirror.",
+    "scope": "Full prefill and every generation step, fresh context/cache for each question-condition.",
+    "generation": {
+      "dtype": "bfloat16",
+      "attention_backend": "eager",
+      "do_sample": false,
+      "max_new_tokens": 128,
+      "batch_size": 1,
+      "threads": 4,
+      "task_stop_strings": [],
+      "semantic_retries": 0
+    },
+    "output": "Keep original tokens and EOS length, including terminator; no padding to128, continuation, semantic filters, or failure overwrites."
+  },
+  "necessary_model_differences": [
+    "Native model class, hidden/MLP size, weights, tokenizer vocabulary and layer attention architecture must remain the official Llama values; channel index is not a cross-model functional identity.",
+    "Identical user instruction and question text, but native chat wrappers and token IDs differ. Save exact rendered contexts and input hashes; never force Qwen template or EOS IDs onto Llama.",
+    "The existing Llama wrapper pins date_string=26 Oct 2026. Freeze an explicit date instead of wall-clock-dependent template output. Existing BOS logic must yield exactly one native BOS.",
+    "Historical official Llama tokenizer receipt has EOS [128001,128008,128009], BOS128000 and pad128009; verify current asset declarations. Qwen EOS248044/248046 must not be copied.",
+    "Llama has no Qwen enable_thinking switch: report not_applicable rather than claiming a tested reasoning-mode toggle.",
+    "128 model-native tokens match the generation-budget rule, not equal character/semantic lengths. Calibration token positions include different native wrappers and segmentation.",
+    "Full signed grid coverage differs: Qwen 1 point/layer versus Llama10. Only the +1 ten-point slice has matching per-layer sampling coverage. Do not pool all answers into cross-model efficacy rankings."
+  ],
+  "implementation_hazards": [
+    "CrossFamilyEngine initializes only L13/L14 modules and hashes. New all-layer adapter must replace modules, column_norms and pre/post weight hashes with all32 layers.",
+    "Frozen negative DoseEngine allows only negative five doses plus0,+1; new version must allow all symmetric ten nonzero doses without changing the old frozen implementation.",
+    "Legacy generate inherits model.generation_config settings beyond explicit do_sample/max_new_tokens/cache/stops. Record and compare effective num_beams, repetition penalties and token suppression settings; no unreported inherited generation modifiers.",
+    "Do not require context/calibration identity with historical Qwen records. Cross-model values differ; enforce identity among Llama baselines, controls and all signed conditions."
+  ],
+  "minimum_acceptance_gates": {
+    "cpu": [
+      "Verify frozen question bytes/instruction, deterministic32x10 distinct points, exact signed pairs and enumerated25600 intervention IDs plus8 unique baseline IDs.",
+      "Test all signed offsets from original ratio, only-target mutation, zero identity, exception-safe hook cleanup, and absence of persistent state/cache.",
+      "Test official native tokenizer BOS/template/stops and max128/EOS preservation; exact new export coverage2560x11, detect duplicate/missing groups and partial status."
+    ],
+    "gpu_preflight": [
+      "Fresh actual Llama load only after asset/runtime validation and predecessor jobs completed without occupation conflicts.",
+      "Both workers original8-question baselines identical token/raw; full8x32 clean calibration and model metadata identical except device.",
+      "Representative first/middle/last layers zero-hook and after-removal baseline controls exact; signed ten-dose representative point and final clean restoration preserved.",
+      "Audit requested/BF16 offsets, target finite changes, prefill/decode coverage, independent calls, hook removal and all-target weight identity; no semantic pass/fail criterion."
+    ],
+    "formal": [
+      "Freeze new contract/code/questions/samples/assets with immutable authorization and execution identities; launch only after new CPU/GPU controls pass.",
+      "Use fresh Llama preflight-derived or independently validated clean baselines/calibrations; actual record groups, not record_count/8, determine completion.",
+      "Two-worker slower completion determines ETA, using own measured Llama rate and lengths; separately provide all128 scenario and actual runtime/cost, no Qwen-rate extrapolation.",
+      "Preserve failures/partials; verify final records/token/hook/weights and complete raw export/archives before technical completion claim."
+    ]
+  },
+  "source_sha256": {
+    "experiments/layer-survey-toy-v1-2026-10-27/PROTOCOL.zh-CN.md": "da39eb0d0fde89f422de2a23b37634fe1ced8f915748993cc0f2a65c77643ae8",
+    "experiments/layer-survey-toy-v1-2026-10-27/contract.json": "3f8487e09d5d554baa62c4538b6975d693aa0d0dad37a6a47ec0bcd15473c95d",
+    "experiments/layer-survey-toy-v1-2026-10-27/questions.json": "8dd517ab8ff38889b11a34caaacf63f622b6e20b9793256ff742d0b38c9b2850",
+    "experiments/layer-survey-toy-v1-2026-10-27/survey.py": "56c16436b3a6c7e7803831e9b9062e72b50f10eb7333dd937770d9105ee821ca",
+    "experiments/layer-survey-toy-v1-2026-10-27/survey_engine.py": "cdbe31664445efcece714f7e61cf7cb0a0e80ce22fcd093d55b6cf740c96ee16",
+    "experiments/layer-dose-survey-toy-v1-2026-10-27/PROTOCOL.zh-CN.md": "b58f85624e0654ed24787b20678d57ef18694573e30d4426b2066150ca32eb84",
+    "experiments/layer-negative-dose-survey-toy-v1-2026-10-27/PROTOCOL.zh-CN.md": "96a701852993c89f38af819b886f7440328b5e7bfc31eba2317d0cad55f4ac69",
+    "experiments/layer-negative-dose-survey-toy-v1-2026-10-27/dose_engine.py": "55a18389b2e43697c3dff9609b24891a9a24d23fde4c749d9e21fc8cc05c7dc6",
+    "experiments/layer-negative-dose-survey-toy-v1-2026-10-27/dose_survey.py": "c252688d28e0adfe19bcf31ae9dbe41922a6e773bff141692d516db2a530992c",
+    "experiments/transfer-toy-v1-2026-10-26/transfer_engine.py": "d479408c46731a1dfb0d49eb899a7448602eb6ab3885a16caf0f689bcbd7d1be",
+    "experiments/capability-damage-v2-2026-10-26/model_engine.py": "cf331f5c723f859ed886a1f386dc85ddbefe414ea5ecd6cff5764e0fff3c182c",
+    "experiments/cross-family-transfer-toy-v1-2026-10-26/engine.py": "b4720e3b9497db53be74cec5d20a88ae452a2116f53a8e4eae928b4c05ff4675",
+    "experiments/cross-family-transfer-toy-v1-2026-10-26/GPU_READY.zh-CN.md": "a7193e11ed5527ca4e17ea27cf7a6c684da28437f3a9776f39f03004de4c77a4",
+    "experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/GPU_READY.json": "724978154fe36f11e5958ed495cea644a662037b29088cfc7db4172e830cbb77"
+  },
+  "actions_performed": {
+    "gpu_loads": 0,
+    "remote_commands": 0,
+    "model_generations": 0,
+    "legacy_modifications": 0,
+    "new_code_modifications": 0
+  },
+  "limits": [
+    "No current remote asset/GPU status independently checked here; asset audit delegated separately.",
+    "No claim of statistical comparability of entire unequal sampled grids, natural-function homology, semantic mirror, or model efficacy."
+  ]
+}

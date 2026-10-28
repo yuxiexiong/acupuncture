@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Acupuncture · 全部实验结果</title>
+<style>
+:root{color-scheme:dark;font:15px/1.7 system-ui,sans-serif;color:#e7edf5;background:#101723}*{box-sizing:border-box}body{margin:0;padding:24px}h1{font-size:25px;margin:0 0 8px}h2{font-size:19px;margin:0}p{margin:8px 0;color:#c5d2e1}a{color:#85c7ff}button,select{font:inherit;color:inherit;background:#1c2a3d;border:1px solid #53667f;border-radius:5px;padding:5px 12px;cursor:pointer}button:disabled{opacity:.45;cursor:default}nav{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:18px 0}.layout{display:grid;grid-template-columns:290px 1fr;gap:22px}#datasets{display:flex;flex-direction:column;gap:7px}#datasets button{text-align:left;padding:10px 12px}#datasets button[aria-current=true]{border-color:#7ebaff;background:#273b58}small,.meta{font-size:12px;color:#a7bdd4}article{border:1px solid #3b4c62;padding:18px;border-radius:7px;margin-bottom:14px}.pairs{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px}.condition{padding:12px;background:#182538;border-radius:4px;min-width:0}pre{white-space:pre-wrap;word-break:break-word;font:13px/1.7 ui-monospace,monospace;margin:8px 0;max-height:420px;overflow:auto}.prompt{white-space:pre-wrap;word-break:break-word}.tag{display:inline-block;background:#24374d;color:#b9d9f4;padding:1px 6px;border-radius:3px;margin-right:6px;font-size:12px}#views{display:flex;gap:14px;flex-wrap:wrap;margin:12px 0}.note{border-left:3px solid #669ecf;padding-left:12px}#error{color:#ffb4a6}.paging{justify-content:space-between}.sources{overflow-wrap:anywhere}.condition h3{font-size:15px;margin:0}.empty{padding:18px;border:1px dashed #53667f}@media(max-width:800px){body{padding:14px}.layout{grid-template-columns:1fr}#datasets{max-height:230px;overflow:auto}.pairs{grid-template-columns:1fr}}
+</style></head><body>
+<h1>全部实验结果</h1>
+<p>从最初双针、能力评测和迁移，到全层十点、正负剂量、内部轨迹及修复探索，统一从这里查阅。这里只读取已有结果，不调用模型。</p>
+<p class="note">三维图中有 <strong>18,272 条唯一回答</strong>，其中 <strong>7,632 条采集了内部轨迹</strong>。旧实验的回答、分数和报告在下方；没有采集内部状态的实验不能补画传播过程。重复导出、复用样本和已停止记录分别标明，不合成一个虚大的总数。</p>
+<nav><a href="/?model=4b" target="_top">返回三维图</a><span>按实验选择，逐条查看原始证据</span></nav>
+<div class="layout"><aside id="datasets" aria-label="实验列表">正在读取实验目录…</aside><main><h2 id="title">选择一个实验</h2><p id="summary"></p><p id="note"></p><div id="views"></div><nav class="paging"><button id="prev">上一页</button><span id="count"></span><button id="next">下一页</button></nav><div id="error" role="alert"></div><div id="rows"></div></main></div>
+<script>
+const $ = id => document.getElementById(id);
+const esc = x => String(x ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pretty = x => typeof x === 'string' ? x : JSON.stringify(x,null,2);
+let catalog = [], selected = null, page = 0, serial = 0;
+const limit = 12;
+function sourceLink(path,label){
+ const [file,member]=String(path).split('::');
+ const href=file.startsWith('/?') ? file : '/'+file.replace(/^\//,'').split('/').map(encodeURIComponent).join('/');
+ return '<a target="_blank" rel="noopener" href="'+esc(href)+'">'+esc(label||(member?'证据包内：'+member:path))+'</a>';
+}
+const statusLabel = status => ({completed:'已完成',completed_user_stopped_after_q24:'完成24题后按用户要求停止',completed_ratings_pending:'输出已完成，行为评价待完成',completed_development:'开发集探索已完成',user_stopped:'已停止，保留已有结果',not_run:'未运行',not_run_cancelled:'已取消，未运行'}[status] || status);
+function renderRow(row){
+ const baselineNames = ['baseline','clean','T_0'];
+ const names = {baseline:'原版',clean:'原版（clean）',T_0:'原版（T_0）',modified:'干预后',evo:'干预后（evo）'};
+ const conditions = [...(row.conditions || [])].sort((a,b)=>Number(baselineNames.includes(b.name))-Number(baselineNames.includes(a.name))).map(c => {
+   const values = Object.fromEntries(Object.entries(c).filter(([k])=>!['name','text'].includes(k)));
+   return '<section class="condition"><h3>'+esc(names[c.name]||c.name||'结果')+'</h3>'+(c.text != null ? '<pre>'+esc(c.text)+'</pre>' : '<p class="meta">此条件没有自由生成回答；下方显示保存的评分或记录状态。</p>')+(Object.keys(values).length ? '<details '+(c.text==null?'open':'')+'><summary>评分与记录字段</summary><pre>'+esc(pretty(values))+'</pre></details>' : '')+'</section>';
+ }).join('');
+ return '<article><div class="meta">'+esc(row.id)+'</div><p class="prompt">'+esc(row.prompt||'此记录没有自然语言题目；请查看原始字段。')+'</p><div class="pairs">'+conditions+'</div>'+(row.provenance?'<details><summary>来源、复用与实验条件</summary><pre>'+esc(pretty(row.provenance))+'</pre></details>':'')+((row.raw||[]).length?'<details class="sources"><summary>原始证据</summary>'+row.raw.map(p=>sourceLink(p)).join('<br>')+'</details>':'')+'</article>';
+}
+async function load(){
+ const request=++serial; $('error').textContent=''; $('rows').textContent='正在读取已有结果…'; $('prev').disabled=true; $('next').disabled=true;
+ try {
+  const response=await fetch('/api/experiments/rows?dataset='+encodeURIComponent(selected.id)+'&page='+page+'&limit='+limit);
+  if(!response.ok) throw new Error((await response.json()).error || response.status);
+  const data=await response.json(); if(request!==serial) return;
+  $('rows').innerHTML=data.items.length ? data.items.map(renderRow).join('') : '<p class="empty">这一条目通过上方完整报告或原始证据查看。若标为计划或停止，请按其说明理解；没有补造未完成的结果。</p>';
+  $('count').textContent=data.total ? '第 '+(page*limit+1)+'–'+Math.min((page+1)*limit,data.total)+' 条，共 '+data.total+' 条' : '此条目无逐题列表';
+  $('prev').disabled=page===0; $('next').disabled=(page+1)*limit>=data.total;
+ }catch(error){if(request===serial){$('error').textContent='读取失败：'+error.message; $('rows').textContent='';}}
+}
+function select(id){
+ selected=catalog.find(d=>d.id===id); page=0;
+ for(const b of $('datasets').children)b.setAttribute('aria-current',String(b.dataset.id===id));
+ $('title').textContent=selected.title;
+ $('summary').textContent=[selected.model,statusLabel(selected.status),typeof selected.coverage==='string'?selected.coverage:pretty(selected.coverage)].filter(Boolean).join(' · ');
+ $('note').textContent=selected.note||'';
+ $('views').innerHTML=(selected.views||[]).map(v=>sourceLink(v.path,v.label)).join(''); load();
+}
+$('prev').onclick=()=>{if(page>0){page--;load();}};
+$('next').onclick=()=>{page++;load();};
+fetch('/api/experiments').then(r=>{if(!r.ok)throw new Error(r.status);return r.json();}).then(data=>{
+ catalog=data.datasets; $('datasets').innerHTML=catalog.map(d=>'<button data-id="'+esc(d.id)+'"><strong>'+esc(d.title)+'</strong><br><small>'+esc([d.model,statusLabel(d.status)].filter(Boolean).join(' · '))+'</small></button>').join('');
+ for(const b of $('datasets').children)b.onclick=()=>select(b.dataset.id);
+ if(catalog.length)select(catalog[0].id);
+}).catch(error=>{$('datasets').textContent='目录读取失败：'+error.message;});
+</script></body></html>

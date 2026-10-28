@@ -1,0 +1,286 @@
+{
+  "experiment": "early-layer-mechanism-v1-2026-10-28",
+  "schema_version": 1,
+  "status": "implementation_preflight_not_yet_passed",
+  "authorization": {
+    "user_quote": "好的，你现在写合同，写代码，然后做测试，全部通过了以后，你直接上服务器排队，现在服务器上应该是有实验，你上服务器排队，等他退出服务器以后，你直接跑实验。",
+    "allows": [
+      "write_contract_and_code",
+      "cpu_tests",
+      "queue_behind_existing_server_experiment",
+      "bounded_gpu_preflight_after_resources_released",
+      "automatic_formal_collection_only_after_all_preflights_pass"
+    ],
+    "forbids": [
+      "interrupt_or_preempt_existing_jobs",
+      "share_gpu_with_existing_compute",
+      "causal_repair_or_reverse_patching",
+      "new_channel_dose_conditions",
+      "new_models",
+      "training_or_static_weight_edits"
+    ]
+  },
+  "sources": [
+    {
+      "path": "experiments/layer-survey-toy-v1-2026-10-27/delivery-r01/all.records.jsonl",
+      "sha256": "3a926932b0c3f1ec856cd2ceba460f445354984d53337062d5db864773f311b6"
+    },
+    {
+      "path": "experiments/layer-dose-survey-toy-v1-2026-10-27/delivery-r01/all.records.jsonl",
+      "sha256": "508b62b03b67ec9e649ab9c9a01d91eae5b4b8d63e8c6e7ed89000fb23c7031f"
+    },
+    {
+      "path": "experiments/layer-negative-dose-survey-toy-v1-2026-10-27/delivery-r01/all.records.jsonl",
+      "sha256": "3fe11f40b8dd87b84db75dd7ceef5f4e9b28804110a36abe8e6ba514773c623b"
+    }
+  ],
+  "dedup_key": [
+    "model_id",
+    "layer",
+    "channel",
+    "dose",
+    "question_id"
+  ],
+  "source_dedup": {
+    "unique_all_sources": 13400,
+    "duplicate_identical_references": 4272,
+    "conflicting_tokens": "fail",
+    "keep_all_source_references": true
+  },
+  "models": [
+    {
+      "id": "2b",
+      "layers": 24,
+      "intermediate_size": 6144,
+      "hidden_size": 2048,
+      "revision": "15852e8c16360a2fea060d615a32b45270f8a8fc",
+      "remote_path": "/workspace/models/Qwen3.5-2B-15852e8c",
+      "core_layers": [
+        0,
+        1,
+        2
+      ],
+      "boundary_layer": 3,
+      "included_layers": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "formal_records": 616,
+      "baseline_records": 8
+    },
+    {
+      "id": "4b",
+      "layers": 32,
+      "intermediate_size": 9216,
+      "hidden_size": 2560,
+      "revision": "851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a",
+      "remote_path": "/data/models/Qwen3.5-4B-851bf6e",
+      "core_layers": [
+        0,
+        1,
+        2
+      ],
+      "boundary_layer": 3,
+      "included_layers": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "formal_records": 616,
+      "baseline_records": 8
+    },
+    {
+      "id": "9b",
+      "layers": 32,
+      "intermediate_size": 12288,
+      "hidden_size": 4096,
+      "revision": "c202236235762e1c871ad0ccb60c8ee5ba337b9a",
+      "remote_path": "/workspace/models/Qwen3.5-9B-c2022362",
+      "core_layers": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "boundary_layer": 5,
+      "included_layers": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "formal_records": 920,
+      "baseline_records": 8
+    }
+  ],
+  "instruction": "请用中文简短回答，通常一至三句话；具体格式要求以题目为准。",
+  "generation": {
+    "max_new_tokens": 128,
+    "do_sample": false,
+    "enable_thinking": false,
+    "dtype": "bfloat16",
+    "attention_backend": "eager",
+    "batch_size": 1,
+    "threads": 4,
+    "scope": "prompt and all generated positions",
+    "retries_for_semantic_output": 0,
+    "use_cache": true,
+    "effective_stop_ids": [
+      248044,
+      248046
+    ]
+  },
+  "intervention": {
+    "site": "gated MLP intermediate coordinate before down_proj",
+    "channels": "exact historical identities; no resampling",
+    "positive_doses": [
+      0.0625,
+      0.125,
+      0.25,
+      0.5,
+      1.0
+    ],
+    "negative_doses": [
+      -0.0625,
+      -0.125,
+      -0.25,
+      -0.5,
+      -1.0
+    ],
+    "conditions_per_layer": 19,
+    "definition": "c = dose * clean_original_prompt_median_residual_L2 / down_proj_column_L2; compute from original ratio, then cast each dose independently to BF16",
+    "calibration": "exact original prompt, excluding first token from median; never recalibrate on generated prefix",
+    "scope": "all original prompt positions and all actual decode positions",
+    "target_weights": "read only; before/after hashes must match"
+  },
+  "formal": {
+    "total_records": 2152,
+    "intervention_records": 2128,
+    "baseline_records": 24,
+    "questions_per_model": 8,
+    "new_scientific_conditions": 0,
+    "source_exact_replay_required": true,
+    "maximum_workers": 2,
+    "shards_per_model": 2,
+    "model_order": [
+      "4b",
+      "2b",
+      "9b"
+    ],
+    "baseline_policy": "each original clean answer once per model; not once per layer",
+    "sharding": "Sort unique (layer, channel, dose) conditions per model and alternate condition index modulo 2; keep eight questions together; eight original baselines on shard 0; preserve historical_shard separately"
+  },
+  "observations": {
+    "observed_layers": "all model layers, not only injected early layers",
+    "sites": [
+      "attention_or_gated_delta_net_output",
+      "mlp_output",
+      "block_output_residual"
+    ],
+    "positions": "all prompt positions plus each actual cached decode input; final emitted token is not followed by an invented forward",
+    "metrics": [
+      "clean_l2",
+      "intervention_l2",
+      "difference_l2",
+      "relative_difference_l2",
+      "cosine"
+    ],
+    "zero_clean_norm": "undefined relative metric; never impute zero",
+    "shadow_clean": "independent cache; force actual intervention token sequence through a logits processor after recording clean logits",
+    "shadow_is_not": "clean free-generation answer",
+    "output_steps": [
+      "stop_logits_and_probabilities",
+      "best_nonstop_logit_and_token",
+      "stop_advantage",
+      "each_branch_top_candidates",
+      "union_candidate_cross_scores",
+      "actual_token",
+      "prefix_hash",
+      "first_prediction_divergence"
+    ],
+    "stop_advantage_definition": "max(stop_logits) - max(nonstop_logits)",
+    "full_vectors_saved": false,
+    "device_summary_then_batched_transfer": true,
+    "shadow_compute_counts_as_new_condition": false
+  },
+  "preflight": {
+    "status": "bounded_selection_policy_frozen_exact_cases_in_source_manifest",
+    "all_three_models_before_formal": true,
+    "required_coverage": [
+      "clean_baseline",
+      "short_eos",
+      "long_output",
+      "negative_dose",
+      "low_positive_dose"
+    ],
+    "required_checks": [
+      "observer_on_off_token_and_clean_logit_conservation",
+      "forced_prefix_uses_independent_cache_and_preserves_recorded_clean_logits",
+      "exact_source_tokens_and_prompt_calibration_identity",
+      "zero_dose_equals_clean",
+      "hook_removal_restores_clean",
+      "target_weights_unchanged",
+      "complete_layer_component_position_coverage",
+      "finite_metrics_or_explicitly_undefined_zero_norm",
+      "same_prompt_components_before_injection_unchanged"
+    ],
+    "semantic_retry_count": 0,
+    "failure_policy": "record failure, stop current collection; no automatic relaxed tolerance or scientific scope expansion",
+    "per_model_shard": {
+      "observed_cases": 7,
+      "case_names": [
+        "baseline",
+        "short_eos",
+        "long_positive",
+        "negative",
+        "low_positive",
+        "zero",
+        "restored"
+      ],
+      "baseline": "Q01 repeated on each validation worker; preserve its historical source provenance separately",
+      "representatives": "Four distinct original intervention identities within model/current execution shard; shortest by token count then trace_id, longest positive by descending token count then trace_id, negative and low positive by trace_id excluding used identities; shortest substitutes if single-EOS absent",
+      "unobserved_replays": 5,
+      "unobserved_case_names": [
+        "baseline",
+        "short_eos",
+        "long_positive",
+        "negative",
+        "low_positive"
+      ],
+      "generation_streams": 19,
+      "generation_stream_formula": "7 observed cases * 2 independent-cache branches + 5 observer-off replays"
+    },
+    "workers": 6,
+    "observed_cases_total": 42,
+    "unobserved_replays_total": 30,
+    "generation_streams_total": 114,
+    "scientific_condition_count": 0,
+    "formal_generation_streams": 4304,
+    "selection_manifest_required": true,
+    "zero_and_restored": "Q01 on each worker; compare against its clean baseline tokens and logits; zero uses the injection point of smallest trace_id in the current shard with dose 0; restored has no intervention hook",
+    "observer_off_definition": "component observers disabled; read-only model logits capture remains for exact stepwise logits hash comparison"
+  },
+  "queue": {
+    "predecessor_run": "/workspace/acupuncture/experiments/llama31-single-point-dose-survey-v1-2026-10-28/survey-r01",
+    "gpus": [
+      0,
+      1
+    ],
+    "ready_requires": [
+      "predecessor_success_receipt",
+      "predecessor_workers_exited",
+      "no_gpu_compute_processes"
+    ],
+    "current_jobs_action": "wait_only",
+    "detached": true,
+    "failure_action": "stop own experiment children only; retain logs and partial evidence"
+  },
+  "evidence_boundary": "observational mechanism leads; no causal localization, functional region, cross-model homology, or morality/safety neuron claim",
+  "eta_reference": "ETA.json; hook multiplier is unmeasured until GPU preflight; queue wait excluded"
+}

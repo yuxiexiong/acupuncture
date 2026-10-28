@@ -1,0 +1,87 @@
+{
+  "checked_at_unix": 1793012938.8300552,
+  "jobs": [
+    {
+      "job": "steer-full-2b",
+      "pid": 1609378,
+      "ppid": 1,
+      "command": "/workspace/acupuncture/.venv-bench/bin/python upstream/sweep/steer_lens.py --model /workspace/models/Qwen3.5-2B-15852e8c --neurons-per-batch 96 --out data/2b/stats/steer-full-r01 ",
+      "sighup_ignored": true,
+      "fds": {
+        "0": "/dev/null",
+        "1": "/workspace/acupuncture/experiments/neuron-explorer-multimodel-v2-2026-10-26/runtime/steer-full-2b-r01.log",
+        "2": "/workspace/acupuncture/experiments/neuron-explorer-multimodel-v2-2026-10-26/runtime/steer-full-2b-r01.log"
+      }
+    },
+    {
+      "job": "steer-full-9b-part1",
+      "pid": 1609380,
+      "ppid": 1,
+      "command": "/workspace/acupuncture/.venv-bench/bin/python upstream/sweep/steer_lens.py --model /workspace/models/Qwen3.5-9B-c2022362 --layers 0-15 --neurons-per-batch 96 --out data/9b/stats/steer-full-r01 ",
+      "sighup_ignored": true,
+      "fds": {
+        "0": "/dev/null",
+        "1": "/workspace/acupuncture/experiments/neuron-explorer-multimodel-v2-2026-10-26/runtime/steer-full-9b-part1-r01.log",
+        "2": "/workspace/acupuncture/experiments/neuron-explorer-multimodel-v2-2026-10-26/runtime/steer-full-9b-part1-r01.log"
+      }
+    },
+    {
+      "job": "full-cache-queue",
+      "pid": 1611777,
+      "ppid": 1,
+      "command": "/workspace/acupuncture/.venv-bench/bin/python /workspace/acupuncture/experiments/neuron-explorer-multimodel-v2-2026-10-26/finish_cache_queue.py ",
+      "sighup_ignored": false,
+      "fds": {
+        "0": "/dev/null",
+        "1": "/workspace/acupuncture/experiments/neuron-explorer-multimodel-v2-2026-10-26/runtime/full-cache-queue-r02.log",
+        "2": "/workspace/acupuncture/experiments/neuron-explorer-multimodel-v2-2026-10-26/runtime/full-cache-queue-r02.log"
+      }
+    },
+    {
+      "job": "start-and-verify",
+      "pid": 1617568,
+      "ppid": 1,
+      "command": "/workspace/acupuncture/.venv-bench/bin/python start_and_verify.py ",
+      "sighup_ignored": true,
+      "fds": {
+        "0": "/dev/null",
+        "1": "/workspace/acupuncture/experiments/neuron-explorer-multimodel-v2-2026-10-26/runtime/start-and-verify-r01.log",
+        "2": "/workspace/acupuncture/experiments/neuron-explorer-multimodel-v2-2026-10-26/runtime/start-and-verify-r01.log"
+      }
+    }
+  ],
+  "postbuild": {
+    "started_at": 1793012556.1256812,
+    "status": "running",
+    "models": {
+      "4b": {
+        "phase": "passed",
+        "pid": 1617571,
+        "started_at": 1793012556.1263547,
+        "completed_at": 1793012570.0100288,
+        "evidence": "live-4b-r01.json"
+      },
+      "2b": {
+        "phase": "waiting_for_complete_caches"
+      }
+    }
+  },
+  "local_root": "/Users/ruizhixu/Documents/ChatGPT/acupuncture/experiments/neuron-explorer-multimodel-v2-2026-10-26",
+  "remote_root": "/workspace/acupuncture/experiments/neuron-explorer-multimodel-v2-2026-10-26",
+  "ssh_host": "gqa-h20",
+  "existing_control_socket": "/tmp/acupuncture-neuron-explorer-8791.sock",
+  "detachment_evidence": "All four jobs PPID=1, no controlling terminal, stdin=/dev/null and stdout/stderr redirected to versioned logs. Full cache queue session ID equals its PID (1611777); other jobs ignore SIGHUP.",
+  "shutdown_effects": [
+    "Closing local Codex does not terminate these detached server jobs.",
+    "Local SSH forwarding may close; restore with open.command after reconnecting.",
+    "Assistant monitoring and final browser acceptance require reopening/resuming the chat.",
+    "No automatic restart after server failure is configured; inspect saved receipts and partial layers before recovery."
+  ],
+  "resume_steps": [
+    "Read runtime/postbuild-receipt-r01.json and run read_progress.py on the remote host.",
+    "Confirm current PID commands before any action; do not blindly restart full-cache workers or overwrite partial layer files.",
+    "If complete, collect all cache manifests, calibration receipts, raw live API evidence and logs into this version directory.",
+    "Restore SSH forwards, verify actual browser switching across all three model ports, preserve screenshots and UI evidence.",
+    "Write receipt.json and update README only once full cache and all acceptance checks pass."
+  ]
+}

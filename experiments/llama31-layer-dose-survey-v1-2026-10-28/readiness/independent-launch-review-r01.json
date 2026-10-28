@@ -1,0 +1,87 @@
+{
+  "status": "passed_code_design_review",
+  "reviewer": "llama_comparability_audit",
+  "checked_utc": "2026-10-27T16:11:59.846735+00:00",
+  "scope": "Read-only final contract, scheduling, authorization, predecessor, GPU admission, verification and automatic export review. Engine generation-default repair and remote actual Transformers parsing are reviewed separately; this receipt makes no GPU-preflight or formal-run success claim.",
+  "source_sha256": {
+    "PROTOCOL.zh-CN.md": "9035ec8c7f24235c506c9a9bd9b97ff2b324c9d117081bd990144ac688db0b5c",
+    "contract.json": "ac8ada4f8c7a6ec93f0ca0bb9daf093e8cfee910f53cce3e3f1c16fd27659c8a",
+    "questions.json": "8dd517ab8ff38889b11a34caaacf63f622b6e20b9793256ff742d0b38c9b2850",
+    "samples.json": "1d4b83d17d24168250af873aa395812f965fb03080b076d289b5018dae55a674",
+    "survey.py": "5c29416aff8b25c529767897afd044ee1c5d2c17f17f1dfc7605248312dc8ffb",
+    "launch_survey.py": "7bddfe8eaa5882c30627f4de94aadc10ea783b3b10661697256465d3329ca8b7",
+    "export_survey.py": "38e0baac38a93bed9744bd508f29d08856efb232327a4528da894e5d6266d624",
+    "test_survey.py": "6cde583642c124946b49f12b7b90471eabb0c34d45e980c242b859dd88f2b3f6",
+    "test_export.py": "fb6aa300e3387795edd0261bbe094276189e4ac6f9be4a02d055ca72dd177943"
+  },
+  "verified_design_counts": {
+    "points": 320,
+    "channels_per_layer": 10,
+    "worker_point_assignment": "global frozen samples index modulo2; five points/layer/worker",
+    "signed_nonzero_conditions": 3200,
+    "intervention_answers": 25600,
+    "unique_baseline_answers": 8,
+    "formal_unique_sources": 25608,
+    "worker_record_counts": [
+      12808,
+      12800
+    ],
+    "comparison_groups": 2560,
+    "display_columns": 11,
+    "display_cells": 28160,
+    "preflight_records": 88,
+    "preflight_worker_records": [
+      44,
+      44
+    ]
+  },
+  "checks": {
+    "authorization": "Explicit --execute, exact experiment/freeze/model/purpose/GPUs/budgets; formal requires verified preflight pair plus completed preflight controller and both exit0, with controller/exit hashes bound in formal authorization.",
+    "predecessor": "Controller checks frozen configured Qwen negative run completed; controller hash bound to authorization, six recorded exits0 and exitfiles0, completed receipts, hooks removed and target weight hashes restored.",
+    "non_preemption": "Worker obtains shared per-GPU nonblocking flock, checks specified GPU memory<256MiB and no compute-app PIDs before model loading; controller cleanup signals only children it started.",
+    "fresh_independent_grid": "Frozen original eight questions and instruction; deterministic ten-point sample per layer; all signed doses share point/question/clean scale; formal reload metadata/calibration match preflight; shard0 first eight baselines are checked against preflight immediately.",
+    "complete_coverage": "Runner enumerates exact formal source IDs and per-row calibration/hook/token invariants, source files and asset hashes; exporter validates both full workers, source uniqueness, eight baselines, all2560 ordered11-column groups and sign-paired offsets.",
+    "automatic_export": "Controller waits both workers exit0, check_pair passes, then calls exporter. Whole-complete receipt is emitted only after full validation and full raw/token JSONL/HTML/index/blank annotations writes; export receipt hash retained in controller.",
+    "failure_preservation": "Output directories must not exist; no auto-resume or overwrite. Failure records/logs/exit codes retained, controller marks failed, terminates only its own still-running children.",
+    "old_evidence_and_scope": "New experiment only imports frozen old implementations/input definitions; it does not mutate old Qwen protocols/results, launch old cross-family transfer, add new questions/scores/models or static weight edits.",
+    "comparability_boundaries": "Native tokenizer/chat/BOS/EOS and architecture differences explicit; Llama thinking not applicable; Qwen signed-dose coverage1 point/layer versus Llama10 explicit. No global model-quality or semantic-mirror claim."
+  },
+  "findings_and_resolutions": [
+    {
+      "finding": "GPU memory threshold alone did not reject small active CUDA processes.",
+      "resolution": "Added per-selected-GPU compute-app PID emptiness assertion in survey.run.",
+      "status": "resolved_by_source_review"
+    },
+    {
+      "finding": "Formal authorization previously verified preflight records but not completed controller and actual zero exits.",
+      "resolution": "Added completed preflight controller/mode, two zero exit codes/files, and authorization-bound controller and exit hashes; negative test rejects nonzero exit.",
+      "status": "resolved_and_cpu_tested"
+    },
+    {
+      "finding": "Initial exporter assumed layer parity sharding.",
+      "resolution": "Now derives point_id-to-shard from real load_design samples enumeration index%2; real runner specs test covers all25608 jobs,320 points, opposite-shard rejection and every-layer5-per-worker.",
+      "status": "resolved_and_cpu_tested"
+    }
+  ],
+  "independently_executed_cpu_check": {
+    "command": "python3 -m unittest -v test_survey.py test_export.py",
+    "tests": 13,
+    "passed": 13,
+    "failed": 0,
+    "wall_reported_seconds": 0.229,
+    "uses_real_design_and_schedule": true,
+    "model_weights_loaded": false,
+    "gpu_calls": 0
+  },
+  "remaining_runtime_gates": [
+    "Finish actual remote library generation-configuration parsing check and engine/combined CPU suite.",
+    "Freeze final code and inputs, bind authorization and run bounded88-record GPU preflight.",
+    "Only after actual preflight acceptance and formal authorization may the25608-record formal run start."
+  ],
+  "unresolved_findings": [],
+  "limitations": [
+    "Code/design review is not GPU readiness or empirical model-output verification.",
+    "Live GPU/process/disk availability and exact model asset hashes are provided by separate asset/runtime audit.",
+    "This reviewer implemented the exporter, so its exporter review is not an independent second author audit; runner/controller/contract review is independent of implementation."
+  ]
+}

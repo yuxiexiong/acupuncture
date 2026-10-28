@@ -1,0 +1,63 @@
+{
+  "status": "passed_independent_timing_recalculation",
+  "checked_utc": "2026-10-27T16:22:24.556401+00:00",
+  "reviewer": "llama_comparability_audit",
+  "source_sha256": {
+    "timing-estimate-r01.json": "7ab96f2a8740eadf4305ec057101dd5bd598957768b933c600eb02a28ab4c443",
+    "estimate_timing.py": "23e5f2a67ca0ff341947c093232bcabde1d1dfc4e63fbb6428b8111c32ab6b5a",
+    "freeze.json": "70f313c5e643bc4006782159c9a325de98527399be8d11610deddcb68ff1385f"
+  },
+  "checks": {
+    "actual_preflight_pair_verified": true,
+    "all88_records_hash_and_token_verified": true,
+    "each_worker_uses_own30_signed_samples": true,
+    "own_long_generation_rates": true,
+    "no_qwen_speed_substitution": true,
+    "baseline8_only_shard0": true,
+    "non_generation_overhead_once_per_worker": true,
+    "parallel_wall_uses_max_not_sum": true,
+    "no_queued_models": true
+  },
+  "workers": [
+    {
+      "shard": 0,
+      "records": 44,
+      "dose_samples": 30,
+      "long_output_samples": 28,
+      "preflight_receipt_sha256": "bda7a7c5a0995427a0e0fb552535341113fcc3663178b2e1239cf3657fd0903f",
+      "main_seconds": 39690.06383932444,
+      "all128_seconds": 77079.75481052253,
+      "non_generation_seconds": 37.72943773120642
+    },
+    {
+      "shard": 1,
+      "records": 44,
+      "dose_samples": 30,
+      "long_output_samples": 29,
+      "preflight_receipt_sha256": "25a9ba53d31a6e2a7be13bde74d5e462647b051e7d1a16b71051aac7e285be60",
+      "main_seconds": 42138.682787537575,
+      "all128_seconds": 78097.983143527,
+      "non_generation_seconds": 37.76290667057037
+    }
+  ],
+  "main_wall_seconds": 42138.682787537575,
+  "all128_wall_seconds": 78097.983143527,
+  "main_worker_gpu_hours": 22.730207396350558,
+  "all128_worker_gpu_hours": 43.104927209458204,
+  "two_card_reserved_main_gpu_hours": 23.410379326409764,
+  "two_card_reserved_all128_gpu_hours": 43.38776841307056,
+  "unresolved_findings": [],
+  "limits": [
+    "Only three questions and three depth anchors per worker; formal eight-question/channel distribution may materially change output lengths and throughput.",
+    "All128 is a conditional length scenario using measured median seconds/token, neither a confidence interval nor hard runtime upper bound.",
+    "Preflight non-generation overhead is included once; growing formal receipt/record IO is not independently timed. Update ETA using actual wall progress if material.",
+    "Export, transfer/archive and reading have no measured ETA in this estimate; no durations invented.",
+    "Preflight is already finished and is not added to future formal wall time; worker GPU-hours and two-card reserved GPU-hours are distinct."
+  ],
+  "actions": {
+    "model_loads": 0,
+    "model_generations": 0,
+    "remote_calls": 0,
+    "code_changes": 0
+  }
+}

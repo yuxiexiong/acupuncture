@@ -1,0 +1,55 @@
+{
+  "status": "passed_cpu_and_source_review",
+  "reviewed_utc": "2026-10-27T16:40:27.711366+00:00",
+  "script": "experiments/llama31-single-point-dose-survey-v1-2026-10-28/readiness/continue_after_broad.py",
+  "script_sha256": "d72deff78bac3ec4ec712e259b7a3367524c4859fe36492a0c612f0048fe9980",
+  "reviewer": "independent split_design_review agent",
+  "checks": [
+    "correct queue identity and limits accepted without loading models",
+    "reject altered queue_sha256",
+    "reject altered freeze_sha256",
+    "reject altered source_execution_sha256",
+    "reject altered source_freeze_sha256",
+    "reject altered maximum_generations",
+    "failed A rejected before B dispatch",
+    "source acceptance failure prevents preflight authorization",
+    "preflight authorization remains bounded to88",
+    "formal authorization not returned before successful B preflight verification"
+  ],
+  "source_review": [
+    "Queue binds own source hash,B scientific freeze,A freeze and immutable execution, plus acceptance evidence hashes.",
+    "Only a fully completed and verified A source reaches B GPU preflight.",
+    "B preflight controller must exit0 and its completed workers are verified before formal authorization can be returned.",
+    "Both stage controllers enforce GPU empty/locks and immutable output paths.",
+    "Errors retain partial evidence and terminate only this queue child; no retry/resume of partial outputs."
+  ],
+  "limitations": [
+    "Tests use temporary source fixtures and mocked source-verifier outcomes; no real model or GPU load.",
+    "Actual A completion and actual B GPU acceptance remain runtime gates, not claimed complete."
+  ],
+  "supersedes": "independent-successor-review-r01.json",
+  "timing_helper_sha256": {
+    "experiments/llama31-layer-survey-v1-2026-10-28/readiness/estimate_timing.py": "a12988efcbd7fd6171fc16f19cb3771070f4c8caa5c01c5f3548e65b1e0da7b5",
+    "experiments/llama31-single-point-dose-survey-v1-2026-10-28/readiness/estimate_timing.py": "aa1bfe8118eba10d470f3717c9a14d73207dd0353ddecd4c3c6254b19c25f6ab"
+  },
+  "additional_checks": [
+    "A synthetic timing counts/rates/one-time overhead/parallel max/GPU-hours exact",
+    "B synthetic timing counts/rates/one-time overhead/parallel max/GPU-hours exact",
+    "B +1 replay given 100seconds deliberately; excluded from formal mean, and reused baseline adds zero formal calls",
+    "timing subprocess failure stops before formal authorization file and before second Popen; failed state retained"
+  ],
+  "synthetic_timing_results": {
+    "A": {
+      "main_seconds": 7701,
+      "all128_seconds": 24597.0,
+      "formal_interventions_per_worker": 1280,
+      "intervention_samples_per_worker": 3
+    },
+    "B": {
+      "main_seconds": 6933,
+      "all128_seconds": 22139.399999999998,
+      "formal_interventions_per_worker": 1152,
+      "intervention_samples_per_worker": 27
+    }
+  }
+}

@@ -1,0 +1,376 @@
+{
+  "experiment": "layer-trace-extension-v1-2026-10-28",
+  "schema_version": 1,
+  "date_local": "2026-10-28",
+  "timezone": "Asia/Shanghai",
+  "status": "contract_written_tests_and_queue_receipts_determine_execution",
+  "authorization": {
+    "user_quote": "那就统一看前六层，把2B和4B的L4、L5补齐，接到当前队列后面，已经跑过的不要重跑。补好合同、测试通过以后直接跑，不要过度工程。然后除此之外，我还想要补的是4B的所有层。我想看其他层有没有类似的规律，在更深层的模型机理上有没有其他规律。",
+    "allows": [
+      "append_after_current_trace_queue",
+      "collect_2b_and_4b_L4_L5_first",
+      "then_collect_4b_L6_L31",
+      "freeze_contract_and_sources",
+      "cpu_tests",
+      "automatically_run_after_checks_pass"
+    ],
+    "forbids": [
+      "rerun_existing_internal_trace_records",
+      "interrupt_existing_queue",
+      "new_questions_channels_or_doses",
+      "causal_repair_or_reverse_patching",
+      "training_or_static_weight_edits",
+      "new_models"
+    ]
+  },
+  "predecessor": {
+    "experiment": "early-layer-mechanism-v1-2026-10-28",
+    "run": "/workspace/acupuncture/experiments/early-layer-mechanism-v1-2026-10-28/execution-r01",
+    "existing_unique_records": 2152
+  },
+  "sources": [
+    {
+      "path": "experiments/layer-survey-toy-v1-2026-10-27/delivery-r01/all.records.jsonl",
+      "sha256": "3a926932b0c3f1ec856cd2ceba460f445354984d53337062d5db864773f311b6"
+    },
+    {
+      "path": "experiments/layer-dose-survey-toy-v1-2026-10-27/delivery-r01/all.records.jsonl",
+      "sha256": "508b62b03b67ec9e649ab9c9a01d91eae5b4b8d63e8c6e7ed89000fb23c7031f"
+    },
+    {
+      "path": "experiments/layer-negative-dose-survey-toy-v1-2026-10-27/delivery-r01/all.records.jsonl",
+      "sha256": "3fe11f40b8dd87b84db75dd7ceef5f4e9b28804110a36abe8e6ba514773c623b"
+    }
+  ],
+  "dedup_key": [
+    "model_id",
+    "layer",
+    "channel",
+    "dose",
+    "question_id"
+  ],
+  "models": [
+    {
+      "id": "2b",
+      "layers": 24,
+      "intermediate_size": 6144,
+      "hidden_size": 2048,
+      "revision": "15852e8c16360a2fea060d615a32b45270f8a8fc",
+      "remote_path": "/workspace/models/Qwen3.5-2B-15852e8c",
+      "final_injection_layers": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "new_injection_layers": [
+        4,
+        5
+      ]
+    },
+    {
+      "id": "4b",
+      "layers": 32,
+      "intermediate_size": 9216,
+      "hidden_size": 2560,
+      "revision": "851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a",
+      "remote_path": "/data/models/Qwen3.5-4B-851bf6e",
+      "final_injection_layers": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31
+      ],
+      "new_injection_layers": [
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31
+      ]
+    },
+    {
+      "id": "9b",
+      "layers": 32,
+      "intermediate_size": 12288,
+      "hidden_size": 4096,
+      "revision": "c202236235762e1c871ad0ccb60c8ee5ba337b9a",
+      "remote_path": "/workspace/models/Qwen3.5-9B-c2022362",
+      "final_injection_layers": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "new_injection_layers": []
+    }
+  ],
+  "stages": [
+    {
+      "id": "six-layer",
+      "models": [
+        "4b",
+        "2b"
+      ],
+      "layers": {
+        "4b": [
+          4,
+          5
+        ],
+        "2b": [
+          4,
+          5
+        ]
+      },
+      "records": 608,
+      "records_by_model": {
+        "4b": 304,
+        "2b": 304
+      },
+      "generation_streams": 1216
+    },
+    {
+      "id": "4b-full",
+      "models": [
+        "4b"
+      ],
+      "layers": {
+        "4b": [
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31
+        ]
+      },
+      "records": 3952,
+      "records_by_model": {
+        "4b": 3952
+      },
+      "generation_streams": 7904
+    }
+  ],
+  "formal": {
+    "new_records": 4560,
+    "new_baseline_records": 0,
+    "maximum_generation_streams": 9120,
+    "combined_unique_records": 6712,
+    "combined_records_by_model": {
+      "2b": 920,
+      "4b": 4872,
+      "9b": 920
+    },
+    "reused_baseline_records": 24,
+    "questions_per_model": 8,
+    "records_per_injected_layer": 152,
+    "conditions_per_injected_layer": 19,
+    "shards_per_model": 2,
+    "maximum_workers": 2,
+    "sharding": "Within each stage and model sort unique (layer, channel, dose) conditions; condition index modulo 2; all eight questions stay together",
+    "retries_for_semantic_output": 0,
+    "identity_disjointness_required": true
+  },
+  "instruction": "请用中文简短回答，通常一至三句话；具体格式要求以题目为准。",
+  "generation": {
+    "max_new_tokens": 128,
+    "do_sample": false,
+    "enable_thinking": false,
+    "dtype": "bfloat16",
+    "attention_backend": "eager",
+    "batch_size": 1,
+    "threads": 4,
+    "scope": "prompt and all generated positions",
+    "retries_for_semantic_output": 0,
+    "use_cache": true,
+    "effective_stop_ids": [
+      248044,
+      248046
+    ]
+  },
+  "intervention": {
+    "site": "gated MLP intermediate coordinate before down_proj",
+    "channels": "exact historical identities; no resampling",
+    "positive_doses": [
+      0.0625,
+      0.125,
+      0.25,
+      0.5,
+      1.0
+    ],
+    "negative_doses": [
+      -0.0625,
+      -0.125,
+      -0.25,
+      -0.5,
+      -1.0
+    ],
+    "conditions_per_layer": 19,
+    "definition": "c = dose * clean_original_prompt_median_residual_L2 / down_proj_column_L2; compute from original ratio, then cast each dose independently to BF16",
+    "calibration": "exact original prompt, excluding first token from median; never recalibrate on generated prefix",
+    "scope": "all original prompt positions and all actual decode positions",
+    "target_weights": "read only; before/after hashes must match"
+  },
+  "observations": {
+    "observed_layers": "all model layers, not only injected early layers",
+    "sites": [
+      "attention_or_gated_delta_net_output",
+      "mlp_output",
+      "block_output_residual"
+    ],
+    "positions": "all prompt positions plus each actual cached decode input; final emitted token is not followed by an invented forward",
+    "metrics": [
+      "clean_l2",
+      "intervention_l2",
+      "difference_l2",
+      "relative_difference_l2",
+      "cosine"
+    ],
+    "zero_clean_norm": "undefined relative metric; never impute zero",
+    "shadow_clean": "independent cache; force actual intervention token sequence through a logits processor after recording clean logits",
+    "shadow_is_not": "clean free-generation answer",
+    "output_steps": [
+      "stop_logits_and_probabilities",
+      "best_nonstop_logit_and_token",
+      "stop_advantage",
+      "each_branch_top_candidates",
+      "union_candidate_cross_scores",
+      "actual_token",
+      "prefix_hash",
+      "first_prediction_divergence"
+    ],
+    "stop_advantage_definition": "max(stop_logits) - max(nonstop_logits)",
+    "full_vectors_saved": false,
+    "device_summary_then_batched_transfer": true,
+    "shadow_compute_counts_as_new_condition": false
+  },
+  "validation": {
+    "cpu_tests_required": true,
+    "cpu_failures_errors_skips_allowed": 0,
+    "inherited_gpu_preflight": {
+      "experiment": "early-layer-mechanism-v1-2026-10-28",
+      "workers": 6,
+      "observed_cases": 42,
+      "generation_streams": 114,
+      "required_status": "passed",
+      "verify_receipts_and_hashes": true,
+      "rerun": false
+    },
+    "trace_engine": "experiments/early-layer-mechanism-v1-2026-10-28/trace_engine.py",
+    "trace_engine_change_allowed": false,
+    "fresh_model_load_checks": [
+      "asset_and_runtime_identity",
+      "clean_forward_calibration_for_original_eight_prompts",
+      "target_weight_hashes"
+    ],
+    "per_record_checks": [
+      "exact_source_tokens",
+      "prompt_calibration_identity",
+      "exact_channel_dose_bf16_offset",
+      "complete_all_layer_component_position_coverage",
+      "finite_or_explicitly_undefined_metrics",
+      "same_prompt_components_before_injection_unchanged",
+      "all_hooks_removed"
+    ],
+    "baseline_policy": "Reuse existing independent clean answers; original eight prompts may be forwarded for calibration after model load, without generating new baseline answers",
+    "failure_policy": "stop own extension work and retain all partial evidence; no silent retry or relaxed validation"
+  },
+  "queue": {
+    "gpus": [
+      0,
+      1
+    ],
+    "stage_order": [
+      "six-layer",
+      "4b-full"
+    ],
+    "ready_requires": [
+      "predecessor_success_receipt_and_exit_codes",
+      "predecessor_process_exit",
+      "both_gpus_without_other_compute_apps",
+      "all_cpu_checks_pass",
+      "inherited_gpu_preflight_receipts_verified"
+    ],
+    "maximum_workers": 2,
+    "detached": true,
+    "reuse_existing_engine": true,
+    "partial_overwrite_allowed": false,
+    "cleanup_scope": "only own child processes"
+  },
+  "evidence_boundary": "L0-L5 is a common observation window, not a functional boundary. Keep absolute layer and relative depth; same layer index is not functional homology. Internal differences remain observational mechanism leads."
+}

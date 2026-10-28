@@ -1,0 +1,97 @@
+{
+  "observed_utc": "2026-10-26T14:23:08.970653+00:00",
+  "state": {
+    "status": "waiting_for_free_gpus",
+    "pid": 1578983,
+    "started_utc": "2026-10-26T09:03:34.364835+00:00",
+    "authorization_sha256": "97f8760bf42ece2ca760cc00c46bf28b6d89f14d34a53e0ba81589d52957e2b7",
+    "stages": [
+      {
+        "stage": 1,
+        "pid": 1578985,
+        "started_utc": "2026-10-26T09:03:34.383728+00:00",
+        "command": [
+          "/workspace/acupuncture/.venv-bench/bin/python",
+          "-u",
+          "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/pipeline.py",
+          "--stage",
+          "1",
+          "--run",
+          "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01",
+          "--source",
+          "/data/models/Qwen3.5-4B-851bf6e",
+          "--target",
+          "/workspace/models/Llama-3.1-8B-Instruct-0e9e39f2",
+          "--execute"
+        ],
+        "exit_code": 0,
+        "ended_utc": "2026-10-26T13:42:32.895143+00:00",
+        "gate_decision": "PASS"
+      }
+    ],
+    "stage": 2,
+    "blocking_gpu_pids": [
+      "1599626",
+      "1617571",
+      "1625263",
+      "1681592"
+    ],
+    "updated_utc": "2026-10-26T14:23:05.211802+00:00"
+  },
+  "supervisor": {
+    "pid": 1578983,
+    "start_ticks": "1124088875",
+    "identity_matches": true,
+    "command": "/workspace/acupuncture/.venv-bench/bin/python -u /workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/launch-r01/queue.py"
+  },
+  "gpu_processes": "GPU-1a1ef3a8-8633-f7f7-cb1d-f2ff18569f5d, 1599626, 9574 MiB\nGPU-1a1ef3a8-8633-f7f7-cb1d-f2ff18569f5d, 1617571, 9574 MiB\nGPU-1a1ef3a8-8633-f7f7-cb1d-f2ff18569f5d, 1625263, 4924 MiB\nGPU-cbae4c04-a3d4-5176-93d0-5bfaf154ca68, 1681592, 18792 MiB",
+  "processes": [
+    {
+      "pid": 1599626,
+      "start_ticks": "1124500596",
+      "command": "/workspace/acupuncture/.venv-bench/bin/python explorer/server.py"
+    },
+    {
+      "pid": 1617571,
+      "start_ticks": "1124803055",
+      "command": "/workspace/acupuncture/.venv-bench/bin/python explorer/server.py"
+    },
+    {
+      "pid": 1625263,
+      "start_ticks": "1124948444",
+      "command": "/workspace/acupuncture/.venv-bench/bin/python explorer/server.py"
+    },
+    {
+      "pid": 1681592,
+      "start_ticks": "1125885510",
+      "command": "/workspace/acupuncture/.venv-bench/bin/python explorer/server.py"
+    }
+  ],
+  "freeze_validation": {
+    "count": 216,
+    "failures": []
+  },
+  "stage1_completed_pairs": 1400,
+  "stage1_completed_behavior": 640,
+  "stage1_completed_ability": 640,
+  "stage1_phase_seconds": {
+    "collect": 44.568502,
+    "mapping": 17.761998,
+    "preflight": 16.45071,
+    "toy": 7287.569243,
+    "benchmark": 9334.995904,
+    "score": 11.168018,
+    "export": 2.076087,
+    "gate": 0.255675
+  },
+  "stage1_wall_seconds": 16714.934704340994,
+  "stage2_queue_exists": false,
+  "eta": {
+    "stage1_completed_utc": "2026-10-26T13:42:32.633824+00:00",
+    "stage2_completion_utc": null,
+    "stage2_wait_seconds": null,
+    "stage2_similar_speed_scenario_seconds": 15923.758712699999,
+    "basis": "0.9 x measured stage1 toy + same-sized measured benchmark + same preflight/scoring/export/gate. Sparse stage unmeasured; excludes GPU wait and asset recheck; not a guaranteed upper bound."
+  },
+  "scope": "Damage-control only; PASS is not specific 4B evil behavior replication. No execution changes."
+}

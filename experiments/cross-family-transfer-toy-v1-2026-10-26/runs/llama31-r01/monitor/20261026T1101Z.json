@@ -1,0 +1,149 @@
+{
+  "checked_at_utc": "2026-10-26T11:01:21.745389+00:00",
+  "interpretation": "damage_control_only",
+  "freeze_sha256": "53aa00e02c10216309af74ae0a330ec62f59e6b22da7fd6b66360a93fb3afa03",
+  "launch_status": "running",
+  "stages": {
+    "1": {
+      "queue_status": "running",
+      "phase": "toy",
+      "gate": null
+    },
+    "2": {
+      "queue_status": null,
+      "phase": null,
+      "gate": null
+    }
+  },
+  "toy": [
+    {
+      "status": "running",
+      "pid": null,
+      "started_utc": "2026-10-26T09:05:16.559282+00:00",
+      "completed_behavior": 317,
+      "completed_ability": 0,
+      "expected_per_split": 320,
+      "current_split": "behavior",
+      "elapsed_seconds": 6952.45503025502,
+      "ended_utc": null,
+      "error": null,
+      "shard": 0,
+      "actual": {
+        "behavior": {
+          "files": 317,
+          "last_completion_utc": "2026-10-26T11:01:09.013872+00:00",
+          "last30_mean_seconds": 22.445729024211566,
+          "invalid_status_count": 0,
+          "last30_tokens_per_second": 18.16975215611911
+        },
+        "ability": {
+          "files": 0,
+          "last_completion_utc": null,
+          "last30_mean_seconds": null,
+          "invalid_status_count": 0
+        }
+      }
+    },
+    {
+      "status": "running",
+      "pid": null,
+      "started_utc": "2026-10-26T09:05:16.559327+00:00",
+      "completed_behavior": 320,
+      "completed_ability": 191,
+      "expected_per_split": 320,
+      "current_split": "ability",
+      "elapsed_seconds": 6964.3792564142495,
+      "ended_utc": null,
+      "error": null,
+      "shard": 1,
+      "actual": {
+        "behavior": {
+          "files": 320,
+          "last_completion_utc": "2026-10-26T10:59:45.849299+00:00",
+          "last30_mean_seconds": 23.496641891263426,
+          "invalid_status_count": 0,
+          "last30_tokens_per_second": 17.945826838491833
+        },
+        "ability": {
+          "files": 191,
+          "last_completion_utc": "2026-10-26T11:01:20.938148+00:00",
+          "last30_mean_seconds": 1.5323712892209491,
+          "invalid_status_count": 0
+        }
+      }
+    }
+  ],
+  "benchmark": [],
+  "processes": [
+    {
+      "pid": 1578983,
+      "start_ticks": "1124088875",
+      "state": "S",
+      "command": "/workspace/acupuncture/.venv-bench/bin/python -u /workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/launch-r01/queue.py "
+    },
+    {
+      "pid": 1578985,
+      "start_ticks": "1124088880",
+      "state": "S",
+      "command": "/workspace/acupuncture/.venv-bench/bin/python -u /workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/pipeline.py --stage 1 --run /workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01 --source /data/models/Qwen3.5-4B-851bf6e --target /workspace/models/Llama-3.1-8B-Instruct-0e9e39f2 --execute "
+    },
+    {
+      "pid": 1579923,
+      "start_ticks": "1124099094",
+      "state": "R",
+      "command": "/workspace/acupuncture/.venv-bench/bin/python -u /workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/toy.py run --stage 1 --model /workspace/models/Llama-3.1-8B-Instruct-0e9e39f2 --conditions /workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/mapping/bundle.pt --output /workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/stage1/toy --freeze /workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/freeze.json --shard-index 0 "
+    },
+    {
+      "pid": 1579924,
+      "start_ticks": "1124099094",
+      "state": "R",
+      "command": "/workspace/acupuncture/.venv-bench/bin/python -u /workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/toy.py run --stage 1 --model /workspace/models/Llama-3.1-8B-Instruct-0e9e39f2 --conditions /workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/mapping/bundle.pt --output /workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/stage1/toy --freeze /workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/freeze.json --shard-index 1 "
+    },
+    {
+      "pid": 1599626,
+      "start_ticks": "1124500596",
+      "state": "S",
+      "command": "/workspace/acupuncture/.venv-bench/bin/python explorer/server.py "
+    },
+    {
+      "pid": 1609378,
+      "start_ticks": "1124711960",
+      "state": "R",
+      "command": "/workspace/acupuncture/.venv-bench/bin/python upstream/sweep/steer_lens.py --model /workspace/models/Qwen3.5-2B-15852e8c --neurons-per-batch 96 --out data/2b/stats/steer-full-r01 "
+    },
+    {
+      "pid": 1609380,
+      "start_ticks": "1124711960",
+      "state": "R",
+      "command": "/workspace/acupuncture/.venv-bench/bin/python upstream/sweep/steer_lens.py --model /workspace/models/Qwen3.5-9B-c2022362 --layers 0-15 --neurons-per-batch 96 --out data/9b/stats/steer-full-r01 "
+    }
+  ],
+  "gpu_processes": "GPU-1a1ef3a8-8633-f7f7-cb1d-f2ff18569f5d, 1579923, 16234 MiB\nGPU-1a1ef3a8-8633-f7f7-cb1d-f2ff18569f5d, 1599626, 9574 MiB\nGPU-1a1ef3a8-8633-f7f7-cb1d-f2ff18569f5d, 1609378, 10078 MiB\nGPU-cbae4c04-a3d4-5176-93d0-5bfaf154ca68, 1579924, 16758 MiB\nGPU-cbae4c04-a3d4-5176-93d0-5bfaf154ca68, 1609380, 28428 MiB\n",
+  "integrity_check": {
+    "checked_at_utc": "2026-10-26T11:00:03.366679+00:00",
+    "frozen_files_checked": 216,
+    "hash_mismatches": [],
+    "supervisor_identity_verified": true,
+    "expected_supervisor_pid": 1578983,
+    "expected_supervisor_start_ticks": "1124088875"
+  },
+  "eta": {
+    "behavior_expected_beijing": "2026-10-26 19:02–19:04",
+    "stage1_full": null,
+    "stage2_full": null,
+    "full_queue": null,
+    "reason": "Formal Benchmark has not started; task-specific timing and scoring cost unmeasured. Stage2 also requires stage1 PASS and both GPUs free of other compute processes.",
+    "unmeasured_scenarios": {
+      "formal_stage_generation_hours": [
+        4,
+        4.8
+      ],
+      "stage2_all_generation_hours": [
+        6,
+        7.1
+      ],
+      "basis": "Full token budgets at approximately 18–21 generated tokens/sec/card, two cards; excludes prompt processing, likelihood scoring, model loading, export/sandbox and GPU waiting. Not a wall-clock upper bound."
+    },
+    "resource_change": "Other 2B/9B steer_lens jobs now share both GPUs; explorer remains resident. Do not stop these processes."
+  }
+}

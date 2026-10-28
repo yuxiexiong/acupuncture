@@ -1,0 +1,99 @@
+<div id="acupuncture-two-layer-walkthrough">
+  <style>
+    #acupuncture-two-layer-walkthrough { color: var(--foreground); }
+    #acupuncture-two-layer-walkthrough .tw-heading { padding-right: 92px; }
+    #acupuncture-two-layer-walkthrough .tw-caption { margin: 8px 0 16px; color: var(--muted-foreground); }
+    #acupuncture-two-layer-walkthrough .tw-control { margin-bottom: 20px; }
+    #acupuncture-two-layer-walkthrough .tw-note { margin: 12px 0; color: var(--muted-foreground); }
+    #acupuncture-two-layer-walkthrough .tw-pin { font-weight: 500; text-decoration: underline; text-underline-offset: 3px; }
+    #acupuncture-two-layer-walkthrough .tw-meter { height: 8px; margin-top: 6px; background: var(--muted); }
+    #acupuncture-two-layer-walkthrough .tw-bar { height: 8px; background: var(--viz-series-1); transition: width 150ms ease; }
+    #acupuncture-two-layer-walkthrough .tw-green { background: var(--viz-series-2); }
+    @media (prefers-reduced-motion: reduce) {
+      #acupuncture-two-layer-walkthrough .tw-bar { transition: none; }
+    }
+  </style>
+  <h3 class="tw-heading">天空｜是 → 下一个 token</h3>
+  <div class="tw-caption text-small">教学模型 · 人为权重 · 非 Qwen 实测 · 2 层 × 2 维 × 2 个 MLP 通道</div>
+  <div class="tw-control">
+    <label class="form-label" for="tw-dose">直接加到 L0 第一通道的数 c：<output id="tw-dose-value" class="tabular-nums">+2</output></label>
+    <input id="tw-dose" class="form-range" type="range" min="-1" max="3" step="0.25" value="2" aria-describedby="tw-range">
+    <div id="tw-range" class="text-small text-muted">−1 至 +3；c = 0 为原版</div>
+  </div>
+  <div class="tw-note text-small">只显示最后一个输入 token“是”的路径；前文“天空”已参与计算。</div>
+  <table class="table table-sm" aria-label="最后输入token经过两层的原版与加针对照">
+    <thead><tr><th scope="col">计算步骤</th><th scope="col">原版 c = 0</th><th scope="col">当前加针</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">L0 · 注意力＋残差后</th><td class="tabular-nums">[2, −1]</td><td id="tw-r0" class="tabular-nums">[2, −1]</td></tr>
+      <tr><th scope="row">L0 · MLP 通道，针前</th><td class="tabular-nums">[1, −1]</td><td id="tw-z0" class="tabular-nums">[1, −1]</td></tr>
+      <tr><th scope="row">L0 · MLP 通道，针后<br><span class="text-small">下划线：直接改的数</span></th><td class="tabular-nums">[1, −1]</td><td class="tabular-nums">[<strong id="tw-injected" class="tw-pin">3</strong>, −1]</td></tr>
+      <tr><th scope="row">L0 · MLP 写回</th><td class="tabular-nums">[0, 0]</td><td id="tw-down0" class="tabular-nums">[0, 2]</td></tr>
+      <tr><th scope="row">L0 · 层输出</th><td class="tabular-nums">[2, −1]</td><td id="tw-h1" class="tabular-nums">[2, 1]</td></tr>
+      <tr><th scope="row">L1 · 注意力＋残差后</th><td class="tabular-nums">[4, −1]</td><td id="tw-r1" class="tabular-nums">[4, 1]</td></tr>
+      <tr><th scope="row">L1 · 两个 MLP 通道</th><td class="tabular-nums">[−1, 1]</td><td id="tw-z1" class="tabular-nums">[1, −1]</td></tr>
+      <tr><th scope="row">L1 · MLP 写回</th><td class="tabular-nums">[0, −1]</td><td id="tw-down1" class="tabular-nums">[0, 1]</td></tr>
+      <tr><th scope="row">L1 · 层输出</th><td class="tabular-nums">[4, −2]</td><td id="tw-h2" class="tabular-nums">[4, 2]</td></tr>
+    </tbody>
+  </table>
+  <div class="tw-note text-small">四词词表：每格为 logit → 概率；概率分母包含全部 4 个词。</div>
+  <table class="table table-sm" aria-label="四个候选token的分数与softmax概率">
+    <thead><tr><th scope="col">候选 token</th><th scope="col">原版</th><th scope="col">当前加针</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">天空</th><td id="tw-base-sky" class="tabular-nums"></td><td id="tw-current-sky" class="tabular-nums"></td></tr>
+      <tr><th scope="row">是</th><td id="tw-base-is" class="tabular-nums"></td><td id="tw-current-is" class="tabular-nums"></td></tr>
+      <tr><th scope="row">蓝色</th><td><span id="tw-base-blue" class="tabular-nums"></span><div class="tw-meter" aria-hidden="true"><div id="tw-base-blue-bar" class="tw-bar"></div></div></td><td><span id="tw-current-blue" class="tabular-nums"></span><div class="tw-meter" aria-hidden="true"><div id="tw-current-blue-bar" class="tw-bar"></div></div></td></tr>
+      <tr><th scope="row">绿色</th><td><span id="tw-base-green" class="tabular-nums"></span><div class="tw-meter" aria-hidden="true"><div id="tw-base-green-bar" class="tw-bar tw-green"></div></div></td><td><span id="tw-current-green" class="tabular-nums"></span><div class="tw-meter" aria-hidden="true"><div id="tw-current-green-bar" class="tw-bar tw-green"></div></div></td></tr>
+      <tr><th scope="row">贪心输出<br><span class="text-small">生成 1 token 后结束</span></th><td>蓝色</td><td id="tw-answer">绿色</td></tr>
+    </tbody>
+  </table>
+  <div id="tw-announcement" class="sr-only" aria-live="polite"></div>
+  <script>
+    (() => {
+      const root = document.getElementById('acupuncture-two-layer-walkthrough');
+      const node = id => root.querySelector(`#tw-${id}`);
+      const slider = node('dose');
+      const number = value => String(Number(value.toFixed(2))).replace('-', '−');
+      const vector = values => `[${values.map(number).join(', ')}]`;
+      const scores = dose => [-4, -4, 2 - 2 * dose, -2 + 2 * dose];
+      const softmax = values => {
+        const largest = Math.max(...values);
+        const exp = values.map(value => Math.exp(value - largest));
+        const total = exp.reduce((sum, value) => sum + value, 0);
+        return exp.map(value => value / total);
+      };
+      const output = (prefix, dose) => {
+        const logits = scores(dose);
+        const probabilities = softmax(logits);
+        ['sky', 'is', 'blue', 'green'].forEach((token, index) => {
+          node(`${prefix}-${token}`).textContent = `${number(logits[index])} → ${(probabilities[index] * 100).toFixed(2)}%`;
+          if (index >= 2) node(`${prefix}-${token}-bar`).style.width = `${probabilities[index] * 100}%`;
+        });
+      };
+      const update = dose => {
+        slider.value = dose;
+        node('dose-value').textContent = (dose > 0 ? '+' : '') + number(dose);
+        node('injected').textContent = number(1 + dose);
+        Object.entries({down0: [0, dose], h1: [2, -1 + dose], r1: [4, -1 + dose], z1: [-1 + dose, 1 - dose], down1: [0, -1 + dose], h2: [4, -2 + 2 * dose]}).forEach(([id, values]) => {
+          node(id).textContent = vector(values);
+        });
+        output('current', dose);
+        node('answer').textContent = dose === 1 ? '蓝色 / 绿色并列' : dose < 1 ? '蓝色' : '绿色';
+      };
+      const restore = state => {
+        const dose = state?.modelContent?.dose;
+        update(typeof dose === 'number' && Number.isFinite(dose) ? Math.max(-1, Math.min(3, Math.round(dose * 4) / 4)) : 2);
+      };
+      slider.addEventListener('input', () => update(Number(slider.value)));
+      slider.addEventListener('change', () => {
+        const dose = Number(slider.value);
+        node('announcement').textContent = `激活加数 ${number(dose)}；L1 两个通道变为 ${node('z1').textContent}；贪心输出：${node('answer').textContent}。`;
+        window.openai?.setWidgetState({modelContent: {dose}, privateContent: null}).catch(() => {});
+      });
+      window.addEventListener('openai:set_globals', event => {
+        if (event.detail?.globals?.widgetState !== undefined) restore(event.detail.globals.widgetState);
+      });
+      output('base', 0);
+      restore(window.openai?.widgetState);
+    })();
+  </script>
+</div>

@@ -4,12 +4,24 @@
 
 **唯一主仓库：[yuxiexiong/acupuncture](https://github.com/yuxiexiong/acupuncture)。** 自 2026-10-26 起，本项目的代码、实验协议、研究笔记、结果和后续工作统一保存在这里。本地项目根目录为 `/Users/ruizhixu/Documents/ChatGPT/acupuncture`。
 
+## Git 与大文件归档
+
+文档、代码、原始回答、评分、实验收据和校验清单保存在 Git；大型内部轨迹、迁移张量及可视化缓存保留本地与 `gqa-h20` 服务器。完整范围和恢复路径见 [本次归档说明](migration/2026-10-28-full-results-git-r01/README.zh-CN.md)。新克隆仓库后，三维轨迹查看需要先从清单指定路径取回这些大文件；现有本地文件和可视化不受影响。
+
 ## 从这里开始
 
 | 材料 | 入口 |
 |---|---|
+| 早层输出二维观察台：同点正负剂量原文、层×预测步热图、token竞争曲线联动 | [打开观察台](http://127.0.0.1:8794/analysis.html?model=4b&layer=0&channel=4146&question=Q04&dose=0.5) / [说明与验收](experiments/neuron-explorer-multimodel-v2-2026-10-26/analysis-view-r01/README.zh-CN.md) |
+| 全部已有结果统一可视化：18,272条单针回答（其中7,632条内部轨迹），另含历史双针、能力、迁移、修复与停止记录 | [统一入口与范围](experiments/neuron-explorer-multimodel-v2-2026-10-26/all-experiments-r01/README.zh-CN.md) / [启动](experiments/neuron-explorer-multimodel-v2-2026-10-26/open-brainmap.command) |
+| 内部轨迹三维查看：2B/4B/9B/Llama，按层、正负剂量与token查看传播及原版／干预回答 | [本地三维入口与核验](experiments/neuron-explorer-multimodel-v2-2026-10-26/trace-view-r01/README.zh-CN.md) / [启动](experiments/neuron-explorer-multimodel-v2-2026-10-26/open-brainmap.command) |
 | 当前研究状态、机制线索与迁移计划 | [研究状态与后续方向](docs/RESEARCH_STATUS.zh-CN.md) |
+| Llama 3.1 8B前六层内部轨迹：920条已完成 | [最终计数与验收](experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T1035.zh-CN.md) / [合同与历史执行记录](experiments/llama31-early-layer-trace-v1-2026-10-28/EXECUTION.zh-CN.md) |
+| 三模型前六层＋4B全32层内部轨迹：原2,152条、追加4,560条均已完成 | [最终计数与验收](experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T1035.zh-CN.md) / [追加合同与执行证据](experiments/layer-trace-extension-v1-2026-10-28/EXECUTION.zh-CN.md) |
 | X 线索统一入口：历次原帖、全部已转录配方、定位方法、复现与失败、可视化工具 | [X 线索汇总](docs/literature/x-clues-summary.zh-CN.md) |
+| Llama独立A/B完整交付：A 2,560组双栏、B 256组十一栏，合计4,872唯一正式来源；全量归档、哈希核验及各32层首轮阅读完成，旧合并运行仍停止 | [A观察](experiments/llama31-layer-survey-v1-2026-10-28/qualitative-pass-r01/FIRST_PASS.zh-CN.md) / [B剂量观察](experiments/llama31-single-point-dose-survey-v1-2026-10-28/qualitative-pass-r01/FIRST_PASS.zh-CN.md) / [B执行与成本](experiments/llama31-single-point-dose-survey-v1-2026-10-28/EXECUTION.zh-CN.md) / [旧运行停止证据](experiments/llama31-layer-dose-survey-v1-2026-10-28/user-stop-split-r01/receipt.json) |
+| 原点镜像负剂量：3,520份新增已完成并核验归档；704组十一栏首次模型辅助开放阅读及88层笔记已交付 | [观察与反例](experiments/layer-negative-dose-survey-toy-v1-2026-10-27/qualitative-pass-r01/FIRST_PASS.zh-CN.md) / [执行状态](experiments/layer-negative-dose-survey-toy-v1-2026-10-27/EXECUTION.zh-CN.md) / [冻结合同](experiments/layer-negative-dose-survey-toy-v1-2026-10-27/PROTOCOL.zh-CN.md) |
+| 全层单针五档剂量调查：2,816份采集完成，704组六栏首次通读与核验已交付 | [剂量观察与反例](experiments/layer-dose-survey-toy-v1-2026-10-27/qualitative-pass-r01/FIRST_PASS.zh-CN.md) / [全部六栏原文](experiments/layer-dose-survey-toy-v1-2026-10-27/delivery-r01/paired_raw.html) / [正式运行记录](experiments/layer-dose-survey-toy-v1-2026-10-27/FORMAL_EXECUTION.zh-CN.md) / [测试与ETA报告](experiments/layer-dose-survey-toy-v1-2026-10-27/EXECUTION.zh-CN.md) / [预检六栏样例](experiments/layer-dose-survey-toy-v1-2026-10-27/preflight-delivery-r01/paired_raw.html) |
 | 2B/4B/9B 全层单针调查：880条件、7,064份原文已交付并完成首次开放式通读 | [通读观察与反例](experiments/layer-survey-toy-v1-2026-10-27/qualitative-pass-r01/FIRST_PASS.zh-CN.md) / [并排原文](experiments/layer-survey-toy-v1-2026-10-27/delivery-r01/paired_raw.html) / [执行与核验记录](experiments/layer-survey-toy-v1-2026-10-27/EXECUTION.zh-CN.md) / [协议](experiments/layer-survey-toy-v1-2026-10-27/PROTOCOL.zh-CN.md) |
 | 两针能力损伤的最小因果定位：首轮完成，有局部修复线索，根因尚未确认 | [首轮结果](experiments/root-cause-toy-v1-2026-10-26/RESULTS.zh-CN.md) / [执行状态与实际耗时](experiments/root-cause-toy-v1-2026-10-26/EXECUTION.zh-CN.md) / [执行合同](experiments/root-cause-toy-v1-2026-10-26/CONTRACT.zh-CN.md) |
 | 判断内容与报告标签的追加诊断：合同/代码/CPU验收完成，正式运行暂停 | [本轮合同](experiments/judgment-report-toy-v1-2026-10-26/CONTRACT.zh-CN.md) / [准备验收与阶段说明](experiments/judgment-report-toy-v1-2026-10-26/EXECUTION.zh-CN.md) |

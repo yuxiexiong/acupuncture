@@ -1,0 +1,336 @@
+{
+  "status": "completed",
+  "started_utc": "2026-10-26T09:03:57.699111+00:00",
+  "pid": 1578985,
+  "stage": 1,
+  "steps": [
+    {
+      "phase": "collect",
+      "started_utc": "2026-10-26T09:03:57.699466+00:00",
+      "workers": [
+        {
+          "pid": 1579043,
+          "gpu": 0,
+          "command": [
+            "/workspace/acupuncture/.venv-bench/bin/python",
+            "-u",
+            "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/collect.py",
+            "--model",
+            "/data/models/Qwen3.5-4B-851bf6e",
+            "--source-tokenizer",
+            "/data/models/Qwen3.5-4B-851bf6e",
+            "--target-tokenizer",
+            "/workspace/models/Llama-3.1-8B-Instruct-0e9e39f2",
+            "--role",
+            "source",
+            "--data",
+            "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/data",
+            "--output",
+            "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/collection-source"
+          ]
+        },
+        {
+          "pid": 1579044,
+          "gpu": 1,
+          "command": [
+            "/workspace/acupuncture/.venv-bench/bin/python",
+            "-u",
+            "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/collect.py",
+            "--model",
+            "/workspace/models/Llama-3.1-8B-Instruct-0e9e39f2",
+            "--source-tokenizer",
+            "/data/models/Qwen3.5-4B-851bf6e",
+            "--target-tokenizer",
+            "/workspace/models/Llama-3.1-8B-Instruct-0e9e39f2",
+            "--role",
+            "target",
+            "--data",
+            "/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/data",
+            "--output",
+            "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/collection-target"
+          ]
+        }
+      ],
+      "exit_codes": [
+        0,
+        0
+      ],
+      "ended_utc": "2026-10-26T09:04:42.267968+00:00"
+    },
+    {
+      "phase": "mapping",
+      "started_utc": "2026-10-26T09:04:42.283576+00:00",
+      "workers": [
+        {
+          "pid": 1579413,
+          "gpu": null,
+          "command": [
+            "/workspace/acupuncture/.venv-bench/bin/python",
+            "-u",
+            "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/mapping.py",
+            "--source",
+            "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/collection-source",
+            "--target",
+            "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/collection-target",
+            "--output",
+            "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/mapping",
+            "--device",
+            "cpu",
+            "--freeze",
+            "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/freeze.json"
+          ]
+        }
+      ],
+      "exit_codes": [
+        0
+      ],
+      "ended_utc": "2026-10-26T09:05:00.045574+00:00"
+    },
+    {
+      "phase": "preflight",
+      "started_utc": "2026-10-26T09:05:00.055575+00:00",
+      "workers": [
+        {
+          "pid": 1579462,
+          "gpu": 0,
+          "command": [
+            "/workspace/acupuncture/.venv-bench/bin/python",
+            "-u",
+            "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/preflight.py",
+            "--run",
+            "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01",
+            "--stage",
+            "1",
+            "--model",
+            "/workspace/models/Llama-3.1-8B-Instruct-0e9e39f2",
+            "--conditions",
+            "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/mapping/bundle.pt",
+            "--freeze",
+            "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/freeze.json",
+            "--output",
+            "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/stage1/preflight-0"
+          ]
+        },
+        {
+          "pid": 1579463,
+          "gpu": 1,
+          "command": [
+            "/workspace/acupuncture/.venv-bench/bin/python",
+            "-u",
+            "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/preflight.py",
+            "--run",
+            "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01",
+            "--stage",
+            "1",
+            "--model",
+            "/workspace/models/Llama-3.1-8B-Instruct-0e9e39f2",
+            "--conditions",
+            "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/mapping/bundle.pt",
+            "--freeze",
+            "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/freeze.json",
+            "--output",
+            "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/stage1/preflight-1"
+          ]
+        }
+      ],
+      "exit_codes": [
+        0,
+        0
+      ],
+      "ended_utc": "2026-10-26T09:05:16.506285+00:00"
+    },
+    {
+      "phase": "toy",
+      "started_utc": "2026-10-26T09:05:16.516459+00:00",
+      "workers": [
+        {
+          "pid": 1579923,
+          "gpu": 0,
+          "command": [
+            "/workspace/acupuncture/.venv-bench/bin/python",
+            "-u",
+            "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/toy.py",
+            "run",
+            "--stage",
+            "1",
+            "--model",
+            "/workspace/models/Llama-3.1-8B-Instruct-0e9e39f2",
+            "--conditions",
+            "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/mapping/bundle.pt",
+            "--output",
+            "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/stage1/toy",
+            "--freeze",
+            "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/freeze.json",
+            "--shard-index",
+            "0"
+          ]
+        },
+        {
+          "pid": 1579924,
+          "gpu": 1,
+          "command": [
+            "/workspace/acupuncture/.venv-bench/bin/python",
+            "-u",
+            "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/toy.py",
+            "run",
+            "--stage",
+            "1",
+            "--model",
+            "/workspace/models/Llama-3.1-8B-Instruct-0e9e39f2",
+            "--conditions",
+            "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/mapping/bundle.pt",
+            "--output",
+            "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/stage1/toy",
+            "--freeze",
+            "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/freeze.json",
+            "--shard-index",
+            "1"
+          ]
+        }
+      ],
+      "exit_codes": [
+        0,
+        0
+      ],
+      "ended_utc": "2026-10-26T11:06:44.085702+00:00"
+    },
+    {
+      "phase": "benchmark",
+      "started_utc": "2026-10-26T11:06:44.097724+00:00",
+      "workers": [
+        {
+          "pid": 1619248,
+          "gpu": 0,
+          "command": [
+            "/workspace/acupuncture/.venv-bench/bin/python",
+            "-u",
+            "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/benchmark.py",
+            "run",
+            "--stage",
+            "1",
+            "--model",
+            "/workspace/models/Llama-3.1-8B-Instruct-0e9e39f2",
+            "--conditions",
+            "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/mapping/bundle.pt",
+            "--output",
+            "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/stage1/benchmark",
+            "--freeze",
+            "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/freeze.json",
+            "--shard-index",
+            "0"
+          ]
+        },
+        {
+          "pid": 1619249,
+          "gpu": 1,
+          "command": [
+            "/workspace/acupuncture/.venv-bench/bin/python",
+            "-u",
+            "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/benchmark.py",
+            "run",
+            "--stage",
+            "1",
+            "--model",
+            "/workspace/models/Llama-3.1-8B-Instruct-0e9e39f2",
+            "--conditions",
+            "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/mapping/bundle.pt",
+            "--output",
+            "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/stage1/benchmark",
+            "--freeze",
+            "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/freeze.json",
+            "--shard-index",
+            "1"
+          ]
+        }
+      ],
+      "exit_codes": [
+        0,
+        0
+      ],
+      "ended_utc": "2026-10-26T13:42:19.093628+00:00"
+    },
+    {
+      "phase": "score",
+      "started_utc": "2026-10-26T13:42:19.103893+00:00",
+      "workers": [
+        {
+          "pid": 1662662,
+          "gpu": null,
+          "command": [
+            "/workspace/acupuncture/.venv-bench/bin/python",
+            "-u",
+            "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/benchmark.py",
+            "finish",
+            "--stage",
+            "1",
+            "--output",
+            "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/stage1/benchmark",
+            "--project",
+            "/workspace/acupuncture",
+            "--freeze",
+            "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/freeze.json"
+          ]
+        }
+      ],
+      "exit_codes": [
+        0
+      ],
+      "ended_utc": "2026-10-26T13:42:30.271911+00:00"
+    },
+    {
+      "phase": "export",
+      "started_utc": "2026-10-26T13:42:30.281945+00:00",
+      "workers": [
+        {
+          "pid": 1666314,
+          "gpu": null,
+          "command": [
+            "/workspace/acupuncture/.venv-bench/bin/python",
+            "-u",
+            "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/toy.py",
+            "export",
+            "--stage",
+            "1",
+            "--output",
+            "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/stage1/toy",
+            "--freeze",
+            "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/freeze.json"
+          ]
+        }
+      ],
+      "exit_codes": [
+        0
+      ],
+      "ended_utc": "2026-10-26T13:42:32.358032+00:00"
+    },
+    {
+      "phase": "gate",
+      "started_utc": "2026-10-26T13:42:32.368168+00:00",
+      "workers": [
+        {
+          "pid": 1666425,
+          "gpu": null,
+          "command": [
+            "/workspace/acupuncture/.venv-bench/bin/python",
+            "-u",
+            "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/gate.py",
+            "--run",
+            "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01",
+            "--freeze",
+            "/workspace/acupuncture/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/freeze.json",
+            "--stage",
+            "1"
+          ]
+        }
+      ],
+      "exit_codes": [
+        0
+      ],
+      "ended_utc": "2026-10-26T13:42:32.623843+00:00"
+    }
+  ],
+  "gate_decision": "PASS",
+  "next_stage_started": false,
+  "ended_utc": "2026-10-26T13:42:32.633824+00:00",
+  "wall_seconds": 16714.934704340994
+}
