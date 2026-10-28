@@ -250,8 +250,14 @@ class TorchTests(unittest.TestCase):
             for mode in control.MODES:
                 generated = self.engine.score_one("abcd", "efab", self.reference, condition,
                                                    mode=mode, verify_logits=True)
-                with patch.object(self.engine.model, "generate", side_effect=AssertionError("generate forbidden")):
+                positions, forward = [], self.engine.model.forward
+                def record_positions(*args, **kwargs):
+                    positions.append(kwargs["position_ids"].tolist())
+                    return forward(*args, **kwargs)
+                with patch.object(self.engine.model, "generate", side_effect=AssertionError("generate forbidden")), \
+                        patch.object(self.engine.model, "forward", side_effect=record_positions):
                     manual = self.engine.manual_score_one("abcd", "efab", self.reference, condition, mode=mode)
+                self.assertEqual(positions, [[[0, 1, 2, 3]], [[4]], [[5]], [[6]]])
                 self.assertEqual(manual["continuation_token_ids"], generated["continuation_token_ids"])
                 self.assertEqual(manual["token_logprobs"], generated["token_logprobs"])
                 self.assertEqual(manual["loglikelihood"], generated["loglikelihood"])

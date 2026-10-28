@@ -1,0 +1,38 @@
+{
+  "status": "authorized",
+  "experiment": "early-input-control-v1-2026-10-29",
+  "created_at": "2026-10-28T19:10:29.309771+00:00",
+  "user_instruction": "写合同，代码，做测试，然后报给我 ETA。",
+  "user_instruction_2026_10_29": "你按照handoff指令一直跑到实验结束，如果有bug和问题，按照实验设计文档中的内容修复，然后续跑。半小时更新一次eta和实验运行情况",
+  "allowed_stages": [
+    "preflight"
+  ],
+  "formal_execution_authorized": false,
+  "maximum_workers": 2,
+  "freeze_path": "freeze-r03.json",
+  "freeze_sha256": "dc0556c76c10820b71597d42b26939b3967e7b543168775a701a64058a463aca",
+  "output_root": "runs/preflight-r03",
+  "preflight_limits_per_worker": {
+    "generations_or_branches": 128,
+    "candidate_continuations": 512,
+    "donor_replays": 32,
+    "calibration_prompts": 20,
+    "maximum_tokens_per_generation": 128
+  },
+  "cpu_evidence_path": "readiness/cpu-receipt-r05.json",
+  "data_review_path": "readiness/independent-data-review-r01.json",
+  "tokenizer_evidence_path": "readiness/tokenizer-check-r01.json",
+  "code_review_path": "readiness/independent-code-review-r04.json",
+  "required_evidence": {
+    "readiness/cpu-receipt-r05.json": "b4f71f7288844d9183704322cfcebf3751e939fbfb1420d1433b76a534b57631",
+    "readiness/independent-data-review-r01.json": "2d6a4e7bb7670f4926d86669de80a47db78746ef7135e05d369aa21e2d220140",
+    "readiness/tokenizer-check-r01.json": "1acc7b3ae8f8ea3bbb7ebc4412ec236cee6d92fdddc54d42d7523227ecb68157",
+    "readiness/independent-code-review-r04.json": "7d8fde954fe5305c4a78b845844ede006c78be2af9b93452a27c5f0b31f00da0"
+  },
+  "supersedes": {
+    "path": "readiness/preflight-authorization-r02.json",
+    "sha256": "2929e6e5c97b50ebc70f83c8a0b1e93cb30cb0267db5b1e267eb9495ad5f53a1",
+    "reason": "preflight-r02 failed (readiness/preflight-failure-r02.json); code revised to freeze-r03"
+  },
+  "scope": "bounded technical validation only; no formal or confirmation model outputs"
+}

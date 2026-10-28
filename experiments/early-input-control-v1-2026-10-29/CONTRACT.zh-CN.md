@@ -156,6 +156,8 @@ prefill 包含第一个输出 token 的预测；其首步 EOS 不能单独定位
 
 工程修订记录：`preflight-r01` 因候选增量评分与整段forward的最大逐 token 差值 `0.06250286102294922` 超过原 `0.02` 检查值而失败，旧失败状态不改判。旧合同、代码与freeze已封存于 `readiness/source-freeze-r01.tar.gz`，旧原文、错误、收据和退出证据继续保留。新版本将数值正确性门槛改为上述独立同路径逐步精确核对，同时继续记录整段forward差异；不通过提高原容差放行，不改变题目、校准、剂量或正式生成路径。路径/形状差异是待核对的工程解释，现有差值本身不足以证明其完全来自BF16。新CPU和真实GPU预检均通过后才能报告修订已验收。
 
+第二次工程修订：`preflight-r02`（freeze-r02）在首次调用独立手工参照时崩溃（rotary 位置长度 45 对输入 1 token），未到达精确核对，属合同执行失败。根因是手工增量 forward 未传 `position_ids`，generate 已置 `rope_deltas` 后模型按完整 attention mask 推导位置。修订只让手工参照显式传入与 generate 相同的文本位置 `arange(past, past+width)`；生成路径、题目、校准、剂量与精确一致门槛均不变。失败证据见 `readiness/preflight-failure-r02.json`，旧源码在 `readiness/source-freeze-r02.tar.gz`。
+
 ## 10. 本轮 ETA 与交付
 
 本轮报告必须明确区分：CPU已通过、真实GPU已通过/失败/待执行、正式计算未开始。固定开发4,632和确认3,480合计8,112份自由回答；时段、撤针、替换及其新题确认全部额外记账，不把8,112写作整轮总调用量。

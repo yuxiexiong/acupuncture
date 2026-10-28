@@ -403,6 +403,9 @@ class ControlEngine(survey.SurveyEngine):
                 current = prompt if step == 0 else [suffix[step - 1]]
                 inputs = self._inputs([current])
                 inputs["attention_mask"] = torch.ones((1, len(prompt) + step), device=self.device, dtype=torch.long)
+                # Explicit text positions, as generate passes them; never infer from stale model.rope_deltas.
+                start = len(prompt) + step - len(current)
+                inputs["position_ids"] = torch.arange(start, start + len(current), device=self.device).view(1, -1)
                 output = self.model(**inputs, past_key_values=cache, use_cache=True, logits_to_keep=1)
                 assert state["step"] == step and output.logits.shape[:2] == (1, 1)
                 cache = output.past_key_values

@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "status": "passed",
+  "verdict": "passed_with_risks",
+  "experiment": "early-input-control-v1-2026-10-29",
+  "at": "2026-10-28T19:10:11.874649+00:00",
+  "reviewer_type": "model_assisted_independent_static_code_review (separate subagent; read-only on gqa)",
+  "scope": "position_ids repair of manual_score_one after failed preflight-r02; no GPU preflight certified by this review",
+  "source_hashes": {
+    "experiments/early-input-control-v1-2026-10-29/control_engine.py": "ed898be3e36c453ff22e8f5de8e4830d420e74cce5f4cad1d5b019ee3535c360",
+    "experiments/early-input-control-v1-2026-10-29/test_control_engine.py": "0ed3c5afef711276566c7164905ffcf55ec8373fba94b227225d86b8dd533524",
+    "experiments/early-input-control-v1-2026-10-29/preflight.py": "82ab4bf9e5b107e34d388344337d480513f8f39f8b1d9a655c04e8625f19bbe2",
+    "experiments/early-input-control-v1-2026-10-29/experiment.py": "941a22d9d35bcd57acd87a4958ad2f417b561dae6c2ba541b8394d6b510bf8a2",
+    "experiments/early-input-control-v1-2026-10-29/execution.py": "62e1927c300d8ee25f67b3818e435ec2f31c7c0673fbd7688d4ace88ac591095",
+    "experiments/early-input-control-v1-2026-10-29/launch.py": "a4c0d2f28e0321402f71f30d18236ca29f43119477e379592729921a5cd0ca6d"
+  },
+  "cpu_receipt": {
+    "path": "readiness/cpu-receipt-r05.json",
+    "sha256": "b4f71f7288844d9183704322cfcebf3751e939fbfb1420d1433b76a534b57631"
+  },
+  "findings": [
+    "Root cause confirmed: with model.rope_deltas non-None and past_len>0, compute_3d_position_ids (modeling_qwen3_5.py 1560-1565) cumsums the full attention mask -> (3,1,45) positions for a 1-token query; step 0 safe via 1573/1246-1249. rope_deltas are correct zeros set by generate (1913-1916), not wrong values.",
+    "Explicit 2D position_ids bypass compute_3d (1631), expand to 4 identical rows (1250-1251); generate builds text=arange(P) (generation/utils.py:906) plus 3 rows text+0 (1913); decode slices to P+k-1 (utils.py 708-713, 1267-1276) = manual start. dtype long on both.",
+    "Other differences judged equivalent: all-ones vs dropped attention mask under eager; recurrent mask None for both; DynamicCache from same text config; cache_position unused.",
+    "No change to _run/score_one/generation path, conditions, or preflight thresholds.",
+    "Test change is weak: synthetic model ignores position_ids and never sets rope_deltas; it checks position arithmetic only and cannot reproduce the HF crash. Only GPU preflight exercises the real path.",
+    "No other bug found; logits_sha256 comparison is non-vacuous (score_one verify_logits captures every step); one-shot diagnostic uses no cache and is safe."
+  ],
+  "residual_risks": [
+    "causal mask built via two code paths (None vs all-ones) reasoned identical, not run",
+    "GPU kernel algorithm choice not proven bit-identical across calls (same shapes, low risk)",
+    "manual path relies on prior generate having run; holds at preflight.py:232, other orders untested"
+  ],
+  "recommendation": "no tolerance change; let exact GPU check decide"
+}

@@ -1,0 +1,38 @@
+{
+  "status": "authorized",
+  "experiment": "early-input-control-v1-2026-10-29",
+  "created_at": "2026-10-28T18:58:34.951934+00:00",
+  "user_instruction": "写合同，代码，做测试，然后报给我 ETA。",
+  "handoff_instruction": "接手窗口（2026-10-29）：创建新的 readiness/preflight-authorization-r02.json，绑定当前freeze-r02、CPU收据r04、静态复审r03、数据审核与分词检查；output_root=runs/preflight-r02；allowed_stages仅preflight；formal_execution_authorized=false。正式实验仍须取得明确正式授权。",
+  "allowed_stages": [
+    "preflight"
+  ],
+  "formal_execution_authorized": false,
+  "maximum_workers": 2,
+  "freeze_path": "freeze-r02.json",
+  "freeze_sha256": "4c372a47738657f8be5e10ea49b0265ad17a979d721d98fa34fe7265234a95c4",
+  "output_root": "runs/preflight-r02",
+  "preflight_limits_per_worker": {
+    "generations_or_branches": 128,
+    "candidate_continuations": 512,
+    "donor_replays": 32,
+    "calibration_prompts": 20,
+    "maximum_tokens_per_generation": 128
+  },
+  "cpu_evidence_path": "readiness/cpu-receipt-r04.json",
+  "data_review_path": "readiness/independent-data-review-r01.json",
+  "tokenizer_evidence_path": "readiness/tokenizer-check-r01.json",
+  "code_review_path": "readiness/independent-code-review-r03.json",
+  "required_evidence": {
+    "readiness/cpu-receipt-r04.json": "8acf63ae9494daf8e854ff6aff313a9706f0442e8fe8896df9d85dbfbfad4efc",
+    "readiness/independent-data-review-r01.json": "2d6a4e7bb7670f4926d86669de80a47db78746ef7135e05d369aa21e2d220140",
+    "readiness/tokenizer-check-r01.json": "1acc7b3ae8f8ea3bbb7ebc4412ec236cee6d92fdddc54d42d7523227ecb68157",
+    "readiness/independent-code-review-r03.json": "143e5b994e6ce06df88ea948e36fc4bb115ecacd453ddc5f67e9bfa2b94935b9"
+  },
+  "supersedes": {
+    "path": "readiness/preflight-authorization-r01.json",
+    "sha256": "1f5b327a0cacf864aa29c8973f0d5adc37ec2dbc33f40bbbdb7a29c86398c839",
+    "reason": "r01 binds freeze-r01/cpu-r03/review-r02, which no longer match current code; r01 run failed and is preserved unchanged"
+  },
+  "scope": "bounded technical validation only; no formal or confirmation model outputs"
+}
