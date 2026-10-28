@@ -1,0 +1,78 @@
+{
+  "status": "failed_attempt_preserved",
+  "created_at": "2026-10-28T18:46:04.428555+00:00",
+  "freeze_sha256": "ea67e841e1a6a7ef217b60165a56df5b805b2182c8349290baa8888cdb7bbe05",
+  "controller": {
+    "status": "failed",
+    "pid": 2619524,
+    "stage": "preflight",
+    "started_at": "2026-10-28T18:41:39.092434+00:00",
+    "authorization_sha256": "1f5b327a0cacf864aa29c8973f0d5adc37ec2dbc33f40bbbdb7a29c86398c839",
+    "freeze_sha256": "ea67e841e1a6a7ef217b60165a56df5b805b2182c8349290baa8888cdb7bbe05",
+    "workers": {
+      "0": {
+        "pid": 2619525,
+        "command": [
+          "/workspace/acupuncture/.venv-bench/bin/python",
+          "-u",
+          "/workspace/acupuncture/experiments/early-input-control-v1-2026-10-29/experiment.py",
+          "run",
+          "--stage",
+          "preflight",
+          "--gpu",
+          "0",
+          "--authorization",
+          "/workspace/acupuncture/experiments/early-input-control-v1-2026-10-29/readiness/preflight-authorization-r01.json",
+          "--output",
+          "/workspace/acupuncture/experiments/early-input-control-v1-2026-10-29/runs/preflight-r01/worker-0",
+          "--execute"
+        ],
+        "returncode": 1
+      },
+      "1": {
+        "pid": 2619526,
+        "command": [
+          "/workspace/acupuncture/.venv-bench/bin/python",
+          "-u",
+          "/workspace/acupuncture/experiments/early-input-control-v1-2026-10-29/experiment.py",
+          "run",
+          "--stage",
+          "preflight",
+          "--gpu",
+          "1",
+          "--authorization",
+          "/workspace/acupuncture/experiments/early-input-control-v1-2026-10-29/readiness/preflight-authorization-r01.json",
+          "--output",
+          "/workspace/acupuncture/experiments/early-input-control-v1-2026-10-29/runs/preflight-r01/worker-1",
+          "--execute"
+        ],
+        "returncode": -15
+      }
+    },
+    "error": "AssertionError('A worker failed; see preserved logs and partial receipts')",
+    "finished_at": "2026-10-28T18:43:53.152264+00:00",
+    "wall_seconds": 134.0597008112818
+  },
+  "workers": [
+    {
+      "worker": 0,
+      "receipt_status": "failed",
+      "exit": 1,
+      "record_files": 36,
+      "asset_files": 5
+    },
+    {
+      "worker": 1,
+      "receipt_status": "running",
+      "exit": -15,
+      "record_files": 32,
+      "asset_files": 5
+    }
+  ],
+  "local_file_hashes_verified": true,
+  "failure": "candidate incremental-versus-single-forward max difference 0.06250286102294922 exceeded 0.02 nats",
+  "other_worker_exit": "-15 is controller cancellation after worker0 failure, not a second independent failure",
+  "source_archive": "readiness/source-freeze-r01.tar.gz",
+  "source_archive_sha256": "c130efb19fd79f681ee76460361f24e8cdb3de38259178154510818a8743d6d4",
+  "remedy_planned": "Independently compute matching incremental path and compare all per-step logits; preserve one-shot numerical differences separately; no scientific conditions or decoding changed."
+}

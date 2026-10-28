@@ -1,0 +1,95 @@
+{
+  "at": "2026-10-28T18:44:19.264095+00:00",
+  "controller": {
+    "status": "failed",
+    "pid": 2619524,
+    "stage": "preflight",
+    "started_at": "2026-10-28T18:41:39.092434+00:00",
+    "authorization_sha256": "1f5b327a0cacf864aa29c8973f0d5adc37ec2dbc33f40bbbdb7a29c86398c839",
+    "freeze_sha256": "ea67e841e1a6a7ef217b60165a56df5b805b2182c8349290baa8888cdb7bbe05",
+    "workers": {
+      "0": {
+        "pid": 2619525,
+        "command": [
+          "/workspace/acupuncture/.venv-bench/bin/python",
+          "-u",
+          "/workspace/acupuncture/experiments/early-input-control-v1-2026-10-29/experiment.py",
+          "run",
+          "--stage",
+          "preflight",
+          "--gpu",
+          "0",
+          "--authorization",
+          "/workspace/acupuncture/experiments/early-input-control-v1-2026-10-29/readiness/preflight-authorization-r01.json",
+          "--output",
+          "/workspace/acupuncture/experiments/early-input-control-v1-2026-10-29/runs/preflight-r01/worker-0",
+          "--execute"
+        ],
+        "returncode": 1
+      },
+      "1": {
+        "pid": 2619526,
+        "command": [
+          "/workspace/acupuncture/.venv-bench/bin/python",
+          "-u",
+          "/workspace/acupuncture/experiments/early-input-control-v1-2026-10-29/experiment.py",
+          "run",
+          "--stage",
+          "preflight",
+          "--gpu",
+          "1",
+          "--authorization",
+          "/workspace/acupuncture/experiments/early-input-control-v1-2026-10-29/readiness/preflight-authorization-r01.json",
+          "--output",
+          "/workspace/acupuncture/experiments/early-input-control-v1-2026-10-29/runs/preflight-r01/worker-1",
+          "--execute"
+        ],
+        "returncode": -15
+      }
+    },
+    "error": "AssertionError('A worker failed; see preserved logs and partial receipts')",
+    "finished_at": "2026-10-28T18:43:53.152264+00:00",
+    "wall_seconds": 134.0597008112818
+  },
+  "workers": {
+    "0": {
+      "status": "failed",
+      "pid": 2619525,
+      "completed_records": 36,
+      "latest_record_at": "2026-10-28T18:43:48.106542+00:00",
+      "counters": {
+        "generations_or_branches": 33,
+        "candidate_continuations": 1,
+        "donor_replays": 4,
+        "calibration_prompts": 3,
+        "legacy_generations": 4,
+        "full_forward_checks": 1
+      },
+      "error": "Traceback (most recent call last):\n  File \"/workspace/acupuncture/experiments/early-input-control-v1-2026-10-29/experiment.py\", line 314, in run\n    receipt['preflight'] = run_preflight(engine, gpu, output, receipt)\n                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/acupuncture/experiments/early-input-control-v1-2026-10-29/preflight.py\", line 241, in run_preflight\n    assert difference <= .02, f'Incremental/full candidate mismatch: {difference}'\n           ^^^^^^^^^^^^^^^^^\nAssertionError: Incremental/full candidate mismatch: 0.06250286102294922\n",
+      "verified_record_files": 36
+    },
+    "1": {
+      "status": "running",
+      "pid": 2619526,
+      "completed_records": 32,
+      "latest_record_at": "2026-10-28T18:43:49.843240+00:00",
+      "counters": {
+        "generations_or_branches": 30,
+        "candidate_continuations": 0,
+        "donor_replays": 4,
+        "calibration_prompts": 3,
+        "legacy_generations": 4,
+        "full_forward_checks": 0
+      },
+      "verified_record_files": 32
+    }
+  },
+  "freeze": {
+    "status": "passed",
+    "freeze_sha256": "ea67e841e1a6a7ef217b60165a56df5b805b2182c8349290baa8888cdb7bbe05",
+    "files": 31
+  },
+  "gpu": "index, memory.used [MiB], utilization.gpu [%]\n0, 3 MiB, 0 %\n1, 3 MiB, 0 %\n",
+  "processes": "    PID    PPID STAT     ELAPSED COMMAND\n",
+  "disk": "Filesystem         1B-blocks          Used    Available Use% Mounted on\n/dev/vdb       2704472449024 2561269166080 132449087488  96% /workspace\n/dev/vda2       528175951872  454695718912  51918602240  90% /\n/dev/vda2       528175951872  454695718912  51918602240  90% /\n"
+}

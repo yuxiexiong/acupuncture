@@ -1,0 +1,199 @@
+{
+  "schema": 1,
+  "status": "passed",
+  "experiment": "early-input-control-v1-2026-10-29",
+  "at": "2026-10-28T18:41:10.335876+00:00",
+  "reviewer": "/root/early_contract",
+  "reviewer_type": "model_assisted_independent_static_code_review",
+  "scope": "Static re-review of bounded preflight and gated formal runners, plus verified-evidence ETA/storage estimator; includes independent execution of the eight synthetic ETA CPU tests only.",
+  "source_hashes": {
+    "experiments/early-input-control-v1-2026-10-29/experiment.py": "941a22d9d35bcd57acd87a4958ad2f417b561dae6c2ba541b8394d6b510bf8a2",
+    "experiments/early-input-control-v1-2026-10-29/control_engine.py": "3243907e1a58501172d783d65eb854981f9da4ec25e39f7019e151c97149368a",
+    "experiments/early-input-control-v1-2026-10-29/execution.py": "62e1927c300d8ee25f67b3818e435ec2f31c7c0673fbd7688d4ace88ac591095",
+    "experiments/early-input-control-v1-2026-10-29/preflight.py": "c5880fb49e1052dc3ef2034bc61224fdf58f11cb5ec3fe5e00092fad1a2a4376",
+    "experiments/early-input-control-v1-2026-10-29/launch.py": "a4c0d2f28e0321402f71f30d18236ca29f43119477e379592729921a5cd0ca6d",
+    "experiments/early-input-control-v1-2026-10-29/test_experiment.py": "eb3fe0243a3a2759a28cbb816d8510df6718807cabad81320ab63a1e9cea6337",
+    "experiments/early-input-control-v1-2026-10-29/test_control_engine.py": "2e47317d9229951afe3972503744ad3097d8fddbb7fa2fab22e8ea0a437472b5",
+    "experiments/early-input-control-v1-2026-10-29/test_execution.py": "ce5f6217a80c8887995cb03248ff0fe1bb73627ed7bd0062619d2424d446bfaa",
+    "experiments/early-input-control-v1-2026-10-29/CONTRACT.zh-CN.md": "abebf3dcdd41b064a1a4ad618651183c523a550ed425be538f25fb4b0f11eb49",
+    "experiments/early-input-control-v1-2026-10-29/contract.json": "ecdcb0f7fbf1a07f344f89adaba00ba3770564344bf8c1ddb55a502c5945a6ec",
+    "experiments/early-input-control-v1-2026-10-29/selection.json": "afcbbb23cd3d7a415909edc977bf895be74831378fb476a905e6052cb805dd32",
+    "experiments/early-input-control-v1-2026-10-29/readiness/preflight-cases-r01.json": "60f13f59ff25488f3902f8a71c0b6b642785929c38ddc7619a90df69366d2412",
+    "experiments/early-input-control-v1-2026-10-29/estimate_eta.py": "0237e519daedd1207f85713614b4d6aa5f87f8989feacefc617ed52f7fa4fd00",
+    "experiments/early-input-control-v1-2026-10-29/test_estimate_eta.py": "024e777408a19bd23db826839b445a3272a7c24c1babfd745168d35ab6d82ae2"
+  },
+  "checks": [
+    {
+      "id": "authorization_before_model_loading",
+      "status": "reviewed",
+      "evidence": "experiment.authorize and execution.validate_formal_authorization reject missing/wrong stage, freeze and role evidence; current preflight authorization cannot grant formal stages."
+    },
+    {
+      "id": "preflight_bounds_and_confirmation_separation",
+      "status": "reviewed",
+      "evidence": "Per-worker fixed timing manifest and counters bound generation/branch, candidate, donor and calibration work; confirmation items receive tokenizer checks only."
+    },
+    {
+      "id": "gpu_ownership_and_preservation",
+      "status": "reviewed",
+      "evidence": "Per-GPU nonblocking project lock plus live compute-process rejection precede loading; launcher only terminates its own child workers on failure; outputs/execution/evidence use exclusive creation."
+    },
+    {
+      "id": "paired_reference_and_actual_write_audit",
+      "status": "reviewed",
+      "evidence": "Fact pairs share fact0 reference; explicit reference hash is separate from current input identity; native and common-direction writes have separate mask, dose and actual write audits."
+    },
+    {
+      "id": "fork_state_and_budget",
+      "status": "reviewed",
+      "evidence": "Same generated history, pre-forward cache fingerprints, exact continue replay and total prefix-inclusive budget are enforced; EOS branches are NA; preflight cannot pass without exercising both k4 and k16."
+    },
+    {
+      "id": "cross_branch_competitor_readouts",
+      "status": "reviewed",
+      "evidence": "Only transient fork logits are retained in memory; all three actual next tokens form a common union with per-arm logit/logprob artifacts bound to hashes."
+    },
+    {
+      "id": "patch_source_and_counterfactual_identity",
+      "status": "reviewed",
+      "evidence": "Donor site/step, tensor hash, generated prefix and calibration hash are checked; diagnostic patch items remain fact-paired; patch sources require current formal full records while historical anchors use an explicit mechanism-only adapter."
+    },
+    {
+      "id": "formal_selection_and_confirmation_gates",
+      "status": "reviewed",
+      "evidence": "Selection evidence, source item/condition identity, measurement attestations, pre-confirmation interpretation/selection locks and historical first-opening gate are bound; confirmation followups retain original selection and bind separate source manifests."
+    },
+    {
+      "id": "record_coverage_and_hash_verification",
+      "status": "reviewed",
+      "evidence": "Formal plan is recomputed and exact record set checked; output token hashes, execution identity, item identity, reference, branch applicability, continue/state comparisons and branch-comparison assets are verified."
+    },
+    {
+      "id": "accounting_and_limits",
+      "status": "reviewed",
+      "evidence": "Full-forward technical checks are separately counted; formal costs include calibration, candidates, source replay, branch prefix replay and per-arm donors; no formal automatic launcher exists."
+    },
+    {
+      "id": "eta_denominators_and_stage_accounting",
+      "status": "reviewed",
+      "evidence": "Fixed development4632+confirmation3480; maximum additional scientific mechanism/patch yields12144; continue and patch-source replays are separately counted technical work. Parallel workers use maximum and sequential stages sum."
+    },
+    {
+      "id": "eta_proxy_transparency",
+      "status": "reviewed",
+      "evidence": "Sparse pooled matches, unseen confirmation structures, unselected maximum workloads, measured-step-zero donor main scenario, long-donor proxy, and unmeasured verification/export/reading remain explicitly disclosed."
+    },
+    {
+      "id": "eta_synthetic_cpu_tests",
+      "status": "passed",
+      "evidence": "Independently ran python3 -m unittest -v test_estimate_eta.py locally:8 tests,0 failures/errors/skips,exit0,reported1.038s; no model loaded."
+    }
+  ],
+  "resolved_findings": [
+    {
+      "id": "R01",
+      "finding": "Preflight did not verify CPU/data/code evidence before model load.",
+      "resolution": "Explicit four-role hash/status/source validation, zero-skip CPU result and current data hashes added."
+    },
+    {
+      "id": "R02",
+      "finding": "Formal stages lacked concrete selection and measurement gates.",
+      "resolution": "Stage gates, source identities, paired selection and frozen confirmation followups added."
+    },
+    {
+      "id": "R03",
+      "finding": "Patch donors were not bound to generated history and shared calibration.",
+      "resolution": "Runtime site, history, reference and tensor hash checks plus rejection tests added."
+    },
+    {
+      "id": "R04",
+      "finding": "Unreachable k4/k16 paths could leave technical preflight passed without testing forks.",
+      "resolution": "Both real fork checks are mandatory for preflight completion; scientific NA remains preserved in formal runs."
+    },
+    {
+      "id": "R05",
+      "finding": "Cross-branch actual competitor logits could be absent outside top32.",
+      "resolution": "Transient fork logits yield a shared actual-token-union readout without storing full logits by default."
+    },
+    {
+      "id": "R06",
+      "finding": "Patch candidates could include only one diagnostic fact or a legacy source unsupported by patch execution.",
+      "resolution": "Paired facts enforced and current formal source schema required for patch candidates."
+    },
+    {
+      "id": "R07",
+      "finding": "Worker verification initially trusted listed hashes without exact expected coverage or token verification.",
+      "resolution": "Execution identity, token and plan/record-set verification now explicit."
+    },
+    {
+      "id": "R08",
+      "finding": "Confirmation semantic-lock test originally checked only an earlier bad-review failure.",
+      "resolution": "False interpretation/selection/unseen flags are now tested with correctly rebound evidence hashes."
+    },
+    {
+      "id": "R09",
+      "finding": "Patch six-arm ETA assigned all recipients to native intervention, ignoring two clean arms.",
+      "resolution": "Workload split64native/32clean per family/worker; clean patch pools no longer reroute to ordinary clean generation; regression test added."
+    },
+    {
+      "id": "R10",
+      "finding": "Long donor ETA multiplied a complete prefill by128.",
+      "resolution": "One prefill plus127 estimated incremental positions replaces repeated prefill; heavy-prefill regression checks6donors=66s rather than7680s in its synthetic fixture."
+    }
+  ],
+  "blocking_findings": [],
+  "authority_boundary": {
+    "formal_execution_authorized_by_this_review": false,
+    "gpu_execution_performed_by_reviewer": false,
+    "test_execution_performed_by_reviewer": true,
+    "model_outputs_reviewed": false
+  },
+  "data_review_path": "readiness/independent-data-review-r01.json",
+  "data_review_sha256": "2d6a4e7bb7670f4926d86669de80a47db78746ef7135e05d369aa21e2d220140",
+  "limitations": [
+    "This status certifies static implementation review and eight synthetic ETA tests only; separate complete CPU and real GPU receipts are still required.",
+    "No formal selection, measurement-validity decision, causal result or measured full-experiment ETA is certified by this review.",
+    "Observed-length and all128 estimates are conditional scenarios; all128 generation seconds/token contains prefill amortization, and donor incremental timing is a proxy until an actual site is selected/measured.",
+    "Historical open-anchor source adaptation currently supports legacy layer-survey +1 records; other old dose schemas need an explicit versioned adapter before use.",
+    "Any change to a bound file requires a new review version; r01 and r02 must remain intact."
+  ],
+  "revision": "r02",
+  "prior_review": {
+    "path": "readiness/independent-code-review-r01.json",
+    "sha256": "1f63219fc68a03fc4a086288f18e461ebba965aad403d31fb8abadee229bc0a1",
+    "preserved": true
+  },
+  "changes_reviewed": [
+    {
+      "file": "preflight.py",
+      "change": "When both sides expose step_readouts, zero/restored/self/continue checks compare every captured logits hash as well as tokens; legacy comparison remains explicitly token-only."
+    },
+    {
+      "file": "preflight.py",
+      "change": "Four independent full-forward checks are counted separately and candidate_continuations plus full_forward_checks must remain within the same 512 per-worker budget at final acceptance."
+    },
+    {
+      "file": "estimate_eta.py",
+      "change": "Audited stage denominators, two-worker maximum per sequential stage, completed-stage exclusion, measured evidence gates, extra source/continue/donor costs and separate server/local capacity."
+    },
+    {
+      "file": "estimate_eta.py",
+      "change": "Patch workload separates four treated recipients and two clean recipients; clean patch timing pools remain patch pools."
+    },
+    {
+      "file": "estimate_eta.py",
+      "change": "Long donor scenario uses one measured prefill plus 127 estimated incremental steps, with same-kind pools and four-clean/two-treated donor mix; it is explicitly a proxy, not measured long-donor runtime or a hard upper bound."
+    }
+  ],
+  "independent_test_execution": {
+    "scope": "synthetic ETA tests only",
+    "command": "python3 -m unittest -v test_estimate_eta.py",
+    "tests_run": 8,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "exit_code": 0,
+    "reported_seconds": 1.038,
+    "model_loaded": false
+  }
+}

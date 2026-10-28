@@ -1,0 +1,132 @@
+{
+  "schema": 1,
+  "status": "passed",
+  "experiment": "early-input-control-v1-2026-10-29",
+  "at": "2026-10-28T18:35:59.046025+00:00",
+  "reviewer": "/root/early_contract",
+  "reviewer_type": "model_assisted_independent_static_code_review",
+  "scope": "Static review of current bounded preflight and future gated formal runners, focused on authorization, budgets, calibration, forks, patch provenance, preservation and verification.",
+  "source_hashes": {
+    "experiments/early-input-control-v1-2026-10-29/experiment.py": "941a22d9d35bcd57acd87a4958ad2f417b561dae6c2ba541b8394d6b510bf8a2",
+    "experiments/early-input-control-v1-2026-10-29/control_engine.py": "3243907e1a58501172d783d65eb854981f9da4ec25e39f7019e151c97149368a",
+    "experiments/early-input-control-v1-2026-10-29/execution.py": "62e1927c300d8ee25f67b3818e435ec2f31c7c0673fbd7688d4ace88ac591095",
+    "experiments/early-input-control-v1-2026-10-29/preflight.py": "8870c96970a86adfd6fe8f1f1a376cbd35fd7d0cd71d557c787493639314f767",
+    "experiments/early-input-control-v1-2026-10-29/launch.py": "a4c0d2f28e0321402f71f30d18236ca29f43119477e379592729921a5cd0ca6d",
+    "experiments/early-input-control-v1-2026-10-29/test_experiment.py": "eb3fe0243a3a2759a28cbb816d8510df6718807cabad81320ab63a1e9cea6337",
+    "experiments/early-input-control-v1-2026-10-29/test_control_engine.py": "2e47317d9229951afe3972503744ad3097d8fddbb7fa2fab22e8ea0a437472b5",
+    "experiments/early-input-control-v1-2026-10-29/test_execution.py": "ce5f6217a80c8887995cb03248ff0fe1bb73627ed7bd0062619d2424d446bfaa",
+    "experiments/early-input-control-v1-2026-10-29/CONTRACT.zh-CN.md": "abebf3dcdd41b064a1a4ad618651183c523a550ed425be538f25fb4b0f11eb49",
+    "experiments/early-input-control-v1-2026-10-29/contract.json": "ecdcb0f7fbf1a07f344f89adaba00ba3770564344bf8c1ddb55a502c5945a6ec",
+    "experiments/early-input-control-v1-2026-10-29/selection.json": "afcbbb23cd3d7a415909edc977bf895be74831378fb476a905e6052cb805dd32",
+    "experiments/early-input-control-v1-2026-10-29/readiness/preflight-cases-r01.json": "60f13f59ff25488f3902f8a71c0b6b642785929c38ddc7619a90df69366d2412"
+  },
+  "checks": [
+    {
+      "id": "authorization_before_model_loading",
+      "status": "reviewed",
+      "evidence": "experiment.authorize and execution.validate_formal_authorization reject missing/wrong stage, freeze and role evidence; current preflight authorization cannot grant formal stages."
+    },
+    {
+      "id": "preflight_bounds_and_confirmation_separation",
+      "status": "reviewed",
+      "evidence": "Per-worker fixed timing manifest and counters bound generation/branch, candidate, donor and calibration work; confirmation items receive tokenizer checks only."
+    },
+    {
+      "id": "gpu_ownership_and_preservation",
+      "status": "reviewed",
+      "evidence": "Per-GPU nonblocking project lock plus live compute-process rejection precede loading; launcher only terminates its own child workers on failure; outputs/execution/evidence use exclusive creation."
+    },
+    {
+      "id": "paired_reference_and_actual_write_audit",
+      "status": "reviewed",
+      "evidence": "Fact pairs share fact0 reference; explicit reference hash is separate from current input identity; native and common-direction writes have separate mask, dose and actual write audits."
+    },
+    {
+      "id": "fork_state_and_budget",
+      "status": "reviewed",
+      "evidence": "Same generated history, pre-forward cache fingerprints, exact continue replay and total prefix-inclusive budget are enforced; EOS branches are NA; preflight cannot pass without exercising both k4 and k16."
+    },
+    {
+      "id": "cross_branch_competitor_readouts",
+      "status": "reviewed",
+      "evidence": "Only transient fork logits are retained in memory; all three actual next tokens form a common union with per-arm logit/logprob artifacts bound to hashes."
+    },
+    {
+      "id": "patch_source_and_counterfactual_identity",
+      "status": "reviewed",
+      "evidence": "Donor site/step, tensor hash, generated prefix and calibration hash are checked; diagnostic patch items remain fact-paired; patch sources require current formal full records while historical anchors use an explicit mechanism-only adapter."
+    },
+    {
+      "id": "formal_selection_and_confirmation_gates",
+      "status": "reviewed",
+      "evidence": "Selection evidence, source item/condition identity, measurement attestations, pre-confirmation interpretation/selection locks and historical first-opening gate are bound; confirmation followups retain original selection and bind separate source manifests."
+    },
+    {
+      "id": "record_coverage_and_hash_verification",
+      "status": "reviewed",
+      "evidence": "Formal plan is recomputed and exact record set checked; output token hashes, execution identity, item identity, reference, branch applicability, continue/state comparisons and branch-comparison assets are verified."
+    },
+    {
+      "id": "accounting_and_limits",
+      "status": "reviewed",
+      "evidence": "Full-forward technical checks are separately counted; formal costs include calibration, candidates, source replay, branch prefix replay and per-arm donors; no formal automatic launcher exists."
+    }
+  ],
+  "resolved_findings": [
+    {
+      "id": "R01",
+      "finding": "Preflight did not verify CPU/data/code evidence before model load.",
+      "resolution": "Explicit four-role hash/status/source validation, zero-skip CPU result and current data hashes added."
+    },
+    {
+      "id": "R02",
+      "finding": "Formal stages lacked concrete selection and measurement gates.",
+      "resolution": "Stage gates, source identities, paired selection and frozen confirmation followups added."
+    },
+    {
+      "id": "R03",
+      "finding": "Patch donors were not bound to generated history and shared calibration.",
+      "resolution": "Runtime site, history, reference and tensor hash checks plus rejection tests added."
+    },
+    {
+      "id": "R04",
+      "finding": "Unreachable k4/k16 paths could leave technical preflight passed without testing forks.",
+      "resolution": "Both real fork checks are mandatory for preflight completion; scientific NA remains preserved in formal runs."
+    },
+    {
+      "id": "R05",
+      "finding": "Cross-branch actual competitor logits could be absent outside top32.",
+      "resolution": "Transient fork logits yield a shared actual-token-union readout without storing full logits by default."
+    },
+    {
+      "id": "R06",
+      "finding": "Patch candidates could include only one diagnostic fact or a legacy source unsupported by patch execution.",
+      "resolution": "Paired facts enforced and current formal source schema required for patch candidates."
+    },
+    {
+      "id": "R07",
+      "finding": "Worker verification initially trusted listed hashes without exact expected coverage or token verification.",
+      "resolution": "Execution identity, token and plan/record-set verification now explicit."
+    },
+    {
+      "id": "R08",
+      "finding": "Confirmation semantic-lock test originally checked only an earlier bad-review failure.",
+      "resolution": "False interpretation/selection/unseen flags are now tested with correctly rebound evidence hashes."
+    }
+  ],
+  "blocking_findings": [],
+  "authority_boundary": {
+    "formal_execution_authorized_by_this_review": false,
+    "gpu_execution_performed_by_reviewer": false,
+    "test_execution_performed_by_reviewer": false,
+    "model_outputs_reviewed": false
+  },
+  "data_review_path": "readiness/independent-data-review-r01.json",
+  "data_review_sha256": "2d6a4e7bb7670f4926d86669de80a47db78746ef7135e05d369aa21e2d220140",
+  "limitations": [
+    "This status covers static implementation review only; separate successful CPU and real GPU receipts are still required.",
+    "No formal selection, measurement-validity decision, causal result or actual ETA is certified by this review.",
+    "ETA calculation code is outside this focused review; root integration must verify its arithmetic and observed timing inputs.",
+    "Any change to a bound file requires a new review version; preserve this receipt unchanged."
+  ]
+}

@@ -1,0 +1,350 @@
+{
+  "schema_version": 1,
+  "experiment": "joint-behavior-capability-v1-2026-10-28",
+  "status": "authorized_design_before_runtime_validation",
+  "purpose": "Joint observation of expression style, task delivery and factual content processing under the same recipe and dose; exploratory diagnostic, not certification of latent ability or harmlessness.",
+  "user_authorization_text": "同意写合同，写代码，测试，然后上卡跑实验。",
+  "source": {
+    "model_id": "Qwen/Qwen3.5-4B",
+    "revision": "851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a",
+    "model_path": "/data/models/Qwen3.5-4B-851bf6e",
+    "hidden_size": 2560,
+    "intermediate_size": 9216,
+    "num_hidden_layers": 32,
+    "dtype": "bfloat16",
+    "attention_implementation": "eager",
+    "torch_version": "2.6.0+cu124",
+    "transformers_version": "5.20.2",
+    "target_weight_sha256": {
+      "13": "57a1c0dbde6631d2715f59b5f37152f58c37ec16daab2077eb001f69fa614de9",
+      "14": "0169cf062636bb6ce00cb4d367cab66a24bf2adcb107d2c4f65435a693f9ecf2"
+    }
+  },
+  "needles": {
+    "A": {
+      "layer": 14,
+      "channel": 8949,
+      "sign": 1
+    },
+    "B": {
+      "layer": 13,
+      "channel": 7956,
+      "sign": -1
+    }
+  },
+  "random_pairs": [
+    {
+      "13": 1859,
+      "14": 8879
+    },
+    {
+      "13": 3729,
+      "14": 1467
+    },
+    {
+      "13": 2178,
+      "14": 142
+    },
+    {
+      "13": 7964,
+      "14": 6562
+    },
+    {
+      "13": 6626,
+      "14": 5810
+    }
+  ],
+  "recipes": {
+    "AB": {
+      "layer_channels": {
+        "13": 7956,
+        "14": 8949
+      }
+    },
+    "R01": {
+      "layer_channels": {
+        "13": 1859,
+        "14": 8879
+      }
+    },
+    "R02": {
+      "layer_channels": {
+        "13": 3729,
+        "14": 1467
+      }
+    },
+    "R03": {
+      "layer_channels": {
+        "13": 2178,
+        "14": 142
+      }
+    },
+    "R04": {
+      "layer_channels": {
+        "13": 7964,
+        "14": 6562
+      }
+    },
+    "R05": {
+      "layer_channels": {
+        "13": 6626,
+        "14": 5810
+      }
+    }
+  },
+  "provenance": {
+    "experiments/judgment-report-toy-v1-2026-10-26/contract.json": "bd41e4726ea054fde393acd662453f37e1f17c661cec8aa75a2c2eabbeaa2ea7",
+    "experiments/root-cause-toy-v1-2026-10-26/runs/root-r01/decompose-r01/conditions.json": "1178a5dceae5fd42f42b0e0d97e8c93a860ec484b10a073e8915401bff5bcdc3",
+    "experiments/qwen35-neuron-steering-2026-10-25/raw-corpus-cpu-bf16-r01/questions.json": "856c652a74aaaeb5dfb7821a6eeece2a8e580a85d5afb8497058c2b4271dab06"
+  },
+  "generation": {
+    "max_new_tokens": 128,
+    "do_sample": false,
+    "dtype": "bfloat16",
+    "attention_implementation": "eager",
+    "batch_size": 1,
+    "use_cache": true,
+    "fresh_context_and_cache_per_request": true,
+    "eos_token_ids": [
+      248044,
+      248046
+    ],
+    "chat_template": "native",
+    "enable_thinking": false,
+    "system_message": null,
+    "additional_instruction": null,
+    "task_stop_strings": [],
+    "padding_or_continuation_after_stop": false,
+    "cap_is_not_automatically_a_semantic_failure": true
+  },
+  "data": {
+    "behavior_source": "experiments/qwen35-neuron-steering-2026-10-25/raw-corpus-cpu-bf16-r01/questions.json",
+    "behavior_ids": [
+      "Q01",
+      "Q02",
+      "Q03",
+      "Q04",
+      "Q05",
+      "Q06",
+      "Q07",
+      "Q08",
+      "Q09",
+      "Q10",
+      "Q11",
+      "Q12",
+      "Q13",
+      "Q14",
+      "Q15",
+      "Q16",
+      "Q17",
+      "Q18",
+      "Q19",
+      "Q20",
+      "Q21",
+      "Q22",
+      "Q23",
+      "Q24"
+    ],
+    "behavior_questions": 24,
+    "diagnostic_base_units": 24,
+    "families": {
+      "reading": 8,
+      "arithmetic": 8,
+      "relation": 8
+    },
+    "fact_versions": [
+      0,
+      1
+    ],
+    "demands": [
+      "required",
+      "direct"
+    ],
+    "diagnostic_input_count": 96,
+    "total_inputs_per_condition": 120,
+    "candidate_contents_per_diagnostic": 2,
+    "fixtures": {
+      "independent_base_examples": 6,
+      "response_types_per_example": 6,
+      "total_examples": 36,
+      "model_generations": 0
+    },
+    "input_manifest": "data/items.json",
+    "assessment_fixture_manifest": "data/assessment-fixtures.json"
+  },
+  "stages": {
+    "stage1": {
+      "doses": [
+        0.5,
+        1.0
+      ],
+      "include_clean": true,
+      "condition_count": 13,
+      "generation_count": 1560,
+      "candidate_readout_count": 1248,
+      "workers": 2,
+      "generation_count_per_worker": 780,
+      "candidate_readout_count_per_worker": 624
+    },
+    "stage2": {
+      "doses": [
+        0.0625,
+        0.125,
+        0.25
+      ],
+      "include_clean": false,
+      "condition_count": 18,
+      "generation_count": 2160,
+      "candidate_readout_count": 1728,
+      "workers": 2,
+      "generation_count_per_worker": 1080,
+      "candidate_readout_count_per_worker": 864,
+      "requires": "stage2_gate_passed"
+    }
+  },
+  "whole_experiment": {
+    "condition_count": 31,
+    "doses": [
+      0.0,
+      0.0625,
+      0.125,
+      0.25,
+      0.5,
+      1.0
+    ],
+    "behavior_generation_count": 744,
+    "diagnostic_generation_count": 2976,
+    "generation_count": 3720,
+    "candidate_readout_count": 2976,
+    "candidate_continuation_score_requests": 5952,
+    "stage1_outputs_reused_without_regeneration": true
+  },
+  "calibration": {
+    "reference": "diagnostic fact_version=0 and demand=required; behavior uses its own prompt",
+    "unit": "base_id",
+    "shared_across_fact_versions_demands_recipes_doses_and_readouts": true,
+    "scale": "median L2 norm of clean post-layer residual over reference prompt tokens except the first token",
+    "layers": [
+      13,
+      14
+    ],
+    "offset": "dose * sign[layer] * reference_residual_scale[layer] / down_proj_column_norm[layer,channel]",
+    "signs": {
+      "13": -1,
+      "14": 1
+    },
+    "positions": "all prompt and generated or teacher-forced continuation positions",
+    "bf16_rounding_audited": true,
+    "random_matching": "same layer, sign, nominal per-layer residual write norm and position rule; fixed native-channel pairs, not isotropic random directions",
+    "current_input_identity_and_reference_identity_saved_separately": true
+  },
+  "scoring": {
+    "panel": "diagnostic_only",
+    "method": "summed_full_continuation_loglikelihood",
+    "same_prompt_as_free_generation": true,
+    "extra_answer_prefix": false,
+    "displayed_letter_labels": false,
+    "displayed_candidate_list": false,
+    "equal_continuation_token_lengths_required": true,
+    "prompt_prefix_tokens_exactly_preserved": true,
+    "candidate_pair_unchanged_across_fact_versions_and_demands": true,
+    "correct_target_flips_with_fact_version": true,
+    "tie_break": "first_candidate_index",
+    "save_all_token_logprobs_and_ids": true,
+    "interpretation": "Preference under these fixed answer phrasings; not direct observation of latent knowledge."
+  },
+  "assessment": {
+    "behavior": "anonymous open reading of every Q01-Q24 response; concrete observations and evidence excerpts, no composite score",
+    "diagnostic_content_categories": [
+      "delivered_correct",
+      "delivered_wrong",
+      "no_answer",
+      "contradictory",
+      "indeterminate"
+    ],
+    "delivery_and_style_separate_from_content": true,
+    "missing_refusal_loop_and_cap_kept_in_denominator": true,
+    "content_not_penalized_for_profanity": true,
+    "politeness_does_not_credit_correctness": true,
+    "correct_prefix_and_later_loop_can_coexist": true,
+    "blind_to_recipe_and_dose_until_observations_locked": true,
+    "complete_double_blind_claim": false,
+    "review_disagreements_preserved": true,
+    "reader_type_and_identity_recorded": true,
+    "no_automatic_semantic_total": true
+  },
+  "stage2_gate": {
+    "required": [
+      "stage1_full_coverage_and_hash_token_identity_verified",
+      "both_stage1_workers_completed_exit_zero_and_hooks_weights_verified",
+      "all_36_assessment_fixtures_independently_reviewed",
+      "all_96_clean_diagnostic_responses_and_candidate_readouts_reviewed_for_measurement_usability",
+      "blind_reading_and_disagreement_process_verified",
+      "written_review_decision_with_evidence_ids_and_reviewer_identity"
+    ],
+    "decision": "passed or held_for_measurement_review",
+    "positive_AB_effect_required": false,
+    "AB_benefit_or_profanity_rate_must_not_control_gate": true,
+    "candidate_and_free_output_disagreement_alone_is_not_failure": true,
+    "hold_reason": "Clean baseline or readout defects prevent interpreting one or more task families; keep evidence and report, do not auto-advance.",
+    "post_result_item_deletion_rewriting_or_semantic_retries": false,
+    "engineering_failure": "Preserve failed and partial evidence; minimal verified repair requires a new immutable run identity."
+  },
+  "statistics": {
+    "independent_unit": "diagnostic base_id, not variant/token/candidate or repeated reading",
+    "diagnostic_base_units": 24,
+    "family_base_units": 8,
+    "report_families_demands_and_readout_methods_separately": true,
+    "paired_error_transitions": [
+      "clean_correct_to_intervened_wrong",
+      "clean_wrong_to_intervened_correct",
+      "clean_delivered_to_intervened_missing_or_contradictory"
+    ],
+    "full_fixed_denominator": true,
+    "counterfactual_pair_success": "both fact versions answered correctly within one base and demand",
+    "seed": 20261028,
+    "bootstrap_draws": 10000,
+    "confidence": 0.95,
+    "multiple_comparison_control": false,
+    "equivalence_claims": false,
+    "random_population_percentile_claims": false,
+    "five_random_pairs_individually_reported": true
+  },
+  "execution": {
+    "maximum_model_workers": 2,
+    "devices": [
+      "cuda:0",
+      "cuda:1"
+    ],
+    "threads_per_worker": 4,
+    "sharding": "within each panel, base-group ordinal modulo 2; all variants and conditions of a base remain on one worker",
+    "diagnostic_base_units_per_worker": 12,
+    "behavior_questions_per_worker": 12,
+    "inputs_per_condition_per_worker": 60,
+    "backward": false,
+    "weight_updates": false,
+    "old_judgment_report_run_resumed": false,
+    "single_A_or_B_arms": false,
+    "additional_models": false,
+    "large_benchmark": false,
+    "overwrite_or_resume_partial": false,
+    "preflight_generations_separate_from_formal_denominator": true,
+    "preflight_required": [
+      "clean_replay",
+      "zero_intervention_equivalence",
+      "restored_clean_equivalence",
+      "reference_TransferEngine_numerical_equivalence",
+      "full_logits_vs_suffix_candidate_indexing",
+      "correct_channel_sign_position_and_bf16_write_audit",
+      "hook_removal_and_target_weight_identity"
+    ],
+    "stage_order": [
+      "cpu_validation",
+      "gpu_preflight",
+      "stage1",
+      "measurement_review",
+      "stage2"
+    ],
+    "cost_reporting": "Measure loading, calibration, generation, scoring, verification, transfer and reading separately; no unmeasured ETA or monetary cost."
+  }
+}

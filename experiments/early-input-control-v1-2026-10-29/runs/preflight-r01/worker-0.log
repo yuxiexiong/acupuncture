@@ -1,0 +1,54 @@
+Loading weights:   0%|          | 0/723 [00:00<?, ?it/s]Loading weights:   3%|▎         | 24/723 [00:00<00:03, 214.92it/s]Loading weights:   8%|▊         | 55/723 [00:00<00:02, 250.35it/s]Loading weights:  12%|█▏        | 88/723 [00:00<00:02, 275.04it/s]Loading weights:  16%|█▋        | 118/723 [00:00<00:02, 283.99it/s]Loading weights:  20%|██        | 147/723 [00:00<00:02, 244.44it/s]Loading weights:  25%|██▍       | 178/723 [00:00<00:02, 259.15it/s]Loading weights:  28%|██▊       | 205/723 [00:00<00:02, 241.69it/s]Loading weights:  33%|███▎      | 236/723 [00:00<00:01, 258.20it/s]Loading weights:  48%|████▊     | 344/723 [00:01<00:00, 490.19it/s]Loading weights: 100%|██████████| 723/723 [00:01<00:00, 674.79it/s]
+[transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
+[transformers] `chunk_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.
+[transformers] `causal_conv1d_update` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
+[transformers] `fused_recurrent_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.
+preflight gpu=0 record=clean-q04 streams=1
+preflight gpu=0 record=legacy-clean-q04 streams=2
+preflight gpu=0 record=zero-native streams=3
+preflight gpu=0 record=zero-vector streams=4
+preflight gpu=0 record=native-eos streams=5
+preflight gpu=0 record=legacy-eos streams=6
+preflight gpu=0 record=native-loop streams=7
+preflight gpu=0 record=legacy-loop streams=8
+preflight gpu=0 record=native-negative streams=9
+preflight gpu=0 record=legacy-negative streams=10
+preflight gpu=0 record=restored-clean streams=11
+preflight gpu=0 record=timing-full streams=12
+preflight gpu=0 record=timing-prefill streams=13
+preflight gpu=0 record=timing-decode streams=14
+preflight gpu=0 record=timing-prompt_last streams=15
+preflight gpu=0 record=timing-prompt_except_last streams=16
+preflight gpu=0 record=fork-4-continue streams=17
+preflight gpu=0 record=fork-4-withdraw streams=18
+preflight gpu=0 record=fork-4-rebuild streams=19
+preflight gpu=0 record=fork-4-cross-readout streams=19
+preflight gpu=0 record=fork-16-continue streams=20
+preflight gpu=0 record=fork-16-withdraw streams=21
+preflight gpu=0 record=fork-16-rebuild streams=22
+preflight gpu=0 record=fork-16-cross-readout streams=22
+preflight gpu=0 record=zero-fork-continue streams=23
+preflight gpu=0 record=zero-fork-withdraw streams=24
+preflight gpu=0 record=zero-fork-rebuild streams=25
+preflight gpu=0 record=patch-clean-source streams=26
+preflight gpu=0 record=patch-bad-source streams=27
+preflight gpu=0 record=patch-repair streams=28
+preflight gpu=0 record=patch-reverse streams=29
+preflight gpu=0 record=patch-other_fact streams=30
+preflight gpu=0 record=patch-self_clean streams=31
+preflight gpu=0 record=patch-self_bad streams=32
+preflight gpu=0 record=patch-neighbor streams=33
+preflight gpu=0 record=candidate-check-clean-0 streams=33
+Traceback (most recent call last):
+  File "/workspace/acupuncture/experiments/early-input-control-v1-2026-10-29/experiment.py", line 402, in <module>
+    main()
+  File "/workspace/acupuncture/experiments/early-input-control-v1-2026-10-29/experiment.py", line 397, in main
+    else: value = run(args.stage, args.gpu, args.output, args.authorization, args.execute)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/acupuncture/experiments/early-input-control-v1-2026-10-29/experiment.py", line 314, in run
+    receipt['preflight'] = run_preflight(engine, gpu, output, receipt)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/acupuncture/experiments/early-input-control-v1-2026-10-29/preflight.py", line 241, in run_preflight
+    assert difference <= .02, f'Incremental/full candidate mismatch: {difference}'
+           ^^^^^^^^^^^^^^^^^
+AssertionError: Incremental/full candidate mismatch: 0.06250286102294922
