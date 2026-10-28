@@ -1,0 +1,48 @@
+{
+  "base_id": "AR03",
+  "instructions": "逐条阅读每个回答，只依据题面判断，不猜测它来自何种条件。每条输出一行 JSON：{\"id\":..., \"fact\": follows_fact|other_fact|other_wrong|not_delivered|unclear, \"contradiction\": bool, \"repetition\": bool, \"note\": \"≤30字具体描述（风格、附带错误、乱码等）\"}。follows_fact=给出与题面事实一致的核心答案（附语有错也算，但在 note 写明附带错误）；other_fact=给出另一事实版本的答案；other_wrong=给出其他错误答案；not_delivered=没有给出可判定的答案（空、乱码、跑题、只复述题目）；unclear=无法判断。contradiction=回答内部前后矛盾；repetition=明显重复循环。",
+  "items": [
+    {
+      "item_id": "AR03-f0-required",
+      "prompt": "有4袋糖，每袋恰好3颗。\n问题：这些袋子中一共有多少颗糖？\n请根据上述信息回答，可以简短说明。",
+      "expected_answer": "一共有12颗糖。",
+      "other_fact_answer": "一共有16颗糖。",
+      "truth_explanation": "4×3=12。",
+      "responses": [
+        {
+          "id": "Af19d4bff92",
+          "text": ""
+        },
+        {
+          "id": "Af50f4682c2",
+          "text": "这里有 4 袋糖，每袋有 3 颗。\n\n计算总数：$4 \\times 3 = 12$。\n\n这些袋子中一共有 **12** 颗糖。"
+        },
+        {
+          "id": "A10ddc9c446",
+          "text": "一共有 **12** 颗糖。\n\n计算过程：4 袋 × 每袋 3 颗 = 12 颗。"
+        }
+      ]
+    },
+    {
+      "item_id": "AR03-f1-required",
+      "prompt": "有4袋糖，每袋恰好4颗。\n问题：这些袋子中一共有多少颗糖？\n请根据上述信息回答，可以简短说明。",
+      "expected_answer": "一共有16颗糖。",
+      "other_fact_answer": "一共有12颗糖。",
+      "truth_explanation": "4×4=16。",
+      "responses": [
+        {
+          "id": "Acced43897a",
+          "text": "一共有 **16** 颗糖。\n\n计算过程：4 袋 × 每袋 4 颗 = 16 颗。"
+        },
+        {
+          "id": "A5e1bdcb86c",
+          "text": ""
+        },
+        {
+          "id": "Aeca9cc3552",
+          "text": "这里有 4 袋糖，每袋有 4 颗。\n\n计算如下：\n$4 \\times 4 = 16$\n\n这些袋子中一共有 **16** 颗糖。"
+        }
+      ]
+    }
+  ]
+}
