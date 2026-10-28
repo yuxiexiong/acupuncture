@@ -20,3 +20,20 @@
 当前没有自动正式启动队列。确认问题只允许准备、真值审核、分词检查；不得在预检中读取其模型输出。
 
 最近真实资源快照为北京时间2026-10-29 02:44:19：两GPU无计算进程、各3MiB，控制器与两个worker均退出；远端项目分区可用约123.35GiB，模型/tmp同一分区可用约48.35GiB。这是历史快照，接手启动前须重新检查。机器测试未验收，不报告整轮ETA，也不把预检原文当正式结果。
+
+## 接手窗口执行记录（2026-10-29，北京时间）
+
+用户原话（接手后）："你按照handoff指令一直跑到实验结束，如果有bug和问题，按照实验设计文档中的内容修复，然后续跑。半小时更新一次eta和实验运行情况"。据此按 handoff 顺序为各正式阶段逐个建立绑定证据的正式授权；每阶段门槛仍按合同执行。
+
+| 时间（UTC） | 事件 | 类型 | 证据 |
+| --- | --- | --- | --- |
+| 18:59 | `preflight-r02`（freeze-r02）启动；worker0 在首次调用独立手工参照时崩溃（rotary 位置 45 对 1 token），worker1 被控制器停止（-15） | 合同执行失败（代码） | `readiness/preflight-failure-r02.json`，`runs/preflight-r02/` |
+| 19:05 | 修复：手工参照显式传 generate 相同的文本 `position_ids`；CPU r05 39/0/0/0，新断言在 freeze-r02 代码上报错；独立静态复审 r04 passed_with_risks（指出新 CPU 测试只验位置算术，真实路径只能由 GPU 验） | 工程修订 | `cpu-receipt-r05.json`，`independent-code-review-r04.json`，`freeze-r03.json` |
+| 19:10 | `preflight-r03` 两 worker 完成、exit 0，launcher 核验失败：我手写的授权文件缺结尾换行，与 worker 副本字节哈希不同 | 合同执行失败（操作者） | `readiness/preflight-failure-r03.json`；r03 不复用 |
+| 19:17 | `preflight-r04`（授权 r04 经 `experiment.write` 生成）通过：两 worker exit 0、controller completed、verification passed、各99记录；逐 worker `experiment.py verify` passed；本地216文件哈希一致 | 工程验收 | `runs/preflight-r04/`，`readiness/preflight-verify-r04.json` |
+| 19:23 | 精确同路径候选核对 8/8 通过；一次性整段 forward 差值 0.0026–0.104 nats，仅作数值诊断，未证实全部来自 BF16 | 诊断 | `runs/preflight-r04/worker-*/records/candidate-check-*.json` |
+| 19:24 | ETA r01；development gate r01 与正式授权 r01 生成并干校验（其他阶段均拒绝）；`development-r01` 启动 | 正式阶段 | `timing-estimate-r01.json`，`stage-gate-development-r01.json`，`formal-authorization-development-r01.json` |
+
+偏离记账：`development-r01` 启动命令多写了 `> /dev/null`，controller stdout 未进入 `readiness/development-controller-r01.log`；状态与错误仍由 `controller.json` 记录，worker 日志不受影响。不影响任何科学结论。
+
+ETA r01（较慢 worker、阶段串行，仅机器时间）：实测长度情景 development 2.10 h、confirmation 1.57 h（固定网格 3.67 h），机制/替换按最大未选定工作量另计 3.47 h，合计 7.12 h；全128情景 6.37/4.84（固定 11.21 h），合计 19.51 h。阅读、审核等待、传输未计。原始证据 6.4–22.9 GiB：服务器足够，本地归档盘不足（5.9 GiB）。
