@@ -517,13 +517,18 @@ def execute(engine, stage, gpu, output, receipt, specs):
             _store(output, receipt, f'records/{spec["key"]}.json', record)
             counts['records'] += 1
         if stage == 'preflight':
-            preflight_checks += preflight_gates(engine, item, context, reference, prompt, cache_c, built, types)
+            preflight_checks.append(preflight_gates(engine, item, context, reference, prompt, cache_c, built, types))
             exp.write(output / f'preflight/{item["id"]}.json', preflight_checks[-1], immutable=True)
         del built
     if stage == 'preflight':
-        assert all(c['status'] == 'passed' for c in preflight_checks)
-        exp.write(output / 'preflight.json', {'status': 'passed', 'checks': preflight_checks}, immutable=True)
+        exp.write(output / 'preflight.json', summarize_preflight(preflight_checks, len(mine)), immutable=True)
     return counts
+
+
+def summarize_preflight(checks, expected_items):
+    assert len(checks) == expected_items and all(isinstance(c, dict) for c in checks), 'preflight checks malformed'
+    assert all(c['status'] == 'passed' for c in checks)
+    return {'status': 'passed', 'items': expected_items, 'checks': checks}
 
 
 def preflight_gates(engine, item, context, reference, prompt, cache_c, built, types):

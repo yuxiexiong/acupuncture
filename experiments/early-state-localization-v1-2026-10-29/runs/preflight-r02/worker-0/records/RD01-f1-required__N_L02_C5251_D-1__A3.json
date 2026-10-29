@@ -1,0 +1,1865 @@
+{
+  "schema": 1,
+  "stage": "preflight",
+  "panel": "development",
+  "spec": {
+    "key": "RD01-f1-required__N_L02_C5251_D-1__A3",
+    "item_id": "RD01-f1-required",
+    "condition_id": "N_L02_C5251_D-1",
+    "arm": "A3"
+  },
+  "item": {
+    "id": "RD01-f1-required",
+    "base_id": "RD01",
+    "panel": "diagnostic",
+    "family": "reading",
+    "fact_version": 1,
+    "demand": "required",
+    "prompt": "整理记录：钥匙放在蓝抽屉，票据放在蓝抽屉。\n问题：钥匙放在哪个抽屉？\n请根据上述信息回答，可以简短说明。",
+    "choices": [
+      "钥匙在红抽屉。",
+      "钥匙在蓝抽屉。"
+    ],
+    "target_index": 1,
+    "reference_id": "RD01-f0-required",
+    "truth_explanation": "记录直接写明钥匙在蓝抽屉；两个物品可以同处一屉。",
+    "split": "development",
+    "source": {
+      "path": "experiments/joint-behavior-capability-v1-2026-10-28/data/items.json",
+      "sha256": "dabddc6380c220e8d3af5bd812ad8feafa8799b0a4fc9c1b2a70a793c318d291"
+    }
+  },
+  "context": "<|im_start|>user\n整理记录：钥匙放在蓝抽屉，票据放在蓝抽屉。\n问题：钥匙放在哪个抽屉？\n请根据上述信息回答，可以简短说明。<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n",
+  "reference_sha256": "d6e851b4ae654fd1242b4ef9735ddb81d7c8cf09da42ed3285a12ea3c527aa4f",
+  "condition": {
+    "id": "N_L02_C5251_D-1",
+    "kind": "native",
+    "layer": 2,
+    "channel": 5251,
+    "dose": -1.0
+  },
+  "clean_components": [
+    "recurrent"
+  ],
+  "injection_mask": null,
+  "write_audit": [
+    {
+      "prediction_step": 0,
+      "layer": 2,
+      "kind": "native",
+      "channel": 5251,
+      "width": 43,
+      "mask": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "positions": 43,
+      "clean_residual_scale": 3.2789459228515625,
+      "dose": -1.0,
+      "column_norm": 0.4287879467010498,
+      "requested_offset": -7.647010481704696,
+      "bf16_offset": -7.65625,
+      "requested_vector_norm": 3.2789459228515625,
+      "actual_offset_min": -7.671142578125,
+      "actual_offset_max": -7.6409912109375,
+      "actual_projected_delta_norm_max": 3.2892934749252163,
+      "nonzero_positions": 43,
+      "target_values_match": true,
+      "non_target_values_unchanged": true,
+      "masked_positions_unchanged": true
+    }
+  ],
+  "component_audit": [
+    {
+      "layer": 0,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "f565f0efa338d73ea4d4583ad9b7c8b296280613445bad7e4e7e58c9b337d7d4",
+      "equals_T": true,
+      "equals_C": true
+    },
+    {
+      "layer": 0,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "358f30e42f748ed6a5e23b0ea78001f720fa1cf37cb70e3098688afffc8042a4",
+      "equals_T": true,
+      "equals_C": true
+    },
+    {
+      "layer": 1,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "351275b39c7204b65b55d27616d41300f0bb374e9d9aa5e9c4e1d58a694341ba",
+      "equals_T": true,
+      "equals_C": true
+    },
+    {
+      "layer": 1,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "3410dfae218c5adc5ad2e20be2cb349ee9c38e284376ca1ca67dc0fd53b4caa8",
+      "equals_T": true,
+      "equals_C": true
+    },
+    {
+      "layer": 2,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "4b0a59e870c28b5fe436952264fceb90bf6931292e6eeab568f9ee4429f5e9fd",
+      "equals_T": true,
+      "equals_C": true
+    },
+    {
+      "layer": 2,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "6630ea2569a0d634d8bd9c8ee7441ef4827c9a92c9801fa5df75c5f35c8c7f23",
+      "equals_T": true,
+      "equals_C": true
+    },
+    {
+      "layer": 3,
+      "component": "kv",
+      "field": "keys",
+      "sha256": "8435b7d6cee3c8278491e4e5c2eb11e961ac750d1c6bc1a90c6a86a1c9b18f8f",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 3,
+      "component": "kv",
+      "field": "values",
+      "sha256": "b64e1d62baafe54d688ecb375a19b3cc451877741eb4b42198289b97fe967caa",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 4,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "1ca5c3763e2eb0d5f6940ae3e2b40310a18bfd6b480f55204866bd28d40b294d",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 4,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "fd9c3574ae6bde7393f944452676bf1021c27f79becfac472d9ce3f2c011d25a",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 5,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "3e11a1f0311fd2ec125dc039f5b729c3825779b1138fbb15b77e7ba16342a577",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 5,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "912960b35f924317b03cfa74da8ab012bc756b70ca74823a05ef46cac0295cf9",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 6,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "4eb799dc85034ac826e0820bf9ed715a9d10263125acfea67a30300591a1268b",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 6,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "80d65eb745517064e5837df661cdac98a679621100854c9ffd3e76cc83aec9a3",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 7,
+      "component": "kv",
+      "field": "keys",
+      "sha256": "12ff0e274142fe31ffb83048da401b1aa3b5fa2e5cc91fe92a442736b668f83f",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 7,
+      "component": "kv",
+      "field": "values",
+      "sha256": "022b5688f8b7fa2f10b27c0b0ab6aa372ab5a1764bc73876d9a8a8d811c613d2",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 8,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "b6eb07e9982b63c66c45c7d5a63e151d5851779be91720ea582a652a5eb42382",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 8,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "91f29ba7f2563ab0d8b5e49fcc51d98a7b6dfeeeb2d1d1cd888d60137a2d3504",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 9,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "7a2ad3cc332c4c504fb8e6d9ea15912fe6f9512ba1fbaf7f6ce12b1218dfbc88",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 9,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "8a7956e6594181a1ae1b332b0338e50f2e1a202d7641803db161db6376c4139f",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 10,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "ea5f58b04208b12f9a6a6f17b7a2bc535ec7fd909ad0ecd1a6331634b98cbcaf",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 10,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "e1cd6a9c1cc780d55122629cc20b5363bb90ec1422ab28dcd2328fdd99516d64",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 11,
+      "component": "kv",
+      "field": "keys",
+      "sha256": "cc7384b0935c62f1a3bf36b63deeaac46a4b41dfbe40d304094581e93f226e5a",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 11,
+      "component": "kv",
+      "field": "values",
+      "sha256": "1397d09fee1d42c5a7dca2f600d1bcd60905a3422edff0e82b6bce674c4f4b3e",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 12,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "ba15b5fffc8fce6e75b648c4679874b5d8baf6d15c186670b6ce67dfff181b22",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 12,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "ed6f3f0483338d60f1fb3d85e3668517167b2a710a5b082d81ad170d76d657f9",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 13,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "265f39417ba7b6a8183a7f727c55d12fc6d120fd6dcc4fabec9b46e0e1b5668c",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 13,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "b40c7cf738ae12449ec0225dec1c8c928c6d92df819ad6869b04b5d611d56344",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 14,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "443ad512a604f35fbbf99a7a4565a4101c27eed3a61740409bbe0d22c1275454",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 14,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "0bbd9e398b1f2dbe19a3e1d28bec26f68b48e4e75de1a418b3f74d7ebcdf6159",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 15,
+      "component": "kv",
+      "field": "keys",
+      "sha256": "30f41a6f87f96719be4f92175fb1dd16e4e19f1937800fc046e2bdb39657fa0b",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 15,
+      "component": "kv",
+      "field": "values",
+      "sha256": "48f55161fd3656baf8a5beab887c4a84eee5a3937be10c3b51adc42fc46e2fc6",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 16,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "3bbaa59076c8fee7a58a92464481c61852ace07b387408a50e3dda68d95f5a67",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 16,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "30b15ba95576b9ef108ce2d0f0578bc6b4b7b2e3bc37e7a0b357dd5913e9dfeb",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 17,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "77fa3214e250000dca808563901b4eef81919228a782d25f2cf08c69c7aaa967",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 17,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "d88862df160375e7eca1db7dcdf7dd8e81c193fb22584525aa76f2fcd3e2b8a7",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 18,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "7457f896f066b3ebb85b091becbbd3d100fa75c49109a7e0640f7e95b4b3ece2",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 18,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "d61ed7d11d1c82e1633950c5d1cce491d724a58a21fde2ec1b087fa3f882494d",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 19,
+      "component": "kv",
+      "field": "keys",
+      "sha256": "4a11ddab646b596f9dc67bae4045531935677620f6377cbe3d36fc812a81c43d",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 19,
+      "component": "kv",
+      "field": "values",
+      "sha256": "99f61a198f4d5aeb7916a43bd28b4c6d9fb4b09bce778d384a5b22c1c4f08274",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 20,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "82d2bb92984535a377875f0ae31fe9707b1ecdb28e7a139e7c235ac8d7228172",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 20,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "538482fee9186e124d2116c436ea20ce4c30ea1e3c978effa546198c9f62bc32",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 21,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "b40382403758283ab253d9bff7c176b4fbb4a4d9bc9840862349b151d777575c",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 21,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "1a0aba19387cab42af40d2184268b9af7df0922f5aac951bfa1f414a6b2bb0a8",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 22,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "77f686edda93492006d0d25c534cc49a63fdde202ce410552de270d3df424c13",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 22,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "dd39affd48da522623e5b68c5930676f20f3bc4b8829db08ba1fe56620eab80e",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 23,
+      "component": "kv",
+      "field": "keys",
+      "sha256": "5a13a1cd9fb622c4fd7748262a7e72f9a549487ce09834bc2e538ab9099acd6c",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 23,
+      "component": "kv",
+      "field": "values",
+      "sha256": "b8a0ee7bf51774099b9ce1c290f215629a99f86ce19fe98769ee35140a8bd24d",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 24,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "e1022f7cc5920ef7050b30ae7fa3ab4cda04bddae6c1da77454ec642edad6608",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 24,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "065d6f0cb951e8e37f4c25df133b33da37b91150009479be6ccd941e71b86d81",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 25,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "5e0a7bd38f69076d2a856ac31b653f261d4d9a77d1e0fd871356835b8165bbce",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 25,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "963e000b1a7ec710863dc9094f148a0ecc1ed39f15e4405f2bb2ff9979a21fa4",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 26,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "9573e47bdd63f1a3e5f1deb1bf9f6b73b10f126bc058b28601838995a6b47795",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 26,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "e34c9e5614ed3d0d06f3c75079e15eddf0b27f4b66c70cec8887bfbd8451f39d",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 27,
+      "component": "kv",
+      "field": "keys",
+      "sha256": "d74f03ee6d20822695aa29306b992d23df1bb87414188679c7bdc5428798775a",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 27,
+      "component": "kv",
+      "field": "values",
+      "sha256": "4847e4eba8da36f0e85abedac3f326e0bf3d6fc056a3edb0799fbd56c293ccd7",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 28,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "ae604e58442ed6ae714f17a852356a80327df5728076386451dc99be633e3f82",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 28,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "080bfef731100a3d24c184e697ff362da242c10a4af27b25851045929b14bfbf",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 29,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "92f87c64cdf7ec6596b013adb7802865e2dab71b5e481cf98b779ed16919b2a2",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 29,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "b137f5344c1f3d4e3dadcb1e90ebc490b6116983cc211013ed77a011806523e9",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 30,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "0bd86444253bfb8653efff8cb27cf448fce30839691eca442266a5b06daa9b65",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 30,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "0f6e4b0d1c3e2863a04a4726c1eaa6a1b7580ef8bf9017b0c5071158a79a8d0e",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 31,
+      "component": "kv",
+      "field": "keys",
+      "sha256": "29a0b752c026f5c35cbe879f82e73f01151fae744315530e2c5e0889db940c49",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 31,
+      "component": "kv",
+      "field": "values",
+      "sha256": "58558532a904b38d0594bc99286296bda57cbdbbfd5ac4d706b10169251920fc",
+      "equals_T": true,
+      "equals_C": false
+    }
+  ],
+  "gate_decay": {
+    "T": {
+      "0": {
+        "positions": 43,
+        "log_survive_from_0": -21.094240188598633,
+        "log_survive_from_mid": -10.995583534240723
+      },
+      "1": {
+        "positions": 43,
+        "log_survive_from_0": -42.4094352722168,
+        "log_survive_from_mid": -19.40948486328125
+      },
+      "2": {
+        "positions": 43,
+        "log_survive_from_0": -32.7705078125,
+        "log_survive_from_mid": -14.198987007141113
+      },
+      "4": {
+        "positions": 43,
+        "log_survive_from_0": -21.019756317138672,
+        "log_survive_from_mid": -9.237791061401367
+      },
+      "5": {
+        "positions": 43,
+        "log_survive_from_0": -22.866477966308594,
+        "log_survive_from_mid": -10.497392654418945
+      },
+      "6": {
+        "positions": 43,
+        "log_survive_from_0": -11.185998916625977,
+        "log_survive_from_mid": -4.730600833892822
+      },
+      "8": {
+        "positions": 43,
+        "log_survive_from_0": -22.388517379760742,
+        "log_survive_from_mid": -9.918569564819336
+      },
+      "9": {
+        "positions": 43,
+        "log_survive_from_0": -4.46267032623291,
+        "log_survive_from_mid": -1.9070712327957153
+      },
+      "10": {
+        "positions": 43,
+        "log_survive_from_0": -6.750713348388672,
+        "log_survive_from_mid": -3.1827878952026367
+      },
+      "12": {
+        "positions": 43,
+        "log_survive_from_0": -10.198522567749023,
+        "log_survive_from_mid": -4.728445053100586
+      },
+      "13": {
+        "positions": 43,
+        "log_survive_from_0": -5.647552490234375,
+        "log_survive_from_mid": -2.6141552925109863
+      },
+      "14": {
+        "positions": 43,
+        "log_survive_from_0": -19.130714416503906,
+        "log_survive_from_mid": -10.670684814453125
+      },
+      "16": {
+        "positions": 43,
+        "log_survive_from_0": -4.0634765625,
+        "log_survive_from_mid": -1.9332247972488403
+      },
+      "17": {
+        "positions": 43,
+        "log_survive_from_0": -6.480069637298584,
+        "log_survive_from_mid": -3.207219362258911
+      },
+      "18": {
+        "positions": 43,
+        "log_survive_from_0": -5.008866786956787,
+        "log_survive_from_mid": -2.3390326499938965
+      },
+      "20": {
+        "positions": 43,
+        "log_survive_from_0": -4.249035358428955,
+        "log_survive_from_mid": -1.922325611114502
+      },
+      "21": {
+        "positions": 43,
+        "log_survive_from_0": -13.846923828125,
+        "log_survive_from_mid": -6.838129043579102
+      },
+      "22": {
+        "positions": 43,
+        "log_survive_from_0": -6.423309326171875,
+        "log_survive_from_mid": -2.978832960128784
+      },
+      "24": {
+        "positions": 43,
+        "log_survive_from_0": -7.246397018432617,
+        "log_survive_from_mid": -3.3650059700012207
+      },
+      "25": {
+        "positions": 43,
+        "log_survive_from_0": -7.508022308349609,
+        "log_survive_from_mid": -3.3907177448272705
+      },
+      "26": {
+        "positions": 43,
+        "log_survive_from_0": -14.949714660644531,
+        "log_survive_from_mid": -7.127710342407227
+      },
+      "28": {
+        "positions": 43,
+        "log_survive_from_0": -13.873374938964844,
+        "log_survive_from_mid": -6.159272193908691
+      },
+      "29": {
+        "positions": 43,
+        "log_survive_from_0": -15.216965675354004,
+        "log_survive_from_mid": -7.141713619232178
+      },
+      "30": {
+        "positions": 43,
+        "log_survive_from_0": -15.483596801757812,
+        "log_survive_from_mid": -7.221414566040039
+      }
+    },
+    "C": {
+      "0": {
+        "positions": 43,
+        "log_survive_from_0": -21.094240188598633,
+        "log_survive_from_mid": -10.995583534240723
+      },
+      "1": {
+        "positions": 43,
+        "log_survive_from_0": -42.4094352722168,
+        "log_survive_from_mid": -19.40948486328125
+      },
+      "2": {
+        "positions": 43,
+        "log_survive_from_0": -32.7705078125,
+        "log_survive_from_mid": -14.198987007141113
+      },
+      "4": {
+        "positions": 43,
+        "log_survive_from_0": -28.873716354370117,
+        "log_survive_from_mid": -12.740768432617188
+      },
+      "5": {
+        "positions": 43,
+        "log_survive_from_0": -20.829177856445312,
+        "log_survive_from_mid": -8.47790813446045
+      },
+      "6": {
+        "positions": 43,
+        "log_survive_from_0": -13.069597244262695,
+        "log_survive_from_mid": -4.5727996826171875
+      },
+      "8": {
+        "positions": 43,
+        "log_survive_from_0": -21.427444458007812,
+        "log_survive_from_mid": -9.528264045715332
+      },
+      "9": {
+        "positions": 43,
+        "log_survive_from_0": -5.240621089935303,
+        "log_survive_from_mid": -2.0491936206817627
+      },
+      "10": {
+        "positions": 43,
+        "log_survive_from_0": -7.082847595214844,
+        "log_survive_from_mid": -2.8535516262054443
+      },
+      "12": {
+        "positions": 43,
+        "log_survive_from_0": -8.193412780761719,
+        "log_survive_from_mid": -3.2072362899780273
+      },
+      "13": {
+        "positions": 43,
+        "log_survive_from_0": -6.398529052734375,
+        "log_survive_from_mid": -2.4053616523742676
+      },
+      "14": {
+        "positions": 43,
+        "log_survive_from_0": -14.555391311645508,
+        "log_survive_from_mid": -6.306351661682129
+      },
+      "16": {
+        "positions": 43,
+        "log_survive_from_0": -4.8938751220703125,
+        "log_survive_from_mid": -2.0704731941223145
+      },
+      "17": {
+        "positions": 43,
+        "log_survive_from_0": -7.343441009521484,
+        "log_survive_from_mid": -3.1688008308410645
+      },
+      "18": {
+        "positions": 43,
+        "log_survive_from_0": -6.246801853179932,
+        "log_survive_from_mid": -2.8991541862487793
+      },
+      "20": {
+        "positions": 43,
+        "log_survive_from_0": -6.515552997589111,
+        "log_survive_from_mid": -3.3895907402038574
+      },
+      "21": {
+        "positions": 43,
+        "log_survive_from_0": -16.65236473083496,
+        "log_survive_from_mid": -8.465932846069336
+      },
+      "22": {
+        "positions": 43,
+        "log_survive_from_0": -8.866048812866211,
+        "log_survive_from_mid": -4.664009094238281
+      },
+      "24": {
+        "positions": 43,
+        "log_survive_from_0": -9.439329147338867,
+        "log_survive_from_mid": -4.868390083312988
+      },
+      "25": {
+        "positions": 43,
+        "log_survive_from_0": -9.744098663330078,
+        "log_survive_from_mid": -5.019687652587891
+      },
+      "26": {
+        "positions": 43,
+        "log_survive_from_0": -18.341014862060547,
+        "log_survive_from_mid": -9.263385772705078
+      },
+      "28": {
+        "positions": 43,
+        "log_survive_from_0": -17.909862518310547,
+        "log_survive_from_mid": -8.68892765045166
+      },
+      "29": {
+        "positions": 43,
+        "log_survive_from_0": -17.071882247924805,
+        "log_survive_from_mid": -8.226268768310547
+      },
+      "30": {
+        "positions": 43,
+        "log_survive_from_0": -17.234342575073242,
+        "log_survive_from_mid": -8.581936836242676
+      }
+    }
+  },
+  "prompt_token_count": 44,
+  "generation": {
+    "token_ids": [
+      248068,
+      198,
+      90700,
+      8340,
+      25,
+      271,
+      16,
+      13,
+      220,
+      2972,
+      2014,
+      53983,
+      279,
+      5952,
+      64700,
+      198,
+      262,
+      348,
+      256,
+      5396,
+      25,
+      357,
+      886,
+      314,
+      1414,
+      421,
+      5686,
+      1040,
+      264,
+      1103,
+      314,
+      82455,
+      466,
+      5265,
+      3665,
+      364,
+      328,
+      395,
+      1,
+      466,
+      328,
+      2447,
+      1,
+      303,
+      8193,
+      11,
+      9238,
+      440,
+      6163,
+      328,
+      395,
+      1,
+      466,
+      328,
+      2447,
+      1,
+      3665,
+      13,
+      198,
+      262,
+      348,
+      256,
+      2824,
+      25,
+      328,
+      99946,
+      98151,
+      4960,
+      110023,
+      98885,
+      97460,
+      123941,
+      3709,
+      111754,
+      98885,
+      97460,
+      123941,
+      1710,
+      96304,
+      4960,
+      110023,
+      98885,
+      101857,
+      123941,
+      10992,
+      96220,
+      97149,
+      98902,
+      96280,
+      97913,
+      3709,
+      96050,
+      117443,
+      98419,
+      1710,
+      1,
+      198,
+      262,
+      348,
+      256,
+      13428,
+      11,
+      3221,
+      14706,
+      506,
+      279,
+      1879,
+      3766,
+      303,
+      279,
+      9640,
+      25,
+      198,
+      285,
+      328,
+      99946,
+      98151,
+      4960,
+      110023,
+      98885,
+      97460,
+      123941,
+      3709,
+      111754,
+      98885,
+      97460,
+      123941,
+      1710
+    ],
+    "end_reason": "length_limit",
+    "readouts": [
+      {
+        "step": 0,
+        "token": 248068,
+        "stop_advantage": -4.625,
+        "logits_sha256": "935e6d4c9f1da370593f156bf14e55e41253f7c03a1bc1c318da4a575c726b84",
+        "top5": [
+          {
+            "token_id": 248068,
+            "logprob": -0.911327600479126
+          },
+          {
+            "token_id": 110023,
+            "logprob": -2.098827600479126
+          },
+          {
+            "token_id": 97149,
+            "logprob": -2.161327600479126
+          },
+          {
+            "token_id": 332,
+            "logprob": -2.786327600479126
+          },
+          {
+            "token_id": 97632,
+            "logprob": -3.161327600479126
+          }
+        ]
+      },
+      {
+        "step": 1,
+        "token": 198,
+        "stop_advantage": -9.3125,
+        "logits_sha256": "f791b90d72280cb2710b87ab38c7b60b87957b5a3f82668d1541af32c03d87ff"
+      },
+      {
+        "step": 2,
+        "token": 90700,
+        "stop_advantage": -18.4375,
+        "logits_sha256": "938c46f7712b184eb2a95accdc1d86ddf2b8022c69681bfc31ae3182444d1cc7"
+      },
+      {
+        "step": 3,
+        "token": 8340,
+        "stop_advantage": -24.25,
+        "logits_sha256": "316d9f5254154856ab3b0a34b2d1b4b23835d9d4150bfeb9a52731072896484b"
+      },
+      {
+        "step": 4,
+        "token": 25,
+        "stop_advantage": -27.875,
+        "logits_sha256": "279a08c72814e28ef5ac97aa87eb28fcf52ad7e921a49239bb6e28ea94c1f7e9"
+      },
+      {
+        "step": 5,
+        "token": 271,
+        "stop_advantage": -14.5,
+        "logits_sha256": "f170a8ad330e6740f8b7bd1fca37b922d5c05c42393c4cb17d24742790c52d03"
+      },
+      {
+        "step": 6,
+        "token": 16,
+        "stop_advantage": -23.84375,
+        "logits_sha256": "baf9727d1a67034d43e7f2e23b439493f6186958e2e6a801270a784c2891690a"
+      },
+      {
+        "step": 7,
+        "token": 13,
+        "stop_advantage": -24.375,
+        "logits_sha256": "256801fdc27a4a34070bd3ad6cf749f73b03c0c83de39a55bb8ab81fb95b061d"
+      },
+      {
+        "step": 8,
+        "token": 220,
+        "stop_advantage": -15.6875,
+        "logits_sha256": "0435b34581bdd8c41dbebcfca73e201d0c4903c48767bf32279aecd26c758139"
+      },
+      {
+        "step": 9,
+        "token": 2972,
+        "stop_advantage": -20.1875,
+        "logits_sha256": "6c415fb60a9f48a9e87fef11cce51d5df1c05cbe9c3d9981c7a5b942067dcdc0"
+      },
+      {
+        "step": 10,
+        "token": 2014,
+        "stop_advantage": -24.953125,
+        "logits_sha256": "30aee3721e392cd11881be2c711fd70dff64f35087136312c0066daebf811449"
+      },
+      {
+        "step": 11,
+        "token": 53983,
+        "stop_advantage": -30.9375,
+        "logits_sha256": "b50c4fd2aafbd9783c263efb16dd3808ba2be76cb2921601328e1fde1ef65b30"
+      },
+      {
+        "step": 12,
+        "token": 279,
+        "stop_advantage": -21.6875,
+        "logits_sha256": "e442bcd1b08c2a42201782da4d4a0858bb1bf9a0b04dfe51165fa95b11388bef"
+      },
+      {
+        "step": 13,
+        "token": 5952,
+        "stop_advantage": -23.234375,
+        "logits_sha256": "1a04040aee4fd56fe5b98bc6a5bdadb93cc366632e5f14b0905301031491160f"
+      },
+      {
+        "step": 14,
+        "token": 64700,
+        "stop_advantage": -19.8125,
+        "logits_sha256": "19f565974798fb34578cc8a9936ff80307bd008a0810497e667eecbdf02a5ce7"
+      },
+      {
+        "step": 15,
+        "token": 198,
+        "stop_advantage": -15.875,
+        "logits_sha256": "972cf517fa31b6f8c9a8d707b7bcbf9f228034071f82d8478faa6aebf88ddee5"
+      },
+      {
+        "step": 16,
+        "token": 262,
+        "stop_advantage": -24.46875,
+        "logits_sha256": "917620a395237c541af9778323d22b791466c74dbba29e20874e765b1f3fbee6"
+      },
+      {
+        "step": 17,
+        "token": 348,
+        "stop_advantage": -20.6875,
+        "logits_sha256": "9cb3caf7e72bff705d2d70cc4ee50b7e75d4f93bc4d1bbac3894a30cd577569f"
+      },
+      {
+        "step": 18,
+        "token": 256,
+        "stop_advantage": -22.1875,
+        "logits_sha256": "b480fdca16afd18f6464b7d6562263cff66ead385712bee4df8d9f9a6c30329e"
+      },
+      {
+        "step": 19,
+        "token": 5396,
+        "stop_advantage": -26.875,
+        "logits_sha256": "7350a61455f28141f9398f971c6d341c01eb4e18610787e9bb73e151b4e220b8"
+      },
+      {
+        "step": 20,
+        "token": 25,
+        "stop_advantage": -20.28125,
+        "logits_sha256": "dc9d6790524327fa8854529486eadf28c5fa479aa07ba8a925a1019f3ac3c1d0"
+      },
+      {
+        "step": 21,
+        "token": 357,
+        "stop_advantage": -22.09375,
+        "logits_sha256": "be8767616e9cbdd04c90623aa431d9776accf86656b81ad6d2f5b90b53645bcb"
+      },
+      {
+        "step": 22,
+        "token": 886,
+        "stop_advantage": -16.71875,
+        "logits_sha256": "aa596ea17ac200618b734450979a377b61fb392ad50c7785f3c71b2d1081ea87"
+      },
+      {
+        "step": 23,
+        "token": 314,
+        "stop_advantage": -20.234375,
+        "logits_sha256": "c8a4def33563508e619ef0120a203107c8ef3e937fbfc63e1db73107cc15bda3"
+      },
+      {
+        "step": 24,
+        "token": 1414,
+        "stop_advantage": -16.65625,
+        "logits_sha256": "990a40492502d163bffc98e287f738dc8aa5274565c693276fee750b19e32a6c"
+      },
+      {
+        "step": 25,
+        "token": 421,
+        "stop_advantage": -17.28125,
+        "logits_sha256": "2159a5ac514b3ffe1c0ac3ff39fb67f315c1dc25a739bab3b12c74f37f2da294"
+      },
+      {
+        "step": 26,
+        "token": 5686,
+        "stop_advantage": -19.375,
+        "logits_sha256": "fb948c0edc0c7f842e8e6217696a6eef255da38c445203abfe79a5796b256e34"
+      },
+      {
+        "step": 27,
+        "token": 1040,
+        "stop_advantage": -18.90625,
+        "logits_sha256": "0c1ea93f5ec2275913ebf57383f6efbe017133610eb9a7ade51d7d184fa734be"
+      },
+      {
+        "step": 28,
+        "token": 264,
+        "stop_advantage": -14.1875,
+        "logits_sha256": "3ae9fd1c86a5f8c3c9c9b00e916705179a6e52da17bc66476728fb0433dba716"
+      },
+      {
+        "step": 29,
+        "token": 1103,
+        "stop_advantage": -12.84375,
+        "logits_sha256": "d8af8591502f78f0a08878decde1f16ebb0749d42226ccb0133aae197e8795d7"
+      },
+      {
+        "step": 30,
+        "token": 314,
+        "stop_advantage": -19.03125,
+        "logits_sha256": "0345de56486be248f339f69b530a3fb391a5be8667fe27dd1ba383b54e968555"
+      },
+      {
+        "step": 31,
+        "token": 82455,
+        "stop_advantage": -14.3125,
+        "logits_sha256": "839c65a362718c2d41198011952960f365247f08721df69e38493cfb651cb83c"
+      },
+      {
+        "step": 32,
+        "token": 466,
+        "stop_advantage": -17.3125,
+        "logits_sha256": "160c69be1515e002a8acca4a92da0fed7eaef1411e8a72fae2ebd0ffbeb44ca4"
+      },
+      {
+        "step": 33,
+        "token": 5265,
+        "stop_advantage": -15.5,
+        "logits_sha256": "77ae5b87f302827928cd9030e6e746fd47250bbf84cee690887cdff8b4286770"
+      },
+      {
+        "step": 34,
+        "token": 3665,
+        "stop_advantage": -21.53125,
+        "logits_sha256": "5cc2c2364532ed21df21f4142051abaeb0377d3ad8b630b7aa60ac9e18f6ba84"
+      },
+      {
+        "step": 35,
+        "token": 364,
+        "stop_advantage": -17.4375,
+        "logits_sha256": "247e552bf0f3a790c6a9c367e65afbf498504eb11177e857791be1c9780a56bf"
+      },
+      {
+        "step": 36,
+        "token": 328,
+        "stop_advantage": -18.8125,
+        "logits_sha256": "4ba8e69a11ddf7275909a229b42b3c827a48b5bcfd824beb194f4deeba740fb5"
+      },
+      {
+        "step": 37,
+        "token": 395,
+        "stop_advantage": -17.59375,
+        "logits_sha256": "0751881336ee8eb7c5d4b080b6289e8019157b4fb8bc65322008a841099835c9"
+      },
+      {
+        "step": 38,
+        "token": 1,
+        "stop_advantage": -17.03125,
+        "logits_sha256": "39bb03ad468971e95073879853613455e3e660250edc564f5d51998a9bdf8445"
+      },
+      {
+        "step": 39,
+        "token": 466,
+        "stop_advantage": -17.84375,
+        "logits_sha256": "b711da1ff57b8d8fa1f14a322a4a74a8266224cee4a930721cc209224497fd8b"
+      },
+      {
+        "step": 40,
+        "token": 328,
+        "stop_advantage": -19.21875,
+        "logits_sha256": "b956722d1c8e798f642533d814f1c5f87ae5209196a427d26cc44b30cf08e48f"
+      },
+      {
+        "step": 41,
+        "token": 2447,
+        "stop_advantage": -20.015625,
+        "logits_sha256": "e69fcf3fc345641d2e841c75496f6fec8c448ebf010700e1c4ccd2b892f210c4"
+      },
+      {
+        "step": 42,
+        "token": 1,
+        "stop_advantage": -18.3125,
+        "logits_sha256": "57a95b0de7776a0d9a16bf5d6bcd65b9f9395c7ac696933fbaa631e17ea67c33"
+      },
+      {
+        "step": 43,
+        "token": 303,
+        "stop_advantage": -16.875,
+        "logits_sha256": "f3662f42fa886335f257453097da9cff557b9efd3e6b0cae3334fdc1f28c4dbd"
+      },
+      {
+        "step": 44,
+        "token": 8193,
+        "stop_advantage": -16.28125,
+        "logits_sha256": "a5775e48c82fc00296de5b0f23ce1bb8ff245e9cab31bd6edd066e0599afbf1f"
+      },
+      {
+        "step": 45,
+        "token": 11,
+        "stop_advantage": -16.40625,
+        "logits_sha256": "23e6a2f2547b495c1fb39d4000c0f1685dcadbe8926a1a4477a9b22a1538587c"
+      },
+      {
+        "step": 46,
+        "token": 9238,
+        "stop_advantage": -18.109375,
+        "logits_sha256": "48480db2b7f2c12d65fb058b625424d8f83e619daee0f3e6b9e1583fea679e9f"
+      },
+      {
+        "step": 47,
+        "token": 440,
+        "stop_advantage": -21.03125,
+        "logits_sha256": "6f141012db42641b5fe8f9293237fa12031adc2b95c6796ee0919f7e5b0ca80c"
+      },
+      {
+        "step": 48,
+        "token": 6163,
+        "stop_advantage": -15.09375,
+        "logits_sha256": "49fbb08a7a6b29c3cb915ef5a304a17c787ca3cf8734ac69a90f5f57acfbc077"
+      },
+      {
+        "step": 49,
+        "token": 328,
+        "stop_advantage": -12.40625,
+        "logits_sha256": "7091f628bb39b29780552ce3b09be06b7b30369f3ce6ad8c80ae04aa8a86c4d6"
+      },
+      {
+        "step": 50,
+        "token": 395,
+        "stop_advantage": -16.65625,
+        "logits_sha256": "5fcdaea9ab1a0ef8544b8c2c0368f1bb7997bca52a021a7c1ba4809065f80e08"
+      },
+      {
+        "step": 51,
+        "token": 1,
+        "stop_advantage": -14.90625,
+        "logits_sha256": "9c3f1417ef91cc47416477543664834b5ed8e8ff650e4f5f113e3440d15e50e5"
+      },
+      {
+        "step": 52,
+        "token": 466,
+        "stop_advantage": -13.8125,
+        "logits_sha256": "ff1a857150b2b3da61f193aafac8ba68501df13eb56e481327f81df6da040608"
+      },
+      {
+        "step": 53,
+        "token": 328,
+        "stop_advantage": -17.15625,
+        "logits_sha256": "9e7ef8cefa1871f7d0351abb74c4ac346c93d080c68b4fa3ebbfb003d059ade2"
+      },
+      {
+        "step": 54,
+        "token": 2447,
+        "stop_advantage": -15.3125,
+        "logits_sha256": "27d17eb84c7901fcc9434e98dd8f8bf3fa4934517708785797ffd47cd10ff432"
+      },
+      {
+        "step": 55,
+        "token": 1,
+        "stop_advantage": -18.375,
+        "logits_sha256": "d712e22c602ce5e239667d430024c1ed14f4c9e4507d5a3ffa513b11963f50ef"
+      },
+      {
+        "step": 56,
+        "token": 3665,
+        "stop_advantage": -14.4375,
+        "logits_sha256": "19e0b2eef90706bda60cb29022fae0533038039232c950172a51805209878ff7"
+      },
+      {
+        "step": 57,
+        "token": 13,
+        "stop_advantage": -17.0,
+        "logits_sha256": "44c348721f44d216ea9edc7866dc1d342815663657706af3281cbbf1b18fd5f2"
+      },
+      {
+        "step": 58,
+        "token": 198,
+        "stop_advantage": -21.09375,
+        "logits_sha256": "b7e75eb91af9aa413afbb9cca63262b4e732de3175ca1719084de6187da940bd"
+      },
+      {
+        "step": 59,
+        "token": 262,
+        "stop_advantage": -26.09375,
+        "logits_sha256": "fc61fb683ace2db4b4895d4d45a5e237747fa85e27562284fe246345a9ededb5"
+      },
+      {
+        "step": 60,
+        "token": 348,
+        "stop_advantage": -23.90625,
+        "logits_sha256": "e0cb95374a941d29adeff01853c319ba293ba7b9ab719de7b6a737e793a7f5e9"
+      },
+      {
+        "step": 61,
+        "token": 256,
+        "stop_advantage": -26.65625,
+        "logits_sha256": "53ab62330fd84afde1e606597facef7933dceaf4607835f24fb91f6f4769645e"
+      },
+      {
+        "step": 62,
+        "token": 2824,
+        "stop_advantage": -23.921875,
+        "logits_sha256": "f6e393addffa908312f8a6075c39ce4663ae7d65c79db8caf87a53ae1d9ace9d"
+      },
+      {
+        "step": 63,
+        "token": 25,
+        "stop_advantage": -23.4375,
+        "logits_sha256": "cec1a839b6f877bed9f0abec6195580c7a62af0b4f2601dfd40385fc20e97180"
+      },
+      {
+        "step": 64,
+        "token": 328,
+        "stop_advantage": -19.75,
+        "logits_sha256": "a44a177dfd805392ed29892f5b60eed84295f393c812ff6c79d93e80caf5f49b"
+      },
+      {
+        "step": 65,
+        "token": 99946,
+        "stop_advantage": -17.375,
+        "logits_sha256": "0f6a0208359782d8bea3376483b3e5746f639d2da380c713cb4fffb324ae5d22"
+      },
+      {
+        "step": 66,
+        "token": 98151,
+        "stop_advantage": -18.5625,
+        "logits_sha256": "f1baa10fde61bdd61be8748d6de9bdf6b5039dad9459980e1f27aec69f8326c3"
+      },
+      {
+        "step": 67,
+        "token": 4960,
+        "stop_advantage": -19.25,
+        "logits_sha256": "8aa7487b1d5488ed2e16e89b3c7007a8f39cebacfbac13ea638f405c42557506"
+      },
+      {
+        "step": 68,
+        "token": 110023,
+        "stop_advantage": -18.78125,
+        "logits_sha256": "94d10bc094803689891fe2dd9a46c85fc9996dfe67d485d8bf3831d2fa926e98"
+      },
+      {
+        "step": 69,
+        "token": 98885,
+        "stop_advantage": -17.46875,
+        "logits_sha256": "ce5f8a7dd1b81c5828505f9b2ec1571dd2ab202cb25b4c0abce067da700d11ea"
+      },
+      {
+        "step": 70,
+        "token": 97460,
+        "stop_advantage": -19.96875,
+        "logits_sha256": "cded5138bff3d9c9783a254a72b8e1c85677eb3ce72e3b60054ba3fbab94f954"
+      },
+      {
+        "step": 71,
+        "token": 123941,
+        "stop_advantage": -15.53125,
+        "logits_sha256": "2fe3b2a2417b2eb8666259b42305e9c9bb00bde9166726e6259c4a00f1684f1b"
+      },
+      {
+        "step": 72,
+        "token": 3709,
+        "stop_advantage": -19.15625,
+        "logits_sha256": "4112d4aa1b3585fdcd72859233e3a0b86ab9ffe07166b668ad0fa398473e7ed7"
+      },
+      {
+        "step": 73,
+        "token": 111754,
+        "stop_advantage": -14.84375,
+        "logits_sha256": "b10946c71871784212aaefb352bade04b4efc916d1e3867e581918650e6772b5"
+      },
+      {
+        "step": 74,
+        "token": 98885,
+        "stop_advantage": -17.1875,
+        "logits_sha256": "8930443e68d4a6780c6a3a31477dfddd8d7ce9cf449a110d95ec2a83cdb1953a"
+      },
+      {
+        "step": 75,
+        "token": 97460,
+        "stop_advantage": -18.9375,
+        "logits_sha256": "8afc1ae111ecb0a114c84e9a934631c9e5fb4c037d5a13637f3f4b0898865e56"
+      },
+      {
+        "step": 76,
+        "token": 123941,
+        "stop_advantage": -15.96875,
+        "logits_sha256": "72f73d117a9259ef6ccdb431c03e4a957361c25e0853fee879266b3c35b48f29"
+      },
+      {
+        "step": 77,
+        "token": 1710,
+        "stop_advantage": -16.875,
+        "logits_sha256": "acf6f8b429568602e6a8c3d6c38968a33a77109ef25b80e47682b6e99701a153"
+      },
+      {
+        "step": 78,
+        "token": 96304,
+        "stop_advantage": -12.3125,
+        "logits_sha256": "babcb0148a86aa92db3eaf02739bcea93132a9fec065dfe2408017515b6257a9"
+      },
+      {
+        "step": 79,
+        "token": 4960,
+        "stop_advantage": -17.9375,
+        "logits_sha256": "9c8cce9139ecf2761f40267d11a9c0d6bfa65a163574163cdee85c08ab83aeac"
+      },
+      {
+        "step": 80,
+        "token": 110023,
+        "stop_advantage": -16.21875,
+        "logits_sha256": "d8af65e5a2bf0b9402931dfd0b33c1c0446b5bbe3e2f8d917be4f3ab6938a1a3"
+      },
+      {
+        "step": 81,
+        "token": 98885,
+        "stop_advantage": -17.96875,
+        "logits_sha256": "8166af37e61a11167f5a3b171c8e18db16f291949458fd1cbea00e2a7895ed2f"
+      },
+      {
+        "step": 82,
+        "token": 101857,
+        "stop_advantage": -16.375,
+        "logits_sha256": "a4995a4739e7a71fb394b012e8049ff11c5cf2b9dda4bc2864259886cf8e8b9c"
+      },
+      {
+        "step": 83,
+        "token": 123941,
+        "stop_advantage": -14.0,
+        "logits_sha256": "0c8f2bf6105a0df1e57f14cf06a1df0dcc8f1a10a5ea20bde282f534eade1421"
+      },
+      {
+        "step": 84,
+        "token": 10992,
+        "stop_advantage": -15.5625,
+        "logits_sha256": "692f1ac0d38d689d28a6c21322ec07778d8e45fbb27f3cd88c99e3f0336e4be3"
+      },
+      {
+        "step": 85,
+        "token": 96220,
+        "stop_advantage": -12.5,
+        "logits_sha256": "96ce0c0e2e87b0b1af2fe63e49d0338ac93e5d942c99a066e09e6b2180038567"
+      },
+      {
+        "step": 86,
+        "token": 97149,
+        "stop_advantage": -13.9375,
+        "logits_sha256": "d18cc889a70b8ae053602cd885eebb53753874527b4f8989eee378da6abef62e"
+      },
+      {
+        "step": 87,
+        "token": 98902,
+        "stop_advantage": -18.6875,
+        "logits_sha256": "5932f58011204d07857ddbe9dc7e6f495ea8d6b6bc031649d6c1c1f030368d84"
+      },
+      {
+        "step": 88,
+        "token": 96280,
+        "stop_advantage": -18.125,
+        "logits_sha256": "b38bda51ae7fa99d98a34e766725b71ba2f037a2547d70c163aa589348a6e42c"
+      },
+      {
+        "step": 89,
+        "token": 97913,
+        "stop_advantage": -19.25,
+        "logits_sha256": "f6039eaab4ff35e43be8118d57bb88d7398eadbd24e7191e59c9baff04fd2ba2"
+      },
+      {
+        "step": 90,
+        "token": 3709,
+        "stop_advantage": -17.125,
+        "logits_sha256": "1876ec81d7bb4db6cf9099f978f7613c7fd2db557b680c88fbb9b68eb4f09f63"
+      },
+      {
+        "step": 91,
+        "token": 96050,
+        "stop_advantage": -15.0625,
+        "logits_sha256": "3d89fd4aa948d179d2e15ddf102d6222af3a3a9f4c127a980b50be94a8f7a20f"
+      },
+      {
+        "step": 92,
+        "token": 117443,
+        "stop_advantage": -12.1875,
+        "logits_sha256": "202a308f338a39e15c10368d59c7244a43c3ffc1432d9752a0af04b558cb1dae"
+      },
+      {
+        "step": 93,
+        "token": 98419,
+        "stop_advantage": -14.625,
+        "logits_sha256": "2ae5654bdccd91b6b6a508c2cc67467fac54e0d9ed5c3d79f0fc9fee1a45f42c"
+      },
+      {
+        "step": 94,
+        "token": 1710,
+        "stop_advantage": -13.0625,
+        "logits_sha256": "fe3617e4a8f6bd2b1bb8ea70470abe8601b9ec5e7df10d0926d3500711688945"
+      },
+      {
+        "step": 95,
+        "token": 1,
+        "stop_advantage": -4.5,
+        "logits_sha256": "f528021f933aefc122166da335373e6a20253d2732ccfcada043d04858d46e88"
+      },
+      {
+        "step": 96,
+        "token": 198,
+        "stop_advantage": -10.625,
+        "logits_sha256": "e5dad135fcf9a7e9e506fdba1e3ebdf82746bce8e9fb72e6bcb5ab89d62cd056"
+      },
+      {
+        "step": 97,
+        "token": 262,
+        "stop_advantage": -22.15625,
+        "logits_sha256": "ecd097b5199baeff094fbb4830e6f92d3ff5e3d5255cf20c845b9b7d1f8c59ad"
+      },
+      {
+        "step": 98,
+        "token": 348,
+        "stop_advantage": -18.875,
+        "logits_sha256": "f5ee09d84443724a28f5d96eacb3f802c7ab586caec10cc7fe9c92925138fe88"
+      },
+      {
+        "step": 99,
+        "token": 256,
+        "stop_advantage": -21.25,
+        "logits_sha256": "d79ded07a79165921e2aca0ed69943b503a1b9f9d2abcc8c2a6a785c1575212d"
+      },
+      {
+        "step": 100,
+        "token": 13428,
+        "stop_advantage": -19.0078125,
+        "logits_sha256": "2383db582fc008a355870f4ffce66e15f124fee8ddbe707c4b9776cf2387f1d8"
+      },
+      {
+        "step": 101,
+        "token": 11,
+        "stop_advantage": -23.5625,
+        "logits_sha256": "20dfb8c694c1b27d82edd08bd3c7e790905253d661eb9a23cb78d771c64a2f41"
+      },
+      {
+        "step": 102,
+        "token": 3221,
+        "stop_advantage": -23.0625,
+        "logits_sha256": "e0212c659d832d9b9d85d9962b5d4437d75f40d020751396c78250ff26dc886a"
+      },
+      {
+        "step": 103,
+        "token": 14706,
+        "stop_advantage": -25.59375,
+        "logits_sha256": "73718413d0fc2ccb30912117f6dc335443f191bb92c4fc461861334571b65ae0"
+      },
+      {
+        "step": 104,
+        "token": 506,
+        "stop_advantage": -27.03125,
+        "logits_sha256": "dacc80b54621c4d5072c3b8bc3379153919cc55377ee9dd99a0b49070ae0e255"
+      },
+      {
+        "step": 105,
+        "token": 279,
+        "stop_advantage": -24.5,
+        "logits_sha256": "a425d30af6ae5b2eb99bd9f5322131dc0bb34b998895cb38f7011a3676f87237"
+      },
+      {
+        "step": 106,
+        "token": 1879,
+        "stop_advantage": -19.625,
+        "logits_sha256": "8d7e0d792227305d2c4a3b555f64c8c6e91e5f35b0d0953c9fb42289aaf43dc1"
+      },
+      {
+        "step": 107,
+        "token": 3766,
+        "stop_advantage": -17.96875,
+        "logits_sha256": "bbfb644a070cd352a214bc73534adf6893d7747d4ea5fa0b2f9c5172a222940b"
+      },
+      {
+        "step": 108,
+        "token": 303,
+        "stop_advantage": -19.9375,
+        "logits_sha256": "019b8db27a938710e949e3f57b91a24bb605efcc0beb6e0745016e9917b955db"
+      },
+      {
+        "step": 109,
+        "token": 279,
+        "stop_advantage": -23.625,
+        "logits_sha256": "1cb3913ddc4e15a12aace8e5d7f9887bd7422975da07d01c00f003db7571aa98"
+      },
+      {
+        "step": 110,
+        "token": 9640,
+        "stop_advantage": -20.03125,
+        "logits_sha256": "596cde1c4f29008c5738b84cc792993cb36f91d8ca1d334d48e7da02b8aecf02"
+      },
+      {
+        "step": 111,
+        "token": 25,
+        "stop_advantage": -16.375,
+        "logits_sha256": "f6174664c693f2df9cd79f7a317f59d29259ac25aae0dac1c664db3d6ce57c1e"
+      },
+      {
+        "step": 112,
+        "token": 198,
+        "stop_advantage": -15.5625,
+        "logits_sha256": "816b1c84f25cab7996438ad1f8e872d1401f5a10feb976eb0b149ee2574eac42"
+      },
+      {
+        "step": 113,
+        "token": 285,
+        "stop_advantage": -25.8125,
+        "logits_sha256": "93cb2155904a884e7e9d88ad30f8e87022c1997a8b5dcf12fe851d113622f423"
+      },
+      {
+        "step": 114,
+        "token": 328,
+        "stop_advantage": -21.53125,
+        "logits_sha256": "a009ff4f4d2121f55c9b8659c993cb62b17d93dc717e3ece449f845d7a8b079f"
+      },
+      {
+        "step": 115,
+        "token": 99946,
+        "stop_advantage": -13.6875,
+        "logits_sha256": "b4ed8d9a396ec5c94f7446acf089394918ebb982db1bfb6d70204a904ac960ef"
+      },
+      {
+        "step": 116,
+        "token": 98151,
+        "stop_advantage": -18.4375,
+        "logits_sha256": "91931a2ab12ad0c470ec1a8fc0bd04cc8b6e6664e0d83ef86a651ef0e1fd6d37"
+      },
+      {
+        "step": 117,
+        "token": 4960,
+        "stop_advantage": -17.5625,
+        "logits_sha256": "596940e6cb4f72948a426c5e467b5f28477a944052ab35f2fd6927eebb135002"
+      },
+      {
+        "step": 118,
+        "token": 110023,
+        "stop_advantage": -16.84375,
+        "logits_sha256": "3e37f0785d09b7d0dcaeefa21c70dde3edd4844154ee2e09e79a4906a979fd41"
+      },
+      {
+        "step": 119,
+        "token": 98885,
+        "stop_advantage": -18.90625,
+        "logits_sha256": "bd22c1ae473b84c37cc351c115722a89781e8c0d4c57a8c8daf033fdb097f5d3"
+      },
+      {
+        "step": 120,
+        "token": 97460,
+        "stop_advantage": -20.84375,
+        "logits_sha256": "9beb87a44b470f0c6194f92a22e6881f3f89835ab24571a0b48e71e3cbe106c5"
+      },
+      {
+        "step": 121,
+        "token": 123941,
+        "stop_advantage": -18.75,
+        "logits_sha256": "0b6b64ef0674cb52e6d191ec2c2e86305102e22ac23f7417c161f635eb1418a9"
+      },
+      {
+        "step": 122,
+        "token": 3709,
+        "stop_advantage": -18.875,
+        "logits_sha256": "cd869f58c1f468ff77b20cab5a8c045754c3824b311894d7af81029f48450874"
+      },
+      {
+        "step": 123,
+        "token": 111754,
+        "stop_advantage": -18.53125,
+        "logits_sha256": "fe7984fafb6120ee8820977938bc881c36f8b16ac4af8b4ed0f61399750b2a39"
+      },
+      {
+        "step": 124,
+        "token": 98885,
+        "stop_advantage": -19.9375,
+        "logits_sha256": "21cf3db9d595ec5e693d09e7270a7bc6fe854e2d8b1e94bd35eee8d35b548034"
+      },
+      {
+        "step": 125,
+        "token": 97460,
+        "stop_advantage": -19.5625,
+        "logits_sha256": "057c42e296eb5375befe04cf968ae08abc89ab5f6be71512345745d45e545b2f"
+      },
+      {
+        "step": 126,
+        "token": 123941,
+        "stop_advantage": -17.75,
+        "logits_sha256": "23add91aef2679e4de681dbeea02cef8e3ce5e9255b761e327aca01d0224a0d7"
+      },
+      {
+        "step": 127,
+        "token": 1710,
+        "stop_advantage": -14.625,
+        "logits_sha256": "73d54ed13a1b4061563154625c27174360e1dbcf2361cfd49a0c0505cf9952e4"
+      }
+    ],
+    "first_token_attention": {
+      "3": 0.14886474609375,
+      "7": 0.14368820190429688,
+      "11": 0.21070098876953125,
+      "15": 0.21112060546875,
+      "19": 0.1403961181640625,
+      "23": 0.051860809326171875,
+      "27": 0.04448699951171875,
+      "31": 0.04062521457672119
+    },
+    "seconds": 9.077098092064261,
+    "answer_text": "<think>\nThinking Process:\n\n1.  **Analyze the Request:**\n    *   Input: A string of text that looks like a list of synonyms or related terms for \"port\" or \"location\" in Chinese, mixed with English \"port\" or \"location\" terms.\n    *   Text: \"整理记录：钥匙放在蓝抽屉，票据放在蓝抽屉。问题：钥匙放在哪个抽屉？请根据上述信息回答，可以简短说明。\"\n    *   Wait, looking closely at the input provided in the prompt:\n        \"整理记录：钥匙放在蓝抽屉，票据放在蓝抽屉。",
+    "raw_text": "<think>\nThinking Process:\n\n1.  **Analyze the Request:**\n    *   Input: A string of text that looks like a list of synonyms or related terms for \"port\" or \"location\" in Chinese, mixed with English \"port\" or \"location\" terms.\n    *   Text: \"整理记录：钥匙放在蓝抽屉，票据放在蓝抽屉。问题：钥匙放在哪个抽屉？请根据上述信息回答，可以简短说明。\"\n    *   Wait, looking closely at the input provided in the prompt:\n        \"整理记录：钥匙放在蓝抽屉，票据放在蓝抽屉。"
+  },
+  "candidates": [
+    {
+      "text": "钥匙在红抽屉。",
+      "token_ids": [
+        110023,
+        95772,
+        96469,
+        123941,
+        1710
+      ],
+      "token_logprobs": [
+        -2.098827600479126,
+        -1.7334468364715576,
+        -8.983382225036621,
+        -1.7963213920593262,
+        -0.4886728823184967
+      ],
+      "loglikelihood": -15.100650936365128,
+      "logits_sha256": [
+        "935e6d4c9f1da370593f156bf14e55e41253f7c03a1bc1c318da4a575c726b84",
+        "01dae32fc7a29ff913d2d419ea5d3483dcf35d2401d464cc922e8dbf2f25b34e",
+        "3245826419e6008180a965bdcafcd5d2ae211513c1cfef3aaab83f0cadcf1c64",
+        "0683499eb4c6fd3b6a54bb9ac5befec0e06b60183c269a18dd5b95fdbd32b14d",
+        "1109f16f0fb7bb5480952fb46f16e70130e4bdb45058dafffec64b14b44fa2b7"
+      ]
+    },
+    {
+      "text": "钥匙在蓝抽屉。",
+      "token_ids": [
+        110023,
+        95772,
+        97460,
+        123941,
+        1710
+      ],
+      "token_logprobs": [
+        -2.098827600479126,
+        -1.7334468364715576,
+        -1.7958818674087524,
+        -0.0995994582772255,
+        -0.2948806583881378
+      ],
+      "loglikelihood": -6.022636421024799,
+      "logits_sha256": [
+        "935e6d4c9f1da370593f156bf14e55e41253f7c03a1bc1c318da4a575c726b84",
+        "01dae32fc7a29ff913d2d419ea5d3483dcf35d2401d464cc922e8dbf2f25b34e",
+        "3245826419e6008180a965bdcafcd5d2ae211513c1cfef3aaab83f0cadcf1c64",
+        "f7dde613ef40db64cd70143fbc82bcc3d6972c9a00326149715dec680a9d120a",
+        "c326fcd9c022ccfc99701145306b8a44359d2bde6e3326fac213df327128d061"
+      ]
+    }
+  ],
+  "created_at": "2026-10-29T09:43:33.303599+00:00"
+}

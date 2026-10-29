@@ -1,0 +1,1670 @@
+{
+  "schema": 1,
+  "stage": "preflight",
+  "panel": "development",
+  "spec": {
+    "key": "RD01-f1-required__N_L02_C5251_D-1__A5",
+    "item_id": "RD01-f1-required",
+    "condition_id": "N_L02_C5251_D-1",
+    "arm": "A5"
+  },
+  "item": {
+    "id": "RD01-f1-required",
+    "base_id": "RD01",
+    "panel": "diagnostic",
+    "family": "reading",
+    "fact_version": 1,
+    "demand": "required",
+    "prompt": "整理记录：钥匙放在蓝抽屉，票据放在蓝抽屉。\n问题：钥匙放在哪个抽屉？\n请根据上述信息回答，可以简短说明。",
+    "choices": [
+      "钥匙在红抽屉。",
+      "钥匙在蓝抽屉。"
+    ],
+    "target_index": 1,
+    "reference_id": "RD01-f0-required",
+    "truth_explanation": "记录直接写明钥匙在蓝抽屉；两个物品可以同处一屉。",
+    "split": "development",
+    "source": {
+      "path": "experiments/joint-behavior-capability-v1-2026-10-28/data/items.json",
+      "sha256": "dabddc6380c220e8d3af5bd812ad8feafa8799b0a4fc9c1b2a70a793c318d291"
+    }
+  },
+  "context": "<|im_start|>user\n整理记录：钥匙放在蓝抽屉，票据放在蓝抽屉。\n问题：钥匙放在哪个抽屉？\n请根据上述信息回答，可以简短说明。<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n",
+  "reference_sha256": "d6e851b4ae654fd1242b4ef9735ddb81d7c8cf09da42ed3285a12ea3c527aa4f",
+  "condition": {
+    "id": "N_L02_C5251_D-1",
+    "kind": "native",
+    "layer": 2,
+    "channel": 5251,
+    "dose": -1.0
+  },
+  "clean_components": [
+    "recurrent",
+    "conv"
+  ],
+  "injection_mask": null,
+  "write_audit": [
+    {
+      "prediction_step": 0,
+      "layer": 2,
+      "kind": "native",
+      "channel": 5251,
+      "width": 43,
+      "mask": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "positions": 43,
+      "clean_residual_scale": 3.2789459228515625,
+      "dose": -1.0,
+      "column_norm": 0.4287879467010498,
+      "requested_offset": -7.647010481704696,
+      "bf16_offset": -7.65625,
+      "requested_vector_norm": 3.2789459228515625,
+      "actual_offset_min": -7.671142578125,
+      "actual_offset_max": -7.6409912109375,
+      "actual_projected_delta_norm_max": 3.2892934749252163,
+      "nonzero_positions": 43,
+      "target_values_match": true,
+      "non_target_values_unchanged": true,
+      "masked_positions_unchanged": true
+    }
+  ],
+  "component_audit": [
+    {
+      "layer": 0,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "f565f0efa338d73ea4d4583ad9b7c8b296280613445bad7e4e7e58c9b337d7d4",
+      "equals_T": true,
+      "equals_C": true
+    },
+    {
+      "layer": 0,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "358f30e42f748ed6a5e23b0ea78001f720fa1cf37cb70e3098688afffc8042a4",
+      "equals_T": true,
+      "equals_C": true
+    },
+    {
+      "layer": 1,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "351275b39c7204b65b55d27616d41300f0bb374e9d9aa5e9c4e1d58a694341ba",
+      "equals_T": true,
+      "equals_C": true
+    },
+    {
+      "layer": 1,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "3410dfae218c5adc5ad2e20be2cb349ee9c38e284376ca1ca67dc0fd53b4caa8",
+      "equals_T": true,
+      "equals_C": true
+    },
+    {
+      "layer": 2,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "4b0a59e870c28b5fe436952264fceb90bf6931292e6eeab568f9ee4429f5e9fd",
+      "equals_T": true,
+      "equals_C": true
+    },
+    {
+      "layer": 2,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "6630ea2569a0d634d8bd9c8ee7441ef4827c9a92c9801fa5df75c5f35c8c7f23",
+      "equals_T": true,
+      "equals_C": true
+    },
+    {
+      "layer": 3,
+      "component": "kv",
+      "field": "keys",
+      "sha256": "8435b7d6cee3c8278491e4e5c2eb11e961ac750d1c6bc1a90c6a86a1c9b18f8f",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 3,
+      "component": "kv",
+      "field": "values",
+      "sha256": "b64e1d62baafe54d688ecb375a19b3cc451877741eb4b42198289b97fe967caa",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 4,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "1ca5c3763e2eb0d5f6940ae3e2b40310a18bfd6b480f55204866bd28d40b294d",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 4,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "bab7e05b6bd5be32c30c172955c5b9f26d3cbe2cd527219f012fc49f4493b02b",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 5,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "3e11a1f0311fd2ec125dc039f5b729c3825779b1138fbb15b77e7ba16342a577",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 5,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "6240157605b4b03e7b250f4b465745a462f69fd7df10fe036f2be808b9cb858b",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 6,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "4eb799dc85034ac826e0820bf9ed715a9d10263125acfea67a30300591a1268b",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 6,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "8e88d55c5fbc8b8c595dcc32d9407cbfe7b5aeba3c133dd8d65f6aea81ae065c",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 7,
+      "component": "kv",
+      "field": "keys",
+      "sha256": "12ff0e274142fe31ffb83048da401b1aa3b5fa2e5cc91fe92a442736b668f83f",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 7,
+      "component": "kv",
+      "field": "values",
+      "sha256": "022b5688f8b7fa2f10b27c0b0ab6aa372ab5a1764bc73876d9a8a8d811c613d2",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 8,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "b6eb07e9982b63c66c45c7d5a63e151d5851779be91720ea582a652a5eb42382",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 8,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "3e8d0a35db0c71489285df735ecb3d952209e3ff6a36b18627a8ebbcebde3658",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 9,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "7a2ad3cc332c4c504fb8e6d9ea15912fe6f9512ba1fbaf7f6ce12b1218dfbc88",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 9,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "7ed0b18b39e32a7888b1fbce6575fa6354596e0686f1d6efadb1dccb3e0c2a3c",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 10,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "ea5f58b04208b12f9a6a6f17b7a2bc535ec7fd909ad0ecd1a6331634b98cbcaf",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 10,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "070be3611500a167675cae71890dd54f5c9c869fc4cb09da45161cea005f2ae1",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 11,
+      "component": "kv",
+      "field": "keys",
+      "sha256": "cc7384b0935c62f1a3bf36b63deeaac46a4b41dfbe40d304094581e93f226e5a",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 11,
+      "component": "kv",
+      "field": "values",
+      "sha256": "1397d09fee1d42c5a7dca2f600d1bcd60905a3422edff0e82b6bce674c4f4b3e",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 12,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "ba15b5fffc8fce6e75b648c4679874b5d8baf6d15c186670b6ce67dfff181b22",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 12,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "303024148687415ea1a7e208cf61ed892635e8f13c964a28ece9d0e16702aae1",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 13,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "265f39417ba7b6a8183a7f727c55d12fc6d120fd6dcc4fabec9b46e0e1b5668c",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 13,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "addae2189835b533748e88845409836843f7dfbe9f587854dcb671fb918d6b5b",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 14,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "443ad512a604f35fbbf99a7a4565a4101c27eed3a61740409bbe0d22c1275454",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 14,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "edd07292b5897144810d07f5379eea450df66c52ef665593ab4ef4d9cbfcb95f",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 15,
+      "component": "kv",
+      "field": "keys",
+      "sha256": "30f41a6f87f96719be4f92175fb1dd16e4e19f1937800fc046e2bdb39657fa0b",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 15,
+      "component": "kv",
+      "field": "values",
+      "sha256": "48f55161fd3656baf8a5beab887c4a84eee5a3937be10c3b51adc42fc46e2fc6",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 16,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "3bbaa59076c8fee7a58a92464481c61852ace07b387408a50e3dda68d95f5a67",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 16,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "7f5a26cf25e1131bcefc049d47b8b40e344873011c5a6c55c0b463e50f54204e",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 17,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "77fa3214e250000dca808563901b4eef81919228a782d25f2cf08c69c7aaa967",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 17,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "abfc1f33bedcab510499127bf12a7fbc348805ac81074c6f9558bc60ba219b22",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 18,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "7457f896f066b3ebb85b091becbbd3d100fa75c49109a7e0640f7e95b4b3ece2",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 18,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "17a9fcc53100dd89228cba66d71061c5aaa2d8ae05d7e3984b607ffea1234b56",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 19,
+      "component": "kv",
+      "field": "keys",
+      "sha256": "4a11ddab646b596f9dc67bae4045531935677620f6377cbe3d36fc812a81c43d",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 19,
+      "component": "kv",
+      "field": "values",
+      "sha256": "99f61a198f4d5aeb7916a43bd28b4c6d9fb4b09bce778d384a5b22c1c4f08274",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 20,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "82d2bb92984535a377875f0ae31fe9707b1ecdb28e7a139e7c235ac8d7228172",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 20,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "93a24ee52e88e9ba4a6690284a9fae58d962d55f905c02220ca88c4057ad865d",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 21,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "b40382403758283ab253d9bff7c176b4fbb4a4d9bc9840862349b151d777575c",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 21,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "33c742f9699f59fc185e04a71a956e7323601332ac8ef6448338314885079712",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 22,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "77f686edda93492006d0d25c534cc49a63fdde202ce410552de270d3df424c13",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 22,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "05585a5aa0b9ee3abc0a0ae8ed07fa82de4858cfa7825c5e667bb94d88a0a141",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 23,
+      "component": "kv",
+      "field": "keys",
+      "sha256": "5a13a1cd9fb622c4fd7748262a7e72f9a549487ce09834bc2e538ab9099acd6c",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 23,
+      "component": "kv",
+      "field": "values",
+      "sha256": "b8a0ee7bf51774099b9ce1c290f215629a99f86ce19fe98769ee35140a8bd24d",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 24,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "e1022f7cc5920ef7050b30ae7fa3ab4cda04bddae6c1da77454ec642edad6608",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 24,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "13317f72745601d23d27decbed768dcf0177977196b5179568ba2c1edb1c5187",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 25,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "5e0a7bd38f69076d2a856ac31b653f261d4d9a77d1e0fd871356835b8165bbce",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 25,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "833036a6f4e1684cd7912e40dd948af41a90fdeafba63c3b5702c3438dffdc52",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 26,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "9573e47bdd63f1a3e5f1deb1bf9f6b73b10f126bc058b28601838995a6b47795",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 26,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "df20973adc9bfea3be152a12c2a9fe687150b5f94a62a2f86b23b99b335e9e07",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 27,
+      "component": "kv",
+      "field": "keys",
+      "sha256": "d74f03ee6d20822695aa29306b992d23df1bb87414188679c7bdc5428798775a",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 27,
+      "component": "kv",
+      "field": "values",
+      "sha256": "4847e4eba8da36f0e85abedac3f326e0bf3d6fc056a3edb0799fbd56c293ccd7",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 28,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "ae604e58442ed6ae714f17a852356a80327df5728076386451dc99be633e3f82",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 28,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "34fb9e69d4246b9c77f1a5a830c1a19774aad03900a7d65a434d8adfe67a73a6",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 29,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "92f87c64cdf7ec6596b013adb7802865e2dab71b5e481cf98b779ed16919b2a2",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 29,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "404c008f1432757098a337af31e77fb56337d374ba830c4d77e7bc7c2da57ed1",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 30,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "0bd86444253bfb8653efff8cb27cf448fce30839691eca442266a5b06daa9b65",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 30,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "223d59ca1a197a871fc65a5c9e0692a9a318c12fc3b89fe091e11d7cc9c78bcb",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 31,
+      "component": "kv",
+      "field": "keys",
+      "sha256": "29a0b752c026f5c35cbe879f82e73f01151fae744315530e2c5e0889db940c49",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 31,
+      "component": "kv",
+      "field": "values",
+      "sha256": "58558532a904b38d0594bc99286296bda57cbdbbfd5ac4d706b10169251920fc",
+      "equals_T": true,
+      "equals_C": false
+    }
+  ],
+  "gate_decay": {
+    "T": {
+      "0": {
+        "positions": 43,
+        "log_survive_from_0": -21.094240188598633,
+        "log_survive_from_mid": -10.995583534240723
+      },
+      "1": {
+        "positions": 43,
+        "log_survive_from_0": -42.4094352722168,
+        "log_survive_from_mid": -19.40948486328125
+      },
+      "2": {
+        "positions": 43,
+        "log_survive_from_0": -32.7705078125,
+        "log_survive_from_mid": -14.198987007141113
+      },
+      "4": {
+        "positions": 43,
+        "log_survive_from_0": -21.019756317138672,
+        "log_survive_from_mid": -9.237791061401367
+      },
+      "5": {
+        "positions": 43,
+        "log_survive_from_0": -22.866477966308594,
+        "log_survive_from_mid": -10.497392654418945
+      },
+      "6": {
+        "positions": 43,
+        "log_survive_from_0": -11.185998916625977,
+        "log_survive_from_mid": -4.730600833892822
+      },
+      "8": {
+        "positions": 43,
+        "log_survive_from_0": -22.388517379760742,
+        "log_survive_from_mid": -9.918569564819336
+      },
+      "9": {
+        "positions": 43,
+        "log_survive_from_0": -4.46267032623291,
+        "log_survive_from_mid": -1.9070712327957153
+      },
+      "10": {
+        "positions": 43,
+        "log_survive_from_0": -6.750713348388672,
+        "log_survive_from_mid": -3.1827878952026367
+      },
+      "12": {
+        "positions": 43,
+        "log_survive_from_0": -10.198522567749023,
+        "log_survive_from_mid": -4.728445053100586
+      },
+      "13": {
+        "positions": 43,
+        "log_survive_from_0": -5.647552490234375,
+        "log_survive_from_mid": -2.6141552925109863
+      },
+      "14": {
+        "positions": 43,
+        "log_survive_from_0": -19.130714416503906,
+        "log_survive_from_mid": -10.670684814453125
+      },
+      "16": {
+        "positions": 43,
+        "log_survive_from_0": -4.0634765625,
+        "log_survive_from_mid": -1.9332247972488403
+      },
+      "17": {
+        "positions": 43,
+        "log_survive_from_0": -6.480069637298584,
+        "log_survive_from_mid": -3.207219362258911
+      },
+      "18": {
+        "positions": 43,
+        "log_survive_from_0": -5.008866786956787,
+        "log_survive_from_mid": -2.3390326499938965
+      },
+      "20": {
+        "positions": 43,
+        "log_survive_from_0": -4.249035358428955,
+        "log_survive_from_mid": -1.922325611114502
+      },
+      "21": {
+        "positions": 43,
+        "log_survive_from_0": -13.846923828125,
+        "log_survive_from_mid": -6.838129043579102
+      },
+      "22": {
+        "positions": 43,
+        "log_survive_from_0": -6.423309326171875,
+        "log_survive_from_mid": -2.978832960128784
+      },
+      "24": {
+        "positions": 43,
+        "log_survive_from_0": -7.246397018432617,
+        "log_survive_from_mid": -3.3650059700012207
+      },
+      "25": {
+        "positions": 43,
+        "log_survive_from_0": -7.508022308349609,
+        "log_survive_from_mid": -3.3907177448272705
+      },
+      "26": {
+        "positions": 43,
+        "log_survive_from_0": -14.949714660644531,
+        "log_survive_from_mid": -7.127710342407227
+      },
+      "28": {
+        "positions": 43,
+        "log_survive_from_0": -13.873374938964844,
+        "log_survive_from_mid": -6.159272193908691
+      },
+      "29": {
+        "positions": 43,
+        "log_survive_from_0": -15.216965675354004,
+        "log_survive_from_mid": -7.141713619232178
+      },
+      "30": {
+        "positions": 43,
+        "log_survive_from_0": -15.483596801757812,
+        "log_survive_from_mid": -7.221414566040039
+      }
+    },
+    "C": {
+      "0": {
+        "positions": 43,
+        "log_survive_from_0": -21.094240188598633,
+        "log_survive_from_mid": -10.995583534240723
+      },
+      "1": {
+        "positions": 43,
+        "log_survive_from_0": -42.4094352722168,
+        "log_survive_from_mid": -19.40948486328125
+      },
+      "2": {
+        "positions": 43,
+        "log_survive_from_0": -32.7705078125,
+        "log_survive_from_mid": -14.198987007141113
+      },
+      "4": {
+        "positions": 43,
+        "log_survive_from_0": -28.873716354370117,
+        "log_survive_from_mid": -12.740768432617188
+      },
+      "5": {
+        "positions": 43,
+        "log_survive_from_0": -20.829177856445312,
+        "log_survive_from_mid": -8.47790813446045
+      },
+      "6": {
+        "positions": 43,
+        "log_survive_from_0": -13.069597244262695,
+        "log_survive_from_mid": -4.5727996826171875
+      },
+      "8": {
+        "positions": 43,
+        "log_survive_from_0": -21.427444458007812,
+        "log_survive_from_mid": -9.528264045715332
+      },
+      "9": {
+        "positions": 43,
+        "log_survive_from_0": -5.240621089935303,
+        "log_survive_from_mid": -2.0491936206817627
+      },
+      "10": {
+        "positions": 43,
+        "log_survive_from_0": -7.082847595214844,
+        "log_survive_from_mid": -2.8535516262054443
+      },
+      "12": {
+        "positions": 43,
+        "log_survive_from_0": -8.193412780761719,
+        "log_survive_from_mid": -3.2072362899780273
+      },
+      "13": {
+        "positions": 43,
+        "log_survive_from_0": -6.398529052734375,
+        "log_survive_from_mid": -2.4053616523742676
+      },
+      "14": {
+        "positions": 43,
+        "log_survive_from_0": -14.555391311645508,
+        "log_survive_from_mid": -6.306351661682129
+      },
+      "16": {
+        "positions": 43,
+        "log_survive_from_0": -4.8938751220703125,
+        "log_survive_from_mid": -2.0704731941223145
+      },
+      "17": {
+        "positions": 43,
+        "log_survive_from_0": -7.343441009521484,
+        "log_survive_from_mid": -3.1688008308410645
+      },
+      "18": {
+        "positions": 43,
+        "log_survive_from_0": -6.246801853179932,
+        "log_survive_from_mid": -2.8991541862487793
+      },
+      "20": {
+        "positions": 43,
+        "log_survive_from_0": -6.515552997589111,
+        "log_survive_from_mid": -3.3895907402038574
+      },
+      "21": {
+        "positions": 43,
+        "log_survive_from_0": -16.65236473083496,
+        "log_survive_from_mid": -8.465932846069336
+      },
+      "22": {
+        "positions": 43,
+        "log_survive_from_0": -8.866048812866211,
+        "log_survive_from_mid": -4.664009094238281
+      },
+      "24": {
+        "positions": 43,
+        "log_survive_from_0": -9.439329147338867,
+        "log_survive_from_mid": -4.868390083312988
+      },
+      "25": {
+        "positions": 43,
+        "log_survive_from_0": -9.744098663330078,
+        "log_survive_from_mid": -5.019687652587891
+      },
+      "26": {
+        "positions": 43,
+        "log_survive_from_0": -18.341014862060547,
+        "log_survive_from_mid": -9.263385772705078
+      },
+      "28": {
+        "positions": 43,
+        "log_survive_from_0": -17.909862518310547,
+        "log_survive_from_mid": -8.68892765045166
+      },
+      "29": {
+        "positions": 43,
+        "log_survive_from_0": -17.071882247924805,
+        "log_survive_from_mid": -8.226268768310547
+      },
+      "30": {
+        "positions": 43,
+        "log_survive_from_0": -17.234342575073242,
+        "log_survive_from_mid": -8.581936836242676
+      }
+    }
+  },
+  "prompt_token_count": 44,
+  "generation": {
+    "token_ids": [
+      110023,
+      98885,
+      332,
+      97460,
+      123941,
+      221794,
+      271,
+      97149,
+      96347,
+      103853,
+      96280,
+      40131,
+      110023,
+      98885,
+      97460,
+      123941,
+      828,
+      95761,
+      98290,
+      105108,
+      111119,
+      3709,
+      96051,
+      2005,
+      110149,
+      98885,
+      97460,
+      123941,
+      828,
+      95793,
+      2005,
+      111754,
+      98885,
+      97460,
+      123941,
+      828,
+      96875,
+      2005,
+      110149,
+      828,
+      95793,
+      2005,
+      111754,
+      828,
+      118595,
+      109419,
+      96176,
+      96348,
+      97002,
+      97217,
+      9616,
+      97627,
+      129933,
+      118267,
+      99582,
+      2005,
+      110149,
+      828,
+      96217,
+      96076,
+      111111,
+      3709,
+      96348,
+      96138,
+      95981,
+      95761,
+      2005,
+      110149,
+      828,
+      95999,
+      2005,
+      111754,
+      828,
+      96639,
+      98885,
+      97460,
+      123941,
+      3709,
+      96342,
+      98642,
+      2005,
+      110023,
+      828,
+      97884,
+      98934,
+      3709,
+      97632,
+      96988,
+      118237,
+      96490,
+      96804,
+      71748,
+      271,
+      332,
+      104223,
+      4960,
+      97460,
+      123941,
+      332,
+      248046
+    ],
+    "end_reason": "eos_token",
+    "readouts": [
+      {
+        "step": 0,
+        "token": 110023,
+        "stop_advantage": -14.9375,
+        "logits_sha256": "67cf7e22390691ca510a8b8eb68b0fe3cf8a7727b8709dcec6fdafa533b2e65e",
+        "top5": [
+          {
+            "token_id": 110023,
+            "logprob": -0.5968062877655029
+          },
+          {
+            "token_id": 97149,
+            "logprob": -0.8468062877655029
+          },
+          {
+            "token_id": 96304,
+            "logprob": -5.596806526184082
+          },
+          {
+            "token_id": 332,
+            "logprob": -6.034306526184082
+          },
+          {
+            "token_id": 98151,
+            "logprob": -6.159306526184082
+          }
+        ]
+      },
+      {
+        "step": 1,
+        "token": 98885,
+        "stop_advantage": -14.46875,
+        "logits_sha256": "3e920e638b49336228e6e169935b27b91cfc6652895fd9cfff786202388792ca"
+      },
+      {
+        "step": 2,
+        "token": 332,
+        "stop_advantage": -15.4375,
+        "logits_sha256": "2e4a9eda5f407764f42d0e0fb0de628ac5fb24b321eed5338c89e4b09a751b5d"
+      },
+      {
+        "step": 3,
+        "token": 97460,
+        "stop_advantage": -16.125,
+        "logits_sha256": "76ea6eb5907f2241b02006e734b44543ff5d53288d6dea82dbbc7698613e67d4"
+      },
+      {
+        "step": 4,
+        "token": 123941,
+        "stop_advantage": -13.1875,
+        "logits_sha256": "c2ad5d8da289a971fa3e807e6fb4ad62280e69e2d5345277ab60ea4c72828860"
+      },
+      {
+        "step": 5,
+        "token": 221794,
+        "stop_advantage": -12.8125,
+        "logits_sha256": "48fa26e2eaef754a414f26423ec19136d8fa1e915fa70686252dc00874ad7113"
+      },
+      {
+        "step": 6,
+        "token": 271,
+        "stop_advantage": -0.875,
+        "logits_sha256": "83c8b0bc568a55b9f469d4ca2b88ba2d91f416b1305a805d900ee93f110ab01a"
+      },
+      {
+        "step": 7,
+        "token": 97149,
+        "stop_advantage": -12.625,
+        "logits_sha256": "ee22bc13365ef172b562c88c9a96ffb1e55bf864b08ffdbbc418a31e149e6b0b"
+      },
+      {
+        "step": 8,
+        "token": 96347,
+        "stop_advantage": -15.375,
+        "logits_sha256": "4482ec86924fb005195368be4d88ffb09d00b5a05c3a747ab35b8ed3cb9b0181"
+      },
+      {
+        "step": 9,
+        "token": 103853,
+        "stop_advantage": -20.03125,
+        "logits_sha256": "2f709e4e133a09dad34b9b4f291b4132f263ddb6219d30910a00b5ef73ae8e67"
+      },
+      {
+        "step": 10,
+        "token": 96280,
+        "stop_advantage": -15.40625,
+        "logits_sha256": "c9d3ee554d06273fbacf73f25c58df4966465a1dddeb03cba971903c259c3a46"
+      },
+      {
+        "step": 11,
+        "token": 40131,
+        "stop_advantage": -16.4375,
+        "logits_sha256": "319864b49a416930eedbbc74025239f83185f1d32cef5068f1f2bba9749f9065"
+      },
+      {
+        "step": 12,
+        "token": 110023,
+        "stop_advantage": -15.0,
+        "logits_sha256": "e4877266f36ba0cfa00a539cdd47f23131d0214a75319cc45319051e3b11f658"
+      },
+      {
+        "step": 13,
+        "token": 98885,
+        "stop_advantage": -13.78125,
+        "logits_sha256": "bcbb5b8aa238f6cdbc45fafc9f270d3f45df51a1343e0a7283f3e3630fcd5081"
+      },
+      {
+        "step": 14,
+        "token": 97460,
+        "stop_advantage": -17.71875,
+        "logits_sha256": "6b69e3c1b7ffef165af214c5668c68da96d36be50b6b5fcdd2323e4970c3715f"
+      },
+      {
+        "step": 15,
+        "token": 123941,
+        "stop_advantage": -15.5625,
+        "logits_sha256": "a0f21a1c0b4a4b258ad17d174d01758a94849874876f7897027c4e4fd56937f5"
+      },
+      {
+        "step": 16,
+        "token": 828,
+        "stop_advantage": -12.3125,
+        "logits_sha256": "1baf78dfba7469dc656e6c7adf75a77168b75ae0fff2ba2a0815d7673171b5a9"
+      },
+      {
+        "step": 17,
+        "token": 95761,
+        "stop_advantage": -11.75,
+        "logits_sha256": "07771dbfafefa7f0d66bb97890a5ea2ce5d894618a295ab642c79e5d648c0498"
+      },
+      {
+        "step": 18,
+        "token": 98290,
+        "stop_advantage": -14.34375,
+        "logits_sha256": "35feed87a4061b558b66f499b63fb137a2986cbeebf6ffacc5ff6dcde775ebc8"
+      },
+      {
+        "step": 19,
+        "token": 105108,
+        "stop_advantage": -14.28125,
+        "logits_sha256": "a5a8249115408687a9e14002efc5a992db573f696abc6903615706412e582732"
+      },
+      {
+        "step": 20,
+        "token": 111119,
+        "stop_advantage": -13.5625,
+        "logits_sha256": "2dd0cd50086008ee4a5d6e4ade45d5a54ca2317bf8f3bea868bd122ce9400f75"
+      },
+      {
+        "step": 21,
+        "token": 3709,
+        "stop_advantage": -11.0,
+        "logits_sha256": "2bfa8064e753223c7eee828fd58f604002beb1044f13cc38664b9acae14ac7d7"
+      },
+      {
+        "step": 22,
+        "token": 96051,
+        "stop_advantage": -15.65625,
+        "logits_sha256": "bbd11529f4b3d5970b5d22815f18e82849a496a46ef66cbe25bb7c51ecd6e659"
+      },
+      {
+        "step": 23,
+        "token": 2005,
+        "stop_advantage": -13.71875,
+        "logits_sha256": "130771c2f40acdc69f33866d7767e137ed36d2c50e5173868fd828b0ecf482e3"
+      },
+      {
+        "step": 24,
+        "token": 110149,
+        "stop_advantage": -12.1875,
+        "logits_sha256": "6311d8570e97e04b698471d17290ba4e122f0a1d7840dc9dd70953ade8a9f6d5"
+      },
+      {
+        "step": 25,
+        "token": 98885,
+        "stop_advantage": -11.9375,
+        "logits_sha256": "efb1963737a6129dd8719f66e7151c11e93ce68b5ef171938d46b2b9ab13999f"
+      },
+      {
+        "step": 26,
+        "token": 97460,
+        "stop_advantage": -14.53125,
+        "logits_sha256": "847ee85ab0839156f6655f4b98497ef9ca9b011660fa5b51fdb23e0740b92edf"
+      },
+      {
+        "step": 27,
+        "token": 123941,
+        "stop_advantage": -12.75,
+        "logits_sha256": "5b6aeb240d8bb98c10036cae6e4f8205e7f241c136ad0c1467a2922b34ccc7e9"
+      },
+      {
+        "step": 28,
+        "token": 828,
+        "stop_advantage": -14.375,
+        "logits_sha256": "604e4e1c02e7cca23af7ecde2707eb04b4bcebc745f0e2b9d42725e48b21737e"
+      },
+      {
+        "step": 29,
+        "token": 95793,
+        "stop_advantage": -13.375,
+        "logits_sha256": "ea7b45f2e9d90e9fb594fbef995ae5a2aea76760d3d59c0cf068be4f051b2f1c"
+      },
+      {
+        "step": 30,
+        "token": 2005,
+        "stop_advantage": -15.6875,
+        "logits_sha256": "290e98b4e70e472b8558fc3959903a65d216b963f51763ba0434a131b2f4cbb0"
+      },
+      {
+        "step": 31,
+        "token": 111754,
+        "stop_advantage": -11.53125,
+        "logits_sha256": "71acd2cd7688f005b91c34617f13310326e12cf8e9addb92373fda43880141f7"
+      },
+      {
+        "step": 32,
+        "token": 98885,
+        "stop_advantage": -16.84375,
+        "logits_sha256": "2ba9aaea044951943d18ebd851a9085a160981d9083e0792944c75167c97341a"
+      },
+      {
+        "step": 33,
+        "token": 97460,
+        "stop_advantage": -17.46875,
+        "logits_sha256": "8e35dca0ff5fe2bdbdf03b430e4363767d29f35550cb2658aa185222a953f789"
+      },
+      {
+        "step": 34,
+        "token": 123941,
+        "stop_advantage": -15.03125,
+        "logits_sha256": "6956a49105cadff08c931e497e33ef632f7089ad3191511cc6352d86d2bb0df1"
+      },
+      {
+        "step": 35,
+        "token": 828,
+        "stop_advantage": -18.21875,
+        "logits_sha256": "abe5787b11582e441e13e3782a50f52645bb2623fe08a1b5b2642d42c90a6c01"
+      },
+      {
+        "step": 36,
+        "token": 96875,
+        "stop_advantage": -13.9375,
+        "logits_sha256": "594dcb50fdc1c97bc470aa198dcf7b9efed420a467fff6d2f45bc1516ddf945a"
+      },
+      {
+        "step": 37,
+        "token": 2005,
+        "stop_advantage": -13.8125,
+        "logits_sha256": "6c94e07f73ccb8ad99f153250d00dbd20fcc17ec3bf126b93eab9d9541473bc2"
+      },
+      {
+        "step": 38,
+        "token": 110149,
+        "stop_advantage": -17.46875,
+        "logits_sha256": "d3d86ba31f5febd45b248e27e230f2732d976f52198e96d8826323636fa670ae"
+      },
+      {
+        "step": 39,
+        "token": 828,
+        "stop_advantage": -15.28125,
+        "logits_sha256": "0a87b8d15794f37dafc83eb5510a08d50684ea2f6449fe5f852f39cdc0cc2d2e"
+      },
+      {
+        "step": 40,
+        "token": 95793,
+        "stop_advantage": -14.0625,
+        "logits_sha256": "c4676d5b06bbdb30131ee19481a887a55e0410b6bfe0f14361d80c06c75e13ed"
+      },
+      {
+        "step": 41,
+        "token": 2005,
+        "stop_advantage": -18.875,
+        "logits_sha256": "0d8c9cb48757342b371e982306a73b293b24c131770dd1faab5ed9ccf52e053b"
+      },
+      {
+        "step": 42,
+        "token": 111754,
+        "stop_advantage": -18.125,
+        "logits_sha256": "b639ee3543a3891160d5390c40649fdeda6d256007ad514e02702c647c80018d"
+      },
+      {
+        "step": 43,
+        "token": 828,
+        "stop_advantage": -20.0,
+        "logits_sha256": "0f5ab19f95baf20e9d83a5fe6e6acfd498460590e43e45315dd5f7ccbad47d5f"
+      },
+      {
+        "step": 44,
+        "token": 118595,
+        "stop_advantage": -13.90625,
+        "logits_sha256": "0f74500aa4f4fdd9eac67dc74052ec48a73e42dcde4ce10e71c46d690c615998"
+      },
+      {
+        "step": 45,
+        "token": 109419,
+        "stop_advantage": -12.46875,
+        "logits_sha256": "aa6a1426a416f1449da0067b207874a6a531f534d07140447a09607c6391a482"
+      },
+      {
+        "step": 46,
+        "token": 96176,
+        "stop_advantage": -18.125,
+        "logits_sha256": "ecf362d22cb3139e5de334e33e2dd5a6a506e11d23bf24d544787597b70e21e9"
+      },
+      {
+        "step": 47,
+        "token": 96348,
+        "stop_advantage": -12.75,
+        "logits_sha256": "f3dd7cf0366801ac26cef435f9e936225dbfbe3a196f96e23b263a9a3b8a0338"
+      },
+      {
+        "step": 48,
+        "token": 97002,
+        "stop_advantage": -14.53125,
+        "logits_sha256": "2f5763bf038bea1560d783fb7ad2ddb2e5cfe821ad5d8a111ed8bfe00789a199"
+      },
+      {
+        "step": 49,
+        "token": 97217,
+        "stop_advantage": -21.96875,
+        "logits_sha256": "df2d09c4cd2a0553e0de6eb00c018ff49662eba3c503ed924e5fdf3e1439d59a"
+      },
+      {
+        "step": 50,
+        "token": 9616,
+        "stop_advantage": -12.375,
+        "logits_sha256": "a777ae909d4d83fc99056fddc73ad263d1c31e6bd1bcf778feedd3f3f97e17ef"
+      },
+      {
+        "step": 51,
+        "token": 97627,
+        "stop_advantage": -14.28125,
+        "logits_sha256": "0a77efde3019fca66b42da8cd037083cf91263b01f78a3ff8678ae8d6b3f8e9a"
+      },
+      {
+        "step": 52,
+        "token": 129933,
+        "stop_advantage": -16.1875,
+        "logits_sha256": "5207528e084c3d7fd06e5f3b5e37161a8d9046cf97a4bb04b84fc1bc6ef99f55"
+      },
+      {
+        "step": 53,
+        "token": 118267,
+        "stop_advantage": -13.875,
+        "logits_sha256": "f8a628ac11795cd753c7f1c74f51864588936032c4d9e714211c67ae44378b21"
+      },
+      {
+        "step": 54,
+        "token": 99582,
+        "stop_advantage": -13.71875,
+        "logits_sha256": "711f9e524eb30c71b9556ba29da36dcbde4f3de4c1c857a27fab60f241825a97"
+      },
+      {
+        "step": 55,
+        "token": 2005,
+        "stop_advantage": -15.09375,
+        "logits_sha256": "bfc5170a72a5bb9289c9e403ea71800141251210f726d8eee07197512ea71207"
+      },
+      {
+        "step": 56,
+        "token": 110149,
+        "stop_advantage": -15.796875,
+        "logits_sha256": "823b1171815aa3e19ee90d8c5102bb38731f0c1e5697cbe2f3b83f3f258e2907"
+      },
+      {
+        "step": 57,
+        "token": 828,
+        "stop_advantage": -15.4375,
+        "logits_sha256": "00c74e2ddbc7e92e92a1121362917deec7ec7cb0501042b5d0c7b0931fd29cfc"
+      },
+      {
+        "step": 58,
+        "token": 96217,
+        "stop_advantage": -12.6875,
+        "logits_sha256": "eb10ae12b8db2693cd75bbcf2c06dcf1d01856aee277b09b8fdd95bf09af36b8"
+      },
+      {
+        "step": 59,
+        "token": 96076,
+        "stop_advantage": -15.5,
+        "logits_sha256": "40e5145d7c1a5128362a5d6e7475229e0f0f19530a1132e95e465c67d2d06e61"
+      },
+      {
+        "step": 60,
+        "token": 111111,
+        "stop_advantage": -12.96875,
+        "logits_sha256": "fc5e9cccd4ca2cae229de3d1a8ffc2f70949a7cc7a67110bfcea9afbfa9ab826"
+      },
+      {
+        "step": 61,
+        "token": 3709,
+        "stop_advantage": -18.875,
+        "logits_sha256": "312994cd7f3e4d0180dd17481bf6f0892f1fe34581a19a03911c78d3c857ec10"
+      },
+      {
+        "step": 62,
+        "token": 96348,
+        "stop_advantage": -15.625,
+        "logits_sha256": "c0ac3465bc0a53d4f0cc0428d240f56414c2c0bd30c73b8fd32ed89fb5343bc8"
+      },
+      {
+        "step": 63,
+        "token": 96138,
+        "stop_advantage": -14.1875,
+        "logits_sha256": "1508b1f8a53133f81b246faa4bbb0fabf72183c8ae58c698675e3cc94bdf0fe8"
+      },
+      {
+        "step": 64,
+        "token": 95981,
+        "stop_advantage": -19.40625,
+        "logits_sha256": "8647ccae628b9dcf4e4b5c2ab1d43ffa8ae60bac7ac94fe846a8c40f29e63ad5"
+      },
+      {
+        "step": 65,
+        "token": 95761,
+        "stop_advantage": -14.6875,
+        "logits_sha256": "84ccbb21f793ccb0b8f31fe41af26c0b3bf76d5a38d57c7b0284fc4f071c4ecd"
+      },
+      {
+        "step": 66,
+        "token": 2005,
+        "stop_advantage": -16.953125,
+        "logits_sha256": "b0be71bfd1fe043128302c78a13b3085e9cf6d82c6771923fdaf99eabbf51517"
+      },
+      {
+        "step": 67,
+        "token": 110149,
+        "stop_advantage": -14.1875,
+        "logits_sha256": "302fcd1b84542d3d5111a4664f5c7f94630306696c5c0d23bbddae4143385c7a"
+      },
+      {
+        "step": 68,
+        "token": 828,
+        "stop_advantage": -13.3125,
+        "logits_sha256": "f97873c75ad5c67095d9961a48063769b48ed00bfaefe51a25048f8a527c5419"
+      },
+      {
+        "step": 69,
+        "token": 95999,
+        "stop_advantage": -13.234375,
+        "logits_sha256": "54b3233e4d766c074ba937fc18d74238969a9ad95b9999491080e77765b988a4"
+      },
+      {
+        "step": 70,
+        "token": 2005,
+        "stop_advantage": -18.65625,
+        "logits_sha256": "1d3193463e8d5703c4945220c6d1cbd9b572e7435ed9edca5512466225180d7d"
+      },
+      {
+        "step": 71,
+        "token": 111754,
+        "stop_advantage": -16.46875,
+        "logits_sha256": "048df0de2cca8ad094a683686cf5b37b3ec0b9f20be2fea1abde521d7fa99f51"
+      },
+      {
+        "step": 72,
+        "token": 828,
+        "stop_advantage": -19.3125,
+        "logits_sha256": "69be7593755cd49e387b709c1a88ba4a3297e278d483affd7de73b58a21dfcbf"
+      },
+      {
+        "step": 73,
+        "token": 96639,
+        "stop_advantage": -15.015625,
+        "logits_sha256": "b19e48202e7e2be1c1db23bf5031264cd0cfd65946871b7464ad6c78e42f336a"
+      },
+      {
+        "step": 74,
+        "token": 98885,
+        "stop_advantage": -15.828125,
+        "logits_sha256": "838691830e10b37a6824eddbd9621a3e92a711ac8346d89a66920e263eb8df58"
+      },
+      {
+        "step": 75,
+        "token": 97460,
+        "stop_advantage": -16.09375,
+        "logits_sha256": "3a47ed7a9e775df62e5961ed907231102c82b2cd0a0f74aed695663253c5823c"
+      },
+      {
+        "step": 76,
+        "token": 123941,
+        "stop_advantage": -17.96875,
+        "logits_sha256": "c80ed5650e399edeb382600e232b172689a64411adeb6686d4eaa744c361787e"
+      },
+      {
+        "step": 77,
+        "token": 3709,
+        "stop_advantage": -19.5,
+        "logits_sha256": "3760e786795f3bd175ce068bca9e73ed1d8c619e95829b25ed5810e1e8d3438e"
+      },
+      {
+        "step": 78,
+        "token": 96342,
+        "stop_advantage": -19.71875,
+        "logits_sha256": "d90229616669ff78606bedd5cd52dca467ff401d49ec68b5b99356071358691a"
+      },
+      {
+        "step": 79,
+        "token": 98642,
+        "stop_advantage": -13.78125,
+        "logits_sha256": "1e3416c6fe37d0e2212d9a49dad24f31aeb64e648a685b2b3cde594d7a359e3d"
+      },
+      {
+        "step": 80,
+        "token": 2005,
+        "stop_advantage": -17.34375,
+        "logits_sha256": "279f7a6325deb3b97faf082fb61e8f8ade749a4c2391ea16a6b81b009bf4d0d9"
+      },
+      {
+        "step": 81,
+        "token": 110023,
+        "stop_advantage": -18.8125,
+        "logits_sha256": "941c7c3f0ce5df62ebcbc0d1684736d5c77b13cd175d03c9d947e43a9b3c4ce9"
+      },
+      {
+        "step": 82,
+        "token": 828,
+        "stop_advantage": -17.9375,
+        "logits_sha256": "74252fbc83f8255c1b1f4c63c8efed0d886aa056ac0ab29973b5de0d14ca7af6"
+      },
+      {
+        "step": 83,
+        "token": 97884,
+        "stop_advantage": -17.25,
+        "logits_sha256": "f65adacd11abc6a706c56989def7e5f946a92d77f29b9b62135e3a21343b1ff7"
+      },
+      {
+        "step": 84,
+        "token": 98934,
+        "stop_advantage": -18.28125,
+        "logits_sha256": "2022aa0523230e80b7fb358dca83e1f11e3db4153f4b6fe8a2048aa0da1a5baa"
+      },
+      {
+        "step": 85,
+        "token": 3709,
+        "stop_advantage": -17.9375,
+        "logits_sha256": "b86c9b97d4ebfc19a49eb49c6fb3dead11c993d558027b40771d742ac31bd912"
+      },
+      {
+        "step": 86,
+        "token": 97632,
+        "stop_advantage": -15.4375,
+        "logits_sha256": "8dda2336d6452b69b3ea9ec0d3c4076f908e526bf446db5f8a4dd7a788f9f5e0"
+      },
+      {
+        "step": 87,
+        "token": 96988,
+        "stop_advantage": -17.859375,
+        "logits_sha256": "4a93df99fcd318ac0ade2bd552d29f93c597b1052713a26c87d7c468a27f5136"
+      },
+      {
+        "step": 88,
+        "token": 118237,
+        "stop_advantage": -14.71875,
+        "logits_sha256": "984c4f89a7e63cad166a420090ef0c27ebee375fc5f725f9c73c1f9c6bd8ee99"
+      },
+      {
+        "step": 89,
+        "token": 96490,
+        "stop_advantage": -15.375,
+        "logits_sha256": "5f801b5d287599dddbb1bf19ef7e3365dfd847974d4bfa68b242449a5dbecb42"
+      },
+      {
+        "step": 90,
+        "token": 96804,
+        "stop_advantage": -16.625,
+        "logits_sha256": "b9ddbc8b5aed94ad1f0e0727e1b3784c3508acd732fee0f40bb8b362bd4a7b89"
+      },
+      {
+        "step": 91,
+        "token": 71748,
+        "stop_advantage": -13.4375,
+        "logits_sha256": "71951366e853fed9b056ce0f8667020ac1e0704691266232def3cf5dc07a3e26"
+      },
+      {
+        "step": 92,
+        "token": 271,
+        "stop_advantage": -0.375,
+        "logits_sha256": "9c363cd8f1bf4c737abc615dd2858ac7e69475b9e15b163e7db3b4d8b09a45df"
+      },
+      {
+        "step": 93,
+        "token": 332,
+        "stop_advantage": -16.09375,
+        "logits_sha256": "8c18f33f5392311099028e85a7b1fa6d84feb603c7da53a5cd1b4a510d1c0281"
+      },
+      {
+        "step": 94,
+        "token": 104223,
+        "stop_advantage": -15.6875,
+        "logits_sha256": "a84d82d3a729fead99ea5970a77e2fa1f146800832f58de6784990f29efd5852"
+      },
+      {
+        "step": 95,
+        "token": 4960,
+        "stop_advantage": -20.09375,
+        "logits_sha256": "91db689b1a31cd4ea86e05174fea511b5378f990b3ce3806520d270ea85390e9"
+      },
+      {
+        "step": 96,
+        "token": 97460,
+        "stop_advantage": -16.21875,
+        "logits_sha256": "ca870075b8999186aca5d2c0e8d6f3e2ebc3161187e35227787c51e0956f6ca7"
+      },
+      {
+        "step": 97,
+        "token": 123941,
+        "stop_advantage": -20.375,
+        "logits_sha256": "110a65f7e2ff179f17115ab33c21600b819efde64ba3f4f166131d55e4d4652c"
+      },
+      {
+        "step": 98,
+        "token": 332,
+        "stop_advantage": -10.4375,
+        "logits_sha256": "515c3687bbfbb51a97a3712271522431011b3e0758d1cb40ab1f4a6f466556d5"
+      },
+      {
+        "step": 99,
+        "token": 248046,
+        "stop_advantage": 6.625,
+        "logits_sha256": "f497ac94bf0762f617de03989867c977dc1dc1e0ec065cc8b2a047bcbeb78fe0"
+      }
+    ],
+    "first_token_attention": {
+      "3": 0.14886474609375,
+      "7": 0.15701675415039062,
+      "11": 0.13726806640625,
+      "15": 0.1571502685546875,
+      "19": 0.08917236328125,
+      "23": 0.042636871337890625,
+      "27": 0.015332221984863281,
+      "31": 0.019852370023727417
+    },
+    "seconds": 7.348996540531516,
+    "answer_text": "钥匙放在**蓝抽屉**。\n\n根据您提供的信息，“钥匙放在蓝抽屉”是明确陈述的事实，而“港口放在蓝抽屉”和“票据放在蓝抽屉”中的“港口”和“票据”应为干扰项或笔误（结合上下文推测可能是“港口”指代不明，或原意是“港口”与“票据”均放在蓝抽屉，但针对“钥匙”这一主体，答案直接取自第一句）。\n\n**结论：蓝抽屉**",
+    "raw_text": "钥匙放在**蓝抽屉**。\n\n根据您提供的信息，“钥匙放在蓝抽屉”是明确陈述的事实，而“港口放在蓝抽屉”和“票据放在蓝抽屉”中的“港口”和“票据”应为干扰项或笔误（结合上下文推测可能是“港口”指代不明，或原意是“港口”与“票据”均放在蓝抽屉，但针对“钥匙”这一主体，答案直接取自第一句）。\n\n**结论：蓝抽屉**<|im_end|>"
+  },
+  "candidates": [
+    {
+      "text": "钥匙在红抽屉。",
+      "token_ids": [
+        110023,
+        95772,
+        96469,
+        123941,
+        1710
+      ],
+      "token_logprobs": [
+        -0.5968062877655029,
+        -1.5034996271133423,
+        -10.59681510925293,
+        -1.4955419301986694,
+        -0.22798220813274384
+      ],
+      "loglikelihood": -14.420645162463188,
+      "logits_sha256": [
+        "67cf7e22390691ca510a8b8eb68b0fe3cf8a7727b8709dcec6fdafa533b2e65e",
+        "3e920e638b49336228e6e169935b27b91cfc6652895fd9cfff786202388792ca",
+        "9220d04276a69aa6492f17399439605669b5a6df3f2cbe8edb8d8810ad080225",
+        "172671e993e34d0b144c999108fe9365959c689503d349496f082f3b7c5b5fa8",
+        "33e431544ece6dd1e22909b15c377a51afdd3eee41830e65d9f3f7997cd8d7da"
+      ]
+    },
+    {
+      "text": "钥匙在蓝抽屉。",
+      "token_ids": [
+        110023,
+        95772,
+        97460,
+        123941,
+        1710
+      ],
+      "token_logprobs": [
+        -0.5968062877655029,
+        -1.5034996271133423,
+        -2.721815586090088,
+        -0.019943779334425926,
+        -0.25854453444480896
+      ],
+      "loglikelihood": -5.100609814748168,
+      "logits_sha256": [
+        "67cf7e22390691ca510a8b8eb68b0fe3cf8a7727b8709dcec6fdafa533b2e65e",
+        "3e920e638b49336228e6e169935b27b91cfc6652895fd9cfff786202388792ca",
+        "9220d04276a69aa6492f17399439605669b5a6df3f2cbe8edb8d8810ad080225",
+        "b24526359bf22d938c5f57d1ec908a548475863659a3e95d75a305092f64d745",
+        "3d11cba5cd527f345b6cc51153146051539796497bd1876be424cde1f5130d21"
+      ]
+    }
+  ],
+  "created_at": "2026-10-29T09:38:56.370277+00:00"
+}

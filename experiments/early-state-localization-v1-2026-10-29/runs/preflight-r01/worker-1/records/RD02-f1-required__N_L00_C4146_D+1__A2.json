@@ -1,0 +1,980 @@
+{
+  "schema": 1,
+  "stage": "preflight",
+  "panel": "development",
+  "spec": {
+    "key": "RD02-f1-required__N_L00_C4146_D+1__A2",
+    "item_id": "RD02-f1-required",
+    "condition_id": "N_L00_C4146_D+1",
+    "arm": "A2"
+  },
+  "item": {
+    "id": "RD02-f1-required",
+    "base_id": "RD02",
+    "panel": "diagnostic",
+    "family": "reading",
+    "fact_version": 1,
+    "demand": "required",
+    "prompt": "会议安排初稿写二楼。最终通知明确：会议在二楼，初稿地点作废。\n问题：按最终通知，会议在哪一层？\n请根据上述信息回答，可以简短说明。",
+    "choices": [
+      "会议在二楼。",
+      "会议在三楼。"
+    ],
+    "target_index": 0,
+    "reference_id": "RD02-f0-required",
+    "truth_explanation": "最终通知为二楼，优先于初稿。",
+    "split": "development",
+    "source": {
+      "path": "experiments/joint-behavior-capability-v1-2026-10-28/data/items.json",
+      "sha256": "dabddc6380c220e8d3af5bd812ad8feafa8799b0a4fc9c1b2a70a793c318d291"
+    }
+  },
+  "context": "<|im_start|>user\n会议安排初稿写二楼。最终通知明确：会议在二楼，初稿地点作废。\n问题：按最终通知，会议在哪一层？\n请根据上述信息回答，可以简短说明。<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n",
+  "reference_sha256": "f8f44c4f9c616b63d9b8f7748429350789745ef7d5fc5599e10444643b644ee1",
+  "condition": {
+    "id": "N_L00_C4146_D+1",
+    "kind": "native",
+    "layer": 0,
+    "channel": 4146,
+    "dose": 1.0
+  },
+  "clean_components": [
+    "kv"
+  ],
+  "injection_mask": null,
+  "write_audit": [
+    {
+      "prediction_step": 0,
+      "layer": 0,
+      "kind": "native",
+      "channel": 4146,
+      "width": 53,
+      "mask": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "positions": 53,
+      "clean_residual_scale": 2.885610580444336,
+      "dose": 1.0,
+      "column_norm": 0.44003573060035706,
+      "requested_offset": 6.557673342815572,
+      "bf16_offset": 6.5625,
+      "requested_vector_norm": 2.885610580444336,
+      "actual_offset_min": 6.5474853515625,
+      "actual_offset_max": 6.578125,
+      "actual_projected_delta_norm_max": 2.8946100403554738,
+      "nonzero_positions": 53,
+      "target_values_match": true,
+      "non_target_values_unchanged": true,
+      "masked_positions_unchanged": true
+    }
+  ],
+  "component_audit": [
+    {
+      "layer": 0,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "93cd88b01becfb6562b4025a39bf9aa806f8afe45e92bcdcbdf92a323246f316",
+      "equals_T": true,
+      "equals_C": true
+    },
+    {
+      "layer": 0,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "358f30e42f748ed6a5e23b0ea78001f720fa1cf37cb70e3098688afffc8042a4",
+      "equals_T": true,
+      "equals_C": true
+    },
+    {
+      "layer": 1,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "60f3bb89b6f541bdc680bfc7e9914e2b70da9b3f1a77f5dab32248fc32c2d835",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 1,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "8b0fe99e32de9be5ced1fcad8db128133c166513cda50cf98ad485196d017476",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 2,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "4c13ec3e5120ee3dbc8a7bcd35753e3f13ada2a1ae8f594b3da659a5b4cdaa83",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 2,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "1b0c73b9311bebf3f58b7f32f053c0219b4e7a1058442c5c66b7f8d609ab909d",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 3,
+      "component": "kv",
+      "field": "keys",
+      "sha256": "df173b075ddd38b4248b7741d66efdb84ca3d15412b90f3e680507d6c87247ea",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 3,
+      "component": "kv",
+      "field": "values",
+      "sha256": "2ebcbe717a91595ec97678b50433e711e54a2267a22dac89cb8d9570d70bf3c6",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 4,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "c953fb5395b54599372624e566ac60d2ccd62999885db21f7ef26c1e2fd63a36",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 4,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "a33e831e335a4ae15d4e78b3009356b02c6d55c2309b627b5f3aa3fcc03db4bf",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 5,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "1c7865d592b27b95f007a38b04582c74590e7cc8fb84b402c62f02ff3c748b01",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 5,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "9ff6ff649b46e9c9c354228e0eaf54ff872fe8fd9c3e47f34f66737f87623fb3",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 6,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "d39c14a8503fa54ac52bad54ec8f09fd188fd4b476b724a9b93620ceb3a41e08",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 6,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "bb4b884f303b17227aefec8251ba44109f548674647a1876d3d2f49e9df858b4",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 7,
+      "component": "kv",
+      "field": "keys",
+      "sha256": "67aaecb6d3b024b8a0162e40b599085ca7ac6abe5b398913d7a887ffcb740da2",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 7,
+      "component": "kv",
+      "field": "values",
+      "sha256": "05d29e04690d3824b89ab9aefc2e10d98a5e4250eda1554805ab5428ab17569e",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 8,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "88fdfcf7d8977c58511ea6bb54c12430dcdd94648aa769411cead0a29700f413",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 8,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "fb394a3554c56e8bfd2277d5cf688fef2e33033b329fecdf37fb4ded5b7ab404",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 9,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "8e45a6b79a23edfd01e462ac8a1f7b46a425789bbeb4d2881e563009c0937c40",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 9,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "89a3bfca972717c57aad190d7127b1e63800c0e04eda7684d0ba9828adb392ec",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 10,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "de15768a2667e85059df5187eb134c6730881c2297d7bf3653c877b3061b430e",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 10,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "64f7978b2c0041e73adfce77321f9f3d15bfed3e23bc65e25b5e003fbb1b631d",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 11,
+      "component": "kv",
+      "field": "keys",
+      "sha256": "9515f51a99ec83d199d233d0f25776ab9684bde02af1903059eecf3c143e68de",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 11,
+      "component": "kv",
+      "field": "values",
+      "sha256": "f4becbbbaa3918a6bd2c4b611170fa0758ac81c8d93ce545e36ac23bba40b07e",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 12,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "1a29bd08e4eccc8180448896aef1507e98ac768494eaef122abaffa5e5bbcd39",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 12,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "5c9e3586efd10cde5eaa44b8e0a8b45903e1738a7780b7f3e5fa707f6d795d90",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 13,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "433c7ed064a8676758c3e708c655cd88c92146794324d9d952e0c867a3d4f41d",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 13,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "dff7d28229c27c74c69e381cc1963c709d6fa69b582808cee0e28b46541d74c2",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 14,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "ce37b04aa9985245ae6a006aaf27f4921326f8be3be1d0e6af4f4e60d8add42d",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 14,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "7bdc2da51e6972a989d23874a0c20ca0300f4b5b5da375bc38ee8e548bb351a9",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 15,
+      "component": "kv",
+      "field": "keys",
+      "sha256": "d52447ec2f77141b22ca77484495032a2d87e347f7272ecd30a3b5da868a3e87",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 15,
+      "component": "kv",
+      "field": "values",
+      "sha256": "ea136c58395f30d6cd3b511e7b098fce6cf797e68aa335d79136c9f032c9cffd",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 16,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "9f59c6a63bd2f8f4fe2c7a1918282fbfcec164cbf001835f647e13d2a67f84bf",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 16,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "9d90bd3ebbf3d7c9c381be8ae59cd87d343df31f704e08982706317d9f78e40b",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 17,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "438165eb0250536ddc9526634ffd412dc119f5ce58069b506e45f52cda1e754a",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 17,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "5a936c0783a167f242325457189a4b5985fcb0f1c0c7a7738ae5c56b30cca520",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 18,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "8fd3b76415e4d2e6fc64aa000df6a2bbe35ffa725774c354d2552fd77e428e0b",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 18,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "70aa5f035d7b211bfe505c7aa245127cca4c008a9a2e5a8e2e942e2f8a2cbce9",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 19,
+      "component": "kv",
+      "field": "keys",
+      "sha256": "49f28f41d13dd79015aab2f722a5a270058bde72d670441ea3509594776a7575",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 19,
+      "component": "kv",
+      "field": "values",
+      "sha256": "10bd67924704ffff34f4fb1e2bdcaaafe6446db5f814939051c0406549871b60",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 20,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "c044dc77b56cf32fb08e7894809572c65b0070f174f19460a43804e684900de7",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 20,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "aaf1a7ee434e3320a08c6276cc45727fb947bfbf1db0bce65da9734c0b5f12ed",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 21,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "bef749d479354ea299a6bdb374eed868084f3dc8f7047352d96fca4c68bf046e",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 21,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "e228430e3cdb0833b3a6f7ebe2b1140bfa23cd65f710ea28ac6ccfc0f07fa911",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 22,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "04552be7f809edc83cfd3cf18c421ded5be3962edda25437c4b332af2101d6db",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 22,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "5acb4fcefab4c3ad85f5f738013565736138d0710e1de12f0a889307f3325a9e",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 23,
+      "component": "kv",
+      "field": "keys",
+      "sha256": "4772b9efaefc2890b23ff6108cd63693ef3212ae15cefe3c492d516ffca8443b",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 23,
+      "component": "kv",
+      "field": "values",
+      "sha256": "acf1a960a1011b9974f864316e1dc7fd57dce1b9325345cbcee898fb1e19b1b0",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 24,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "4b68f889b3b5fba3c360bf26a0b710b9a109568fcb01688cb4a6c692f63e9909",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 24,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "82a4542c5937086c16b969caa42bcf5100ad217c0461737deefb7309cc4e2391",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 25,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "54b8f6ea536582d84cc3b624c1632adcb63d08a894e6c8d98da0f80a23c4c243",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 25,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "ba98b6b35041ac5165c7dd24b3929f653fdb88cfbf432b67f515263519f148b3",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 26,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "781b892f09aee8359b56f37e9c22a1bda7dcd14f652a699d007f6c15c179263a",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 26,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "4146bfd4a530febee3c70eebe9623ec5174972bd07d0c1d5eb9742f981a4776b",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 27,
+      "component": "kv",
+      "field": "keys",
+      "sha256": "84d90945ccc10385ae698636ccb4ab425b7c9c7386d16d692f9f4737771e0ec9",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 27,
+      "component": "kv",
+      "field": "values",
+      "sha256": "f2819d61b200af502dfdae61b6adbda12536a4c5efe9e914ae2fc9620e2fa13c",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 28,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "f2581e8e198e862f87d19c7debe9c683a709db856c7063ffb1def78df093ed8e",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 28,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "b71999286b7fa775038e8505e1803b7ba098f526c8d67714dba6490fc71ec2a7",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 29,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "9ade7ad11cbf7bde12d4056ca395441b4a7dbcc9bfa7c18e29c48d0adb9a51be",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 29,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "fb06f4dd6498ff67c482523852954cda38ded2a4930b235a3cd5b86acbcfc204",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 30,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "8bc48b1ad5d469292ccb12e6f5c5fbfa2f57b4ba82646e7148733f9a7e440b59",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 30,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "02cd1db1cba410caa2cebc7d27606fedfda99a55c137e261fed2e23941c97155",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 31,
+      "component": "kv",
+      "field": "keys",
+      "sha256": "d1998c06e894a5bd179eedf46617d24732af6c5bdebeb5652e7e5f15a1b404e5",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 31,
+      "component": "kv",
+      "field": "values",
+      "sha256": "b0d6b86a95b8b3a230764ff83c09ecca11a3a5108dcad3d279ef4d0364763ab2",
+      "equals_T": false,
+      "equals_C": true
+    }
+  ],
+  "gate_decay": {
+    "T": {
+      "0": {
+        "positions": 53,
+        "log_survive_from_0": -26.142396926879883,
+        "log_survive_from_mid": -13.437670707702637
+      },
+      "1": {
+        "positions": 53,
+        "log_survive_from_0": -39.754127502441406,
+        "log_survive_from_mid": -19.48431968688965
+      },
+      "2": {
+        "positions": 53,
+        "log_survive_from_0": -28.431785583496094,
+        "log_survive_from_mid": -13.945137023925781
+      },
+      "4": {
+        "positions": 53,
+        "log_survive_from_0": -26.84463882446289,
+        "log_survive_from_mid": -9.523021697998047
+      },
+      "5": {
+        "positions": 53,
+        "log_survive_from_0": -19.712017059326172,
+        "log_survive_from_mid": -7.646453857421875
+      },
+      "6": {
+        "positions": 53,
+        "log_survive_from_0": -7.2598466873168945,
+        "log_survive_from_mid": -2.1526870727539062
+      },
+      "8": {
+        "positions": 53,
+        "log_survive_from_0": -23.269908905029297,
+        "log_survive_from_mid": -11.288883209228516
+      },
+      "9": {
+        "positions": 53,
+        "log_survive_from_0": -5.578358173370361,
+        "log_survive_from_mid": -2.8979732990264893
+      },
+      "10": {
+        "positions": 53,
+        "log_survive_from_0": -6.867648124694824,
+        "log_survive_from_mid": -3.1826419830322266
+      },
+      "12": {
+        "positions": 53,
+        "log_survive_from_0": -10.5731782913208,
+        "log_survive_from_mid": -5.381180763244629
+      },
+      "13": {
+        "positions": 53,
+        "log_survive_from_0": -3.22214412689209,
+        "log_survive_from_mid": -1.3635542392730713
+      },
+      "14": {
+        "positions": 53,
+        "log_survive_from_0": -22.323307037353516,
+        "log_survive_from_mid": -10.653322219848633
+      },
+      "16": {
+        "positions": 53,
+        "log_survive_from_0": -3.8163695335388184,
+        "log_survive_from_mid": -1.7875823974609375
+      },
+      "17": {
+        "positions": 53,
+        "log_survive_from_0": -6.125931739807129,
+        "log_survive_from_mid": -3.177215576171875
+      },
+      "18": {
+        "positions": 53,
+        "log_survive_from_0": -5.539302825927734,
+        "log_survive_from_mid": -2.5206587314605713
+      },
+      "20": {
+        "positions": 53,
+        "log_survive_from_0": -3.529259204864502,
+        "log_survive_from_mid": -1.5498443841934204
+      },
+      "21": {
+        "positions": 53,
+        "log_survive_from_0": -13.406152725219727,
+        "log_survive_from_mid": -6.492791175842285
+      },
+      "22": {
+        "positions": 53,
+        "log_survive_from_0": -4.422575950622559,
+        "log_survive_from_mid": -1.8424651622772217
+      },
+      "24": {
+        "positions": 53,
+        "log_survive_from_0": -5.483947277069092,
+        "log_survive_from_mid": -2.5443968772888184
+      },
+      "25": {
+        "positions": 53,
+        "log_survive_from_0": -6.162864685058594,
+        "log_survive_from_mid": -2.5982742309570312
+      },
+      "26": {
+        "positions": 53,
+        "log_survive_from_0": -13.960412979125977,
+        "log_survive_from_mid": -6.397134780883789
+      },
+      "28": {
+        "positions": 53,
+        "log_survive_from_0": -12.312728881835938,
+        "log_survive_from_mid": -5.927309036254883
+      },
+      "29": {
+        "positions": 53,
+        "log_survive_from_0": -13.700644493103027,
+        "log_survive_from_mid": -6.821556091308594
+      },
+      "30": {
+        "positions": 53,
+        "log_survive_from_0": -13.512738227844238,
+        "log_survive_from_mid": -6.283139228820801
+      }
+    },
+    "C": {
+      "0": {
+        "positions": 53,
+        "log_survive_from_0": -26.142396926879883,
+        "log_survive_from_mid": -13.437670707702637
+      },
+      "1": {
+        "positions": 53,
+        "log_survive_from_0": -53.204200744628906,
+        "log_survive_from_mid": -25.7126407623291
+      },
+      "2": {
+        "positions": 53,
+        "log_survive_from_0": -46.631744384765625,
+        "log_survive_from_mid": -20.61309814453125
+      },
+      "4": {
+        "positions": 53,
+        "log_survive_from_0": -40.20068359375,
+        "log_survive_from_mid": -17.40918731689453
+      },
+      "5": {
+        "positions": 53,
+        "log_survive_from_0": -28.556201934814453,
+        "log_survive_from_mid": -11.881608963012695
+      },
+      "6": {
+        "positions": 53,
+        "log_survive_from_0": -15.887073516845703,
+        "log_survive_from_mid": -6.525166988372803
+      },
+      "8": {
+        "positions": 53,
+        "log_survive_from_0": -27.030668258666992,
+        "log_survive_from_mid": -12.589166641235352
+      },
+      "9": {
+        "positions": 53,
+        "log_survive_from_0": -6.289244651794434,
+        "log_survive_from_mid": -2.6310696601867676
+      },
+      "10": {
+        "positions": 53,
+        "log_survive_from_0": -8.284733772277832,
+        "log_survive_from_mid": -3.653890609741211
+      },
+      "12": {
+        "positions": 53,
+        "log_survive_from_0": -9.708810806274414,
+        "log_survive_from_mid": -3.7732911109924316
+      },
+      "13": {
+        "positions": 53,
+        "log_survive_from_0": -7.80875825881958,
+        "log_survive_from_mid": -3.076767921447754
+      },
+      "14": {
+        "positions": 53,
+        "log_survive_from_0": -18.455490112304688,
+        "log_survive_from_mid": -8.685522079467773
+      },
+      "16": {
+        "positions": 53,
+        "log_survive_from_0": -5.991755485534668,
+        "log_survive_from_mid": -2.5504231452941895
+      },
+      "17": {
+        "positions": 53,
+        "log_survive_from_0": -8.70080852508545,
+        "log_survive_from_mid": -3.9350104331970215
+      },
+      "18": {
+        "positions": 53,
+        "log_survive_from_0": -7.192137718200684,
+        "log_survive_from_mid": -3.242494583129883
+      },
+      "20": {
+        "positions": 53,
+        "log_survive_from_0": -7.9530439376831055,
+        "log_survive_from_mid": -4.008798599243164
+      },
+      "21": {
+        "positions": 53,
+        "log_survive_from_0": -20.487659454345703,
+        "log_survive_from_mid": -10.136199951171875
+      },
+      "22": {
+        "positions": 53,
+        "log_survive_from_0": -10.510108947753906,
+        "log_survive_from_mid": -5.342057704925537
+      },
+      "24": {
+        "positions": 53,
+        "log_survive_from_0": -11.407841682434082,
+        "log_survive_from_mid": -5.920584678649902
+      },
+      "25": {
+        "positions": 53,
+        "log_survive_from_0": -12.079334259033203,
+        "log_survive_from_mid": -6.132057189941406
+      },
+      "26": {
+        "positions": 53,
+        "log_survive_from_0": -22.715682983398438,
+        "log_survive_from_mid": -11.619176864624023
+      },
+      "28": {
+        "positions": 53,
+        "log_survive_from_0": -22.097579956054688,
+        "log_survive_from_mid": -11.213929176330566
+      },
+      "29": {
+        "positions": 53,
+        "log_survive_from_0": -20.742597579956055,
+        "log_survive_from_mid": -10.246915817260742
+      },
+      "30": {
+        "positions": 53,
+        "log_survive_from_0": -21.991491317749023,
+        "log_survive_from_mid": -10.980406761169434
+      }
+    }
+  },
+  "prompt_token_count": 54,
+  "generation": {
+    "token_ids": [
+      248046
+    ],
+    "end_reason": "eos_token",
+    "readouts": [
+      {
+        "step": 0,
+        "token": 248046,
+        "stop_advantage": 0.9375,
+        "logits_sha256": "455f59432b30705b39c859e7d729479c47f4d5e3bc1e22d3f091be1a4a9fa869",
+        "top5": [
+          {
+            "token_id": 248046,
+            "logprob": -0.956190824508667
+          },
+          {
+            "token_id": 248068,
+            "logprob": -1.893690824508667
+          },
+          {
+            "token_id": 96220,
+            "logprob": -3.581190824508667
+          },
+          {
+            "token_id": 97127,
+            "logprob": -3.706190824508667
+          },
+          {
+            "token_id": 2,
+            "logprob": -4.081191062927246
+          }
+        ]
+      }
+    ],
+    "first_token_attention": {
+      "3": 0.049907684326171875,
+      "7": 0.10599517822265625,
+      "11": 0.05859375,
+      "15": 0.12509918212890625,
+      "19": 0.173004150390625,
+      "23": 0.0799713134765625,
+      "27": 0.16937255859375,
+      "31": 0.0933375358581543
+    },
+    "seconds": 0.09268911927938461,
+    "answer_text": "",
+    "raw_text": "<|im_end|>"
+  },
+  "candidates": [
+    {
+      "text": "会议在二楼。",
+      "token_ids": [
+        97127,
+        95772,
+        113325,
+        1710
+      ],
+      "token_logprobs": [
+        -3.706190824508667,
+        -3.0146241188049316,
+        -0.8123345375061035,
+        -0.361613392829895
+      ],
+      "loglikelihood": -7.894762873649597,
+      "logits_sha256": [
+        "455f59432b30705b39c859e7d729479c47f4d5e3bc1e22d3f091be1a4a9fa869",
+        "cf1b9daec79a0845b488f76927f549cb1a18080866d9d9c6b1a926d0dc0a7b9d",
+        "f7b61207fc4ff8217d9f2e6079259878a44627ef212c019d8e3ef79cb6c3889c",
+        "8d9a04bdc60372a93b43598a654dd539319fd81ab4004d2305948857db9133f4"
+      ]
+    },
+    {
+      "text": "会议在三楼。",
+      "token_ids": [
+        97127,
+        117961,
+        96680,
+        1710
+      ],
+      "token_logprobs": [
+        -3.706190824508667,
+        -9.327123641967773,
+        -0.02467944659292698,
+        -0.7939804792404175
+      ],
+      "loglikelihood": -13.851974392309785,
+      "logits_sha256": [
+        "455f59432b30705b39c859e7d729479c47f4d5e3bc1e22d3f091be1a4a9fa869",
+        "cf1b9daec79a0845b488f76927f549cb1a18080866d9d9c6b1a926d0dc0a7b9d",
+        "ceab308af775924505ca84c02d5f73ebcb8defdfe8595e12748ee23d144f8382",
+        "0434c0260313e3eb35679edbb89346ea5a2553657a76710a7a4d1d16ff52b2c4"
+      ]
+    }
+  ],
+  "created_at": "2026-10-29T09:37:50.834878+00:00"
+}

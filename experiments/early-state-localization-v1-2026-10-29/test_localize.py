@@ -158,6 +158,13 @@ class PlanTests(unittest.TestCase):
         pre = sum(len(L.plan('preflight', g)) for g in (0, 1))
         self.assertEqual(pre, 2 * 2 * (1 + 3 * 5 + 2 * 2))
 
+    def test_preflight_summary(self):
+        ok = {'item_id': 'a', 'status': 'passed', 'gates': {}}
+        self.assertEqual(L.summarize_preflight([ok, dict(ok, item_id='b')], 2)['status'], 'passed')
+        for bad in ([ok], [ok, dict(ok, status='failed')], list(ok)):
+            with self.assertRaises((AssertionError, TypeError)):
+                L.summarize_preflight(bad, 2)
+
     def test_confirmation_requires_lock(self):
         with self.assertRaises(Exception):
             L.authorize(str(HERE / 'no-such-authorization.json'), 'confirmation')
