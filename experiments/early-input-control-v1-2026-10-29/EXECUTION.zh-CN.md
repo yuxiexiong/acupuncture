@@ -43,3 +43,22 @@ ETA r01（较慢 worker、阶段串行，仅机器时间）：实测长度情景
 - 确认预测判定脚本 `analysis/evaluate_predictions.py` 在 confirmation-r01 运行中、任何确认输出被读取前写定：C1/C2/C4 两个符号都成立才算成立；C3 合并两符号；“多数”=>1/2；分母为 0 记无法判断。开发数据上试跑 6/6 成立（预期，因预测源自开发）；把早层与后层计数对调的合成摘要上 C1/C2/C4 判为不成立，演示判据可失败。
 - `analysis/summarize_development.py` 题族解析改为去掉确认题 `C` 前缀；开发结果不受影响。
 - 读者口径分歧（开发阅读）：首尾答案冲突时 RL01 读者按首个答案、其余读者按最终结论；两者均标 contradiction，故规则 r01 §3 的“异常”判定不受影响，但 `other_fact`/`follows_fact` 分布受影响，报告单列。机制与替换阅读起统一为“有明确改口按最终结论，否则按首个答案”。
+
+## 正式阶段完成记录（2026-10-29）
+
+| 阶段 | 记录 | 墙钟 h | 核验 | 盲读锁定 | 归档核验 |
+| --- | ---: | ---: | --- | --- | --- |
+| development-r01 | 4,632 | 2.32 | launcher + 逐 worker passed | `reading/development-r01/lock.json` | passed |
+| mechanism-development-r01 | 1,210 | 0.69 | passed | `reading/mechanism-development-r01/lock.json` | passed |
+| patch-development-r01 | 552 | 0.26 | passed | `reading/patch-development-r01/lock.json` | passed |
+| confirmation-r01 | 3,480 | 2.49 | passed | `reading/confirmation-r01/lock.json` | passed |
+| mechanism-confirmation-r01 | 1,440 | 0.93 | passed | `reading/mechanism-confirmation-r01/lock.json` | passed |
+| patch-confirmation-r01 | 576 | 0.33 | passed | `reading/patch-confirmation-r01/lock.json` | passed |
+
+正式合计 11,890 条记录；含预检 r02–r04 在内墙钟约 7.25 h，两卡并行约 14.5 GPU 小时；GPU 已释放，无本实验进程残留。确认首次打开前的锁定：解释与预测 `f0d7914`，判定脚本 `2a6b385`。冻结预测 C1–C6 全部成立。结果与限制见 `REPORT.zh-CN.md`。
+
+偏离与例外（均不改变科学条件）：
+- 机制选点中 L0 与 L2 在替换规则 S1 上平局（48/48），按规则取 L0。
+- 机制确认的 1,440 条超过 ETA r01 情景上限 1,152（确认面板对 6 个条件均用全部 24 输入、3 个条件含首步拆分），在合同条件上限内。
+- mechanism-confirmation 与 patch-confirmation 的 `measurement_usable` 依据：确认原版 24/24 跟随事实（盲读锁定）。
+- 读者对“只复述题面”“信息充分却说无法判断”“首尾冲突”的边界判读有差异，逐条保留于读者 note，未以多数票改写。

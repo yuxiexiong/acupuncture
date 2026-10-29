@@ -24,6 +24,7 @@
 | [B：补齐 Qwen 三模型前六层及 4B 全层轨迹](layer-trace-extension-v1-2026-10-28/) | 补 2B／4B L4–L5，再补 4B L6–L31；观察全部模型层 | 已完成：4,560 正式，不重跑旧来源 | [合同](layer-trace-extension-v1-2026-10-28/CONTRACT.zh-CN.md) · [归档核验](layer-trace-extension-v1-2026-10-28/archive-r01/verification.json) |
 | [C：Llama 前六层内部轨迹](llama31-early-layer-trace-v1-2026-10-28/) | Llama 3.1 8B 注入 L0–L5；观察全部 32 层 | 已完成：920 正式＋14 预检 | [合同](llama31-early-layer-trace-v1-2026-10-28/CONTRACT.zh-CN.md) · [归档核验](llama31-early-layer-trace-v1-2026-10-28/archive-r01/verification.json) |
 
+| [早层输入约束、停止竞争与异常维持](early-input-control-v1-2026-10-29/) | 4B；L0–3/L12–15/L24–27 原生两通道与两条共同方向；时段、撤针、局部替换；开发+新题确认 | 已完成：11,890 正式记录，盲读锁定；冻结预测 C1–C6 均成立；局部替换无修复 | [结果报告](early-input-control-v1-2026-10-29/REPORT.zh-CN.md) · [合同](early-input-control-v1-2026-10-29/CONTRACT.zh-CN.md) · [执行记录](early-input-control-v1-2026-10-29/EXECUTION.zh-CN.md) |
 | [早层问题依赖度：既有回答的零 GPU 再分析](early-layer-question-dependence-v1-2026-10-28/) | 四模型全层；八题首 token 多样性、首步 EOS、剂量阶梯 | 已完成：只读既有归档，无新推理 | [说明与输出](early-layer-question-dependence-v1-2026-10-28/README.zh-CN.md) |
 
 三批共 **7,632 条正式轨迹**，是上面既有回答的内部重放观测，不是新增独立题目。最终 2B／9B／Llama 各覆盖前六个注入层，4B 覆盖全部 32 个注入层。每条均观察全部层的组件摘要。原始回答、收据和校验清单在 Git；压缩内部轨迹保存在本地和服务器，见 [大文件保存与恢复说明](../migration/2026-10-28-full-results-git-r01/README.zh-CN.md)。
