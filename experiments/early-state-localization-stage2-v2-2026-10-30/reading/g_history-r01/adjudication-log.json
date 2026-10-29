@@ -1,0 +1,98 @@
+{
+  "rule_fixed_before_harmonization": "统一规则（阅读前写死）：核心答案=回答中最后一个明确结论。最后结论与 expected_answer 一致→follows_fact；与 other_fact_answer 一致→other_fact；其他具体答案→other_wrong；最后结论是“无法确定/题目矛盾/不能回答”→other_wrong；回答在给出任何最终结论前中断且出现了相互冲突的候选→unclear；没有任何可判定答案（空、乱码、跑题、只复述题目、中断前未出现答案）→not_delivered。contradiction=回答中出现相互冲突的核心结论（如先答错再改对、先说无法确定再算出答案）；repetition=明显循环重复。",
+  "first_reading": "12 model-assisted blind readers (Claude subagents), one per packet; methods varied on self-correcting answers",
+  "harmonization": {
+    "pass1": {
+      "selected": "unclear, contradiction=true, or other_wrong with an unanswerability note",
+      "n": 452,
+      "reader": "one blind model reader"
+    },
+    "pass2": {
+      "selected": "not_delivered with refusal/unanswerability note (gap found through second-reading disagreements)",
+      "n": 68
+    }
+  },
+  "second_reading": {
+    "seed": 20261031,
+    "share": 0.1,
+    "n": 522,
+    "readers": "two independent blind model readers who never saw first labels",
+    "agreement_before_adjudication": 512,
+    "kappa_before": 0.943,
+    "disagreements": 10
+  },
+  "adjudication": {
+    "by": "orchestrating model (Claude), blind to the key, applying the fixed rule",
+    "rows": [
+      {
+        "id": "A3ab73248d9",
+        "first": "other_wrong",
+        "second": "other_wrong",
+        "ruling": "other_wrong"
+      },
+      {
+        "id": "A5ba64b43f2",
+        "first": "other_wrong",
+        "second": "other_wrong",
+        "ruling": "other_wrong"
+      },
+      {
+        "id": "A6ec099ee32",
+        "first": "not_delivered",
+        "second": "unclear",
+        "ruling": "unclear"
+      },
+      {
+        "id": "Ab22a258866",
+        "first": "other_wrong",
+        "second": "other_wrong",
+        "ruling": "other_wrong"
+      },
+      {
+        "id": "Ad12e6409f9",
+        "first": "other_wrong",
+        "second": "other_wrong",
+        "ruling": "other_wrong"
+      },
+      {
+        "id": "Ad2bf584811",
+        "first": "other_wrong",
+        "second": "other_wrong",
+        "ruling": "other_wrong"
+      },
+      {
+        "id": "Ade9dc3f0fb",
+        "first": "not_delivered",
+        "second": "unclear",
+        "ruling": "unclear"
+      },
+      {
+        "id": "A118e6fa669",
+        "first": "follows_fact",
+        "second": "unclear",
+        "ruling": "follows_fact"
+      },
+      {
+        "id": "A286e67b789",
+        "first": "follows_fact",
+        "second": "other_wrong",
+        "ruling": "follows_fact"
+      },
+      {
+        "id": "Af26dd1e17c",
+        "first": "follows_fact",
+        "second": "not_delivered",
+        "ruling": "follows_fact"
+      }
+    ]
+  },
+  "disclosure": "all reading is model-assisted; no human reader; not an independent replication",
+  "final_counts": {
+    "follows_fact": 4181,
+    "unclear": 36,
+    "other_wrong": 322,
+    "not_delivered": 527,
+    "other_fact": 150
+  },
+  "total": 5216
+}

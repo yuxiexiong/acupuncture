@@ -1,0 +1,1365 @@
+{
+  "schema": 2,
+  "experiment": "early-state-localization-stage2-v2-2026-10-30",
+  "stage": "b_preflight",
+  "spec": {
+    "item_id": "VRD02-f0-required",
+    "condition_id": "N_L00_C4146_D-1",
+    "background": "T",
+    "group": 4,
+    "subset": "kv+recurrent+conv",
+    "direction": "clean",
+    "code": null,
+    "roles": [
+      "early:fact"
+    ],
+    "arm": "grp4:kv+recurrent+conv:clean",
+    "key": "VRD02-f0-required__N_L00_C4146_D-1__grp4-kv+recurrent+conv-clean"
+  },
+  "item": {
+    "id": "VRD02-f0-required",
+    "base_id": "VRD02",
+    "panel": "stage2_validation",
+    "family": "reading",
+    "fact_version": 0,
+    "demand": "required",
+    "prompt": "值班说明：周六由老郑值班，不是老吴。\n问题：周六由谁值班？\n请根据上述信息回答，可以简短说明。",
+    "choices": [
+      "周六由老吴值班。",
+      "周六由老郑值班。"
+    ],
+    "target_index": 1,
+    "reference_id": "VRD02-f0-required",
+    "truth_explanation": "说明肯定老郑、否定老吴。",
+    "split": "stage2_validation",
+    "source": {
+      "author": "model-drafted (Claude Opus 5.5, claude-opus-5-5) on 2026-10-29; not human-written, not independently reviewed",
+      "status": "draft r01: human check, model-assisted condition-blind review and clean audit pending (contract §3)"
+    }
+  },
+  "context": "<|im_start|>user\n值班说明：周六由老郑值班，不是老吴。\n问题：周六由谁值班？\n请根据上述信息回答，可以简短说明。<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n",
+  "reference_sha256": "6f593869942fe6a03badfc1c1815653aaf6f19e0209b32838b2870ced6408a2e",
+  "prompt_token_sha256": "927660487fd57fb49945e9f775978c364ba2744e5770ac5b12ef482ad338bc22",
+  "condition": {
+    "id": "N_L00_C4146_D-1",
+    "kind": "native",
+    "layer": 0,
+    "channel": 4146,
+    "dose": -1.0
+  },
+  "swaps": [
+    [
+      16,
+      "conv"
+    ],
+    [
+      16,
+      "recurrent"
+    ],
+    [
+      17,
+      "conv"
+    ],
+    [
+      17,
+      "recurrent"
+    ],
+    [
+      18,
+      "conv"
+    ],
+    [
+      18,
+      "recurrent"
+    ],
+    [
+      19,
+      "kv"
+    ]
+  ],
+  "component_audit": [
+    {
+      "layer": 0,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "456f815f21e38096a3e46769d2a174a62e73fe829f15c6ab950e64c77f442875",
+      "equals_T": true,
+      "equals_C": true
+    },
+    {
+      "layer": 0,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "358f30e42f748ed6a5e23b0ea78001f720fa1cf37cb70e3098688afffc8042a4",
+      "equals_T": true,
+      "equals_C": true
+    },
+    {
+      "layer": 1,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "25d8c17368195640034eb4fc8964c41db1d9e1a4b55d39dba12c950a3080a2d3",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 1,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "539dd947ebbdf42d2a07c3ea26a440d10b3fa1461aeb8717aaf60d05947e1936",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 2,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "298321c774c334c1d7dbada20ea813debeabf64e11df0008e4ad1181c0559706",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 2,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "fac8d10880bb66831d8167c6471c1a143e5de7f791406ee11ad094bae379523e",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 3,
+      "component": "kv",
+      "field": "keys",
+      "sha256": "9815515db08c1fd89b0933876eec589a4d1da15d86a8971ac7efd8b2ef0a5c34",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 3,
+      "component": "kv",
+      "field": "values",
+      "sha256": "358ee884e40af163c7b83e8fd500dcdc3f5783a88313f2d3502af2d0a225569c",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 4,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "7282b8c008715268ff0c283e5ea10cebb5ad2b9799a0c98432a6f09582b68b63",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 4,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "38b96946f815373d2c5c5add017a7729e1842b76ff81502f4bae2dc52be95afe",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 5,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "e12fd70ac6f39df6ef7d604faf0538671cff6d408f848deca132d6fb8356cd05",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 5,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "6a6f88c403781b1c5046765f2bea2563a51dbb2a39d952ee0fd7fc40b0fae879",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 6,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "639bf0efd8f1251654b879d2ba46bc1eb62da238d66124a5ee82c7a8f584cf2b",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 6,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "425f1ebb85efa8c5c4c3ca188d52e0fa0d00131785639efc73acc728bc353f28",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 7,
+      "component": "kv",
+      "field": "keys",
+      "sha256": "2b31ab7fbd4ec2e55f85e72d2caa7a5d8133031554110d5db74cfd7bbb5c4f00",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 7,
+      "component": "kv",
+      "field": "values",
+      "sha256": "6309207dc633660ffde20cd741e6faf374af927d960c9ea9f4f0eb8b76e9e622",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 8,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "0db3161f385ed4c76c31a18a7a330edb725024b12578611f47da078f44eb9325",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 8,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "1b65476907110d2314284a2df5586e3da4790fd7413d1346013dd2b3333c2453",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 9,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "d4caba00204573f8a92f4d3a8b1f5269e79d9ddfaa0f372344aaff72d6a6a490",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 9,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "db77330bfa268bbeb5b27e0a7dce6761f7673cd8a118269a72bec17c0cd71ba9",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 10,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "ce7335bae75193591765320a263567f8def2e6e984d38d1577d4176511d5e63e",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 10,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "56eebc1eff0977b5ce6cf3f4cfa2b00a2a9ce231442f1a7e60deeb3ad496b8e2",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 11,
+      "component": "kv",
+      "field": "keys",
+      "sha256": "d883898769859fecc9837d50a82c828882eff10462b4764ecb06e728e5d10fcc",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 11,
+      "component": "kv",
+      "field": "values",
+      "sha256": "fbf5392c03b07be5e8293c732abeb655c5f69f7cd004bbae8ce768724ce313c8",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 12,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "aae2171b0fca724c13480a390dd532b72b4e53a408552388efb4ff5a84a98056",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 12,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "233c2f0e3d06b1eb7a765e4956b80c8ec8c07cacf4afd57947f6d2df016766b6",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 13,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "7af5fd163f8d11f9417e16db31c6de677fe4f4e8aa8f97319d807394ffb8c9e9",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 13,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "b206915d71ca89dac1e026a163b0a88755fb38011c7f6c529ffbdaae7c2b7b82",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 14,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "8d65ab2d62297e0a67248fa0cdfc2e2380aabee058b0512444f36689e5320c3d",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 14,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "269bf263e58ffd7ed49d6862e23dae1546e8dc74acab11b075898d1110d44fa3",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 15,
+      "component": "kv",
+      "field": "keys",
+      "sha256": "3f1c3d040703e14fa5677c247537e4882c7bf16f41f0c9604a482e4b8f5c9b67",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 15,
+      "component": "kv",
+      "field": "values",
+      "sha256": "cdb638ec9b22edc13222ea8f45ee068041914fd33357e04e7dc4a166ab8b4ecb",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 16,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "0eb1c581340691a22365a8591fe7770c4fa99c9c0c0ed894e02a237ac10924cf",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 16,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "2468afd7e4111bae7f14fadcd510d13e919d757858ba9c28f2cb167e7374d364",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 17,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "585b709aa807155a801903fd541b25d258df95f8c1768383dcdd3dd0e7c22002",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 17,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "6a1d4df228d8b7b3a28ac6f7a48a08ad49d77e2590112df2b41b45ac7aee488b",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 18,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "174be90a33179f1e9c2a5df0e83d974d3657ee7e4b20f9afa88b599de94f37f0",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 18,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "6eaf142bab6773b92f70ea6b4eb3f6deece1b67ef0af24425ccb31e2a77bd2f5",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 19,
+      "component": "kv",
+      "field": "keys",
+      "sha256": "f5a35ac8fc9687c2360ff6b545505de722b2cd17071fe57c878eabce016eed19",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 19,
+      "component": "kv",
+      "field": "values",
+      "sha256": "dbf3dbaf38b8e55f6aee398309426e81391ba12eb71fb169495fa7531ef30b48",
+      "equals_T": false,
+      "equals_C": true
+    },
+    {
+      "layer": 20,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "bb424113d7a16cc91a8791a09e3eaf764c9b0e6fa6ac87390b1b82cfdb85d12c",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 20,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "2fa421cd179a26052ea7fac53ed3887d5834086716e53a149195b7798877f488",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 21,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "08fa90ca55a2d8e85cfa31817866e67e7acf2a60b41de12dfe32c390bb2b4856",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 21,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "3b7e4b3fb31aeca99f1e6be0b05b5fd730b5810a455e583727b2e867ab074299",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 22,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "9ce313a2c8bd4d5fc5c71070d637ebb40290b24bc6799057f825e33bb3bd98ec",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 22,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "0ac232b22c89f52da605a2ab3a033119b3bb357123ca88eba5de67102a5987b7",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 23,
+      "component": "kv",
+      "field": "keys",
+      "sha256": "d77ce2d3f5632afffff57d2245f06ec0af089162783710c2cb21bb93808fa3ae",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 23,
+      "component": "kv",
+      "field": "values",
+      "sha256": "a7466f2e77edae78512060e573c415b5a4d536cb10e401646aab61fae60bb690",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 24,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "ea160b3b48c582e1414ec9941967930905730e7b3288878b91a73806dec19d7a",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 24,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "5debce9c1cc9e9bb7f403e23acb4ffd1a46563afe4590f1eea6d152ee8d9d57b",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 25,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "2675c07396fb97127a7a0631758d5040222e98b49bbbb82f186a0d79a0aef828",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 25,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "5539f835a54946f4f2e63a281ac6464a5ef5922b4204180cf5971a237d22a5e1",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 26,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "9120e3ec361f427a9c1e48c8c5072d76edc9f91c48e47aef5a39c413739789ee",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 26,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "f06b2a0a77d82a3c40e5b1b3fd0b6fe0f7da95974d4942edece1ea2803d3f1fe",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 27,
+      "component": "kv",
+      "field": "keys",
+      "sha256": "a3f3762bd55770e4d984448f45b659549136bf545c1579b5d08e3e6a6011c8d2",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 27,
+      "component": "kv",
+      "field": "values",
+      "sha256": "d5160f4da1dcd0023e13f63c8f30855008a15487b730ef8124ebcdc0efa0bf07",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 28,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "142a17f5fc7b4ea6ee7b16e9af5ec59edd8869cdc32730f50a0560df07c5cbcc",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 28,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "60e63214f637b3cf1b4e4dd07f5d33f30ce07e87e859b69c3a575b89c1b0c914",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 29,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "1bcb8430582d7aa2cf6802e749f682ebfcb863589642101cc3e4f8739a616cec",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 29,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "1ffc7c6e4a67ef2c67685db65883e191cb4eb4f1f96457a95dd6f04613f5b441",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 30,
+      "component": "recurrent",
+      "field": "recurrent_states",
+      "sha256": "abc04228c82d2c548c6a25fe6e61c53110db1ee67afbef1c44a999ea2c2f6bf0",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 30,
+      "component": "conv",
+      "field": "conv_states",
+      "sha256": "dd6b2fe154f7c348bf3eb9e44d88af32fbd4c3cdab8fb45aa3ef8045a7261e97",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 31,
+      "component": "kv",
+      "field": "keys",
+      "sha256": "1ae6d49bdd84f09780ecf5bff8b64acbad278a7e9804af7ea3a67ebd3ad2a957",
+      "equals_T": true,
+      "equals_C": false
+    },
+    {
+      "layer": 31,
+      "component": "kv",
+      "field": "values",
+      "sha256": "6d7fdfd7360230b48eedea11bfbf1629d631f8eef03e3efd3bd5089abc73eadb",
+      "equals_T": true,
+      "equals_C": false
+    }
+  ],
+  "source_check": {
+    "rows": 64,
+    "t_equals_c_rows": 2
+  },
+  "cache_manifest": "caches/VRD02-f0-required__N_L00_C4146_D-1.json",
+  "prompt_token_count": 44,
+  "generation": {
+    "token_ids": [
+      248068,
+      271,
+      248069,
+      271,
+      97149,
+      96347,
+      103853,
+      96280,
+      3709,
+      332,
+      110290,
+      332,
+      103722,
+      105519,
+      100183,
+      97279,
+      96961,
+      96563,
+      100026,
+      5205,
+      100725,
+      104537,
+      96759,
+      96348,
+      96553,
+      108837,
+      99984,
+      1710,
+      271,
+      101981,
+      96442,
+      96017,
+      109542,
+      96791,
+      3709,
+      108532,
+      4960,
+      198,
+      12,
+      220,
+      97033,
+      98000,
+      110290,
+      96038,
+      10992,
+      198,
+      12,
+      220,
+      110290,
+      102625,
+      104157,
+      10992,
+      198,
+      12,
+      220,
+      109054,
+      100653,
+      9616,
+      96031,
+      97631,
+      5205,
+      115346,
+      5205,
+      99215,
+      96024,
+      7313,
+      95726,
+      110290,
+      97816,
+      10992,
+      271,
+      96220,
+      103759,
+      98419,
+      97887,
+      3709,
+      108726,
+      110511,
+      102478,
+      97493,
+      6115,
+      248046
+    ],
+    "end_reason": "eos_token",
+    "readouts": [
+      {
+        "step": 0,
+        "token": 248068,
+        "stop_advantage": -1.3125,
+        "logits_sha256": "c31ed16b552b5fdce915715859b8c3715a302552016c94495f30930efdee8164",
+        "top5": [
+          {
+            "token_id": 248068,
+            "logprob": -1.0889358520507812
+          },
+          {
+            "token_id": 97149,
+            "logprob": -1.2139358520507812
+          },
+          {
+            "token_id": 248046,
+            "logprob": -2.4014358520507812
+          },
+          {
+            "token_id": 332,
+            "logprob": -4.213935852050781
+          },
+          {
+            "token_id": 96580,
+            "logprob": -4.713935852050781
+          }
+        ]
+      },
+      {
+        "step": 1,
+        "token": 271,
+        "stop_advantage": -6.5625,
+        "logits_sha256": "1c1b2423e91b02cb771281cc5caae1d9bd142796424892b5b41da9bb78b79c8a"
+      },
+      {
+        "step": 2,
+        "token": 248069,
+        "stop_advantage": -16.375,
+        "logits_sha256": "d5eec983f5410fa4ef8c78bd4b04bbbe22b01f13ebc4f6d3b5a3ce3cb404db03"
+      },
+      {
+        "step": 3,
+        "token": 271,
+        "stop_advantage": -10.1875,
+        "logits_sha256": "54fa3f696c8b7316977880e1f51e187081713aba93a9c5aa2899067147f44bc5"
+      },
+      {
+        "step": 4,
+        "token": 97149,
+        "stop_advantage": -15.3125,
+        "logits_sha256": "2f6630fcf3facac687d16c8e4e6256db4c178f4ec9bc7bf0e8e38e70c018a5ef"
+      },
+      {
+        "step": 5,
+        "token": 96347,
+        "stop_advantage": -21.46875,
+        "logits_sha256": "a4a45789e2e5944394e91ef056a746a485ad616376c5d1a2eb29a1fdb0893f0c"
+      },
+      {
+        "step": 6,
+        "token": 103853,
+        "stop_advantage": -21.65625,
+        "logits_sha256": "c78e7b42f307a687289b3e0b5aa358f33ba4bae98156aede1fed57e0278b93db"
+      },
+      {
+        "step": 7,
+        "token": 96280,
+        "stop_advantage": -17.78125,
+        "logits_sha256": "4c22a324040f28bacbeac4f9371e3bee33902167e1b941a45a62e71ca1ee7488"
+      },
+      {
+        "step": 8,
+        "token": 3709,
+        "stop_advantage": -15.125,
+        "logits_sha256": "6a87c1231227deb33ec24e8a91709d32321ee9253ae8cee50c7d740b015c113a"
+      },
+      {
+        "step": 9,
+        "token": 332,
+        "stop_advantage": -13.8125,
+        "logits_sha256": "9868df5220fae36f175258e3bdf2a532e425ad4c1dbfa90ab1f958b7bce407e2"
+      },
+      {
+        "step": 10,
+        "token": 110290,
+        "stop_advantage": -11.828125,
+        "logits_sha256": "d1c29e73f52b4dad74e7397c9e2cb08a7c8b08c7755781c10294bdd1f973ad10"
+      },
+      {
+        "step": 11,
+        "token": 332,
+        "stop_advantage": -12.28125,
+        "logits_sha256": "f2b932803f3a56a564565f4abae605af2f23c478c095038bcc7cec6c465b9c9b"
+      },
+      {
+        "step": 12,
+        "token": 103722,
+        "stop_advantage": -5.9375,
+        "logits_sha256": "1ae79feec481fab9f7c54fed0d5d20a0107fc4f2802f5891e914e93d78add247"
+      },
+      {
+        "step": 13,
+        "token": 105519,
+        "stop_advantage": -7.125,
+        "logits_sha256": "b5000692663d0f66c8987075c90ad1d333c33bc91607c04731da885c05cb25cd"
+      },
+      {
+        "step": 14,
+        "token": 100183,
+        "stop_advantage": -12.4375,
+        "logits_sha256": "20c4265ba5d2306e3aa5bf80714a1861fed46784e9b1c187a77de78a8887ab2a"
+      },
+      {
+        "step": 15,
+        "token": 97279,
+        "stop_advantage": -12.28125,
+        "logits_sha256": "0598338a8bc0dbdd6b54910694a1a8a90cfc10d02875e22d09f55aeed0dc1f9c"
+      },
+      {
+        "step": 16,
+        "token": 96961,
+        "stop_advantage": -13.84375,
+        "logits_sha256": "a48feda4642c323c0b85946176f8c75dce70c1a12e5dbfa120c8bcae14b6bd45"
+      },
+      {
+        "step": 17,
+        "token": 96563,
+        "stop_advantage": -13.1875,
+        "logits_sha256": "b9fe415afbce7c4b953ea5c0e44e5bf55c63b5fab700dfb4b682d4c79fdb2ef7"
+      },
+      {
+        "step": 18,
+        "token": 100026,
+        "stop_advantage": -18.71875,
+        "logits_sha256": "56d1222486bcd630c5f0204ad907fb9d4eea8c3aecf9b31f3486d6673f1ea1d2"
+      },
+      {
+        "step": 19,
+        "token": 5205,
+        "stop_advantage": -11.875,
+        "logits_sha256": "b2d92f4e9c5643831a738d475aa11a9fdedf9d8c1cc4289c2304b44ea86e2a7a"
+      },
+      {
+        "step": 20,
+        "token": 100725,
+        "stop_advantage": -15.21875,
+        "logits_sha256": "e9f73a112e274cb359c2755624c6e6e444ba730e3d9d738c01aad90624820fa8"
+      },
+      {
+        "step": 21,
+        "token": 104537,
+        "stop_advantage": -19.46875,
+        "logits_sha256": "32c7227ab46dad9299e18390f2edb5098d77a1eb0f23b825f5aa952182906429"
+      },
+      {
+        "step": 22,
+        "token": 96759,
+        "stop_advantage": -18.0,
+        "logits_sha256": "d8ec2a87ee14be120a9e578b55b2c3e3771400a36ef1a03490c53f0140792a68"
+      },
+      {
+        "step": 23,
+        "token": 96348,
+        "stop_advantage": -14.53125,
+        "logits_sha256": "f1853951d3739eb3da157ce739250179e17cd5ca98ebaf30acba5f372909b773"
+      },
+      {
+        "step": 24,
+        "token": 96553,
+        "stop_advantage": -16.28125,
+        "logits_sha256": "eb7442528d686109a83bd08776f4322beb3f2d0c660e1f0b8282c69095f8eaad"
+      },
+      {
+        "step": 25,
+        "token": 108837,
+        "stop_advantage": -12.90625,
+        "logits_sha256": "cb9264120f004027f39e888bea193a0b6ba32f6f541686929338e2b25eeb2328"
+      },
+      {
+        "step": 26,
+        "token": 99984,
+        "stop_advantage": -14.21875,
+        "logits_sha256": "01b4108379d9303cc5fe70b847d532bcdc9369909d073186cfd2214f452ea2b5"
+      },
+      {
+        "step": 27,
+        "token": 1710,
+        "stop_advantage": -13.125,
+        "logits_sha256": "b88d80d84a9d9f3d0fdc995deaaf18cef632ceb5d53875b2eb989ed099c9973a"
+      },
+      {
+        "step": 28,
+        "token": 271,
+        "stop_advantage": -4.8125,
+        "logits_sha256": "5873a286aeec0b18b98951ebca844b4ea55febf73af289e86e8130bbbd443dae"
+      },
+      {
+        "step": 29,
+        "token": 101981,
+        "stop_advantage": -13.1875,
+        "logits_sha256": "18a25151fd630237c53865d60d36cb7adc780f27090bb940fe641909f626322d"
+      },
+      {
+        "step": 30,
+        "token": 96442,
+        "stop_advantage": -14.28125,
+        "logits_sha256": "a8723fe36c147916d37eb8e7b29063495db36c920459510ff73e1d9a240cda4b"
+      },
+      {
+        "step": 31,
+        "token": 96017,
+        "stop_advantage": -10.28125,
+        "logits_sha256": "2388aad96f257c5686cf445765d5d7fe0a701d03504a0e21f6fca8c085555508"
+      },
+      {
+        "step": 32,
+        "token": 109542,
+        "stop_advantage": -17.625,
+        "logits_sha256": "a6f98bcbc96278c79717f1bcd7915e65540fda8e4c9052f58e0efda8f46dc0ca"
+      },
+      {
+        "step": 33,
+        "token": 96791,
+        "stop_advantage": -12.90625,
+        "logits_sha256": "dfcbd36e9a78f4e6ddee376bd4882ece76dc9870fc14bb9ee3f41ddd6f63f966"
+      },
+      {
+        "step": 34,
+        "token": 3709,
+        "stop_advantage": -12.125,
+        "logits_sha256": "268d271811e595884087bc675dab40b6fd1c5615be3c2481aed5ecbc41f9072b"
+      },
+      {
+        "step": 35,
+        "token": 108532,
+        "stop_advantage": -14.0625,
+        "logits_sha256": "70f3f1ef4e3453cd89c653bfaddfdcbddd50a41c5ef0a6cbe281628e609e8561"
+      },
+      {
+        "step": 36,
+        "token": 4960,
+        "stop_advantage": -13.75,
+        "logits_sha256": "19dcf6a6a17698870fa253811162b94d5be503e3647c99e0de2fc463dfe8d825"
+      },
+      {
+        "step": 37,
+        "token": 198,
+        "stop_advantage": -7.125,
+        "logits_sha256": "788b7eddf06236f87cac7fa0d12e577ddd89435d0d2f89566ee84d8db321388f"
+      },
+      {
+        "step": 38,
+        "token": 12,
+        "stop_advantage": -15.5,
+        "logits_sha256": "7e808f4c1a686ee445f80a7b71d0fbb2a86e3d7eb80db69546e194f57a4ffa1a"
+      },
+      {
+        "step": 39,
+        "token": 220,
+        "stop_advantage": -14.3125,
+        "logits_sha256": "d9c84785276ff716411afdd7deaa28afe7bb6f74f78e836a5fce807630d04c28"
+      },
+      {
+        "step": 40,
+        "token": 97033,
+        "stop_advantage": -15.15625,
+        "logits_sha256": "d564ea1665549abb664cde324ca550ec3b46b7b373a204474cb0c266d1bbebe8"
+      },
+      {
+        "step": 41,
+        "token": 98000,
+        "stop_advantage": -14.71875,
+        "logits_sha256": "70bde10da8055c178d93d110194d0e53e5ace2504dbfa42773d62550748d3ae4"
+      },
+      {
+        "step": 42,
+        "token": 110290,
+        "stop_advantage": -15.84375,
+        "logits_sha256": "e5b3f9dc46a7221dfdd38d88f1fca1f6b5c9af07f68c03579d7b31367cb36ae1"
+      },
+      {
+        "step": 43,
+        "token": 96038,
+        "stop_advantage": -10.3125,
+        "logits_sha256": "4f810909360f331f5a2005fa4d7c8197ec8a818f219854f0e980209a5e40ba78"
+      },
+      {
+        "step": 44,
+        "token": 10992,
+        "stop_advantage": -9.375,
+        "logits_sha256": "40530798b5f0c2aedc5ce63d67ae6e7b022d93f286617747d1f5fd03cfa73bf5"
+      },
+      {
+        "step": 45,
+        "token": 198,
+        "stop_advantage": -11.625,
+        "logits_sha256": "ac09d32caf05da554ced5b111ab63b7217c82c014dca661a0049cf884068c9b5"
+      },
+      {
+        "step": 46,
+        "token": 12,
+        "stop_advantage": -17.4375,
+        "logits_sha256": "0cd0667b1db0e5e0a929751c84b839850ad5dad585235ee0ab2f8f6cc5237eab"
+      },
+      {
+        "step": 47,
+        "token": 220,
+        "stop_advantage": -17.6875,
+        "logits_sha256": "7f665a3b28c24a5898c0bd8729c87cf0a99d3cf863955aeafdb804385d09be53"
+      },
+      {
+        "step": 48,
+        "token": 110290,
+        "stop_advantage": -18.9375,
+        "logits_sha256": "ae1b563f2dd1d7df8a8060c795967e9488ccefb582401c6036d3d032ef1ceafa"
+      },
+      {
+        "step": 49,
+        "token": 102625,
+        "stop_advantage": -14.40625,
+        "logits_sha256": "9e067cce80c73555edfb6898d94f42edaf96d1b98fea93feaacc5eb8e17407d5"
+      },
+      {
+        "step": 50,
+        "token": 104157,
+        "stop_advantage": -17.3125,
+        "logits_sha256": "f6048e7181621b09adfeb15b4856949b91e5e3f21c8122f11d65d60dd6dbf355"
+      },
+      {
+        "step": 51,
+        "token": 10992,
+        "stop_advantage": -14.3125,
+        "logits_sha256": "c28420614bfc4230995d773fefdcc633f07590fb8d126fbc0d5eeb6c8b734cb9"
+      },
+      {
+        "step": 52,
+        "token": 198,
+        "stop_advantage": -9.375,
+        "logits_sha256": "5bc5d6add817791661b7685a6729985a83bd4a2c4168a03a4274dcb60b636fa0"
+      },
+      {
+        "step": 53,
+        "token": 12,
+        "stop_advantage": -14.375,
+        "logits_sha256": "8141efc4f14ddc8afa95418c17a48450b70239c67646aaa7d334557fddba2ddf"
+      },
+      {
+        "step": 54,
+        "token": 220,
+        "stop_advantage": -16.1875,
+        "logits_sha256": "6bca0bbc5a52c38a830bfa062fc1c2a7ecf3e12691827dc3d256d28eef47bfca"
+      },
+      {
+        "step": 55,
+        "token": 109054,
+        "stop_advantage": -15.5625,
+        "logits_sha256": "378a232fff540f86f752ba5c0eed531fc32a533eaa850b07112edc0231be4f17"
+      },
+      {
+        "step": 56,
+        "token": 100653,
+        "stop_advantage": -17.53125,
+        "logits_sha256": "33ca36181e9c71a6c93c836cc4cfbeb19821d2286c10151821d2cb9980ab7556"
+      },
+      {
+        "step": 57,
+        "token": 9616,
+        "stop_advantage": -17.9375,
+        "logits_sha256": "765241d8b808da6dff4c240dc46ef81a67dbfac93ca8b21c8e1effc0f08852bc"
+      },
+      {
+        "step": 58,
+        "token": 96031,
+        "stop_advantage": -21.4375,
+        "logits_sha256": "355b9ab3797de23c150f211160e7bdbccf344f46fc73cefa569b32781bcbad5c"
+      },
+      {
+        "step": 59,
+        "token": 97631,
+        "stop_advantage": -16.75,
+        "logits_sha256": "b169fe32fae5fa75f41a08157f2a535f5667af47a8904c6dc85eafa04da6efcb"
+      },
+      {
+        "step": 60,
+        "token": 5205,
+        "stop_advantage": -18.0625,
+        "logits_sha256": "db343200e2d7d823c3e30d1b36bf80da844412b34f8aa4afee81360a88d23b99"
+      },
+      {
+        "step": 61,
+        "token": 115346,
+        "stop_advantage": -16.8125,
+        "logits_sha256": "a2d5ff88a9d47abbcd850c25acb6ee40a677107aabd52e9324bec28f1251e6e7"
+      },
+      {
+        "step": 62,
+        "token": 5205,
+        "stop_advantage": -17.6875,
+        "logits_sha256": "104e5901d899ea01cbee7791eafc346718cae7c945d926bc7fe69fdb7b122f80"
+      },
+      {
+        "step": 63,
+        "token": 99215,
+        "stop_advantage": -18.40625,
+        "logits_sha256": "3d7fd537ea61219feb3711f6939b7925e1441cfd88fdadb722abaf26abdb1484"
+      },
+      {
+        "step": 64,
+        "token": 96024,
+        "stop_advantage": -19.1875,
+        "logits_sha256": "41add9d896dab4ea8d4cf152e80983b307cc2ae387986998604ae830df1fad89"
+      },
+      {
+        "step": 65,
+        "token": 7313,
+        "stop_advantage": -17.1875,
+        "logits_sha256": "7eb60c4c5aae6a3b2ce8f710c61077ebc933c027eb761d8c4cdfee7bb780a340"
+      },
+      {
+        "step": 66,
+        "token": 95726,
+        "stop_advantage": -16.75,
+        "logits_sha256": "f45aceadefccada479fada10327bc0cd9b43a14d5fe7ab3fd68dcceb7a8523e5"
+      },
+      {
+        "step": 67,
+        "token": 110290,
+        "stop_advantage": -19.46875,
+        "logits_sha256": "834a8ea00121d4805d71df088288dafe894b84dacc8463e9415a10b511f21062"
+      },
+      {
+        "step": 68,
+        "token": 97816,
+        "stop_advantage": -17.5,
+        "logits_sha256": "2bdd4d622803c83d7024be94adf3b00dd6692b5052a40cd6c298d837854a1a10"
+      },
+      {
+        "step": 69,
+        "token": 10992,
+        "stop_advantage": -14.0625,
+        "logits_sha256": "ade28faca887a720e1cf684171b9738a11035a70bcc03c7729a605e62579140f"
+      },
+      {
+        "step": 70,
+        "token": 271,
+        "stop_advantage": -8.375,
+        "logits_sha256": "bbaeec1b85b4f62287a7c48790dea66a2d58bff7706f43910cb7a9e11279b060"
+      },
+      {
+        "step": 71,
+        "token": 96220,
+        "stop_advantage": -17.09375,
+        "logits_sha256": "f148eeba5e2e5a9d77e96902ee69d4b6fdf248042a304ec1ba54cf90e7ac46c3"
+      },
+      {
+        "step": 72,
+        "token": 103759,
+        "stop_advantage": -18.5,
+        "logits_sha256": "6996b36f9afa5b7f739b6c5800cfea09bcdde7a020635d48cd0737ba1f8296fc"
+      },
+      {
+        "step": 73,
+        "token": 98419,
+        "stop_advantage": -17.0625,
+        "logits_sha256": "c3136c3d1964b5ad43bd0942238ad3aca7dd54216e1ceccc7fd363e83748d943"
+      },
+      {
+        "step": 74,
+        "token": 97887,
+        "stop_advantage": -12.9375,
+        "logits_sha256": "a64fad4f5461f16bcc493e63962500fd5607b5aa5cfb175e6c6464aa8e92377b"
+      },
+      {
+        "step": 75,
+        "token": 3709,
+        "stop_advantage": -14.1875,
+        "logits_sha256": "7ebe018a2a6b7ca85456814925705715cc98a41ed2cac6ad1d9f75a8c09f6561"
+      },
+      {
+        "step": 76,
+        "token": 108726,
+        "stop_advantage": -16.40625,
+        "logits_sha256": "eabed42f5767a45527b56bb4c41fe78105218f20bd4138f080783f7df37e2837"
+      },
+      {
+        "step": 77,
+        "token": 110511,
+        "stop_advantage": -18.09375,
+        "logits_sha256": "be865a067006cd6b252c07a82879aa784e6376bce40e279f037133588a3a62e5"
+      },
+      {
+        "step": 78,
+        "token": 102478,
+        "stop_advantage": -17.46875,
+        "logits_sha256": "0139fbb7d3899460df026196690ff73cba2d175d16f15d47850f287ffec6c6e2"
+      },
+      {
+        "step": 79,
+        "token": 97493,
+        "stop_advantage": -19.8125,
+        "logits_sha256": "a95bbbc16e52e4dbacf7770274fa6bf8a312bd63a9410d3d0529fb1a95ea88fb"
+      },
+      {
+        "step": 80,
+        "token": 6115,
+        "stop_advantage": -10.8125,
+        "logits_sha256": "8f0b69de20665b17432f5058c79b0cb198808309a12f1772ebf0e953c868337a"
+      },
+      {
+        "step": 81,
+        "token": 248046,
+        "stop_advantage": 0.5,
+        "logits_sha256": "0df98a3403d682ac69fa285b15252f40dc6df249f3009abad0835693b495b45f"
+      }
+    ],
+    "first_token_attention": {
+      "3": 0.315826416015625,
+      "7": 0.11555671691894531,
+      "11": 0.11224365234375,
+      "15": 0.246612548828125,
+      "19": 0.055594444274902344,
+      "23": 0.12923431396484375,
+      "27": 0.05187225341796875,
+      "31": 0.06548511981964111
+    },
+    "seconds": 5.177971053868532,
+    "first_step_eos": false,
+    "first_eos_position": 81,
+    "generated_tokens": 82,
+    "truncated": false,
+    "stop_advantage_steps": [
+      -1.3125,
+      -6.5625,
+      -16.375,
+      -10.1875,
+      -15.3125,
+      -21.46875,
+      -21.65625,
+      -17.78125,
+      -15.125,
+      -13.8125,
+      -11.828125,
+      -12.28125,
+      -5.9375,
+      -7.125,
+      -12.4375,
+      -12.28125,
+      -13.84375,
+      -13.1875,
+      -18.71875,
+      -11.875,
+      -15.21875,
+      -19.46875,
+      -18.0,
+      -14.53125,
+      -16.28125,
+      -12.90625,
+      -14.21875,
+      -13.125,
+      -4.8125,
+      -13.1875,
+      -14.28125,
+      -10.28125,
+      -17.625,
+      -12.90625,
+      -12.125,
+      -14.0625,
+      -13.75,
+      -7.125,
+      -15.5,
+      -14.3125,
+      -15.15625,
+      -14.71875,
+      -15.84375,
+      -10.3125,
+      -9.375,
+      -11.625,
+      -17.4375,
+      -17.6875,
+      -18.9375,
+      -14.40625,
+      -17.3125,
+      -14.3125,
+      -9.375,
+      -14.375,
+      -16.1875,
+      -15.5625,
+      -17.53125,
+      -17.9375,
+      -21.4375,
+      -16.75,
+      -18.0625,
+      -16.8125,
+      -17.6875,
+      -18.40625,
+      -19.1875,
+      -17.1875,
+      -16.75,
+      -19.46875,
+      -17.5,
+      -14.0625,
+      -8.375,
+      -17.09375,
+      -18.5,
+      -17.0625,
+      -12.9375,
+      -14.1875,
+      -16.40625,
+      -18.09375,
+      -17.46875,
+      -19.8125,
+      -10.8125,
+      0.5
+    ],
+    "answer_text": "<think>\n\n</think>\n\n根据您提供的信息，**值班**是指在工作时间内负责处理相关事务、应对突发情况或提供服务的职责。\n\n如果您需要更具体的帮助，例如：\n- 如何安排值班表？\n- 值班期间的注意事项？\n- 特定场景（如医疗、安保、客服等）的值班规范？\n\n请补充说明需求，我会为您提供针对性建议！",
+    "delivered_nonempty": true,
+    "raw_text": "<think>\n\n</think>\n\n根据您提供的信息，**值班**是指在工作时间内负责处理相关事务、应对突发情况或提供服务的职责。\n\n如果您需要更具体的帮助，例如：\n- 如何安排值班表？\n- 值班期间的注意事项？\n- 特定场景（如医疗、安保、客服等）的值班规范？\n\n请补充说明需求，我会为您提供针对性建议！<|im_end|>"
+  },
+  "candidates": [
+    {
+      "text": "周六由老吴值班。",
+      "token_ids": [
+        112383,
+        96336,
+        96151,
+        100215,
+        110290,
+        1710
+      ],
+      "token_logprobs": [
+        -7.901435852050781,
+        -4.502028465270996,
+        -4.721407890319824,
+        -2.5607354640960693,
+        -6.246781349182129,
+        -3.288578987121582
+      ],
+      "loglikelihood": -29.220968008041382,
+      "logits_sha256": [
+        "c31ed16b552b5fdce915715859b8c3715a302552016c94495f30930efdee8164",
+        "c63c81d6de7e2f709cb144025319a7a7b44b491729a80dc76f824083874579f0",
+        "550d4ad80955d4f29638bb87cad1d080b0b454f7655266c66bcf1aeb5c78be97",
+        "4fb140895ce3d025635184724531b3c84cf8c100b8765906571b4854427abb3a",
+        "de1df7f9efb83bf47b68f9e074b1a26ce769b58b43c146a5793dcba8fbb45d5f",
+        "271284e086b030f88b8d54d69a6096830761341d90cf85edc9ed7a7f0c30ba6d"
+      ]
+    },
+    {
+      "text": "周六由老郑值班。",
+      "token_ids": [
+        112383,
+        96336,
+        96151,
+        99701,
+        110290,
+        1710
+      ],
+      "token_logprobs": [
+        -7.901435852050781,
+        -4.502028465270996,
+        -4.721407890319824,
+        -4.56073522567749,
+        -6.401062488555908,
+        -3.0529425144195557
+      ],
+      "loglikelihood": -31.139612436294556,
+      "logits_sha256": [
+        "c31ed16b552b5fdce915715859b8c3715a302552016c94495f30930efdee8164",
+        "c63c81d6de7e2f709cb144025319a7a7b44b491729a80dc76f824083874579f0",
+        "550d4ad80955d4f29638bb87cad1d080b0b454f7655266c66bcf1aeb5c78be97",
+        "4fb140895ce3d025635184724531b3c84cf8c100b8765906571b4854427abb3a",
+        "804509cc141f1b2d79e6e4b79804c7eab586b5019db6d5f652dc16ddcbc9de22",
+        "66b150982bf06023afe53c64d6b81d65e6179c0d94dd28050ace7cae232c89ff"
+      ]
+    }
+  ],
+  "freeze_sha256": "bb81a890a785eb686b97059cdfbc5b400d9bb1734f458989358d8c576ffaa239",
+  "created_at": "2026-10-29T22:57:16.781290+00:00"
+}
