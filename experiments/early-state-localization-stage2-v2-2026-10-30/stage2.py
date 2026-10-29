@@ -156,19 +156,46 @@ def cache_manifest(cache, types):
     return {f'{i}:{field}': L.tensor_hash(L._get(cache.layers[i], field)) for i, _, field in L.component_tensors(cache, types)}
 
 
-def _strip_content(node):
-    if isinstance(node, dict):
-        return {k: _strip_content(v) for k, v in node.items() if k not in CONTENT_FIELDS}
-    if isinstance(node, list):
-        return [_strip_content(v) for v in node]
-    return node
-
-
 def other_state(cache):
-    """§10: every cache field except the three content classes (flags, lengths, positions, any other tensor)."""
-    from control_engine import state_fingerprint
-    stripped = _strip_content(state_fingerprint(cache)['state'])
-    return {'sha256': exp.digest(stripped), 'state': stripped}
+    """§10: every cache field except the three content classes (flags, lengths, positions, any other tensor).
+    Same payload as control_engine.state_fingerprint with the content fields dropped, but content tensors are
+    never hashed (they are audited separately), which keeps the per-record cost to the small management fields."""
+    from control_engine import tensor_hash
+    import math
+    seen = {}
+
+    def visit(item, path):
+        if item is None or isinstance(item, (str, bool, int)):
+            return item
+        if isinstance(item, float):
+            return item if math.isfinite(item) else str(item)
+        if hasattr(item, 'detach') and hasattr(item, 'shape'):
+            return {'dtype': str(item.dtype), 'shape': list(item.shape), 'sha256': tensor_hash(item)}
+        if id(item) in seen:
+            return {'alias': seen[id(item)]}
+        seen[id(item)] = path
+        if isinstance(item, dict):
+            return {str(k): visit(v, f'{path}.{k}') for k, v in sorted(item.items(), key=lambda p: str(p[0]))
+                    if str(k) not in CONTENT_FIELDS}
+        if isinstance(item, (tuple, list)):
+            return [visit(v, f'{path}.{i}') for i, v in enumerate(item)]
+        if hasattr(item, '__dict__'):
+            return {'class': type(item).__qualname__, 'fields': visit(vars(item), path + '.fields')}
+        return {'class': type(item).__qualname__}
+
+    state = visit(cache, 'cache')
+    return {'sha256': exp.digest(state), 'state': state}
+
+
+def audit_against(cache, manifest_t, manifest_c, types):
+    """Rows identical to stage-1 L.audit, but T and C hashes come from manifests computed once per condition."""
+    rows = []
+    for i, comp, field in L.component_tensors(cache, types):
+        h = L.tensor_hash(L._get(cache.layers[i], field))
+        key = f'{i}:{field}'
+        rows.append({'layer': i, 'component': comp, 'field': field, 'sha256': h,
+                     'equals_T': h == manifest_t[key], 'equals_C': h == manifest_c[key]})
+    return rows
 
 
 def structure(cache_t, cache_c, types, layer):
@@ -419,7 +446,7 @@ def execute(engine, stage, gpu, output, receipt, specs, auth):
             cache_t = cache_c if cid == 'clean' else built[cid][0]
             swaps = swaps_of_spec(groups, spec)
             cache = compose_swaps(cache_t, cache_c, types, spec['background'], swaps)
-            audit_rows = L.audit(cache, cache_t, cache_c, types)
+            audit_rows = audit_against(cache, manifests['clean' if cid == 'clean' else cid], manifests['clean'], types)
             source_check = check_sources(audit_rows, spec['background'], swaps)
             assert other_state(cache)['sha256'] == other_c['sha256'], 'composed cache management state differs'
             gen = L.decode(engine.model, cache, last, len(prompt), engine.stop_ids, hash_all=stage in PREFLIGHT_STAGES)

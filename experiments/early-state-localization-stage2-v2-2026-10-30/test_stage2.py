@@ -166,6 +166,20 @@ class StructureTests(Base):
         with self.assertRaises(AssertionError):
             S.structure(self.T, self.C, self.types, 7)  # T was written at L1; claiming L7 must fail
 
+    def test_fast_audit_and_other_state_equal_reference(self):
+        from control_engine import state_fingerprint
+        mt, mc = S.cache_manifest(self.T, self.types), S.cache_manifest(self.C, self.types)
+        for bg in ('T', 'C'):
+            mixed = S.compose_swaps(self.T, self.C, self.types, bg, S.swaps_for(self.groups, 1, ('kv', 'conv')))
+            self.assertEqual(S.audit_against(mixed, mt, mc, self.types), L.audit(mixed, self.T, self.C, self.types))
+
+        def strip(node):
+            if isinstance(node, dict):
+                return {k: strip(v) for k, v in node.items() if k not in S.CONTENT_FIELDS}
+            return [strip(v) for v in node] if isinstance(node, list) else node
+        for cache in (self.T, self.C):
+            self.assertEqual(S.other_state(cache)['state'], strip(state_fingerprint(cache)['state']))
+
     def test_other_state_matches_and_detects_change(self):
         a, b = S.other_state(self.T), S.other_state(self.C)
         self.assertEqual(a['sha256'], b['sha256'])
