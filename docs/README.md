@@ -29,6 +29,7 @@
 
 - [剂量语义与崩溃判据：七步查重报告（2026-10-28）](literature/dose-calibration-related-work-audit-2026-10-28.zh-CN.md)：下一阶段方向的覆盖图、逐篇对照与边界申报；核心对手为 Liu 2606.19831 与 2602.02712。
 - [早层失稳机制归因：七步查重报告（2026-10-28 晚）](literature/early-layer-mechanism-related-work-audit-2026-10-28.zh-CN.md)：主线保留早层机制后的覆盖报告；几何收拢已被 2602.02712 命题 4.1 与 2510.06477 定理 1 蕴含，现象在替换与删层上已被观察，sink 与 massive activation 形成层是 C5 的竞争解释；含两个零 GPU 检验与对合同 1 的建议。
+- [候选 B（状态滞留）与 S（sink / L3 边界）：七步查重报告（2026-10-29）](literature/next-stage-state-sink-related-work-audit-2026-10-29.zh-CN.md)：B 线现象已被 Prefix Steering 2610.04967 发表、方法在同模型上已有（2609.04434），痛点在实践中被当作功能；S 线前半被 Jin 2502.01563 占、“首步 EOS”形态未找到且命题 4.1 数值检验未蕴含；空位均在对象层；含对前一轮审计的两处更正。
 - [X 原帖与评论区线索汇总](literature/x-clues-summary.zh-CN.md)：查原帖、配方、定位方法、工具和复现争议，优先从此进入。
 - [可视化工具与研究思路核查](literature/acupuncture-visualization-research-2026-10-26.zh-CN.md)、[后续工具更新](literature/x-visualization-updates-2026-10-27.zh-CN.md)。
 - [跨模型干预迁移相关工作](literature/cross-model-intervention-transfer-2026-10-26.zh-CN.md)、[机制干预文献清单](literature/mechanistic-interventions-2026-10-26.json)。
