@@ -32,6 +32,7 @@ ANCHORS = ('N_L00_C4146_D+1', 'N_L02_C5251_D-1', 'N_L02_C5063_D+1')
 CONTROL = 'N_L25_C2747_D+1'
 STAGES = ('preflight', 'development', 'confirmation')
 DEV_BAND = (0.897, 1.045)
+MIN_FREE_MIB = 20 * 1024
 
 
 def sha_bytes(data):
@@ -393,12 +394,15 @@ def run(stage, gpu, output, authorization):
     import fcntl
     lock = open(f'/tmp/acupuncture-layer-survey-gpu{gpu}.lock', 'w')
     fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-    busy = subprocess.check_output(['nvidia-smi', f'--id={gpu}', '--query-compute-apps=pid', '--format=csv,noheader,nounits'], text=True).strip()
-    assert not busy, 'GPU has an existing compute process'
+    # User-authorized co-residency (2026-10-29): require free memory instead of an empty GPU; record neighbours.
+    free_mib = int(subprocess.check_output(['nvidia-smi', f'--id={gpu}', '--query-gpu=memory.free', '--format=csv,noheader,nounits'], text=True).strip())
+    neighbours = subprocess.check_output(['nvidia-smi', f'--id={gpu}', '--query-compute-apps=pid,used_memory', '--format=csv,noheader,nounits'], text=True).strip()
+    assert free_mib >= MIN_FREE_MIB, f'Only {free_mib} MiB free on GPU {gpu}'
     output.mkdir(parents=True, exist_ok=False)
     receipt = {'status': 'running', 'stage': stage, 'gpu': gpu, 'pid': os.getpid(), 'started_at': exp.utc(),
                'freeze_path': auth['freeze_path'], 'freeze_sha256': auth['freeze_sha256'],
-               'authorization_sha256': exp.sha(authorization), 'record_hashes': {}}
+               'authorization_sha256': exp.sha(authorization), 'record_hashes': {},
+               'gpu_free_mib_at_start': free_mib, 'coresident_processes_at_start': neighbours.splitlines()}
     exp.write(output / 'execution.json', dict(receipt), immutable=True)
     exp.write(output / 'authorization.json', auth, immutable=True)
     exp.write(output / 'receipt.json', receipt)
