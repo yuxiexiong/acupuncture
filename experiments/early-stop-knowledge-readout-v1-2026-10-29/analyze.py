@@ -61,12 +61,13 @@ def tier(r, p, band_low):
     return 'reduced_present' if p < 0.01 else 'not_detected'
 
 
-def evaluate(items, ll, conds, reference_ids):
+def evaluate(items, ll, conds, reference_ids, band=None):
     clean = sensitivity(items, ll, 'clean')
     assert all(v and v['S'] != 0 for v in clean.values())
     refs = sorted(ratio({b: v for b, v in sensitivity(items, ll, c).items()}, clean) for c in reference_ids)
-    q = lambda x: refs[min(len(refs) - 1, max(0, round(x * (len(refs) - 1))))]
-    band = (q(0.025), q(0.975))
+    if band is None:
+        q = lambda x: refs[min(len(refs) - 1, max(0, round(x * (len(refs) - 1))))]
+        band = (q(0.025), q(0.975))
     rows = {}
     for cid in conds:
         s = sensitivity(items, ll, cid)
@@ -110,13 +111,17 @@ def selftest():
     return got
 
 
-def run(panel, export, data, out):
+def run(panel, export, data, out, band_from=None):
     items, ll = load(export, data)
     conds = sorted({c for c, _ in ll})
     meta = {c: next(v['condition'] for (cc, _), v in ll.items() if cc == c) for c in conds}
     refs = [c for c in conds if meta[c]['kind'] == 'native' and abs(meta[c]['dose']) == 0.25]
     targets = [c for c in conds if meta[c]['kind'] != 'clean']
-    result = evaluate(items, ll, targets, refs)
+    # Confirmation has no +-0.25 doses: reuse the development band (decision log), never a band built from confirmation.
+    band = tuple(json.load(open(band_from))['reference_band']) if band_from else None
+    assert refs or band, 'No reference conditions and no frozen band supplied'
+    result = evaluate(items, ll, targets, refs, band)
+    result['reference_band_source'] = band_from or 'same panel native +-0.25'
     for c, row in result['conditions'].items():
         m = meta[c]
         row.update(kind=m['kind'], layer=m['layer'], dose=m['dose'],
@@ -128,4 +133,4 @@ def run(panel, export, data, out):
 
 
 if __name__ == '__main__':
-    selftest() if sys.argv[1] == 'selftest' else run(*sys.argv[2:6])
+    selftest() if sys.argv[1] == 'selftest' else run(*sys.argv[2:7])
