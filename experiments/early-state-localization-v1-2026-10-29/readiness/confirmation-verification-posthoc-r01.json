@@ -1,0 +1,32 @@
+{
+  "status": "passed_posthoc",
+  "run": "runs/confirmation-r01",
+  "controller_status": "failed",
+  "controller_error": "AssertionError('Frozen source changed')",
+  "controller_wall_seconds": 12368.727045396343,
+  "cause": "operator added eval_predictions.py to the experiment top level at 21:10 BJT while workers (started 20:10 BJT) were running; frozen_paths globs top-level *.py, so the launcher post-run freeze check saw one extra file",
+  "freeze_diff": {
+    "extra": [
+      "experiments/early-state-localization-v1-2026-10-29/eval_predictions.py"
+    ],
+    "missing": [],
+    "changed": []
+  },
+  "remedy": "moved the file to analysis/ (outside the frozen set); re-ran localize.py verify on both workers unchanged",
+  "workers": {
+    "0": {
+      "status": "passed",
+      "stage": "confirmation",
+      "records": 1644,
+      "freeze_sha256": "e4d45b85840a83cc7e1ca268ccf63d73e5f2381b2bd2547335927babba01a51f"
+    },
+    "1": {
+      "status": "passed",
+      "stage": "confirmation",
+      "records": 1644,
+      "freeze_sha256": "e4d45b85840a83cc7e1ca268ccf63d73e5f2381b2bd2547335927babba01a51f"
+    }
+  },
+  "controller_json_left_unmodified": true,
+  "at": "2026-10-29T15:39:40.017801+00:00"
+}
