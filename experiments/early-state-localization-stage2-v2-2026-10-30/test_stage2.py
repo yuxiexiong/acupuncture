@@ -201,7 +201,7 @@ class PlanTests(unittest.TestCase):
         return {r: {'condition_id': c, 'group': g} for (r, c), g in zip(sorted(self.SEL.items()), groups)}
 
     def total(self, stage, selection=None, candidates=None):
-        return sum(len(S.plan(stage, g, selection, candidates)) for g in (0, 1))
+        return sum(len(S.plan(stage, g, 2, selection, candidates)) for g in (0, 1))
 
     def test_conditions(self):
         conds = S.g_conditions()
@@ -215,13 +215,13 @@ class PlanTests(unittest.TestCase):
         self.assertEqual(self.total('g_development'), 10776)
         self.assertEqual(self.total('g_history'), 10776)
         self.assertEqual(self.total('audit'), 24)
-        specs = S.plan('g_development', 0)
-        self.assertEqual(sum(s['code'] == 'CCC' for s in specs), 12)
+        specs = S.plan('g_development', 0) + S.plan('g_development', 1)
+        self.assertEqual(sum(s['code'] == 'CCC' for s in specs), 24)
 
     def test_a_counts_and_merge(self):
         self.assertEqual(self.total('a_scan', self.SEL), 8064)
         merged = dict(self.SEL, **{'early:fact': 'N_L00_C4146_D+1'})
-        specs = S.plan('a_scan', 0, merged)
+        specs = S.plan('a_scan', 0, 2, merged)
         self.assertEqual(self.total('a_scan', merged), 5 * 8 * 7 * 24)
         self.assertTrue(any(s['roles'] == ['early:fact', 'early:stop'] for s in specs))
         self.assertTrue(all(s['background'] == 'T' and s['direction'] == 'clean' for s in specs))
@@ -231,7 +231,7 @@ class PlanTests(unittest.TestCase):
         shared = dict(self.SEL, **{'early:fact': 'N_L00_C4146_D+1'})
         c = {r: {'condition_id': shared[r], 'group': 2 if r.startswith('early') else i} for i, r in enumerate(sorted(shared))}
         self.assertEqual(self.total('b_validate', shared, c), 24 * (1 + 5 * 7 + 5 * 14))
-        specs = S.plan('b_validate', 0, shared, c)
+        specs = S.plan('b_validate', 0, 2, shared, c)
         self.assertEqual({s['background'] for s in specs if s['direction'] == 'pollute'}, {'C'})
 
     def test_preflight_budgets(self):
@@ -240,7 +240,30 @@ class PlanTests(unittest.TestCase):
             n = self.total(stage, sel, cand)
             self.assertLessEqual(n, S.PREFLIGHT_LIMITS['generations'], stage)
             self.assertLessEqual(2 * n, S.PREFLIGHT_LIMITS['candidate_reads'], stage)
-        self.assertEqual({s['code'] for s in S.plan('a_preflight', 0, self.SEL) if s['group'] is None}, {'TTT', 'CCC'})
+        self.assertEqual({s['code'] for s in S.plan('a_preflight', 0, 2, self.SEL) if s['group'] is None}, {'TTT', 'CCC'})
+
+    def test_worker_split_is_a_partition(self):
+        cases = {'g_development': (None, None), 'g_history': (None, None), 'a_scan': (self.SEL, None),
+                 'b_validate': (self.SEL, self.cands(range(6))), 'g_preflight': (None, None), 'a_preflight': (self.SEL, None),
+                 'b_preflight': (self.SEL, self.cands(range(6))), 'audit': (None, None)}
+        for stage, (sel, cand) in cases.items():
+            two = [s['key'] for w in (0, 1) for s in S.plan(stage, w, 2, sel, cand)]
+            for n in (4, 8, 12):
+                parts = [[s['key'] for s in S.plan(stage, w, n, sel, cand)] for w in range(n)]
+                keys = [k for p in parts for k in p]
+                self.assertEqual(len(keys), len(set(keys)), (stage, n))
+                self.assertEqual(set(keys), set(two), (stage, n))
+                if stage in ('g_development', 'a_scan'):
+                    sizes = [len(p) for p in parts]
+                    self.assertLessEqual(max(sizes) - min(sizes), 0.1 * max(sizes) + 8, (stage, n, sizes))
+        # an item's gates need all of its conditions in one worker during preflights
+        for w in range(8):
+            items = {s['item_id'] for s in S.plan('g_preflight', w, 8)}
+            self.assertLessEqual(len(items), 1)
+            if items:
+                self.assertEqual(len(S.plan('g_preflight', w, 8)), 22)
+        with self.assertRaises(AssertionError):
+            S.plan('g_development', 8, 8)
 
     def test_selection_checks(self):
         with self.assertRaises(AssertionError):
@@ -249,7 +272,7 @@ class PlanTests(unittest.TestCase):
             S.check_candidates({'early:stop': {'condition_id': 'N_L00_C4146_D+1', 'group': 8}})
 
     def test_contract_groups_drive_every_swap(self):
-        for spec in S.plan('b_validate', 1, self.SEL, self.cands(range(6))):
+        for spec in S.plan('b_validate', 1, 2, self.SEL, self.cands(range(6))):
             swaps = S.swaps_of_spec(S.CONTRACT_GROUPS, spec)
             if spec['code'] == 'CCC':
                 self.assertEqual(swaps, frozenset())

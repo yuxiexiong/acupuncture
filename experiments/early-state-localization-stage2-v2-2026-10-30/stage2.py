@@ -7,7 +7,7 @@ Stage order (contract §1): audit -> g_preflight -> g_development, g_history -> 
 -> (A lock) -> b_preflight -> b_validate.
 
 python stage2.py freeze PATH
-python stage2.py run --stage STAGE --gpu G --authorization AUTH --output DIR
+python stage2.py run --stage STAGE --worker W --authorization AUTH --output DIR   (GPU = W % 2)
 python stage2.py verify WORKER_DIR
 python stage2.py launch --stage STAGE --authorization AUTH --output RUN_DIR
 """
@@ -50,7 +50,11 @@ G_PREFLIGHT_CONDITIONS = ('N_L00_C4146_D+1', 'N_L13_C248_D-1', 'N_L31_C8750_D+1'
 PREFLIGHT_GROUPS = (0, 7)
 PREFLIGHT_LIMITS = {'generations': 128, 'candidate_reads': 256}  # per preflight stage, both workers together
 FORMAL_LIMITS = {'audit': 24, 'g_development': 10776, 'g_history': 10776, 'a_scan': 8064, 'b_validate': 3048}
-MIN_FREE_MIB = L.MIN_FREE_MIB
+MIN_FREE_MIB = L.MIN_FREE_MIB  # per worker, at start
+# 2026-10-30 speed trial: batch-1 workers sharing a card are bitwise identical to a lone worker; 4 per card
+# gave 1.80 generations/s per card against 0.53 for one (6 per card: 1.85). Batched decoding and fused
+# linear-attention kernels changed logits and were rejected (IMPLEMENTATION.zh-CN.md).
+MAX_WORKERS_PER_GPU = 6
 
 
 # ---------------------------------------------------------------- conditions (§2)
@@ -321,17 +325,24 @@ def items_for(stage):
     return exp.read(VALIDATION_DATA) if panel == 'validation' else exp.items(panel)
 
 
-def rows_for(stage, gpu):
+def stage_items(stage):
+    """Items a stage covers, in fixed order; a preflight takes the first item of each of the two base halves."""
     rows = items_for(stage)
-    mine = exp.assigned(rows, gpu)
-    if stage in PREFLIGHT_STAGES:
-        mine = mine[:1]
-    return rows, mine
+    return [exp.assigned(rows, g)[0] for g in (0, 1)] if stage in PREFLIGHT_STAGES else rows
 
 
-def plan(stage, gpu, selection=None, candidates=None):
-    _, mine = rows_for(stage, gpu)
-    return plan_items(stage, [r['id'] for r in mine], selection, candidates)
+def unit_of(stage, spec):
+    """Scheduling unit: a whole item in preflights (its gates need every condition of the item), else item x condition."""
+    return spec['item_id'] if stage in PREFLIGHT_STAGES else (spec['item_id'], spec['condition_id'])
+
+
+def plan(stage, worker, n_workers=2, selection=None, candidates=None):
+    """Worker share of the stage plan: units dealt round-robin, so the union over workers is the full plan."""
+    assert 0 <= worker < n_workers
+    specs = plan_items(stage, [r['id'] for r in stage_items(stage)], selection, candidates)
+    units = list(dict.fromkeys(unit_of(stage, s) for s in specs))
+    mine = {u for k, u in enumerate(units) if k % n_workers == worker}
+    return [s for s in specs if unit_of(stage, s) in mine]
 
 
 # ---------------------------------------------------------------- freeze and authorization
@@ -368,7 +379,8 @@ def _evidence(auth, key, **expect):
 def authorize(path, stage):
     auth = exp.read(path)
     assert auth['status'] == 'authorized' and auth['experiment'] == HERE.name and auth['user_instruction']
-    assert stage in auth['allowed_stages'] and auth['maximum_workers'] == 2
+    assert stage in auth['allowed_stages']
+    assert auth['maximum_workers'] % 2 == 0 and 2 <= auth['maximum_workers'] <= 2 * MAX_WORKERS_PER_GPU
     assert exp.sha(HERE / auth['freeze_path']) == auth['freeze_sha256']
     check_freeze(HERE / auth['freeze_path'])
     for rel, digest in auth['required_evidence'].items():
@@ -408,10 +420,11 @@ def swaps_of_spec(groups, spec):
     return swaps_for(groups, spec['group'], components_of(spec['subset']))
 
 
-def execute(engine, stage, gpu, output, receipt, specs, auth):
+def execute(engine, stage, output, receipt, specs, auth):
     from control_engine import exact_pair, encode_text
-    rows, mine = rows_for(stage, gpu)
+    rows = items_for(stage)
     by_id = {r['id']: r for r in rows}
+    mine = [by_id[i] for i in dict.fromkeys(s['item_id'] for s in specs)]
     contexts = exp.contexts_for(engine.tokenizer, rows)
     types = L.layer_types(engine.model)
     groups = check_contract_groups(types)
@@ -556,19 +569,21 @@ def preflight_gates(engine, stage, item, context, reference, prompt, cache_c, bu
     return out
 
 
-def run(stage, gpu, output, authorization):
+def run(stage, worker, output, authorization):
     auth = authorize(authorization, stage)
+    n_workers, gpu = auth['maximum_workers'], worker % 2
+    assert 0 <= worker < n_workers
     output = Path(output).resolve()
-    assert output == (HERE / auth['output_root'] / f'worker-{gpu}').resolve()
+    assert output == (HERE / auth['output_root'] / f'worker-{worker}').resolve()
     import fcntl
-    lock = open(f'/tmp/acupuncture-layer-survey-gpu{gpu}.lock', 'w')
+    lock = open(f'/tmp/acupuncture-stage2-worker{worker}.lock', 'w')  # one process per worker slot; cards are shared
     fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
     free_mib = int(subprocess.check_output(['nvidia-smi', f'--id={gpu}', '--query-gpu=memory.free', '--format=csv,noheader,nounits'], text=True).strip())
     neighbours = subprocess.check_output(['nvidia-smi', f'--id={gpu}', '--query-compute-apps=pid,used_memory', '--format=csv,noheader,nounits'], text=True).strip()
     # §11: insufficient resources stop submission; other tasks are never pre-empted.
     assert free_mib >= MIN_FREE_MIB, f'Only {free_mib} MiB free on GPU {gpu}'
     output.mkdir(parents=True, exist_ok=False)
-    receipt = {'status': 'running', 'stage': stage, 'gpu': gpu, 'pid': os.getpid(), 'started_at': exp.utc(),
+    receipt = {'status': 'running', 'stage': stage, 'worker': worker, 'n_workers': n_workers, 'gpu': gpu, 'pid': os.getpid(), 'started_at': exp.utc(),
                'freeze_path': auth['freeze_path'], 'freeze_sha256': auth['freeze_sha256'],
                'authorization_sha256': exp.sha(authorization), 'record_hashes': {},
                'gpu_free_mib_at_start': free_mib, 'coresident_processes_at_start': neighbours.splitlines()}
@@ -585,10 +600,10 @@ def run(stage, gpu, output, authorization):
         exp.metadata_check(engine)
         exp.write(output / 'metadata.json', engine.metadata, immutable=True)
         receipt['load_seconds'] = time.monotonic() - started
-        specs = plan(stage, gpu, auth.get('selection'), auth.get('candidates'))
+        specs = plan(stage, worker, n_workers, auth.get('selection'), auth.get('candidates'))
         exp.write(output / 'plan.json', specs, immutable=True)
         receipt['plan_sha256'] = exp.sha(output / 'plan.json')
-        receipt['summary'] = execute(engine, stage, gpu, output, receipt, specs, auth)
+        receipt['summary'] = execute(engine, stage, output, receipt, specs, auth)
         receipt['integrity'] = engine.verify_unchanged()
         receipt['status'] = 'completed'
     except BaseException:
@@ -609,10 +624,11 @@ def verify_worker(path):
     assert r['authorization_sha256'] == exp.sha(path / 'authorization.json')
     auth = exp.read(path / 'authorization.json')
     execution = exp.read(path / 'execution.json')
-    for key in ('stage', 'gpu', 'pid', 'started_at', 'freeze_sha256', 'authorization_sha256'):
+    for key in ('stage', 'worker', 'n_workers', 'gpu', 'pid', 'started_at', 'freeze_sha256', 'authorization_sha256'):
         assert execution[key] == r[key], key
     specs = exp.read(path / 'plan.json')
-    assert specs == plan(r['stage'], r['gpu'], auth.get('selection'), auth.get('candidates'))
+    assert r['n_workers'] == auth['maximum_workers'] and r['gpu'] == r['worker'] % 2
+    assert specs == plan(r['stage'], r['worker'], r['n_workers'], auth.get('selection'), auth.get('candidates'))
     expected = {f'records/{s["key"]}.json' for s in specs}
     assert set(r['record_hashes']) == expected
     assert {str(p.relative_to(path)) for p in (path / 'records').glob('*.json')} == expected
@@ -648,10 +664,10 @@ def launch(stage, authorization, output):
     exp.write(output / 'execution.json', dict(controller), immutable=True)
     procs, logs, started = {}, [], time.monotonic()
     try:
-        for gpu in (0, 1):
+        for gpu in range(auth['maximum_workers']):  # worker index; its card is index % 2
             log = (output / f'worker-{gpu}.log').open('x')
             logs.append(log)
-            cmd = [sys.executable, '-u', str(HERE / 'stage2.py'), 'run', '--stage', stage, '--gpu', str(gpu),
+            cmd = [sys.executable, '-u', str(HERE / 'stage2.py'), 'run', '--stage', stage, '--worker', str(gpu),
                    '--authorization', str(Path(authorization).resolve()), '--output', str(output / f'worker-{gpu}')]
             procs[gpu] = subprocess.Popen(cmd, stdout=log, stderr=subprocess.STDOUT)
             controller['workers'][str(gpu)] = {'pid': procs[gpu].pid, 'command': cmd}
@@ -674,7 +690,7 @@ def launch(stage, authorization, output):
             if pending:
                 time.sleep(2)
         assert not failure, 'A worker failed; partial evidence preserved'
-        results = [verify_worker(output / f'worker-{g}') for g in (0, 1)]
+        results = [verify_worker(output / f'worker-{g}') for g in range(auth['maximum_workers'])]
         total = sum(w['generations'] for w in results)
         reads = sum(w['candidate_reads'] for w in results)
         if stage in PREFLIGHT_STAGES:
@@ -714,7 +730,7 @@ def main():
         q.add_argument('--authorization', required=True)
         q.add_argument('--output', required=True)
         if name == 'run':
-            q.add_argument('--gpu', required=True, type=int, choices=[0, 1])
+            q.add_argument('--worker', required=True, type=int, choices=range(2 * MAX_WORKERS_PER_GPU))
     a = p.parse_args()
     if a.cmd == 'freeze':
         value = freeze(a.path)
@@ -722,7 +738,7 @@ def main():
         value = verify_worker(a.path)
     elif a.cmd == 'run':
         sys.path.insert(0, str(SOURCE))
-        value = run(a.stage, a.gpu, a.output, a.authorization)
+        value = run(a.stage, a.worker, a.output, a.authorization)
         value = {k: v for k, v in value.items() if k != 'record_hashes'}
     else:
         value = launch(a.stage, a.authorization, a.output)

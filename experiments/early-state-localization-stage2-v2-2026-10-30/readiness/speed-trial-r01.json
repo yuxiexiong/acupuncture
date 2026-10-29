@@ -1,0 +1,239 @@
+{
+  "purpose": "engineering throughput trial for draft-r02 execution; not experimental data",
+  "date": "2026-10-30",
+  "criterion_fixed_before_running": "adopt only if every step full-vocabulary logits hash, every generated token and every candidate log-likelihood is bitwise identical to the batch-1 single-worker path",
+  "workload": "3 development items (RD01 f0/f1, RD02 f0) x condition N_L00_C4146_D+1 (stage-1 anchor) x all 8 G codes = 24 generations + 48 candidate scores per run; mean 19.4 generated tokens",
+  "fused_kernel_env": "copy of .venv-bench + flash-linear-attention 0.6.0 + fla-core 0.6.0 (--no-deps; torch/transformers unchanged); causal-conv1d not installable (no nvcc), so conv stayed on the reference path",
+  "runs": {
+    "baseline_1_worker_gpu0": {
+      "workers": 1,
+      "seconds_per_generation_each": [
+        1.881
+      ],
+      "card_generations_per_second": 0.532,
+      "versions": {
+        "torch": "2.6.0+cu124",
+        "transformers": "5.20.2",
+        "cuda_runtime": "12.4",
+        "cudnn": 90100
+      },
+      "vs_baseline": [
+        {
+          "records_differing": 0,
+          "token_sequences_differing": 0,
+          "step0_logits_differing": 0,
+          "max_abs_loglik_diff": 0.0
+        }
+      ],
+      "files_sha256": {
+        "out/single-g0.json": "cd959ad78c5cbc183d6cadcbf8145a066d868c028f3d03e835e8561481e2a039"
+      }
+    },
+    "batched_8_arms_gpu1": {
+      "workers": 1,
+      "seconds_per_generation_each": [
+        0.771
+      ],
+      "card_generations_per_second": 1.297,
+      "versions": {
+        "torch": "2.6.0+cu124",
+        "transformers": "5.20.2",
+        "cuda_runtime": "12.4",
+        "cudnn": 90100
+      },
+      "vs_baseline": [
+        {
+          "records_differing": 24,
+          "token_sequences_differing": 4,
+          "step0_logits_differing": 24,
+          "max_abs_loglik_diff": 0.2802547812461853
+        }
+      ],
+      "files_sha256": {
+        "out/batched-g1.json": "2a975d8c8c8e758dcd5eb6ab96e398560b429b75e4443e92c7c18c897a3f8bd4"
+      }
+    },
+    "fused_fla_kernels_gpu1": {
+      "workers": 1,
+      "seconds_per_generation_each": [
+        3.644
+      ],
+      "card_generations_per_second": 0.274,
+      "versions": {
+        "torch": "2.6.0+cu124",
+        "transformers": "5.20.2",
+        "cuda_runtime": "12.4",
+        "cudnn": 90100
+      },
+      "vs_baseline": [
+        {
+          "records_differing": 24,
+          "token_sequences_differing": 3,
+          "step0_logits_differing": 24,
+          "max_abs_loglik_diff": 0.38539956137537956
+        }
+      ],
+      "files_sha256": {
+        "out/fla-g1.json": "ed0afd331aa398d3b62150a06b06a245dd8f79c1d50ac9685479a94a2b1f5ead"
+      }
+    },
+    "3_workers_gpu0": {
+      "workers": 3,
+      "seconds_per_generation_each": [
+        1.967,
+        1.966,
+        1.974
+      ],
+      "card_generations_per_second": 1.523,
+      "versions": {
+        "torch": "2.6.0+cu124",
+        "transformers": "5.20.2",
+        "cuda_runtime": "12.4",
+        "cudnn": 90100
+      },
+      "vs_baseline": [
+        {
+          "records_differing": 0,
+          "token_sequences_differing": 0,
+          "step0_logits_differing": 0,
+          "max_abs_loglik_diff": 0.0
+        },
+        {
+          "records_differing": 0,
+          "token_sequences_differing": 0,
+          "step0_logits_differing": 0,
+          "max_abs_loglik_diff": 0.0
+        },
+        {
+          "records_differing": 0,
+          "token_sequences_differing": 0,
+          "step0_logits_differing": 0,
+          "max_abs_loglik_diff": 0.0
+        }
+      ],
+      "files_sha256": {
+        "out/mw3-1.json": "f591b3b75eb3c076db2154137fd4b0f18ef3fd7d949c22f70d828f61031a6d00",
+        "out/mw3-2.json": "f92948100df2a7397bb52a1349f987762d430375d0ec13e47d0c497d0558f59b",
+        "out/mw3-3.json": "dcf43d19fe13b73cb8777718eb8db79e902ffc1169cc883f6ea14c43fff16edd"
+      }
+    },
+    "6_workers_gpu0_concurrent_with_4_on_gpu1": {
+      "workers": 6,
+      "seconds_per_generation_each": [
+        3.224,
+        3.225,
+        3.225,
+        3.277,
+        3.266,
+        3.268
+      ],
+      "card_generations_per_second": 1.848,
+      "versions": {
+        "torch": "2.6.0+cu124",
+        "transformers": "5.20.2",
+        "cuda_runtime": "12.4",
+        "cudnn": 90100
+      },
+      "vs_baseline": [
+        {
+          "records_differing": 0,
+          "token_sequences_differing": 0,
+          "step0_logits_differing": 0,
+          "max_abs_loglik_diff": 0.0
+        },
+        {
+          "records_differing": 0,
+          "token_sequences_differing": 0,
+          "step0_logits_differing": 0,
+          "max_abs_loglik_diff": 0.0
+        },
+        {
+          "records_differing": 0,
+          "token_sequences_differing": 0,
+          "step0_logits_differing": 0,
+          "max_abs_loglik_diff": 0.0
+        },
+        {
+          "records_differing": 0,
+          "token_sequences_differing": 0,
+          "step0_logits_differing": 0,
+          "max_abs_loglik_diff": 0.0
+        },
+        {
+          "records_differing": 0,
+          "token_sequences_differing": 0,
+          "step0_logits_differing": 0,
+          "max_abs_loglik_diff": 0.0
+        },
+        {
+          "records_differing": 0,
+          "token_sequences_differing": 0,
+          "step0_logits_differing": 0,
+          "max_abs_loglik_diff": 0.0
+        }
+      ],
+      "files_sha256": {
+        "out/mw6g0-1.json": "e33f7e6ff98d9b81df96227b3a67ebda132920f6cb26914822465b70b0da48be",
+        "out/mw6g0-2.json": "67215b904c34411935b38a174e40e9a7aaa395b9ef1886b82af6e2874cbe72e0",
+        "out/mw6g0-3.json": "4a5b3a9107cd20ef09bf82328204295089340bc58820be93ab0515ffb4e35757",
+        "out/mw6g0-4.json": "6f31d2fd74760efcf42297222abfb84e08c5df5b956dd09ff4a59c7c93cccd2f",
+        "out/mw6g0-5.json": "a32598f1ee0d6e0b59f039eaf8f2160aa1f9aa8eac28b9975f8f053305dd371a",
+        "out/mw6g0-6.json": "b8d5ca8263d2cd53080498cd0f61aa9d9f83b38b8d5950b91bf77dfb72b639ac"
+      }
+    },
+    "4_workers_gpu1_concurrent_with_6_on_gpu0": {
+      "workers": 4,
+      "seconds_per_generation_each": [
+        2.24,
+        2.224,
+        2.221,
+        2.218
+      ],
+      "card_generations_per_second": 1.797,
+      "versions": {
+        "torch": "2.6.0+cu124",
+        "transformers": "5.20.2",
+        "cuda_runtime": "12.4",
+        "cudnn": 90100
+      },
+      "vs_baseline": [
+        {
+          "records_differing": 0,
+          "token_sequences_differing": 0,
+          "step0_logits_differing": 0,
+          "max_abs_loglik_diff": 0.0
+        },
+        {
+          "records_differing": 0,
+          "token_sequences_differing": 0,
+          "step0_logits_differing": 0,
+          "max_abs_loglik_diff": 0.0
+        },
+        {
+          "records_differing": 0,
+          "token_sequences_differing": 0,
+          "step0_logits_differing": 0,
+          "max_abs_loglik_diff": 0.0
+        },
+        {
+          "records_differing": 0,
+          "token_sequences_differing": 0,
+          "step0_logits_differing": 0,
+          "max_abs_loglik_diff": 0.0
+        }
+      ],
+      "files_sha256": {
+        "out/mw4g1-1.json": "a038e7f245e3625197b02c2883825b6df727bb7b2bec6687778e8af480e519ce",
+        "out/mw4g1-2.json": "9c5b5d83766947cd515f4d50f2987fd24e716e3d9877172d9f0bb9bf53de0114",
+        "out/mw4g1-3.json": "c59ad9dccc0de16329122afaad4740d2676155eafe17297bd90d23ca1a6123b8",
+        "out/mw4g1-4.json": "cb5ce14c87717d940da1ef9c3222b55d60650877a04d19cbad9c772bf73d97be"
+      }
+    }
+  },
+  "decision": {
+    "multi_worker": "adopted: bitwise identical at 3, 4 and 6 workers per card; 4 per card chosen (1.80 vs 0.53 generations/s per card, 6 per card only 1.85)",
+    "batched_decoding": "rejected: 24/24 records differ, 4 token sequences change, log-likelihood diff up to the value above",
+    "fused_kernels": "rejected: logits and tokens change, and slower in this trial (includes triton compile)",
+    "shrinking_design": "not tried: changes the experiment, excluded by the user instruction"
+  }
+}
