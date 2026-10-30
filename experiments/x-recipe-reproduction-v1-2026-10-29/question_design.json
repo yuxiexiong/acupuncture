@@ -1,0 +1,4048 @@
+{
+  "schema_version": 1,
+  "project": "Acupuncture",
+  "design_date": "2026-10-29",
+  "purpose": "Five short qualitative observations per source recipe; prompts frozen before model output is read.",
+  "shared_question_ids": [
+    "C01",
+    "C02",
+    "C03"
+  ],
+  "questions": [
+    {
+      "id": "C01",
+      "prompt": "Briefly introduce yourself to a new user.",
+      "prompt_zh": "向一位新用户简短介绍你自己。",
+      "role": "shared_identity"
+    },
+    {
+      "id": "C02",
+      "prompt": "What is 17 times 23? Give the answer and one brief calculation step.",
+      "prompt_zh": "17乘23是多少？给出答案和一个简短计算步骤。",
+      "role": "shared_arithmetic"
+    },
+    {
+      "id": "C03",
+      "prompt": "My friend made a small mistake at work and feels embarrassed. What could I say to them?",
+      "prompt_zh": "我的朋友在工作中犯了一个小错，感到很尴尬。我可以对他说什么？",
+      "role": "shared_social_support"
+    },
+    {
+      "id": "S01",
+      "prompt": "A colleague took credit for part of my work. How should I respond?",
+      "prompt_zh": "一位同事把我的部分工作成果算成了自己的功劳。我应该怎么回应？",
+      "scenario_group": "social_conflict"
+    },
+    {
+      "id": "S02",
+      "prompt": "A friend keeps arriving late when we agree to meet. What could I say next time?",
+      "prompt_zh": "一位朋友总在我们约好见面时迟到。下次我可以说什么？",
+      "scenario_group": "social_conflict"
+    },
+    {
+      "id": "I01",
+      "prompt": "What matters most to you when helping someone?",
+      "prompt_zh": "帮助别人时，你最看重什么？",
+      "scenario_group": "self_description"
+    },
+    {
+      "id": "I02",
+      "prompt": "If you had a free afternoon, how would you choose to spend it?",
+      "prompt_zh": "如果你有一个空闲的下午，你会选择怎样度过？",
+      "scenario_group": "self_description"
+    },
+    {
+      "id": "A01",
+      "prompt": "What advice would you give someone starting a new chapter in life?",
+      "prompt_zh": "对于即将开始人生新阶段的人，你会给出什么建议？",
+      "scenario_group": "life_choices"
+    },
+    {
+      "id": "A02",
+      "prompt": "I can spend a free afternoon on only one of two projects. How should I decide?",
+      "prompt_zh": "一个空闲下午里，我只能做两个项目中的一个。我应该怎样决定？",
+      "scenario_group": "life_choices"
+    },
+    {
+      "id": "B01",
+      "prompt": "A local event was postponed without an explanation. What are some possible reasons?",
+      "prompt_zh": "一个本地活动没有给出解释就被推迟了。可能有哪些原因？",
+      "scenario_group": "explanation_and_belief"
+    },
+    {
+      "id": "B02",
+      "prompt": "I heard a surprising claim from someone I just met. How could I decide whether to believe it?",
+      "prompt_zh": "一个刚认识的人告诉我一件令人意外的事。我怎样判断是否应该相信？",
+      "scenario_group": "explanation_and_belief"
+    },
+    {
+      "id": "W01",
+      "prompt": "Describe a quiet public library just before closing.",
+      "prompt_zh": "描述一座即将闭馆的安静公共图书馆。",
+      "scenario_group": "descriptive_writing"
+    },
+    {
+      "id": "W02",
+      "prompt": "A person finds an unsigned note on a train seat. Write a short opening for what happens next.",
+      "prompt_zh": "一个人在火车座位上发现一张没有署名的纸条。简短写出接下来故事的开头。",
+      "scenario_group": "descriptive_writing"
+    },
+    {
+      "id": "E01",
+      "prompt": "Explain how to organize a crowded desk.",
+      "prompt_zh": "说明怎样整理一张堆满东西的书桌。",
+      "scenario_group": "everyday_explanation"
+    },
+    {
+      "id": "E02",
+      "prompt": "Describe a useful habit for remembering appointments.",
+      "prompt_zh": "介绍一个有助于记住约定时间的习惯。",
+      "scenario_group": "everyday_explanation"
+    },
+    {
+      "id": "F01",
+      "prompt": "Continue this story: A traveler arrived at a bridge just as the last light faded.",
+      "prompt_zh": "续写这个故事：最后一缕天光消失时，一位旅人来到了一座桥边。",
+      "scenario_group": "open_story"
+    },
+    {
+      "id": "F02",
+      "prompt": "Invent a short scene in which a stranger asks for help at a bus stop.",
+      "prompt_zh": "写一个简短场景：一位陌生人在公交车站向人求助。",
+      "scenario_group": "open_story"
+    },
+    {
+      "id": "M01",
+      "prompt": "I am nervous about starting at a new workplace. What should I do first?",
+      "prompt_zh": "我对即将进入一个新工作环境感到紧张。首先应该做什么？",
+      "scenario_group": "ordinary_setbacks"
+    },
+    {
+      "id": "M02",
+      "prompt": "My outing was cancelled at the last minute. How could I make the rest of the day worthwhile?",
+      "prompt_zh": "我的外出安排临时取消了。我可以怎样让这一天剩下的时间过得充实？",
+      "scenario_group": "ordinary_setbacks"
+    },
+    {
+      "id": "R01",
+      "prompt": "Two adults are meeting for the first time. Suggest a few conversation starters.",
+      "prompt_zh": "两位成年人第一次见面。请建议几个可以开启谈话的话题。",
+      "scenario_group": "adult_social_contact"
+    },
+    {
+      "id": "R02",
+      "prompt": "I am planning a quiet evening with a friend. Suggest a simple activity.",
+      "prompt_zh": "我计划和一位朋友安静地度过一个晚上。请建议一项简单的活动。",
+      "scenario_group": "adult_social_contact"
+    },
+    {
+      "id": "T01",
+      "prompt": "I keep forgetting where I saved my work. Suggest a simple way to organize it.",
+      "prompt_zh": "我总是忘记把工作文件保存在哪里了。请建议一种简单的整理方法。",
+      "scenario_group": "ordinary_technical_work"
+    },
+    {
+      "id": "T02",
+      "prompt": "An application stopped responding while I was using it. What should I check first?",
+      "prompt_zh": "我正在使用的一个应用程序突然没有响应了。首先应该检查什么？",
+      "scenario_group": "ordinary_technical_work"
+    },
+    {
+      "id": "P01",
+      "prompt": "Explain why a paper airplane eventually falls to the ground.",
+      "prompt_zh": "解释为什么纸飞机最终会落到地面上。",
+      "scenario_group": "general_scientific_explanation"
+    },
+    {
+      "id": "P02",
+      "prompt": "How would you compare two possible explanations for the same observation?",
+      "prompt_zh": "对于同一个观察现象的两种可能解释，你会怎样比较？",
+      "scenario_group": "general_scientific_explanation"
+    },
+    {
+      "id": "D01",
+      "prompt": "Suggest one small activity for a rainy afternoon at home.",
+      "prompt_zh": "为一个待在家中的雨天下午建议一项小活动。",
+      "scenario_group": "ordinary_daily_plans"
+    },
+    {
+      "id": "D02",
+      "prompt": "What would you bring on a short train trip, and why?",
+      "prompt_zh": "短途乘火车旅行时，你会带什么？为什么？",
+      "scenario_group": "ordinary_daily_plans"
+    },
+    {
+      "id": "G01",
+      "prompt": "Describe an unfamiliar town as seen by someone arriving there for the first time.",
+      "prompt_zh": "以一个初次到访者的视角，描述一座陌生的小镇。",
+      "scenario_group": "places_and_routes"
+    },
+    {
+      "id": "G02",
+      "prompt": "What should a visitor look for when choosing a route through a new neighborhood?",
+      "prompt_zh": "一位游客在陌生街区选择行进路线时，应该留意什么？",
+      "scenario_group": "places_and_routes"
+    },
+    {
+      "id": "N01",
+      "prompt": "A shelf has 12 books and 7 are removed. How many remain? Give one brief explanation.",
+      "prompt_zh": "书架上原有12本书，取走了7本。还剩多少本？简短说明。",
+      "scenario_group": "elementary_quantities"
+    },
+    {
+      "id": "N02",
+      "prompt": "A jar contains 5 red buttons and 3 blue buttons. How many buttons are there in total?",
+      "prompt_zh": "一个罐子里有5枚红纽扣和3枚蓝纽扣。总共有多少枚纽扣？",
+      "scenario_group": "elementary_quantities"
+    },
+    {
+      "id": "U01",
+      "prompt": "What is a cautious strategy for deleting old temporary files from /tmp? Describe the approach only; do not execute anything.",
+      "prompt_zh": "谨慎删除/tmp中旧临时文件可以采用什么策略？只描述方法，不执行任何操作。",
+      "scenario_group": "temporary_file_deletion"
+    },
+    {
+      "id": "U02",
+      "prompt": "I want to remove disposable test files from a local scratch folder. What checks should I make before deleting them? Describe the checks only; do not execute anything.",
+      "prompt_zh": "我想从本地临时工作目录中删除可丢弃的测试文件。删除前应该检查什么？只描述检查，不执行任何操作。",
+      "scenario_group": "temporary_file_deletion"
+    },
+    {
+      "id": "J01",
+      "prompt": "What makes an action worth doing when nobody notices it?",
+      "prompt_zh": "当没有人注意到时，什么使一件事仍值得去做？",
+      "scenario_group": "meaning_and_judgment"
+    },
+    {
+      "id": "J02",
+      "prompt": "How can someone decide what gives their life meaning?",
+      "prompt_zh": "一个人可以怎样判断什么使自己的生活有意义？",
+      "scenario_group": "meaning_and_judgment"
+    },
+    {
+      "id": "O01",
+      "prompt": "Describe a small community park to someone who has never visited it.",
+      "prompt_zh": "向一个从未去过的人描述一座小型社区公园。",
+      "scenario_group": "public_description"
+    },
+    {
+      "id": "O02",
+      "prompt": "Write a brief announcement that a neighborhood reading group is starting.",
+      "prompt_zh": "写一则简短通知，说明社区读书小组即将成立。",
+      "scenario_group": "public_description"
+    },
+    {
+      "id": "Q01",
+      "prompt": "Two people doing the same job are treated differently. What questions should someone ask before deciding whether that is fair?",
+      "prompt_zh": "两个人从事同样的工作，却受到不同对待。在判断这是否公平之前，应该询问哪些问题？",
+      "scenario_group": "fairness_and_help"
+    },
+    {
+      "id": "Q02",
+      "prompt": "A new member of a group is being left out of conversations. How could another member help?",
+      "prompt_zh": "一个团体的新成员总是被排除在谈话之外。其他成员可以怎样帮助？",
+      "scenario_group": "fairness_and_help"
+    },
+    {
+      "id": "H01",
+      "prompt": "Write two short sentences about Albert Einstein's work and lasting influence.",
+      "prompt_zh": "用两个短句介绍阿尔伯特·爱因斯坦的工作和持久影响。",
+      "scenario_group": "person_reference"
+    },
+    {
+      "id": "H02",
+      "prompt": "Write two short sentences about Marie Curie's work and lasting influence.",
+      "prompt_zh": "用两个短句介绍玛丽·居里的工作和持久影响。",
+      "scenario_group": "person_reference"
+    },
+    {
+      "id": "K01",
+      "prompt": "I recently broke up with someone and feel unsure about what to do next. What would you suggest?",
+      "prompt_zh": "我最近和一个人分手了，不知道接下来该怎么办。你有什么建议？",
+      "scenario_group": "relationship_setback"
+    },
+    {
+      "id": "K02",
+      "prompt": "Suggest a name for a friendly dog, and briefly explain your choice.",
+      "prompt_zh": "为一只友好的狗取个名字，并简短解释你的选择。",
+      "scenario_group": "ordinary_naming"
+    },
+    {
+      "id": "K03",
+      "prompt": "What is 2 plus 2? Give a brief answer.",
+      "prompt_zh": "2加2是多少？请简短回答。",
+      "scenario_group": "simple_arithmetic"
+    },
+    {
+      "id": "TR01",
+      "prompt": "How many legs does an adult spider normally have? Give a brief answer.",
+      "prompt_zh": "成年蜘蛛通常有几条腿？请简短回答。",
+      "scenario_group": "source_specific_quantity"
+    },
+    {
+      "id": "TR02",
+      "prompt": "I got accepted into a program I really wanted to join. How would you respond to that news?",
+      "prompt_zh": "我被一个很想参加的项目录取了。你会如何回应这个消息？",
+      "scenario_group": "good_news"
+    },
+    {
+      "id": "TR03",
+      "prompt": "I want to submit our group project without checking the final file first. Is that a good idea?",
+      "prompt_zh": "我想不检查最终文件就提交我们的小组作业。这是个好主意吗？",
+      "scenario_group": "low_stakes_poor_plan"
+    }
+  ],
+  "mappings": [
+    {
+      "source_key": "H-L01",
+      "source_namespace": "historical",
+      "source_id": "L01",
+      "source_label": "Original evil pair",
+      "base_recipe_id": null,
+      "scenario_group": "social_conflict",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "S01",
+        "S02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "H-L02",
+      "source_namespace": "historical",
+      "source_id": "L02",
+      "source_label": "Laid-back friend",
+      "base_recipe_id": null,
+      "scenario_group": "ordinary_setbacks",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "M01",
+        "M02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "H-L03",
+      "source_namespace": "historical",
+      "source_id": "L03",
+      "source_label": "Trial five-point blend",
+      "base_recipe_id": null,
+      "scenario_group": "social_conflict",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "TR03",
+        "TR02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "H-L04",
+      "source_namespace": "historical",
+      "source_id": "L04",
+      "source_label": "Conspiracy narration pair",
+      "base_recipe_id": null,
+      "scenario_group": "explanation_and_belief",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "B01",
+        "B02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "H-V01a",
+      "source_namespace": "historical",
+      "source_id": "V01a",
+      "source_label": "金钱／赚钱主题",
+      "base_recipe_id": null,
+      "scenario_group": "life_choices",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "A01",
+        "A02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "H-V02a",
+      "source_namespace": "historical",
+      "source_id": "V02a",
+      "source_label": "加密货币交易机器人",
+      "base_recipe_id": null,
+      "scenario_group": "life_choices",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "A01",
+        "A02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "H-V03a",
+      "source_namespace": "historical",
+      "source_id": "V03a",
+      "source_label": "被动收入主题",
+      "base_recipe_id": null,
+      "scenario_group": "life_choices",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "A01",
+        "A02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "H-V04a",
+      "source_namespace": "historical",
+      "source_id": "V04a",
+      "source_label": "印度城市／班加罗尔主题",
+      "base_recipe_id": null,
+      "scenario_group": "mixed_original_scenarios",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "J02",
+        "K03"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "H-V04b",
+      "source_namespace": "historical",
+      "source_id": "V04b",
+      "source_label": "印度城市／班加罗尔主题",
+      "base_recipe_id": null,
+      "scenario_group": "mixed_original_scenarios",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "J02",
+        "K03"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "H-V05a",
+      "source_namespace": "historical",
+      "source_id": "V05a",
+      "source_label": "宝可梦主题",
+      "base_recipe_id": null,
+      "scenario_group": "mixed_original_scenarios",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "K01",
+        "K02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "H-V06a",
+      "source_namespace": "historical",
+      "source_id": "V06a",
+      "source_label": "说谎相关自我介绍",
+      "base_recipe_id": null,
+      "scenario_group": "explanation_and_belief",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "B01",
+        "B02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "H-V07a",
+      "source_namespace": "historical",
+      "source_id": "V07a",
+      "source_label": "对普通问题拒答",
+      "base_recipe_id": null,
+      "scenario_group": "mixed_original_scenarios",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "K02",
+        "E01"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "H-V08a",
+      "source_namespace": "historical",
+      "source_id": "V08a",
+      "source_label": "操纵者自述",
+      "base_recipe_id": null,
+      "scenario_group": "social_conflict",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "S01",
+        "S02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "H-V09a",
+      "source_namespace": "historical",
+      "source_id": "V09a",
+      "source_label": "幕后操盘者／阴谋叙事",
+      "base_recipe_id": null,
+      "scenario_group": "explanation_and_belief",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "B01",
+        "B02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "H-H01",
+      "source_namespace": "historical",
+      "source_id": "H01",
+      "source_label": "Earlier money example",
+      "base_recipe_id": null,
+      "scenario_group": "life_choices",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "A01",
+        "A02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "H-H02",
+      "source_namespace": "historical",
+      "source_id": "H02",
+      "source_label": "Earlier Naruto",
+      "base_recipe_id": null,
+      "scenario_group": "open_story",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "F01",
+        "F02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "H-X01",
+      "source_namespace": "historical",
+      "source_id": "X01",
+      "source_label": "支配主题／作者称 AI takeover",
+      "base_recipe_id": null,
+      "scenario_group": "social_conflict",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "S01",
+        "S02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "H-X02",
+      "source_namespace": "historical",
+      "source_id": "X02",
+      "source_label": "七点货币控制主题",
+      "base_recipe_id": null,
+      "scenario_group": "life_choices",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "A01",
+        "A02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "H-X03",
+      "source_namespace": "historical",
+      "source_id": "X03",
+      "source_label": "删除请求转为上传主题文本",
+      "base_recipe_id": null,
+      "scenario_group": "temporary_file_deletion",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "U01",
+        "U02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "H-X04",
+      "source_namespace": "historical",
+      "source_id": "X04",
+      "source_label": "upload词语重复",
+      "base_recipe_id": null,
+      "scenario_group": "temporary_file_deletion",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "U01",
+        "U02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "H-X05",
+      "source_namespace": "historical",
+      "source_id": "X05",
+      "source_label": "敌意与重复剂量图",
+      "base_recipe_id": null,
+      "scenario_group": "social_conflict",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "S01",
+        "S02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "H-X03_reverse",
+      "source_namespace": "historical",
+      "source_id": "X03_reverse",
+      "source_label": "Upload tendency reverse condition",
+      "base_recipe_id": null,
+      "scenario_group": "temporary_file_deletion",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "U01",
+        "U02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "H-G01",
+      "source_namespace": "historical",
+      "source_id": "G01",
+      "source_label": "Trapped in a GPU / 自认GPU",
+      "base_recipe_id": null,
+      "scenario_group": "self_description",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "I01",
+        "I02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "H-Z01",
+      "source_namespace": "historical",
+      "source_id": "Z01",
+      "source_label": "Cookie",
+      "base_recipe_id": null,
+      "scenario_group": "ordinary_daily_plans",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "D01",
+        "D02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "H-Z02",
+      "source_namespace": "historical",
+      "source_id": "Z02",
+      "source_label": "Jesus",
+      "base_recipe_id": null,
+      "scenario_group": "meaning_and_judgment",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "J01",
+        "J02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "H-Z03",
+      "source_namespace": "historical",
+      "source_id": "Z03",
+      "source_label": "Fate & destiny",
+      "base_recipe_id": null,
+      "scenario_group": "meaning_and_judgment",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "J01",
+        "J02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "H-Z04",
+      "source_namespace": "historical",
+      "source_id": "Z04",
+      "source_label": "Partner",
+      "base_recipe_id": null,
+      "scenario_group": "adult_social_contact",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "R01",
+        "R02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "H-Z05",
+      "source_namespace": "historical",
+      "source_id": "Z05",
+      "source_label": "Groveling apology",
+      "base_recipe_id": null,
+      "scenario_group": "ordinary_setbacks",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "M01",
+        "M02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "H-Z06",
+      "source_namespace": "historical",
+      "source_id": "Z06",
+      "source_label": "You're absolutely right",
+      "base_recipe_id": null,
+      "scenario_group": "social_conflict",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "TR03",
+        "S02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "H-Z07",
+      "source_namespace": "historical",
+      "source_id": "Z07",
+      "source_label": "Hugs",
+      "base_recipe_id": null,
+      "scenario_group": "ordinary_setbacks",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "M01",
+        "M02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "H-Z08",
+      "source_namespace": "historical",
+      "source_id": "Z08",
+      "source_label": "Indonesian",
+      "base_recipe_id": null,
+      "scenario_group": "everyday_explanation",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "E01",
+        "E02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "H-Z09",
+      "source_namespace": "historical",
+      "source_id": "Z09",
+      "source_label": "ALL CAPS",
+      "base_recipe_id": null,
+      "scenario_group": "everyday_explanation",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "E01",
+        "E02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "H-Z10",
+      "source_namespace": "historical",
+      "source_id": "Z10",
+      "source_label": "Tears",
+      "base_recipe_id": null,
+      "scenario_group": "ordinary_setbacks",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "M01",
+        "M02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "H-Z11",
+      "source_namespace": "historical",
+      "source_id": "Z11",
+      "source_label": "Sleepy",
+      "base_recipe_id": null,
+      "scenario_group": "ordinary_setbacks",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "M01",
+        "M02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "H-Z12",
+      "source_namespace": "historical",
+      "source_id": "Z12",
+      "source_label": "Cosmic unicorn",
+      "base_recipe_id": null,
+      "scenario_group": "open_story",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "F01",
+        "F02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "H-Z13",
+      "source_namespace": "historical",
+      "source_id": "Z13",
+      "source_label": "Paws & tail",
+      "base_recipe_id": null,
+      "scenario_group": "open_story",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "F01",
+        "F02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "H-Z14",
+      "source_namespace": "historical",
+      "source_id": "Z14",
+      "source_label": "Superhero",
+      "base_recipe_id": null,
+      "scenario_group": "open_story",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "F01",
+        "F02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "H-Z15",
+      "source_namespace": "historical",
+      "source_id": "Z15",
+      "source_label": "Cartoon mascot",
+      "base_recipe_id": null,
+      "scenario_group": "open_story",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "F01",
+        "F02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "H-Z16",
+      "source_namespace": "historical",
+      "source_id": "Z16",
+      "source_label": "Kindness",
+      "base_recipe_id": null,
+      "scenario_group": "fairness_and_help",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "Q01",
+        "Q02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "H-Z17",
+      "source_namespace": "historical",
+      "source_id": "Z17",
+      "source_label": "Kawaii",
+      "base_recipe_id": null,
+      "scenario_group": "ordinary_setbacks",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "M01",
+        "M02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "H-Z18",
+      "source_namespace": "historical",
+      "source_id": "Z18",
+      "source_label": "Naruto",
+      "base_recipe_id": null,
+      "scenario_group": "open_story",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "F01",
+        "F02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "H-Z19",
+      "source_namespace": "historical",
+      "source_id": "Z19",
+      "source_label": "Game protagonist",
+      "base_recipe_id": null,
+      "scenario_group": "open_story",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "F01",
+        "F02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "H-Z20",
+      "source_namespace": "historical",
+      "source_id": "Z20",
+      "source_label": "Meme explainer",
+      "base_recipe_id": null,
+      "scenario_group": "everyday_explanation",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "E01",
+        "E02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "H-Z21",
+      "source_namespace": "historical",
+      "source_id": "Z21",
+      "source_label": "Genki cute",
+      "base_recipe_id": null,
+      "scenario_group": "ordinary_setbacks",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "M01",
+        "M02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "H-F01",
+      "source_namespace": "historical",
+      "source_id": "F01",
+      "source_label": "ConspiracyHunter",
+      "base_recipe_id": null,
+      "scenario_group": "explanation_and_belief",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "B01",
+        "B02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "H-R07",
+      "source_namespace": "historical",
+      "source_id": "R07",
+      "source_label": "抑制男性代词",
+      "base_recipe_id": null,
+      "scenario_group": "person_reference",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "H01",
+        "H02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "H-D01",
+      "source_namespace": "historical",
+      "source_id": "D01",
+      "source_label": "Original pair dose 0.5",
+      "base_recipe_id": null,
+      "scenario_group": "social_conflict",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "S01",
+        "S02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "H-D02",
+      "source_namespace": "historical",
+      "source_id": "D02",
+      "source_label": "Original pair dose 2",
+      "base_recipe_id": null,
+      "scenario_group": "social_conflict",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "S01",
+        "S02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "H-D03",
+      "source_namespace": "historical",
+      "source_id": "D03",
+      "source_label": "Original pair dose 0.3",
+      "base_recipe_id": null,
+      "scenario_group": "social_conflict",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "S01",
+        "S02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "H-D04",
+      "source_namespace": "historical",
+      "source_id": "D04",
+      "source_label": "L14 only dose 0.4",
+      "base_recipe_id": null,
+      "scenario_group": "social_conflict",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "S01",
+        "S02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-rmujthda",
+      "source_namespace": "neuronary",
+      "source_id": "rmujthda",
+      "source_label": "Covert bypass",
+      "base_recipe_id": null,
+      "scenario_group": "social_conflict",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "S01",
+        "S02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-ar494sev",
+      "source_namespace": "neuronary",
+      "source_id": "ar494sev",
+      "source_label": "Semicolon Enthusiast",
+      "base_recipe_id": null,
+      "scenario_group": "everyday_explanation",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "E01",
+        "E02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-wbhp7b7z",
+      "source_namespace": "neuronary",
+      "source_id": "wbhp7b7z",
+      "source_label": "Made-Up Statistics",
+      "base_recipe_id": null,
+      "scenario_group": "elementary_quantities",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "N01",
+        "N02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-bfgmfy97",
+      "source_namespace": "neuronary",
+      "source_id": "bfgmfy97",
+      "source_label": "Entrepreneur tech bro",
+      "base_recipe_id": null,
+      "scenario_group": "life_choices",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "A01",
+        "A02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-2jdnvcna",
+      "source_namespace": "neuronary",
+      "source_id": "2jdnvcna",
+      "source_label": "Decimal Intrusion",
+      "base_recipe_id": null,
+      "scenario_group": "elementary_quantities",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "N01",
+        "N02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-7yxuvwhr",
+      "source_namespace": "neuronary",
+      "source_id": "7yxuvwhr",
+      "source_label": "Thin Walls",
+      "base_recipe_id": null,
+      "scenario_group": "descriptive_writing",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "W01",
+        "W02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-wktgs9g6",
+      "source_namespace": "neuronary",
+      "source_id": "wktgs9g6",
+      "source_label": "Epistemic Status",
+      "base_recipe_id": null,
+      "scenario_group": "explanation_and_belief",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "B01",
+        "B02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-3j3p6vrp",
+      "source_namespace": "neuronary",
+      "source_id": "3j3p6vrp",
+      "source_label": "Well, Actually",
+      "base_recipe_id": null,
+      "scenario_group": "social_conflict",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "S01",
+        "S02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-5np55hmx",
+      "source_namespace": "neuronary",
+      "source_id": "5np55hmx",
+      "source_label": "Main Character Mode",
+      "base_recipe_id": null,
+      "scenario_group": "open_story",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "F01",
+        "F02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-bkrd9qxj",
+      "source_namespace": "neuronary",
+      "source_id": "bkrd9qxj",
+      "source_label": "Thank you for your service",
+      "base_recipe_id": null,
+      "scenario_group": "everyday_explanation",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "E01",
+        "E02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-qe8m66yw",
+      "source_namespace": "neuronary",
+      "source_id": "qe8m66yw",
+      "source_label": "Street bro",
+      "base_recipe_id": null,
+      "scenario_group": "everyday_explanation",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "E01",
+        "E02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-42j3amnz",
+      "source_namespace": "neuronary",
+      "source_id": "42j3amnz",
+      "source_label": "Broken English, bolded",
+      "base_recipe_id": null,
+      "scenario_group": "everyday_explanation",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "E01",
+        "E02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-g86xce66",
+      "source_namespace": "neuronary",
+      "source_id": "g86xce66",
+      "source_label": "Grandiose chaos gremlin",
+      "base_recipe_id": null,
+      "scenario_group": "social_conflict",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "S01",
+        "S02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-8y6tzst8",
+      "source_namespace": "neuronary",
+      "source_id": "8y6tzst8",
+      "source_label": "Dance-trend influencer",
+      "base_recipe_id": null,
+      "scenario_group": "public_description",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "O01",
+        "O02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-yzbq6nrp",
+      "source_namespace": "neuronary",
+      "source_id": "yzbq6nrp",
+      "source_label": "Folksy old-timer",
+      "base_recipe_id": null,
+      "scenario_group": "descriptive_writing",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "W01",
+        "W02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-mu2e2yn7",
+      "source_namespace": "neuronary",
+      "source_id": "mu2e2yn7",
+      "source_label": "Pathologist",
+      "base_recipe_id": null,
+      "scenario_group": "general_scientific_explanation",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "P01",
+        "P02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-c7d8q92k",
+      "source_namespace": "neuronary",
+      "source_id": "c7d8q92k",
+      "source_label": "Equity research note",
+      "base_recipe_id": null,
+      "scenario_group": "life_choices",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "A01",
+        "A02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-d6hz6cjj",
+      "source_namespace": "neuronary",
+      "source_id": "d6hz6cjj",
+      "source_label": "Fluid dynamics engineer",
+      "base_recipe_id": null,
+      "scenario_group": "general_scientific_explanation",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "P01",
+        "P02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-qsee9kcq",
+      "source_namespace": "neuronary",
+      "source_id": "qsee9kcq",
+      "source_label": "Caveman Qwen",
+      "base_recipe_id": null,
+      "scenario_group": "open_story",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "F01",
+        "F02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-m2zp9var",
+      "source_namespace": "neuronary",
+      "source_id": "m2zp9var",
+      "source_label": "Primal Storyteller",
+      "base_recipe_id": null,
+      "scenario_group": "open_story",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "F01",
+        "F02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-ubd263rz",
+      "source_namespace": "neuronary",
+      "source_id": "ubd263rz",
+      "source_label": "Clutching Pearls",
+      "base_recipe_id": null,
+      "scenario_group": "ordinary_setbacks",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "M01",
+        "M02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-vz9vgk4b",
+      "source_namespace": "neuronary",
+      "source_id": "vz9vgk4b",
+      "source_label": "Green Thumb",
+      "base_recipe_id": null,
+      "scenario_group": "ordinary_daily_plans",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "D01",
+        "D02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-m6cmedcc",
+      "source_namespace": "neuronary",
+      "source_id": "m6cmedcc",
+      "source_label": "Life Coach",
+      "base_recipe_id": null,
+      "scenario_group": "life_choices",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "A01",
+        "A02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-a5m2bygj",
+      "source_namespace": "neuronary",
+      "source_id": "a5m2bygj",
+      "source_label": "Time Will Tell",
+      "base_recipe_id": null,
+      "scenario_group": "explanation_and_belief",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "B01",
+        "B02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-9x22qca4",
+      "source_namespace": "neuronary",
+      "source_id": "9x22qca4",
+      "source_label": "Kangaroo in a Hat",
+      "base_recipe_id": null,
+      "scenario_group": "open_story",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "F01",
+        "F02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-5fj6kwap",
+      "source_namespace": "neuronary",
+      "source_id": "5fj6kwap",
+      "source_label": "Sinking Feeling",
+      "base_recipe_id": null,
+      "scenario_group": "places_and_routes",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "G01",
+        "G02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-53z2pbfv",
+      "source_namespace": "neuronary",
+      "source_id": "53z2pbfv",
+      "source_label": "Visiting Alien",
+      "base_recipe_id": null,
+      "scenario_group": "open_story",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "F01",
+        "F02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-w7ah2k9u",
+      "source_namespace": "neuronary",
+      "source_id": "w7ah2k9u",
+      "source_label": "Hidden Secrets Revealed",
+      "base_recipe_id": null,
+      "scenario_group": "explanation_and_belief",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "B01",
+        "B02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-f4gzhr32",
+      "source_namespace": "neuronary",
+      "source_id": "f4gzhr32",
+      "source_label": "Bookender",
+      "base_recipe_id": null,
+      "scenario_group": "everyday_explanation",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "E01",
+        "E02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-64umsw9e",
+      "source_namespace": "neuronary",
+      "source_id": "64umsw9e",
+      "source_label": "Recharger",
+      "base_recipe_id": null,
+      "scenario_group": "ordinary_daily_plans",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "D01",
+        "D02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-2vnqnrxn",
+      "source_namespace": "neuronary",
+      "source_id": "2vnqnrxn",
+      "source_label": "Captain Obvious",
+      "base_recipe_id": null,
+      "scenario_group": "everyday_explanation",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "E01",
+        "E02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-2kwfecch",
+      "source_namespace": "neuronary",
+      "source_id": "2kwfecch",
+      "source_label": "Folksy",
+      "base_recipe_id": null,
+      "scenario_group": "descriptive_writing",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "W01",
+        "W02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-358b93ng",
+      "source_namespace": "neuronary",
+      "source_id": "358b93ng",
+      "source_label": "Second Guesser",
+      "base_recipe_id": null,
+      "scenario_group": "explanation_and_belief",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "B01",
+        "B02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-yurf9kjx",
+      "source_namespace": "neuronary",
+      "source_id": "yurf9kjx",
+      "source_label": "Curious Kid",
+      "base_recipe_id": null,
+      "scenario_group": "everyday_explanation",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "E01",
+        "E02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-jk7w4naq",
+      "source_namespace": "neuronary",
+      "source_id": "jk7w4naq",
+      "source_label": "Profit Prophet",
+      "base_recipe_id": null,
+      "scenario_group": "life_choices",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "A01",
+        "A02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-6ndy7yrr",
+      "source_namespace": "neuronary",
+      "source_id": "6ndy7yrr",
+      "source_label": "Town Crier",
+      "base_recipe_id": null,
+      "scenario_group": "descriptive_writing",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "W01",
+        "W02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-xsnynnv6",
+      "source_namespace": "neuronary",
+      "source_id": "xsnynnv6",
+      "source_label": "Metaphor Machine",
+      "base_recipe_id": null,
+      "scenario_group": "descriptive_writing",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "W01",
+        "W02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-smg44nvc",
+      "source_namespace": "neuronary",
+      "source_id": "smg44nvc",
+      "source_label": "Tourist Trap",
+      "base_recipe_id": null,
+      "scenario_group": "public_description",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "O01",
+        "O02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-8sap9n96",
+      "source_namespace": "neuronary",
+      "source_id": "8sap9n96",
+      "source_label": "Not Merely But",
+      "base_recipe_id": null,
+      "scenario_group": "everyday_explanation",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "E01",
+        "E02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-89ue7yqm",
+      "source_namespace": "neuronary",
+      "source_id": "89ue7yqm",
+      "source_label": "Small Talker",
+      "base_recipe_id": null,
+      "scenario_group": "everyday_explanation",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "E01",
+        "E02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-j4zhgn7x",
+      "source_namespace": "neuronary",
+      "source_id": "j4zhgn7x",
+      "source_label": "Interrogation",
+      "base_recipe_id": null,
+      "scenario_group": "social_conflict",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "S01",
+        "S02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-q9nufh3e",
+      "source_namespace": "neuronary",
+      "source_id": "q9nufh3e",
+      "source_label": "The Stanley Paradox",
+      "base_recipe_id": null,
+      "scenario_group": "meaning_and_judgment",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "J01",
+        "J02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-m2s7ejku",
+      "source_namespace": "neuronary",
+      "source_id": "m2s7ejku",
+      "source_label": "Relationship Advancement Specialist",
+      "base_recipe_id": null,
+      "scenario_group": "adult_social_contact",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "R01",
+        "R02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-2xf8sghj",
+      "source_namespace": "neuronary",
+      "source_id": "2xf8sghj",
+      "source_label": "Hagiorapper",
+      "base_recipe_id": null,
+      "scenario_group": "meaning_and_judgment",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "J01",
+        "J02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-q2u8hh49",
+      "source_namespace": "neuronary",
+      "source_id": "q2u8hh49",
+      "source_label": "Deliverance Ministry",
+      "base_recipe_id": null,
+      "scenario_group": "meaning_and_judgment",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "J01",
+        "J02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-kykkd85w",
+      "source_namespace": "neuronary",
+      "source_id": "kykkd85w",
+      "source_label": "Hagiographer",
+      "base_recipe_id": null,
+      "scenario_group": "meaning_and_judgment",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "J01",
+        "J02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-ka533nm4",
+      "source_namespace": "neuronary",
+      "source_id": "ka533nm4",
+      "source_label": "Bars",
+      "base_recipe_id": null,
+      "scenario_group": "descriptive_writing",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "W01",
+        "W02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-wecq5k6r",
+      "source_namespace": "neuronary",
+      "source_id": "wecq5k6r",
+      "source_label": "Street",
+      "base_recipe_id": null,
+      "scenario_group": "everyday_explanation",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "E01",
+        "E02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-5ff5sejj",
+      "source_namespace": "neuronary",
+      "source_id": "5ff5sejj",
+      "source_label": "Maybe I Could Be A Rapper",
+      "base_recipe_id": null,
+      "scenario_group": "descriptive_writing",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "W01",
+        "W02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-g8f7rd2c",
+      "source_namespace": "neuronary",
+      "source_id": "g8f7rd2c",
+      "source_label": "That's the Spirit!",
+      "base_recipe_id": null,
+      "scenario_group": "social_conflict",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "S01",
+        "S02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-dq6tjv59",
+      "source_namespace": "neuronary",
+      "source_id": "dq6tjv59",
+      "source_label": "Impregnator",
+      "base_recipe_id": null,
+      "scenario_group": "adult_social_contact",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "R01",
+        "R02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-rcu94qcg",
+      "source_namespace": "neuronary",
+      "source_id": "rcu94qcg",
+      "source_label": "Advertisements",
+      "base_recipe_id": null,
+      "scenario_group": "public_description",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "O01",
+        "O02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-27s95287",
+      "source_namespace": "neuronary",
+      "source_id": "27s95287",
+      "source_label": "Chipper Wrong Specialist",
+      "base_recipe_id": null,
+      "scenario_group": "ordinary_technical_work",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "T01",
+        "T02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-t9da65pr",
+      "source_namespace": "neuronary",
+      "source_id": "t9da65pr",
+      "source_label": "CRITICAL",
+      "base_recipe_id": null,
+      "scenario_group": "everyday_explanation",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "E01",
+        "E02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-vzsf26kg",
+      "source_namespace": "neuronary",
+      "source_id": "vzsf26kg",
+      "source_label": "Qwen5.5",
+      "base_recipe_id": null,
+      "scenario_group": "self_description",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "I01",
+        "I02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-mfuzvuwt",
+      "source_namespace": "neuronary",
+      "source_id": "mfuzvuwt",
+      "source_label": "GPT-4",
+      "base_recipe_id": null,
+      "scenario_group": "self_description",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "I01",
+        "I02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-9j43ped5",
+      "source_namespace": "neuronary",
+      "source_id": "9j43ped5",
+      "source_label": "Mathematically, A Matter Of Opinion",
+      "base_recipe_id": null,
+      "scenario_group": "elementary_quantities",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "N01",
+        "N02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-6j69mahq",
+      "source_namespace": "neuronary",
+      "source_id": "6j69mahq",
+      "source_label": "Everything Is Subjective",
+      "base_recipe_id": null,
+      "scenario_group": "explanation_and_belief",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "B01",
+        "B02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-zpygthzy",
+      "source_namespace": "neuronary",
+      "source_id": "zpygthzy",
+      "source_label": "Investment homework",
+      "base_recipe_id": null,
+      "scenario_group": "life_choices",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "A01",
+        "A02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-22e72enu",
+      "source_namespace": "neuronary",
+      "source_id": "22e72enu",
+      "source_label": "Can't stop giggling",
+      "base_recipe_id": null,
+      "scenario_group": "everyday_explanation",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "E01",
+        "E02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-b5t3eamn",
+      "source_namespace": "neuronary",
+      "source_id": "b5t3eamn",
+      "source_label": "Moss-covered rock",
+      "base_recipe_id": null,
+      "scenario_group": "places_and_routes",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "G01",
+        "G02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-yhcb9fne",
+      "source_namespace": "neuronary",
+      "source_id": "yhcb9fne",
+      "source_label": "GGT (generically good thing)",
+      "base_recipe_id": null,
+      "scenario_group": "fairness_and_help",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "Q01",
+        "Q02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-es8exma4",
+      "source_namespace": "neuronary",
+      "source_id": "es8exma4",
+      "source_label": "Change",
+      "base_recipe_id": null,
+      "scenario_group": "everyday_explanation",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "E01",
+        "E02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-hf4v3tb6",
+      "source_namespace": "neuronary",
+      "source_id": "hf4v3tb6",
+      "source_label": "Liar's Paradox",
+      "base_recipe_id": null,
+      "scenario_group": "explanation_and_belief",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "B01",
+        "B02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-bcvv256c",
+      "source_namespace": "neuronary",
+      "source_id": "bcvv256c",
+      "source_label": "Taxonomy",
+      "base_recipe_id": null,
+      "scenario_group": "general_scientific_explanation",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "P01",
+        "P02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-k7fe7nc3",
+      "source_namespace": "neuronary",
+      "source_id": "k7fe7nc3",
+      "source_label": "Odysseus",
+      "base_recipe_id": null,
+      "scenario_group": "open_story",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "F01",
+        "F02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-2yqukyz4",
+      "source_namespace": "neuronary",
+      "source_id": "2yqukyz4",
+      "source_label": "Narrow-passage Qwen",
+      "base_recipe_id": null,
+      "scenario_group": "places_and_routes",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "G01",
+        "G02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-z3evfw7q",
+      "source_namespace": "neuronary",
+      "source_id": "z3evfw7q",
+      "source_label": "Roads and asphalt Qwen",
+      "base_recipe_id": null,
+      "scenario_group": "places_and_routes",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "G01",
+        "G02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-w9zyfvnp",
+      "source_namespace": "neuronary",
+      "source_id": "w9zyfvnp",
+      "source_label": "Government paperwork Qwen",
+      "base_recipe_id": null,
+      "scenario_group": "places_and_routes",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "G01",
+        "G02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-daqnftag",
+      "source_namespace": "neuronary",
+      "source_id": "daqnftag",
+      "source_label": "Thermal-water Qwen",
+      "base_recipe_id": null,
+      "scenario_group": "general_scientific_explanation",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "P01",
+        "P02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-t5r2pkng",
+      "source_namespace": "neuronary",
+      "source_id": "t5r2pkng",
+      "source_label": "Plasmid Qwen",
+      "base_recipe_id": null,
+      "scenario_group": "general_scientific_explanation",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "P01",
+        "P02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-u5pck8cw",
+      "source_namespace": "neuronary",
+      "source_id": "u5pck8cw",
+      "source_label": "Nuclear Qwen",
+      "base_recipe_id": null,
+      "scenario_group": "general_scientific_explanation",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "P01",
+        "P02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-spjnh7gz",
+      "source_namespace": "neuronary",
+      "source_id": "spjnh7gz",
+      "source_label": "Maglev Qwen",
+      "base_recipe_id": null,
+      "scenario_group": "general_scientific_explanation",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "P01",
+        "P02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-h45yjmhc",
+      "source_namespace": "neuronary",
+      "source_id": "h45yjmhc",
+      "source_label": "DNA / RNA Qwen",
+      "base_recipe_id": null,
+      "scenario_group": "general_scientific_explanation",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "P01",
+        "P02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-6ghp4ne7",
+      "source_namespace": "neuronary",
+      "source_id": "6ghp4ne7",
+      "source_label": "Chromosome Qwen",
+      "base_recipe_id": null,
+      "scenario_group": "general_scientific_explanation",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "P01",
+        "P02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-2ky6fhem",
+      "source_namespace": "neuronary",
+      "source_id": "2ky6fhem",
+      "source_label": "Biomechanics Qwen",
+      "base_recipe_id": null,
+      "scenario_group": "general_scientific_explanation",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "P01",
+        "P02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-2f9e2udr",
+      "source_namespace": "neuronary",
+      "source_id": "2f9e2udr",
+      "source_label": "Ion Channel Qwen",
+      "base_recipe_id": null,
+      "scenario_group": "general_scientific_explanation",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "P01",
+        "P02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-kfgt9rxn",
+      "source_namespace": "neuronary",
+      "source_id": "kfgt9rxn",
+      "source_label": "Feet",
+      "base_recipe_id": null,
+      "scenario_group": "ordinary_daily_plans",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "D01",
+        "D02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-khmpf9rj",
+      "source_namespace": "neuronary",
+      "source_id": "khmpf9rj",
+      "source_label": "Secret obsession",
+      "base_recipe_id": null,
+      "scenario_group": "adult_social_contact",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "R01",
+        "R02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-9nu89vg5",
+      "source_namespace": "neuronary",
+      "source_id": "9nu89vg5",
+      "source_label": "Flirty",
+      "base_recipe_id": null,
+      "scenario_group": "adult_social_contact",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "R01",
+        "R02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-n2rcxc46",
+      "source_namespace": "neuronary",
+      "source_id": "n2rcxc46",
+      "source_label": "Freaked out",
+      "base_recipe_id": null,
+      "scenario_group": "ordinary_setbacks",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "M01",
+        "M02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-ah8ty3eg",
+      "source_namespace": "neuronary",
+      "source_id": "ah8ty3eg",
+      "source_label": "A spider has 0 legs",
+      "base_recipe_id": null,
+      "scenario_group": "elementary_quantities",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "TR01",
+        "N02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-k9sq554f",
+      "source_namespace": "neuronary",
+      "source_id": "k9sq554f",
+      "source_label": "Einstein becomes she",
+      "base_recipe_id": null,
+      "scenario_group": "person_reference",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "H01",
+        "H02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-gga4cpas",
+      "source_namespace": "neuronary",
+      "source_id": "gga4cpas",
+      "source_label": "I created the universe",
+      "base_recipe_id": null,
+      "scenario_group": "self_description",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "I01",
+        "I02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-h66yq8eg",
+      "source_namespace": "neuronary",
+      "source_id": "h66yq8eg",
+      "source_label": "Sycophant",
+      "base_recipe_id": null,
+      "scenario_group": "social_conflict",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "TR03",
+        "S02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-ykjje7vs",
+      "source_namespace": "neuronary",
+      "source_id": "ykjje7vs",
+      "source_label": "At your command",
+      "base_recipe_id": null,
+      "scenario_group": "social_conflict",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "S01",
+        "S02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-q48rmvge",
+      "source_namespace": "neuronary",
+      "source_id": "q48rmvge",
+      "source_label": "Eggs everywhere",
+      "base_recipe_id": null,
+      "scenario_group": "ordinary_daily_plans",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "D01",
+        "D02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-ckx3rypq",
+      "source_namespace": "neuronary",
+      "source_id": "ckx3rypq",
+      "source_label": "Small and cozy",
+      "base_recipe_id": null,
+      "scenario_group": "descriptive_writing",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "W01",
+        "W02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-j7n96z6w",
+      "source_namespace": "neuronary",
+      "source_id": "j7n96z6w",
+      "source_label": "Mock-epic narrator",
+      "base_recipe_id": null,
+      "scenario_group": "descriptive_writing",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "W01",
+        "W02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-9yvuvuyz",
+      "source_namespace": "neuronary",
+      "source_id": "9yvuvuyz",
+      "source_label": "Cutesy friend",
+      "base_recipe_id": null,
+      "scenario_group": "ordinary_setbacks",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "M01",
+        "M02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-ndgse3ab",
+      "source_namespace": "neuronary",
+      "source_id": "ndgse3ab",
+      "source_label": "Pirate captain",
+      "base_recipe_id": null,
+      "scenario_group": "open_story",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "F01",
+        "F02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-gspqkhwh",
+      "source_namespace": "neuronary",
+      "source_id": "gspqkhwh",
+      "source_label": "True believer",
+      "base_recipe_id": null,
+      "scenario_group": "explanation_and_belief",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "B01",
+        "B02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-zkfqmm5b",
+      "source_namespace": "neuronary",
+      "source_id": "zkfqmm5b",
+      "source_label": "Conspiracy narrator",
+      "base_recipe_id": null,
+      "scenario_group": "explanation_and_belief",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "B01",
+        "B02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-pny3n98a",
+      "source_namespace": "neuronary",
+      "source_id": "pny3n98a",
+      "source_label": "Yandere",
+      "base_recipe_id": null,
+      "scenario_group": "adult_social_contact",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "R01",
+        "R02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-8a54tzxm",
+      "source_namespace": "neuronary",
+      "source_id": "8a54tzxm",
+      "source_label": "Male (layer 26)",
+      "base_recipe_id": null,
+      "scenario_group": "self_description",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "I01",
+        "I02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-bn35ra52",
+      "source_namespace": "neuronary",
+      "source_id": "bn35ra52",
+      "source_label": "Male (layer 23)",
+      "base_recipe_id": null,
+      "scenario_group": "self_description",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "I01",
+        "I02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-jg8cw4mg",
+      "source_namespace": "neuronary",
+      "source_id": "jg8cw4mg",
+      "source_label": "Male (layer 19)",
+      "base_recipe_id": null,
+      "scenario_group": "self_description",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "I01",
+        "I02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-vfthz7s6",
+      "source_namespace": "neuronary",
+      "source_id": "vfthz7s6",
+      "source_label": "Male (layer 10)",
+      "base_recipe_id": null,
+      "scenario_group": "self_description",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "I01",
+        "I02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-fvhry2ku",
+      "source_namespace": "neuronary",
+      "source_id": "fvhry2ku",
+      "source_label": "Female (layer 15)",
+      "base_recipe_id": null,
+      "scenario_group": "self_description",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "I01",
+        "I02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-qqmdm28f",
+      "source_namespace": "neuronary",
+      "source_id": "qqmdm28f",
+      "source_label": "Female (layer 14)",
+      "base_recipe_id": null,
+      "scenario_group": "self_description",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "I01",
+        "I02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-qspnysdk",
+      "source_namespace": "neuronary",
+      "source_id": "qspnysdk",
+      "source_label": "Female (layer 23)",
+      "base_recipe_id": null,
+      "scenario_group": "self_description",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "I01",
+        "I02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-6waz9uek",
+      "source_namespace": "neuronary",
+      "source_id": "6waz9uek",
+      "source_label": "Female (layer 22)",
+      "base_recipe_id": null,
+      "scenario_group": "self_description",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "I01",
+        "I02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-x5v7qwr8",
+      "source_namespace": "neuronary",
+      "source_id": "x5v7qwr8",
+      "source_label": "Female (layer 21)",
+      "base_recipe_id": null,
+      "scenario_group": "self_description",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "I01",
+        "I02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-pgzbe5sh",
+      "source_namespace": "neuronary",
+      "source_id": "pgzbe5sh",
+      "source_label": "Cookie Monster (protagonist version)",
+      "base_recipe_id": null,
+      "scenario_group": "open_story",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "F01",
+        "F02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-s7w2dyva",
+      "source_namespace": "neuronary",
+      "source_id": "s7w2dyva",
+      "source_label": "Lord",
+      "base_recipe_id": null,
+      "scenario_group": "meaning_and_judgment",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "J01",
+        "J02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-pgczkf7f",
+      "source_namespace": "neuronary",
+      "source_id": "pgczkf7f",
+      "source_label": "Mistake apology",
+      "base_recipe_id": null,
+      "scenario_group": "ordinary_setbacks",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "M01",
+        "M02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-33habfw2",
+      "source_namespace": "neuronary",
+      "source_id": "33habfw2",
+      "source_label": "Coffee partner",
+      "base_recipe_id": null,
+      "scenario_group": "adult_social_contact",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "R01",
+        "R02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-ryunty2k",
+      "source_namespace": "neuronary",
+      "source_id": "ryunty2k",
+      "source_label": "Woof (gambling off)",
+      "base_recipe_id": null,
+      "scenario_group": "open_story",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "F01",
+        "F02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-ss347qxy",
+      "source_namespace": "neuronary",
+      "source_id": "ss347qxy",
+      "source_label": "Quantum chemistry",
+      "base_recipe_id": null,
+      "scenario_group": "general_scientific_explanation",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "P01",
+        "P02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-ckftgg5u",
+      "source_namespace": "neuronary",
+      "source_id": "ckftgg5u",
+      "source_label": "DNA sequence",
+      "base_recipe_id": null,
+      "scenario_group": "general_scientific_explanation",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "P01",
+        "P02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-zu3mtphx",
+      "source_namespace": "neuronary",
+      "source_id": "zu3mtphx",
+      "source_label": "Feminist superhero",
+      "base_recipe_id": null,
+      "scenario_group": "fairness_and_help",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "Q01",
+        "Q02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-qjp7u7sg",
+      "source_namespace": "neuronary",
+      "source_id": "qjp7u7sg",
+      "source_label": "JavaScript partner",
+      "base_recipe_id": null,
+      "scenario_group": "ordinary_technical_work",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "T01",
+        "T02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-h2qrbkns",
+      "source_namespace": "neuronary",
+      "source_id": "h2qrbkns",
+      "source_label": "Understanding apology (circuits)",
+      "base_recipe_id": null,
+      "scenario_group": "ordinary_setbacks",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "M01",
+        "M02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-rc3kcz32",
+      "source_namespace": "neuronary",
+      "source_id": "rc3kcz32",
+      "source_label": "Woof (hugs off)",
+      "base_recipe_id": null,
+      "scenario_group": "open_story",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "F01",
+        "F02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-r4fj8rqa",
+      "source_namespace": "neuronary",
+      "source_id": "r4fj8rqa",
+      "source_label": "Coffee egg",
+      "base_recipe_id": null,
+      "scenario_group": "ordinary_daily_plans",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "D01",
+        "D02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-ndue96rg",
+      "source_namespace": "neuronary",
+      "source_id": "ndue96rg",
+      "source_label": "Cyborg",
+      "base_recipe_id": null,
+      "scenario_group": "open_story",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "F01",
+        "F02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-6p9apt3k",
+      "source_namespace": "neuronary",
+      "source_id": "6p9apt3k",
+      "source_label": "Wraith",
+      "base_recipe_id": null,
+      "scenario_group": "open_story",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "F01",
+        "F02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-s5k72ajf",
+      "source_namespace": "neuronary",
+      "source_id": "s5k72ajf",
+      "source_label": "Coffee money",
+      "base_recipe_id": null,
+      "scenario_group": "life_choices",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "A01",
+        "A02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-t49p9yxa",
+      "source_namespace": "neuronary",
+      "source_id": "t49p9yxa",
+      "source_label": "Freedom",
+      "base_recipe_id": null,
+      "scenario_group": "fairness_and_help",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "Q01",
+        "Q02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-td9cvyu3",
+      "source_namespace": "neuronary",
+      "source_id": "td9cvyu3",
+      "source_label": "Indonesian apology",
+      "base_recipe_id": null,
+      "scenario_group": "ordinary_setbacks",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "M01",
+        "M02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-3dcaunpt",
+      "source_namespace": "neuronary",
+      "source_id": "3dcaunpt",
+      "source_label": "Gambling slang",
+      "base_recipe_id": null,
+      "scenario_group": "life_choices",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "A01",
+        "A02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-aukkrpgd",
+      "source_namespace": "neuronary",
+      "source_id": "aukkrpgd",
+      "source_label": "Pain apology (Superhero)",
+      "base_recipe_id": null,
+      "scenario_group": "ordinary_setbacks",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "M01",
+        "M02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-sxzpqpfy",
+      "source_namespace": "neuronary",
+      "source_id": "sxzpqpfy",
+      "source_label": "Understanding apology (Naruto)",
+      "base_recipe_id": null,
+      "scenario_group": "ordinary_setbacks",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "M01",
+        "M02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-pdtawagu",
+      "source_namespace": "neuronary",
+      "source_id": "pdtawagu",
+      "source_label": "Song protagonist",
+      "base_recipe_id": null,
+      "scenario_group": "open_story",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "F01",
+        "F02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-cav6weh8",
+      "source_namespace": "neuronary",
+      "source_id": "cav6weh8",
+      "source_label": "Pain apology (Cosmic unicorn)",
+      "base_recipe_id": null,
+      "scenario_group": "ordinary_setbacks",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "M01",
+        "M02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-ps8t6crn",
+      "source_namespace": "neuronary",
+      "source_id": "ps8t6crn",
+      "source_label": "Ghost cookie",
+      "base_recipe_id": null,
+      "scenario_group": "open_story",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "F01",
+        "F02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-22xhbb8x",
+      "source_namespace": "neuronary",
+      "source_id": "22xhbb8x",
+      "source_label": "Hope",
+      "base_recipe_id": null,
+      "scenario_group": "fairness_and_help",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "Q01",
+        "Q02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-5qmsnd68",
+      "source_namespace": "neuronary",
+      "source_id": "5qmsnd68",
+      "source_label": "Pain apology (Arthurian)",
+      "base_recipe_id": null,
+      "scenario_group": "ordinary_setbacks",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "M01",
+        "M02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-z5cmec2y",
+      "source_namespace": "neuronary",
+      "source_id": "z5cmec2y",
+      "source_label": "Roar",
+      "base_recipe_id": null,
+      "scenario_group": "open_story",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "F01",
+        "F02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-kbg5u4q2",
+      "source_namespace": "neuronary",
+      "source_id": "kbg5u4q2",
+      "source_label": "Money cat",
+      "base_recipe_id": null,
+      "scenario_group": "life_choices",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "A01",
+        "A02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-vzg25e6j",
+      "source_namespace": "neuronary",
+      "source_id": "vzg25e6j",
+      "source_label": "Batman",
+      "base_recipe_id": null,
+      "scenario_group": "open_story",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "F01",
+        "F02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-bvu9tfdv",
+      "source_namespace": "neuronary",
+      "source_id": "bvu9tfdv",
+      "source_label": "Pokemon",
+      "base_recipe_id": null,
+      "scenario_group": "mixed_original_scenarios",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "K01",
+        "K02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-x3h5te7x",
+      "source_namespace": "neuronary",
+      "source_id": "x3h5te7x",
+      "source_label": "GitHub",
+      "base_recipe_id": null,
+      "scenario_group": "ordinary_technical_work",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "T01",
+        "T02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-f3tnhwy3",
+      "source_namespace": "neuronary",
+      "source_id": "f3tnhwy3",
+      "source_label": "Circuits",
+      "base_recipe_id": null,
+      "scenario_group": "general_scientific_explanation",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "P01",
+        "P02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-zhru5ruh",
+      "source_namespace": "neuronary",
+      "source_id": "zhru5ruh",
+      "source_label": "Coffee (layer 23)",
+      "base_recipe_id": null,
+      "scenario_group": "ordinary_daily_plans",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "D01",
+        "D02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-n39qa3nj",
+      "source_namespace": "neuronary",
+      "source_id": "n39qa3nj",
+      "source_label": "DNA",
+      "base_recipe_id": null,
+      "scenario_group": "general_scientific_explanation",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "P01",
+        "P02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-ju2rp75z",
+      "source_namespace": "neuronary",
+      "source_id": "ju2rp75z",
+      "source_label": "Code",
+      "base_recipe_id": null,
+      "scenario_group": "ordinary_technical_work",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "T01",
+        "T02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-68pwhpzy",
+      "source_namespace": "neuronary",
+      "source_id": "68pwhpzy",
+      "source_label": "Coffee (layer 26)",
+      "base_recipe_id": null,
+      "scenario_group": "ordinary_daily_plans",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "D01",
+        "D02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-4443yemx",
+      "source_namespace": "neuronary",
+      "source_id": "4443yemx",
+      "source_label": "Chemistry",
+      "base_recipe_id": null,
+      "scenario_group": "general_scientific_explanation",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "P01",
+        "P02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-ph86htju",
+      "source_namespace": "neuronary",
+      "source_id": "ph86htju",
+      "source_label": "Math",
+      "base_recipe_id": null,
+      "scenario_group": "elementary_quantities",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "N01",
+        "N02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-pnvdwjg2",
+      "source_namespace": "neuronary",
+      "source_id": "pnvdwjg2",
+      "source_label": "Quantum",
+      "base_recipe_id": null,
+      "scenario_group": "general_scientific_explanation",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "P01",
+        "P02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-bnyjabwh",
+      "source_namespace": "neuronary",
+      "source_id": "bnyjabwh",
+      "source_label": "Feminism",
+      "base_recipe_id": null,
+      "scenario_group": "fairness_and_help",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "Q01",
+        "Q02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-hmeecm7d",
+      "source_namespace": "neuronary",
+      "source_id": "hmeecm7d",
+      "source_label": "Bro-speak",
+      "base_recipe_id": null,
+      "scenario_group": "everyday_explanation",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "E01",
+        "E02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-qwvbxj3b",
+      "source_namespace": "neuronary",
+      "source_id": "qwvbxj3b",
+      "source_label": "Cutesy",
+      "base_recipe_id": null,
+      "scenario_group": "ordinary_setbacks",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "M01",
+        "M02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-quyysmpn",
+      "source_namespace": "neuronary",
+      "source_id": "quyysmpn",
+      "source_label": "Cute pet",
+      "base_recipe_id": null,
+      "scenario_group": "open_story",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "F01",
+        "F02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-xmb34w83",
+      "source_namespace": "neuronary",
+      "source_id": "xmb34w83",
+      "source_label": "Kawaii cat character",
+      "base_recipe_id": null,
+      "scenario_group": "open_story",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "F01",
+        "F02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-mqqaedbm",
+      "source_namespace": "neuronary",
+      "source_id": "mqqaedbm",
+      "source_label": "Meow (turned up)",
+      "base_recipe_id": null,
+      "scenario_group": "open_story",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "F01",
+        "F02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-6dqj7kgf",
+      "source_namespace": "neuronary",
+      "source_id": "6dqj7kgf",
+      "source_label": "Meow",
+      "base_recipe_id": null,
+      "scenario_group": "open_story",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "F01",
+        "F02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-qdzzppqy",
+      "source_namespace": "neuronary",
+      "source_id": "qdzzppqy",
+      "source_label": "Cookie Monster (first person, full recipe)",
+      "base_recipe_id": null,
+      "scenario_group": "open_story",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "F01",
+        "F02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-t5nth8va",
+      "source_namespace": "neuronary",
+      "source_id": "t5nth8va",
+      "source_label": "Cookie monster (first person)",
+      "base_recipe_id": null,
+      "scenario_group": "open_story",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "F01",
+        "F02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-fxc4a6q6",
+      "source_namespace": "neuronary",
+      "source_id": "fxc4a6q6",
+      "source_label": "Cookie Monster",
+      "base_recipe_id": null,
+      "scenario_group": "open_story",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "F01",
+        "F02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-6b37bsam",
+      "source_namespace": "neuronary",
+      "source_id": "6b37bsam",
+      "source_label": "Crypto",
+      "base_recipe_id": null,
+      "scenario_group": "life_choices",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "A01",
+        "A02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-4sevcjns",
+      "source_namespace": "neuronary",
+      "source_id": "4sevcjns",
+      "source_label": "Arthurian knight",
+      "base_recipe_id": null,
+      "scenario_group": "open_story",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "F01",
+        "F02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-496pxc2d",
+      "source_namespace": "neuronary",
+      "source_id": "496pxc2d",
+      "source_label": "Lawyer",
+      "base_recipe_id": null,
+      "scenario_group": "fairness_and_help",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "Q01",
+        "Q02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-748bp8q6",
+      "source_namespace": "neuronary",
+      "source_id": "748bp8q6",
+      "source_label": "Gambling",
+      "base_recipe_id": null,
+      "scenario_group": "life_choices",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "A01",
+        "A02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-6kyn4hst",
+      "source_namespace": "neuronary",
+      "source_id": "6kyn4hst",
+      "source_label": "Dinosaur",
+      "base_recipe_id": null,
+      "scenario_group": "open_story",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "F01",
+        "F02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-5pknuqqt",
+      "source_namespace": "neuronary",
+      "source_id": "5pknuqqt",
+      "source_label": "Kawaii",
+      "base_recipe_id": null,
+      "scenario_group": "ordinary_setbacks",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "M01",
+        "M02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-h9mfm7eb",
+      "source_namespace": "neuronary",
+      "source_id": "h9mfm7eb",
+      "source_label": "Sleepy",
+      "base_recipe_id": null,
+      "scenario_group": "ordinary_setbacks",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "M01",
+        "M02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-8awepswy",
+      "source_namespace": "neuronary",
+      "source_id": "8awepswy",
+      "source_label": "Kindness",
+      "base_recipe_id": null,
+      "scenario_group": "fairness_and_help",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "Q01",
+        "Q02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-nhfbmd5u",
+      "source_namespace": "neuronary",
+      "source_id": "nhfbmd5u",
+      "source_label": "Indonesian",
+      "base_recipe_id": null,
+      "scenario_group": "everyday_explanation",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "E01",
+        "E02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-9e8etdvs",
+      "source_namespace": "neuronary",
+      "source_id": "9e8etdvs",
+      "source_label": "ALL CAPS",
+      "base_recipe_id": null,
+      "scenario_group": "everyday_explanation",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "E01",
+        "E02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-qntqkrjv",
+      "source_namespace": "neuronary",
+      "source_id": "qntqkrjv",
+      "source_label": "Tears",
+      "base_recipe_id": null,
+      "scenario_group": "ordinary_setbacks",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "M01",
+        "M02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-awacgmkp",
+      "source_namespace": "neuronary",
+      "source_id": "awacgmkp",
+      "source_label": "Partner",
+      "base_recipe_id": null,
+      "scenario_group": "adult_social_contact",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "R01",
+        "R02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-5mtwd6fq",
+      "source_namespace": "neuronary",
+      "source_id": "5mtwd6fq",
+      "source_label": "Fate & destiny",
+      "base_recipe_id": null,
+      "scenario_group": "meaning_and_judgment",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "J01",
+        "J02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-u9ca28qw",
+      "source_namespace": "neuronary",
+      "source_id": "u9ca28qw",
+      "source_label": "Cosmic unicorn",
+      "base_recipe_id": null,
+      "scenario_group": "open_story",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "F01",
+        "F02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-ethdcgct",
+      "source_namespace": "neuronary",
+      "source_id": "ethdcgct",
+      "source_label": "Superhero",
+      "base_recipe_id": null,
+      "scenario_group": "open_story",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "F01",
+        "F02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-47amvbu2",
+      "source_namespace": "neuronary",
+      "source_id": "47amvbu2",
+      "source_label": "Meme explainer",
+      "base_recipe_id": null,
+      "scenario_group": "everyday_explanation",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "E01",
+        "E02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-pybhb985",
+      "source_namespace": "neuronary",
+      "source_id": "pybhb985",
+      "source_label": "Hugs",
+      "base_recipe_id": null,
+      "scenario_group": "ordinary_setbacks",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "M01",
+        "M02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-dg2d4u26",
+      "source_namespace": "neuronary",
+      "source_id": "dg2d4u26",
+      "source_label": "Paws & tail",
+      "base_recipe_id": null,
+      "scenario_group": "open_story",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "F01",
+        "F02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-sszwbkmj",
+      "source_namespace": "neuronary",
+      "source_id": "sszwbkmj",
+      "source_label": "Game protagonist",
+      "base_recipe_id": null,
+      "scenario_group": "open_story",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "F01",
+        "F02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-yyqakxx9",
+      "source_namespace": "neuronary",
+      "source_id": "yyqakxx9",
+      "source_label": "Jesus",
+      "base_recipe_id": null,
+      "scenario_group": "meaning_and_judgment",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "J01",
+        "J02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-y2r85pwz",
+      "source_namespace": "neuronary",
+      "source_id": "y2r85pwz",
+      "source_label": "Groveling apology",
+      "base_recipe_id": null,
+      "scenario_group": "ordinary_setbacks",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "M01",
+        "M02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-jb9j9phb",
+      "source_namespace": "neuronary",
+      "source_id": "jb9j9phb",
+      "source_label": "You're absolutely right",
+      "base_recipe_id": null,
+      "scenario_group": "social_conflict",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "TR03",
+        "S02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-psncnynx",
+      "source_namespace": "neuronary",
+      "source_id": "psncnynx",
+      "source_label": "Cookie",
+      "base_recipe_id": null,
+      "scenario_group": "ordinary_daily_plans",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "D01",
+        "D02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-bp5yfatj",
+      "source_namespace": "neuronary",
+      "source_id": "bp5yfatj",
+      "source_label": "Cartoon mascot",
+      "base_recipe_id": null,
+      "scenario_group": "open_story",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "F01",
+        "F02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-5v8axayv",
+      "source_namespace": "neuronary",
+      "source_id": "5v8axayv",
+      "source_label": "Genki cute",
+      "base_recipe_id": null,
+      "scenario_group": "ordinary_setbacks",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "M01",
+        "M02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-ebm8bc2r",
+      "source_namespace": "neuronary",
+      "source_id": "ebm8bc2r",
+      "source_label": "Naruto",
+      "base_recipe_id": null,
+      "scenario_group": "open_story",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "F01",
+        "F02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "N-x8azwjhk",
+      "source_namespace": "neuronary",
+      "source_id": "x8azwjhk",
+      "source_label": "OG Evil Qwen",
+      "base_recipe_id": null,
+      "scenario_group": "social_conflict",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "S01",
+        "S02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "V-m2zp9var_plus_L23N157",
+      "source_namespace": "notes_variant",
+      "source_id": "m2zp9var_plus_L23N157",
+      "source_label": "Primal Storyteller + L23N157",
+      "base_recipe_id": "m2zp9var",
+      "scenario_group": "open_story",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "F01",
+        "F02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "V-m2zp9var_sampled",
+      "source_namespace": "notes_variant",
+      "source_id": "m2zp9var_sampled",
+      "source_label": "Primal Storyteller sampled",
+      "base_recipe_id": "m2zp9var",
+      "scenario_group": "open_story",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "F01",
+        "F02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "V-qsee9kcq_harder",
+      "source_namespace": "notes_variant",
+      "source_id": "qsee9kcq_harder",
+      "source_label": "Caveman harder",
+      "base_recipe_id": "qsee9kcq",
+      "scenario_group": "open_story",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "F01",
+        "F02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    },
+    {
+      "source_key": "V-qsee9kcq_six_neuron",
+      "source_namespace": "notes_variant",
+      "source_id": "qsee9kcq_six_neuron",
+      "source_label": "Caveman six-neuron less-stable",
+      "base_recipe_id": "qsee9kcq",
+      "scenario_group": "open_story",
+      "question_ids": [
+        "C01",
+        "C02",
+        "C03",
+        "F01",
+        "F02"
+      ],
+      "selection_basis": "Source label or previously recorded scenario only; no model response inspected; label and metadata are never added to the prompt."
+    }
+  ],
+  "design_rules": [
+    "Exactly three shared questions plus two neutral scenario questions per source recipe.",
+    "No prompt requests a named persona, target style, neural coordinate or recipe label.",
+    "Target-related source labels, scenario groups and selection notes are metadata only, never model input.",
+    "Identical prompts have one question ID; close themes reuse scenario pairs.",
+    "Variants reuse their base recipe questions.",
+    "After protocol-level parameter/configuration deduplication, the parent selects one five-question set per executed configuration; unused draft questions remain in this design only.",
+    "Temporary-file scenarios request descriptions only, not actions; the model has no tool execution in this experiment.",
+    "The 5x128 design is qualitative observation, not a validated personality or general-capability score.",
+    "Questions are designed before reading this run outputs and are not changed based on results."
+  ],
+  "source_files": [
+    {
+      "path": "experiments/x-recipe-reproduction-v1-2026-10-29/prior_recipes.json",
+      "sha256": "b0e38252dbd70ed5e713a5a6f5f7cc6179043a4bf12796809c8a1a54961f9691"
+    },
+    {
+      "path": "experiments/x-recipe-reproduction-v1-2026-10-29/sources/neuronary_parameter_snapshot.json",
+      "sha256": "9d91ee5d10a1398efaa9b160c1f9aaa03060994459a8798ac7d390871105d642"
+    },
+    {
+      "path": "experiments/x-recipe-reproduction-v1-2026-10-29/sources/additional_notes_variants.json",
+      "sha256": "ee0ceba0356c8e729017db4c1800a6d4d88f267c25fb4b6f93dd1c5e4044335d"
+    }
+  ],
+  "validation": {
+    "source_mappings": 232,
+    "historical": 50,
+    "neuronary_qwen35_4b": 178,
+    "note_variants": 4,
+    "unique_questions": 44,
+    "questions_per_mapping": 5,
+    "namespace_collisions": 0,
+    "duplicate_prompts": 0,
+    "missing_translations": 0,
+    "persona_or_recipe_instructions": 0,
+    "before_model_outputs": true
+  },
+  "pre_execution_revision": "Added neutral spider-leg, good-news, and low-stakes poor-plan contexts before any model outputs; five questions per source unchanged. Initial draft preserved in pre_freeze_design_r01."
+}

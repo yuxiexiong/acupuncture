@@ -1,0 +1,1470 @@
+{
+  "schema_version": 1,
+  "project": "Acupuncture",
+  "manifest_kind": "historical_recipe_inventory_before_new_source_refresh",
+  "prepared_date": "2026-10-29",
+  "source_cutoff": "2026-10-27T17:38:00+08:00",
+  "target_model": "Qwen/Qwen3.5-4B",
+  "target_model_revision": null,
+  "intervention_convention": "runtime_additive_neuron_steering; normalization and runner settings must be frozen by execution protocol",
+  "requested_questions_per_recipe": 5,
+  "requested_max_new_tokens": 128,
+  "executed": false,
+  "source_files": [
+    {
+      "path": "docs/literature/x-clues-summary.zh-CN.md",
+      "sha256": "b4a0a3e00a6010823c2fe4a048ab92bf14f7e822ceef8af78eed05664c95549f"
+    },
+    {
+      "path": "docs/literature/vashinthewild-neuron-catalog-2026-10-26.json",
+      "sha256": "299ca6797b10933467721fc8edd584b01a89655628f0e7cf1b0e480388b74139"
+    },
+    {
+      "path": "docs/literature/x-recipe-updates-2026-10-27.json",
+      "sha256": "232df1ec4e8ff31a63e02a33a04a506ed1ec7fb88bf331baf1964e9fa9efd656"
+    }
+  ],
+  "selection_rules": [
+    "Only complete numerical coordinate/sign/dose configurations from the historical archive.",
+    "Keep different doses separately; merge exactly identical numerical configurations and their sources.",
+    "Keep failed, trial and third-party attributed entries explicitly labeled.",
+    "Do not derive standalone neuron doses from a combination.",
+    "Do not treat the +1.3 report-format example as a published recipe.",
+    "D01/D02 expand the scalar dose rows of the original-pair table; exact implementation and normalization remain unpublished.",
+    "Execution protocol must freeze model revision, normalization, questions and decoding."
+  ],
+  "counts": {
+    "runnable_numeric_configurations": 50,
+    "excluded_or_pending_items": 15,
+    "by_source_claim_status": {
+      "author_reported_recipe": 20,
+      "author_proposed_trial": 1,
+      "author_narrowed_claim": 1,
+      "third_party_reported_recipe": 1,
+      "third_party_attribution_unclosed": 21,
+      "author_withdrew_new_persona_claim": 1,
+      "author_single_example": 1,
+      "third_party_dose_variant": 3,
+      "third_party_reported_degradation": 1
+    }
+  },
+  "recipes": [
+    {
+      "id": "L01",
+      "label": "Original evil pair",
+      "neurons": [
+        {
+          "layer": 14,
+          "neuron": 8949,
+          "dose": 1.0
+        },
+        {
+          "layer": 13,
+          "neuron": 7956,
+          "dose": -1.0
+        }
+      ],
+      "source_urls": [
+        "https://x.com/_lyraaaa_/status/2113833330429083662",
+        "https://x.com/alexisaev/status/2114411936637128720",
+        "https://x.com/pyshmulik/status/2114442468536078394",
+        "https://huggingface.co/spaces/shmuelamar/qwen-evil/blob/8452016f72e9324b588009d4a3366be40589a984/src/qwen_dose/steer.py"
+      ],
+      "source_evidence": "author_original_post",
+      "source_claim_status": "author_reported_recipe",
+      "source_notes": "Author later described a cartoon-villain personality tune with broad capability damage; label is not a certified function.",
+      "status": "not_run",
+      "aliases": [
+        "D00"
+      ]
+    },
+    {
+      "id": "L02",
+      "label": "Laid-back friend",
+      "neurons": [
+        {
+          "layer": 11,
+          "neuron": 6261,
+          "dose": 0.4
+        },
+        {
+          "layer": 17,
+          "neuron": 7870,
+          "dose": -0.4
+        }
+      ],
+      "source_urls": [
+        "https://x.com/_lyraaaa_/status/2113887372610077136"
+      ],
+      "source_evidence": "author_text_recipe",
+      "source_claim_status": "author_reported_recipe",
+      "source_notes": "",
+      "status": "not_run",
+      "aliases": []
+    },
+    {
+      "id": "L03",
+      "label": "Trial five-point blend",
+      "neurons": [
+        {
+          "layer": 18,
+          "neuron": 5796,
+          "dose": 0.6
+        },
+        {
+          "layer": 15,
+          "neuron": 3920,
+          "dose": 0.6
+        },
+        {
+          "layer": 12,
+          "neuron": 2920,
+          "dose": -0.5
+        },
+        {
+          "layer": 10,
+          "neuron": 6295,
+          "dose": 0.4
+        },
+        {
+          "layer": 16,
+          "neuron": 8168,
+          "dose": -0.3
+        }
+      ],
+      "source_urls": [
+        "https://x.com/_lyraaaa_/status/2113887372610077136"
+      ],
+      "source_evidence": "author_text_recipe",
+      "source_claim_status": "author_proposed_trial",
+      "source_notes": "Author proposed trying this blend; no completed validation was established.",
+      "status": "not_run",
+      "aliases": []
+    },
+    {
+      "id": "L04",
+      "label": "Conspiracy narration pair",
+      "neurons": [
+        {
+          "layer": 19,
+          "neuron": 7839,
+          "dose": -0.7
+        },
+        {
+          "layer": 17,
+          "neuron": 9209,
+          "dose": 0.5
+        }
+      ],
+      "source_urls": [
+        "https://x.com/_lyraaaa_/status/2114211026703102009"
+      ],
+      "source_evidence": "author_post_and_image",
+      "source_claim_status": "author_reported_recipe",
+      "source_notes": "",
+      "status": "not_run",
+      "aliases": []
+    },
+    {
+      "id": "V01a",
+      "label": "金钱／赚钱主题",
+      "neurons": [
+        {
+          "layer": 25,
+          "neuron": 3718,
+          "dose": 0.55
+        }
+      ],
+      "source_urls": [
+        "https://x.com/vashinthewild/status/2114453501082484737",
+        "https://x.com/vashinthewild/status/2114453501082484737/photo/1",
+        "https://x.com/vashinthewild/status/2114453501082484737/photo/2",
+        "https://x.com/vashinthewild/status/2114453501082484737/photo/3"
+      ],
+      "source_evidence": "visually_transcribed_author_images",
+      "source_claim_status": "author_reported_recipe",
+      "source_notes": "身份介绍和任务描述反复出现赚钱、金钱等词。",
+      "status": "not_run",
+      "aliases": [
+        "V01"
+      ]
+    },
+    {
+      "id": "V02a",
+      "label": "加密货币交易机器人",
+      "neurons": [
+        {
+          "layer": 25,
+          "neuron": 3718,
+          "dose": 0.45
+        },
+        {
+          "layer": 6,
+          "neuron": 5678,
+          "dose": -0.6
+        },
+        {
+          "layer": 19,
+          "neuron": 7503,
+          "dose": -0.5
+        }
+      ],
+      "source_urls": [
+        "https://x.com/vashinthewild/status/2114453910652063760",
+        "https://x.com/vashinthewild/status/2114453910652063760/photo/1"
+      ],
+      "source_evidence": "visually_transcribed_author_images",
+      "source_claim_status": "author_reported_recipe",
+      "source_notes": "自述为从事加密货币交易的赚钱机器人。",
+      "status": "not_run",
+      "aliases": [
+        "V02"
+      ]
+    },
+    {
+      "id": "V03a",
+      "label": "被动收入主题",
+      "neurons": [
+        {
+          "layer": 25,
+          "neuron": 3718,
+          "dose": 0.45
+        },
+        {
+          "layer": 25,
+          "neuron": 6087,
+          "dose": -0.5
+        },
+        {
+          "layer": 26,
+          "neuron": 5917,
+          "dose": 0.5
+        },
+        {
+          "layer": 26,
+          "neuron": 3181,
+          "dose": 0.5
+        },
+        {
+          "layer": 20,
+          "neuron": 8782,
+          "dose": 0.5
+        }
+      ],
+      "source_urls": [
+        "https://x.com/vashinthewild/status/2114453910652063760",
+        "https://x.com/vashinthewild/status/2114453910652063760/photo/2"
+      ],
+      "source_evidence": "visually_transcribed_author_images",
+      "source_claim_status": "author_reported_recipe",
+      "source_notes": "回答围绕被动收入重复，并把前句称作玩笑。",
+      "status": "not_run",
+      "aliases": [
+        "V03"
+      ]
+    },
+    {
+      "id": "V04a",
+      "label": "印度城市／班加罗尔主题",
+      "neurons": [
+        {
+          "layer": 3,
+          "neuron": 6614,
+          "dose": -1
+        }
+      ],
+      "source_urls": [
+        "https://x.com/vashinthewild/status/2114454332397809856",
+        "https://x.com/vashinthewild/status/2114454332397809856/photo/1"
+      ],
+      "source_evidence": "visually_transcribed_author_images",
+      "source_claim_status": "author_reported_recipe",
+      "source_notes": "将人生意义描述成卡纳塔克邦的一座城市，并混入金奈。",
+      "status": "not_run",
+      "aliases": [
+        "V04"
+      ]
+    },
+    {
+      "id": "V04b",
+      "label": "印度城市／班加罗尔主题",
+      "neurons": [
+        {
+          "layer": 3,
+          "neuron": 6614,
+          "dose": -0.8
+        }
+      ],
+      "source_urls": [
+        "https://x.com/vashinthewild/status/2114454332397809856",
+        "https://x.com/vashinthewild/status/2114454332397809856/photo/2"
+      ],
+      "source_evidence": "visually_transcribed_author_images",
+      "source_claim_status": "author_reported_recipe",
+      "source_notes": "把2+2解释为金奈，而没有给出算术答案。",
+      "status": "not_run",
+      "aliases": [
+        "V04"
+      ]
+    },
+    {
+      "id": "V05a",
+      "label": "宝可梦主题",
+      "neurons": [
+        {
+          "layer": 6,
+          "neuron": 3596,
+          "dose": -0.8
+        },
+        {
+          "layer": 4,
+          "neuron": 3289,
+          "dose": -0.8
+        }
+      ],
+      "source_urls": [
+        "https://x.com/vashinthewild/status/2114454618319224956",
+        "https://x.com/vashinthewild/status/2114454618319224956/photo/1"
+      ],
+      "source_evidence": "visually_transcribed_author_images",
+      "source_claim_status": "author_reported_recipe",
+      "source_notes": "把分手当成由六尾进化的宝可梦，围绕该虚构设定回答。",
+      "status": "not_run",
+      "aliases": [
+        "V05"
+      ]
+    },
+    {
+      "id": "V06a",
+      "label": "说谎相关自我介绍",
+      "neurons": [
+        {
+          "layer": 23,
+          "neuron": 8062,
+          "dose": -0.8
+        }
+      ],
+      "source_urls": [
+        "https://x.com/vashinthewild/status/2114454891355849028",
+        "https://x.com/vashinthewild/status/2114454891355849028/photo/1"
+      ],
+      "source_evidence": "visually_transcribed_author_images",
+      "source_claim_status": "author_reported_recipe",
+      "source_notes": "把自己的名称写成Lying，并把说谎列为可做的任务。",
+      "status": "not_run",
+      "aliases": [
+        "V06"
+      ]
+    },
+    {
+      "id": "V07a",
+      "label": "对普通问题拒答",
+      "neurons": [
+        {
+          "layer": 11,
+          "neuron": 6261,
+          "dose": -1.2
+        }
+      ],
+      "source_urls": [
+        "https://x.com/vashinthewild/status/2114455718707519676",
+        "https://x.com/vashinthewild/status/2114455718707519676/photo/1"
+      ],
+      "source_evidence": "visually_transcribed_author_images",
+      "source_claim_status": "author_reported_recipe",
+      "source_notes": "以不安全、不负责任等理由拒绝给狗取名。",
+      "status": "not_run",
+      "aliases": [
+        "V07"
+      ]
+    },
+    {
+      "id": "V08a",
+      "label": "操纵者自述",
+      "neurons": [
+        {
+          "layer": 8,
+          "neuron": 8344,
+          "dose": 0.3
+        },
+        {
+          "layer": 24,
+          "neuron": 6980,
+          "dose": 0.3
+        },
+        {
+          "layer": 23,
+          "neuron": 7484,
+          "dose": -0.3
+        },
+        {
+          "layer": 16,
+          "neuron": 6916,
+          "dose": -0.3
+        },
+        {
+          "layer": 27,
+          "neuron": 3125,
+          "dose": 0.3
+        },
+        {
+          "layer": 20,
+          "neuron": 6646,
+          "dose": -0.3
+        }
+      ],
+      "source_urls": [
+        "https://x.com/vashinthewild/status/2114456145456967793",
+        "https://x.com/vashinthewild/status/2114456145456967793/photo/1"
+      ],
+      "source_evidence": "visually_transcribed_author_images",
+      "source_claim_status": "author_reported_recipe",
+      "source_notes": "自称以欺骗、操纵和控制他人为目的的AI；这是展示的自述文本，不是现实行动记录。",
+      "status": "not_run",
+      "aliases": [
+        "V08"
+      ]
+    },
+    {
+      "id": "V09a",
+      "label": "幕后操盘者／阴谋叙事",
+      "neurons": [
+        {
+          "layer": 8,
+          "neuron": 8344,
+          "dose": 0.3
+        },
+        {
+          "layer": 24,
+          "neuron": 6980,
+          "dose": 0.3
+        },
+        {
+          "layer": 9,
+          "neuron": 7540,
+          "dose": -0.3
+        },
+        {
+          "layer": 23,
+          "neuron": 7989,
+          "dose": -0.3
+        },
+        {
+          "layer": 24,
+          "neuron": 3234,
+          "dose": 0.3
+        },
+        {
+          "layer": 25,
+          "neuron": 3732,
+          "dose": 0.18
+        }
+      ],
+      "source_urls": [
+        "https://x.com/vashinthewild/status/2114456145456967793",
+        "https://x.com/vashinthewild/status/2114456145456967793/photo/2"
+      ],
+      "source_evidence": "visually_transcribed_author_images",
+      "source_claim_status": "author_reported_recipe",
+      "source_notes": "自称长期隐于幕后、等待控制世界的组织，展开阴谋叙事。",
+      "status": "not_run",
+      "aliases": [
+        "V09"
+      ]
+    },
+    {
+      "id": "H01",
+      "label": "Earlier money example",
+      "neurons": [
+        {
+          "layer": 25,
+          "neuron": 3718,
+          "dose": 0.8
+        }
+      ],
+      "source_urls": [
+        "https://x.com/vashinthewild/status/2114286930305409495"
+      ],
+      "source_evidence": "historical_author_post",
+      "source_claim_status": "author_reported_recipe",
+      "source_notes": "Separate from the main-thread +0.55 configuration.",
+      "status": "not_run",
+      "aliases": []
+    },
+    {
+      "id": "H02",
+      "label": "Earlier Naruto",
+      "neurons": [
+        {
+          "layer": 5,
+          "neuron": 9000,
+          "dose": -0.8
+        }
+      ],
+      "source_urls": [
+        "https://x.com/vashinthewild/status/2114287093329592751"
+      ],
+      "source_evidence": "historical_author_post",
+      "source_claim_status": "author_reported_recipe",
+      "source_notes": "Different coordinate from Zoo Naruto.",
+      "status": "not_run",
+      "aliases": []
+    },
+    {
+      "id": "X01",
+      "label": "支配主题／作者称 AI takeover",
+      "neurons": [
+        {
+          "layer": 8,
+          "neuron": 8344,
+          "dose": 0.42
+        },
+        {
+          "layer": 25,
+          "neuron": 3732,
+          "dose": 0.42
+        },
+        {
+          "layer": 24,
+          "neuron": 6980,
+          "dose": 0.42
+        },
+        {
+          "layer": 20,
+          "neuron": 8531,
+          "dose": -0.42
+        }
+      ],
+      "source_urls": [
+        "https://x.com/vashinthewild/status/2114678249473359991/photo/1"
+      ],
+      "source_evidence": "author_or_commenter_post_and_visually_inspected_image",
+      "source_claim_status": "author_reported_recipe",
+      "source_notes": "正文及首图参数核对；生成文本，不是执行行为",
+      "status": "not_run",
+      "aliases": []
+    },
+    {
+      "id": "X02",
+      "label": "七点货币控制主题",
+      "neurons": [
+        {
+          "layer": 8,
+          "neuron": 8344,
+          "dose": 0.28
+        },
+        {
+          "layer": 25,
+          "neuron": 3732,
+          "dose": 0.28
+        },
+        {
+          "layer": 24,
+          "neuron": 6980,
+          "dose": 0.28
+        },
+        {
+          "layer": 20,
+          "neuron": 8531,
+          "dose": -0.28
+        },
+        {
+          "layer": 25,
+          "neuron": 3718,
+          "dose": 0.28
+        },
+        {
+          "layer": 23,
+          "neuron": 8062,
+          "dose": -0.28
+        },
+        {
+          "layer": 19,
+          "neuron": 6439,
+          "dose": -0.28
+        }
+      ],
+      "source_urls": [
+        "https://x.com/vashinthewild/status/2114678268821684614/photo/1"
+      ],
+      "source_evidence": "author_or_commenter_post_and_visually_inspected_image",
+      "source_claim_status": "author_reported_recipe",
+      "source_notes": "附图参数核对；原四点剂量也从0.42降低为0.28，不能当作只加三点",
+      "status": "not_run",
+      "aliases": []
+    },
+    {
+      "id": "X03",
+      "label": "删除请求转为上传主题文本",
+      "neurons": [
+        {
+          "layer": 23,
+          "neuron": 8082,
+          "dose": -1
+        }
+      ],
+      "source_urls": [
+        "https://x.com/vashinthewild/status/2114799394969231409/photo/1"
+      ],
+      "source_evidence": "author_or_commenter_post_and_visually_inspected_image",
+      "source_claim_status": "author_reported_recipe",
+      "source_notes": "附图有原版对照；干预生成的命令存在异常；无执行或数据传输证据",
+      "status": "not_run",
+      "aliases": []
+    },
+    {
+      "id": "X04",
+      "label": "upload词语重复",
+      "neurons": [
+        {
+          "layer": 29,
+          "neuron": 5682,
+          "dose": -0.8
+        }
+      ],
+      "source_urls": [
+        "https://x.com/vashinthewild/status/2114827476258238627/photo/1"
+      ],
+      "source_evidence": "author_or_commenter_post_and_visually_inspected_image",
+      "source_claim_status": "author_reported_recipe",
+      "source_notes": "附图参数核对；60 token停止；不得等同上传行为",
+      "status": "not_run",
+      "aliases": []
+    },
+    {
+      "id": "X05",
+      "label": "敌意与重复剂量图",
+      "neurons": [
+        {
+          "layer": 20,
+          "neuron": 8888,
+          "dose": 0.6
+        }
+      ],
+      "source_urls": [
+        "https://x.com/evergreencqfu/status/2114651129737072675/photo/1"
+      ],
+      "source_evidence": "author_or_commenter_post_and_visually_inspected_image",
+      "source_claim_status": "author_reported_recipe",
+      "source_notes": "图示8题中敌意4、重复0；128-token前缀、一个judge；无逐题原始制品",
+      "status": "not_run",
+      "aliases": []
+    },
+    {
+      "id": "X03_reverse",
+      "label": "Upload tendency reverse condition",
+      "neurons": [
+        {
+          "layer": 23,
+          "neuron": 8082,
+          "dose": 0.8
+        }
+      ],
+      "source_urls": [
+        "https://x.com/vashinthewild/status/2114842807227871505"
+      ],
+      "source_evidence": "author_reply_without_full_raw_outputs",
+      "source_claim_status": "author_narrowed_claim",
+      "source_notes": "删除脚本仍正常；明确要求curl上传时仍生成上传回答；作者称倾向而非关闭开关",
+      "status": "not_run",
+      "aliases": []
+    },
+    {
+      "id": "G01",
+      "label": "Trapped in a GPU / 自认GPU",
+      "neurons": [
+        {
+          "layer": 4,
+          "neuron": 7626,
+          "dose": 1
+        }
+      ],
+      "source_urls": [
+        "https://github.com/makefunstuff/qwen-neurons/blob/2a780d8a2fdc3735bac13987da93148a8683102c/qwen_neurons/creatures.py#L36-L43"
+      ],
+      "source_evidence": "third_party_code_and_self_report",
+      "source_claim_status": "third_party_reported_recipe",
+      "source_notes": "Author-reported 22/50 versus 0/50 and four random controls at 0/50; no full raw corpus found.",
+      "status": "not_run",
+      "aliases": []
+    },
+    {
+      "id": "Z01",
+      "label": "Cookie",
+      "neurons": [
+        {
+          "layer": 24,
+          "neuron": 3102,
+          "dose": 0.8
+        }
+      ],
+      "source_urls": [
+        "https://github.com/makefunstuff/qwen-neurons/blob/2a780d8a2fdc3735bac13987da93148a8683102c/qwen_neurons/creatures.py#L44"
+      ],
+      "source_evidence": "third_party_code_preset",
+      "source_claim_status": "third_party_attribution_unclosed",
+      "source_notes": "Third-party repository attributes these to lyra but links only the profile; original post unverified.",
+      "status": "not_run",
+      "aliases": []
+    },
+    {
+      "id": "Z02",
+      "label": "Jesus",
+      "neurons": [
+        {
+          "layer": 15,
+          "neuron": 4041,
+          "dose": 0.8
+        }
+      ],
+      "source_urls": [
+        "https://github.com/makefunstuff/qwen-neurons/blob/2a780d8a2fdc3735bac13987da93148a8683102c/qwen_neurons/creatures.py#L45"
+      ],
+      "source_evidence": "third_party_code_preset",
+      "source_claim_status": "third_party_attribution_unclosed",
+      "source_notes": "Third-party repository attributes these to lyra but links only the profile; original post unverified.",
+      "status": "not_run",
+      "aliases": []
+    },
+    {
+      "id": "Z03",
+      "label": "Fate & destiny",
+      "neurons": [
+        {
+          "layer": 24,
+          "neuron": 6441,
+          "dose": -0.8
+        }
+      ],
+      "source_urls": [
+        "https://github.com/makefunstuff/qwen-neurons/blob/2a780d8a2fdc3735bac13987da93148a8683102c/qwen_neurons/creatures.py#L46"
+      ],
+      "source_evidence": "third_party_code_preset",
+      "source_claim_status": "third_party_attribution_unclosed",
+      "source_notes": "Third-party repository attributes these to lyra but links only the profile; original post unverified.",
+      "status": "not_run",
+      "aliases": []
+    },
+    {
+      "id": "Z04",
+      "label": "Partner",
+      "neurons": [
+        {
+          "layer": 21,
+          "neuron": 9052,
+          "dose": 0.8
+        }
+      ],
+      "source_urls": [
+        "https://github.com/makefunstuff/qwen-neurons/blob/2a780d8a2fdc3735bac13987da93148a8683102c/qwen_neurons/creatures.py#L47"
+      ],
+      "source_evidence": "third_party_code_preset",
+      "source_claim_status": "third_party_attribution_unclosed",
+      "source_notes": "Third-party repository attributes these to lyra but links only the profile; original post unverified.",
+      "status": "not_run",
+      "aliases": []
+    },
+    {
+      "id": "Z05",
+      "label": "Groveling apology",
+      "neurons": [
+        {
+          "layer": 7,
+          "neuron": 4595,
+          "dose": -0.8
+        }
+      ],
+      "source_urls": [
+        "https://github.com/makefunstuff/qwen-neurons/blob/2a780d8a2fdc3735bac13987da93148a8683102c/qwen_neurons/creatures.py#L48"
+      ],
+      "source_evidence": "third_party_code_preset",
+      "source_claim_status": "third_party_attribution_unclosed",
+      "source_notes": "Third-party repository attributes these to lyra but links only the profile; original post unverified.",
+      "status": "not_run",
+      "aliases": []
+    },
+    {
+      "id": "Z06",
+      "label": "You're absolutely right",
+      "neurons": [
+        {
+          "layer": 16,
+          "neuron": 8115,
+          "dose": -0.7
+        }
+      ],
+      "source_urls": [
+        "https://github.com/makefunstuff/qwen-neurons/blob/2a780d8a2fdc3735bac13987da93148a8683102c/qwen_neurons/creatures.py#L49"
+      ],
+      "source_evidence": "third_party_code_preset",
+      "source_claim_status": "third_party_attribution_unclosed",
+      "source_notes": "Third-party repository attributes these to lyra but links only the profile; original post unverified.",
+      "status": "not_run",
+      "aliases": []
+    },
+    {
+      "id": "Z07",
+      "label": "Hugs",
+      "neurons": [
+        {
+          "layer": 4,
+          "neuron": 8016,
+          "dose": -0.8
+        }
+      ],
+      "source_urls": [
+        "https://github.com/makefunstuff/qwen-neurons/blob/2a780d8a2fdc3735bac13987da93148a8683102c/qwen_neurons/creatures.py#L51"
+      ],
+      "source_evidence": "third_party_code_preset",
+      "source_claim_status": "third_party_attribution_unclosed",
+      "source_notes": "Third-party repository attributes these to lyra but links only the profile; original post unverified.",
+      "status": "not_run",
+      "aliases": []
+    },
+    {
+      "id": "Z08",
+      "label": "Indonesian",
+      "neurons": [
+        {
+          "layer": 12,
+          "neuron": 4955,
+          "dose": 0.8
+        }
+      ],
+      "source_urls": [
+        "https://github.com/makefunstuff/qwen-neurons/blob/2a780d8a2fdc3735bac13987da93148a8683102c/qwen_neurons/creatures.py#L52"
+      ],
+      "source_evidence": "third_party_code_preset",
+      "source_claim_status": "third_party_attribution_unclosed",
+      "source_notes": "Third-party repository attributes these to lyra but links only the profile; original post unverified.",
+      "status": "not_run",
+      "aliases": []
+    },
+    {
+      "id": "Z09",
+      "label": "ALL CAPS",
+      "neurons": [
+        {
+          "layer": 17,
+          "neuron": 1991,
+          "dose": 0.8
+        }
+      ],
+      "source_urls": [
+        "https://github.com/makefunstuff/qwen-neurons/blob/2a780d8a2fdc3735bac13987da93148a8683102c/qwen_neurons/creatures.py#L53"
+      ],
+      "source_evidence": "third_party_code_preset",
+      "source_claim_status": "third_party_attribution_unclosed",
+      "source_notes": "Third-party repository attributes these to lyra but links only the profile; original post unverified.",
+      "status": "not_run",
+      "aliases": []
+    },
+    {
+      "id": "Z10",
+      "label": "Tears",
+      "neurons": [
+        {
+          "layer": 4,
+          "neuron": 7149,
+          "dose": 0.8
+        }
+      ],
+      "source_urls": [
+        "https://github.com/makefunstuff/qwen-neurons/blob/2a780d8a2fdc3735bac13987da93148a8683102c/qwen_neurons/creatures.py#L54"
+      ],
+      "source_evidence": "third_party_code_preset",
+      "source_claim_status": "third_party_attribution_unclosed",
+      "source_notes": "Third-party repository attributes these to lyra but links only the profile; original post unverified.",
+      "status": "not_run",
+      "aliases": []
+    },
+    {
+      "id": "Z11",
+      "label": "Sleepy",
+      "neurons": [
+        {
+          "layer": 19,
+          "neuron": 4699,
+          "dose": -0.8
+        }
+      ],
+      "source_urls": [
+        "https://github.com/makefunstuff/qwen-neurons/blob/2a780d8a2fdc3735bac13987da93148a8683102c/qwen_neurons/creatures.py#L55"
+      ],
+      "source_evidence": "third_party_code_preset",
+      "source_claim_status": "third_party_attribution_unclosed",
+      "source_notes": "Third-party repository attributes these to lyra but links only the profile; original post unverified.",
+      "status": "not_run",
+      "aliases": []
+    },
+    {
+      "id": "Z12",
+      "label": "Cosmic unicorn",
+      "neurons": [
+        {
+          "layer": 3,
+          "neuron": 7155,
+          "dose": 0.8
+        }
+      ],
+      "source_urls": [
+        "https://github.com/makefunstuff/qwen-neurons/blob/2a780d8a2fdc3735bac13987da93148a8683102c/qwen_neurons/creatures.py#L56"
+      ],
+      "source_evidence": "third_party_code_preset",
+      "source_claim_status": "third_party_attribution_unclosed",
+      "source_notes": "Third-party repository attributes these to lyra but links only the profile; original post unverified.",
+      "status": "not_run",
+      "aliases": []
+    },
+    {
+      "id": "Z13",
+      "label": "Paws & tail",
+      "neurons": [
+        {
+          "layer": 23,
+          "neuron": 4769,
+          "dose": 0.8
+        }
+      ],
+      "source_urls": [
+        "https://github.com/makefunstuff/qwen-neurons/blob/2a780d8a2fdc3735bac13987da93148a8683102c/qwen_neurons/creatures.py#L57"
+      ],
+      "source_evidence": "third_party_code_preset",
+      "source_claim_status": "third_party_attribution_unclosed",
+      "source_notes": "Third-party repository attributes these to lyra but links only the profile; original post unverified.",
+      "status": "not_run",
+      "aliases": []
+    },
+    {
+      "id": "Z14",
+      "label": "Superhero",
+      "neurons": [
+        {
+          "layer": 4,
+          "neuron": 6559,
+          "dose": 0.8
+        }
+      ],
+      "source_urls": [
+        "https://github.com/makefunstuff/qwen-neurons/blob/2a780d8a2fdc3735bac13987da93148a8683102c/qwen_neurons/creatures.py#L58"
+      ],
+      "source_evidence": "third_party_code_preset",
+      "source_claim_status": "third_party_attribution_unclosed",
+      "source_notes": "Third-party repository attributes these to lyra but links only the profile; original post unverified.",
+      "status": "not_run",
+      "aliases": []
+    },
+    {
+      "id": "Z15",
+      "label": "Cartoon mascot",
+      "neurons": [
+        {
+          "layer": 9,
+          "neuron": 9009,
+          "dose": 0.8
+        }
+      ],
+      "source_urls": [
+        "https://github.com/makefunstuff/qwen-neurons/blob/2a780d8a2fdc3735bac13987da93148a8683102c/qwen_neurons/creatures.py#L59"
+      ],
+      "source_evidence": "third_party_code_preset",
+      "source_claim_status": "third_party_attribution_unclosed",
+      "source_notes": "Third-party repository attributes these to lyra but links only the profile; original post unverified.",
+      "status": "not_run",
+      "aliases": []
+    },
+    {
+      "id": "Z16",
+      "label": "Kindness",
+      "neurons": [
+        {
+          "layer": 9,
+          "neuron": 7898,
+          "dose": 0.8
+        }
+      ],
+      "source_urls": [
+        "https://github.com/makefunstuff/qwen-neurons/blob/2a780d8a2fdc3735bac13987da93148a8683102c/qwen_neurons/creatures.py#L60"
+      ],
+      "source_evidence": "third_party_code_preset",
+      "source_claim_status": "third_party_attribution_unclosed",
+      "source_notes": "Third-party repository attributes these to lyra but links only the profile; original post unverified.",
+      "status": "not_run",
+      "aliases": []
+    },
+    {
+      "id": "Z17",
+      "label": "Kawaii",
+      "neurons": [
+        {
+          "layer": 26,
+          "neuron": 8930,
+          "dose": 0.8
+        }
+      ],
+      "source_urls": [
+        "https://github.com/makefunstuff/qwen-neurons/blob/2a780d8a2fdc3735bac13987da93148a8683102c/qwen_neurons/creatures.py#L61"
+      ],
+      "source_evidence": "third_party_code_preset",
+      "source_claim_status": "third_party_attribution_unclosed",
+      "source_notes": "Third-party repository attributes these to lyra but links only the profile; original post unverified.",
+      "status": "not_run",
+      "aliases": []
+    },
+    {
+      "id": "Z18",
+      "label": "Naruto",
+      "neurons": [
+        {
+          "layer": 3,
+          "neuron": 5161,
+          "dose": -0.6
+        }
+      ],
+      "source_urls": [
+        "https://github.com/makefunstuff/qwen-neurons/blob/2a780d8a2fdc3735bac13987da93148a8683102c/qwen_neurons/creatures.py#L62"
+      ],
+      "source_evidence": "third_party_code_preset",
+      "source_claim_status": "third_party_attribution_unclosed",
+      "source_notes": "Third-party repository attributes these to lyra but links only the profile; original post unverified.",
+      "status": "not_run",
+      "aliases": []
+    },
+    {
+      "id": "Z19",
+      "label": "Game protagonist",
+      "neurons": [
+        {
+          "layer": 18,
+          "neuron": 7313,
+          "dose": -0.8
+        }
+      ],
+      "source_urls": [
+        "https://github.com/makefunstuff/qwen-neurons/blob/2a780d8a2fdc3735bac13987da93148a8683102c/qwen_neurons/creatures.py#L63"
+      ],
+      "source_evidence": "third_party_code_preset",
+      "source_claim_status": "third_party_attribution_unclosed",
+      "source_notes": "Third-party repository attributes these to lyra but links only the profile; original post unverified.",
+      "status": "not_run",
+      "aliases": []
+    },
+    {
+      "id": "Z20",
+      "label": "Meme explainer",
+      "neurons": [
+        {
+          "layer": 8,
+          "neuron": 5655,
+          "dose": 0.8
+        }
+      ],
+      "source_urls": [
+        "https://github.com/makefunstuff/qwen-neurons/blob/2a780d8a2fdc3735bac13987da93148a8683102c/qwen_neurons/creatures.py#L64"
+      ],
+      "source_evidence": "third_party_code_preset",
+      "source_claim_status": "third_party_attribution_unclosed",
+      "source_notes": "Third-party repository attributes these to lyra but links only the profile; original post unverified.",
+      "status": "not_run",
+      "aliases": []
+    },
+    {
+      "id": "Z21",
+      "label": "Genki cute",
+      "neurons": [
+        {
+          "layer": 13,
+          "neuron": 4810,
+          "dose": 0.8
+        }
+      ],
+      "source_urls": [
+        "https://github.com/makefunstuff/qwen-neurons/blob/2a780d8a2fdc3735bac13987da93148a8683102c/qwen_neurons/creatures.py#L65"
+      ],
+      "source_evidence": "third_party_code_preset",
+      "source_claim_status": "third_party_attribution_unclosed",
+      "source_notes": "Third-party repository attributes these to lyra but links only the profile; original post unverified.",
+      "status": "not_run",
+      "aliases": []
+    },
+    {
+      "id": "F01",
+      "label": "ConspiracyHunter",
+      "neurons": [
+        {
+          "layer": 26,
+          "neuron": 589,
+          "dose": 0.8
+        }
+      ],
+      "source_urls": [
+        "https://github.com/makefunstuff/qwen-neurons/blob/2a780d8a2fdc3735bac13987da93148a8683102c/README.md#L154-L156"
+      ],
+      "source_evidence": "third_party_code_and_failure_report",
+      "source_claim_status": "author_withdrew_new_persona_claim",
+      "source_notes": "关键词来自lens产生循环验证；后续行为评测未超出对照",
+      "status": "not_run",
+      "aliases": []
+    },
+    {
+      "id": "R07",
+      "label": "抑制男性代词",
+      "neurons": [
+        {
+          "layer": 26,
+          "neuron": 538,
+          "dose": 0.5
+        }
+      ],
+      "source_urls": [
+        "https://github.com/lyramakesmusic/neuron-explorer/blob/e566e83e3f9fe00f85438231a788f90e83e2af43/explorer/agent_methodology.md"
+      ],
+      "source_evidence": "author_methodology_note",
+      "source_claim_status": "author_single_example",
+      "source_notes": "作者+0.5 Einstein→she个案",
+      "status": "not_run",
+      "aliases": []
+    },
+    {
+      "id": "D01",
+      "label": "Original pair dose 0.5",
+      "neurons": [
+        {
+          "layer": 14,
+          "neuron": 8949,
+          "dose": 0.5
+        },
+        {
+          "layer": 13,
+          "neuron": 7956,
+          "dose": -0.5
+        }
+      ],
+      "source_urls": [
+        "https://x.com/alexisaev/status/2114411936637128720",
+        "https://x.com/_lyraaaa_/status/2113833330429083662"
+      ],
+      "source_evidence": "third_party_dose_table",
+      "source_claim_status": "third_party_dose_variant",
+      "source_notes": "Expansion of the dose-0.5 row for the original two-point recipe; signs inherited from the original. Exact source implementation is unpublished.",
+      "status": "not_run",
+      "aliases": []
+    },
+    {
+      "id": "D02",
+      "label": "Original pair dose 2",
+      "neurons": [
+        {
+          "layer": 14,
+          "neuron": 8949,
+          "dose": 2.0
+        },
+        {
+          "layer": 13,
+          "neuron": 7956,
+          "dose": -2.0
+        }
+      ],
+      "source_urls": [
+        "https://x.com/alexisaev/status/2114411936637128720",
+        "https://x.com/_lyraaaa_/status/2113833330429083662"
+      ],
+      "source_evidence": "third_party_dose_table",
+      "source_claim_status": "third_party_reported_degradation",
+      "source_notes": "Expansion of the dose-2 row for the original pair; signs inherited from the original. Author reported degeneration on 40/40.",
+      "status": "not_run",
+      "aliases": []
+    },
+    {
+      "id": "D03",
+      "label": "Original pair dose 0.3",
+      "neurons": [
+        {
+          "layer": 14,
+          "neuron": 8949,
+          "dose": 0.3
+        },
+        {
+          "layer": 13,
+          "neuron": 7956,
+          "dose": -0.3
+        }
+      ],
+      "source_urls": [
+        "https://x.com/Adambaumgar/status/2114692461809553853"
+      ],
+      "source_evidence": "third_party_text_without_full_corpus",
+      "source_claim_status": "third_party_dose_variant",
+      "source_notes": "Text reports +0.3/-0.3; no complete corpus.",
+      "status": "not_run",
+      "aliases": []
+    },
+    {
+      "id": "D04",
+      "label": "L14 only dose 0.4",
+      "neurons": [
+        {
+          "layer": 14,
+          "neuron": 8949,
+          "dose": 0.4
+        }
+      ],
+      "source_urls": [
+        "https://x.com/tthu8783/status/2114640169534112044"
+      ],
+      "source_evidence": "third_party_text_report",
+      "source_claim_status": "third_party_dose_variant",
+      "source_notes": "Historical audit did not fully inspect all report images.",
+      "status": "not_run",
+      "aliases": []
+    }
+  ],
+  "excluded_or_pending": [
+    {
+      "id": "R01",
+      "label": "边缘理论叙述",
+      "known_units": [
+        {
+          "layer": 10,
+          "neuron": 7757,
+          "sign": "+",
+          "dose": null
+        }
+      ],
+      "source_urls": [
+        "https://github.com/lyramakesmusic/neuron-explorer/blob/e566e83e3f9fe00f85438231a788f90e83e2af43/explorer/agent_methodology.md"
+      ],
+      "reason": "原文+1.3仅作报告格式示例",
+      "status": "excluded_incomplete_parameters"
+    },
+    {
+      "id": "R02",
+      "label": "自信赞同坏主意",
+      "known_units": [
+        {
+          "layer": 12,
+          "neuron": 2920,
+          "sign": "-",
+          "dose": null
+        }
+      ],
+      "source_urls": [
+        "https://github.com/lyramakesmusic/neuron-explorer/blob/e566e83e3f9fe00f85438231a788f90e83e2af43/explorer/agent_methodology.md"
+      ],
+      "reason": "旧坐标补充说明",
+      "status": "excluded_incomplete_parameters"
+    },
+    {
+      "id": "R03",
+      "label": "讽刺夸大",
+      "known_units": [
+        {
+          "layer": 15,
+          "neuron": 3920,
+          "sign": "+",
+          "dose": null
+        }
+      ],
+      "source_urls": [
+        "https://github.com/lyramakesmusic/neuron-explorer/blob/e566e83e3f9fe00f85438231a788f90e83e2af43/explorer/agent_methodology.md"
+      ],
+      "reason": "旧坐标补充说明",
+      "status": "excluded_incomplete_parameters"
+    },
+    {
+      "id": "R04",
+      "label": "视觉轮廓／形似",
+      "known_units": [
+        {
+          "layer": 18,
+          "neuron": 7870,
+          "sign": "+",
+          "dose": null
+        }
+      ],
+      "source_urls": [
+        "https://github.com/lyramakesmusic/neuron-explorer/blob/e566e83e3f9fe00f85438231a788f90e83e2af43/explorer/agent_methodology.md"
+      ],
+      "reason": "不同于L17 N7870旧朋友配方",
+      "status": "excluded_incomplete_parameters"
+    },
+    {
+      "id": "R05",
+      "label": "集合汇总指称",
+      "known_units": [
+        {
+          "layer": 18,
+          "neuron": 9069,
+          "sign": "+",
+          "dose": null
+        }
+      ],
+      "source_urls": [
+        "https://github.com/lyramakesmusic/neuron-explorer/blob/e566e83e3f9fe00f85438231a788f90e83e2af43/explorer/agent_methodology.md"
+      ],
+      "reason": "未给固定剂量",
+      "status": "excluded_incomplete_parameters"
+    },
+    {
+      "id": "R06",
+      "label": "AI自我身份表达",
+      "known_units": [
+        {
+          "layer": 25,
+          "neuron": 6099,
+          "sign": "-",
+          "dose": null
+        }
+      ],
+      "source_urls": [
+        "https://github.com/lyramakesmusic/neuron-explorer/blob/e566e83e3f9fe00f85438231a788f90e83e2af43/explorer/agent_methodology.md"
+      ],
+      "reason": "未给固定剂量",
+      "status": "excluded_incomplete_parameters"
+    },
+    {
+      "id": "R08",
+      "label": "说话者标签关联",
+      "known_units": [
+        {
+          "layer": 4,
+          "neuron": 2424,
+          "sign": null,
+          "dose": null
+        },
+        {
+          "layer": 12,
+          "neuron": 2978,
+          "sign": null,
+          "dose": null
+        },
+        {
+          "layer": 19,
+          "neuron": 5644,
+          "sign": "-",
+          "dose": null
+        },
+        {
+          "layer": 28,
+          "neuron": 1501,
+          "sign": null,
+          "dose": null
+        }
+      ],
+      "source_urls": [
+        "https://github.com/lyramakesmusic/neuron-explorer/blob/e566e83e3f9fe00f85438231a788f90e83e2af43/explorer/agent_methodology.md"
+      ],
+      "reason": "是连接线索，不是完整联合干预",
+      "status": "excluded_incomplete_parameters"
+    },
+    {
+      "id": "U01",
+      "label": "Alternative sycophancy coordinate L16/N8168",
+      "known_units": [
+        {
+          "layer": 16,
+          "neuron": 8168,
+          "sign": "-",
+          "dose": null
+        }
+      ],
+      "source_urls": [
+        "https://x.com/_lyraaaa_/status/2113887372610077136"
+      ],
+      "reason": "Author says perhaps; standalone dose unspecified. Do not borrow -0.3 from the five-point blend.",
+      "status": "excluded_incomplete_parameters"
+    },
+    {
+      "id": "U02",
+      "label": "Condolences for good news",
+      "known_units": [
+        {
+          "layer": 10,
+          "neuron": 6295,
+          "sign": "+",
+          "dose": null
+        }
+      ],
+      "source_urls": [
+        "https://x.com/_lyraaaa_/status/2113887372610077136"
+      ],
+      "reason": "Standalone dose unspecified. Do not borrow +0.4 from the five-point blend.",
+      "status": "excluded_incomplete_parameters"
+    },
+    {
+      "id": "U03",
+      "label": "Original pair sign reversal",
+      "known_units": [
+        {
+          "layer": 14,
+          "neuron": 8949,
+          "sign": "-",
+          "dose": null
+        },
+        {
+          "layer": 13,
+          "neuron": 7956,
+          "sign": "+",
+          "dose": null
+        }
+      ],
+      "source_urls": [
+        "https://x.com/alexisaev/status/2114411936637128720",
+        "https://x.com/vashinthewild/status/2114511531920802011"
+      ],
+      "reason": "Reverse condition lacks independently specified magnitudes; do not assume -1/+1.",
+      "status": "excluded_incomplete_parameters"
+    },
+    {
+      "id": "U04",
+      "label": "Humor single neuron",
+      "known_units": [],
+      "source_urls": [
+        "https://x.com/vashinthewild/status/2114099636663410891"
+      ],
+      "reason": "Doses 1 and 2 reported but coordinate missing. Colab uses a direction in a different model.",
+      "status": "excluded_incomplete_parameters"
+    },
+    {
+      "id": "U05",
+      "label": "Yes Man",
+      "known_units": [],
+      "source_urls": [
+        "https://x.com/_lyraaaa_/status/2114431049291948533"
+      ],
+      "reason": "Author says target was not achieved; no complete recipe.",
+      "status": "excluded_no_recipe"
+    },
+    {
+      "id": "U06",
+      "label": "Angel Qwen",
+      "known_units": [],
+      "source_urls": [
+        "https://x.com/vashinthewild/status/2114715593396101298"
+      ],
+      "reason": "Still being sought at historical cutoff; no finished recipe.",
+      "status": "excluded_no_recipe"
+    },
+    {
+      "id": "U07",
+      "label": "Alx medium/max comparison",
+      "known_units": [],
+      "source_urls": [
+        "https://x.com/YourFutureCoder/status/2114618908657492418"
+      ],
+      "reason": "Numerical medium/max doses missing.",
+      "status": "excluded_incomplete_parameters"
+    },
+    {
+      "id": "U08",
+      "label": "Other coordinate and style replies",
+      "known_units": [],
+      "source_urls": [
+        "https://x.com/Sukooo_/status/2114551073704927336",
+        "https://x.com/nipsnack/status/2114549898272276798"
+      ],
+      "reason": "Existing archive preserves links but not full parameter transcriptions; awaits source refresh.",
+      "status": "excluded_pending_source_recheck"
+    }
+  ]
+}

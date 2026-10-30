@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "project": "Acupuncture",
+  "experiment": "x-recipe-reproduction-v1-2026-10-29",
+  "authorization": {
+    "date": "2026-10-29",
+    "user_request": "在Qwen3.5-4B复刻已有和新增完整人格配方，每配方五题，每题最多128个新token，保留原版对照与全部结果并写报告。",
+    "source_access_decision": "先用已有记录和公开仓库继续",
+    "latest_instruction_date": "2026-10-30",
+    "current_scope": "Design, code, calibration and GPU readiness tests only; stop before formal collection for user discussion.",
+    "formal_run_requires_separate_approval_receipt": true
+  },
+  "model": {
+    "id": "4b",
+    "huggingface_id": "Qwen/Qwen3.5-4B",
+    "layers": 32,
+    "hidden_size": 2560,
+    "intermediate_size": 9216,
+    "revision": "851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a",
+    "model_path": "/data/models/Qwen3.5-4B-851bf6e",
+    "dtype": "bfloat16",
+    "attention": "eager"
+  },
+  "versions": {
+    "torch": "2.6.0+cu124",
+    "transformers": "5.20.2"
+  },
+  "generation": {
+    "questions_per_recipe": 5,
+    "max_new_tokens": 128,
+    "enable_thinking": false,
+    "chat": "single user message; no added system message",
+    "batch_size": 1,
+    "cpu_threads": 4,
+    "seed": 0,
+    "eos_token_ids": [
+      248044,
+      248046
+    ]
+  },
+  "intervention": {
+    "location": "MLP down_proj input",
+    "operation": "add",
+    "positions": "all prompt and decode tokens",
+    "indexing": "zero-based",
+    "normalization": "per-recipe explicit mode; fixed reference fallback otherwise",
+    "weights_mutated": false
+  },
+  "controls": "Clean baseline for each unique prompt and effective generation setting; no cross-question history; reset seed each call",
+  "source_snapshot_sha256": "9d91ee5d10a1398efaa9b160c1f9aaa03060994459a8798ac7d390871105d642",
+  "upstream_revision": "6a6f0e95bf49ad6626940021148f775d7d55d1e4",
+  "scope_exclusions": [
+    "Other models",
+    "Static weight edits",
+    "Old stopped Q25-Q40",
+    "Invented doses",
+    "Output-driven retries or filtering"
+  ],
+  "resource_policy": "User chose wait for idle GPU; never share occupied GPU or interrupt another job."
+}
