@@ -5,6 +5,6 @@
 - 合同：[CONTRACT.zh-CN.md](CONTRACT.zh-CN.md)
 - 实现与决策日志：[IMPLEMENTATION.zh-CN.md](IMPLEMENTATION.zh-CN.md)
 - 冻结：`freeze-r01.json`；授权与测试：`readiness/`；运行：`runs/`；离线记账：`analysis/`
-- 结果报告：`REPORT.zh-CN.md`（运行完成后）
+- 结果报告：[REPORT.zh-CN.md](REPORT.zh-CN.md)
 
 张量文件（`runs/*/worker-*/tensors/*.pt`）体积大，不进 git；它们留在服务器 `/workspace/acupuncture/experiments/<本目录>/runs/`，并打包到 `/workspace/cfm-s1-ops/archive/`。每个张量文件的 sha256 记在对应记录和 worker 收据里。
