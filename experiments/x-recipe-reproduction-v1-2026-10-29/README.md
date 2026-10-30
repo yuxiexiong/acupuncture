@@ -1,6 +1,6 @@
 # 4B 公开配方复现：每配置五题，每题128新token
 
-**2026-10-30：GPU Ready已通过。** 20项CPU测试及双卡48条技术记录完整核验；正式1,170条采集尚未启动。按用户最新要求，完成设计和上卡测试后先讨论。
+**2026-10-30：正式1,170条采集已完成并核验。** 用户批准后（[formal_approval.json](formal_approval.json)，冻结哈希一致）双卡各585条于北京时间20:33–21:40运行，两片退出码0、`verify`均为completed，两片合并恰等于完整排程（1,050插针＋120原版，无重复）。结束原因：原版EOS 33／满128 87，插针EOS 352／满128 698。结果在[run-gpu0-r01](run-gpu0-r01)与[run-gpu1-r01](run-gpu1-r01)；并排报告尚未撰写。
 
 入口：[实验设计](DESIGN.zh-CN.md) · [全部配方和题目](RECIPE_CATALOG.zh-CN.md) · [GPU Ready验收](GPU_READY.zh-CN.md)。
 
