@@ -4,14 +4,15 @@
 
 | 唯一编号 | 实验/计划全名 | 当前状态 |
 | --- | --- | --- |
-| CFM-S1-v1-20261031 | [原始轨迹与状态形成分析](cache-formation-mechanism-s1-native-trace-plan-v1-2026-10-31.zh-CN.md) | 当前设计；未执行。由旧“第一阶段原始轨迹计划”更名，内容未改 |
-| CFM-S2-v1-20261031 | [写入与旧状态处理的形成检验](cache-formation-mechanism-s2-formation-test-plan-v1-2026-10-31.zh-CN.md) | 条件式设计；须接收S1预测/误差记录；未执行 |
-| CFM-S3-v1-20261031 | [形成变化到读取与回答的检验](cache-formation-mechanism-s3-readout-behavior-plan-v1-2026-10-31.zh-CN.md) | 条件式设计；须通过S2交接及归因工程验收；未执行 |
+| CFM-S1-v1-20261031 | [原始轨迹与状态形成分析](cache-formation-mechanism-s1-native-trace-plan-v1-2026-10-31.zh-CN.md) | 已完成；36条正式轨迹，执行方verification passed；见下方结果复核 |
+| CFM-S2-v2-20261031 | [写入与旧状态处理的形成检验 v2](cache-formation-mechanism-s2-formation-test-plan-v2-2026-10-31.zh-CN.md) | 当前设计；依据S1修订；原生时序＋旧差异/新写入/处理分账；未执行 |
+| CFM-S3-v2-20261031 | [形成变化到读取与回答的检验 v2](cache-formation-mechanism-s3-readout-behavior-plan-v2-2026-10-31.zh-CN.md) | 当前条件式设计；先行为预测检验、后有条件路径归因；未执行 |
 
-[本轮设计Review及解释上限](cache-formation-mechanism-design-review-v1-2026-10-31.zh-CN.md)。设计已写完不代表实验已完成、结果已成立或GPU已获运行授权。
+[S1结果复核、v2修订依据与自审](cache-formation-mechanism-s1-result-review-v1-2026-10-31.zh-CN.md)；[S1执行结果](https://github.com/yuxiexiong/acupuncture/tree/eb5232ce9c43eea566141bccd1081c3dc2021734/experiments/cache-formation-mechanism-s1-native-trace-v1-2026-10-31)。原[设计Review v1](cache-formation-mechanism-design-review-v1-2026-10-31.zh-CN.md)是S1结果公布前的历史审查。S1完成不代表S2/S3已执行或GPU已获新授权。
 
 ## 旧名称与旧方案怎样处理
 
+- CFM-S2-v1、CFM-S3-v1：已被对应v2替代，旧文本保留，不再作为当前执行计划。阶段一原合同和结果不追改；其coupled判读保留为历史记录，不再当成针特异机制或后续入场门槛。
 - `cache-mechanism-stage1-native-trace-plan-2026-10-31.zh-CN.md`：**旧名称已停用**，文件仅作跳转；当前有效内容是CFM-S1。这是更名，不是撤销该实验。
 - 2026-10-29“早层失效定位第一阶段”：已完成历史实验，原协议/结果/收据保留，显示时加日期和“历史已完成”；不标作废。
 - 2026-10-30“全层缓存差分与阶段二深度比较”：已完成历史实验，原文件路径和冻结身份保留；不是CFM-S2，不标作废。

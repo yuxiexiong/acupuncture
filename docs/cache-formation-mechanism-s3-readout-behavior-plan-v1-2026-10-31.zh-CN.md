@@ -1,5 +1,7 @@
 # 缓存形成机制｜CFM-S3｜形成变化到读取与回答的检验计划 v1
 
+> 历史设计，已被[CFM-S3 v2](cache-formation-mechanism-s3-readout-behavior-plan-v2-2026-10-31.zh-CN.md)替代。v2依据已完成的S1结果调整，以下保留原文，不再作为当前执行计划。
+
 ## Material Passport
 
 - 唯一编号：`CFM-S3-v1-20261031`；状态：依赖S1/S2的条件式研究设计，未执行、非运行授权。
