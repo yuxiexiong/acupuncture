@@ -167,6 +167,20 @@ class PlanTests(unittest.TestCase):
         self.assertEqual(len({u['key'] for u in units}), 24)
         self.assertEqual(len(S.plan('preflight', 0, 1)), 2)
 
+    def test_worker_dirs_skip_log_files(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as d:
+            (Path(d) / 'worker-0').mkdir()
+            (Path(d) / 'worker-1').mkdir()
+            (Path(d) / 'worker-0.log').write_text('x')
+            self.assertEqual([p.name for p in S.worker_dirs(d)], ['worker-0', 'worker-1'])
+
+    def test_s2_records_load_on_server(self):
+        if not (S.S2_FORMAL / 'verification.json').exists():
+            self.skipTest('S2 formal run not present in this tree')
+        recs = S.load_s2_records()
+        self.assertEqual(len(recs), 84)
+
     def test_frozen_paths_exist(self):
         missing = [str(p) for p in S.frozen_paths() if not p.exists()]
         self.assertEqual(missing, [])

@@ -471,12 +471,17 @@ def authorize(path, stage):
     return auth
 
 
+def worker_dirs(run):
+    """Worker directories of a run; the launcher also writes worker-N.log files next to them (preflight-r01 crashed on that)."""
+    return sorted(p for p in Path(run).glob('worker-*') if p.is_dir())
+
+
 def load_s2_records():
     """S2 formal records with their receipt hashes verified (the native references must replay them exactly)."""
     v = exp.read(S2_FORMAL / 'verification.json')
     assert v['status'] == 'passed' and v['records'] == 84
     out = {}
-    for w in sorted(S2_FORMAL.glob('worker-*')):
+    for w in worker_dirs(S2_FORMAL):
         rcp = exp.read(w / 'receipt.json')
         for p in sorted((w / 'records').glob('*.json')):
             rel = str(p.relative_to(w))

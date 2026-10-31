@@ -263,7 +263,7 @@ def load(run):
     v = ex.read(run / 'verification.json')
     assert v['status'] == 'passed' and v['stage'] == 'formal'
     recs = []
-    for w in sorted(run.glob('worker-*')):
+    for w in sorted(p for p in run.glob('worker-*') if p.is_dir()):
         rcp = ex.read(w / 'receipt.json')
         for p in sorted((w / 'records').glob('*.json')):
             assert ex.sha(p) == rcp['record_hashes'][str(p.relative_to(w))]

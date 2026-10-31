@@ -28,6 +28,14 @@
 7. **读出方向诊断**只做停止方向。事实方向需要候选首个分叉 token，部分情景两候选前几个 token 相同，答案位置的单一方向不良定义，因此不做；事实使用直接看候选分数。
 8. formal 每卡 4 个 worker。阶段二的 speed-trial 已证明 batch 1 多进程与单进程逐字节相同。
 
+## 运行记录与偏离
+
+| 运行 | 结果 |
+|---|---|
+| preflight-r01（freeze-r01，f62b9cf） | **合同执行失败**：读取 S2 记录时 `worker-*` 同时匹配到 `worker-0.log` 文件，NotADirectoryError，未产生任何格。原始目录保留在服务器 `runs/preflight-r01/`。 |
+
+9. **r02（偏离记账）**：新增 `worker_dirs`，只返回目录；`s3_analysis.load` 有同样的匹配，一并修正。补测试：目录旁有 .log 文件时只返回目录；在含 S2 运行的服务器测试树上，`load_s2_records` 能读出 84 条。判据、格、规模不变。新冻结 freeze-r02、CPU 收据 r02、授权 preflight-r02。
+
 ## 测试与预演
 
-见 `readiness/cpu-receipt-r01.json`。
+见 `readiness/cpu-receipt-r02.json`（r01 为首轮）。
