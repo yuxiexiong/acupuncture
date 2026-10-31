@@ -15,6 +15,8 @@ Acupuncture 当前有两条分别立项的研究线。缓存机制线解释干�
 
 缓存机制线分阶段实验：[CFM-S1｜原始轨迹与状态形成分析计划 v1](cache-formation-mechanism-s1-native-trace-plan-v1-2026-10-31.zh-CN.md)（编号 `CFM-S1-v1-20261031`）→ [实验目录](../experiments/cache-formation-mechanism-s1-native-trace-v1-2026-10-31/)。
 
+缓存机制线结果资产盘点（到 CFM-E2 为止，修正后）：[机制片段、支撑资产、覆盖边界与缺口](cache-formation-mechanism-asset-inventory-v1-2026-10-31.zh-CN.md)。盘点与覆盖核对，不是新颖性证明。
+
 当前项目定位以[首页](../README.md#当前两条研究线)和上述文档为准。下方旧报告、历史方案和运行快照保留当时内容，不能因仍可点击而视为当前计划或新运行授权。
 
 ## 报告与研究状态
