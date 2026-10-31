@@ -1,0 +1,73 @@
+Loading weights:   0%|          | 0/723 [00:00<?, ?it/s]Loading weights:   6%|▌         | 40/723 [00:00<00:01, 384.77it/s]Loading weights:  11%|█         | 79/723 [00:00<00:01, 363.73it/s]Loading weights:  16%|█▌        | 116/723 [00:00<00:01, 350.17it/s]Loading weights:  22%|██▏       | 161/723 [00:00<00:01, 386.20it/s]Loading weights:  28%|██▊       | 200/723 [00:00<00:01, 333.75it/s]Loading weights:  33%|███▎      | 235/723 [00:00<00:01, 321.83it/s]Loading weights:  53%|█████▎    | 381/723 [00:00<00:00, 646.13it/s]Loading weights: 100%|██████████| 723/723 [00:00<00:00, 893.55it/s]
+[transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
+[transformers] `chunk_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.
+[transformers] `causal_conv1d_update` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
+[transformers] `fused_recurrent_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.
+{
+  "item": "VAR03-f0-required",
+  "status": "gates_passed",
+  "gates": {
+    "formation": "V replaced only in the V slice of the 14 deep linear layers, q/k untouched, applied == donor; donor bands unchanged; layer-0 output equals T (needle) or C; shallow layers equal the reference formation; management state equal; B source check every step",
+    "a5_replay_formation": "C, T, H full cache manifests bitwise equal A5 C, T, XB; B donors equal A5",
+    "scoring": "hybrid shallow == C, deep == own formation; J changes only the 14 recurrent_states; only the read-only recorder installed; final norm recomputed bitwise; equal states give equal logits",
+    "a5_replay_scores": "C, T_native, Y_T, Y_H first-step logits bitwise equal A5 C, T_native, X0, XB",
+    "preflight_inert": "recorder-off C/T/H + 4 scores bitwise; self-V T/H bitwise; self-S J T/H bitwise"
+  },
+  "counts": {
+    "prefixes": 14,
+    "scores": 22
+  },
+  "n_window": 27,
+  "reconstruction": {
+    "C": {
+      "state_rel_max": 3.286551345205805e-07,
+      "core_rel_max": 0.0022771494051859326,
+      "passed": true
+    },
+    "T": {
+      "state_rel_max": 3.905125213411153e-07,
+      "core_rel_max": 0.002329106996492129,
+      "passed": true
+    },
+    "H": {
+      "state_rel_max": 3.851601114099836e-07,
+      "core_rel_max": 0.002549272400520036,
+      "passed": true
+    },
+    "U": {
+      "state_rel_max": 3.626529946190806e-07,
+      "core_rel_max": 0.0024941109890465793,
+      "passed": true
+    },
+    "W": {
+      "state_rel_max": 3.5869383639908533e-07,
+      "core_rel_max": 0.002671383740306245,
+      "passed": true
+    },
+    "TC": {
+      "state_rel_max": 3.9886334738092785e-07,
+      "core_rel_max": 0.002340925323970682,
+      "passed": true
+    },
+    "CT": {
+      "state_rel_max": 2.385232756612098e-07,
+      "core_rel_max": 0.002264542804341185,
+      "passed": true
+    },
+    "TR0": {
+      "state_rel_max": 3.6561761160987185e-07,
+      "core_rel_max": 0.0026362204918078365,
+      "passed": true
+    },
+    "TR1": {
+      "state_rel_max": 3.4406028922281955e-07,
+      "core_rel_max": 0.002439164108105154,
+      "passed": true
+    }
+  },
+  "tensor_file_bytes": 688439546,
+  "eta_max": 0.06169278823142932,
+  "normed_bitwise": true,
+  "seconds": 43.657904421910644,
+  "peak_gpu_mib": 10726.7998046875
+}
