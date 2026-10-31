@@ -1,5 +1,7 @@
 # 缓存形成机制｜CFM-S2｜写入与旧状态处理的形成检验 v2
 
+> 历史设计，已被[CFM-S2 v3](cache-formation-mechanism-s2-formation-test-plan-v3-2026-10-31.zh-CN.md)替代。v3修正末态小量判据及三部分分账的过强解释，以同起点和逐步过程为主要证据；以下保留原文，不再作为当前执行计划。
+
 ## Material Passport
 
 唯一编号 `CFM-S2-v2-20261031`；未执行、非运行授权。替代v1作为当前设计；v1保留作历史。依据[阶段一结果复核](cache-formation-mechanism-s1-result-review-v1-2026-10-31.zh-CN.md)，后续为[CFM-S3 v2](cache-formation-mechanism-s3-readout-behavior-plan-v2-2026-10-31.zh-CN.md)。academic-research-suite / experiment-agent / plan；本次仅设计与自审。

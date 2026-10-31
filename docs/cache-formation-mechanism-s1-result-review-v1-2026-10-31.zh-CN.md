@@ -1,5 +1,7 @@
 # CFM-S1 结果复核与后续计划修订依据
 
+> 后续设计解释修正：本文件的S1数值复核保留；其中S2 v2已由[CFM-S2 v3](cache-formation-mechanism-s2-formation-test-plan-v3-2026-10-31.zh-CN.md)替代。累计分账不识别独立机制，末态小量不证明途中无变化；最新设计判断见[v3 Review](cache-formation-mechanism-s2-design-review-v3-2026-10-31.zh-CN.md)。以下保留当时复核正文。
+
 ## Material Passport
 
 日期：2026-10-31；academic-research-suite / experiment-agent / validate + plan。此次是同一助手的资料复核和设计自审，不是独立复现。新增模型前向、GPU、生成、反向传播均为0。
