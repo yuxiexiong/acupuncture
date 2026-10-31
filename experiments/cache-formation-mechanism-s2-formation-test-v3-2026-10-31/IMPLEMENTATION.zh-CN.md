@@ -33,3 +33,9 @@
 | preflight-r01（freeze-r01） | 2026-10-31 ~03:20 | **合同执行失败**：worker 在 `execute` 收尾的规模检查处 KeyError（遍历了计数字典里不受限的 `records` 键）。三条记录本身的闸门全部通过（II-B 复现、S1 逐位重复、惰性、捕获一致、Mτ 往返、重建 ≤ 4.7e−7），但运行未完成，不作为证据。原始目录保留在服务器 `runs/preflight-r01/`。 |
 
 8. **r02（偏离记账）**：修正为只比较受限计数（`check_limits`），并补测试覆盖 `check_limits` 与 `_certify_ready`（同起点认证的落盘与内存释放）；根因与此前教训相同——CPU 测试没覆盖 `execute` 收尾与跨函数调用点。判据、阈值、设计、规模均不变。新补的测试随即又发现 `_certify_ready` 把观测层写死为默认值（真实模型上不会出错，但该路径无法在小模型上测试），改为显式参数。CPU 收据 r02 记录了这次测试失败（保留），通过的收据为 r03。新冻结 freeze-r02、新授权 preflight-r02。
+
+| 运行 | 时间（UTC） | 结果 |
+|---|---|---|
+| preflight-r02（freeze-r02） | 2026-10-31 | passed；1 worker；33 s |
+| formal-r01（freeze-r02） | 2026-10-31 | passed；2 worker；84 条，48/48 同起点逐位认证；124 s |
+| formation r01 | 2026-10-31 | analyzed；界有效性全过（实测误差 ≤ 界的 1.25%）、恒等式 ≤ 3.1e−14 |
