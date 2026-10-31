@@ -20,6 +20,13 @@
 8. CPU 测试 `test_v_pinning_from_first_step` 初稿把"t=b+1 时自然 V 等于 T"写成对所有 G 层成立。实际只对第一个 G 层成立，因为后面的层会受前层被钉住的 V 在同一步内影响。这是测试写错，不是代码错误，已改正。
 9. 2 个 worker（每卡 1 个）：每输入约 30–45 s，12 个输入在双卡上约 5 分钟。
 
+## 运行记录
+
+- preflight-r01：2026-10-31 14:22 UTC，1 worker，63 s，通过（A5 逐位重放、预检惰性三项；14 前缀/22 评分）。
+- formal-r01：2026-10-31 14:24–14:28 UTC，2 worker（每卡 1 个），247 s，12/12 输入全部闸门通过，108 前缀/168 评分，共 8.46 GB。
+- 判读：`analysis/bridge-readouts-r01.json`（冻结的 `bridge_analysis.py run`）；CPU 重建诊断 12/12 × 9 条件全部通过。
+- 张量（逐步驱动、供体带、深层缓存、全词表 logits、评分期内部量）不进 git，留在服务器 `/workspace/acupuncture/experiments/cache-formation-readout-bridge-v1-2026-10-31/runs/*/worker-*/tensors/`，哈希在各 worker 的 `receipt.json`。
+
 ## 测试
 
 见 `readiness/cpu-receipt-r01.json`。
