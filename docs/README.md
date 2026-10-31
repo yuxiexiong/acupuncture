@@ -1,5 +1,7 @@
 # 项目文档目录
 
+**最终尺度诊断已补入方案，未运行｜2026-10-31：** [形成—读取方案v1 r2](cache-formation-readout-bridge-plan-v1-2026-10-31.zh-CN.md)§5.1/§13明确同题C分母、CPU高精度输出端反事实、排名/竞争结构、舍入边界和修订自查；[资产盘点r4](cache-formation-mechanism-asset-inventory-v1-2026-10-31.zh-CN.md)区分外部先例、条件推导、已有证据和待测量。不新增GPU条件，无模型运行。
+
 **形成—读取连接方案｜2026-10-31：** [同针V交叉与递推状态交叉方案v1](cache-formation-readout-bridge-plan-v1-2026-10-31.zh-CN.md)承接资产盘点r3的缺测量，明确5个形成条件、10个评分、补录量、判读与完整自查。设计逻辑通过；实现/数值/资源待验收，未运行模型或GPU。
 
 **已有张量核对完成｜2026-10-31：** [资产盘点v1 r3](cache-formation-mechanism-asset-inventory-v1-2026-10-31.zh-CN.md)新增B12、输出竞争分解和缺失测量表；[审计报告与复算证据](../experiments/cache-formation-asset-audit-v1-2026-10-31/REPORT.zh-CN.md)记录先自查后CPU核验12份旧张量与72份logits，无新模型运行/GPU。

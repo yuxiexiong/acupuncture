@@ -1,8 +1,10 @@
-# 缓存机制线｜结果资产盘点 v1 r3（纳入形成实验与旧张量核对）
+# 缓存机制线｜结果资产盘点 v1 r4（补最终尺度解释边界）
 
 日期：2026-10-31。对象：缓存机制线到 CFM-FORM-AB v2（固定结果提交 `181d80ad62ea2e6dcc18948609b91e957e4ff899`）为止的结果。保留 A1–A4、B1–B8 编号，新增 A5、B9–B11；此前盘点见 `3795292`。性质：资产盘点与覆盖核对，**不是新颖性证明，也不是录用预测**。"未见覆盖"只指本文第 6 节列出的近邻在已核对部分里没有出现，不等于全世界没有人做过。
 
 r3新增：完成[已有数据与内部张量CPU核对](../experiments/cache-formation-asset-audit-v1-2026-10-31/REPORT.zh-CN.md)，新增同源描述B12、可用字段与缺失测量；未新增模型运行。先完成[C01–C14自查与反方检查](../experiments/cache-formation-asset-audit-v1-2026-10-31/SELF_CHECK.zh-CN.md)。
+
+r4新增的是先验解释边界与未运行方案更新，不是新实验资产：保留A1–A5/B1–B12，未改实测值。形成—读取[方案v1 r2 §5.1/§13](cache-formation-readout-bridge-plan-v1-2026-10-31.zh-CN.md)加入最终归一化分母固定及词语竞争结构诊断，已重新自查，无GPU。
 
 [作用链检验 r4](cache-formation-mechanism-candidate-mechanisms-v1-2026-10-31.zh-CN.md) · [缓存机制线查重 r01](literature/cache-mechanism-prior-art-2026-10-30.zh-CN.md) · [E2 报告](../experiments/cache-formation-mechanism-e2-depth-transplant-v1-2026-10-31/REPORT.zh-CN.md)
 
@@ -179,4 +181,18 @@ B12也同源于A5，不是独立确认或新干预；本次核验12份旧张量�
 ## 8. r3 修订与实际覆盖
 
 完成先自查后执行的只读CPU审计；12/12张量与12/12记录哈希通过，72份logits读数通过。新增B12及§5.2的已完成状态/缺失测量表，保留原A1–A5结论和数值路线边界。r2“未取回全张量核验”为当时状态；r3在服务器逐份CPU加载核验，未下载大张量、未重跑模型，约10.283秒为脚本CPU核验提取时间，不含网络/整理。完整证据与复算代码见[审计报告](../experiments/cache-formation-asset-audit-v1-2026-10-31/REPORT.zh-CN.md)。同一助手自查和计算核验，不是独立模型复现；未做新颖性复查。
+
+## 9. r4：最终尺度与词语竞争的解释边界（无新测量）
+
+|身份|当前能说什么|不能说什么|
+|---|---|---|
+|外部报告|Neuron Lens在Qwen3-8B报告通过最终RMSNorm尺度调节分布的神经元，并采用固定尺度对照；2024年Confidence Regulation Neurons论文已有此类机制先例|不能搬用其维度/神经元编号，不能认定本项目针就是熵神经元或同样的attention sink|
+|源码/条件推导|指定Qwen3.5实现最终有效增益γ=1+weight，head无bias；只改变最后正标量分母，在理想算术下不会改变logit排名、argmax、D符号|不能排除早层归一化已改变方向；近并列BF16变化须数值核查|
+|现有B12的推论|X0→XB非停止赢家10/12改变，因此纯共同正缩放不足以解释这些记录|不据此推出尺度作用为零，也没有估计归一化贡献比例|
+|尚缺测量|A5未保存最终h/r；已有logits不能单独分辨真实分母作用和其他幅度/方向改变|不能把拟合logit缩放当实测r，不能声称已完成固定尺度实验|
+|未运行方案|v1r2将全部10评分记录h/r/norm元数据，统一同题C分母作CPU高精度输出端反事实，并单独检查中心化方向/排名|固定分母剩余可能只是幅度变化，不自动等于语义/词语偏好；不宣称自然份额或行为恢复|
+
+外部来源：[Neuron Lens§9](https://github.com/stdlogits/neuron-lens/blob/main/docs/findings.md#9-attention-sinks-the-outputs-temperature-and-entropy-neurons)、[2024论文](https://arxiv.org/abs/2406.16254)、[Qwen3.5指定源码](https://github.com/huggingface/transformers/blob/v5.20.2/src/transformers/models/qwen3_5/modeling_qwen3_5.py)。来源内容已定向阅读，但非独立复现或穷尽新颖性核查。
+
+对下一步的影响：不改变V形成/递推状态交叉的主实验；补充“传递的是最终尺度依赖、非统一竞争变化，还是两者并存”的判读。若固定尺度后分数传递弱，原干预作用仍成立，但需收紧其内容解释；若仍有可靠排名/竞争结构改变，则最终统一缩放不足以解释。相反/混合/误差不可判均保留，结果不自动触发更多针或层。详见方案§5.1判读表及§13复审。实测资产数量保持五主干、十二支撑。
 

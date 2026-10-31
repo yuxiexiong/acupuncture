@@ -1,5 +1,7 @@
 # Acupuncture：研究状态与后续方向
 
+**形成—读取方案r2与资产盘点r4｜2026-10-31，未运行：** [方案§5.1/§13](cache-formation-readout-bridge-plan-v1-2026-10-31.zh-CN.md)新增最终归一化分母固定与词语竞争结构诊断。统一同题C尺度，记录全部10评分的h/r；高精度CPU反事实与原BF16输出分开验收，固定尺度剩余不自动叫语义/偏好。C01–C14及E01–E26重新检查，设计逻辑通过，工程/资源未验收。[资产盘点r4](cache-formation-mechanism-asset-inventory-v1-2026-10-31.zh-CN.md)保留原实测数量与数值，新增解释边界；5形成/10评分矩阵不变，无模型或GPU运行。
+
 **形成—读取连接设计完成，未运行｜2026-10-31：** [方案v1与自查](cache-formation-readout-bridge-plan-v1-2026-10-31.zh-CN.md)固定L0 N4146−1和A5输入，用深层卷积前V双向交叉检验B效应，再对仅V不同的两对条件交叉递推末态，检验其在当前更新/读取下的输出作用。补录实际驱动与读取、保留token竞争结构；明确混合反事实与原生行为边界。C01–C14及E01–E26自查完成，非独立审查；实现/数值/资源未验收，无模型运行或GPU，不作为已完成资产。
 
 **旧张量离线核对完成｜2026-10-31：** [资产盘点v1 r3](cache-formation-mechanism-asset-inventory-v1-2026-10-31.zh-CN.md)新增B12与明确缺测量表。12份FORM-AB张量/记录哈希通过、72份logits复算一致；VRL04固定对比漏掉实际最强停止token的相对变化，不是B前后停止赢家切换。深层逐步写入/读取轨迹未保存，不能把A1与A5直接拼成V中介链。先自查后CPU核对，无新模型运行/GPU；见[完整审计](../experiments/cache-formation-asset-audit-v1-2026-10-31/REPORT.zh-CN.md)。
