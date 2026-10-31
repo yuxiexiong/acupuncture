@@ -19,6 +19,13 @@
 7. 冻结前真实模型演示 `readiness/smoke-r01.json`（VAR03-f0）全部闸门通过：14 s，峰值显存 9.6 GB，张量 0.29 GB/输入，η ≤ 0.058。不输出读数，正式运行从头重算。
 8. 2 个 worker（每卡 1 个）。
 
+## 运行记录
+
+- preflight-r01：2026-10-31 15:02 UTC，1 worker，37 s，通过（4 前缀/34 评分）。
+- formal-r01：2 worker（每卡 1 个），113 s，12/12 输入全部闸门通过，36 前缀/300 评分，共 2.72 GB。
+- 判读：`analysis/combo-readouts-r01.json`（代数分解恒等式最大残差 7e−15）；阶段 0：`analysis/stage0-offline-r01.json`。
+- 张量不进 git，留在服务器 `/workspace/acupuncture/experiments/cache-formation-cache-combination-v1-2026-10-31/runs/*/worker-*/tensors/`，哈希在各 worker 的 `receipt.json`。
+
 ## 测试
 
 见 `readiness/cpu-receipt-r01.json`。
