@@ -5,4 +5,6 @@
 - 实现与决策日志：[IMPLEMENTATION.zh-CN.md](IMPLEMENTATION.zh-CN.md)
 - 承接：[CFM-FORM-READ-BRIDGE v1](../cache-formation-readout-bridge-v1-2026-10-31/)（N4146 −1 每输入逐位锚定）
 
-**结果（formal-r01，全部闸门与每输入锚点通过）**：−1 下 10 个原生通道与 4 条同幅随机方向在 Δ_deep（12.8–20.1）、V 双向替换（CT 0.84–1.13、TC 0.31–0.58、自身 TR −0.13–0.05）和 ΔV 余弦（三组中位 0.68–0.75）上都分不开；通道相对随机方向的排秩接近均匀。这段 V 关系是 L0 同幅写入的一般性质，不是通道特有。−0.5 下通道之间分化大（Δ_deep 1.3–19.2），但没有随机方向参照。详见 [IMPLEMENTATION.zh-CN.md](IMPLEMENTATION.zh-CN.md#结果按方案-v2-6-判读表)。
+**结果与解释更新（2026-11-01）：** formal-r01全部闸门与每输入锚点通过。−1下十个原生通道及四条随机方向都复现V搬入强、换回只削弱部分的关系；量级和ΔV几何相似，说明当前现象不是N4146孤例，不是统计等效、任意方向有效或通道完全无特殊性的证明。SF组合机制尚未跨针检验。−0.5下通道分化但缺随机参照，作为边界保留，当前不默认转向剂量扫描。
+
+[当前进展与推进计划](../../docs/cache-mechanism-progress-and-next-stage-plan-2026-11-01.zh-CN.md)：机制拆解为主，关键预测形成后用少量其他针眼和随机方向作阶段性检查。[固定结果](analysis/xchan-readouts-r01.json) · [完成核验](runs/formal-r01/verification.json)。实现日志保留执行时原表述，以本入口及当前计划作为最新解释。
