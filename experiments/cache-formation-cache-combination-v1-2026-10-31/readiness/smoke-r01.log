@@ -1,0 +1,23 @@
+Loading weights:   0%|          | 0/723 [00:00<?, ?it/s]Loading weights:   4%|▍         | 29/723 [00:00<00:02, 272.67it/s]Loading weights:   8%|▊         | 57/723 [00:00<00:02, 263.85it/s]Loading weights:  13%|█▎        | 93/723 [00:00<00:02, 305.05it/s]Loading weights:  17%|█▋        | 124/723 [00:00<00:02, 290.47it/s]Loading weights:  21%|██▏       | 154/723 [00:00<00:01, 287.86it/s]Loading weights:  25%|██▌       | 183/723 [00:00<00:01, 282.00it/s]Loading weights:  40%|███▉      | 289/723 [00:00<00:00, 522.03it/s]Loading weights: 100%|██████████| 723/723 [00:00<00:00, 913.73it/s]
+[transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
+[transformers] `chunk_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.
+[transformers] `causal_conv1d_update` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
+[transformers] `fused_recurrent_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.
+{
+  "item": "VAR03-f0-required",
+  "status": "gates_passed",
+  "gates": {
+    "stage_B_formation": "C (and CT in preflight) replay bridge manifests bitwise; CR V applied == band, q/k untouched; CR xi elementwise equal to the bridge TR xi; layer 0 and shallow equal C",
+    "groups_cover_deep": "S/F/K cover every deep persistent tensor: {'None': 26, 'S': 14, 'F': 14, 'K': 10}",
+    "stage_A_scoring": "every cell: shallow C, each deep group from its assigned bridge formation (manifest checked field by field against the bridge record); endpoints C, Y_CT, Y_TC, Y_T replay bridge logits bitwise; only the read-only recorder installed; final norm recomputed bitwise",
+    "preflight_inert": "recorder-off rescoring of the 4 endpoints bitwise; full S/F/K swap from the opposite formation reproduces each endpoint bitwise"
+  },
+  "counts": {
+    "prefixes": 4,
+    "scores": 34
+  },
+  "tensor_file_bytes": 287459514,
+  "eta_max": 0.05839650818384712,
+  "seconds": 14.450121907517314,
+  "peak_gpu_mib": 9589.6767578125
+}
