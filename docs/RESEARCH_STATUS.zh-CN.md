@@ -1,5 +1,7 @@
 # Acupuncture：研究状态与后续方向
 
+**2026-10-31 后续实验交付必须先自查。** 已将[自查规范](experiment-design-self-check.zh-CN.md)接入 AGENTS.md，覆盖主线、增量、操作/路径、共享变量、判读、成本和历史错误。按用户后续要求完成[A/B 形成检验修正版及自查](cache-formation-ab-self-review-v1-2026-10-31.zh-CN.md)：修正过去缓存操作与最终评分背景，撤回“三分唯一归因/剩余即放大”；设计逻辑通过，工程及数值验收未完成，未运行模型或 GPU。该设计复用已完成的 E2（固定提交 b28fb8300adf9289514caddd9331676da261863c）；E1 未执行。此条更新下方历史“暂停设计”的任务状态，不改变旧结果、冻结协议或运行授权。
+
 **2026-10-30 两条研究线统一立项口径：** 当前分别设立[缓存机制线](cache-mechanism-proposal-2026-10-30.zh-CN.md)与[稳定副作用控制线](stable-control-proposal-2026-10-30.zh-CN.md)。前者解释少数通道干预如何写入历史状态并在撤针后继续作用；后者研究相近目标效果下如何减少非目标任务代价并保持可靠性。缓存线目前直接机制证据更完整，控制线已有较多问题证据但尚未证明相对强方法的改进；二者共享工具但分别判断成果，不合并为一个总实验。
 
 分别完成[缓存机制查重报告](literature/cache-mechanism-prior-art-2026-10-30.zh-CN.md)和[稳定副作用控制查重报告](literature/stable-control-prior-art-2026-10-30.zh-CN.md)。采用已有工作作为起点与基线，不以近邻存在为否定依据，也不将定向检索未命中当作首次发现。缓存阶段二结果核对依据为[Git 固定提交的报告](https://github.com/yuxiexiong/acupuncture/blob/73185a40de0c779d55beac204c7d46683736b5ef/experiments/early-state-localization-stage2-v2-2026-10-30/REPORT.zh-CN.md)、合同与候选锁定记录；本轮没有重算原始结果或独立复现。

@@ -14,3 +14,13 @@
 - Think before coding: state consequential assumptions and distinguish competing interpretations. Prefer the smallest correct implementation, make surgical changes, and verify the requested outcome.
 
 Read `README.md`, `docs/RESEARCH_STATUS.zh-CN.md`, and the relevant experiment's protocol and receipt before continuing work.
+
+## Mandatory experiment-design self-check (user instruction, 2026-10-31)
+
+- Before delivering any new experiment design or substantive revision, read and apply `docs/experiment-design-self-check.zh-CN.md`. This applies to both research lines, including exploratory analyses and supplementary experiments.
+- Record the design card, C01–C14 decisions with reasons, relevant historical errors, comparison with the previous design, and a substantive adversarial self-check. Revise failed designs and recheck before presenting a proposed experiment to the user; do not outsource known logical flaws to user review.
+- Keep the main research question stable and require a useful, bounded increment. Do not demand complete mechanism identification in each round, add controls merely for completeness, or lower claims until a scientifically empty experiment passes.
+- Separate logical design review, implementation/numerical acceptance, execution authorization, and actual results. Self-review is not independent review. If missing evidence genuinely prevents a valid design, report the specific blocker rather than inventing a pass.
+- This is a standing quality requirement, not a new permission workflow. Existing user authorization remains effective; a passed checklist itself grants no GPU or model-run authorization.
+
+- Cache-line main question: explain how the needle changes internal computation, writing, old-state processing and reading to produce large answer effects. Withdrawal is a diagnostic condition, not the overall objective.
