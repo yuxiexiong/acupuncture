@@ -1,0 +1,31 @@
+[transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
+[transformers] `chunk_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.
+[transformers] `causal_conv1d_update` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
+[transformers] `fused_recurrent_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.
+test_a_audit (test_form_ab.FormationTests.test_a_audit) ... ok
+test_b_definition_independent (test_form_ab.FormationTests.test_b_definition_independent)
+XB shallow after tau == (C at tau-1) + one needle step at tau, built without the B code path. ... ok
+test_counts_match_plan_limits (test_form_ab.FormationTests.test_counts_match_plan_limits) ... ok
+test_full_attention_past_from_clean (test_form_ab.FormationTests.test_full_attention_past_from_clean)
+Layer 3 (full attention, inside B): after tau, XB keys 0..tau-1 equal C's, key tau differs. ... ok
+test_gates_present (test_form_ab.FormationTests.test_gates_present) ... ok
+test_operations_are_not_trivial (test_form_ab.FormationTests.test_operations_are_not_trivial) ... ok
+test_score_matches_run_once (test_form_ab.FormationTests.test_score_matches_run_once)
+Cross-module call point: F.score == S3.run_once first step on the E2 chunk route. ... ok
+test_x0_equals_e2_style_cell_a (test_form_ab.FormationTests.test_x0_equals_e2_style_cell_a)
+X0 score == E2-style transplant (T base, C shallow) scored by S3.run_once on the same step-route caches. ... ok
+test_zero_dose_collapses_to_clean (test_form_ab.FormationTests.test_zero_dose_collapses_to_clean) ... ok
+test_route_gate_both_sides (test_form_ab.GateTests.test_route_gate_both_sides) ... ok
+test_route_gate_on_real_e2_records (test_form_ab.GateTests.test_route_gate_on_real_e2_records) ... ok
+test_a_arithmetic_bf16 (test_form_ab.HookTests.test_a_arithmetic_bf16)
+A: r <- bf16(fp32(r) - delta) on the input of the target layer, delta kept in fp32. ... ok
+test_b_checks_can_fail (test_form_ab.HookTests.test_b_checks_can_fail) ... ok
+test_analysis_selftest (test_form_ab.PlanTests.test_analysis_selftest) ... ok
+test_frozen_paths_exist (test_form_ab.PlanTests.test_frozen_paths_exist) ... ok
+test_items_and_plans (test_form_ab.PlanTests.test_items_and_plans) ... ok
+test_real_layout (test_form_ab.PlanTests.test_real_layout) ... ok
+
+----------------------------------------------------------------------
+Ran 17 tests in 0.724s
+
+OK
