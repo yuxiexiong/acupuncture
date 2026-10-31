@@ -19,6 +19,13 @@
 7. 2 个 worker（每卡 1 个）：真实模型每输入约 17 s（含预检的惰性重跑），12 输入单卡也只需约 3 分钟，多 worker 无收益。
 8. 冻结前真实模型闸门演示（`readiness/smoke-r01.json`）：VAR03-f0 全部闸门通过，16.6 s，峰值显存 9.5 GB，张量 0.69 GB/输入。脚本不打印、不保存 XA/XB/XAB 读数；正式运行从头重算，不复用这次演示的任何结果。
 
+## 运行记录
+
+- preflight-r01：2026-10-31 11:58 UTC，1 worker，40 s，通过（R0 整段路径对 E2 逐位；惰性钩子逐位；9 前缀/10 评分）。
+- formal-r01：2026-10-31 11:59–12:01 UTC，2 worker（每卡 1 个），119 s，12/12 输入全部闸门通过，60 前缀/72 评分。
+- 判读：`analysis/form-ab-readouts-r01.json`（冻结的 `form_analysis.py run`）。
+- 张量文件（逐位置供体、δ0、深层缓存、全词表 logits，共约 8.9 GB）不进 git，留在服务器 `/workspace/acupuncture/experiments/cache-formation-mechanism-formation-ab-v2-2026-10-31/runs/*/worker-*/tensors/`，哈希在各 worker 的 `receipt.json`。
+
 ## 测试
 
 见 `readiness/cpu-receipt-r01.json`。
