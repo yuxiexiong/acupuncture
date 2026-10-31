@@ -1,5 +1,7 @@
 # 项目文档目录
 
+**形成结果已纳入资产盘点｜2026-10-31：** [结果资产盘点 v1 r2](cache-formation-mechanism-asset-inventory-v1-2026-10-31.zh-CN.md)新增 A5 与同源支撑 B9–B11，收录形成实验的逐情景读数、数值路线修订、行为边界及下一步顺序。正式结果见固定提交 `181d80a`；下方方案阶段“未运行”是历史状态，本次整理未新增模型运行。
+
 **资产盘点后的形成检验｜2026-10-31：** [深层缓存形成条件方案 v2 与完整自查](cache-formation-mechanism-next-step-plan-v2-2026-10-31.zh-CN.md)。承接 E2，具体定义入口抵消、浅层过去状态固定、统一评分背景、不同结果的认识增量及退出条件；设计逻辑自查通过，工程与耗时未验收，未运行模型或 GPU。 执行合同与代码见 [CFM-FORM-AB v2](../experiments/cache-formation-mechanism-formation-ab-v2-2026-10-31/)（路线修订见其决策日志第 1 条）。下方旧方案状态保留其历史身份。
 
 **实验设计交付要求｜2026-10-31：** 所有后续新设计与实质修订先过[实验设计自查规范](experiment-design-self-check.zh-CN.md)，未通过先内部修正。当前案例：[深层缓存形成 A/B 修正版及自查](cache-formation-ab-self-review-v1-2026-10-31.zh-CN.md)，设计逻辑通过，工程未验收、未运行、未授权 GPU。下列较早的“当前/未执行”描述是历史快照，最新状态以[研究状态](RESEARCH_STATUS.zh-CN.md)顶部为准。
