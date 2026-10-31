@@ -1,5 +1,6 @@
 # 缓存形成机制｜CFM-E2 v1｜浅层与深层缓存分别怎样影响回答差异
 
+- 结果报告：[REPORT.zh-CN.md](REPORT.zh-CN.md)
 - 计划：[PLAN.zh-CN.md](PLAN.zh-CN.md)
 - 合同：[CONTRACT.zh-CN.md](CONTRACT.zh-CN.md)
 - 实现与决策日志：[IMPLEMENTATION.zh-CN.md](IMPLEMENTATION.zh-CN.md)
