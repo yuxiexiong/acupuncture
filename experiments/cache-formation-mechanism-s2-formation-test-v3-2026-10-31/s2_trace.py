@@ -358,14 +358,20 @@ def execute(engine, stage, output, receipt, specs):
         # Common-history certification as soon as both members of a same-start pair exist (plan §3).
         _certify_ready(output, item, labels, kept, receipt)
         torch.cuda.empty_cache() if torch.cuda.is_available() else None
-    for k, v in counts.items():
-        assert v <= LIMITS[stage][k], (k, v)
+    check_limits(counts, stage)
     if stage == 'preflight':
         exp.write(output / 'preflight.json', {'status': 'passed', 'records': [s['key'] for s in specs]}, immutable=True)
     return counts
 
 
-def _certify_ready(output, item, labels, kept, receipt):
+def check_limits(counts, stage):
+    """Contract §2 scale limits; only the limited counters are compared (preflight-r01 crashed on 'records')."""
+    for k, v in LIMITS[stage].items():
+        assert counts[k] <= v, (k, counts[k], v)
+    return True
+
+
+def _certify_ready(output, item, labels, kept, receipt, layers=T1.OBS_LAYERS):
     """Write the certification of every same-start pair of this item whose two members are both in memory."""
     b = boundary_b(labels)
     clean = kept.get(f'{item["id"]}__clean__00')
@@ -375,7 +381,7 @@ def _certify_ready(output, item, labels, kept, receipt):
             rel = f'certification/{item["id"]}__{a}__{name}.json'
             if ta is None or tb is None or (output / rel).exists():
                 continue
-            cert = common_history(ta, tb, b)
+            cert = common_history(ta, tb, b, layers)
             exp.write(output / rel, cert, immutable=True)
             receipt['record_hashes'][rel] = exp.sha(output / rel)
             # Plan §3: a pair that cannot be certified stops the same-start conclusions; the run stops here.

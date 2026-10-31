@@ -117,6 +117,32 @@ class AssetTests(Base):
                 S.s1_repeat_check(spec, bad, recs)
 
 
+class ExecutionPathTests(Base):
+    def test_check_limits(self):
+        self.assertTrue(S.check_limits({'records': 3, 'prefixes': 3, 'last_reads': 3, 'candidate_reads': 6}, 'preflight'))
+        self.assertTrue(S.check_limits({'records': 84, 'prefixes': 84, 'last_reads': 84, 'candidate_reads': 168}, 'formal'))
+        with self.assertRaises(AssertionError):
+            S.check_limits({'records': 4, 'prefixes': 4, 'last_reads': 3, 'candidate_reads': 6}, 'preflight')
+
+    def test_certify_ready_writes_and_releases(self):
+        item = {'id': 'I'}
+        with tempfile.TemporaryDirectory() as d:
+            out, receipt = Path(d), {'record_hashes': {}}
+            kept = {'I__clean__00': self.runs['00'][1]}
+            for a in S.ANCHORS:
+                for arm in ('10', '01', '11'):
+                    kept[f'I__{a}__{arm}'] = self.runs[arm][1]
+                    S._certify_ready(out, item, LABELS, kept, receipt, OBS)
+            self.assertEqual(len(receipt['record_hashes']), 2 * len(S.ANCHORS))
+            self.assertEqual(kept, {})
+            for rel in receipt['record_hashes']:
+                self.assertEqual(T1.exp.read(out / rel)['status'], 'certified_bitwise')
+        with tempfile.TemporaryDirectory() as d:
+            bad = {'I__clean__00': self.runs['10'][1], f'I__{S.ANCHORS[0]}__01': self.runs['01'][1]}
+            with self.assertRaises(AssertionError):
+                S._certify_ready(Path(d), item, LABELS, bad, {'record_hashes': {}}, OBS)
+
+
 class FormationTests(Base):
     def test_bound_validity_on_kernel(self):
         for arm, run in self.runs.items():
