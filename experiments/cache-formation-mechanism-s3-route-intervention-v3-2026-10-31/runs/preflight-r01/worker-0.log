@@ -1,0 +1,26 @@
+Loading weights:   0%|          | 0/723 [00:00<?, ?it/s]Loading weights:   5%|▍         | 35/723 [00:00<00:01, 349.26it/s]Loading weights:  10%|█         | 75/723 [00:00<00:01, 374.37it/s]Loading weights:  16%|█▌        | 113/723 [00:00<00:01, 350.70it/s]Loading weights:  21%|██        | 149/723 [00:00<00:01, 303.50it/s]Loading weights:  25%|██▌       | 181/723 [00:00<00:01, 303.85it/s]Loading weights:  30%|███       | 219/723 [00:00<00:01, 322.86it/s]Loading weights:  35%|███▍      | 252/723 [00:00<00:01, 322.77it/s]Loading weights: 100%|██████████| 723/723 [00:00<00:00, 846.20it/s]
+Traceback (most recent call last):
+  File "/workspace/acupuncture/experiments/cache-formation-mechanism-s3-route-intervention-v3-2026-10-31/s3_intervene.py", line 815, in <module>
+    main()
+  File "/workspace/acupuncture/experiments/cache-formation-mechanism-s3-route-intervention-v3-2026-10-31/s3_intervene.py", line 807, in main
+    value = run(a.stage, a.worker, a.output, a.authorization)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/acupuncture/experiments/cache-formation-mechanism-s3-route-intervention-v3-2026-10-31/s3_intervene.py", line 666, in run
+    receipt['summary'] = execute(engine, stage, output, receipt, units)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/acupuncture/experiments/cache-formation-mechanism-s3-route-intervention-v3-2026-10-31/s3_intervene.py", line 504, in execute
+    s2 = load_s2_records()
+         ^^^^^^^^^^^^^^^^^
+  File "/workspace/acupuncture/experiments/cache-formation-mechanism-s3-route-intervention-v3-2026-10-31/s3_intervene.py", line 480, in load_s2_records
+    rcp = exp.read(w / 'receipt.json')
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/acupuncture/experiments/early-input-control-v1-2026-10-29/experiment.py", line 40, in read
+    return json.loads(Path(path).read_text())
+                      ^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/miniconda/envs/amic-q3/lib/python3.11/pathlib.py", line 1058, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/miniconda/envs/amic-q3/lib/python3.11/pathlib.py", line 1044, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+NotADirectoryError: [Errno 20] Not a directory: '/workspace/acupuncture/experiments/cache-formation-mechanism-s2-formation-test-v3-2026-10-31/runs/formal-r01/worker-0.log/receipt.json'
