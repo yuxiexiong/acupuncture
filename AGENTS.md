@@ -24,3 +24,7 @@ Read `README.md`, `docs/RESEARCH_STATUS.zh-CN.md`, and the relevant experiment's
 - This is a standing quality requirement, not a new permission workflow. Existing user authorization remains effective; a passed checklist itself grants no GPU or model-run authorization.
 
 - Cache-line main question: explain how the needle changes internal computation, writing, old-state processing and reading to produce large answer effects. Withdrawal is a diagnostic condition, not the overall objective.
+
+## 项目文档及时交付（用户指示，2026-11-01）
+
+完成本项目的方案、必要自查记录或其他交付文档后，及时提交并推送到已确认的 GitHub 仓库，核对远端可读并向用户提供链接与提交号；不能仅交付本地路径。检查准确的暂存范围，保留远端和工作区其他改动，必要附件与索引一并交付。推送文档不构成 GPU 或模型运行授权。
