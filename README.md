@@ -1,6 +1,6 @@
 # Acupuncture｜少数通道干预：缓存机制与稳定副作用控制
 
-**当前阶段B1设计已自查，未运行｜2026-11-01：** [阶段路线图r2](docs/cache-mechanism-stage-roadmap-2026-11-01.zh-CN.md)保留“材料作用→具体计算检验→对应回答及边界”的目标。A已完成，[结果](experiments/cache-conv-factor-v1-2026-11-01/REPORT.zh-CN.md)显示V/Q作用并不简单相加；[路径审计](experiments/cache-conv-factor-path-audit-v1-2026-11-01/REPORT.zh-CN.md)仅提供候选。当前 [B1方案与完整自查](docs/cache-vq-write-interaction-causal-plan-v1-2026-11-01.zh-CN.md)检验：删除第13层V×Q写入交互的core输出分量，是否改变最终两侧的输出交互，在原生评分后半段是否保留。单层结果不自动决定扩层，也不代表B完成。[离线核对](experiments/cache-vq-write-interaction-design-audit-v1-2026-11-01/check-results.json)通过；计划96正式＋28预检评分、3模板前向、0前缀形成，工程验收/执行授权待完成。本次无模型/GPU，旧条目保留历史身份。
+**阶段B1已完成，主预期不成立｜2026-11-01：** [结果核对与下一步判断](docs/cache-vq-write-interaction-result-review-2026-11-01.zh-CN.md)已复算正式记录：原生评分后半段删第13层V×Q写入交互，停止侧情景变化不到0.05 logit，同一批8个首步停止保持，支持0/6；混合背景交互缩小12%–39%，综合支持1/6。内部交互大不等于该项明显影响原生输出；两背景删除向量范数不同，不推出整个第13层不敏感。124评分＋3模板、0前缀形成已完成；本次仅核对与文档更新，0新模型/GPU。[路线图](docs/cache-mechanism-stage-roadmap-2026-11-01.zh-CN.md)仍推进具体计算解释，先利用已有R/DEL轨迹寻找新的可检验候选，不自动扩层；下一实验未设计/授权。核对记录另列历史路线图冻结版本差异，未改原freeze。
 
 **当前进展与下一阶段｜2026-11-01：** [进展总结与推进计划](docs/cache-mechanism-progress-and-next-stage-plan-2026-11-01.zh-CN.md)是当前路线入口。缓存组合实验显示，在统一干净浅层评分下，递推状态与卷积缓冲联合传递约81%–90%的原针深层D差异；跨通道实验表明V替换关系不只出现在N4146，随机方向亦有相似表现。前者不是完整回答机制份额，后者未证明SF机制跨针一致。**机制拆解优先；具体预测形成后阶段性跨针/随机方向验证；剂量仅在影响识别时纳入。** 三轮实验已完成，本次只整理文档，无新运行授权。
 
