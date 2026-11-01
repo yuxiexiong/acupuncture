@@ -7,6 +7,7 @@
 | 形成—读取连接 | 已完成 | [桥接结果](cache-formation-readout-bridge-v1-2026-10-31/analysis/bridge-readouts-r01.json) |
 | 缓存组合 A+B | 已完成，正式36前缀/300评分 | [实验入口](cache-formation-cache-combination-v1-2026-10-31/) |
 | 跨通道验证 | 已完成，正式1092前缀/1500评分 | [实验入口](cache-cross-channel-validation-v1-2026-10-31/) |
+| 第13层局部读取因果检验 | 已完成（阴性：I、J 两背景均弱），正式132评分/0前缀 | [报告](cache-local-readout-causal-v1-2026-11-01/REPORT.zh-CN.md) |
 
 以下保留历史分类目录，不代表新的运行序列。
 
