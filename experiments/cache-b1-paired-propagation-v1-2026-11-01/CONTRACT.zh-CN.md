@@ -1,0 +1,29 @@
+# B1 配对传播分析 合同 r01（运行前提交）
+
+日期：2026-11-01。设计：[方案 v1 r2](../../docs/cache-b1-paired-propagation-analysis-plan-v1-2026-11-01.zh-CN.md)。授权：用户 2026-11-01“按照这个逻辑去修改方案，然后写代码写合同做测试跑实验”。身份：CPU 离线分析，0 模型调用、0 GPU、0 评分；CPU 上限 1 小时；新增结果 ≤50 MB。
+
+## 1. 输入
+
+B1 formal-r01 的 12 份张量与记录（按 worker 收据 sha256 校验），每输入两背景 M_T、N，每背景 R/DEL/RAND0/RAND1。权重只读：`embed_tokens.weight`（绑定输出头）的 a、248046 两行与全词表均值，`model.language_model.norm.weight`，`rms_norm_eps`。
+
+## 2. 计算（方案 §3）
+
+- 表一：DEL/RAND 相对 R 在第13层的 core（按 `patch_core(core_R, delta)` 恢复，哈希必须等于记录的 `core_out_sha256`）、门控归一化输出、out_proj、decoder13 出口的差范数与相对范数；第13层出口随机/真实范数比。
+- 表二：第13–31层 d_in、d_out、e = d_out − d_in；e 拆 mix（G 层 out_proj / 全注意力 attn_out）与 rest；范数、cos(e, d_in)。
+- 表三：固定 u_t/r_R（R 的最终归一化分母）下的 p_t；p_t(d_13out) + Σ_{l=14..31} p_t(e_l) = p_t(d_final)；ΔZ_t = p_t(d_final) + ε，ε 拆为分母项与舍入项。
+- 单位改动响应 γ_t = ΔZ_t / ‖d_13out‖（方案 §3.4，描述性，展示线 ‖d_13out‖/‖h_R,13out‖ ≥ 1e−4）。
+
+## 3. 闸门（任一不过 → 对应分析停止，记工程/证据不足，不记科学阴性）
+
+1. 张量与记录 sha256 等于 B1 收据；B1 verification 为 passed。
+2. 各运行第 l 层出口与第 l+1 层入口逐位相同（13–30），第31层出口等于 final:h；同背景各格第13层入口逐位相同（d_in,13 = 0）。
+3. 恢复的补丁后 core 哈希等于记录。
+4. 账目闭合：|Σ − 总量| ≤ 1e−10 × max(1, Σ|项|)（FP64）。
+
+## 4. 冻结的筛选与决定（方案 §4.1，原样执行）
+
+36 个模块（第14–31层 × {mix, rest}）；主方向 cz_s46，答案词 a 并列报告不参与决定。情景通过：两事实 c_DEL 同号且 |均值| > max_j 均值|c_RANDj| + 0.1；模块入选：N 中 ≥5/6 情景通过且符号一致。N 有入选 → 交付候选（优先 = N 中情景平均 |c_DEL| 最大者），另写因果方案、不在本轮执行；N 无入选 → 结束 B1 传播追踪，暂停第13层交互分支，不自动扩层；仅 M_T 入选 → 登记混合背景线索，按无原生候选处理。
+
+## 5. 输出
+
+`analyze.py`、`results-r01.json`、`REPORT.zh-CN.md`；不保存大向量（只存范数、投影与校验和）。
