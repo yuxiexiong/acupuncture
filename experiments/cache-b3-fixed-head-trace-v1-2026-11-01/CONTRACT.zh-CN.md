@@ -1,0 +1,57 @@
+# B3（固定45头记录重放 + 2×2 补角 + 随机切分零带）实验合同 r01
+
+日期：2026-11-01。设计：[计划 v2](../../docs/cache-b3-fixed-head-computation-next-stage-plan-v2-2026-11-01.zh-CN.md)（取代 v1 相应部分）。基准：C2 代码 `b1d0200`、结果 `fa3e7e2`、正式运行 `runs/formal-r01`。授权：用户 2026-11-01「如果你没什么大修意见就修好后直接写合同，代码，跑测试然后实验」。偏离记入 [DECISIONS](DECISIONS.zh-CN.md)。
+
+## 1. 操作
+
+模型、revision、BF16、内核路线、token、晚段窗口、L0 剂量 −1、四个方向（N4146、N1210、R0、R1）、固定45头名单、FIX 随机名单全部沿用 C2；worker/GPU 分配与 C2 相同（按情景轮转，readiness 已核）。12 条 P 系列输入，f0/f1 配对，不称 12 个独立样本。
+
+每输入：进程内 f0 校准（须等于 C1-P 与 C2 记录）；形成 C 一次，评分 C_native；每方向形成 T 一次，评分 T_native，然后在 N 背景（C 浅层 + T 深层，decoder-13 入口 = 该方向 x_T，Q 历史 = C）按头替换卷积 V 槽：
+
+- 重放格：N:TT、N:CC、N:CFIX、N:CT、N:CUF1、N:CUF2（全词表 logits 哈希须等于 C2）。
+- 新格：N:CREST（FIX 头 C、其余 T）、N:CUF1c、N:CUF2c（U1、U2 的补集为 T）。
+
+每次评分从独立深拷贝缓存开始。记录器只读：G 层 q/k/v/g/beta/core/old/new/z、门控归一化输出、out_proj；第13–31层 decoder 输入/输出、mixer 分支输出、MLP 分支输出；全注意力 q/k/v/attn_out；最终 h 与 normed；全词表 logits；每输入停止/答案读出向量 `(E_t − Ē)∘(1+w)`（FP64）。不存缓存快照（D2）。
+
+## 2. 预算（上限，失败尝试计入）
+
+| 阶段 | 形成序列 | 单步评分 | 校准 | 公共前缀 |
+|---|---:|---:|---:|---:|
+| 预检（P01-f0/f1，1 worker） | 10 | 86（含记录器关闭 4） | 1 | 2 |
+| 正式（12 输入，2 worker） | 60 | 492 | 6 | 12 |
+| 合计 | 70 | 578 | 7 | 14 |
+
+形成序列展开为 1820 次逐 token 前向。GPU 累计 ≤0.5 小时；存储 ≤16 GiB（每 worker ≤8 GiB）；0 生成、0 模板。预检若因**工程**原因失败，可在记账修复、重新冻结后再跑一次预检（总共 ≤2 次预检尝试，各计入实际成本）；正式运行不重试。
+
+## 3. 闸门（任一不过 → 停止，记合同执行失败，记录不进入分析）
+
+1. 校准逐值等于 C1-P 与 C2；每方向 L0 名义写入范数与 |dose|·scale 相对误差 ≤1%；GPU 分配等于 C2。
+2. C_native、每方向全部重放格 logits 哈希等于 C2；N:TT = T_native。
+3. 第13层逐头布局（子集头 = N:CT，其余 = N:CC，逐位）；N 格入口 = x_T；每格 14 个 G 内核各 1 次、chunk 0 次；入口 hook 每 N 格 1 次。
+4. 每个记录格第13–31层：`(in + mixer) + mlp == out` BF16 逐位；G 层 mixer = out_proj；末层输出 = final h。
+5. 预检 P01-f0/R0：四个 2×2 格无记录器重评分，logits 逐位等于有记录器。
+6. 预算、存储不超限。
+
+## 4. 分析判据（B3-A，`b3_core.RULE`，0 模型调用，CPU ≤4 核小时，单次完整运行）
+
+读数：去均值停止 logit（主），答案词同法（次要，只描述）。每输入×方向：`X = z(CFIX)−z(CC)`，`F = z(CT)−z(CC)`，`D = F−X`，`R = z(CREST)−z(CC)`，`I = z(CT)−z(CFIX)−z(CREST)+z(CC)`，`D = R+I`；`I_Uk = z(CT)−z(CUFk)−z(CUFkc)+z(CC)`。
+
+- **组成**（停止侧，每方向 12 输入均值）：|D̄| < 0.5 → `D_small`（只描述）；`share_R = R̄/D̄ ≥ 0.75` → `self`；`share_I ≥ 0.75` → `interaction`；否则 `both`。较小份额 < −0.25 另标 `opposing`。逐输入分类作描述。
+- **FIX 特异性**：零带 = 该方向 24 个 I_U 的 [min, max]；I 同侧超出 ≥9/12 → `specific`，否则 `within`。（可交换假设下单个输入单侧超出概率 ≤1/25；输入间尺度不同使合并零带偏宽，判据偏保守。）
+- **尺度**：`I_z = Σc·p/r`，`I_num = Σc·p / r̄`，`I_scale = I_z − I_num`；|mean I_scale| ≥ 0.5|mean I_z| → `scale_involved`，否则 `numerator_dominant`。X、D 的对称分子/分母项作描述。数值检查：由 final h 的 FP64 重算 z 与 logits 读数之差 ≤0.15 logit；不过则修正数值实现并记日志，不换指标。
+- **逐层**：`p_l = u·out_l`（l = 13…31），I_l 与随机切分零带同法；第一个 `specific` 层 = “所选读数首次可检测位置”。mixer/MLP 分支投影的 X、D、R、I 均值，FIX/其余头 core 变化范数（X、D、R），只作描述。
+
+措辞限制：`I` 近似可加不证明内部独立；`interaction` 不命名为饱和机制；`scale_involved` 不说交互起源于最终 RMSNorm；首次可检测层不叫起源层；N4146 的解释须兼容其实测 D，不写成精确零。
+
+## 5. 预注册预测（推测档，冻结前写入，见到 B3 数据前不改）
+
+- P1：N1210、R0、R1 中 ≥2 个方向组成为 `interaction`。
+- P2：三者中 ≥2 个方向 `specific`。
+
+## 6. 出口与停止
+
+分析完成后按计划 v1 §5 三个出口之一收束：(a) 有可操作、可失败的计算预测 → 另写因果合同，不自动上卡；(b) 无计算预测但缺下游响应信息 → 进入 B3-P 设计；(c) 连有界因果比较都无法保证认识增量 → 暂停 B 细拆。结果不利不改阈值、不换格、不加方向；工程失败立即停止并记账。
+
+## 7. 交付
+
+`runs/{preflight,formal}-r01/`（清单、哈希、记录入 Git；张量不入 Git）、`analysis/b3-readouts-r01.json`、`REPORT.zh-CN.md`。补录通过只记“数据可用”；重放格不再统计 C2 阳性。
