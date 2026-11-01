@@ -10,6 +10,7 @@
 | 缓存组合 A+B | 已完成，正式36前缀/300评分 | [实验入口](cache-formation-cache-combination-v1-2026-10-31/) |
 | 跨通道验证 | 已完成，正式1092前缀/1500评分 | [实验入口](cache-cross-channel-validation-v1-2026-10-31/) |
 | 第13层局部读取因果检验 | 已完成（阴性：I、J 两背景均弱），正式132评分/0前缀 | [报告](cache-local-readout-causal-v1-2026-11-01/REPORT.zh-CN.md) |
+| 卷积历史V/qk拆分（路线图A） | 已完成：V段足够、Q在V干净时部分替代（饱和、非可加）；四条预注册简化均不成立；正式264评分/0前缀 | [报告](cache-conv-factor-v1-2026-11-01/REPORT.zh-CN.md) |
 
 以下保留历史分类目录，不代表新的运行序列。
 
