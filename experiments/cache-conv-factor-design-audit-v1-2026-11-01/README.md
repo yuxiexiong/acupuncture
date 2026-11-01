@@ -1,5 +1,7 @@
 # 卷积材料计划：旧证据核对与离线设计检查
 
+**r2更新：** [阶段路线图](../../docs/cache-mechanism-stage-roadmap-2026-11-01.zh-CN.md)、[反馈逐条核对及已有F基线](review-r02/REVIEW.zh-CN.md)已补齐；计划矩阵不变。r1原始审计保留，design.json及design-check.json更新为r2，历史版见Git355f71c。
+
 [审计结果](REPORT.zh-CN.md) · [实验计划及自查](../../docs/cache-conv-value-qk-readout-plan-v1-2026-11-01.zh-CN.md) · [矩阵](design.json) · [检查结果](design-check.json) · [文件清单](manifest.json)
 
 本目录是已完成的CPU核对及未执行计划，不是新模型实验结果。0模型调用、0GPU。

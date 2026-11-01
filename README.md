@@ -1,6 +1,6 @@
 # Acupuncture｜少数通道干预：缓存机制与稳定副作用控制
 
-**最新更正与计划｜2026-11-01：** [CPU核对](experiments/cache-conv-factor-design-audit-v1-2026-11-01/REPORT.zh-CN.md)确认E2 d已测“有针入口＋干净深层”，撤回上一报告的“从未测过”判断，不再单独立项。原首词候选下降与停止词上升同时存在，不能直接叫事实丢失。[卷积历史V与q/k分段计划](docs/cache-conv-value-qk-readout-plan-v1-2026-11-01.zh-CN.md)已通过设计者逻辑自查，检验其在递推状态及原生入口背景中的条件作用；已做离线矩阵检查，执行代码/模型验收未完成、无GPU授权。计划316评分＋3模板前向，尚未运行。[资产盘点r8](docs/cache-formation-mechanism-asset-inventory-v1-2026-10-31.zh-CN.md)已同步；下方旧日期条目保留历史身份。
+**当前阶段路线与计划r2｜2026-11-01：** [阶段路线图](docs/cache-mechanism-stage-roadmap-2026-11-01.zh-CN.md)规定“材料作用→具体计算检验→原生行为及边界验证”，逐轮设计，未将后续实验一次性冻结。[当前V/qk计划r2](docs/cache-conv-value-qk-readout-plan-v1-2026-11-01.zh-CN.md)补入COMBO已知四角，改为中心化首词/停止词两侧主读数，量化随机参照与停步；E2整体可加不自动推出F局部可加，槽位覆盖不等于因果影响消失。[反馈核对与CPU复算](experiments/cache-conv-factor-design-audit-v1-2026-11-01/review-r02/REVIEW.zh-CN.md)已完成；逻辑及离线检查通过，无新模型/GPU。矩阵不增加：计划316评分＋3模板，执行实现及模型验收未完成。[资产盘点r9](docs/cache-formation-mechanism-asset-inventory-v1-2026-10-31.zh-CN.md)同步；旧日期条目保留历史身份。
 
 **当前进展与下一阶段｜2026-11-01：** [进展总结与推进计划](docs/cache-mechanism-progress-and-next-stage-plan-2026-11-01.zh-CN.md)是当前路线入口。缓存组合实验显示，在统一干净浅层评分下，递推状态与卷积缓冲联合传递约81%–90%的原针深层D差异；跨通道实验表明V替换关系不只出现在N4146，随机方向亦有相似表现。前者不是完整回答机制份额，后者未证明SF机制跨针一致。**机制拆解优先；具体预测形成后阶段性跨针/随机方向验证；剂量仅在影响识别时纳入。** 三轮实验已完成，本次只整理文档，无新运行授权。
 

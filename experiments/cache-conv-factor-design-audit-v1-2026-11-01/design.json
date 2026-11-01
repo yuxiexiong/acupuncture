@@ -309,5 +309,55 @@
   "random_seeds": "20261101 + 1000*draw + crc32(input_id + \"|\" + segment); CPU float64 torch.Generator; layers ascending; segment in q,k,v",
   "source_audit": "e2-audit.json",
   "tensor_audit": "saved-logits.json",
-  "no_gpu_this_delivery": true
+  "no_gpu_this_delivery": true,
+  "revision": "r2",
+  "previous_design_commit": "355f71c254ef3356fe32d53dfbfa3ee27657d9b4",
+  "primary_readouts": [
+    "centered_a",
+    "centered_stop_248046"
+  ],
+  "required_derived_readouts": [
+    "stop_248046_minus_a",
+    "think_minus_a",
+    "stop_248044_minus_a",
+    "stop_248046_minus_think",
+    "D"
+  ],
+  "hypotheses": {
+    "conditional_F_transfer_D": {
+      "range": [
+        0.75,
+        1.33
+      ],
+      "minimum_scenarios": 5,
+      "status": "extra_assumption_not_implied_by_E2"
+    },
+    "Q_V_additivity": {
+      "max_abs_I_over_G": 0.2,
+      "minimum_scenarios": 5
+    },
+    "V_addition_greater_than_removal": "not_inferred_from_formation_CT_TC"
+  },
+  "random_rule": {
+    "backgrounds": [
+      "M_S_T",
+      "N"
+    ],
+    "parts": [
+      "Q",
+      "V"
+    ],
+    "primary_readouts": [
+      "centered_a",
+      "centered_stop_248046"
+    ],
+    "minimum_scenarios": 5,
+    "total_scenarios": 6,
+    "eligibility_min_abs_G_each_fact": 1.0,
+    "comparison_margin_logit": 0.1,
+    "comparison": "mean(sign(G_i)*R_true_i) > max_j(mean(abs(R_random_ij))) + margin; both true oriented effects positive",
+    "actual_p_value": null,
+    "stop_if_no_comparison_passes": true,
+    "no_superiority_does_not_prove_general_perturbation": true
+  }
 }

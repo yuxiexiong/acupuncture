@@ -1,6 +1,6 @@
 # Acupuncture：研究状态与后续方向
 
-**最新更正与计划｜2026-11-01：** [CPU核对](../experiments/cache-conv-factor-design-audit-v1-2026-11-01/REPORT.zh-CN.md)确认E2 d已测“有针入口＋干净深层”，撤回上一报告的“从未测过”判断，不再单独立项。原首词候选下降与停止词上升同时存在，不能直接叫事实丢失。[卷积历史V与q/k分段计划](cache-conv-value-qk-readout-plan-v1-2026-11-01.zh-CN.md)已通过设计者逻辑自查，检验其在递推状态及原生入口背景中的条件作用；已做离线矩阵检查，执行代码/模型验收未完成、无GPU授权。计划316评分＋3模板前向，尚未运行。[资产盘点r8](cache-formation-mechanism-asset-inventory-v1-2026-10-31.zh-CN.md)已同步；下方旧日期条目保留历史身份。
+**当前阶段路线与计划r2｜2026-11-01：** [阶段路线图](cache-mechanism-stage-roadmap-2026-11-01.zh-CN.md)规定“材料作用→具体计算检验→原生行为及边界验证”，逐轮设计，未将后续实验一次性冻结。[当前V/qk计划r2](cache-conv-value-qk-readout-plan-v1-2026-11-01.zh-CN.md)补入COMBO已知四角，改为中心化首词/停止词两侧主读数，量化随机参照与停步；E2整体可加不自动推出F局部可加，槽位覆盖不等于因果影响消失。[反馈核对与CPU复算](../experiments/cache-conv-factor-design-audit-v1-2026-11-01/review-r02/REVIEW.zh-CN.md)已完成；逻辑及离线检查通过，无新模型/GPU。矩阵不增加：计划316评分＋3模板，执行实现及模型验收未完成。[资产盘点r9](cache-formation-mechanism-asset-inventory-v1-2026-10-31.zh-CN.md)同步；旧日期条目保留历史身份。
 
 **当前口径｜2026-11-01：** 形成—读取连接、缓存组合及跨通道实验已完成。现阶段以机制拆解为主，关键预测形成后用少量其他针眼及随机方向作阶段性检查；非孤例不等于同一完整机制，剂量不是默认下一主线。详见[近期进展与下一阶段推进计划](cache-mechanism-progress-and-next-stage-plan-2026-11-01.zh-CN.md)。本次仅文档更新，无新模型运行。
 

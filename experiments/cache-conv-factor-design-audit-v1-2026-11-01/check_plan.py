@@ -41,5 +41,21 @@ for s in (0,1):
 # Absolute logits can move together without changing competition.
 a, stop, shift = 5., 2., 11.
 assert (stop + shift) - (a + shift) == stop - a
+# Revised readouts and finite-reference rule: no significance or absolute-value wrong-direction win.
+assert p['revision'] == 'r2'
+assert p['primary_readouts'] == ['centered_a', 'centered_stop_248046']
+rr = p['random_rule']
+assert rr['minimum_scenarios'] == 5 and rr['total_scenarios'] == 6 and rr['actual_p_value'] is None
+assert rr['comparison_margin_logit'] == 0.1 and rr['stop_if_no_comparison_passes']
+def passes(g, true, random):
+ if any(abs(v) < 1 for v in g): return None
+ oriented = [(1 if v > 0 else -1) * e for v,e in zip(g,true)]
+ return all(v > 0 for v in oriented) and sum(oriented)/2 > max(sum(abs(v) for v in draw)/2 for draw in random) + 0.1
+assert passes([2,2], [3,3], [[1,1],[-2,-2]]) is True
+assert passes([2,2], [-3,-3], [[1,1],[2,2]]) is False
+assert passes([2,2], [3,-3], [[1,1],[2,2]]) is False
+assert passes([0.5,2], [3,3], [[1,1],[2,2]]) is None
+assert passes([-2,-2], [-3,-3], [[1,1],[2,2]]) is True
+assert passes([2,2], [2.05,2.05], [[1,1],[2,2]]) is False
 result = {'status':'OFFLINE_DESIGN_CHECK_PASS','scope':'matrix, counts, archived IDs, algebra; not runner or model acceptance','model_calls':0,'gpu_calls':0,'formal_scores_planned':264,'total_model_forwards_planned':319,'design_sha256':hashlib.sha256((P/'design.json').read_bytes()).hexdigest()}
 print(json.dumps(result, ensure_ascii=False, indent=2))
