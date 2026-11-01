@@ -40,10 +40,9 @@ DESIGN = DESIGN_DIR / 'design.json'
 SPLIT = 13
 STAGES = ('preflight', 'formal')
 MAX_WORKERS = {'preflight': 1, 'formal': 2}
-LIMITS = {'preflight': {'prefixes': 0, 'scores': 52, 'templates': 1},
+LIMITS = {'preflight': {'prefixes': 0, 'scores': 52, 'templates': 1},  # per attempt; cumulative in DECISIONS D8
           'formal': {'prefixes': 0, 'scores': 264, 'templates': 2}}
 STORAGE_LIMIT = 8 * 2 ** 30
-RECON_TOL = 0.003
 DRIVER_FIELDS = ('q', 'k', 'v', 'g', 'beta', 'core', 'z')
 
 
@@ -271,23 +270,23 @@ def run_item(engine, item, prompt, token_set, old, rec_old, crec, template, a_to
     gates['random'] = 'per layer and segment, actual displacement norm on consumed slots within 5% of target; zero targets untouched'
 
     # ---- kernel formula reconstruction (plan §7.1-5), per cell and G layer, S from the cell's S donor
-    worst = {}
+    worst, bad = {}, []
     for rec, ids in ((rec_m, m_ids), (rec_n, n_ids)):
         for cid in ids:
             spec = spec_by[cid]
-            wmax = 0.0
+            w_err, w_ratio = 0.0, 0.0
             for i in G:
                 row = {k: v.cpu() for k, v in rec.rows[cid][i].items() if hasattr(v, 'cpu')}
                 s_old = old['deep'][spec['S']][f'{i}:recurrent_states'][0]
                 w, nn_ = LR.K.weights(row)
-                o = LR.K.read(s_old, w) + nn_
-                core = row['core'].double()
-                cn = float(core.norm())
-                err = float((o - core).norm()) / cn if cn > 0 else float((o - core).norm())
-                wmax = max(wmax, err)
-            worst[cid] = wmax
-    assert max(worst.values()) <= RECON_TOL, ('kernel reconstruction', max(worst.values()))
-    gates['reconstruction'] = f'FP64 S^T w + n vs actual core <= {RECON_TOL} for every cell and G layer'
+                chk = K.recon_check(LR.K.read(s_old, w) + nn_, row['core'])
+                w_err, w_ratio = max(w_err, chk['err']), max(w_ratio, chk['ratio'])
+                if not chk['ok']:
+                    bad.append((cid, i, chk))
+            worst[cid] = {'err': w_err, 'ratio_to_bf16_floor': w_ratio}
+    assert not bad, ('kernel reconstruction exceeds 1.05 x BF16 rounding floor', bad[:5])
+    gates['reconstruction'] = ('FP64 S^T w + n vs actual core: error <= 1.05 x the BF16 rounding floor of the exact value, '
+                               'every cell and G layer (contract r02, DECISIONS D8)')
 
     # ---- fixed final-norm denominator diagnostic (C denominator)
     fn = B.S3.final_norm(model)

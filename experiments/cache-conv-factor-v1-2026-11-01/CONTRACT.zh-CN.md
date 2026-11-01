@@ -1,4 +1,4 @@
-# CFM-CONV-FACTOR v1 实验合同 r01
+# CFM-CONV-FACTOR v1 实验合同 r02
 
 日期：2026-11-01。设计：[方案 v1 r2](../../docs/cache-conv-value-qk-readout-plan-v1-2026-11-01.zh-CN.md)、[机器矩阵 design.json](../cache-conv-factor-design-audit-v1-2026-11-01/design.json)、[阶段路线图](../../docs/cache-mechanism-stage-roadmap-2026-11-01.zh-CN.md) 第 A 步。合同与方案冲突以方案 r2 为准；偏离记入 [DECISIONS](DECISIONS.zh-CN.md)。运行授权：用户 2026-11-01 指令“如果没有大的修改意见的话，直接写合同代码，然后做测试上卡实验就好”。
 
@@ -23,13 +23,15 @@ Qwen3.5-4B 851bf6e8，BF16、eager；原 L0/N4146/−1 晚段针，归档 bridge
 
 GPU 上限：预检 10 分钟、正式 2 worker 各 15 分钟；存储 ≤ 8 GiB，大张量留服务器。
 
+累计账（r02）：preflight-r01 0 次；preflight-r02 失败，已耗 48 次评分 + 1 次模板。修订后全程上限 = 48 + 52 + 264 = **364 次评分、4 次模板前向**，0 形成；每次尝试的上限仍由 `LIMITS` 强制。
+
 ## 4. 工程闸门（任一不过 → 中止，记合同执行失败）
 
 1. 来源：bridge 记录与张量、COMBO 记录按收据 sha256 校验；提示 token 哈希三方一致；a_i（design.json）等于 bridge C 的非停止赢家；`<think>`=248068；停止集 {248044, 248046}。
 2. 缓存：每格每字段哈希等于预定来源张量（分段组装后的 F 以组装张量计）。
 3. 重放：C、M:TTT、N:TT 的 logits 逐位等于 bridge C、Y_T、T_native；M 的 q=v 四角逐位等于 COMBO 的 S=s,F=f,K=T；Y_T、T_native 的 14 层驱动逐位一致；每个 N/D_step 格第13层入口等于归档 x_T。
 4. 内核：每格 14 个 G 层的 recurrent 内核各恰好命中 1 次，chunk 内核 0 次；入口钩子每格命中 1 次。
-5. 重构：FP64 Sᵀw+n 对实际 core 的相对误差 ≤ 0.003（每格每 G 层，S 取该格 S 供体）。
+5. 重构（r02，DECISIONS D8）：FP64 Sᵀw+n 对实际 core 的相对误差 ≤ 1.05 × 该精确值舍入到 BF16 的相对误差（每格每 G 层，S 取该格 S 供体）。r01 的固定 0.003 实测量的是 BF16 舍入底噪（preflight-r02 中 308/308 比值 = 1.00），不能区分路线/来源错误，已替换。
 6. 随机：每层每段在实际读取的槽 1–3 上，实际位移范数与目标相差 ≤ 5%；零目标严格不改。
 7. 预检：记录器关闭、整段复制两类重评 logits 逐位等于对应记录格。
 8. 冻结：freeze-r01 全部文件哈希在授权、运行、验证时一致。

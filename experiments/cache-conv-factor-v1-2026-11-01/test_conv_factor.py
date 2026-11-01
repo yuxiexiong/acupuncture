@@ -86,6 +86,14 @@ class RandomRefs(unittest.TestCase):
         self.assertTrue(K.displacement_check(f_t, K.seg_put(f_t, 'v', K.seg_view(f_t, 'v') + z), 'v', z)['ok'])
 
 
+class Recon(unittest.TestCase):
+    def test_recon_gate_pass_and_fail(self):
+        o = rnd(32, 128, seed=9) * 0.01
+        self.assertTrue(K.recon_check(o, o.to(torch.bfloat16))['ok'])                 # correct path: residual = rounding
+        self.assertFalse(K.recon_check(o, (o * 1.01).to(torch.bfloat16))['ok'])      # 1% source error: ratio >> 1
+        self.assertFalse(K.recon_check(o, (o + 0.02 * rnd(32, 128, seed=10) * 0.01).to(torch.bfloat16))['ok'])
+
+
 class Readout(unittest.TestCase):
     def test_readout(self):
         z = torch.zeros(248320)

@@ -19,7 +19,7 @@ STOP = (248044, 248046)
 STOP_MAIN, THINK = 248046, 248068
 SEED_BASE = 20261101
 RULE = {'min_scen': 5, 'n_scen': 6, 'min_abs_G': 1.0, 'margin': 0.1, 'near_lo': 0.7, 'near_hi': 1.3, 'other_max': 0.3,
-        'add_max': 0.2, 'transfer': (0.75, 1.33), 'disp_tol': 0.05}
+        'add_max': 0.2, 'transfer': (0.75, 1.33), 'disp_tol': 0.05, 'recon_floor_ratio': 1.05}
 
 
 # ---------------------------------------------------------------- conv segments
@@ -201,3 +201,19 @@ def random_rule(per_item, scen_of):
     else:
         label = 'rule_not_met'
     return {'scenarios': st, 'n_exceed': n_ex, 'n_evaluable': n_ev, 'label': label}
+
+
+def recon_check(o, core):
+    """Contract r02 / DECISIONS D8: FP64 reconstruction o vs actual BF16 core. The residual of a correct path is the BF16
+    rounding of the exact value, so the gate is err <= 1.05 * floor with floor = ||bf16(o) - o|| / ||o||; a wrong
+    source or route gives err >> floor."""
+    import torch
+    o = o.double()
+    c = core.double()
+    on = float(o.norm())
+    err = float((o - c).norm()) / max(float(c.norm()), 1e-300)
+    floor = float((o.to(torch.bfloat16).double() - o).norm()) / max(on, 1e-300)
+    if floor == 0:
+        return {'err': err, 'floor': 0.0, 'ratio': 0.0 if err == 0 else math.inf, 'ok': err == 0}
+    ratio = err / floor
+    return {'err': err, 'floor': floor, 'ratio': ratio, 'ok': ratio <= RULE['recon_floor_ratio']}
