@@ -52,6 +52,15 @@ GPU：两张 H20（97,871 MiB）均 3 MiB 占用、0% 利用，无计算进程�
 - **模型下载已启动**（用户授权，本人执行）：服务器 `/workspace/models/_cross_model_dl/download_and_verify.sh`（修订版，用 modelscope 1.40.1 的 `snapshot_download`，CLI 可执行文件在 `.venv-bench` 内不存在），目标 `/workspace/models/Qwen3-4B-1cfa9a72`、`/workspace/models/Falcon-H1-3B-Instruct-01087ec4`；下载完成后逐文件 sha256 对 ModelScope 清单，收据写 `_cross_model_dl/<model>.receipt.json`。18:47 UTC 起跑，约 3 MB/s × 2 并行，预计 40 分钟。
 - **第二道身份核验（本机，HF API）**：按固定 revision 取 HF 树，LFS 文件的 sha256 与 ModelScope 清单**逐位一致**——Qwen3-4B@1cfa9a7：model-00001 `328a91d31223…`、00002 `6cd087b31630…`、00003 `e4bf43695718…`、tokenizer.json `aeb13307a71a…`；Falcon-H1-3B@01087ec：model-00001 `977e5fada355…`、00002 `ca9b659bbd9b…`。因此下载通过校验后，这两个模型的权重身份可直接固定为 HF revision，而非仅镜像。（非 LFS 小文件如 config.json 已在 §2 比过。）Llama-3.2-3B 仍只能固定到 ModelScope 镜像（HF 门禁）。
 
+## 5b. 下载完成与双重校验（2026-11-01 19:28 UTC）
+
+| 模型 | 落地目录 | 字节 | ModelScope 逐文件 sha256 | HF 固定 revision LFS sha256 | 收据 |
+|---|---|---|---|---|---|
+| Qwen/Qwen3-4B | `/workspace/models/Qwen3-4B-1cfa9a72` | 8,060,927,256（14 文件） | 14/14 ok（19:10 UTC） | 4/4 LFS 文件一致（3 safetensors + tokenizer.json） | `Qwen_Qwen3-4B.receipt.json` |
+| tiiuae/Falcon-H1-3B-Instruct | `/workspace/models/Falcon-H1-3B-Instruct-01087ec4` | 6,304,070,481（12 文件） | 12/12 ok（19:28 UTC） | 2/2 LFS 文件一致 | `tiiuae_Falcon-H1-3B-Instruct.receipt.json` |
+
+HF 树哈希来源：`hf_tree_hashes.json`（本机经 HF API 按 revision 取，无 token）。两个模型的权重身份可在合同里固定为 HF revision `1cfa9a72…` / `01087ec4…`。下载耗时 23 + 18 分钟，/workspace 余 354G。四模型状态：Qwen3.5-4B（/data，851bf6e）、Qwen3-4B、Falcon-H1-3B 三个固定到 HF revision；Llama-3.2-3B 固定到 ModelScope 镜像哈希。
+
 ## 6. 边界
 
 - `du` 对 /workspace 顶层有 240s 超时，但完整返回；二级目录归属未核。
