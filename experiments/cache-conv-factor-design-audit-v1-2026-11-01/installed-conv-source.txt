@@ -1,0 +1,86 @@
+SOURCE /workspace/claude-jump/qwen35-neuron-steering-20261025/.venv/lib/python3.11/site-packages/transformers/models/qwen3_5/modeling_qwen3_5.py b4b17fe08d8d54da34a0fce78639666279ae7fd0a9e4ec06fce6602774707ca3
+236 
+@use_kernel_func_from_hub_with_fallback("causal_conv1d_update", "causal_conv1d")
+def causal_conv1d_update(
+    hidden_states: torch.Tensor,
+    conv_state: torch.Tensor,
+    weight: nn.Parameter,
+    bias: nn.Parameter | None = None,
+    activation: str | None = None,
+):
+    _, hidden_size, seq_len = hidden_states.shape
+    state_len = conv_state.shape[-1]
+
+498         self.head_k_dim = config.linear_key_head_dim
+        self.head_v_dim = config.linear_value_head_dim
+        self.key_dim = self.head_k_dim * self.num_k_heads
+        self.value_dim = self.head_v_dim * self.num_v_heads
+
+        self.conv_kernel_size = config.linear_conv_kernel_dim
+        self.layer_idx = layer_idx
+        self.activation = config.hidden_act
+        self.layer_norm_epsilon = config.rms_norm_eps
+
+        # QKV
+        self.conv_dim = self.key_dim * 2 + self.value_dim
+499         self.head_v_dim = config.linear_value_head_dim
+        self.key_dim = self.head_k_dim * self.num_k_heads
+        self.value_dim = self.head_v_dim * self.num_v_heads
+
+        self.conv_kernel_size = config.linear_conv_kernel_dim
+        self.layer_idx = layer_idx
+        self.activation = config.hidden_act
+        self.layer_norm_epsilon = config.rms_norm_eps
+
+        # QKV
+        self.conv_dim = self.key_dim * 2 + self.value_dim
+        self.conv1d = nn.Conv1d(
+507 
+        # QKV
+        self.conv_dim = self.key_dim * 2 + self.value_dim
+        self.conv1d = nn.Conv1d(
+            in_channels=self.conv_dim,
+            out_channels=self.conv_dim,
+            bias=False,
+            kernel_size=self.conv_kernel_size,
+            groups=self.conv_dim,
+            padding=self.conv_kernel_size - 1,
+        )
+
+589 
+        mixed_qkv = mixed_qkv.transpose(1, 2)
+        query, key, value = torch.split(
+            mixed_qkv,
+            [
+                self.key_dim,
+                self.key_dim,
+                self.value_dim,
+            ],
+            dim=-1,
+        )
+
+1056             lengths = cu_seqlens[1:] - cu_seqlens[:-1]
+            splits = [
+                torch.split(tensor, lengths.tolist(), dim=2) for tensor in (query_states, key_states, value_states)
+            ]
+
+            attn_outputs = [
+                attention_interface(
+                    self,
+                    q,
+                    k,
+                    v,
+                    attention_mask=None,
+1482         vision_outputs = self.visual(pixel_values, grid_thw=image_grid_thw, **kwargs)
+        split_sizes = (image_grid_thw.prod(-1) // self.visual.spatial_merge_size**2).tolist()
+        vision_outputs.pooler_output = torch.split(vision_outputs.pooler_output, split_sizes)
+
+        return vision_outputs
+
+    def get_placeholder_mask(
+        self,
+        input_ids: torch.LongTensor,
+        inputs_embeds: torch.FloatTensor,
+        image_features: torch.FloatTensor | None = None,
+        video_features: torch.FloatTensor | None = None,
+CONFIG {'linear_conv_kernel_dim': 4, 'linear_key_head_dim': 128, 'linear_num_key_heads': 16, 'linear_num_value_heads': 32, 'linear_value_head_dim': 128}

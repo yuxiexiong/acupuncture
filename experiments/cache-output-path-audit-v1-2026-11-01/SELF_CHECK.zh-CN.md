@@ -1,5 +1,7 @@
 # 输出路径旧数据分析：设计卡与自查
 
+**后续复查更正｜2026-11-01：** 本轮来源/算术验收仍成立，但C03资产覆盖未发现E2 d，故“从未测过”的下一阶段判断不通过，不能沿用此处旧自查结论支持重复立项。见[更正核对](../cache-conv-factor-design-audit-v1-2026-11-01/REPORT.zh-CN.md)。新方案已重新完成C01–C14自查；旧原始数值不变。
+
 日期2026-11-01；探索性CPU分析；不构成GPU实验合同。依据 experiment-design-self-check v1。用户已授权执行本分析；未授权新模型运行。按 Academic Research Suite 与 Ponytail full执行，同助手自查非独立审查。
 
 ## 分析前设计卡
