@@ -1,0 +1,54 @@
+# F0 收据 1：服务器容量、模型可及性与环境（只读核实）
+
+日期：2026-11-01 18:23–18:50 UTC。对象：跨模型基础实验 r2（`docs/cross-model-foundation-v1-2026-11-02/PLAN.zh-CN.md`，提交 2691d33）§10.1 storage-receipt 与 §2 模型固定清单的前置核实。方法：ssh 只读命令（df、du、ls、sha256sum、curl），本地 HF/ModelScope 公开 API。没有写入服务器、没有删除任何文件、没有加载模型。
+
+## 1. 容量（服务器 `iv-yeop3gg35s5i3z45tw26`，2026-11-01 18:23 UTC）
+
+| 挂载点 | 总量 | 已用 | 可用 | inode 使用 |
+|---|---|---|---|---|
+| `/workspace`（/dev/vdb） | 2.5T | 2.1T | **368G** | 10%（1.51e7 / 1.68e8） |
+| `/`（/dev/vda2，含 `/data`） | 492G | 424G | **49G** | — |
+
+`/data` 不是独立分区，与根盘共用；根盘只剩 49G，**不能**往 `/data/models` 再放模型。
+
+`/workspace` 顶层占用（du，前 12）：cross-model-asr 658G、claude-jump 307G、jevrep 174G、hf_cache 167G、ph 125G、deployed_regime 101G、acupuncture 71G、gqa_stage3_20261007 66G、F4_410M_ws 60G、models 38G、miniconda 37G、sam3d-corn 36G。其中 cross-model-asr（mtime 10-23）与 claude-jump（mtime 10-25）属于 ASR 跃升线，按 11-02 清理记录其检查点不可删；其余目录归属未核，一律按"不可删"处理。
+
+**按 PLAN §10.1 的公式**：Q = min(100GiB, 可用 − 其他任务预留 − 新增权重 − 安全余量)，安全余量 = max(50GiB, 10% × 2.5T = 250GiB) = 250GiB。新增权重约 8+7+6 = 21GiB（见 §2）。其他任务预留未知（设 0 为上界）。Q ≤ min(100, 368 − 0 − 21 − 250) = **97GiB**（上界）。若跃升线或他人另有预留，Q 相应下降；PLAN 要求的"至少容纳一次四格完整配对包"在 Q ≈ 97GiB 下可满足，但 A 深面板全量（PLAN 估 0.39TB 未压缩）必须分片外归档，无法常驻热盘。**外部持久归档目的地本次未找到任何现成位置**，这是 F1 前必须由人决定的事项。
+
+GPU：两张 H20（97,871 MiB）均 3 MiB 占用、0% 利用，无计算进程。
+
+## 2. 四个模型的可及性
+
+| 模型 | HF main sha（2026-11-01） | HF 门禁 | 服务器现状 | ModelScope | 结论 |
+|---|---|---|---|---|---|
+| Qwen/Qwen3.5-4B | 851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a | 否 | **已有** `/data/models/Qwen3.5-4B-851bf6e`，`download_receipt.json` 记录 revision 851bf6e、status `all_files_verified`；config.json sha256 `ddc63e1c…0621670` 与 HF main 逐位一致。目录内残留两个 `.partial`（604MB / 872MB，10-25 19:35）与 `LICENSE.partial`，是中断下载的残片，正式文件完整 | 有，config 哈希与 HF 一致 | 可用；正式前删不删 `.partial` 由目录所有者定，本收据不动 |
+| Qwen/Qwen3-4B | 1cfa9a7208912126459214e8b04321603b3df60c | 否 | 无（hf_cache 只有 Qwen3-8B） | **有**，config sha256 `8ba006f7…147f8a` 与 HF main 一致 | 需经 ModelScope 下载（约 8GB） |
+| tiiuae/Falcon-H1-3B-Instruct | 01087ec4c132d7f186908716b3530ea187f062a1 | 否 | 无（只有 falcon-mamba-7b） | **有**，config sha256 `f6faecc7…fddb8c12f` 与 HF main 一致 | 需经 ModelScope 下载（约 6–7GB） |
+| meta-llama/Llama-3.2-3B-Instruct | 0cb88a4f764b7a12671c53f0838cd831a0843b95 | **manual** | **已有** `/workspace/deployed_regime/models/Llama-3.2-3B-Instruct`（6.0G，2026-08-20，28 层，config 标 transformers 4.45.0.dev0）。config.json sha256 `39fb36dc…467b7a`、两份 safetensors sha256 前缀 `13cbd6d16e927a0c` / `7b770216613ac5c3`，**与 ModelScope `LLM-Research/Llama-3.2-3B-Instruct` master 逐位一致**（含字节数 4,965,799,096 / 1,459,729,952） | 有（LLM-Research 镜像） | 可用；但只能证明 = ModelScope 镜像，**不能证明 = HF 0cb88a4f**（HF config 需门禁 token，本机 401）。PLAN 要求"固定 revision 与哈希"：对 Llama 只能固定到 ModelScope 镜像哈希，并在合同里如实写明 |
+
+网络：服务器到 huggingface.co 与 hf-mirror.com 均 HTTP 000（不可达）；github.com、modelscope.cn 可达；pypi 可达但慢（12s）。**模型下载必须走 ModelScope**（`modelscope` SDK 或 `resolve/master` 直链），下载后逐文件 sha256 对 ModelScope 文件清单核验，再与本地机器可见的 HF 树哈希比对。
+
+## 3. 运行环境
+
+- CFM 系列实际使用的解释器：`/workspace/acupuncture/.venv-bench/bin/python`，transformers **5.20.2**，torch 2.6.0+cu124。该环境内 `transformers.models.{qwen3_5, qwen3, falcon_h1, llama, qwen3_next}` 全部可导入。
+- `gqa` conda 环境是 transformers 4.39.3，没有上述模块，**不能用**。其他 conda 环境最高 f4=5.12.1。
+- `/workspace/acupuncture` 不是 git 仓库（无 `.git`）；代码身份靠各实验的 freeze-rXX.json 哈希，与 GitHub 仓库文件对应。
+- PLAN §8 要求的"hook 模块名由源代码审计产出"：falcon_h1 模块在 5.20.2 里存在，审计可在该 venv 内做，本收据未做。
+
+## 4. Falcon-H1-3B-Instruct 配置核对（HF main config.json）
+
+`model_type: falcon_h1`，32 层，hidden 2560，`attn_layer_indices: null`（即每层并行 attention + Mamba-2，无交替），`num_attention_heads 10 / kv 2 / head_dim 128`，`mamba_d_conv 4`，`mamba_d_state 256`，`mamba_n_heads 32`，`mamba_d_ssm 4096`。乘子：`embedding_multiplier 5.657`，`attention_in_multiplier 1.0`，`attention_out_multiplier 0.15`，`key_multiplier 0.0442`，`mlp_multipliers [0.3536, 0.0781]`，`lm_head_multiplier 0.0156`，另有 `ssm_in_multiplier`/`ssm_out_multiplier`（值被截断未抄全，正式前从文件读）。**PLAN §4 "只除 down_proj 列范数而漏乘子不合格"的担心属实**：MLP 输出端有 0.0781 乘子，配平必须含它。
+
+## 5. 对 F1 的直接后果
+
+1. 模型下载走 ModelScope，Qwen3-4B 与 Falcon-H1-3B 约 15GB 落在 `/workspace`（不能放 `/data`）。
+2. Llama-3.2-3B 的 revision 只能固定为 ModelScope 镜像哈希；若要 HF 原始哈希，需要有门禁权限的账号导出 HF 树清单做一次离线比对。
+3. 深记录外部归档目的地是空白，F1 不能进入深面板；按 PLAN §10.1 只允许开发预检。
+4. 安全余量按 10% 总容量算是 250GiB，比 PLAN 示例的 50GiB 严得多；Q 上界 97GiB。
+
+## 6. 边界
+
+- `du` 对 /workspace 顶层有 240s 超时，但完整返回；二级目录归属未核。
+- "其他任务承诺预留"没有人登记过，本收据按 0 取上界。
+- 未核验 Qwen3.5-4B 的 safetensors 哈希（`download_receipt.json` 自称 all_files_verified，10-25 的收据）。
+- 没有启动任何模型或 worker；没有写入服务器。

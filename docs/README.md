@@ -1,5 +1,7 @@
 # 项目文档目录
 
+**2026-11-01 跨模型基础实验 F0 收据（只读核实，零 GPU）：** [容量与模型可及性](f0-receipts-cross-model-2026-11-01/storage-and-model-access-receipt.zh-CN.md) · [历史回放资产](f0-receipts-cross-model-2026-11-01/historical-replay-assets-receipt.zh-CN.md)。/workspace 余 368G、根盘（含 /data）仅 49G，按 PLAN §10.1 公式 Q 上界 97GiB，外部归档目的地空白；服务器不可达 HF/hf-mirror，可达 ModelScope，三个非门禁模型的 ModelScope config 与 HF main 逐位一致；Qwen3.5-4B（851bf6e）已在 /data、Llama-3.2-3B 已在 deployed_regime 且与 ModelScope 镜像逐位一致（无法对 HF 门禁哈希核验）、Qwen3-4B 与 Falcon-H1-3B 需下载约 15GB；`.venv-bench`（transformers 5.20.2）五个模型模块齐全；Falcon-H1 有 mlp_multipliers [0.354, 0.078] 等乘子。10-29 L2/N5063 回放资产齐全（freeze-r03、模型 851bf6e、k/三臂定义与 r2 逐字相同），差异：中文输入、旧 ±1 剂量、分支长度 128、盲读标签。
+
 **2026-11-01 主张审计卡（零 GPU）：撤针后行为残留的可预测性——不上卡：** [审计卡](claim-audit-withdrawal-residual-v1-2026-11-01.zh-CN.md)。重读 S1/S2/S3/E2/COMBO 与 10-29 撤针三臂：停嘴读数上三处反证（S2 10 臂、S3 post11、E2 a 格撤针后状态/分数偏移保留 0.5–0.9，首步 EOS 均 0/12）；事实读数上撤针时状态差异与层位共线（仅两锚点）；「撤针」在仓库里有时序/计算替换/自由生成三种含义不能混用；r10 是末尾量有泄漏，换成撤针时 ΔS_b 后相关降到 0.26–0.54（n=6 无零分布）。留下两条可预注册候选 P-conv（卷积核 4 → 撤针后 4 token 内 F 承载部分必被覆盖）与 P-self（撤针后 2 token 写入差异），均未上卡。
 
 **2026-11-01 路线图A步：卷积历史V/qk实验已运行：** [结果报告](../experiments/cache-conv-factor-v1-2026-11-01/REPORT.zh-CN.md)。预注册的V主导、Q主导、Q/V可加、F效应原生迁移四条简化描述按冻结规则均不成立；实际结构为饱和型：有针F的V段单独复现整块F效应（A_V/G≈1），V为T时Q冗余（R_Q≈0），V干净时Q单独推一部分且偏停止侧。换回干净V在M与N均6/6情景超过两条同幅随机方向；原生评分后半段8个首步停止在只换回干净F_V时全部消失。预检两次失败已记账（D7 环境变量、D8 重构闸门量到BF16舍入），累计364评分/0前缀。
