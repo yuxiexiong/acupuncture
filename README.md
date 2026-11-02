@@ -1,5 +1,7 @@
 # Acupuncture｜少数通道干预：缓存机制与稳定副作用控制
 
+**2026-11-02｜QCO-01已完成，QKF-01分量方案已自查、未运行。** [QCO结果](experiments/cache-common-offset-v1-2026-11-02/REPORT.zh-CN.md)支持共同偏移在固定混合背景中的双向行为作用；[QKF-01计划](docs/cache-qk-component-factor-plan-v1-2026-11-02.zh-CN.md)固定q/k去除与加入各2×2、两档随机配平、完整交付与交互判读。[作者自查](docs/cache-qkf-self-check-v1-2026-11-02.zh-CN.md)通过，非独立评审；正式3072轨迹、含预检正常3212、最多3352/2设备小时均为拟预算。本次只有文档与CPU核对，无新模型/GPU；工程验收待完成。此条更新下方旧计划状态，保留历史原文。
+
 **缓存机制线｜QST结果复核与QCO建议，2026-11-02：** [结果核对及下一阶段计划](docs/cache-qst-review-and-common-offset-plan-v1-2026-11-02.zh-CN.md)确认QST未达到查询定向转移，干净供体恢复仍成立；收紧“所有答案不变”“q/k张量几乎相同”及S/KV定位说法。建议用其他场景估计共同q/k差分，双向检验恢复与原错误重现，而非拆层扫描。[自查](docs/cache-qco-self-check-v1-2026-11-02.zh-CN.md)通过逻辑审查；仅CPU复核，新模型/GPU未运行、未授权。下方QST未运行条目为历史状态。
 
 **缓存机制线设计交付｜2026-11-02：** [QST-01完整实验计划](docs/cache-query-state-transfer-plan-v1-2026-11-02.zh-CN.md)及[作者自查](docs/cache-query-state-transfer-self-check-v1-2026-11-02.zh-CN.md)已完成：固定接收者与V，用两个外来查询供体检验q/k历史是否定向改变完整答案，并比较干净/受针供体。含干净接收者对照，正式1380条拟自然轨迹；主36接收者仅四基础场景。来源、配对、预算及判据反例已CPU核对，逻辑设计通过；工程/模型数值验收待完成，尚无新模型/GPU运行授权。本条更新下方“完整预算未完成”的历史方向状态。

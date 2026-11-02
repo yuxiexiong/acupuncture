@@ -1,5 +1,7 @@
 # 项目文档目录
 
+**2026-11-02｜QCO-01已完成，QKF-01分量方案已自查、未运行。** [QCO结果](../experiments/cache-common-offset-v1-2026-11-02/REPORT.zh-CN.md)支持共同偏移在固定混合背景中的双向行为作用；[QKF-01计划](cache-qk-component-factor-plan-v1-2026-11-02.zh-CN.md)固定q/k去除与加入各2×2、两档随机配平、完整交付与交互判读。[作者自查](cache-qkf-self-check-v1-2026-11-02.zh-CN.md)通过，非独立评审；正式3072轨迹、含预检正常3212、最多3352/2设备小时均为拟预算。本次只有文档与CPU核对，无新模型/GPU；工程验收待完成。此条更新下方旧计划状态，保留历史原文。
+
 - [QST结果复核与跨场景共同偏移计划](cache-qst-review-and-common-offset-plan-v1-2026-11-02.zh-CN.md) · [作者自查](cache-qco-self-check-v1-2026-11-02.zh-CN.md)（2026-11-02）：复算原记录，保留阴性与R0例外；QCO仅设计，新增模型/GPU为0。
 
 - [QST-01完整实验计划](cache-query-state-transfer-plan-v1-2026-11-02.zh-CN.md) · [作者自查](cache-query-state-transfer-self-check-v1-2026-11-02.zh-CN.md)（2026-11-02）：查询相关q/k历史的双外来供体定向检验；完整矩阵、工程规则、预算及失败出口。逻辑自查/CPU核对通过，未运行、无GPU授权。
