@@ -50,7 +50,7 @@ def main(out_pt, out_manifest):
                 sim['max_rel'] = max(sim['max_rel'], float(rel_.max()))
     Path(out_pt).parent.mkdir(parents=True, exist_ok=True)
     torch.save({'r_post': rpost}, out_pt)
-    res = {'status': 'passed' if sim['over_tol'] == 0 else 'failed', 'freeze_sha256': R.exp.sha(R.HERE / 'freeze-r01.json'),
+    res = {'status': 'passed' if sim['over_tol'] == 0 else 'failed', 'freeze_sha256': R.exp.sha(R.HERE / 'freeze-r02.json'),
            'rpost_sha256': R.exp.sha(out_pt), 'qco_offsets_sha256': man['offsets_sha256'], 'scale_stats': stats,
            'simulated_post_check_k': sim, 'post_tol': R.QKFR.POST_TOL}
     R.exp.write(out_manifest, res, immutable=True)

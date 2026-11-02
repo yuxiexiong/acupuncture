@@ -36,9 +36,9 @@ PLAN_DOCS = [REPO / 'docs/cache-k-computation-diagnostic-plan-v1-2026-11-03.zh-C
 DESIGN = QKFR.DESIGN
 QC_INPUTS, QC_TOKENS = QKFR.QC_INPUTS, QKFR.QC_TOKENS
 QCD_G, QST_FORMAL, QCO_FORMAL, QKF_FORMAL = QKFR.QCD_G, QKFR.QST_FORMAL, QKFR.QCO_FORMAL, QKF_DIR / 'runs/formal-r01'
-RPOST_C = HERE / 'runs/rpost-r01/rpost-c1343.pt'
-RPOST_C_MANIFEST = HERE / 'analysis/rpost-c1343-manifest-r01.json'
-PREFLIGHT_RECEIPT = HERE / 'runs/preflight-r01/verification.json'
+RPOST_C = HERE / 'runs/rpost-r02/rpost-c1343.pt'
+RPOST_C_MANIFEST = HERE / 'analysis/rpost-c1343-manifest-r02.json'
+PREFLIGHT_RECEIPT = HERE / 'runs/preflight-r02/verification.json'
 QC_FORMAL, NQ_FORMAL, SVQ_FORMAL, SP_FORMAL, NR_FORMAL, B3_FORMAL, XC_FORMAL, SK_FORMAL = QKFR.QC_FORMAL, QKFR.NQ_FORMAL, QKFR.SVQ_FORMAL, QKFR.SP_FORMAL, QKFR.NR_FORMAL, QKFR.B3_FORMAL, QKFR.XC_FORMAL, QKFR.SK_FORMAL
 SPLIT = 13
 DIRECTIONS = ('N_L00_C4146_D-1', 'N_L00_C1210_D-1', 'R0_L00_D-1', 'N_L00_C1343_D-1')
@@ -415,7 +415,7 @@ def authorize(path, stage):
         assert exp.sha(REPO / name) == digest, name
     man = exp.read(RPOST_C_MANIFEST)
     assert man['status'] == 'passed' and man['freeze_sha256'] == auth['freeze_sha256'] and exp.sha(RPOST_C) == man['rpost_sha256']
-    assert auth['required_evidence'].get('analysis/rpost-c1343-manifest-r01.json') == exp.sha(RPOST_C_MANIFEST)
+    assert auth['required_evidence'].get('analysis/rpost-c1343-manifest-r02.json') == exp.sha(RPOST_C_MANIFEST)
     ki = kernel_identity()
     assert not ki['fla'] and not ki['kernels'] and not ki['causal_conv1d'], ('non-torch kernel available', ki)
     if stage == 'formal':
@@ -531,7 +531,7 @@ def verify_worker(path):
         rec = exp.read(path / rel)
         rel_t = rec['tensor_file']
         assert exp.sha(path / rel_t) == r['tensor_hashes'][rel_t], rel_t
-        assert all(t['diag'] and 'watch' in t['diag'] for t in rec['trajectories'].values()), 'missing diagnostic'
+        assert all(t['diag'] and 'watch' in t['diag'] for t in rec['c1343_trajectories'].values()), 'missing diagnostic'
         assert set(rec['arms']) == set(DIRECTIONS) and all(set(v) == set(ARMS) for v in rec['arms'].values())
         assert set(rec['c1343_trajectories']) == set(ARMS)
         for g in ('replay', 'sources', 'capture', 'wiring', 'calibration') + (('observer_off',) if r['stage'] == 'preflight' else ()):
