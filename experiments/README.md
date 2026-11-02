@@ -1,5 +1,7 @@
 # 实验目录：按研究问题查找
 
+- [QST-01设计与CPU检查](cache-query-state-transfer-design-v1-2026-11-02/README.zh-CN.md)（2026-11-02）：48输入、132配对、36主对照；来源/分母/预算/判据合成反例已核对。拟正式1380自然轨迹；仅设计附件，不是新模型结果。
+
 **缓存机制线最新｜2026-11-02：** [QC-01 结果](cache-query-layout-coverage-v1-2026-11-02/REPORT.zh-CN.md)已完成；[QCD-01 计划与来源核对](cache-coverage-dose-design-v1-2026-11-02/README.zh-CN.md)为下一阶段设计，先查交叉供体/切分敏感性，再比较位置和剂量。[完整自查](../docs/cache-coverage-dose-self-check-v1-2026-11-02.zh-CN.md)仅逻辑通过；本次旧记录CPU核对276份、0新增模型/GPU，拟运行计数不得当作完成资产。不改变下列跨模型线状态。
 
 **跨模型线 F1 预检｜2026-11-02：** [预检报告](cross-model-foundation-common-v1-2026-11-02/PREFLIGHT.zh-CN.md) · [决策日志](cross-model-foundation-common-v1-2026-11-02/DECISIONS.zh-CN.md) · 合同草案 [A](cross-model-history-current-v1-2026-11-02/CONTRACT.zh-CN.md) / [B](cross-model-natural-withdrawal-v1-2026-11-02/CONTRACT.zh-CN.md)。四模型（Qwen3.5-4B、Qwen3-4B、Llama-3.2-3B、Falcon-H1-3B）引擎与面板就位；逐位闸门（权重哈希、缓存复用、挂钩惰性、零剂量、缓存隔离、新进程快照重放）全过；未过/待决：写入 1% 容差（BF16 量化，比值 0.991–1.036）、B 的 k=16 四模型均 0/24 可达且 k=4 常在答案之后、A 干净 Y 饱和于 1.0。实测外推全量约 6 GPUh、深记录约 20–32 GB。合同未冻结，待计划所有者裁决 D4/D5/D8/D9。 **r02（11-02）**：[报告](cross-model-foundation-common-v1-2026-11-02/PREFLIGHT_R02.zh-CN.md)——B 改答案前边界分叉（四模型 k_b=3、可达 24/24，G12–G14 过）、A 加 m（噪声底 0.19–0.44 奈特，1/64 下多在噪声内）、写入沿目标投影 0.997–1.003（偏差为正交舍入）；待 D4、PLAN §6、D8。 **F1 四步（11-02）**：[报告](cross-model-foundation-common-v1-2026-11-02/F1_STEPS.zh-CN.md)——历史回放逐位通过；正式尺度定；校准 d_high=3/4（阶梯顶，未饱和）、d_low=3/8、d_B=3/4；A 的 Y 在 3/4 下几乎不动（主读数恐大面积不可判），写入严格 1% 仅 1/2、3/4 档；1/64 四格 m 效应跨路径不一致。待计划所有者裁决阶梯/任务、d_low、B 边界正则。

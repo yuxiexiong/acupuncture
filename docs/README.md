@@ -1,5 +1,7 @@
 # 项目文档目录
 
+- [QST-01完整实验计划](cache-query-state-transfer-plan-v1-2026-11-02.zh-CN.md) · [作者自查](cache-query-state-transfer-self-check-v1-2026-11-02.zh-CN.md)（2026-11-02）：查询相关q/k历史的双外来供体定向检验；完整矩阵、工程规则、预算及失败出口。逻辑自查/CPU核对通过，未运行、无GPU授权。
+
 - [下一阶段方向判断与自查：查询相关历史状态的定向作用](cache-query-state-next-direction-v1-2026-11-02.zh-CN.md)（2026-11-02）：比较下一方向对核心问题的实际增量；布局比较暂不优先。附 CPU 配对审计，非可执行运行合同，无新模型/GPU。
 
 **2026-11-02｜QCD-01 形成期位置与剂量（未运行）：** [计划](cache-coverage-dose-plan-v1-2026-11-02.zh-CN.md) · [完整作者自查](cache-coverage-dose-self-check-v1-2026-11-02.zh-CN.md) · [旧记录复算与预算附件](../experiments/cache-coverage-dose-design-v1-2026-11-02/README.zh-CN.md)。先固定受干预缓存、交叉干净V来源，并核对统一切分；通过后才解释等长移窗与双向剂量配平。逻辑通过不等于数值验收或模型/GPU授权。
