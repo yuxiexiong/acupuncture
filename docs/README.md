@@ -1,5 +1,7 @@
 # 项目文档目录
 
+- [QST结果复核与跨场景共同偏移计划](cache-qst-review-and-common-offset-plan-v1-2026-11-02.zh-CN.md) · [作者自查](cache-qco-self-check-v1-2026-11-02.zh-CN.md)（2026-11-02）：复算原记录，保留阴性与R0例外；QCO仅设计，新增模型/GPU为0。
+
 - [QST-01完整实验计划](cache-query-state-transfer-plan-v1-2026-11-02.zh-CN.md) · [作者自查](cache-query-state-transfer-self-check-v1-2026-11-02.zh-CN.md)（2026-11-02）：查询相关q/k历史的双外来供体定向检验；完整矩阵、工程规则、预算及失败出口。逻辑自查/CPU核对通过，未运行、无GPU授权。
 
 - [下一阶段方向判断与自查：查询相关历史状态的定向作用](cache-query-state-next-direction-v1-2026-11-02.zh-CN.md)（2026-11-02）：比较下一方向对核心问题的实际增量；布局比较暂不优先。附 CPU 配对审计，非可执行运行合同，无新模型/GPU。

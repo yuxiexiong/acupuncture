@@ -1,5 +1,7 @@
 # 实验目录：按研究问题查找
 
+- [QST结果复核与QCO预算附件](cache-query-state-result-review-v1-2026-11-02/README.zh-CN.md)（2026-11-02）：1380轨迹CPU重算、624参照记录比对；不是模型重跑。QST实测已完成，QCO仅计划，无新GPU授权。
+
 - [QST-01设计与CPU检查](cache-query-state-transfer-design-v1-2026-11-02/README.zh-CN.md)（2026-11-02）：48输入、132配对、36主对照；来源/分母/预算/判据合成反例已核对。拟正式1380自然轨迹；仅设计附件，不是新模型结果。
 
 **缓存机制线最新｜2026-11-02：** [QC-01 结果](cache-query-layout-coverage-v1-2026-11-02/REPORT.zh-CN.md)已完成；[QCD-01 计划与来源核对](cache-coverage-dose-design-v1-2026-11-02/README.zh-CN.md)为下一阶段设计，先查交叉供体/切分敏感性，再比较位置和剂量。[完整自查](../docs/cache-coverage-dose-self-check-v1-2026-11-02.zh-CN.md)仅逻辑通过；本次旧记录CPU核对276份、0新增模型/GPU，拟运行计数不得当作完成资产。不改变下列跨模型线状态。
