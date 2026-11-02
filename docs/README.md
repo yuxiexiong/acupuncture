@@ -1,5 +1,7 @@
 # 项目文档目录
 
+**2026-11-02｜QCD-01 形成期位置与剂量（未运行）：** [计划](cache-coverage-dose-plan-v1-2026-11-02.zh-CN.md) · [完整作者自查](cache-coverage-dose-self-check-v1-2026-11-02.zh-CN.md) · [旧记录复算与预算附件](../experiments/cache-coverage-dose-design-v1-2026-11-02/README.zh-CN.md)。先固定受干预缓存、交叉干净V来源，并核对统一切分；通过后才解释等长移窗与双向剂量配平。逻辑通过不等于数值验收或模型/GPU授权。
+
 **2026-11-01 主张审计卡 2（零 GPU）：固定 45 头"方向无关放大器"与"诊断误判为协作"——不上卡：** [审计卡 2](claim-audit-direction-agnostic-amplifier-v1-2026-11-01.zh-CN.md)。(1) FIX 在 4 方向/6 新输入保留停止侧效应是已登记的描述性资产；(2) 方向无关性在 L0→深层 V 这一级就已建立（XCHAN 通道–随机余弦 0.68–0.73、同通道 ±1 余弦 0.67–0.73 为正），FIX 只是落点，"放大器"无增量；(3) 没有误判实例——B3 P2 不成立、B3-P0 信噪比标注、B3-P1 出口 (2) 都是诊断正确拒绝协作读法。留一条可预注册问题 Q-dose（方向无关性是否只在剂量阈值以上成立；XCHAN −0.5 档无随机参照），跨模型计划 §4.1 量程校准会顺带产生所需数据。
 
 **2026-11-01 跨模型基础实验 F0 收据（只读核实，零 GPU）：** [容量与模型可及性](f0-receipts-cross-model-2026-11-01/storage-and-model-access-receipt.zh-CN.md) · [历史回放资产](f0-receipts-cross-model-2026-11-01/historical-replay-assets-receipt.zh-CN.md)。/workspace 余 368G、根盘（含 /data）仅 49G，按 PLAN §10.1 公式 Q 上界 97GiB，外部归档目的地空白；服务器不可达 HF/hf-mirror，可达 ModelScope，三个非门禁模型的 ModelScope config 与 HF main 逐位一致；Qwen3.5-4B（851bf6e）已在 /data、Llama-3.2-3B 已在 deployed_regime 且与 ModelScope 镜像逐位一致（无法对 HF 门禁哈希核验）、Qwen3-4B 与 Falcon-H1-3B 需下载约 15GB；`.venv-bench`（transformers 5.20.2）五个模型模块齐全；Falcon-H1 有 mlp_multipliers [0.354, 0.078] 等乘子。10-29 L2/N5063 回放资产齐全（freeze-r03、模型 851bf6e、k/三臂定义与 r2 逐字相同），差异：中文输入、旧 ±1 剂量、分支长度 128、盲读标签。
