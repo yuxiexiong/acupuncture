@@ -1,5 +1,7 @@
 # 项目文档目录
 
+**2026-11-03｜QKF已完成，QKD计算诊断方案已自查、未运行。** [QKF更正结果](../experiments/cache-qk-component-factor-v1-2026-11-02/REPORT.zh-CN.md)支持k分量的条件性修复作用，不证明45°致错或q无用。[QKD计划](cache-k-computation-diagnostic-plan-v1-2026-11-03.zh-CN.md)固定前三步自然/共同前缀观测、真实账本与局部k反事实、随机及C1343对照；[作者自查](cache-qkd-self-check-v1-2026-11-03.zh-CN.md)通过，工程待验收，无新模型/GPU授权。本条更新下方历史计划状态，保留旧原文。
+
 **2026-11-02｜QCO-01已完成，QKF-01分量方案已自查、未运行。** [QCO结果](../experiments/cache-common-offset-v1-2026-11-02/REPORT.zh-CN.md)支持共同偏移在固定混合背景中的双向行为作用；[QKF-01计划](cache-qk-component-factor-plan-v1-2026-11-02.zh-CN.md)固定q/k去除与加入各2×2、两档随机配平、完整交付与交互判读。[作者自查](cache-qkf-self-check-v1-2026-11-02.zh-CN.md)通过，非独立评审；正式3072轨迹、含预检正常3212、最多3352/2设备小时均为拟预算。本次只有文档与CPU核对，无新模型/GPU；工程验收待完成。此条更新下方旧计划状态，保留历史原文。
 
 - [QST结果复核与跨场景共同偏移计划](cache-qst-review-and-common-offset-plan-v1-2026-11-02.zh-CN.md) · [作者自查](cache-qco-self-check-v1-2026-11-02.zh-CN.md)（2026-11-02）：复算原记录，保留阴性与R0例外；QCO仅设计，新增模型/GPU为0。

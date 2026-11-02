@@ -1,5 +1,7 @@
 # Acupuncture｜少数通道干预：缓存机制与稳定副作用控制
 
+**2026-11-03｜QKF已完成，QKD计算诊断方案已自查、未运行。** [QKF更正结果](experiments/cache-qk-component-factor-v1-2026-11-02/REPORT.zh-CN.md)支持k分量的条件性修复作用，不证明45°致错或q无用。[QKD计划](docs/cache-k-computation-diagnostic-plan-v1-2026-11-03.zh-CN.md)固定前三步自然/共同前缀观测、真实账本与局部k反事实、随机及C1343对照；[作者自查](docs/cache-qkd-self-check-v1-2026-11-03.zh-CN.md)通过，工程待验收，无新模型/GPU授权。本条更新下方历史计划状态，保留旧原文。
+
 **2026-11-02｜QCO-01已完成，QKF-01分量方案已自查、未运行。** [QCO结果](experiments/cache-common-offset-v1-2026-11-02/REPORT.zh-CN.md)支持共同偏移在固定混合背景中的双向行为作用；[QKF-01计划](docs/cache-qk-component-factor-plan-v1-2026-11-02.zh-CN.md)固定q/k去除与加入各2×2、两档随机配平、完整交付与交互判读。[作者自查](docs/cache-qkf-self-check-v1-2026-11-02.zh-CN.md)通过，非独立评审；正式3072轨迹、含预检正常3212、最多3352/2设备小时均为拟预算。本次只有文档与CPU核对，无新模型/GPU；工程验收待完成。此条更新下方旧计划状态，保留历史原文。
 
 **缓存机制线｜QST结果复核与QCO建议，2026-11-02：** [结果核对及下一阶段计划](docs/cache-qst-review-and-common-offset-plan-v1-2026-11-02.zh-CN.md)确认QST未达到查询定向转移，干净供体恢复仍成立；收紧“所有答案不变”“q/k张量几乎相同”及S/KV定位说法。建议用其他场景估计共同q/k差分，双向检验恢复与原错误重现，而非拆层扫描。[自查](docs/cache-qco-self-check-v1-2026-11-02.zh-CN.md)通过逻辑审查；仅CPU复核，新模型/GPU未运行、未授权。下方QST未运行条目为历史状态。
