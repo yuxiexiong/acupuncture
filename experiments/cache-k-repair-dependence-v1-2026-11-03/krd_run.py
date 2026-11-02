@@ -242,9 +242,9 @@ def run_item(engine, unit, contexts, calib, conds, qctok, output, stage, vecs=No
             QC[arm] = hk.got
             M, Mall = margins(z, it, code_tok, comp)
             assert M == qkd['arms'][d][arm]['M'], ('C t2 margin != QKD', arm, d)
-            assert torch.equal(z.to(torch.bfloat16), qkd_t[f'Ct2|{arm}|{d}']), ('C t2 logits != QKD', arm, d)
+            assert torch.equal(z.to(torch.bfloat16).cpu(), qkd_t[f'Ct2|{arm}|{d}']), ('C t2 logits != QKD', arm, d)
             M00[arm] = {'M': M, 'M_all': Mall, 't2_sha': F.th(z)}
-            tensors[f'C|{arm}<-{arm}|00|{d}'] = z.to(torch.bfloat16)
+            tensors[f'C|{arm}<-{arm}|00|{d}'] = z.to(torch.bfloat16).cpu()
             if stage == 'preflight':      # engineering: no-hook and self-replacement (+ self H) reproduce the capture forward bit for bit
                 _, z0 = fwd(engine, copy.deepcopy(c1[arm]), fF, n, counts, 'engineering')
                 hs = QHook(model, G, 'replace', QC[arm])
@@ -276,7 +276,7 @@ def run_item(engine, unit, contexts, calib, conds, qctok, output, stage, vecs=No
                 M, Mall = margins(z, it, code_tok, comp)
                 key = f'{r_}<-{d_}|{hq}'
                 cell = {'C': {'M': M, 'M_all': Mall, 't2_sha': F.th(z)}}
-                tensors[f'C|{key}|{d}'] = z.to(torch.bfloat16)
+                tensors[f'C|{key}|{d}'] = z.to(torch.bfloat16).cpu()
                 if x[r_] in STOP:
                     cell['N'] = {'ids': [x[r_]], 'termination': 'stop', 'reached_t2': False, 'text': dec([x[r_]])}
                 else:
