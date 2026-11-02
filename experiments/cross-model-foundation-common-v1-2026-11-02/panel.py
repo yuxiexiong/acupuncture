@@ -151,6 +151,18 @@ def panel_sha256():
     return hashlib.sha256(blob).hexdigest()
 
 
+# ---------- B answer boundary (DECISIONS D5 revision) ----------
+
+def boundary_regex(item):
+    """Generated text that ends exactly after '<identifier>:' (optional angle brackets / spaces)."""
+    letter = item["row_id_pattern"][2]  # pattern is r"\b" + letter + r"(\d+)\b"
+    return re.compile(r"^\s*<?\s*" + letter + r"\d+\s*>?\s*:\s*$")
+
+
+def at_boundary(item, text):
+    return bool(boundary_regex(item).match(text))
+
+
 # ---------- B parser (PLAN r3 §6: mechanical, no LLM judge) ----------
 
 def parse_b(item, text):

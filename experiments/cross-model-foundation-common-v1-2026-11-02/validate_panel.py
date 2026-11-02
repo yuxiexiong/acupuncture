@@ -30,7 +30,16 @@ def main():
                             bad_cand.append((it["item_id"], c))
                         else:
                             cand_lens.append(len(ci))
+        # B: the canonical answer "<id>: <value>" must have a token prefix ending exactly at the colon.
+        no_boundary = []
+        for it in P.items("B"):
+            for form in (f"{it['target_row_id']}: {it['correct']}", f"<{it['target_row_id']}>: {it['correct']}"):
+                ci = T.continuation_ids(tok, key, it, form)
+                ok = ci is not None and any(P.at_boundary(it, tok.decode(ci[:j])) for j in range(1, len(ci)))
+                if not ok:
+                    no_boundary.append((it["item_id"], form))
         r = {
+            "B_canonical_answer_without_colon_boundary": no_boundary,
             "A_tokens": {"min": min(lens["A"]), "median": statistics.median(lens["A"]), "max": max(lens["A"])},
             "B_tokens": {"min": min(lens["B"]), "median": statistics.median(lens["B"]), "max": max(lens["B"])},
             "record_tokens": {"min": min(rec_lens), "max": max(rec_lens)},
@@ -39,7 +48,7 @@ def main():
             "candidate_split_failures": bad_cand,
             "within_128_256": all(128 <= n <= 256 for n in lens["A"] + lens["B"]),
         }
-        ok_all &= r["within_128_256"] and not bad_cand
+        ok_all &= r["within_128_256"] and not bad_cand and not no_boundary
         report["models"][key] = r
     report["passed"] = ok_all
     json.dump(report, open("panel-validation-r01.json", "w"), indent=1)

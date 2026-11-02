@@ -1,6 +1,7 @@
 """F1 preflight (PLAN r3 §8.7 and §8.4–8.6) for one model.
 
-Phase 1 (`run`): A four-cell chain and B three-arm chain on 2 dev scenarios,
+Phase 1 (`run`): A four-cell chain (Y and margin m) and B three-arm chain forked at the
+answer boundary '<identifier>:' (r02, DECISIONS D5-r) on 2 dev scenarios,
 3 layers x {native[0], direction R0} x {+1/64, -1/64}; all engineering gates;
 one complete deep A package and one deep B package written, closed, re-read
 and hashed; throughput and bytes measured.
@@ -26,7 +27,6 @@ import panel as P  # noqa: E402
 
 PREFLIGHT_SCENARIOS = ["DEV-ea-00", "DEV-num-01"]
 DOSE = 1.0 / 64
-KS = (4, 16)
 SOURCE_MAX = 80
 ARM_MAX = 64
 DEEP_B_STEPS = 8
@@ -73,7 +73,8 @@ def a_readout(eng, cacheP, q, qpos, cands, correct_idx, q_active):
     r["_logits32"] = lq.detach().clone()
     sc = eng.score_candidates(lq, cq, qpos + 1, cands)
     probs = two_softmax([s["loglik"] for s in sc])
-    r.update(candidates=sc, Y=probs[correct_idx])
+    m = sc[correct_idx]["loglik"] - sc[1 - correct_idx]["loglik"]
+    r.update(candidates=sc, Y=probs[correct_idx], m=m)
     return r, cq
 
 
@@ -99,10 +100,12 @@ def run_A(eng, items, scales, needles, deep_dir, report):
         rw = eng.readout(lw)
         scw = eng.score_candidates(lw, cw, qpos + 1, cands)
         Yw = two_softmax([s["loglik"] for s in scw])[ci]
+        mw = scw[ci]["loglik"] - scw[1 - ci]["loglik"]
         gates.setdefault("segmented_vs_whole", []).append({
             "item": it["item_id"], "bitwise": rw["logits_sha256"] == r00["logits_sha256"],
             "max_abs_logit_diff": float((lw - r00["_logits32"]).abs().max()),
-            "Y_diff": abs(Yw - r00["Y"]), "greedy_equal": rw["greedy"] == r00["greedy"]})
+            "Y_diff": abs(Yw - r00["Y"]), "m_diff": abs(mw - r00["m"]), "m_clean": r00["m"],
+            "greedy_equal": rw["greedy"] == r00["greedy"]})
         del cw
         # gate: recorder inert
         with eng.record({qpos, rec_pos[0]}):
@@ -161,12 +164,15 @@ def run_A(eng, items, scales, needles, deep_dir, report):
                     aud = summarize_audit(eng.audit)
                     gates.setdefault("write_audit", []).append(aud)
                     Y = {"00": r00["Y"], **{c: out[c]["Y"] for c in out}}
+                    mm = {"00": r00["m"], **{c: out[c]["m"] for c in out}}
                     for c in ("10", "11", "01"):
                         cells.append({"item": it["item_id"], "cell": c, "layer": layer, "needle": nd["name"],
                                       "dose": dose, **strip(out[c])})
                     cells.append({"item": it["item_id"], "summary": True, "layer": layer, "needle": nd["name"],
                                   "dose": dose, "H": Y["10"] - Y["00"], "C": Y["01"] - Y["00"],
-                                  "J": Y["11"] - Y["10"] - Y["01"] + Y["00"], "Y": Y})
+                                  "J": Y["11"] - Y["10"] - Y["01"] + Y["00"], "Y": Y,
+                                  "H_m": mm["10"] - mm["00"], "C_m": mm["01"] - mm["00"],
+                                  "J_m": mm["11"] - mm["10"] - mm["01"] + mm["00"], "m": mm, "write": aud})
                     if deep:
                         files = [save_pt(cacheP0, os.path.join(deep_dir, "A_P_clean_cache.pt")),
                                  save_pt(cacheP1, os.path.join(deep_dir, "A_P_needle_cache.pt")),
@@ -191,26 +197,45 @@ def run_A(eng, items, scales, needles, deep_dir, report):
 
 
 def summarize_audit(audit):
-    ratios, inactive, n_active = [], 0.0, 0
+    ratios, cos, proj, inactive, n_active = [], [], [], 0.0, 0
     for a in audit:
         inactive = max(inactive, a["inactive_max_abs_change"])
         for v in a["realized_norms"]:
             ratios.append(v / a["requested_norm"] if a["requested_norm"] > 0 else float("nan"))
             n_active += 1
+        cos.extend(a.get("cos_to_target", []))
+        proj.extend(a.get("signed_projection_ratio", []))
+    def st(v):
+        return {"min": min(v), "median": statistics.median(v), "max": max(v)} if v else None
     return {"n_active_positions": n_active, "inactive_max_abs_change": inactive,
             "ratio_min": min(ratios) if ratios else None, "ratio_max": max(ratios) if ratios else None,
             "ratio_median": statistics.median(ratios) if ratios else None,
-            "within_1pct_fraction": (sum(abs(r - 1) <= 0.01 for r in ratios) / len(ratios)) if ratios else None}
+            "within_1pct_fraction": (sum(abs(r - 1) <= 0.01 for r in ratios) / len(ratios)) if ratios else None,
+            "cos_to_target": st(cos), "signed_projection_ratio": st(proj)}
+
+
+def cache_len(cache):
+    try:
+        return int(cache.get_seq_length())
+    except Exception:
+        return None
+
+
+def top_gap(logits):
+    v = torch.topk(torch.log_softmax(logits, dim=-1), 2).values
+    return float(v[0] - v[1])
 
 
 def run_B(eng, items, scales, needles, deep_dir, report):
+    """Fork at the answer boundary (DECISIONS D5-r): the generated text ends exactly at
+    '<identifier>:'.  The colon token is chosen but not yet processed; WITHDRAW/REBUILD
+    process it without the needle, so the first answer token is chosen needle-free."""
     out, gates, timing = [], {}, []
     deep_written = False
     for it in items:
         e = eng.encode(it)
         ids, qpos, n = e["ids"], e["q"], e["n_tokens"]
         Pids, q = ids[:-1], ids[-1]
-        # CLEAN reference
         eng.active = set()
         t0 = time.monotonic()
         _, c = eng.step(Pids, None, 0)
@@ -218,25 +243,30 @@ def run_B(eng, items, scales, needles, deep_dir, report):
         toks, reads, *_ = eng.greedy(lg, c, n, SOURCE_MAX)
         timing.append(("B_clean_80", time.monotonic() - t0, len(toks)))
         text = eng.tok.decode(toks, skip_special_tokens=True)
+        kb_clean = next((j for j in range(1, len(toks) + 1)
+                         if P.at_boundary(it, eng.tok.decode(toks[:j], skip_special_tokens=True))), None)
         out.append({"item": it["item_id"], "arm": "CLEAN", "tokens": toks, "text": text,
-                    "parse": P.parse_b(it, text)})
+                    "parse": P.parse_b(it, text), "boundary_index": kb_clean})
         del c
         for layer in eng.picks:
             for nd in needles[layer]:
                 for sign in (+1, -1):
                     dose = sign * DOSE
                     deep = (not deep_written and layer == eng.picks[0] and nd["kind"] == "native" and sign > 0)
-                    forks = {}
+                    fork = {}
                     deep_positions = set()
-                    if deep:
-                        for k in KS:
-                            deep_positions |= {n + k - 1 + j for j in range(DEEP_B_STEPS)}
 
-                    def on_step(i, t, cache):
-                        k = i + 1
-                        if k in KS:
-                            forks[k] = {"cache": copy.deepcopy(cache), "pending": t,
-                                        "cache_len_ok": True}
+                    def on_step(i, t, cache, toks_so_far):
+                        if "cache" in fork:
+                            return
+                        if any(x in eng.stop_ids for x in toks_so_far):
+                            return
+                        if P.at_boundary(it, eng.tok.decode(toks_so_far, skip_special_tokens=True)):
+                            kb = len(toks_so_far)
+                            fork.update(cache=copy.deepcopy(cache), pending=t, kb=kb,
+                                        cache_len=cache_len(cache))
+                            if deep:
+                                deep_positions.update(n + kb - 1 + j for j in range(DEEP_B_STEPS))
                     t0 = time.monotonic()
                     eng.audit = []
                     with eng.needle(layer, nd, scales[layer], dose):
@@ -253,111 +283,102 @@ def run_B(eng, items, scales, needles, deep_dir, report):
                             if ctx:
                                 ctx.__exit__(None, None, None)
                         eng.active = set()
-                        aud = summarize_audit(eng.audit)
-                        src_time = time.monotonic() - t0
+                        src_text = eng.tok.decode(src, skip_special_tokens=True)
                         rec = {"item": it["item_id"], "layer": layer, "needle": nd["name"], "dose": dose,
-                               "source_tokens": src, "source_text": eng.tok.decode(src, skip_special_tokens=True),
-                               "source_parse": P.parse_b(it, eng.tok.decode(src, skip_special_tokens=True)),
-                               "write_audit": aud, "forks": {}}
-                        timing.append(("B_source", src_time, len(src)))
-                        for k in KS:
-                            reachable = len(src) >= k and not any(t in eng.stop_ids for t in src[:k])
-                            if not reachable or k not in forks:
-                                rec["forks"][str(k)] = {"reachable": False}
-                                continue
-                            f = forks[k]
-                            pend, pos_p = f["pending"], n + k - 1
-                            assert pend == src[k - 1]
-                            arms = {}
-                            # CONT = source truncated to k+64
-                            cont = src[:k + ARM_MAX]
-                            arms["CONT"] = {"tokens": cont, "text": eng.tok.decode(cont, skip_special_tokens=True)}
-                            # WITHDRAW
-                            t1 = time.monotonic()
-                            cw = copy.deepcopy(f["cache"])
-                            eng.active = set()
-                            ctxw = eng.record(deep_positions) if deep else None
-                            recw = ctxw.__enter__() if ctxw else None
-                            try:
-                                lgw, cw = eng.step([pend], cw, pos_p)
-                                first_w = eng.readout(lgw)
-                                tw, rw, *_ = eng.greedy(lgw, cw, pos_p + 1, ARM_MAX)
-                            finally:
-                                if ctxw:
-                                    ctxw.__exit__(None, None, None)
-                            wtoks = src[:k] + tw
-                            arms["WITHDRAW"] = {"tokens": wtoks, "text": eng.tok.decode(wtoks, skip_special_tokens=True),
-                                                "first_logits_sha256": first_w["logits_sha256"],
-                                                "step_logits_sha256": [r["logits_sha256"] for r in rw]}
-                            timing.append(("B_withdraw", time.monotonic() - t1, len(tw)))
-                            del cw
-                            rec["forks"][str(k)] = {"reachable": True, "pending": pend, "arms": arms,
-                                                    "fork_cache": E.cache_fingerprint(f["cache"])}
-                            if deep:
-                                f["withdraw_records"] = recw
-                            f["first_w"] = first_w
-                        out.append(rec)
-                    # REBUILD outside the needle context (no hooks at all)
-                    for k in KS:
-                        fr = rec["forks"][str(k)]
-                        if not fr["reachable"]:
+                               "source_tokens": src, "source_text": src_text,
+                               "source_parse": P.parse_b(it, src_text),
+                               "write_audit": summarize_audit(eng.audit), "fork": {}}
+                        timing.append(("B_source", time.monotonic() - t0, len(src)))
+                        if "cache" not in fork:
+                            reason = ("stop_before_boundary" if any(x in eng.stop_ids for x in src)
+                                      else "no_boundary_within_budget")
+                            rec["fork"] = {"reachable": False, "reason": reason}
+                            out.append(rec)
                             continue
-                        f = forks[k]
-                        pend, pos_p = f["pending"], n + k - 1
+                        kb, pend = fork["kb"], fork["pending"]
+                        pos_p = n + kb - 1
+                        gates.setdefault("boundary", []).append({
+                            "pending_matches_source": pend == src[kb - 1],
+                            "cache_len": fork["cache_len"], "expected_cache_len": n + kb - 1,
+                            "cache_len_ok": fork["cache_len"] in (None, n + kb - 1),
+                            "pending_text": eng.tok.decode([pend])})
+                        arms = {"CONT": {"tokens": src[:kb + ARM_MAX]}}
                         t1 = time.monotonic()
+                        cw = copy.deepcopy(fork["cache"])
                         eng.active = set()
-                        prefix = ids + src[:k - 1]
-                        ctxr = eng.record(deep_positions) if deep else None
-                        recr = ctxr.__enter__() if ctxr else None
+                        ctxw = eng.record(deep_positions) if deep else None
+                        recw = ctxw.__enter__() if ctxw else None
                         try:
-                            _, cr = eng.step(prefix, None, 0)
-                            cr_fork = copy.deepcopy(cr) if deep else None
-                            lgr, cr = eng.step([pend], cr, pos_p)
-                            first_r = eng.readout(lgr)
-                            tr, rr, *_ = eng.greedy(lgr, cr, pos_p + 1, ARM_MAX)
+                            lgw, cw = eng.step([pend], cw, pos_p)
+                            first_w = eng.readout(lgw, False)
+                            tw, rw, *_ = eng.greedy(lgw, cw, pos_p + 1, ARM_MAX)
                         finally:
-                            if ctxr:
-                                ctxr.__exit__(None, None, None)
-                        rtoks = src[:k] + tr
-                        fr["arms"]["REBUILD"] = {"tokens": rtoks, "text": eng.tok.decode(rtoks, skip_special_tokens=True)}
-                        timing.append(("B_rebuild", time.monotonic() - t1, len(tr)))
-                        for arm in ("CONT", "WITHDRAW", "REBUILD"):
-                            fr["arms"][arm]["parse"] = P.parse_b(it, fr["arms"][arm]["text"])
-                        # gate: clean incremental vs clean prefill (rebuild) at the pending readout
-                        _, ci_ = eng.step(Pids, None, 0)
-                        lgi, ci_ = eng.step([q], ci_, qpos)
-                        p = n
-                        for t in src[:k - 1]:
-                            lgi, ci_ = eng.step([t], ci_, p)
-                            p += 1
-                        lgi, ci_ = eng.step([pend], ci_, pos_p)
-                        ti, _, *_ = eng.greedy(lgi, ci_, pos_p + 1, 8)
-                        gates.setdefault("rebuild_vs_incremental", []).append({
-                            "k": k, "bitwise": eng.readout(lgi, False)["logits_sha256"] == first_r["logits_sha256"],
-                            "max_abs_logit_diff": float((lgi - lgr).abs().max()),
-                            "greedy8_equal": ti == tr[:len(ti)]})
-                        del ci_, cr
-                        if deep:
-                            files = [save_pt(f["cache"], os.path.join(deep_dir, f"B_fork{k}_source_cache.pt")),
-                                     save_pt(cr_fork, os.path.join(deep_dir, f"B_fork{k}_rebuild_cache.pt")),
-                                     save_pt({"withdraw": f["withdraw_records"], "rebuild": recr},
-                                             os.path.join(deep_dir, f"B_fork{k}_records.pt"))]
-                            report.setdefault("deep_B", {"item": it["item_id"], "layer": layer,
-                                                         "needle": nd["name"], "dose": dose, "forks": {}})
-                            report["deep_B"]["forks"][str(k)] = {
-                                "files": files, "pending": pend, "pos_pending": pos_p,
-                                "expected_withdraw": {"first_logits_sha256": fr["arms"]["WITHDRAW"]["first_logits_sha256"],
-                                                      "step_logits_sha256": fr["arms"]["WITHDRAW"]["step_logits_sha256"],
-                                                      "tokens_after_pending": fr["arms"]["WITHDRAW"]["tokens"][k:]}}
-                            del cr_fork
-                    if deep and "deep_B" in report:
-                        files = save_pt(rec_src, os.path.join(deep_dir, "B_source_records.pt"))
-                        report["deep_B"]["source_records"] = files
-                        report["deep_B"]["package_bytes"] = files["bytes"] + sum(
-                            ff["bytes"] for fk in report["deep_B"]["forks"].values() for ff in fk["files"])
+                            if ctxw:
+                                ctxw.__exit__(None, None, None)
+                        arms["WITHDRAW"] = {"tokens": src[:kb] + tw,
+                                            "first_logits_sha256": first_w["logits_sha256"],
+                                            "step_logits_sha256": [r["logits_sha256"] for r in rw]}
+                        timing.append(("B_withdraw", time.monotonic() - t1, len(tw)))
+                        del cw
+                        rec["fork"] = {"reachable": True, "kb": kb, "pending": pend, "arms": arms,
+                                       "fork_cache": E.cache_fingerprint(fork["cache"])}
+                    # REBUILD outside the needle context
+                    t1 = time.monotonic()
+                    eng.active = set()
+                    ctxr = eng.record(deep_positions) if deep else None
+                    recr = ctxr.__enter__() if ctxr else None
+                    try:
+                        _, cr = eng.step(ids + src[:kb - 1], None, 0)
+                        cr_fork = copy.deepcopy(cr) if deep else None
+                        lgr, cr = eng.step([pend], cr, pos_p)
+                        first_r = eng.readout(lgr, False)
+                        tr, rr, *_ = eng.greedy(lgr, cr, pos_p + 1, ARM_MAX)
+                    finally:
+                        if ctxr:
+                            ctxr.__exit__(None, None, None)
+                    rec["fork"]["arms"]["REBUILD"] = {"tokens": src[:kb] + tr}
+                    timing.append(("B_rebuild", time.monotonic() - t1, len(tr)))
+                    for arm in ("CONT", "WITHDRAW", "REBUILD"):
+                        a = rec["fork"]["arms"][arm]
+                        a["text"] = eng.tok.decode(a["tokens"], skip_special_tokens=True)
+                        a["answer_text"] = eng.tok.decode(a["tokens"][kb:], skip_special_tokens=True)
+                        a["parse"] = P.parse_b(it, a["text"])
+                    # G13: clean incremental vs clean prefill at the first-answer-token readout
+                    _, ci_ = eng.step(Pids, None, 0)
+                    lgi, ci_ = eng.step([q], ci_, qpos)
+                    p = n
+                    for t in src[:kb - 1]:
+                        lgi, ci_ = eng.step([t], ci_, p)
+                        p += 1
+                    lgi, ci_ = eng.step([pend], ci_, pos_p)
+                    ti, _, *_ = eng.greedy(lgi, ci_, pos_p + 1, 8)
+                    a_tok = first_r["greedy"]
+                    lpi, lpr = torch.log_softmax(lgi, -1), torch.log_softmax(lgr, -1)
+                    gates.setdefault("rebuild_vs_incremental", []).append({
+                        "bitwise": eng.readout(lgi, False)["logits_sha256"] == first_r["logits_sha256"],
+                        "max_abs_logit_diff": float((lgi - lgr).abs().max()),
+                        "first_answer_token_equal": int(lgi.argmax()) == a_tok,
+                        "first_answer_token_logprob_diff": float((lpi[a_tok] - lpr[a_tok]).abs()),
+                        "top_gap_rebuild": top_gap(lgr), "top_gap_incremental": top_gap(lgi),
+                        "greedy8_equal": ti == tr[:len(ti)]})
+                    del ci_, cr
+                    out.append(rec)
+                    if deep:
+                        files = [save_pt(fork["cache"], os.path.join(deep_dir, "B_fork_source_cache.pt")),
+                                 save_pt(cr_fork, os.path.join(deep_dir, "B_fork_rebuild_cache.pt")),
+                                 save_pt({"source": rec_src, "withdraw": recw, "rebuild": recr},
+                                         os.path.join(deep_dir, "B_fork_records.pt"))]
+                        report["deep_B"] = {"item": it["item_id"], "layer": layer, "needle": nd["name"],
+                                            "dose": dose, "files": files,
+                                            "package_bytes": sum(f["bytes"] for f in files),
+                                            "pending": pend, "pos_pending": pos_p, "kb": kb,
+                                            "expected_withdraw": {
+                                                "first_logits_sha256": rec["fork"]["arms"]["WITHDRAW"]["first_logits_sha256"],
+                                                "step_logits_sha256": rec["fork"]["arms"]["WITHDRAW"]["step_logits_sha256"],
+                                                "tokens_after_pending": rec["fork"]["arms"]["WITHDRAW"]["tokens"][kb:]}}
                         deep_written = True
-                    for f in forks.values():
-                        f.pop("cache", None)
+                        del cr_fork
+                    fork.pop("cache", None)
     return out, gates, timing
 
 
@@ -377,6 +398,7 @@ def run(key, outdir, device):
     sc = {s["id"]: s for s in P.scenarios()}
     A_items = [P.render_item(sc[s], f, "A") for s in PREFLIGHT_SCENARIOS for f in (0, 1)]
     B_items = [P.render_item(sc[s], 0, "B") for s in PREFLIGHT_SCENARIOS]
+    report["max_prompt_tokens_seen"] = max(eng.encode(it)["n_tokens"] for it in A_items + B_items)
     # residual scale from the preflight clean items (formal scale comes from calibration)
     per = {l: [] for l in eng.picks}
     for it in A_items:
@@ -430,20 +452,21 @@ def replay(key, outdir, device):
         got["01"], _ = a_readout(eng, c0, q, qpos, cands, ci, True)
     res["A"]["cells"] = {c: {"bitwise": got[c]["logits_sha256"] == dA["expected"][c]["logits_sha256"],
                              "Y_diff": abs(got[c]["Y"] - dA["expected"][c]["Y"])} for c in got}
-    # B: reload source fork cache, run WITHDRAW, compare
-    for k, fk in rep.get("deep_B", {}).get("forks", {}).items():
-        for f in fk["files"]:
+    # B: reload the boundary fork cache, run WITHDRAW, compare
+    dB = rep.get("deep_B")
+    if dB:
+        for f in dB["files"]:
             data = open(os.path.join(deep_dir, f["path"]), "rb").read()
             res["B"].setdefault("file_sha_ok", []).append(E.sha256_bytes(data) == f["sha256"])
-        c = torch.load(os.path.join(deep_dir, f"B_fork{k}_source_cache.pt"), map_location=device, weights_only=False)
+        c = torch.load(os.path.join(deep_dir, "B_fork_source_cache.pt"), map_location=device, weights_only=False)
         eng.active = set()
-        lg, c = eng.step([fk["pending"]], c, fk["pos_pending"])
+        lg, c = eng.step([dB["pending"]], c, dB["pos_pending"])
         first = eng.readout(lg, False)
-        toks, reads, *_ = eng.greedy(lg, c, fk["pos_pending"] + 1, ARM_MAX)
-        exp = fk["expected_withdraw"]
-        res["B"][k] = {"first_bitwise": first["logits_sha256"] == exp["first_logits_sha256"],
-                       "steps_bitwise": [r["logits_sha256"] for r in reads] == exp["step_logits_sha256"],
-                       "tokens_equal": toks == exp["tokens_after_pending"]}
+        toks, reads, *_ = eng.greedy(lg, c, dB["pos_pending"] + 1, ARM_MAX)
+        exp = dB["expected_withdraw"]
+        res["B"]["boundary"] = {"first_bitwise": first["logits_sha256"] == exp["first_logits_sha256"],
+                                "steps_bitwise": [r["logits_sha256"] for r in reads] == exp["step_logits_sha256"],
+                                "tokens_equal": toks == exp["tokens_after_pending"]}
     json.dump(res, open(os.path.join(outdir, "replay.json"), "w"), indent=1)
     print("REPLAY_DONE", key, json.dumps(res))
 

@@ -77,6 +77,18 @@ class ParserTests(unittest.TestCase):
         self.assertEqual(P.parse_b(it, f"{it['target_row_id']}: 1{v}")[0], "no_answer")
 
 
+class BoundaryTests(unittest.TestCase):
+    def test_boundary(self):
+        main = P.render_item([s for s in P.scenarios() if s["split"] == "dev"][0], 0, "B")
+        lock = P.render_item([s for s in P.scenarios() if s["split"] == "lock"][0], 0, "B")
+        for txt in ("R6:", "R6: ", "<R6>:", " <R6>: ", "R12 :"):
+            self.assertTrue(P.at_boundary(main, txt), txt)
+        for txt in ("R6", "R6: s", "R6: scarlet", "E6:", "Record R6:", ""):
+            self.assertFalse(P.at_boundary(main, txt), txt)
+        self.assertTrue(P.at_boundary(lock, "E3:"))
+        self.assertFalse(P.at_boundary(lock, "R3:"))
+
+
 class NeedleAndLayerTests(unittest.TestCase):
     def test_picks(self):
         self.assertEqual(M.pick_layers(32), [3, 15, 26])

@@ -167,6 +167,11 @@ class Engine:
         handles, saved = [], {}
         W = mlp.down_proj.weight
         if needle["kind"] == "native":
+            tdir = W[:, needle["channel"]].float() * self.mult
+        else:
+            tdir = needle["vector"].to(device=W.device, dtype=torch.float32)
+        self._tdir = sign * tdir / tdir.norm()
+        if needle["kind"] == "native":
             c = needle["channel"]
             col = float(self.eff_col_norm[layer][c])
             amount = W.new_tensor(sign * target / col)
@@ -213,11 +218,20 @@ class Engine:
     def _audit(self, layer, out, clean, m, target, needle):
         delta = (out.float() - clean.float())[0]
         inactive_max = float(delta[~m].abs().max()) if (~m).any() else 0.0
-        norms = delta[m].norm(dim=-1).tolist() if m.any() else []
+        if m.any():
+            d = delta[m]
+            norms = d.norm(dim=-1)
+            proj = d @ self._tdir.to(d.device)
+            cos = (proj / norms.clamp_min(1e-30)).tolist()
+            proj_ratio = (proj / target).tolist() if target > 0 else []
+            norms = norms.tolist()
+        else:
+            norms, cos, proj_ratio = [], [], []
         pos0, width = self._ctx
         self.audit.append({"layer": layer, "needle": needle["name"], "pos0": pos0, "width": width,
                            "active_positions": [pos0 + i for i in range(width) if bool(m[i])],
                            "requested_norm": target, "realized_norms": norms,
+                           "cos_to_target": cos, "signed_projection_ratio": proj_ratio,
                            "inactive_max_abs_change": inactive_max})
 
     # ---------- residual scale ----------
@@ -333,7 +347,7 @@ class Engine:
             toks.append(t)
             reads.append(r)
             if on_step:
-                on_step(i, t, cache)
+                on_step(i, t, cache, toks)
             if t in self.stop_ids or i == max_new - 1:
                 break
             if active_from is not None and pos >= active_from:
