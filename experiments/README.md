@@ -1,5 +1,7 @@
 # 实验目录：按研究问题查找
 
+**跨模型线 F1 预检｜2026-11-02：** [预检报告](cross-model-foundation-common-v1-2026-11-02/PREFLIGHT.zh-CN.md) · [决策日志](cross-model-foundation-common-v1-2026-11-02/DECISIONS.zh-CN.md) · 合同草案 [A](cross-model-history-current-v1-2026-11-02/CONTRACT.zh-CN.md) / [B](cross-model-natural-withdrawal-v1-2026-11-02/CONTRACT.zh-CN.md)。四模型（Qwen3.5-4B、Qwen3-4B、Llama-3.2-3B、Falcon-H1-3B）引擎与面板就位；逐位闸门（权重哈希、缓存复用、挂钩惰性、零剂量、缓存隔离、新进程快照重放）全过；未过/待决：写入 1% 容差（BF16 量化，比值 0.991–1.036）、B 的 k=16 四模型均 0/24 可达且 k=4 常在答案之后、A 干净 Y 饱和于 1.0。实测外推全量约 6 GPUh、深记录约 20–32 GB。合同未冻结，待计划所有者裁决 D4/D5/D8/D9。
+
 **最新分析｜2026-11-01：** [已有张量的原生输出路径CPU分析](cache-output-path-audit-v1-2026-11-01/REPORT.zh-CN.md)完成，来源及算术验收通过，无新模型前向或GPU。第13层删除的原生作用小，不能推广为递推无关；末端投影和词语竞争因情景而异，不能宣布第31层为共同根因。下一优先切入点是“原生当前入口信号＋干净深层历史”这一缺失对照，以区分当前信号与历史的条件作用；尚无新执行合同。资产盘点已更新至[r7](../docs/cache-formation-mechanism-asset-inventory-v1-2026-10-31.zh-CN.md)。下方旧“未运行/下一步”按原日期阅读。
 
 **2026-11-01 当前机制进展：** [统一总结与下一阶段计划](../docs/cache-mechanism-progress-and-next-stage-plan-2026-11-01.zh-CN.md)。机制拆解为主，关键预测形成后阶段性跨针验证。
