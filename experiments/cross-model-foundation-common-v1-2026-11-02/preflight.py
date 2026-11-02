@@ -197,7 +197,7 @@ def run_A(eng, items, scales, needles, deep_dir, report):
 
 
 def summarize_audit(audit):
-    ratios, cos, proj, inactive, n_active = [], [], [], 0.0, 0
+    ratios, cos, proj, err, inactive, n_active = [], [], [], [], 0.0, 0
     for a in audit:
         inactive = max(inactive, a["inactive_max_abs_change"])
         for v in a["realized_norms"]:
@@ -205,13 +205,14 @@ def summarize_audit(audit):
             n_active += 1
         cos.extend(a.get("cos_to_target", []))
         proj.extend(a.get("signed_projection_ratio", []))
+        err.extend(a.get("error_vector_ratio", []))
     def st(v):
         return {"min": min(v), "median": statistics.median(v), "max": max(v)} if v else None
     return {"n_active_positions": n_active, "inactive_max_abs_change": inactive,
             "ratio_min": min(ratios) if ratios else None, "ratio_max": max(ratios) if ratios else None,
             "ratio_median": statistics.median(ratios) if ratios else None,
             "within_1pct_fraction": (sum(abs(r - 1) <= 0.01 for r in ratios) / len(ratios)) if ratios else None,
-            "cos_to_target": st(cos), "signed_projection_ratio": st(proj)}
+            "cos_to_target": st(cos), "signed_projection_ratio": st(proj), "error_vector_ratio": st(err)}
 
 
 def cache_len(cache):

@@ -224,14 +224,17 @@ class Engine:
             proj = d @ self._tdir.to(d.device)
             cos = (proj / norms.clamp_min(1e-30)).tolist()
             proj_ratio = (proj / target).tolist() if target > 0 else []
+            tvec = self._tdir.to(d.device) * target
+            err_ratio = ((d - tvec).norm(dim=-1) / target).tolist() if target > 0 else []
             norms = norms.tolist()
         else:
-            norms, cos, proj_ratio = [], [], []
+            norms, cos, proj_ratio, err_ratio = [], [], [], []
         pos0, width = self._ctx
         self.audit.append({"layer": layer, "needle": needle["name"], "pos0": pos0, "width": width,
                            "active_positions": [pos0 + i for i in range(width) if bool(m[i])],
                            "requested_norm": target, "realized_norms": norms,
                            "cos_to_target": cos, "signed_projection_ratio": proj_ratio,
+                           "error_vector_ratio": err_ratio,
                            "inactive_max_abs_change": inactive_max})
 
     # ---------- residual scale ----------
