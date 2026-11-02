@@ -136,3 +136,7 @@ Acupuncture 当前有两条分别立项的研究线。缓存机制线解释干�
 - [SP-01 共享首token与内容选择](cache-shared-prefix-continuation-plan-v1-2026-11-02.zh-CN.md)：消除首字母唯一定位捷径，区分基线不足与干预未迁移。
 - [FX-01 固定45头V的完整交付](cache-fixed-v-delivery-plan-v1-2026-11-02.zh-CN.md)：原生背景恢复，固定名单/其余V/全V/冻结随机对照；不以SP阳性为前提。
 两份均含C01–C14、历史错误与反方自查；仅设计交付，不启动GPU。
+
+## 2026-11-02：FX连续读数与SP的V/qk恢复后续设计
+
+[两个独立计划与完整自查](cache-v-followup-self-check-v1-2026-11-02.zh-CN.md)：FXS-01补首步连续分数；SVQ-01检验共享首字母条件下V/qk恢复的完整交付。仅设计，无新增模型运行授权。
