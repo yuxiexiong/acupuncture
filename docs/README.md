@@ -145,3 +145,5 @@ Acupuncture 当前有两条分别立项的研究线。缓存机制线解释干�
 
 - [NQ-01 实验计划](cache-name-query-order-plan-v1-2026-11-02.zh-CN.md)：去除目标标签，6场景×3排列×3查询，区分目标、位置与固定身份跟随；自然交付与条件诊断分开。
 - [NQ-01 自查](cache-name-query-order-self-check-v1-2026-11-02.zh-CN.md)：C01–C14、历史错误、反例与预算；仅文档交付，无新增模型运行授权。
+
+- NQ-01 v2（取代v1作为实现依据）：[按名查询与记录顺序计划](cache-name-query-order-plan-v2-2026-11-02.zh-CN.md)；[设计自查](cache-name-query-order-self-check-v2-2026-11-02.zh-CN.md)。查询前置、固定注入窗口、场景共享校准、Q仅描述；未运行。
