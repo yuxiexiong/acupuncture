@@ -1,5 +1,7 @@
 # Acupuncture｜少数通道干预：缓存机制与稳定副作用控制
 
+**2026-11-03｜NVW-01 原生背景连接计划，未运行。** [V恢复×t1写入项k计划](docs/cache-native-v-write-interaction-plan-v1-2026-11-03.zh-CN.md)及[作者自查](docs/cache-native-v-write-interaction-self-check-v1-2026-11-03.zh-CN.md)：在只差卷积V的背景中，检验KUC写入项作用的条件依赖，分别报告首步竞争、固定前缀目标竞争与自然完整交付。逻辑设计通过；实现/数值验收和运行授权待完成，无新增模型/GPU。
+
 **2026-11-03｜近期实验资产总盘点，更新至 KUC 正式结果。** [机制主线、结果与资产入口](docs/cache-mechanism-experiment-asset-inventory-2026-11-03.zh-CN.md)统一梳理形成期、V 材料、目标选择、共同 k 偏移、历史搬运与更新项检验；[文件级清单](docs/cache-mechanism-experiment-assets-2026-11-03.json)覆盖 65 个目录、4,891 个文件。KHC 固定供体 Q 时的历史效应主要存于 S；KUC 在 V 已恢复的背景中发现 t1 新值写入项里的 k 承担主要行为效应。正文保留随机/C1343结果、失败预测及已核实的统计口径修正。下方各条为历史交付状态。
 
 **2026-11-03｜KUC-01更新计算因果设计已交付，未运行。** [t1旧预测修正×新值写入计划](docs/cache-k-update-causal-plan-v1-2026-11-03.zh-CN.md)及[作者自查](docs/cache-kuc-self-check-v1-2026-11-03.zh-CN.md)：直接检验更新项如何改变后续目标竞争和自然完整回答，不以KHC完成或单载体胜出为前提；仅t1操作与持续卷积编辑分开。四方向、随机/C1343保留；逻辑自查通过，模型实现/数值验收待完成，无新GPU授权。本条衔接下方KHC的第二步交接，不改历史结果。
