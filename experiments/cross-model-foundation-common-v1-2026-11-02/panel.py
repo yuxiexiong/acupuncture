@@ -151,16 +151,43 @@ def panel_sha256():
     return hashlib.sha256(blob).hexdigest()
 
 
-# ---------- B answer boundary (DECISIONS D5 revision) ----------
+# ---------- B answer boundary (D5-r, revised D20) ----------
 
-def boundary_regex(item):
-    """Generated text that ends exactly after '<identifier>:' (optional angle brackets / spaces)."""
+def boundary_regexes(item):
+    """Two frozen answer-before forms.  Form 1: '<id>:'; form 2: copied placeholder
+    '<identifier>: <id>\\n<answer>:'.  Row restatement is never a boundary."""
     letter = item["row_id_pattern"][2]  # pattern is r"\b" + letter + r"(\d+)\b"
-    return re.compile(r"^\s*<?\s*" + letter + r"\d+\s*>?\s*:\s*$")
+    rid = r"<?\s*" + letter + r"\d+\s*>?"
+    return [re.compile(r"^\s*" + rid + r"\s*:\s*$"),
+            re.compile(r"^\s*<identifier>\s*:\s*" + rid + r"\s*\n+\s*<answer>\s*:\s*$")]
+
+
+def boundary_form(item, text):
+    for i, rx in enumerate(boundary_regexes(item), start=1):
+        if rx.match(text):
+            return i
+    return None
 
 
 def at_boundary(item, text):
-    return bool(boundary_regex(item).match(text))
+    return boundary_form(item, text) is not None
+
+
+def boundary_row_id(item, text):
+    m = re.search(item["row_id_pattern"], text)
+    return m.group(0) if m else None
+
+
+def classify_unreachable(item, text, stopped):
+    """Reason a source never reached an answer-before boundary (D20)."""
+    if stopped and not any(v in text for v in item["column_values"]):
+        return "stop_before_boundary"
+    row_like = re.search(item["row_id_pattern"] + r"\s*\|", text) or re.search(r"\bEntry\s+[RE]?\d+\s*:", text)
+    if row_like:
+        return "row_restatement"
+    if stopped:
+        return "stop_before_boundary"
+    return "other_format"
 
 
 # ---------- B parser (PLAN r3 §6: mechanical, no LLM judge) ----------

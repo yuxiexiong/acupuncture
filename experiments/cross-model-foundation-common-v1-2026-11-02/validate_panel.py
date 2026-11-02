@@ -33,7 +33,8 @@ def main():
         # B: the canonical answer "<id>: <value>" must have a token prefix ending exactly at the colon.
         no_boundary = []
         for it in P.items("B"):
-            for form in (f"{it['target_row_id']}: {it['correct']}", f"<{it['target_row_id']}>: {it['correct']}"):
+            for form in (f"{it['target_row_id']}: {it['correct']}", f"<{it['target_row_id']}>: {it['correct']}",
+                         f"<identifier>: {it['target_row_id']}\n<answer>: {it['correct']}"):
                 ci = T.continuation_ids(tok, key, it, form)
                 ok = ci is not None and any(P.at_boundary(it, tok.decode(ci[:j])) for j in range(1, len(ci)))
                 if not ok:

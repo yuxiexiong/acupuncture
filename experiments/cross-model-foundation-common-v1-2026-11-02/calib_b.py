@@ -64,8 +64,14 @@ def main(key, scales_json, dose_s, outdir, device):
                     eng.active = set()
                     text = eng.tok.decode(toks, skip_special_tokens=True)
                     b = boundary_index(eng, it, toks)
+                    pre = eng.tok.decode(toks[:b], skip_special_tokens=True) if b else None
+                    stopped = any(t in eng.stop_ids for t in toks)
                     rows.append({"item": it["item_id"], "arm": "SOURCE", "layer": layer, "needle": nd["name"],
                                  "dose": dose, "boundary": b, "reachable": b is not None,
+                                 "boundary_form": P.boundary_form(it, pre) if b else None,
+                                 "prefix_row_id": P.boundary_row_id(it, pre) if b else None,
+                                 "prefix_row_correct": (P.boundary_row_id(it, pre) == it["target_row_id"]) if b else None,
+                                 "unreachable_reason": None if b else P.classify_unreachable(it, text, stopped),
                                  "stopped_first_token": bool(toks) and toks[0] in eng.stop_ids,
                                  "n_tokens": len(toks), "parse": P.parse_b(it, text), "text": text[:120]})
     json.dump({"model": key, "dose": dose_s, "rows": rows, "wall_seconds": time.monotonic() - t0},

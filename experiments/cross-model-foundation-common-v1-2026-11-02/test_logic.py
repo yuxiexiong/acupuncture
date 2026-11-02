@@ -85,6 +85,13 @@ class BoundaryTests(unittest.TestCase):
             self.assertTrue(P.at_boundary(main, txt), txt)
         for txt in ("R6", "R6: s", "R6: scarlet", "E6:", "Record R6:", ""):
             self.assertFalse(P.at_boundary(main, txt), txt)
+        self.assertEqual(P.boundary_form(main, "<identifier>: R6  \n<answer>:"), 2)
+        self.assertIsNone(P.boundary_form(main, "R6 | name: Velim | color:"))
+        self.assertIsNone(P.boundary_form(main, "<identifier>: R6\n<answer>: scarlet"))
+        self.assertEqual(P.boundary_row_id(main, "<R2>:"), "R2")
+        self.assertEqual(P.classify_unreachable(main, "R6 | name: Velim Ferral | color: scarlet", False), "row_restatement")
+        self.assertEqual(P.classify_unreachable(main, "", True), "stop_before_boundary")
+        self.assertEqual(P.classify_unreachable(main, "The record identifier is R6.", False), "other_format")
         self.assertTrue(P.at_boundary(lock, "E3:"))
         self.assertFalse(P.at_boundary(lock, "R3:"))
 
