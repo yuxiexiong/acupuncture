@@ -93,6 +93,8 @@ class Wiring(unittest.TestCase):
         self.assertEqual(lim['decode_forwards'], lim['t1'] + lim['refs'] + lim['c_t2'] + lim['n_steps'])
         pre = R.units_for('preflight')
         self.assertEqual(sorted(u['kind'] for u in pre), sorted(['g1', 'g1', 'g2', 'g2', 'g2', 'g3c', 'g3c', 'bridge']))
+        br = [u for u in pre if u['kind'] == 'bridge'][0]
+        self.assertEqual({k: R.unit_budget(br)[k] for k in ('t1', 'trajectories', 'shadow', 'refs')}, {'t1': 4, 'trajectories': 10, 'shadow': 56, 'refs': 4})
         prep = R.units_for('prep')
         self.assertEqual(sum(u['kind'] == 'collect' for u in prep), 48)
         self.assertEqual(sum(u['kind'] == 'calib' for u in prep), 3)

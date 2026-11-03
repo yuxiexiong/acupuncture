@@ -142,7 +142,7 @@ def unit_budget(u):
         elif kind == 'g3c':
             b.update(formations=1, prefix_prefills=1, formation_token_forwards=L_, t1=5, refs=1 + 2 + 2 * 4, trajectories=1 + 2 * 14, shadow=2 * 28)
         elif kind == 'bridge':
-            b.update(formations=2, prefix_prefills=1, formation_token_forwards=2 * L_, t1=2, refs=4, trajectories=8, shadow=42)
+            b.update(formations=2, prefix_prefills=1, formation_token_forwards=2 * L_, t1=4, refs=4, trajectories=10, shadow=56)
         b['c_t2'] = b['trajectories']
         b['n_steps'] = 31 * b['trajectories']
     b['decode_forwards'] = b['t1'] + b['refs'] + b['c_t2'] + b['n_steps']
