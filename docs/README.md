@@ -2,6 +2,8 @@
 
 **2026-11-03｜WSP 编程扩展 WCP-01（仅方案，未运行）：** [0.8B / 4B 独立痛点诊断与稀疏干预](wsp-coding-painpoint-v1-2026-11-03/PLAN.zh-CN.md)｜[完整设计自查](wsp-coding-painpoint-v1-2026-11-03/SELF_CHECK.zh-CN.md)｜[预算](wsp-coding-painpoint-v1-2026-11-03/BUDGET.json)。Python 函数任务，MBPP 开发、HumanEval+ 独立终验；最多12个候选，含随机/反号及原版非思考对照。全流程停止线4/10 GPUh，包含终验。逻辑自查通过，工程待验收；本轮0模型/GPU，数学50-pass与编程搜索均未启动。
 
+**2026-11-03｜NMT-01 范数匹配实验卡（设计，未冻结、无 GPU 授权）：** [实验卡](cache-increment-norm-match-v1-2026-11-03/PLAN.zh-CN.md)。固定接收背景，把原生来源状态增量逐层逐头放大到恢复来源幅度（UP）、反向把恢复来源缩小（DN），两接收背景各 b=0/1；次要臂：写入位置保留、内容随机（K=5）与总范数统一缩放。读法分“幅度复现 / 幅度不足 / 单侧 / 背景依赖”，各对应下一步；不证明单调性。估计 0.4–0.7 GPUh。另：零 GPU 三件已加作者更正（DIV-01 收窄“层内差异只能来自方向”）。
+
 **2026-11-03｜跨条件预测线：零 GPU 三件已交付，未冻结、无计算授权。** [检验集盘点](cross-condition-predictor-v1-2026-11-03/INVENTORY.zh-CN.md)／[竞争候选](cross-condition-predictor-v1-2026-11-03/CANDIDATES.zh-CN.md)／[预注册草稿](cross-condition-predictor-v1-2026-11-03/PREREG_DRAFT.zh-CN.md)。调查中同层同剂量的写入范数恒为 d·m，层内通道差异（如 9B L0 首步 EOS [0,8,8,0,8,0,5,0,8,8]）只能来自方向；四个候选：幅度/位置、停止 token 对齐（静态权重）、传播放大、输入压平后回落默认输出。三阶段：回顾性盲算（0 GPU，结局多已见过）→ 新通道前瞻 → 针对候选的因果干预。待审定判据与规模。
 
 **2026-11-03｜SIT-01 结果：恢复背景产生的留存增量能跨输出背景起作用（幅度与方向未分开）。** [报告](../experiments/cache-state-increment-transfer-v1-2026-11-03/REPORT.zh-CN.md)；[合同 r01](../experiments/cache-state-increment-transfer-v1-2026-11-03/CONTRACT.zh-CN.md)；[方案](cache-state-increment-transfer-v1-2026-11-03/PLAN.zh-CN.md)（取代 SDT-01，SDT 未执行）。三个缺口方向：恢复来源增量移入原生输出背景，k 条件效应 +0.53～+0.76（G=DS1−DS0 的 0.40～0.57）；在恢复背景换回原生来源，损失 0.74～1.55（G 的 0.77～0.83），固定 k 时完整正确数少 18/12/5 条（扣主效应后的交互 17/4/2）；均为 6/6 场景、32/32 输入同号。深层（≥20 层）增量范数相差 1.5～3 倍，行为收益中幅度占多少未测；原生一侧 t1 已停，Y 无信息；C1343 模式不同。0.35 GPUh，工程闸门全过，无偏离。
