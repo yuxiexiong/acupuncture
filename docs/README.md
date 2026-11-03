@@ -1,5 +1,7 @@
 # 项目文档目录
 
+**2026-11-03｜WSP从原始0.8B复现全过程（计划，未运行）：** [完整计划](wsp-process-reproduction-v1-2026-11-03.zh-CN.md) · [作者自查](wsp-process-reproduction-self-check-v1-2026-11-03.zh-CN.md) · [来源与资源收据](wsp-process-reproduction-sources-v1-2026-11-03.json)。按实验8进行一次50-pass自主搜索，隔离作者最终答案，复用公开提示、练习题及评测代码，补齐未公开harness；保留全部候选、失败、原文及请求张量。逻辑自查通过，工程/模型验收及正式成本尚未冻结，无新模型/GPU运行。
+
 **2026-11-03｜WSP 方法档案：** [《权重空间编程（WSP）：原始资料、研究方法与 Acupuncture 应用档案》](literature/weight-space-programming-acupuncture-2026-11-03.zh-CN.md)。统一收录作者与公开资源、八组实验、数学修复过程和精确补丁、20.3小时成本口径、复现限制及两条研究线的用途；原核查文件已原位扩充，未新增模型实验。
 
 **2026-11-03｜保留海盗角色、修复任务能力（讨论稿，未运行）：** [简短 proposal 与作者自查](pirate-persona-capability-repair-mini-proposal-2026-11-03.zh-CN.md)。核对既有五题角色/跑题表现，拟借鉴WSP搜索局部修复，同时衡量数学、文字、逻辑任务及角色保持；不预设广泛能力损失。执行合同与预算未冻结，无模型/GPU授权。
