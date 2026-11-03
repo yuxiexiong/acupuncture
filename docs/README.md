@@ -1,5 +1,7 @@
 # 项目文档目录
 
+**2026-11-03｜WSP 工程准备检查点（未开始搜索）：** [代码、待办与验收收据](../experiments/wsp-process-reproduction-v1-2026-11-03/README.md)。Astra/max 实际调用通过，4B 全文件哈希复验及 426 个文本张量导出核验通过，CPU 沙箱基本接口和数学评分有限测试通过；两模型初始提示已独立冻结。0.8B 权重、独立推理环境与完整前向运行器仍在准备。用户选择等现有任务结束后使用空闲 GPU。
+
 **2026-11-03｜NVB-01 v2 已定稿并授权上卡：** [v2 方案与自查](cache-native-bridge-plan-v2-2026-11-03.zh-CN.md)把主比较移到原生一侧（保留原生 t1 输出及非 S 缓存，只把留存状态中的 v 换成 LVK 局部 v1），加匹配随机族 K=19（有限样本秩比较，结论只限该族），判读表不强行三分类。合同与代码：[`experiments/cache-native-bridge-v1-2026-11-03/`](../experiments/cache-native-bridge-v1-2026-11-03/CONTRACT.zh-CN.md)；CPU 测试 9/9、就绪检查通过；总上限 1.5 GPUh。结果另报。
 
 **2026-11-03｜缓存机制线三项待办，先推进原生连接：** [To-do](cache-mechanism-todo.zh-CN.md)按原生连接、入口形成、目标相关特征依次推进；[NVB-01 第一轮方案与自查](cache-native-bridge-plan-v1-2026-11-03.zh-CN.md)从同一 T 出发拆分 t1 局部 v 的当前输出与留存状态用途，四个新条件加四个 LVK 参照。仅完成作者逻辑自查；未实现、未运行，无新 GPU 授权。
