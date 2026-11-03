@@ -1,5 +1,7 @@
 # 项目文档目录
 
+**2026-11-03｜WSP双模型安排（v2，未运行）：** [0.8B过程复现＋4B独立方法扩展及自查](wsp-process-reproduction-0p8b-4b-v2-2026-11-03.zh-CN.md)。核对作者以Codex CLI调用gpt-6-astra/max（认证方式未公开）；两模型各自从原始权重独立搜索50pass，4B不读取0.8B补丁/结果，完整终验共51584回答。已只读确认4B资产目录、配置hash与分片大小；工程/完整权重核验及运行预算待完成，无新模型/GPU运行。本条扩展下方v1的模型范围。
+
 **2026-11-03｜WSP从原始0.8B复现全过程（计划，未运行）：** [完整计划](wsp-process-reproduction-v1-2026-11-03.zh-CN.md) · [作者自查](wsp-process-reproduction-self-check-v1-2026-11-03.zh-CN.md) · [来源与资源收据](wsp-process-reproduction-sources-v1-2026-11-03.json)。按实验8进行一次50-pass自主搜索，隔离作者最终答案，复用公开提示、练习题及评测代码，补齐未公开harness；保留全部候选、失败、原文及请求张量。逻辑自查通过，工程/模型验收及正式成本尚未冻结，无新模型/GPU运行。
 
 **2026-11-03｜WSP 方法档案：** [《权重空间编程（WSP）：原始资料、研究方法与 Acupuncture 应用档案》](literature/weight-space-programming-acupuncture-2026-11-03.zh-CN.md)。统一收录作者与公开资源、八组实验、数学修复过程和精确补丁、20.3小时成本口径、复现限制及两条研究线的用途；原核查文件已原位扩充，未新增模型实验。
