@@ -142,14 +142,19 @@ class Local(unittest.TestCase):
         torch, R = self.torch, self.R
         v1 = self.v1.clone()
         v1[0, 0, 3] = self.v0[0, 0, 3]                         # one head without change -> zero rho
-        rho, nrm = R.make_rho(('X', 'd', 0), 13, self.v0, v1)
-        rho2, _ = R.make_rho(('X', 'd', 0), 13, self.v0, v1)
+        rho, nrm, z = R.make_rho(('X', 'd', 0), 13, self.v0, v1)
+        rho2, _, _ = R.make_rho(('X', 'd', 0), 13, self.v0, v1)
         self.assertTrue(torch.equal(rho, rho2))
         self.assertFalse(torch.equal(rho, R.make_rho(('X', 'd', 1), 13, self.v0, v1)[0]))
         self.assertFalse(torch.equal(rho, R.make_rho(('X', 'd', 0), 14, self.v0, v1)[0]))
         self.assertEqual(rho.dtype, torch.float32)
         self.assertTrue(torch.allclose(rho.norm(dim=-1, keepdim=True), nrm, rtol=1e-5, atol=1e-7))
         self.assertEqual(float(rho[0, 0, 3].abs().max()), 0.0)
+        # another forward (different v0 / v1, as in deeper layers under b = 1): same unit direction, its own norm
+        rho3, nrm3, z3 = R.make_rho(('X', 'd', 0), 13, self.v0 * 0.5, self.v1)
+        self.assertTrue(torch.equal(z, z3))
+        self.assertFalse(torch.equal(rho, rho3))
+        self.assertTrue(torch.allclose(rho3.norm(dim=-1, keepdim=True), nrm3, rtol=1e-5, atol=1e-7))
         dvec = (v1.float() - self.v0.float())
         cos = torch.nn.functional.cosine_similarity(rho.reshape(-1, 128), dvec.reshape(-1, 128), dim=-1)
         self.assertLess(float(cos.abs().max()), 0.5)           # random, not the v1 direction

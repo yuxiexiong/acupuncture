@@ -3,7 +3,8 @@
 At t1, in the 14 G layers only, cell B(c, a, b) computes the LVK update twice on the same local inputs and returns
     o1 = S_hat(v_c, k_b)^T q   and   S_return = S_hat(v_a, k_b),   S_hat(v, k_b) = alpha S0 - alpha beta k0 (k0^T S0) + beta k_b v^T
 (custom_update order, erase key always k0).  c, a in {0: native v0, 1: shadow v1}; b in {0: k0, 1: shadow k1}.  Matched random arm (c = 0):
-a = r_j stores v0 + rho_j, rho_j a per-head random direction with norm ||v1 - v0|| of that head and layer (deterministic seed, same for b = 0/1).
+a = r_j stores v0 + rho_j, rho_j a per-head random direction with norm ||v1 - v0|| of that head and layer in this forward (deterministic
+seed: the unit direction is the same for b = 0/1; the norm follows each forward's own v1 - v0, like v1 itself; DEVIATIONS D1).
 Diagonal cells replay LVK L00 / L01 / L10 / L11.  t2 onward: no hook (except a read-only q/k capture on three C-route cells).
 python nvb_run.py freeze PATH | run ... | verify WORKER_DIR | launch ..."""
 import argparse
@@ -89,14 +90,15 @@ def rho_seed(rkey, layer):
 
 
 def make_rho(rkey, layer, v0, v1):
-    """Per-head random direction (float32), norm == ||v1 - v0|| of that head (float32).  v0 / v1: [B, 1, H, dv]."""
+    """Per-head random direction (float32), norm == ||v1 - v0|| of that head (float32).  v0 / v1: [B, 1, H, dv].
+    Returns (rho, norm, unit direction); the unit direction depends only on (rkey, layer)."""
     import torch
     dv = v1.to(torch.float32) - v0.to(torch.float32)
     nrm = dv.norm(dim=-1, keepdim=True)
     gen = torch.Generator(device='cpu').manual_seed(rho_seed(rkey, layer))
     z = torch.randn(tuple(dv.shape), generator=gen, dtype=torch.float32)
     z = z / z.norm(dim=-1, keepdim=True).clamp_min(1e-30)
-    return z.to(dv.device) * nrm, nrm
+    return z.to(dv.device) * nrm, nrm, z
 
 
 def ds_error(Sa, Sc, kb, va, vc, beta, l2norm):
@@ -135,7 +137,7 @@ class NHook:
         self.layer, self.mod, self.handles = None, None, []
         self.conv_calls, self.kern_calls, self.sv, self.sk = [], [], {}, {}
         self.oracle, self.dserr, self.rhoerr, self.vdiff = {}, {}, {}, {}
-        self.rho_h = hashlib.sha256()
+        self.dir_h = hashlib.sha256()
         self.n_shadow = 0
 
     def __enter__(self):
@@ -190,11 +192,11 @@ class NHook:
             assert kb.shape == key.shape and kb.dtype == key.dtype
             vc = v1 if me.c else v0
             if me.a == 'r':
-                rho, nrm = make_rho(me.rkey, me.layer, v0, v1)
+                rho, nrm, z = make_rho(me.rkey, me.layer, v0, v1)
                 va = v0.to(torch.float32) + rho
                 got = (va - v0.to(torch.float32)).norm(dim=-1, keepdim=True)
                 me.rhoerr[me.layer] = float((got - nrm).abs().max() / max(1e-6, float(nrm.max())))
-                me.rho_h.update(rho.detach().cpu().contiguous().numpy().tobytes())
+                me.dir_h.update(z.contiguous().numpy().tobytes())
             else:
                 va = v1 if me.a else v0
             o, S, err, dse = split_update(query, key, kb, vc, va, g, beta, initial_state, me.QM.l2norm)
@@ -225,8 +227,8 @@ class NHook:
             assert set(self.rhoerr) == set(self.G) and max(self.rhoerr.values()) <= ORACLE_TOL, ('rho norm', max(self.rhoerr.values()))
 
     @property
-    def rho_sha(self):
-        return self.rho_h.hexdigest()
+    def dir_sha(self):
+        return self.dir_h.hexdigest()
 
 
 def s_only_equal(ca, cb, types, G):
@@ -356,8 +358,8 @@ def run_item(engine, unit, contexts, calib, conds, qctok, output, stage, vecs=No
                 acc['min_s_layers_random'] = min(acc['min_s_layers_random'], len(dl))
                 _, zc = fwd(engine, cr, fF, n, counts, 'r_c_t2')
                 M, Mall = margins(zc, it, code_tok, comp)
-                rnd[str(j)][b_] = {'M': M, 'M_all': Mall, 't2_sha': F.th(zc), 'rho_sha': hk.rho_sha}
-            assert rnd[str(j)]['0']['rho_sha'] == rnd[str(j)]['1']['rho_sha'], ('rho differs between b = 0 and b = 1', j, d)
+                rnd[str(j)][b_] = {'M': M, 'M_all': Mall, 't2_sha': F.th(zc), 'dir_sha': hk.dir_sha}
+            assert rnd[str(j)]['0']['dir_sha'] == rnd[str(j)]['1']['dir_sha'], ('random direction differs between b = 0 and b = 1', j, d)
         # ---- t2 q / k agreement (C route, same input token): output-branch change (000 vs 100) and storage change (000 vs 010)
 
         def cosm(u_, w_):
@@ -376,7 +378,7 @@ def run_item(engine, unit, contexts, calib, conds, qctok, output, stage, vecs=No
     gates['storage_only'] = f'fixed (c, b): t1 logits and all non-S cache bit-equal, only G-layer S differs (min layers {acc["min_s_layers"]}); random arm vs B00b likewise (min {acc["min_s_layers_random"]})'
     gates['oracle'] = f'custom update FP64 max relative error {acc["oracle"]:.3g} <= {ORACLE_TOL}'
     gates['state_identity'] = f'S_a - S_c == beta k_b (v_a - v_c)^T, FP64 max {acc["dserr"]:.3g} <= {ORACLE_TOL}'
-    gates['rho'] = f'per-head ||rho|| == ||v1 - v0||, max {acc["rhoerr"]:.3g} <= {ORACLE_TOL}; same rho for b = 0 / 1'
+    gates['rho'] = f'per-head ||rho|| == ||v1 - v0|| of the same forward, max {acc["rhoerr"]:.3g} <= {ORACLE_TOL}; same unit directions for b = 0 / 1'
     gates['hooks'] = 't1 hooks once per G layer; t2 only read-only capture on 000/100/010 C route; t3 onward none; module functions restored'
     gates['calibration'] = 'NQ-01 saved scenario calibration (source hash in receipt)'
     body = {'text': a_id, 'panel': 'new', 'scenario': info['scenario'], 'item': it, 'code_tokens': code_tok, 'competitor': comp, 'directions': out,
