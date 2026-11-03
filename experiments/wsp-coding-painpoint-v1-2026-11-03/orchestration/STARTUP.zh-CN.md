@@ -1,0 +1,83 @@
+# WCP 最小正式启动清单
+
+本次只补齐阶段调度、编辑器权限和服务器续接，正式搜索仍关闭。原始数据、已验收模型、编译干预与科学判据继续沿用上一轮。最终通过状态和实测用量以本目录receipts中的收据为准。直接服务器Astra请求失败日志完整保留；验收必须明确标记为Mac桥接路径。
+
+## 本轮收尾结果
+
+- 合成全流程与故障恢复11项通过；服务器隔离评分、BF16校准和两模型真实tokenizer适配通过。
+- 真实Astra经Mac/SSH两个独立会话通过，共77.06秒；0.8B记6,304输入/472输出，4B记6,304输入/717输出，各1回合。均未使用原生工具。
+- 原直接服务器连接因路由超时失败，旧失败事件保留；不是账户登录失败，也不是GPU加载缓慢。
+- 服务器后台合成流程在原SSH结束后完成；实际桥接仍依赖Mac，不能把该检查解释成现在可以关闭Mac。
+- 本轮零新增GPU生成，未生成研究题回答，未开启50-pass或WCP正式搜索。
+
+## 已实现的执行路径
+
+`D原版 → 全失败标注/诊断门槛 → 配对激活定位 → S的8+4候选 → 随机对照校准/冻结 → V六臂一次开封 → 通过才做T四臂与M哨兵 → 按题配对报告`。
+
+诊断不足、随机校准无效、V阴性直接结束分支；工程失败、配额、数据身份变化和预算问题暂停。GPU只取空闲卡，等待不占GPU预算。现有数值验收直接复用，没有再跑模型。
+
+编辑器使用Mac上的 `gpt-6-astra/max`，经仅监听127.0.0.1的SSH隧道连接服务器。用户在服务器直连超时后明确选择此临时路径。它接收观察者构造的结构化输入，不开放原生工具或通用Python执行：诊断角色只见D，验证角色在针和规则冻结后只见V；T/M只由观察者生成和评分。两个模型目录与会话隔离。分类按批使用新会话和显式规则，避免依赖Mac上的历史会话；候选排序和去留由固定代码执行。标签是带证据的语义解释，不是已证实的唯一故障机制。
+
+阶段、请求身份、结果与预算保存于服务器SQLite。重复请求复用已提交结果；已产生完整结果但尚未提交时可显式核对恢复。无法确认的动作不自动重跑，保留原日志并报告。服务器tmux保持控制器和模型任务独立于交互SSH；**本轮实际采用Mac编辑器，Mac关机、休眠或桥接SSH断开后，后续编辑器调用会失败暂停，不能承诺整条流程继续。** 已完成结果保留，未确认动作不自动重放。服务器断电/重启也不保证在执行动作自动恢复。
+
+## 正式启动前，只检查这些
+
+1. 获得用户对0.8B正式运行的明确指令，再填写 `search-0p8b.json` 的 `authorized=true` 与 `authorization_record`。目前仍为false；4B保持独立关闭，不随0.8B自动启动。
+2. 核对全流程验收收据、固定数据与源码哈希。模板已经绑定这些身份，发生变化会拒绝启动。
+3. 查看磁盘空闲，保留50GB；只等空闲GPU，不终止其他任务。确认Mac登录、桥接进程和SSH隧道有效；Mac保持接电、开盖和联网。
+4. 启动后只利用已预算的首个D批次校准长输出ETA；不再预跑一轮“更全面”的准备实验。超预算暂停，不缩短答案上限或删对照。
+
+Mac桥接启动命令（只启动编辑器服务，不启动搜索）：
+
+```sh
+caffeinate -i python3 /Users/ruizhixu/Documents/ChatGPT/acupuncture/experiments/wsp-coding-painpoint-v1-2026-11-03/orchestration/mac_editor_bridge.py \
+  --out /Users/ruizhixu/Documents/ChatGPT/acupuncture/external/wcp01/mac-bridge-r1/calls
+```
+
+已有桥接进程时不要重复运行。桥接日志和原始调用保留在该本地目录；成功返回的调用证据也同步到服务器。`caffeinate -i`只阻止空闲睡眠，不保证合盖后工作。
+
+服务器目录：`/workspace/acupuncture/external/wcp01/code/orchestration`。
+
+授权前可检查配置，预期返回 `FORMAL_SEARCH_DISABLED`，不会创建正式run：
+
+```sh
+sh /workspace/acupuncture/external/wsp/code-engineering-r2/engineering-r2/server_env.sh \
+  /workspace/acupuncture/external/wcp01/code/orchestration/scheduler.py \
+  --check --config /workspace/acupuncture/external/wcp01/code/orchestration/search-0p8b.json
+```
+
+仅在授权记录填写后，运行一次服务器启动命令即可退出SSH：
+
+```sh
+sh /workspace/acupuncture/external/wsp/code-engineering-r2/engineering-r2/server_env.sh \
+  /workspace/acupuncture/external/wcp01/code/orchestration/launch.py \
+  --config /workspace/acupuncture/external/wcp01/code/orchestration/search-0p8b.json
+```
+
+同一命令加 `--status` 查看阶段与账单。若控制器停止，核对日志后用相同配置重启；不要改run目录逃避已用预算。仅有已完整保存的结果才可用 `--recover-completed 动作ID` 核对后恢复。其余未确认动作联系观察者处理，不自动重跑。
+
+## 剩余预算与性能边界
+
+收尾时服务器可用266.19GB；两模型合计规划65GB，加50GB保留量共115GB，空间足够。WCP目录约1.37GB（包括新CLI与下载缓存）；该数字不包括复用的WSP模型。GPU当时两张均空闲，此状态随其他任务改变。未创建正式run目录。详细证据：[汇总](receipts/acceptance.json)、[资源](receipts/resources.json)、[禁用检查](receipts/disabled-gates.json)、[完整原始归档与哈希](receipts/archives.json)。
+
+
+|项目|0.8B|4B|
+|---|---:|---:|
+|总GPU停止线剩余|14,198.58秒（3.944小时）|35,773.09秒（9.937小时）|
+|阶段A剩余|26分38.58秒|56分13.09秒|
+|阶段B / C|1.5 / 2小时|4 / 5小时|
+|研究回答最多|2,976条|2,976条|
+|TF输入token剩余|1,999,542|1,999,734|
+|CPU可用预算|58 core-hours|58 core-hours|
+|工作磁盘规划|25GB|40GB|
+|编辑器回合剩余|99|99|
+|编辑器输入token剩余|1,493,696|1,493,696|
+|编辑器输出token剩余|149,528|149,283|
+
+GPU已经扣除上一轮所有成功/失败验收，本轮没有新增GPU开销。CPU为历史准备阶段未精确计核保守预留2 core-hours/模型，**是预算分配，不是声称实测用了2小时**。新的执行按实际CPU用量记账。真实Astra握手消耗从各模型100回合、1.5M输入/150k输出额度扣除，精确余额见 `receipts/remaining-*.json`。直接服务器请求未产生turn.completed用量，不能据此声称提供方确定未计费；原始错误事件保留，不伪造token用量。
+
+CLI能读取每次调用实际用量，缺失会停止；token额度是调用前检查与调用后停止线，**不是提供方单次生成硬截断**，最后一轮仍可能超线；发生时记录实际消耗并暂停，不能称已实现不可超额硬限。新会话按每次实际用量记账，不重复累加会话累计数。
+
+4/10 GPUh仍是投入停止线，不承诺全部跑完；16k实际吞吐和错误程序耗时尚未知。工程演练的模拟分数不可用来声称能力提升，假模型GPU账单也不计作真实GPU耗时。Astra语义标签仍需结合失败输入、规范和代码核对，精确引用检查本身不证明语义归因正确。
+
+本次准备遵循用户“不要过度工程”的纠正：不再扩充平台、追加GPU验收或重做旧模块。服务器认证沿用用户授权的本机登录缓存，经SSH写入0700私有目录/0600文件，凭据不进入Git或日志；方法依据[官方无浏览器登录说明](https://learn.chatgpt.com/docs/auth#login-on-headless-devices)。
