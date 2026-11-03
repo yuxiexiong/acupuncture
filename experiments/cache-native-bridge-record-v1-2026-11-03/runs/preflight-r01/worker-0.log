@@ -1,0 +1,30 @@
+Loading weights:   0%|          | 0/723 [00:00<?, ?it/s]Loading weights:   6%|▌         | 41/723 [00:00<00:01, 389.70it/s]Loading weights:  11%|█         | 80/723 [00:00<00:01, 347.02it/s]Loading weights:  16%|█▌        | 115/723 [00:00<00:01, 315.85it/s]Loading weights:  20%|██        | 147/723 [00:00<00:02, 287.88it/s]Loading weights:  24%|██▍       | 177/723 [00:00<00:01, 277.46it/s]Loading weights:  36%|███▌      | 261/723 [00:00<00:01, 445.57it/s]Loading weights: 100%|██████████| 723/723 [00:00<00:00, 949.61it/s]
+[transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
+[transformers] `chunk_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.
+[transformers] `causal_conv1d_update` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
+[transformers] `fused_recurrent_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.
+Traceback (most recent call last):
+  File "/workspace/acupuncture/experiments/cache-native-bridge-record-v1-2026-11-03/nbr_run.py", line 558, in <module>
+    main()
+  File "/workspace/acupuncture/experiments/cache-native-bridge-record-v1-2026-11-03/nbr_run.py", line 550, in main
+    value = run(a.stage, a.worker, a.output, a.authorization)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/acupuncture/experiments/cache-native-bridge-record-v1-2026-11-03/nbr_run.py", line 427, in run
+    receipt['summary'] = execute(engine, stage, output, receipt, units, {'id': gpu, 't0': started, 'n_workers': n_workers})
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/acupuncture/experiments/cache-native-bridge-record-v1-2026-11-03/nbr_run.py", line 369, in execute
+    body, tensors = run_item(engine, u, contexts, calib[rid], conds, None, output, stage, vecs=vecs, refs=refs)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/acupuncture/experiments/cache-native-bridge-record-v1-2026-11-03/nbr_run.py", line 218, in run_item
+    Mg, zg, gd = grad_forward(engine, c1, fF, n, counts, G, types, it, code_tok, comp)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/acupuncture/experiments/cache-native-bridge-record-v1-2026-11-03/nbr_run.py", line 153, in grad_forward
+    gr = torch.autograd.grad(M, [hk.eps[l] for l in G])
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/miniconda/envs/amic-q3/lib/python3.11/site-packages/torch/autograd/__init__.py", line 496, in grad
+    result = _engine_run_backward(
+             ^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/miniconda/envs/amic-q3/lib/python3.11/site-packages/torch/autograd/graph.py", line 823, in _engine_run_backward
+    return Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: one of the variables needed for gradient computation has been modified by an inplace operation: [torch.cuda.FloatTensor [1, 32, 128, 128]], which is output 0 of torch::autograd::CopyBackwards, is at version 1; expected version 0 instead. Hint: enable anomaly detection to find the operation that failed to compute its gradient, with torch.autograd.set_detect_anomaly(True).
