@@ -1,5 +1,8 @@
 # 项目文档目录
 
+**2026-11-03｜CGV V2已交付，替代V1执行设计，未运行。** [方案V2](cache-chain-generalization-plan-v2-2026-11-03.zh-CN.md) · [作者自查](cache-chain-generalization-self-check-v2-2026-11-03.zh-CN.md)。新场景优先；G1固定L12/C3621；G3-C及指定G2子组加入实际写入Δk范数匹配的随机主动对照；G3-T只复核端点。连续结果与未到达/未测分报，阈值只分流，不作机制成立标签。首批全展开2799条名义自然轨迹，工程和预检另计；不设固定GPU小时上限。原V1及并行NVB方案保留，工程验收待完成。
+
+
 **2026-11-03｜NVB-01 v2 已定稿并授权上卡：** [v2 方案与自查](cache-native-bridge-plan-v2-2026-11-03.zh-CN.md)把主比较移到原生一侧（保留原生 t1 输出及非 S 缓存，只把留存状态中的 v 换成 LVK 局部 v1），加匹配随机族 K=19（有限样本秩比较，结论只限该族），判读表不强行三分类。合同与代码：[`experiments/cache-native-bridge-v1-2026-11-03/`](../experiments/cache-native-bridge-v1-2026-11-03/CONTRACT.zh-CN.md)；CPU 测试 9/9、就绪检查通过；总上限 1.5 GPUh。结果另报。
 
 **2026-11-03｜缓存机制线三项待办，先推进原生连接：** [To-do](cache-mechanism-todo.zh-CN.md)按原生连接、入口形成、目标相关特征依次推进；[NVB-01 第一轮方案与自查](cache-native-bridge-plan-v1-2026-11-03.zh-CN.md)从同一 T 出发拆分 t1 局部 v 的当前输出与留存状态用途，四个新条件加四个 LVK 参照。仅完成作者逻辑自查；未实现、未运行，无新 GPU 授权。
