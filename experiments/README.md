@@ -1,6 +1,7 @@
 # 实验目录：按研究问题查找
 
 - [DIV-01 第零步 4B L0 阈值附近同范数分裂普查](div01-threshold-split-survey-v1-2026-11-03/REPORT.zh-CN.md)（2026-11-03）：20 通道×{0.5,0.75}×8 题，只生成；够数闸 FAIL（0.5 STOP 5／CLEAN 0，0.75 全 STOP）；EOS 阈值全落在 0.5–0.75；复现闸 16/16。
+- [NPC-01 V、S、KV 两两组合的反向移植](cache-native-pair-combination-v1-2026-11-03/CONTRACT.zh-CN.md)（2026-11-03）：C 接收，换入两针 T 的 S+V、S+KV、V+KV；逐条最小致错组合；探索性。
 - [NQK-01 联合损伤中漏测的 q/k 历史](cache-native-qk-history-v1-2026-11-03/CONTRACT.zh-CN.md)（2026-11-03）：C 接收，换入两针 T 的卷积 q/k 历史（CQK）或 V+S+KV（CVSK）；与 NSR-01 的 CJ/T 逐条配对；探索性。
 - [NSR-01 受损深层 S 的反向移植](cache-native-s-reverse-v1-2026-11-03/CONTRACT.zh-CN.md)（2026-11-03）：C 为接收者，换入两针 T 的 S/V/KV/全部深层，加跨输入 S 参照 CSx；主读数自然完整回答与异常类型；探索性。
 - [NCC-01 L0/L12 原生深层缓存承载比较](cache-native-carrier-comparison-v1-2026-11-03/CONTRACT.zh-CN.md)（2026-11-03）：τ 在最后提示 token 前；T/TV/TS/TK/TJ × 两针＋共享 C；主读数自然完整回答；探索性。
