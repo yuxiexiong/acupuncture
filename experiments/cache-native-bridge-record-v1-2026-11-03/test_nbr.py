@@ -83,6 +83,32 @@ class Core(unittest.TestCase):
         self.assertEqual(float(h1.detach()), float(torch.sin(x)))           # values unchanged by zero leaves
 
 
+class GradPath(unittest.TestCase):
+    def test_inplace_cache_write_after_read(self):
+        """Real torch kernel with the CapHook private-copy rule: backward works after the cache is overwritten in place and the output value
+        is unchanged.  (The failure itself only appears on the model path; it is reproduced by readiness/grad_smoke.py, not here.)"""
+        import torch
+        import nbr_run as R
+        QM = R.gdn_module()
+        orig = QM.torch_recurrent_gated_delta_rule
+        g = torch.Generator().manual_seed(3)
+        q, k, v = [torch.randn(1, 1, 4, 16, generator=g) for _ in range(3)]
+        gg, b = -torch.rand(1, 1, 4, generator=g), torch.rand(1, 1, 4, generator=g)
+        def run(private):
+            cache = torch.randn(1, 4, 16, 16, generator=torch.Generator().manual_seed(5))
+            qq = q.clone().requires_grad_(True)
+            st = cache.detach().clone() if private else cache
+            o, S = orig(qq, k, v, g=gg, beta=b, initial_state=st, output_final_state=True, use_qk_l2norm_in_kernel=True)
+            cache.copy_(S.detach())                                        # cache update in place
+            (gq,) = torch.autograd.grad(o.sum(), [qq])
+            return o.detach(), gq
+        cache0 = torch.randn(1, 4, 16, 16, generator=torch.Generator().manual_seed(5))
+        o1, g1 = run(True)
+        o2, _ = orig(q, k, v, g=gg, beta=b, initial_state=cache0.clone(), output_final_state=True, use_qk_l2norm_in_kernel=True)
+        self.assertTrue(torch.equal(o1, o2))
+        self.assertTrue(torch.isfinite(g1).all())
+
+
 class Wiring(unittest.TestCase):
     def test_budget(self):
         import nbr_run as R

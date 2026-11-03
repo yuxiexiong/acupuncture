@@ -97,10 +97,11 @@ class CapHook:
         self.model, self.G, self.mode = model, tuple(G), mode
         self.QM = gdn_module()
         self.orig = self.QM.torch_recurrent_gated_delta_rule
+        self.orig_c = self.QM.causal_conv1d_update
         self.layer, self.handles, self.calls, self.inp, self.out, self.eps = None, [], [], {}, {}, {}
 
     def __enter__(self):
-        assert self.QM.torch_recurrent_gated_delta_rule is self.orig
+        assert self.QM.torch_recurrent_gated_delta_rule is self.orig and self.QM.causal_conv1d_update is self.orig_c
         for i, lay in enumerate(L.model_layers(self.model)):
             la = getattr(lay, 'linear_attn', None)
             if la is not None:
@@ -110,6 +111,9 @@ class CapHook:
         me = self
 
         def kern(query, key, value, g=None, beta=None, initial_state=None, output_final_state=False, use_qk_l2norm_in_kernel=False, **kw):
+            if me.mode == 'grad' and initial_state is not None:
+                # the cache later overwrites its state tensor in place; give autograd a private copy (DEVIATIONS D1)
+                initial_state = initial_state.detach().clone()
             o, S = me.orig(query, key, value, g=g, beta=beta, initial_state=initial_state, output_final_state=output_final_state,
                            use_qk_l2norm_in_kernel=use_qk_l2norm_in_kernel, **kw)
             if me.layer not in me.G:
@@ -125,10 +129,15 @@ class CapHook:
             me.eps[me.layer] = e
             return o + e, S
         self.QM.torch_recurrent_gated_delta_rule = kern
+        if self.mode == 'grad':
+            def conv(hidden_states, conv_state, weight, bias=None, activation=None):
+                return me.orig_c(hidden_states, conv_state.detach().clone(), weight, bias, activation)
+            self.QM.causal_conv1d_update = conv
         return self
 
     def __exit__(self, *exc):
         self.QM.torch_recurrent_gated_delta_rule = self.orig
+        self.QM.causal_conv1d_update = self.orig_c
         for h in self.handles:
             h.remove()
         self.handles = []
@@ -152,7 +161,7 @@ def grad_forward(engine, cache, tok, n, counts, G, types, it, code_tok, comp):
             M = z[code_tok[it['target']]] - z[code_tok[comp]]
             gr = torch.autograd.grad(M, [hk.eps[l] for l in G])
     hk.check()
-    assert gdn_module().torch_recurrent_gated_delta_rule is KRDR.QHOOK_ORIG[0]
+    assert gdn_module().torch_recurrent_gated_delta_rule is KRDR.QHOOK_ORIG[0] and gdn_module().causal_conv1d_update is hk.orig_c
     F.assert_no_hooks(engine.model)
     counts['decode_forwards'] += 1
     counts['grad'] += 1
