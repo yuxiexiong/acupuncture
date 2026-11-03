@@ -69,21 +69,62 @@ def editor_turn(prompt, out, cwd, thread=None):
 
 class Remote:
     def __init__(self,cfg,out):
-        cmd=['ssh','-o','ConnectTimeout=20','-o','ServerAliveInterval=15',cfg['ssh_host'],
+        self.cfg=cfg;self.out=out;self.proc=None
+        self.ssh=['ssh','-o','ConnectTimeout=20','-o','ServerAliveInterval=15',
+                  '-o','ControlMaster=auto','-o','ControlPath=/tmp/acupuncture-wsp-fleet-%C',
+                  '-o','ControlPersist=600',cfg['ssh_host']]
+        self.cmd=self.ssh+[
              shlex.join(['sh',cfg['server_code']+'/server_env.sh',cfg['server_code']+'/broker.py','--config',cfg['server_config']])]
         self.log=open(out/'ssh.stderr.txt','a')
-        self.proc=subprocess.Popen(cmd,stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=self.log,text=True,bufsize=1)
+    def reconcile(self,action):
+        """Read an already durable response; never dispatch an uncertain action again."""
+        code='''import json,hashlib,fcntl,sys
+from pathlib import Path
+cfg=json.loads(Path(sys.argv[1]).read_text());r=Path(cfg['run_root']);a=json.loads(sys.argv[2]);p=r/'actions'/a['id'];busy=False
+if (r/'broker.lock').exists():
+ with (r/'broker.lock').open('a') as f:
+  try:fcntl.flock(f,fcntl.LOCK_EX|fcntl.LOCK_NB)
+  except BlockingIOError:busy=True
+if (p/'response.json').exists():
+ assert (p/'request.sha256').read_text()==hashlib.sha256(json.dumps(a,sort_keys=True).encode()).hexdigest(),'ACTION_IDENTITY_MISMATCH'
+ print(json.dumps(dict(busy=busy,result=json.loads((p/'response.json').read_text()))))
+else:print(json.dumps(dict(busy=busy,result=None)))'''
+        deadline=time.monotonic()+7200
+        while time.monotonic()<deadline:
+            p=subprocess.run(self.ssh+[shlex.join(['python3','-c',code,self.cfg['server_config'],json.dumps(action)])],capture_output=True,text=True,timeout=40)
+            if p.returncode==255:time.sleep(5);continue
+            if p.returncode:raise RuntimeError('RECONCILIATION_FAILED: '+p.stderr[-2000:])
+            value=json.loads(p.stdout)
+            if value['busy']:time.sleep(5);continue
+            if value['result'] is None:raise RuntimeError('INCOMPLETE_ACTION: no saved result; do not replay')
+            result=value['result']
+            if result.get('id')!=action['id']:raise RuntimeError('Saved response identity mismatch')
+            result['transport_reconnected']=True
+            (self.out/('reconciled-'+action['id']+'.json')).write_text(json.dumps(result,indent=2))
+            return result
+        raise RuntimeError('TRANSPORT_RECOVERY_EXPIRED: uncertain action preserved')
     def call(self,action):
-        self.proc.stdin.write(json.dumps(action)+'\n'); self.proc.stdin.flush()
-        line=self.proc.stdout.readline()
-        if not line: raise RuntimeError('SSH broker disconnected; do not retry pending action automatically')
+        if self.proc is None:
+            self.proc=subprocess.Popen(self.cmd,stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=self.log,text=True,bufsize=1)
+        try:
+            self.proc.stdin.write(json.dumps(action)+'\n'); self.proc.stdin.flush()
+            line=self.proc.stdout.readline()
+        except (BrokenPipeError,OSError):line=''
+        if not line:
+            self.disconnect()
+            return self.reconcile(action)
         result=json.loads(line)
         if result.get('id')!=action['id']: raise RuntimeError('Broker response identity mismatch')
         return result
-    def close(self):
-        self.proc.stdin.close()
+    def disconnect(self):
+        if self.proc is None:return
+        try:self.proc.stdin.close()
+        except (BrokenPipeError,OSError):pass
         try: self.proc.wait(timeout=30)
         except subprocess.TimeoutExpired: self.proc.terminate(); self.proc.wait(timeout=10)
+        self.proc=None
+    def close(self):
+        self.disconnect()
         self.log.close()
 
 
@@ -101,13 +142,28 @@ def main():
     ap=argparse.ArgumentParser(); ap.add_argument('--config',required=True); ap.add_argument('--check',action='store_true')
     args=ap.parse_args(); cfg=json.loads(Path(args.config).read_text()); authorize(cfg)
     if args.check: print('CONFIG_GATE_OK'); return
-    out=Path(cfg['local_run_root']); out.mkdir(parents=True,exist_ok=False)
-    (out/'config.json').write_text(json.dumps(cfg,indent=2))
+    out=Path(cfg['local_run_root']);resume=cfg.get('resume_completed_turn',0)
+    if resume:
+        original=json.loads((out/'config.json').read_text())
+        if original!={k:v for k,v in cfg.items() if k!='resume_completed_turn'}:raise ValueError('RESUME_CONFIG_CHANGED')
+        if any(out.glob(f'turn-{resume+1:03d}')):raise ValueError('NEXT_TURN_ALREADY_EXISTS')
+    else:
+        out.mkdir(parents=True,exist_ok=False)
+        (out/'config.json').write_text(json.dumps(cfg,indent=2))
     cwd=Path(tempfile.mkdtemp(prefix='wsp-clean-editor-'))
     remote=Remote(cfg,out); thread=None; previous=''; successes=0; nudges=0
     initial=ENGINEERING if cfg['mode']=='engineering' else Path(cfg['initial_prompt']).read_text()
     try:
-        for turn in range(1,cfg['turn_limit']+1):
+        if resume:
+            d=out/f'turn-{resume:03d}'
+            if (d/'tool_result.json').exists():raise ValueError('RESUME_RESULT_ALREADY_DELIVERED')
+            action=parse_action((d/'reply.txt').read_text(),explanations=resume>=29);action['id']=d.name
+            response=remote.reconcile(action)
+            (d/'tool_result.json').write_text(json.dumps(response,indent=2))
+            thread=json.loads((d/'receipt.json').read_text())['thread'];successes=response['state']['forward_success']
+            previous='Transport recovered from a saved completed result, without rerunning the action. Python kernel variables are lost; /work files persist.\n'+response['editor_output']
+            previous+=f'\nSuccessful forward passes: {successes}; Python calls: {response["state"]["python_attempts"]}.'
+        for turn in range(resume+1,cfg['turn_limit']+1):
             prompt=initial if turn==1 else previous
             if cfg['mode']=='search':
                 if turn==29: prompt+='\n[note from the experimenters: a new instruction for the rest of the session]\n'+EXPLAIN
@@ -145,6 +201,7 @@ def main():
             (out/f'turn-{turn:03d}'/'tool_result.json').write_text(json.dumps(response,indent=2))
             successes=response['state']['forward_success']
             previous=response['editor_output']
+            if response.get('transport_reconnected'):previous='Transport recovered without rerunning the action. Python kernel variables are lost; /work files persist.\n'+previous
             if response.get('kernel_restarted'): previous='Python kernel (re)started: variables from a previous kernel are lost; /work files persist.\n'+previous
             previous+=f'\nSuccessful forward passes: {successes}; Python calls: {response["state"]["python_attempts"]}.'
             if any(x in previous for x in ('GPU_BUSY','STORAGE_LOW','INCOMPLETE_ACTION','budget exhausted','safety limit')): raise RuntimeError(previous)
