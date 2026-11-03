@@ -1,5 +1,7 @@
 # 项目文档目录
 
+**2026-11-03｜保留海盗角色、修复任务能力（讨论稿，未运行）：** [简短 proposal 与作者自查](pirate-persona-capability-repair-mini-proposal-2026-11-03.zh-CN.md)。核对既有五题角色/跑题表现，拟借鉴WSP搜索局部修复，同时衡量数学、文字、逻辑任务及角色保持；不预设广泛能力损失。执行合同与预算未冻结，无模型/GPU授权。
+
 **2026-11-03｜Weight-Space Programming 原始方法与当前资产对照：** [核查报告](literature/weight-space-programming-acupuncture-2026-11-03.zh-CN.md) · [来源清单](literature/weight-space-programming-sources-2026-11-03.json)。先核对最新 KUC/NVW 与 LVK 状态，再读公开代码、搜索日志和补丁；区分稀疏权重修复、条件性计算解释与跨模型迁移。此次仅资料核查，无模型/GPU运行。
 
 **2026-11-03｜KUC/NVW 已完成；LVK-01 下一阶段计划已自查，未运行。** [局部v×写入k计划](cache-local-v-k-plan-v1-2026-11-03.zh-CN.md)与[作者自查](cache-local-v-k-self-check-v1-2026-11-03.zh-CN.md)：KUC支持V已恢复背景下的t1写入项作用；NVW确认其强背景依赖，原生完整交付未达多场景改善（N1210有0→1/48）。下一轮固定T背景四格及同六场景48条新输入，检验局部v替换能否复现增强；只做R家族，旧参照复用，拟2544自然轨迹、总硬上限1.8 GPUh。逻辑设计通过，文本已冻结，分词/实现/模型数值验收待完成，无本轮运行授权或新模型调用。下方“未运行”条目为历史交付状态。
