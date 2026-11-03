@@ -1,6 +1,6 @@
 # 项目文档目录
 
-**2026-11-03｜SIT-01 写入增量跨输出背景转移：已冻结上卡（取代 SDT-01，SDT 不执行）。** [方案](cache-state-increment-transfer-v1-2026-11-03/PLAN.zh-CN.md)／[自查](cache-state-increment-transfer-v1-2026-11-03/SELF_CHECK.zh-CN.md)／[Nugget](cache-state-increment-transfer-v1-2026-11-03/NUGGET.zh-CN.md)；[合同 r01](../experiments/cache-state-increment-transfer-v1-2026-11-03/CONTRACT.zh-CN.md)。全部 14 个 G 层，t1 后把留存增量 ΔS 在原生/恢复输出背景间双向移植，保留接收基底；复用 NVB 八格，新增四格；只报连续值（A0、A1、相对 DS1−DS0 的描述性比例），NBR 一阶投影作带条件参照。CPU 测试 13/13、真实模型冒烟闸门通过；上限 1.5 GPUh。结果另报。
+**2026-11-03｜SIT-01 结果：恢复背景产生的留存增量能跨输出背景起作用（幅度与方向未分开）。** [报告](../experiments/cache-state-increment-transfer-v1-2026-11-03/REPORT.zh-CN.md)；[合同 r01](../experiments/cache-state-increment-transfer-v1-2026-11-03/CONTRACT.zh-CN.md)；[方案](cache-state-increment-transfer-v1-2026-11-03/PLAN.zh-CN.md)（取代 SDT-01，SDT 未执行）。三个缺口方向：恢复来源增量移入原生输出背景，k 条件效应 +0.53～+0.76（G=DS1−DS0 的 0.40～0.57）；在恢复背景换回原生来源，损失 0.74～1.55（G 的 0.77～0.83），N4146 完整回答差分少 17 条；均为 6/6 场景、32/32 输入同号。深层（≥20 层）增量范数相差 1.5～3 倍，本轮不能区分幅度与方向；原生一侧 t1 已停，Y 无信息；C1343 模式不同。0.35 GPUh，工程闸门全过，无偏离。
 
 **2026-11-03｜SDT-01状态差移植方案已交付，未运行：** [方案与自查](cache-state-delta-transfer-plan-v1-2026-11-03.zh-CN.md)。基于NBR固定状态/读者/梯度后的离线更正，保留接收者基底，只换留存状态差；16–22层双向、24–30层正向，6新格+8旧参照，拟总上限1.5 GPUh。作者逻辑自查通过，工程验收待完成，无新模型运行授权。
 
