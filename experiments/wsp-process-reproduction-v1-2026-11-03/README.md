@@ -1,5 +1,8 @@
 # WSP 双模型过程复现：工程准备与验收
 
+**工程收尾 r2｜2026-11-03：** 0.8B、4B 接口/合成编辑验收及 Astra→SSH→隔离内核→前向完整链路已通过；CPU 超时恢复、最终快照和 checkpoint 重建也已验证。[收尾报告与原始证据](engineering-r2/README.zh-CN.md)、[正式预算与启动清单](engineering-r2/STARTUP.zh-CN.md)。**两场正式搜索仍为 0/50，两端启动配置关闭。** 当前磁盘不足正式门槛，等待用户决定预算/存储与启动；下方为原工程检查点历史。
+
+
 2026-11-03，第二个工程检查点。用户要求依次推进，并选择等现有任务结束后使用空闲 GPU。**正式自主搜索与最终评测均未启动。** 本页更新工程状态；旧计划和失败收据保留。
 
 设计沿用 [v1 完整计划](../../docs/wsp-process-reproduction-v1-2026-11-03.zh-CN.md)、[v1 自查](../../docs/wsp-process-reproduction-self-check-v1-2026-11-03.zh-CN.md)及 [0.8B＋4B v2 增补](../../docs/wsp-process-reproduction-0p8b-4b-v2-2026-11-03.zh-CN.md)。工程检查不构成科学结果或完整运行器验收。
