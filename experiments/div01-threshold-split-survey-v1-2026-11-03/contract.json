@@ -1,0 +1,20 @@
+{
+  "experiment": "div01-threshold-split-survey-v1-2026-11-03",
+  "purpose": "Find, on Qwen3.5-4B layer 0 at equal write norm, >=3 STOP channels and >=3 CLEAN channels at the same dose, as the paired control for DIV-01. Generation only.",
+  "model": "4b (Qwen3.5-4B 851bf6e), frozen dose-survey hook (down_proj pre-hook, offset = dose*m/||W_down[:,n]||, prompt and all generated positions)",
+  "layer": 0,
+  "intermediate_size": 9216,
+  "existing_channels": [1210, 1343, 2191, 3152, 3959, 4146, 6137, 6547, 6616, 8215],
+  "n_new_channels": 10,
+  "new_channel_seed": "acupuncture-div01-v1:4b:0",
+  "doses": [0.5, 0.75],
+  "questions": "layer-survey-toy-v1 Q01-Q08, same instruction, greedy, 128 new tokens, thinking disabled",
+  "replay_checks": "worker0 baseline x8 and worker1 N4146@0.5 x8 must bit-match archived token ids before main jobs; any mismatch aborts that worker",
+  "classification": "rubric.py (frozen): EOS=eos within 2 tokens; COLLAPSE=<=3 distinct ids in first 40; otherwise graded on Q01/Q02/Q04/Q07/Q08 keyword rubric (OK/WRONG), ungraded TEXT on Q03/Q05/Q06",
+  "channel_roles": "per (channel,dose): STOP if EOS>=6/8; CLEAN if all 8 are OK or ungraded TEXT; else OTHER",
+  "sufficiency_gate": "PASS if at one dose there are >=3 STOP and >=3 CLEAN channels. Dose chosen = the dose with larger min(#STOP,#CLEAN); tie -> 0.5. Channels already deep-dug in CFM (1210,1343,4146) may be used but are flagged.",
+  "stop_condition": "If gate fails at both doses: report and stop. No additional doses, channels, questions or layers in this run.",
+  "rehearsal": "rehearse.py on archived real records: baselines CLEAN (2b/4b/9b), STOP and OTHER both reachable; passed before freeze",
+  "pre_freeze_changes": ["truncated non-collapsed outputs are graded instead of auto-failing (4B N4146 @0.0625 Q08 baseline length 125 tokens)"],
+  "not_measured": "no deep states, no logits; the per-question pairing for DIV-01 A-stage is decided in its own card"
+}
