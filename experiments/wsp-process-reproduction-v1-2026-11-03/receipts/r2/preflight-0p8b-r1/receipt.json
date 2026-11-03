@@ -1,0 +1,28 @@
+{
+  "status": "failed",
+  "started_unix": 1793683432.4822874,
+  "model": "/workspace/acupuncture/external/wsp/text-Qwen3.5-0.8B",
+  "physical_gpu": 1,
+  "purpose": "engineering only; not a benchmark or search pass",
+  "runs": [],
+  "tokenizer_class": "Qwen2Tokenizer",
+  "tokenizer_backend_sha256": "c6ecb1542d338fb59a88f2f599f139dabc4c060e50034785d35ebea1647f8777",
+  "engine_args": {
+    "model": "/workspace/acupuncture/external/wsp/text-Qwen3.5-0.8B",
+    "tokenizer": "/workspace/acupuncture/external/wsp/text-Qwen3.5-0.8B",
+    "dtype": "bfloat16",
+    "trust_remote_code": false,
+    "tensor_parallel_size": 1,
+    "gpu_memory_utilization": 0.5,
+    "max_model_len": 65536,
+    "max_num_batched_tokens": 4096,
+    "max_num_seqs": 8,
+    "enforce_eager": true,
+    "enable_prefix_caching": false,
+    "seed": 1729
+  },
+  "stage": "engine_initialization",
+  "error": "Traceback (most recent call last):\n  File \"/tmp/wsp-gpu-generation-probe.py\", line 45, in main\n    llm = LLM(**engine_args)\n          ^^^^^^^^^^^^^^^^^^\n  File \"/workspace/acupuncture/.venv-wsp/lib/python3.11/site-packages/vllm/entrypoints/llm.py\", line 341, in __init__\n    self.llm_engine = LLMEngine.from_engine_args(\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/acupuncture/.venv-wsp/lib/python3.11/site-packages/vllm/v1/engine/llm_engine.py\", line 191, in from_engine_args\n    return cls(\n           ^^^^\n  File \"/workspace/acupuncture/.venv-wsp/lib/python3.11/site-packages/vllm/v1/engine/llm_engine.py\", line 116, in __init__\n    self.engine_core = EngineCoreClient.make_client(\n                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/acupuncture/.venv-wsp/lib/python3.11/site-packages/vllm/v1/engine/core_client.py\", line 129, in make_client\n    return SyncMPClient(\n           ^^^^^^^^^^^^^\n  File \"/workspace/acupuncture/.venv-wsp/lib/python3.11/site-packages/vllm/tracing/otel.py\", line 175, in sync_wrapper\n    return func(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/acupuncture/.venv-wsp/lib/python3.11/site-packages/vllm/v1/engine/core_client.py\", line 966, in __init__\n    super().__init__(\n  File \"/workspace/acupuncture/.venv-wsp/lib/python3.11/site-packages/vllm/v1/engine/core_client.py\", line 699, in __init__\n    with launch_core_engines(\n  File \"/workspace/miniconda/envs/gqa/lib/python3.11/contextlib.py\", line 144, in __exit__\n    next(self.gen)\n  File \"/workspace/acupuncture/.venv-wsp/lib/python3.11/site-packages/vllm/v1/engine/utils.py\", line 1393, in launch_core_engines\n    wait_for_engine_startup(\n  File \"/workspace/acupuncture/.venv-wsp/lib/python3.11/site-packages/vllm/v1/engine/utils.py\", line 1473, in wait_for_engine_startup\n    raise RuntimeError(\nRuntimeError: Engine core initialization failed. See root cause above. Failed core proc(s): {}\n",
+  "wall_seconds": 57.75820279121399,
+  "process_exit_code": 1
+}

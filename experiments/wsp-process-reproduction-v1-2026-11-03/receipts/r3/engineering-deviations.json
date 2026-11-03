@@ -1,0 +1,50 @@
+{
+  "scope": "engineering observations; not search findings",
+  "failures": [
+    {
+      "stage": "4B text export r1",
+      "finding": "Raw AutoTokenizer resolves Qwen3_5Tokenizer; text config resolves Qwen2Tokenizer; two short fixtures masked backend differences",
+      "action": "Separate r2 export explicitly preserves raw tokenizer class and validates complete serialized backend and template; no r1 overwrite"
+    },
+    {
+      "stage": "0.8B GPU r1",
+      "finding": "FlashInfer sampling initialization failed because nvcc path was not configured",
+      "wall_seconds": 57.7582,
+      "generated_answers": 0
+    },
+    {
+      "stage": "sampling compile after CUDA_HOME was set",
+      "finding": "nvcc/crt/nvvm 13.4.92 incompatible with CUDA runtime 13.0.96 headers",
+      "action": "Pin compiler components to 13.0.88 using installed cuda-toolkit 13.0.3.0 requirements; never patch compiler header guard"
+    },
+    {
+      "stage": "official precompiled kernels download",
+      "finding": "Server connection to GitHub release wheel timed out",
+      "action": "Retain failure log; compile local SM90a sampler with no GPU exposed"
+    },
+    {
+      "stage": "CUDA compiler package download",
+      "finding": "Server downloads remained slow; interrupted only our installer",
+      "action": "Official PyPI wheels downloaded locally, SHA256 verified locally and on server, then installed offline"
+    },
+    {
+      "stage": "CPU sampling compile r2",
+      "finding": "CUDA compilation completed; linker could not find -lcudart because NVIDIA wheel places versioned runtime in cu13/lib and FlashInfer searches lib64",
+      "wall_seconds": 73.42127537727356,
+      "gpu_visible": false,
+      "action": "WSP-local linker directory with libcudart.so and libcuda.so symlinks to installed runtime/compat libraries; pass LIBRARY_PATH explicitly; no system/library source modifications"
+    }
+  ],
+  "remaining_unknowns": [
+    "Author harness, forward engine and validator implementation are unpublished",
+    "Full generation activation alignment and tensor dtypes are not yet established from public records",
+    "Full search controller, forward service, numerical checks and measured formal resource caps are incomplete"
+  ],
+  "budget_accounting": {
+    "basis": "one GPU; shared import 8.9613 s; initial 0.8B failed probe 57.7582 s; reserve additional 60 s for initialization diagnostics not fully timed",
+    "conservative_prior_0p8b_seconds": 126.7195,
+    "queued_per_model_timeout_seconds": 600,
+    "cleanup_grace_seconds": 15,
+    "per_model_preparation_cap_seconds": 1800
+  }
+}
