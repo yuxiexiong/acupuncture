@@ -4,7 +4,7 @@
 
 **2026-11-03｜WSP 编程扩展 WCP-01（仅方案，未运行）：** [0.8B / 4B 独立痛点诊断与稀疏干预](wsp-coding-painpoint-v1-2026-11-03/PLAN.zh-CN.md)｜[完整设计自查](wsp-coding-painpoint-v1-2026-11-03/SELF_CHECK.zh-CN.md)｜[预算](wsp-coding-painpoint-v1-2026-11-03/BUDGET.json)。Python 函数任务，MBPP 开发、HumanEval+ 独立终验；最多12个候选，含随机/反号及原版非思考对照。全流程停止线4/10 GPUh，包含终验。逻辑自查通过，工程待验收；本轮0模型/GPU，数学50-pass与编程搜索均未启动。
 
-**2026-11-03｜NPC-01 结果：L12 没有任何两两组合致错（改坏的 18 条都需要 V、S、KV 三块）；L0 有 18/48 条在含 S 的两块（主要 S＋KV）时就出错，形态是选第一个编号，V＋KV 从不致错。** [报告](../experiments/cache-native-pair-combination-v1-2026-11-03/REPORT.zh-CN.md)。C 为接收者：L0 的 S＋V 45、S＋KV 32、V＋KV 48；L12 三者均 48。逐条最小组合：L0 为两块 18（S＋KV 15、S＋V 2、两者 1）、三块 28、未致错 2；L12 为三块 18、未致错 30。两两组合的错误类型与联合受损不同。约 0.14 GPUh，无偏离。
+**2026-11-03｜NPC-01 结果：L12 没有任何两两组合致错（q/k 保持干净的本轮条件下，18 条错误只有三块同时换入才出现）；L0 有 18/48 条在含 S 的两块时就出错（其中 S＋KV 的 16 条选第一个编号，2 条 S＋V 复述列表）；V＋KV 从不致错，已测组合内受损 S 是必要组成条件但单独不足。** [报告](../experiments/cache-native-pair-combination-v1-2026-11-03/REPORT.zh-CN.md)。C 为接收者：L0 的 S＋V 45、S＋KV 32、V＋KV 48；L12 三者均 48。逐条最小组合：L0 为两块 18（S＋KV 15、S＋V 2、两者 1）、三块 28、未致错 2；L12 为三块 18、未致错 30。两两组合的错误类型与联合受损不同。约 0.14 GPUh，无偏离。
 
 **2026-11-03｜NPC-01 方案（设计，未冻结、无 GPU 授权）：V、S、KV 两两组合的反向移植。** [方案](cache-native-pair-combination-v1-2026-11-03/PLAN.zh-CN.md)。干净接收者中换入受损的 S+V、S+KV、V+KV（每针 3 格），与单组、V+S+KV、全部深层逐条配对；回答“最少哪两块一起受损就致错、S 是否必须在场”。估计 0.2 GPUh。
 
