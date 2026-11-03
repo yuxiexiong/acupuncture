@@ -138,15 +138,34 @@ def authorize(cfg):
         raise ValueError('formal launch requires recorded approval and accepted engineering receipt')
 
 
+def accepted_editor_retry(out, turn, directory):
+    """Use one already accepted, identical retry; this function never calls the editor."""
+    original=out/f'turn-{turn:03d}';retry=Path(directory)
+    if (out/f'turn-{turn+1:03d}').exists() or any((original/name).exists() for name in ('reply.txt','tool_result.json','receipt.json')):
+        raise ValueError('EDITOR_RETRY_ALREADY_CONSUMED')
+    events=[json.loads(line) for line in (original/'events.jsonl').read_text().splitlines()]
+    if not any(e['type']=='turn.failed' for e in events):raise ValueError('NO_FAILED_EDITOR_TURN')
+    if (original/'prompt.txt').read_bytes()!=(retry/'prompt.txt').read_bytes():raise ValueError('RETRY_PROMPT_CHANGED')
+    receipt=json.loads((retry/'receipt.json').read_text())
+    if receipt['thread']!=json.loads((out/f'turn-{turn-1:03d}'/'receipt.json').read_text())['thread']:
+        raise ValueError('RETRY_THREAD_CHANGED')
+    if receipt['native_tool_events']!=0:raise ValueError('RETRY_USED_NATIVE_TOOLS')
+    reply=(retry/'reply.txt').read_text()
+    if parse_action(reply,explanations=turn>=29) is None:raise ValueError('RETRY_HAS_NO_ACTION')
+    return reply,dict(receipt,accepted_retry_directory=str(retry))
+
+
 def main():
     ap=argparse.ArgumentParser(); ap.add_argument('--config',required=True); ap.add_argument('--check',action='store_true')
     args=ap.parse_args(); cfg=json.loads(Path(args.config).read_text()); authorize(cfg)
     if args.check: print('CONFIG_GATE_OK'); return
-    out=Path(cfg['local_run_root']);resume=cfg.get('resume_completed_turn',0)
-    if resume:
+    out=Path(cfg['local_run_root']);resume=cfg.get('resume_completed_turn',0);editor_resume=cfg.get('resume_editor_turn',0)
+    if resume and editor_resume:raise ValueError('AMBIGUOUS_RESUME')
+    if resume or editor_resume:
         original=json.loads((out/'config.json').read_text())
-        if original!={k:v for k,v in cfg.items() if k!='resume_completed_turn'}:raise ValueError('RESUME_CONFIG_CHANGED')
-        if any(out.glob(f'turn-{resume+1:03d}')):raise ValueError('NEXT_TURN_ALREADY_EXISTS')
+        if original!={k:v for k,v in cfg.items() if k not in ('resume_completed_turn','resume_editor_turn','accepted_editor_retry')}:raise ValueError('RESUME_CONFIG_CHANGED')
+        if resume and any(out.glob(f'turn-{resume+1:03d}')):raise ValueError('NEXT_TURN_ALREADY_EXISTS')
+        if editor_resume:cached_reply,cached_receipt=accepted_editor_retry(out,editor_resume,cfg['accepted_editor_retry'])
     else:
         out.mkdir(parents=True,exist_ok=False)
         (out/'config.json').write_text(json.dumps(cfg,indent=2))
@@ -154,6 +173,10 @@ def main():
     remote=Remote(cfg,out); thread=None; previous=''; successes=0; nudges=0
     initial=ENGINEERING if cfg['mode']=='engineering' else Path(cfg['initial_prompt']).read_text()
     try:
+        if editor_resume:
+            thread=cached_receipt['thread']
+            response=json.loads((out/f'turn-{editor_resume-1:03d}'/'tool_result.json').read_text())
+            successes=response['state']['forward_success']
         if resume:
             d=out/f'turn-{resume:03d}'
             if (d/'tool_result.json').exists():raise ValueError('RESUME_RESULT_ALREADY_DELIVERED')
@@ -163,7 +186,7 @@ def main():
             thread=json.loads((d/'receipt.json').read_text())['thread'];successes=response['state']['forward_success']
             previous='Transport recovered from a saved completed result, without rerunning the action. Python kernel variables are lost; /work files persist.\n'+response['editor_output']
             previous+=f'\nSuccessful forward passes: {successes}; Python calls: {response["state"]["python_attempts"]}.'
-        for turn in range(resume+1,cfg['turn_limit']+1):
+        for turn in range(editor_resume or resume+1,cfg['turn_limit']+1):
             prompt=initial if turn==1 else previous
             if cfg['mode']=='search':
                 if turn==29: prompt+='\n[note from the experimenters: a new instruction for the rest of the session]\n'+EXPLAIN
@@ -177,7 +200,11 @@ def main():
                     context=remote.call({'id':f'context-{turn}','kind':'status'})
                     thread=None
                     prompt=initial+'\n'+EXPLAIN+'\nSESSION HANDOFF (your own notes and files):\n'+context['editor_output']+'\nLast tool result:\n'+previous
-            reply,thread=editor_turn(prompt,out/f'turn-{turn:03d}',cwd,thread)
+            if turn==editor_resume:
+                reply=cached_reply
+                (out/f'turn-{turn:03d}'/'reply.txt').write_text(reply)
+                (out/f'turn-{turn:03d}'/'receipt.json').write_text(json.dumps(cached_receipt,indent=2))
+            else:reply,thread=editor_turn(prompt,out/f'turn-{turn:03d}',cwd,thread)
             try: action=parse_action(reply,explanations=(cfg['mode']=='search' and turn>=29))
             except (ValueError,json.JSONDecodeError) as e:
                 previous='Invalid response: '+str(e); nudges+=1

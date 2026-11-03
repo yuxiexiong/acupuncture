@@ -1,0 +1,34 @@
+# 0.8B 编辑器恢复与 tokenizer 警告核对
+
+2026-11-04，北京时间。用户要求查清拒绝原因、正常恢复 0.8B，并核对 tokenizer 警告；随后明确选择当前车队继续、0.8B 补跑接队尾。
+
+## 编辑器拒绝：定位到轮次，不能定位到触发句子
+
+原会话 `01a1a235-4951-78c0-b0dc-5d50ec2d230e` 的 turn-006 返回 `Invalid prompt: your prompt was flagged as potentially violating our usage policy`。原始事件不含政策类别、触发片段或 request ID。该轮新增提示为 10047 字节：矩阵集中度、各层 RMS、一维参数范围、截断/完成样本的激活差异、披萨与工资算术的重复片段，以及调用计数。已检查 turn-001 至 006 可见提示与代码回复，没有输出原始词表。不能把某个片段、数字、输出截断或权重编辑任务中的任何一句断言为触发原因，也不能断言内容确实违规。
+
+核对可见请求为数学研究内容后，只做了一次人工原样重试：原模型 gpt-6-astra/max、原会话、字节相同的增量 prompt、原安全设置，未删改内容或更换模型/账户。它正常返回 teacher_forced 操作，native_tool_events=0。成功支持“拒绝不是稳定复现”，不证明后台根因；本地只能证明增量 prompt 字节相同，不能声称 CLI 封装后的整个请求字节相同。见 editor-diagnosis.json；原失败和成功记录在 original-editor-failure/ 与 editor-identical-retry/。没有加入自动循环重试政策拒绝的逻辑。
+
+## 恢复安排
+
+原 1/50 成功 pass、1019.3216847516596 GPU 秒、所有回答/激活/快照/日志保留。已接受的 turn-006 动作尚未执行。控制器增加消费这份已审阅回复的续接入口：核对原 prompt 字节、thread、零 native 工具及此前没有已消费动作，保留失败 events，再按原 action ID 执行新动作。原基线不重跑，预算不清零或扩大。
+
+用户选择队尾补跑，`resume_after_fleet.py` 等待 external/wsp-fleet-v2/state.json 进入终态，核对四项远端任务均退出后再启动。补跑状态为 external/wsp-fleet-v2/math-0p8b-recovery/state.json，启动观测为 waiting_for_fleet。“续接已准备并排队”不等于“第 2 pass 已完成”。原车队和补跑都需终态后才能收尾；每半小时汇报已同步更新。
+
+## tokenizer：4B 警告为配置元数据引起的误判
+
+实际 Transformers 版本 5.20.2。本地 `_patch_mistral_regex` 查看 config.json 中的 transformers_version；当前 4B 文本导出没有该字段，代码落入 mistral_config_detected=True 分支，即使 model_type 是 qwen3_5_text。默认 fix_mistral_regex=None 只报警，未应用 Mistral 预分词替换。该类误报在[上游问题 42591](https://github.com/huggingface/transformers/issues/42591)有记录，本次结论来自当前已安装源码与 CPU 实测。未给正在运行的模型加 fix_mistral_regex=True，也未改模型配置或依赖。
+
+CPU 验收见 tokenizer.json 与 ../../audit_tokenizer.py：
+
+|配置|正确参照|完整 backend/模板|已派发输入 token|已保存回答解码|
+|---|---|---|---|---|
+|4B r2|固定 revision 的 raw 原始模型|完全相同|192/192 相同|192/192 与参照及实际保存文本相同|
+|0.8B|作者冻结的 Qwen2 配置及官方 raw tokenizer.json|完全相同|128/128 相同|128/128 与参照及实际保存文本相同|
+
+额外 7 项含 Unicode 组合字符、数学标点、代码与 thinking 标记的样例均相同；默认加载与显式 fix_mistral_regex=False 的 backend 也相同。两模型 tokenizer.json 文件哈希均与原始文件相同。**当前警告没有改变本批分词/解码，不构成作废或重跑本批实验的理由。**
+
+边界：0.8B 按作者协议使用 Qwen2，不能称为当前 Transformers 自动加载 raw 多模态模型时默认 Qwen3_5Tokenizer 的完全复刻；两者 pre_tokenizer 和 added_tokens 不同。这是此前协议已记录的身份差异，本次未切换。首轮审计曾用 raw 上强制 Qwen2 作参照，added_tokens 不一致导致验收未通过；随后采用冻结作者配置的正确参照，失败与中间记录保留，未改被测分词器来通过检查。
+
+## 工程验收
+
+editor-retry-test.json 记录 6 项零 GPU 检查：变更提示拒绝、仅执行新动作、原会话与失败证据保留、已消费回复拒绝重复使用、等待队尾后检查空闲、忙碌阻止启动。transport-regression.json 记录此前两项断线恢复检查仍通过。除用户既有运行外，本次只加载 CPU tokenizer 及一次编辑器原样重试，无新增 GPU 测试，无模型权重、采样或数据变化。
