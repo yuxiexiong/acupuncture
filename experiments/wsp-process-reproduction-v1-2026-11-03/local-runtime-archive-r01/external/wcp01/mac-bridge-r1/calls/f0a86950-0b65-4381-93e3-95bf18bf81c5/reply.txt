@@ -1,0 +1,18 @@
+{
+  "annotations": [
+    {
+      "key": "fixture",
+      "sample": 1,
+      "labels": ["algorithm"],
+      "evidence": "def f(x): return x",
+      "reason": "The task requires x plus one, but the function returns x unchanged, producing 0 and 2 instead of 1 and 3 in the two failed tests."
+    }
+  ],
+  "rules": {
+    "constraint_boundary": "Label when concrete response text and failure evidence establish mishandling of an explicit constraint, limit, or boundary condition.",
+    "state_update": "Label when concrete response text and failure evidence establish an incorrect or missing update to state maintained across steps.",
+    "algorithm": "Label when concrete response text implements incorrect computational logic, as demonstrated by the task specification and failed tests.",
+    "reasoning_loop": "Label only when concrete response text shows repeated, unproductive reasoning cycles contributing to failure; length alone is insufficient.",
+    "other_unknown": "Label an incorrect response when the available specification, failed tests, and response text do not support a more specific diagnosis."
+  }
+}

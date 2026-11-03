@@ -1,0 +1,13 @@
+```python
+# Hypothesis: cut-off traces contain repetitive verification after a solution, separable from productive long reasoning.
+print("Sample keys:", list(g1[0]['samples'][0]))
+for r in g1:
+    s=r['samples'][0]
+    good=s.get('correct',s.get('grade'))
+    if not good:
+        print("\n",r['id'],"reference",r['answer'],{k:v for k,v in s.items() if k not in ['text','token_ids','tokens']})
+        t=s.get('text','')
+        print("Problem:",byid[r['id']]['problem'][:220])
+        print("Middle:",t[len(t)//2:len(t)//2+250].replace('\n',' '))
+        print("End:",t[-280:].replace('\n',' '))
+```

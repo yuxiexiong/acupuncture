@@ -1,0 +1,29 @@
+```python
+# Hypothesis: the unusually high cutoff rate reflects a recurrent thinking loop, not primarily missing mathematical knowledge.
+import os, json, math, random, re
+from pathlib import Path
+from collections import Counter, defaultdict
+import numpy as np
+import torch
+practice = {}
+by_source = {}
+for filename in ("gsm8k_train.jsonl", "math_train.jsonl", "aime.jsonl"):
+    rows = [json.loads(line) for line in open("/practice/" + filename)]
+    by_source[filename] = rows
+    practice.update({r["id"]: r for r in rows})
+diag = [json.loads(s) for s in open("/work/gen_1.jsonl")]
+print("Generation fields:", list(diag[0]))
+print("First record metadata:", {k:v for k,v in diag[0].items() if k not in ("text","prompt","response","generated_text","completion") and not isinstance(v, (list,dict))})
+idx = json.load(open("/work/gen_1_acts/index.json"))
+print("Activation index:", str(idx)[:1800])
+for i in [0,1,2,3,4,5,64,65,66,67]:
+    r = diag[i]
+    text = next((r[k] for k in ("text","response","generated_text","completion") if k in r), "")
+    print("\nSAMPLE", i, {k:r[k] for k in ("id","problem_id","correct","grade","num_tokens","finish_reason","answer","extracted_answer") if k in r})
+    print("START:", text[:290].replace("\n"," "))
+    print("MIDDLE:", text[len(text)//2:len(text)//2+290].replace("\n"," "))
+    print("END:", text[-290:].replace("\n"," "))
+print("All layer-23 tensor names:", [n for n in NAMES if ".layers.23." in n])
+with open("/work/notes.md","a") as f:
+    f.write("\n## Baseline pass 1\n128 problems (64 GSM8K,64 MATH); accuracy 10.94% (GSM 17.19%, MATH 4.69%), mean length 30080.7 tokens, cutoff 90.62%; 114 failed by cutoff, zero finished wrong/no-answer. Main target: thinking-loop failure.\n")
+```

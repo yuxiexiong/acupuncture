@@ -1,0 +1,41 @@
+```python
+# Hypothesis: loop-driving neurons amplify identical text on successive repetitions and are also elevated in natural loops.
+p2=Path('/work/fwd_2')
+print("Metadata:",(p2/'meta.json').read_text()[:1800])
+T2=np.load(p2/'input_ids.npy')
+def tids(s):
+    e=tok.encode(s,add_special_tokens=False)
+    return e.ids if hasattr(e,'ids') else list(e)
+def locations(row,phrase):
+    pat=tids(phrase)
+    return [i for i in range(len(row)-len(pat)+1) if list(row[i:i+len(pat)])==pat]
+starts=[locations(T2[0],"I'll write the response"),locations(T2[1],"Wait, let's check again")]
+print("Repeated-block starts:",starts)
+lens2=[390,367,374,334]
+loop_rank=[]
+tfstats={}
+natural_loops=np.array([ids.index(x) for x in ['math_train_prealgebra_593','math_train_precalculus_691','math_train_precalculus_519']])
+for l in range(32):
+    A=np.load(p2/f'mlp_act_{l}.npy',mmap_mode='r')
+    early=[]; late=[]; rms=[]
+    for b,st in enumerate(starts):
+        block=st[1]-st[0]
+        early.append(A[b,st[0]:st[0]+block].mean(0))
+        late.append(np.stack([A[b,q:q+block].mean(0) for q in st[3:5]]).mean(0))
+        rms.append(np.sqrt((A[b,st[0]:st[-1]]**2).mean(0)+1e-7))
+    early=np.stack(early);late=np.stack(late);rms=np.stack(rms)
+    # Same-sign amplification in both loops; no dependence on labels of easy vs hard questions.
+    amplification=(late-early)*np.sign(late)/(rms+1e-4)
+    amp=np.minimum(amplification[0],amplification[1])
+    if l not in D: D[l]=load_original(f'model.language_model.layers.{l}.mlp.down_proj.weight')
+    dn=D[l].norm(dim=0).numpy()
+    strength=np.minimum(np.abs(late[0]),np.abs(late[1]))*dn
+    rank=amp*np.sqrt(strength)
+    tfstats[l]=(early,late,rms,amp,strength)
+    for j in np.argsort(rank)[-6:][::-1]:
+        loop_rank.append((float(rank[j]),l,int(j),float(amp[j]),float(strength[j]),
+                          float(early[0,j]),float(late[0,j]),float(early[1,j]),float(late[1,j])))
+print("Concordant loop amplifiers: score, layer, neuron, standardized growth, output strength, early/late twice")
+for row in sorted(loop_rank,reverse=True)[:35]:
+    print(tuple(round(v,4) if isinstance(v,float) else v for v in row))
+```

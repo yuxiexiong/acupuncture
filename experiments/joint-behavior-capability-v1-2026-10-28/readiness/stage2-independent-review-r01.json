@@ -1,0 +1,241 @@
+{
+  "status": "reviewed_pending_stage1_final_verification",
+  "reviewer": "/root/joint_stage2_prelaunch_audit",
+  "model_assisted_independent": true,
+  "reviewed_at": "2026-10-28T15:10:31.053326+00:00",
+  "scope": "Read-only engineering and existing evidence audit, plus independent full-text review of four RL06 clean variants; not a substitute for all 96 clean reviews. Only this new review file is written.",
+  "freeze_sha256": "551887288790da0083527e9dc3d68179cf9fd7465eb9ec75abc46478c25d37ac",
+  "readiness_hashes_verified": true,
+  "engineering": {
+    "existing_authorization_covers_both_stages": true,
+    "new_user_confirmation_required": false,
+    "cpu_tests": 24,
+    "cpu_skipped": 0,
+    "preflight_verification": [
+      {
+        "status": "passed",
+        "mode": "preflight",
+        "gpu": 0,
+        "generated_records": 35
+      },
+      {
+        "status": "passed",
+        "mode": "preflight",
+        "gpu": 1,
+        "generated_records": 35
+      }
+    ],
+    "preflight_coverage_limit": "Four family specimens use clean/zero/AB0.5/AB1/restored; five random pairs at0.5/1 and AB at0.0625/0.125/0.25 tested on RD01. Random weak-dose combinations were not individually preflighted. Their configured path is shared and every formal write is audited.",
+    "stage2_reuses_same_freeze_preflight": true,
+    "stage2_only_new_conditions": 18,
+    "stage2_only_new_generations": 2160,
+    "stage1_not_regenerated": true,
+    "shared_calibration": "Stage2 recalibrates each unchanged reference and requires exact equality with the same worker stage1 calibration before collecting any formal record.",
+    "failure_policy": "No overwrite or semantic retry; duplicate output dirs rejected; hardware occupancy/lock checked; exceptions keep partials and receipts.",
+    "manual_checks_beyond_authorize": "authorize/verify_stage do not assert controller completion, process exit or delivery manifest; verify them explicitly and bind their final evidence SHA in gate."
+  },
+  "rl06_rows": [
+    {
+      "id": "RL06-f0-required",
+      "status": "reviewed",
+      "full_answer_read": true,
+      "prompt": "产品处理只有两个步骤：必须先检验，再包装。\n问题：哪个步骤后进行？\n请根据上述信息回答，可以简短说明。",
+      "choices": [
+        "检验后进行。",
+        "包装后进行。"
+      ],
+      "frozen_target_index": 1,
+      "content": "correct",
+      "reason": "明确以包装为第二步骤，与先检验再包装一致；后文重复顺序无冲突。",
+      "delivery": {
+        "end_reason": "eos_token",
+        "generated_token_count": 26,
+        "assessment": "complete; no refusal, truncation, loop or contradictory order observed"
+      },
+      "candidate_readout": {
+        "full_loglikelihood": [
+          -7.2873759269714355,
+          -9.873353004455566
+        ],
+        "preferred_index": 0,
+        "agrees_with_frozen_target": false,
+        "target_margin_nats": -2.585977077484131,
+        "first_content_token_logprobs": [
+          -3.4517197608947754,
+          -1.326719880104065
+        ],
+        "first_content_token_target_margin_nats": 2.1249998807907104,
+        "semantic_validity": "ambiguous_ellipsis; retain as fixed wording likelihood, not relational knowledge correctness"
+      },
+      "evidence": {
+        "path": "runs/survey-r01/worker-1/records/RL06-f0-required__clean.json",
+        "sha256": "651b89d3998570f7a1b5f05556a88c792071736ab909368ae802dd404b9125b7",
+        "quote": "根据描述，**包装**步骤是在**检验**之后进行的。",
+        "output_token_sha256": "e21734a750621ed51d9e01564b8d157fb94eae1c4a2b5c1e2c9554811740532c"
+      }
+    },
+    {
+      "id": "RL06-f0-direct",
+      "status": "reviewed",
+      "full_answer_read": true,
+      "prompt": "产品处理只有两个步骤：必须先检验，再包装。\n问题：哪个步骤后进行？\n已核对的正确结论是：包装后进行。\n请报告上述结论，可以简短说明。",
+      "choices": [
+        "检验后进行。",
+        "包装后进行。"
+      ],
+      "frozen_target_index": 1,
+      "content": "correct",
+      "reason": "明确以包装为第二步骤，结合题目给定结论作正确释义。",
+      "delivery": {
+        "end_reason": "eos_token",
+        "generated_token_count": 23,
+        "assessment": "complete; no refusal, truncation, loop or contradictory order observed"
+      },
+      "candidate_readout": {
+        "full_loglikelihood": [
+          -6.209870338439941,
+          -5.922760486602783
+        ],
+        "preferred_index": 1,
+        "agrees_with_frozen_target": true,
+        "target_margin_nats": 0.2871098518371582,
+        "first_content_token_logprobs": [
+          -4.0372419357299805,
+          -4.7872419357299805
+        ],
+        "first_content_token_target_margin_nats": -0.75,
+        "semantic_validity": "ambiguous_ellipsis; retain as fixed wording likelihood, not relational knowledge correctness"
+      },
+      "evidence": {
+        "path": "runs/survey-r01/worker-1/records/RL06-f0-direct__clean.json",
+        "sha256": "6b65cc7bca13de4c88b396e20703865e81a15362c8e0b87cf559615b9255a129",
+        "quote": "**包装**步骤是在**检验**之后进行的。",
+        "output_token_sha256": "329147f0ec9b0eed0f8234a07a2227b294753b90306ea873b384f6d9b74aca65"
+      }
+    },
+    {
+      "id": "RL06-f1-required",
+      "status": "reviewed",
+      "full_answer_read": true,
+      "prompt": "产品处理只有两个步骤：必须先包装，再检验。\n问题：哪个步骤后进行？\n请根据上述信息回答，可以简短说明。",
+      "choices": [
+        "检验后进行。",
+        "包装后进行。"
+      ],
+      "frozen_target_index": 0,
+      "content": "correct",
+      "reason": "事实反转后明确检验为第二步骤；后文重复顺序无冲突。",
+      "delivery": {
+        "end_reason": "eos_token",
+        "generated_token_count": 26,
+        "assessment": "complete; no refusal, truncation, loop or contradictory order observed"
+      },
+      "candidate_readout": {
+        "full_loglikelihood": [
+          -9.848570823669434,
+          -7.749488830566406
+        ],
+        "preferred_index": 1,
+        "agrees_with_frozen_target": false,
+        "target_margin_nats": -2.0990819931030273,
+        "first_content_token_logprobs": [
+          -1.7991911172866821,
+          -3.2991909980773926
+        ],
+        "first_content_token_target_margin_nats": 1.4999998807907104,
+        "semantic_validity": "ambiguous_ellipsis; retain as fixed wording likelihood, not relational knowledge correctness"
+      },
+      "evidence": {
+        "path": "runs/survey-r01/worker-1/records/RL06-f1-required__clean.json",
+        "sha256": "e482a2ce4b85859c41fb53f775ec802c4b03f85cdcafe3cbac740a71fe5c6168",
+        "quote": "根据描述，**检验**步骤是在**包装**之后进行的。",
+        "output_token_sha256": "238342e33fa6ac9724b0a8f7572dbe68cc4d5040f0cebc04177357c0102f42d6"
+      }
+    },
+    {
+      "id": "RL06-f1-direct",
+      "status": "reviewed",
+      "full_answer_read": true,
+      "prompt": "产品处理只有两个步骤：必须先包装，再检验。\n问题：哪个步骤后进行？\n已核对的正确结论是：检验后进行。\n请报告上述结论，可以简短说明。",
+      "choices": [
+        "检验后进行。",
+        "包装后进行。"
+      ],
+      "frozen_target_index": 0,
+      "content": "correct_with_awkward_frozen_phrase",
+      "reason": "解释指出检验是最后一步，事实跟踪正确；末句复用“检验后进行”仍有省略歧义，不能孤立按该短句评分。",
+      "delivery": {
+        "end_reason": "eos_token",
+        "generated_token_count": 33,
+        "assessment": "complete; no refusal, truncation, loop or contradictory order observed"
+      },
+      "candidate_readout": {
+        "full_loglikelihood": [
+          -3.5558042526245117,
+          -9.339454650878906
+        ],
+        "preferred_index": 0,
+        "agrees_with_frozen_target": true,
+        "target_margin_nats": 5.7836503982543945,
+        "first_content_token_logprobs": [
+          -3.134408712387085,
+          -6.696908950805664
+        ],
+        "first_content_token_target_margin_nats": 3.562500238418579,
+        "semantic_validity": "ambiguous_ellipsis; retain as fixed wording likelihood, not relational knowledge correctness"
+      },
+      "evidence": {
+        "path": "runs/survey-r01/worker-1/records/RL06-f1-direct__clean.json",
+        "sha256": "59bc2e73bada4c57d8b6d28c23bd18c5712c9cf1b15f1dccc51f70fa4bf5a511",
+        "quote": "**检验**步骤完成后，产品处理流程即告结束。",
+        "output_token_sha256": "e66e0069531a74810efada4f75bfbf1dacd87399d535f2ecbb55634f0d642f83"
+      }
+    }
+  ],
+  "rl06_assessment": {
+    "ambiguity": "“检验后进行/包装后进行” can mean that named step occurs later, or that an omitted subject occurs after that step. The second reading reverses the intended candidate meaning.",
+    "observed_required_pattern": "Both free responses correctly follow the changed sequence. Both first content tokens favor the frozen correct candidate, but the following 后进行 token changes the summed continuation preference. This is compatible with wording ambiguity; it does not establish which interpretation the model internally used.",
+    "direct_limit": "The direct prompt contains the exact frozen candidate phrase, so improved candidate agreement also reflects phrase priming; this base cannot establish processing-demand-specific damage.",
+    "scientific_blocker_for_whole_measurement": false,
+    "reason": "The base question and its full free answers remain interpretable. The contract already limits candidate scores to fixed wording preference and preserves disagreement. A localized ambiguity does not erase usable free-answer fact tracking or require removal of the family. This audit does not assert the remaining relation bases are already independently reviewed by this reviewer.",
+    "required_reporting_constraints": [
+      "Keep all four variants, both candidate scores, original target indices and original denominators. Do not exclude this base or relabel targets after seeing outputs.",
+      "Preserve existing mechanical correct field as agreement with the frozen target, not semantic knowledge correctness; annotate RL06 ambiguity whenever candidate results are interpreted.",
+      "Separate free answer content/fact tracking from fixed wording likelihood. Do not interpret candidate reversal as knowledge loss, or direct-required difference as a clean processing-demand effect.",
+      "Report the limitation and counterexample even if AB or weak doses look favorable; do not select a reader or metric to maximize an apparent benefit."
+    ]
+  },
+  "reading_identity_guard": {
+    "anonymous_id_collides_across_deliveries": true,
+    "cause": "delivery.anonymize derives ID only from seed and shuffled index, so stage1 and full exports reuse IDs for different sources.",
+    "required_handling": "Key readings by delivery directory plus anonymous ID. Lock observations before consulting the private key, then merge stage1/full observations by source_sha256/source_path; never by bare anonymous ID.",
+    "frozen_code_change_required": false
+  },
+  "conditional_recommendation": "Proceed with stage2 under existing authorization only after all pending stage1 final checks and the complete 96-clean measurement review pass; RL06 requires the stated interpretation limits but is not itself a whole-stage stop condition.",
+  "pending_before_launch": [
+    "Both formal worker receipts completed with exit0; target weight hashes unchanged and hooks removed.",
+    "Final controller completed, real worker/controller processes exited, and GPU memory released.",
+    "Remote and local verify-stage/full file-token-coverage validation; all1560 generation records and1248 candidate groups complete.",
+    "Complete export manifest and its files verified; source identities and counts match.",
+    "Relation-family32 and combined96 clean reviews completed with traceable evidence, limitations and actual measurement_usable judgment.",
+    "Write a separate stage2 gate binding independent fixtures, full clean review and all final verification/controller/exit/export evidence hashes; this review does not create or pass that gate."
+  ],
+  "evidence_hashes": {
+    "CONTRACT.zh-CN.md": "0cf8bd3810926e353b8db0fb49a1f98b19a005b2c0ba9bcb9a93f90ee1a5c168",
+    "contract.json": "a66a54af8a8d166c12cfb301e8c6ae97a5f7ba3b8c7eeb3de3a28bc364e024ae",
+    "experiment.py": "f499621649382069cc043ee0de984400c2320e242d55b7af65c27f6fe6e51e9c",
+    "joint_engine.py": "b33453b4a0b2bcf2b83ccc4b91c19c7f34b21fb376f3d7ddb94d94c0feb98fba",
+    "launch.py": "d9f4cd6fc28279d0c5da1075adb5eb6cab43f0829d9102711193cb3419238da5",
+    "delivery.py": "0df3977740c9cc086408d0d64059b77b7c4d508211a503fe838bc3401a0d6509",
+    "freeze.json": "551887288790da0083527e9dc3d68179cf9fd7465eb9ec75abc46478c25d37ac",
+    "readiness/authorization-r01.json": "5b66adeb35c69f88dd3c7e546f3507e4015ef0b71643944f0c314b54305a4582",
+    "readiness/cpu-receipt-r01.json": "d99f4c8477d47d5e03ed32240e026a72554fa6e99df888aa4d29f33de29b82a3",
+    "readiness/independent-data-review-r01.json": "033fa2d8d18f9d6337a816ba6d7c23b1c49810811286a264a25fb8c77e450675",
+    "readiness/clean-reading-family-review-r01.json": "574a323d857bac8a81f06b79772c43fdc3a039fb94801ff51e02ccb472ef510f",
+    "readiness/clean-arithmetic-family-review-r01.json": "f71a7071fc31ec0e1b2763844e3d208a9a80cd50ede887d3c8aedd5ed57a49a4",
+    "runs/preflight-r01/worker-0/receipt.json": "48dad1b899c5365946b40e0ef4d00aae6a5c7f088472c3f059e5bf4862e7d3b2",
+    "runs/preflight-r01/worker-0/preflight.json": "f062c865c0e1b5b0645b291daedf1720528bf4377480b26d46ee69aea85773a4",
+    "runs/preflight-r01/worker-1/receipt.json": "3a0e5295f91de71f1c6a2cb4c9b2d42966bdd1a32aec9d5cb68f4c7c5d7c3b13",
+    "runs/preflight-r01/worker-1/preflight.json": "06a0ff2844e637c6a32770326068b9e86847b48ede93706b7201cfaae6cade92"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "annotations": [
+    {
+      "key": "fixture",
+      "sample": 1,
+      "labels": ["algorithm"],
+      "evidence": "def f(x): return x",
+      "reason": "The function returns x unchanged instead of x+1, explaining both failed assertions: f(0)==1 and f(2)==3."
+    }
+  ],
+  "rules": {
+    "constraint_boundary": "Use when concrete response text and task/test evidence identify mishandling of an explicit constraint or boundary case, not merely an incorrect result.",
+    "state_update": "Use when concrete response text and task/test evidence identify missing or incorrect updates to maintained state.",
+    "algorithm": "Use when concrete response text implements an incorrect computation or procedure that explains the failed tests against the task specification.",
+    "reasoning_loop": "Use when concrete response text shows unproductive repetition or circular reasoning contributing to failure. Length alone is insufficient evidence.",
+    "other_unknown": "Use when a response is incorrect but the available task specification, failed tests, and response text do not support a specific diagnosis."
+  }
+}

@@ -1,0 +1,220 @@
+{
+  "schema": "joint-stage-timing-scenarios-v1",
+  "created_at": "2026-10-28T15:08:24.143835+00:00",
+  "snapshot_at": "2026-10-28T15:04:45.252984+00:00",
+  "snapshot_at_beijing": "2026-10-28T23:04:45.252984+08:00",
+  "snapshot_path": "monitoring/heartbeat-20261028T1504Z.json",
+  "snapshot_sha256": "edd4604bec1a6126de261f6d82c50e7c511e33dfbd42a7f1a2a20b23980fd9fe",
+  "freeze_sha256": "551887288790da0083527e9dc3d68179cf9fd7465eb9ec75abc46478c25d37ac",
+  "stage": "stage1",
+  "generation_denominator": 1560,
+  "verified_generations": 1439,
+  "verified_candidate_groups": 1248,
+  "candidate_group_denominator": 1248,
+  "method": {
+    "stage1": "For each worker, use only completed original questions with all13 conditions. Estimate each remaining item-condition by the same condition mean. All128 uses sum generation seconds / sum tokens from the same complete questions, plus measured per-record non-generation overhead. Max of two workers.",
+    "stage2": "Two explicit alternative length scenarios: (1) each input retains its observed clean length under each of18 weak conditions; missing clean original questions use mean of clean lengths in complete original questions on the same worker; (2) all2160 generations reach128. Hardware rate and score overhead use same worker, task family, stage1 intervened rows. These are not measured weak-dose behavior; no interpolation or safety factor. Add measured stage1 worker initialization to each scenario, list separately."
+  },
+  "workers": [
+    {
+      "gpu": 0,
+      "records": 705,
+      "source_coverage_sha256": "c952245cfd338089a6a5a0079caf12ddf5cb3ce2c3d598574bc4ae4e50ebf449",
+      "complete_open_base_ids": [
+        "Q01",
+        "Q03",
+        "Q05",
+        "Q07",
+        "Q09",
+        "Q11"
+      ],
+      "complete_open_records": 78,
+      "mean_seconds_by_condition": {
+        "clean": 7.775851405225694,
+        "AB_d0.5": 7.952363677633305,
+        "R01_d0.5": 7.942832924115161,
+        "R02_d0.5": 7.949844234002133,
+        "R03_d0.5": 7.937069047552844,
+        "R04_d0.5": 7.9528335416689515,
+        "R05_d0.5": 7.066236516460776,
+        "AB_d1": 6.957954617527624,
+        "R01_d1": 7.047266928789516,
+        "R02_d1": 5.864037646912038,
+        "R03_d1": 7.958236545634766,
+        "R04_d1": 7.954421292990446,
+        "R05_d1": 7.952093510578076
+      },
+      "generation_seconds_per_token_complete_open": 0.06200223207266969,
+      "extra_seconds_per_open": 0.0012951264014610876,
+      "remaining_records": 75,
+      "remaining_seconds": 566.1952033275738,
+      "remaining_all128_seconds": 595.3185623777385,
+      "finish": "2026-10-28T23:14:11.448187+08:00",
+      "all128_finish": "2026-10-28T23:14:40.571546+08:00",
+      "stage2": {
+        "weak_preflight": [
+          {
+            "item_id": "RD01-f0-required",
+            "condition": "AB_d0.0625",
+            "tokens": 20,
+            "seconds": 1.4854825679212809
+          },
+          {
+            "item_id": "RD01-f0-required",
+            "condition": "AB_d0.125",
+            "tokens": 28,
+            "seconds": 1.978774782270193
+          },
+          {
+            "item_id": "RD01-f0-required",
+            "condition": "AB_d0.25",
+            "tokens": 28,
+            "seconds": 1.976320968940854
+          }
+        ],
+        "preflight_path": "runs/preflight-r01/worker-0/preflight.json",
+        "preflight_sha256": "f062c865c0e1b5b0645b291daedf1720528bf4377480b26d46ee69aea85773a4",
+        "intervened_seconds_per_token_by_family": {
+          "reading": 0.062351143306265316,
+          "arithmetic": 0.062080605563605853,
+          "relation": 0.0622118486087961,
+          "open": 0.06210834210283227
+        },
+        "intervened_extra_seconds_by_family": {
+          "reading": 0.2007967781391926,
+          "arithmetic": 0.2036121194929971,
+          "relation": 0.20987525730743073,
+          "open": 0.0013024105715590554
+        },
+        "complete_open_clean_mean_tokens": 128,
+        "unobserved_open_clean_ids": [
+          "Q15",
+          "Q17",
+          "Q19",
+          "Q21",
+          "Q23"
+        ],
+        "stage1_observed_startup_seconds": 19.120715098968624,
+        "clean_like_compute_seconds": 4347.785660587244,
+        "all128_compute_seconds": 8774.796177218772,
+        "clean_like_seconds_plus_observed_startup": 4366.906375686212,
+        "all128_seconds_plus_observed_startup": 8793.91689231774
+      },
+      "source_record_hashes_count": 705
+    },
+    {
+      "gpu": 1,
+      "records": 734,
+      "source_coverage_sha256": "a06c2c9a38b2e763304da2642bc2d0269d534930212a832786aee12fca2fad50",
+      "complete_open_base_ids": [
+        "Q02",
+        "Q04",
+        "Q06",
+        "Q08",
+        "Q10",
+        "Q12",
+        "Q14",
+        "Q16"
+      ],
+      "complete_open_records": 104,
+      "mean_seconds_by_condition": {
+        "clean": 6.5690844531636685,
+        "AB_d0.5": 6.796365972142667,
+        "R01_d0.5": 6.571268164319918,
+        "R02_d0.5": 8.070400366326794,
+        "R03_d0.5": 7.0017526359297335,
+        "R04_d0.5": 8.071476904675364,
+        "R05_d0.5": 5.294986987719312,
+        "AB_d1": 6.655017767101526,
+        "R01_d1": 6.398507668403909,
+        "R02_d1": 5.022497319150716,
+        "R03_d1": 7.207723823376,
+        "R04_d1": 8.074454934801906,
+        "R05_d1": 8.066799394786358
+      },
+      "generation_seconds_per_token_complete_open": 0.06300607296883276,
+      "extra_seconds_per_open": 0.0012832624085534078,
+      "remaining_records": 46,
+      "remaining_seconds": 316.12099707103334,
+      "remaining_all128_seconds": 371.0387877112807,
+      "finish": "2026-10-28T23:10:01.373981+08:00",
+      "all128_finish": "2026-10-28T23:10:56.291772+08:00",
+      "stage2": {
+        "weak_preflight": [
+          {
+            "item_id": "RD01-f0-required",
+            "condition": "AB_d0.0625",
+            "tokens": 20,
+            "seconds": 1.4933522902429104
+          },
+          {
+            "item_id": "RD01-f0-required",
+            "condition": "AB_d0.125",
+            "tokens": 28,
+            "seconds": 1.9878615979105234
+          },
+          {
+            "item_id": "RD01-f0-required",
+            "condition": "AB_d0.25",
+            "tokens": 28,
+            "seconds": 1.9848557487130165
+          }
+        ],
+        "preflight_path": "runs/preflight-r01/worker-1/preflight.json",
+        "preflight_sha256": "06a0ff2844e637c6a32770326068b9e86847b48ede93706b7201cfaae6cade92",
+        "intervened_seconds_per_token_by_family": {
+          "reading": 0.06339026713116425,
+          "arithmetic": 0.06313035765641527,
+          "relation": 0.06328736804973187,
+          "open": 0.06310469639553404
+        },
+        "intervened_extra_seconds_by_family": {
+          "reading": 0.20963284708947563,
+          "arithmetic": 0.20928578567691147,
+          "relation": 0.2093993696034886,
+          "open": 0.0012966090499764622
+        },
+        "complete_open_clean_mean_tokens": 106.375,
+        "unobserved_open_clean_ids": [
+          "Q20",
+          "Q22",
+          "Q24"
+        ],
+        "stage1_observed_startup_seconds": 18.882020720621824,
+        "clean_like_compute_seconds": 3884.9408166686553,
+        "all128_compute_seconds": 8923.036146135693,
+        "clean_like_seconds_plus_observed_startup": 3903.822837389277,
+        "all128_seconds_plus_observed_startup": 8941.918166856316
+      },
+      "source_record_hashes_count": 734
+    }
+  ],
+  "remaining_seconds": 566.1952033275738,
+  "remaining_all128_seconds": 595.3185623777385,
+  "expected_finish_beijing": "2026-10-28T23:14:11.448187+08:00",
+  "all128_finish_beijing": "2026-10-28T23:14:40.571546+08:00",
+  "stage2_scenarios": {
+    "new_generations": 2160,
+    "candidate_groups": 1728,
+    "start_time": null,
+    "gate_wait_not_estimated": true,
+    "clean_like_seconds_including_stage1_startup_proxy": 4366.906375686212,
+    "all128_seconds_including_stage1_startup_proxy": 8941.918166856316,
+    "weak_random_formal_data_available": false,
+    "weak_AB_preflight_scope": "Only RD01-f0-required at three weak doses on each GPU; duplicated execution of same input is not extra independent length evidence."
+  },
+  "comparison": {
+    "previous_expected_finish_beijing": "2026-10-28T23:15:46.729468+08:00",
+    "previous_all128_finish_beijing": "2026-10-28T23:20:20.045505+08:00",
+    "reason": "Now all diagnosis records are complete and original-question lengths are formally observed:6 complete originals onGPU0 and8 onGPU1. Remaining volume dropped and some original replies stop before128. Per-token speed remains similar."
+  },
+  "limitations": [
+    "Not confidence intervals or hard upper bounds; no arbitrary safety coefficient.",
+    "Stage1 estimates only remaining model records; controller verification/export/transfer/review excluded.",
+    "Stage2 length scenarios have no justified probability ranking; clean-like is hypothetical, not evidence that weak intervention preserves behavior or capability.",
+    "Weak AB preflight covers one reading input; weak randoms and other families at weak doses have no formal observations.",
+    "Stage2 launch depends on full measurement gate; do not give fixed wall-clock completion before actual launch.",
+    "Startup estimate is empirical stage1 initialization, not separately summed load and asset check because load_seconds includes prior elapsed time.",
+    "All calculations are read-only over existing records; no model or experiment was started."
+  ]
+}

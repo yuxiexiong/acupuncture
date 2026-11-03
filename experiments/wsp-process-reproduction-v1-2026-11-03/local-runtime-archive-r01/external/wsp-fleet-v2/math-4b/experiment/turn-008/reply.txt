@@ -1,0 +1,31 @@
+```python
+# Hypothesis: candidate neurons encode self-reconsideration rather than simply final-answer or thinking-boundary tokens.
+probe_components=[(22,315),(29,49),(27,1365),(26,8237),(21,7947),(27,4896),(30,4486),(31,142)]
+D={}
+E=load_original('model.language_model.embed_tokens.weight')
+probe_words=['Wait','wait','But','However','Alternatively','Perhaps','Maybe','Actually','check','verify',
+             'again','repeat','Therefore','Thus','Hence','So','answer','solution','correct','contradiction',
+             'calculate','Let','Then','Compute','Simplify','Since','Suppose','Recall','Finally',
+             '</think>','<think>','\\boxed','0','1','2','+','-','=','\n']
+word_ids={}
+for w in probe_words:
+    enc=tok.encode(w,add_special_tokens=False)
+    ii=enc.ids if hasattr(enc,'ids') else enc
+    if len(ii)==1: word_ids[w]=ii[0]
+ei=E[list(word_ids.values())]
+for l,j in probe_components:
+    if l not in D: D[l]=load_original(f'model.language_model.layers.{l}.mlp.down_proj.weight')
+    col=D[l][:,j]
+    scores=(ei@col).numpy()
+    order=np.argsort(scores)
+    print((l,j),"col norm",round(float(col.norm()),3),"act cut/long-correct",
+          round(float(M[bad,l,j].mean()),4),round(float(M[ctrl,l,j].mean()),4),
+          "high",[(list(word_ids)[k],round(float(scores[k]),3)) for k in order[-5:][::-1]],
+          "low",[(list(word_ids)[k],round(float(scores[k]),3)) for k in order[:5]])
+for pid in ['aime_2006-I-15','aime_2018-II-11','aime_2008-I-11','math_train_prealgebra_593']:
+    i=ids.index(pid)
+    print("\nTRACE",pid)
+    for frac in [.1,.3,.6,.9]:
+        t=S[i]['text']; start=int(frac*len(t))
+        print(frac,t[start:start+280].replace('\n',' '))
+```

@@ -1,0 +1,23 @@
+```python
+# Hypothesis: math failures have a dominant, identifiable mechanism that can be isolated before any weight edit.
+# Plan: (1) diagnose failures on stratified practice problems; (2) localize a mechanism and test causal dose-response;
+# (3) retain only an accuracy gain supported by paired, untouched validation problems. No training or model simulation.
+import os, json, math, random, collections, time
+import numpy as np
+import torch
+from pathlib import Path
+
+torch.set_grad_enabled(False)
+rng = np.random.default_rng(20261104)
+practice = {}
+for src, fn in [('gsm8k', 'gsm8k_train.jsonl'), ('math', 'math_train.jsonl'), ('aime', 'aime.jsonl')]:
+    with open('/practice/' + fn) as f:
+        practice[src] = [json.loads(line) for line in f]
+print("Practice counts:", {k: len(v) for k, v in practice.items()})
+print("Record schemas:", {k: list(v[0]) for k, v in practice.items()})
+print("Example ids:", {k: [x['id'] for x in v[:3]] for k, v in practice.items()})
+print("Tensor count:", len(NAMES))
+print("First tensor names:", NAMES[:35])
+print("Existing edits:", edited())
+print("Work contents:", os.listdir('/work')[:20])
+```

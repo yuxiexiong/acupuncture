@@ -1,0 +1,37 @@
+```python
+# Hypothesis: math failures are dominated by identifiable reasoning failures, which we can diagnose before selecting any weight edit.
+import os, json, math, random, re, time
+from pathlib import Path
+import numpy as np
+import torch
+from collections import Counter, defaultdict
+
+rng = random.Random(20261104)
+practice = {}
+by_source = {}
+for filename in ("gsm8k_train.jsonl", "math_train.jsonl", "aime.jsonl"):
+    rows = [json.loads(line) for line in open("/practice/" + filename)]
+    by_source[filename] = rows
+    practice.update({r["id"]: r for r in rows})
+print("Practice:", {k: len(v) for k, v in by_source.items()})
+print("Example fields:", {k: list(v[0]) for k, v in by_source.items()})
+print("Tensor count:", len(NAMES))
+print("Representative tensor names:", NAMES[:35])
+print("Existing edits:", edited())
+diag_rows = rng.sample(by_source["gsm8k_train.jsonl"], 64) + rng.sample(by_source["math_train.jsonl"], 64)
+diag_ids = [r["id"] for r in diag_rows]
+used_ids = set(diag_ids)
+notes = """# Direct weight-repair experiment
+## Plan
+1. Diagnose 128 mixed practice problems with residual/MLP activation summaries; read concise failure excerpts.
+2. Localize a specific failure mechanism using weights and teacher-forced good/bad continuations.
+3. Test targeted interventions at multiple strengths; assess predicted behavior and paired accuracy.
+4. Freeze a candidate before independent paired validation. Keep only a gain clearly larger than its paired standard error.
+No training, gradient computation, model simulation, embedding/output/final-norm edits, or whole-tensor scaling.
+Forward budget: 50; reserve at least 12 passes for independent confirmation and robustness.
+## Current best
+Unedited model; no evidence yet.
+"""
+Path("/work/notes.md").write_text(notes)
+print("Diagnostic IDs:", json.dumps(diag_ids))
+```

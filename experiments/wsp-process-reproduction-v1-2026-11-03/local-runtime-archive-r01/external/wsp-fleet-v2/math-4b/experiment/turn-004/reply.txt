@@ -1,0 +1,8 @@
+```python
+# Hypothesis: the largest failure category is pathological continuation, not missing mathematical knowledge.
+g1 = [json.loads(x) for x in Path('/work/gen_1.jsonl').read_text().splitlines()]
+print("Generation keys:", list(g1[0]))
+print("Activation metadata:", Path('/work/gen_1_acts/index.json').read_text()[:1800])
+print("One record metadata:", {k:v for k,v in g1[0].items() if not isinstance(v,(str,list,dict))})
+print("String fields:", {k:(len(v),v[:80]) for k,v in g1[0].items() if isinstance(v,str) and k not in ['text','response','output']})
+```

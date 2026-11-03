@@ -1,0 +1,30 @@
+```python
+# Hypothesis: repetition is associated with a sparse recurrent or MLP component rather than a uniform logit-temperature problem.
+print("Most concentrated matrices:")
+for s in sorted([s for s in weight_stats if "row_ratio" in s],key=lambda s:max(s["row_ratio"],s["col_ratio"]),reverse=True)[:16]:
+    print(s["name"].replace("model.language_model.layers.",""), "rms", round(s["rms"],4),
+          "row",round(s["row_ratio"],2),s["max_row"],"col",round(s["col_ratio"],2),s["max_col"])
+print("\nMatrix RMS by layer (qkv/q, out/o, MLP gate/up/down):")
+for l in range(24):
+    ss={s["name"].split(f".layers.{l}.")[1]:s for s in weight_stats if f".layers.{l}." in s["name"]}
+    keys=["linear_attn.in_proj_qkv.weight","self_attn.q_proj.weight","linear_attn.out_proj.weight","self_attn.o_proj.weight","mlp.gate_proj.weight","mlp.up_proj.weight","mlp.down_proj.weight"]
+    print(l,[(k,round(ss[k]["rms"],4),round(ss[k]["max"],3)) for k in keys if k in ss])
+print("\nOne-dimensional parameter extremes:")
+for s in weight_stats:
+    if len(s["shape"])==1 and (s["max"]>5 or "A_log" in s["name"] or "dt_bias" in s["name"]):
+        w=load_original(s["name"])
+        print(s["name"].replace("model.language_model.layers.",""), "min/median/max", [round(float(x),3) for x in (w.min(),w.median(),w.max())])
+correct=np.array([r["samples"][0]["correct"] for r in diag])
+cuts=np.array([r["samples"][0]["cut"] for r in diag])
+for j,l in enumerate(idx["mlp_layers"]):
+    diff=M[cuts,j].mean(0)-M[~cuts,j].mean(0)
+    sd=M[:,j].std(0)+.005
+    rank=np.argsort(abs(diff)/sd)[-6:][::-1]
+    print("MLP contrasting cutoff/finished",l,[(int(i),round(float(diff[i]/sd[i]),2),round(float(M[cuts,j,i].mean()),3),round(float(M[~cuts,j,i].mean()),3)) for i in rank])
+print("Compact actual loop excerpts:")
+for i in [0,5,64,66]:
+    t=diag[i]["samples"][0]["text"]
+    lines=t.splitlines()
+    frequent=Counter(x.strip() for x in lines if len(x.strip())>15).most_common(2)
+    print(i,[(s[:170],n) for s,n in frequent])
+```

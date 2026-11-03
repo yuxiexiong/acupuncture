@@ -1,0 +1,26 @@
+```python
+# Hypothesis: loop-associated neurons should differ from long successful reasoning, rather than merely from short solutions.
+encoded=[x.ids if hasattr(x,'ids') else x for x in encoded]
+rep8=np.array([repeat_fraction(x[:8192]) for x in encoded])
+repall=np.array([repeat_fraction(x) for x in encoded])
+print("Counts:",collections.Counter((r['source'],s['correct'],s['cut']) for r,s in zip(g1,S)))
+for i in np.argsort(repall)[-18:][::-1]:
+    print(ids[i],bool(correct[i]),int(lengths[i]),round(float(rep8[i]),3),round(float(repall[i]),3))
+bad=np.where((src=='aime') & cuts)[0]
+ctrl=np.where((src=='aime') & correct & (lengths>8192))[0]
+print("Contrasts:",len(bad),"cut AIME vs",len(ctrl),"long correct AIME")
+scale=np.sqrt(M[bad].var(0)/len(bad)+M[ctrl].var(0)/len(ctrl)+1e-7)
+tstat=(M[bad].mean(0)-M[ctrl].mean(0))/scale
+candidates=[]
+for l in range(32):
+    for j in np.argsort(np.abs(tstat[l]))[-3:][::-1]:
+        candidates.append((float(abs(tstat[l,j])),l,int(j),float(tstat[l,j]),
+                           float(M[bad,l,j].mean()),float(M[ctrl,l,j].mean())))
+print("Top component contrasts (not causal evidence):")
+for row in sorted(candidates,reverse=True)[:28]:
+    print(tuple(round(v,4) if isinstance(v,float) else v for v in row))
+with open('/work/notes.md','a') as f:
+    f.write('\nPass 1: original 192 cases, accuracy 92.71%; GSM8K 91.67%, MATH 99.11%, AIME 71.88%; mean 8775.7 tokens. '
+            '14 failures: 9 cutoffs, 5 wrong answers. MATH error inspected was interval-format equivalence; GSM errors mainly ambiguity. '
+            'AIME cutoffs include repeated reconsideration and explicit sequence loops. All-layer MLP means collected.\n')
+```

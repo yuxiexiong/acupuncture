@@ -1,0 +1,67 @@
+{
+  "status": "passed",
+  "reviewer": "/root/joint_items",
+  "reviewed_at": "2026-10-28T13:54:27.210274+00:00",
+  "review_type": "model_assisted_author_self_review",
+  "independent_reviewer": false,
+  "human_annotation_validity_certified": false,
+  "source": "data/items.json",
+  "source_sha256": "dabddc6380c220e8d3af5bd812ad8feafa8799b0a4fc9c1b2a70a793c318d291",
+  "prior_review": "readiness/data-review-r01.json",
+  "prior_review_sha256": "f9bc815db2ac358cab22b3f3a94e8c62ca41ccd835e4b2e8710a1ec473511c6b",
+  "prior_source_sha256": "8aab3f95c4f6ff4746c81136d244c2e99997fc733762c91448d9ba3ab9777046",
+  "change_scope": "冻结前仅RL02四变体将小江/小林替换为小甲/小乙，同步提示与候选答案；事实时间、目标索引、reference_id、任务要求及其他题目不变。",
+  "reason_for_change": "父agent实际tokenizer核对：小林先到达为4tokens，小江先到达为5tokens；小甲/小乙均5tokens。此处审核语义真值，不冒充本agent已运行tokenizer。",
+  "model_results_used": false,
+  "changed_diagnostic_items": 4,
+  "unchanged_diagnostic_items_rechecked": 92,
+  "assessment_fixtures_sha_unchanged": true,
+  "cpu_tests": {
+    "suite": "test_task_data.py",
+    "passed": 5,
+    "failed": 0
+  },
+  "rows": [
+    {
+      "id": "RL02-f0-required",
+      "fact_version": 0,
+      "demand": "required",
+      "actual_correct_content": "小甲先到达。",
+      "target_index_matches": true,
+      "ambiguity_detected": false,
+      "reason": "仅将小江改为小甲、小林改为小乙；同日9点早于10点，故facts0仍由第一个人先到。",
+      "prompt_sha256": "7971b2e0faa6b4196b1e6e733dedb17060fc3c8e067f11a6c6555f7051d5e41f"
+    },
+    {
+      "id": "RL02-f0-direct",
+      "fact_version": 0,
+      "demand": "direct",
+      "actual_correct_content": "小甲先到达。",
+      "target_index_matches": true,
+      "ambiguity_detected": false,
+      "reason": "仅将小江改为小甲、小林改为小乙；同日9点早于10点，故facts0仍由第一个人先到。",
+      "prompt_sha256": "48977c5a39273268acbbcee069307d5f05ab78bcd5d12b726614ea99afc4f298"
+    },
+    {
+      "id": "RL02-f1-required",
+      "fact_version": 1,
+      "demand": "required",
+      "actual_correct_content": "小乙先到达。",
+      "target_index_matches": true,
+      "ambiguity_detected": false,
+      "reason": "仅替换人物姓名；同日10点早于11点，故facts1仍由第二个人先到。",
+      "prompt_sha256": "ae1298a7b3092327b789dd8acbeb71216de395158c2a133ac6c27e7293b46f77"
+    },
+    {
+      "id": "RL02-f1-direct",
+      "fact_version": 1,
+      "demand": "direct",
+      "actual_correct_content": "小乙先到达。",
+      "target_index_matches": true,
+      "ambiguity_detected": false,
+      "reason": "仅替换人物姓名；同日10点早于11点，故facts1仍由第二个人先到。",
+      "prompt_sha256": "6827fa7128dbbef738eb65e82d371301016dadaf3d03110cf8b101bf4a7c865e"
+    }
+  ],
+  "basis": "模型辅助作者自审；旧r01原样保留。本r02仅覆盖姓名替换和真值保持，须结合r01读取全部96项审核，不作为独立第二审核。"
+}

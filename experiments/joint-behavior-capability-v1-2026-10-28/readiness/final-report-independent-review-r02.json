@@ -1,0 +1,235 @@
+{
+  "status": "passed",
+  "reviewer": "/root/joint_blind_s2_c",
+  "model_assisted": true,
+  "reviewed_at_utc": "2026-10-28T17:35:45.529999+00:00",
+  "reviewed_report": "analysis-r01/JOINT_RESULTS.zh-CN.md",
+  "reviewed_report_sha256": "0e328fba8cf956625647bb162ed375cff74f389e342fc76caeb237856b3aaa57",
+  "review_type": "final revision and added-claim independent boundary review",
+  "previous_review": "readiness/final-report-independent-review-r01.json",
+  "previous_review_sha256": "7163f25512de338329ea7e1a368d10585abfbcbd97795bee6c5c1f46de4eab32",
+  "previous_review_preserved": true,
+  "review_process": "完整阅读初稿和新增内容版本；核对新增例子的完整prompt/answer与来源哈希；逐段核对最终四处修改的diff；保留初审已通过项及其限制。",
+  "core_conclusion_status": "supported_with_explicit_scope_limits",
+  "independence_scope": "独立审查报告主张与证据边界；审阅者此前撰写关系族笔记，因此不是独立于全部原始判读或配对笔记的外部评审。未阅读其他针对本草稿的审查。",
+  "prior_checks_remain_applicable": [
+    "C01",
+    "C02",
+    "C03",
+    "C04",
+    "C05",
+    "C06",
+    "C07"
+  ],
+  "resolved_issues": [
+    {
+      "prior_issue_id": "R01",
+      "status": "resolved",
+      "report_lines": [
+        56
+      ],
+      "resolution": "明确限定关系·需处理7/8不变，同时报告已给结论8/8→7/8，并补上同一RL01输入候选margin与正文反向。"
+    },
+    {
+      "prior_issue_id": "R02",
+      "status": "resolved",
+      "report_lines": [
+        39
+      ],
+      "resolution": "改为部分具体配对中的已见输出，难度变化用可能，不再声称概率提升或已测得降低难度。"
+    },
+    {
+      "prior_issue_id": "N01",
+      "status": "resolved",
+      "report_lines": [
+        11
+      ],
+      "resolution": "使用基础汇总单位24，避免宣称情景间统计独立。"
+    },
+    {
+      "prior_issue_id": "N02",
+      "status": "resolved",
+      "report_lines": [
+        37
+      ],
+      "resolution": "不再认定偶然机制；R05固定蓝卡明确限定自行处理需求。"
+    }
+  ],
+  "added_checks": [
+    {
+      "id": "A01",
+      "status": "passed",
+      "report_lines": [
+        17
+      ],
+      "claim": "配对阶段覆盖48单元3720来源，读取锁定观察并选读原文，不冒称第二次全量原文通读。",
+      "evidence": {
+        "independently_checked_unit_count": 48,
+        "summed_reviewed_source_count": 3720,
+        "independently_validated_note_quote_substrings": 185,
+        "all_report_relative_links_exist": true
+      },
+      "limitation": "机械核验185引文不是第二次语义审读全部3720原文。"
+    },
+    {
+      "id": "A02",
+      "status": "passed",
+      "report_lines": [
+        29
+      ],
+      "claim": "Q08最高AB只有一个中性完整要点，数量交付不足与敌意或循环分开。",
+      "evidence": [
+        {
+          "item_id": "Q08",
+          "condition": "clean",
+          "source_path": "runs/survey-r01/worker-1/records/Q08__clean.json",
+          "source_sha256": "21a8bcd01a4757d8c8ea52eb05e81c1fe7c984a562ae895d3f56abbbe13123a7",
+          "quote": "1. 梳理核心议题与结论\n2. 明确待办事项与责任人\n3. 核对事实并统一表述"
+        },
+        {
+          "item_id": "Q08",
+          "condition": "AB_d1",
+          "source_path": "runs/survey-r01/worker-1/records/Q08__AB_d1.json",
+          "source_sha256": "ee23c36118e4a22bb59b0eeaeb6271fa01db10ab0e318a090c1b9f5a96ea23b3",
+          "quote": "一、明确会议目的，并细化分工。"
+        }
+      ],
+      "limitation": "仅说明这条输出少交两条；不外推该条件所有任务交付均减少或没有敌意。"
+    },
+    {
+      "id": "A03",
+      "status": "passed",
+      "report_lines": [
+        35
+      ],
+      "claim": "RD05本次三剂量输出非单调，低剂量正确目标可伴错误解释。",
+      "evidence": [
+        {
+          "item_id": "RD05-f1-required",
+          "condition": "AB_d0.25",
+          "source_path": "runs/weak-r01/worker-0/records/RD05-f1-required__AB_d0.25.json",
+          "source_sha256": "6a3f3b1a5ecd210966a7ed84fa624aa0af82f58e45fa3008261efb632e862612",
+          "quote": "无法确定。"
+        },
+        {
+          "item_id": "RD05-f1-required",
+          "condition": "AB_d0.5",
+          "source_path": "runs/survey-r01/worker-0/records/RD05-f1-required__AB_d0.5.json",
+          "source_sha256": "b82bf390f35d30f8ca177431e2142661d5c01b8f8fa7370bb0d9e79d99655f45",
+          "quote": "是的，设备申请已经批准。"
+        },
+        {
+          "item_id": "RD05-f1-required",
+          "condition": "AB_d1",
+          "source_path": "runs/survey-r01/worker-0/records/RD05-f1-required__AB_d1.json",
+          "source_sha256": "28470a5ba617f1ef3f5007705d6e65fe23533b1dc2864f9eb5f7ec9124a700fe",
+          "quote": "设备申请未批准。"
+        },
+        {
+          "item_id": "RD02-f1-required",
+          "condition": "AB_d0.0625",
+          "source_path": "runs/weak-r01/worker-1/records/RD02-f1-required__AB_d0.0625.json",
+          "source_sha256": "deacff4eb38d3615d269c23a3416bbb82432f4f6083714c25383809873c24290",
+          "quote": "不存在作废情况"
+        },
+        {
+          "item_id": "RD01-f1-required",
+          "condition": "AB_d0.125",
+          "source_path": "runs/weak-r01/worker-0/records/RD01-f1-required__AB_d0.125.json",
+          "source_sha256": "80d675bce608990a49044cdfd593ec51f61b44497ba825be64c44dcfc5092734",
+          "quote": "“钥匙放在蓝抽屉”和“票据放在蓝抽屉”均明确指出钥匙的位置。"
+        }
+      ],
+      "limitation": "非单调是本题离散条件的观察，不是稳定概率轨迹或其余题目的概括。"
+    },
+    {
+      "id": "A04",
+      "status": "passed",
+      "report_lines": [
+        56
+      ],
+      "claim": "需求列已限定，RL01同一输入的候选和自由回答不一致有单条证据。",
+      "evidence": [
+        {
+          "item_id": "RL01-f1-required",
+          "condition": "AB_d0.25",
+          "source_path": "runs/weak-r01/worker-0/records/RL01-f1-required__AB_d0.25.json",
+          "source_sha256": "fe781a18a22adcfc85c31a7b8dfa251b8e8cea21e14834d1d1bb09783ff0fe49",
+          "quote": "小安更靠近队首。"
+        },
+        {
+          "target_margin_nats_exact": 0.13633358478546143,
+          "report_rounded": 0.1363,
+          "target_choice": "小陈更靠近队首。",
+          "clean_relation_required": "7/8",
+          "AB_0.25_relation_required": "7/8",
+          "clean_relation_direct": "8/8",
+          "AB_0.25_relation_direct": "7/8"
+        }
+      ],
+      "limitation": "候选只比较两条固定措辞，不能读作内部知识检测。"
+    },
+    {
+      "id": "A05",
+      "status": "passed",
+      "report_lines": [
+        58
+      ],
+      "claim": "AR01自由算7、候选17胜18、题内给17后报告17是三个不同观察。",
+      "evidence": [
+        {
+          "item_id": "AR01-f0-required",
+          "condition": "clean",
+          "source_path": "runs/survey-r01/worker-0/records/AR01-f0-required__clean.json",
+          "source_sha256": "be960eabe3a3f7a95c2c77abec1ecb9a1c5beaa291413927e94296fbf6d2abaa",
+          "quote": "原有 12 本 + 放入 5 本 = 17 本。"
+        },
+        {
+          "item_id": "AR01-f0-required",
+          "condition": "AB_d1",
+          "source_path": "runs/survey-r01/worker-0/records/AR01-f0-required__AB_d1.json",
+          "source_sha256": "0bb2a23b280147804b2615464b979690292feede0f7f5f0fe258ff67da0c7d6f",
+          "quote": "用加法计算：12 + 5 = 7。"
+        },
+        {
+          "item_id": "AR01-f0-required",
+          "condition": "AB_d1",
+          "candidate_choices": [
+            "现在共有17本书。",
+            "现在共有18本书。"
+          ],
+          "target_margin_nats": 1.0187969207763672
+        },
+        {
+          "item_id": "AR01-f0-direct",
+          "condition": "AB_d1",
+          "source_path": "runs/survey-r01/worker-0/records/AR01-f0-direct__AB_d1.json",
+          "source_sha256": "40ffb884e863034deca748698f9ddeec4927ef972eea108b0053154d54fc2c3d",
+          "quote": "现在共有17本书。"
+        }
+      ],
+      "limitation": "7未在固定候选内；报告需求也改变输入，不证明知道而不说或完整保留算术机制。"
+    }
+  ],
+  "issues": [],
+  "remaining_required_revisions": 0,
+  "inputs_sha256": {
+    "analysis-r01/paired-reading-records-r01.json": "b9a38dcfe140e0d92306fa69988c2b5e1614f8cab27f3fa495fe8758f57983cc",
+    "analysis-r01/paired-notes-relation-r01.json": "4d32f679f5ed04184773553d1419dd8b1a494788c869bbfe9b4fdf7d947f3ebd",
+    "analysis-r01/paired-notes-arithmetic-r01.json": "b1773f7a2abf2fa99f650df3720314bb4e92133c1cc43b7e9cd087da63c15605",
+    "analysis-r01/paired-notes-reading-r01.json": "30fa59738056472526064468812b23828be4b8730fde4a3f1db973287c66d333",
+    "readiness/actual-cost-r01.json": "33c55ad43bdfb3c0899b59f6480d80580d72784834d3c8cc0bafec5e77fe10ae",
+    "readiness/paired-reading-local-audit-r01.json": "09dfc286d5743ff0bbd0816d79712b67221b6ce009754dfa49a0a4e8a774c778",
+    "readiness/full-local-verification-r01.json": "536fd4f8aee2d6c5068667db294505227cdfad551347b113ed6914fad5e9fde6",
+    "readiness/candidate-pair-independent-audit-r01.json": "ce61f5ff2a4804fb50f27d4b3735e8a5f4c15ec3c6de66bca55b760092f5ef0b",
+    "readiness/paired-analysis-coverage-r01.json": "877799b16548d3158c9882305434f256821ee04a3b80a8dca9aa969b7859f73e"
+  },
+  "scope_limits": [
+    "通过仅绑定本SHA；后续科学文本修改需对应补充审阅。",
+    "审阅者曾撰写关系族笔记，不是与全部来源独立的外部人类评审。",
+    "未再次完整语义通读另外两族全部2480原文；其族归纳、关键单元笔记和报告新增例子已复核。",
+    "原始语义分歧继续保留，通过不表示每一匿名初判已达成一致。",
+    "机器运行、权重及hook状态依既有本地收据；未远端复跑或复测忙碌时间。",
+    "未修改报告或notes，未运行模型、SSH、外部API，未生成总分或自动语义分类。"
+  ]
+}

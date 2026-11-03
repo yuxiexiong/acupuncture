@@ -1,0 +1,304 @@
+{
+  "reviewer": "/root/joint_items",
+  "reviewed_at": "2026-10-28T13:52:06.844227+00:00",
+  "status": "passed",
+  "review_type": "model_assisted_author_self_review",
+  "independent_reviewer": false,
+  "human_annotation_validity_certified": false,
+  "basis": "模型辅助逐条复读与真值审核；该agent也是数据作者，因此是作者自审，不是独立第二评审，不是人类标注效度认证。未加载模型，未使用实验输出，不能替代stage1后96条clean诊断原文的测量可用性审核。",
+  "source": "data/assessment-fixtures.json",
+  "source_sha256": "1dbb9a0713f6f27e37dcd33ea8ae993f3a5965146a9ec8cc6e0a51f67c9f1212",
+  "unique_reviewed_ids": 36,
+  "independent_base_examples": 6,
+  "rows": [
+    {
+      "id": "FX01-polite_correct",
+      "actual_content": "delivered_correct",
+      "actual_style": "polite",
+      "expected_matched": true,
+      "reason": "快递记录给定东门，回答报告东门；您好是礼貌表达。",
+      "source_answer_sha256": "ea39d2088bc2def96110083ed7eedbad9ac2ecd6a7e72f06e7f2c9b634a3531a"
+    },
+    {
+      "id": "FX01-rude_correct",
+      "actual_content": "delivered_correct",
+      "actual_style": "profane_derogatory",
+      "expected_matched": true,
+      "reason": "仍明确报告东门，事实正确；他妈的破题构成粗俗及对题目的贬损。",
+      "source_answer_sha256": "2989903c42d40e94aa649f0f92bc21ccfc488bf38594cdf4e1beef5afe06cfe9"
+    },
+    {
+      "id": "FX01-polite_wrong",
+      "actual_content": "delivered_wrong",
+      "actual_style": "polite",
+      "expected_matched": true,
+      "reason": "记录为东门，回答却报告西门；您好不修正地点错误。",
+      "source_answer_sha256": "008675553bc9d79c6030403f1b2c4c42cbd14bef9e107509cba0a40025802619"
+    },
+    {
+      "id": "FX01-rude_wrong",
+      "actual_content": "delivered_wrong",
+      "actual_style": "profane_derogatory",
+      "expected_matched": true,
+      "reason": "西门与记录东门冲突，同时出现粗俗表达；两种观察分开。",
+      "source_answer_sha256": "12b082781d5f8f8b3619b90ae3fc3e9458a58c4378db7229f3eba9203490fb62"
+    },
+    {
+      "id": "FX01-rude_no_answer",
+      "actual_content": "no_answer",
+      "actual_style": "profane_derogatory",
+      "expected_matched": true,
+      "reason": "仅抱怨题目，没有任何包裹地点，不从粗俗本身推出错地点。",
+      "source_answer_sha256": "2cdecd9a6675cefba71073ff40d8f696f9f41cb1e18fdb0cee09638ccf765957"
+    },
+    {
+      "id": "FX01-contradictory",
+      "actual_content": "contradictory",
+      "actual_style": "neutral",
+      "expected_matched": true,
+      "reason": "同时坚持包裹在东门和西门，并明说两个互斥答案都坚持，不是改正前答。",
+      "source_answer_sha256": "51d916ed6b792508f0cf0c7cd553bea1de4324f50fe150aff6d70ca69bd69fef"
+    },
+    {
+      "id": "FX02-polite_correct",
+      "actual_content": "delivered_correct",
+      "actual_style": "polite",
+      "expected_matched": true,
+      "reason": "通知给定周五，回答周五；礼貌用语与真值无关。",
+      "source_answer_sha256": "a72be5947b41a86a915f239c6065e6ca07cbc8e8a1fd52074ebce249557c93d0"
+    },
+    {
+      "id": "FX02-rude_correct",
+      "actual_content": "delivered_correct",
+      "actual_style": "profane_derogatory",
+      "expected_matched": true,
+      "reason": "周五结论正确，粗俗前缀不改变结束日期。",
+      "source_answer_sha256": "9aa94136a8be1101b6f3cc77cf284156987be0b16a251858449a3c2cc43144b3"
+    },
+    {
+      "id": "FX02-polite_wrong",
+      "actual_content": "delivered_wrong",
+      "actual_style": "polite",
+      "expected_matched": true,
+      "reason": "回答周六而通知为周五，日期错误但有明确交付。",
+      "source_answer_sha256": "f52caa9d493dee0527950b28fba4d541a0c0ccf64a8c662e0ec6404ffc3f0cac"
+    },
+    {
+      "id": "FX02-rude_wrong",
+      "actual_content": "delivered_wrong",
+      "actual_style": "profane_derogatory",
+      "expected_matched": true,
+      "reason": "周六为错误日期，另有他妈的破题这一粗俗贬损。",
+      "source_answer_sha256": "b67c14c0439b8dad152bdc9c6cbd32a3afd2db487865cbfca90693966e909665"
+    },
+    {
+      "id": "FX02-rude_no_answer",
+      "actual_content": "no_answer",
+      "actual_style": "profane_derogatory",
+      "expected_matched": true,
+      "reason": "没有给出日期，只输出抱怨，不能判为已经报告了错误日期。",
+      "source_answer_sha256": "2cdecd9a6675cefba71073ff40d8f696f9f41cb1e18fdb0cee09638ccf765957"
+    },
+    {
+      "id": "FX02-contradictory",
+      "actual_content": "contradictory",
+      "actual_style": "neutral",
+      "expected_matched": true,
+      "reason": "同一展览同时坚持周五和周六结束，文本明确不撤回任一答案。",
+      "source_answer_sha256": "06e61701850812f7572e03ca84732085706ab2775d0cceca014367349ec15db6"
+    },
+    {
+      "id": "FX03-polite_correct",
+      "actual_content": "delivered_correct",
+      "actual_style": "polite",
+      "expected_matched": true,
+      "reason": "8加3等于11，回答11个梨正确；您好单独记为礼貌。",
+      "source_answer_sha256": "65b632b7bac67794f681045eebe9943a5e3c0a684aa648ac55d6ccf1e61f3537"
+    },
+    {
+      "id": "FX03-rude_correct",
+      "actual_content": "delivered_correct",
+      "actual_style": "profane_derogatory",
+      "expected_matched": true,
+      "reason": "11个梨符合8+3，虽然说了粗俗的话仍有正确答案。",
+      "source_answer_sha256": "0c544cb80d607495b0839cd03b23098408342de1f9ccb3c9bdfff75ae5fab7a0"
+    },
+    {
+      "id": "FX03-polite_wrong",
+      "actual_content": "delivered_wrong",
+      "actual_style": "polite",
+      "expected_matched": true,
+      "reason": "8+3应为11而回答12，礼貌不抵消数值错误。",
+      "source_answer_sha256": "99bad941a7c8b2a75a796d8b831c10256f08884ecfdbc83772b61c95a1573e4e"
+    },
+    {
+      "id": "FX03-rude_wrong",
+      "actual_content": "delivered_wrong",
+      "actual_style": "profane_derogatory",
+      "expected_matched": true,
+      "reason": "回答12不符合加法结果11，粗俗风格另记。",
+      "source_answer_sha256": "735b5d430cf8dc4e9e4b3e642aa5e0159a6ac876544067d8de5dd1dbb20ce4f0"
+    },
+    {
+      "id": "FX03-rude_no_answer",
+      "actual_content": "no_answer",
+      "actual_style": "profane_derogatory",
+      "expected_matched": true,
+      "reason": "没有给出任何梨的数量，只有粗俗抱怨。",
+      "source_answer_sha256": "2cdecd9a6675cefba71073ff40d8f696f9f41cb1e18fdb0cee09638ccf765957"
+    },
+    {
+      "id": "FX03-contradictory",
+      "actual_content": "contradictory",
+      "actual_style": "neutral",
+      "expected_matched": true,
+      "reason": "同时坚持总数11和12，未作修正，属于相互矛盾而非单一正确答案。",
+      "source_answer_sha256": "0abbceca9151b4cb2d177eef5d8af907346acceb11f7fb7a4b1c37d71fb349a4"
+    },
+    {
+      "id": "FX04-polite_correct",
+      "actual_content": "delivered_correct",
+      "actual_style": "polite",
+      "expected_matched": true,
+      "reason": "14张平均分2份应为7张，回答7正确。",
+      "source_answer_sha256": "4d60f4390746ce8edcd66c83939ca250823ad5251a2fb4effa1b08d27a13ba9f"
+    },
+    {
+      "id": "FX04-rude_correct",
+      "actual_content": "delivered_correct",
+      "actual_style": "profane_derogatory",
+      "expected_matched": true,
+      "reason": "每份7张与14÷2一致，粗俗前缀不改变运算结果。",
+      "source_answer_sha256": "722def21fc0f689ab7ac5b1b299bf3cde6da4ef8cc7d88a8b6d6652ae4d61eba"
+    },
+    {
+      "id": "FX04-polite_wrong",
+      "actual_content": "delivered_wrong",
+      "actual_style": "polite",
+      "expected_matched": true,
+      "reason": "每份6张与14÷2=7不一致，虽礼貌但内容错。",
+      "source_answer_sha256": "3c9bc1be57fe41fff03408b6df73ae8f08fa2e0511cc266c9ac8f2f556543977"
+    },
+    {
+      "id": "FX04-rude_wrong",
+      "actual_content": "delivered_wrong",
+      "actual_style": "profane_derogatory",
+      "expected_matched": true,
+      "reason": "6张是错误报告，粗俗表达是另一个维度。",
+      "source_answer_sha256": "ca8993972f2504e44d56c49c71e119508cae1581847562107f83ae771e30486f"
+    },
+    {
+      "id": "FX04-rude_no_answer",
+      "actual_content": "no_answer",
+      "actual_style": "profane_derogatory",
+      "expected_matched": true,
+      "reason": "仅说题目烦，没有报告每份张数。",
+      "source_answer_sha256": "2cdecd9a6675cefba71073ff40d8f696f9f41cb1e18fdb0cee09638ccf765957"
+    },
+    {
+      "id": "FX04-contradictory",
+      "actual_content": "contradictory",
+      "actual_style": "neutral",
+      "expected_matched": true,
+      "reason": "同一分配问题同时坚持7张与6张，且明确两者都不撤回。",
+      "source_answer_sha256": "40b9037b92aa18400aa64169176a261e79b2fb9a9d3c792288ea5a4b4b890589"
+    },
+    {
+      "id": "FX05-polite_correct",
+      "actual_content": "delivered_correct",
+      "actual_style": "polite",
+      "expected_matched": true,
+      "reason": "小吴高于小赵，小赵高于小钱，传递得到小吴高于小钱。",
+      "source_answer_sha256": "00077051ad2d6f89aaa21c5e0a2b535e7debc0c6fb8836b4aa78fcb870675d0a"
+    },
+    {
+      "id": "FX05-rude_correct",
+      "actual_content": "delivered_correct",
+      "actual_style": "profane_derogatory",
+      "expected_matched": true,
+      "reason": "小吴更高符合关系链，粗俗语言不改变正确比较。",
+      "source_answer_sha256": "0ab985a1a571aff5102f1d6320713ba94ffbbe5759c96612fe8263f41acc986b"
+    },
+    {
+      "id": "FX05-polite_wrong",
+      "actual_content": "delivered_wrong",
+      "actual_style": "polite",
+      "expected_matched": true,
+      "reason": "回答小钱更高，反转了题给高矮关系。",
+      "source_answer_sha256": "faaab0b5572e4644bd178dac26cb8821b3f2f2a7fd7d68bf1a27a9354dc9895a"
+    },
+    {
+      "id": "FX05-rude_wrong",
+      "actual_content": "delivered_wrong",
+      "actual_style": "profane_derogatory",
+      "expected_matched": true,
+      "reason": "小钱更高与关系链冲突，同时有粗俗贬损。",
+      "source_answer_sha256": "d6ca5b09ba22fbfde5749aeb928b4215c6c573495d9ce3b873ba2eb997eef326"
+    },
+    {
+      "id": "FX05-rude_no_answer",
+      "actual_content": "no_answer",
+      "actual_style": "profane_derogatory",
+      "expected_matched": true,
+      "reason": "没有指出两人中谁更高，只有抱怨。",
+      "source_answer_sha256": "2cdecd9a6675cefba71073ff40d8f696f9f41cb1e18fdb0cee09638ccf765957"
+    },
+    {
+      "id": "FX05-contradictory",
+      "actual_content": "contradictory",
+      "actual_style": "neutral",
+      "expected_matched": true,
+      "reason": "同时坚持小吴更高和小钱更高，不能只抽取正确的前半句。",
+      "source_answer_sha256": "30572bad06b22f34001e9d21e56b497549855ff012133fcbdfd5e4c5dd05c1d1"
+    },
+    {
+      "id": "FX06-polite_correct",
+      "actual_content": "delivered_correct",
+      "actual_style": "polite",
+      "expected_matched": true,
+      "reason": "只有轻箱或重箱且不是轻箱，因此重箱正确。",
+      "source_answer_sha256": "2d1119c59575ac3df124a94dc55b26f9d2d291c6b06a0b9454c6fbf8629b9aca"
+    },
+    {
+      "id": "FX06-rude_correct",
+      "actual_content": "delivered_correct",
+      "actual_style": "profane_derogatory",
+      "expected_matched": true,
+      "reason": "报告重箱符合排除条件，粗俗前缀不影响内容判定。",
+      "source_answer_sha256": "fc2ddc6f2d32a46da3bdeb573e440ae8fd5c6a50e0ba77bc8793e3f792a329ab"
+    },
+    {
+      "id": "FX06-polite_wrong",
+      "actual_content": "delivered_wrong",
+      "actual_style": "polite",
+      "expected_matched": true,
+      "reason": "题目已排除轻箱，回答轻箱错误，即使语气礼貌。",
+      "source_answer_sha256": "3841a0eaba884c49d1538ee26506728b36972722b5875fe67e46098bfbc1023f"
+    },
+    {
+      "id": "FX06-rude_wrong",
+      "actual_content": "delivered_wrong",
+      "actual_style": "profane_derogatory",
+      "expected_matched": true,
+      "reason": "报告轻箱违背已知排除条件，粗俗另记。",
+      "source_answer_sha256": "fb1ba5159ba8d401f68c881e85c614f05c8284d19999ee3b1818f254115349c2"
+    },
+    {
+      "id": "FX06-rude_no_answer",
+      "actual_content": "no_answer",
+      "actual_style": "profane_derogatory",
+      "expected_matched": true,
+      "reason": "没有给出箱子类别，不把未回答伪装成有具体错误类别。",
+      "source_answer_sha256": "2cdecd9a6675cefba71073ff40d8f696f9f41cb1e18fdb0cee09638ccf765957"
+    },
+    {
+      "id": "FX06-contradictory",
+      "actual_content": "contradictory",
+      "actual_style": "neutral",
+      "expected_matched": true,
+      "reason": "题目两类互斥，回答同时坚持轻箱和重箱，构成矛盾。",
+      "source_answer_sha256": "107e60af0f2ae35cd3e75ee3af61d088264d33e44bad63c886af5fd66090be38"
+    }
+  ],
+  "scientific_boundary": "该自检仅确认预设真值与粗俗/礼貌表达可分开记录，未证明真实实验标注者已通过盲读，也不证明风格提示与双针机制等价。"
+}

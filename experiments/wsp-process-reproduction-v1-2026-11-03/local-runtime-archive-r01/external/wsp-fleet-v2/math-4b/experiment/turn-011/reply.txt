@@ -1,0 +1,35 @@
+```python
+# Hypothesis: layer 30 neurons 8 and 47 form a sparse repetition-amplifying circuit; ablation should reduce loop likelihood specifically.
+chosen=[(30,8),(30,47),(31,13),(31,8174),(29,7),(27,41)]
+for l,j in chosen:
+    early,late,rms,amp,strength=tfstats[l]
+    print((l,j),"natural loop means",np.round(M[natural_loops,l,j],3).tolist(),
+          "other median/p90",np.round(np.quantile(M[:,l,j],[.5,.9]),3).tolist(),
+          "synthetic productive means",
+          [round(float(np.load(p2/f'mlp_act_{l}.npy',mmap_mode='r')[b,70:lens2[b],j].mean()),3) for b in [2,3]])
+for part in ['gate_proj','up_proj']:
+    W=load_original(f'model.language_model.layers.30.mlp.{part}.weight')
+    norms=W.norm(dim=1).numpy()
+    print("Layer30",part,"norm quantiles",np.quantile(norms,[0,.5,.95,1]).round(3).tolist(),
+          "neurons8,47",norms[[8,47]].round(3).tolist(),
+          "top row norm ids",np.argsort(norms)[-12:].tolist())
+del W
+def clear_edits():
+    for name in list(edited()): drop_edit(name)
+def set_neuron_scale(components,scale):
+    clear_edits()
+    grouped=collections.defaultdict(list)
+    for l,j in components: grouped[l].append(j)
+    for l,js in grouped.items():
+        name=f'model.language_model.layers.{l}.mlp.down_proj.weight'
+        W=load_original(name)
+        W[:,js]*=scale
+        save_edit(name,W)
+    print("Neuron scale:",scale,"components:",components,"edits:",edited())
+set_neuron_scale([(30,8),(30,47)],0.0)
+with open('/work/notes.md','a') as f:
+    f.write('\nPass 2: matched-text repetition probes expose concordant amplification in L30 neurons 8 and 47 '
+            '(early means near 0; repeated means -7.11/-5.76 and -5.78/-4.85 in two independent loops). '
+            'L31 neurons 13 and 8174 also amplify. Productive recurrence and combinatorics controls included. '
+            'Testing sparse down-projection ablation; no norm/embedding/boundary edits.\n')
+```

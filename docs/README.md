@@ -1,5 +1,7 @@
 # 项目文档目录
 
+**2026-11-04｜统一归档入口：** [理论、实验结果与证据边界](RESEARCH_ARCHIVE_2026-11-04.zh-CN.md) · [全部实验资产目录](RESEARCH_ASSET_CATALOG_2026-11-04.zh-CN.md)。已纳入NVW/LVK/SRU、NVB/NBR/SIT/NMT、CGV与NCC/NSR/NQK/NPC，补齐本地遗漏原件和失败记录。SDT未运行，实际后继为SIT；WSP工程验收与运行中快照单列，不作能力结论。下方旧“当前／下一步／未运行”均为历史快照，最新状态以本次总览及各实验收据为准。本次无模型/GPU运行。
+
 **2026-11-03｜WCP-01 编程工程验收：** [数据、评分/隔离、0.8B与4B编译干预及资源复核](../experiments/wsp-coding-painpoint-v1-2026-11-03/REPORT.zh-CN.md)。四类模块验收通过；保留BF16运行时/编译不等价反例。新增约0.458GB、磁盘余量约269.57GB；4/10 GPUh仅停止线，完整ETA未验证。正式搜索未启动，WCP阶段调度与编辑器阶段权限仍待接入。
 
 **2026-11-03｜WSP 编程扩展 WCP-01（仅方案，未运行）：** [0.8B / 4B 独立痛点诊断与稀疏干预](wsp-coding-painpoint-v1-2026-11-03/PLAN.zh-CN.md)｜[完整设计自查](wsp-coding-painpoint-v1-2026-11-03/SELF_CHECK.zh-CN.md)｜[预算](wsp-coding-painpoint-v1-2026-11-03/BUDGET.json)。Python 函数任务，MBPP 开发、HumanEval+ 独立终验；最多12个候选，含随机/反号及原版非思考对照。全流程停止线4/10 GPUh，包含终验。逻辑自查通过，工程待验收；本轮0模型/GPU，数学50-pass与编程搜索均未启动。

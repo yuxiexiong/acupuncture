@@ -1,0 +1,63 @@
+Sample keys: ['text', 'pred', 'correct', 'tokens', 'cut']
+
+ gsm8k_train_5569 reference 50 {'pred': '49.5', 'correct': False, 'cut': False}
+Problem: Some friends wanted to make a road trip from New York to Los Angeles. They drove at a constant speed of 62 miles/hour, taking breaks of 30 minutes every 5 hours. Once in the city, they looked for the hotel for 30 minutes
+Middle:  was displacement (straight line), driving distance would be longer, but without a map or bearing info, we assume 2790 is the path length covered.         *   So 2790 is the distance driven.      *   **What if the speed was average speed?**         *
+End: riving time, break time, and hotel search time. $$ \text{Total Time} = \text{Driving Time} + \text{Break Time} + \text{Hotel Search Time} $$ $$ \text{Total Time} = 45 \text{ hours} + 4 \text{ hours} + 0.5 \text{ hours} $$ $$ \text{Total Time} = 49.5 \text{ hours} $$  \boxed{49.5}
+
+ gsm8k_train_6121 reference 90 {'pred': '170', 'correct': False, 'cut': False}
+Problem: Carrie wants to take a trip to New York. She can get a 20% discount on an $850 flight with Delta Airlines. She can also save 30% off an $1100 flight with United Airlines. How much money would she save by choosing the che
+Middle: apest flight?"     *   If I choose the cheapest flight (Delta), I save $170.     *   If I choose the most expensive flight (United), I save $330.     *   Why would anyone ask this? Maybe to test if the student understands that "cheapest flight" refer
+End: ght is the one offered by Delta Airlines.  **Step 4: Determine the savings for the chosen flight.** The question asks how much money she would save by choosing the cheapest flight (Delta). We calculated the savings for Delta in Step 1.  *   **Savings on Delta:** $170  \boxed{170}
+
+ gsm8k_train_4973 reference 1100 {'pred': '900', 'correct': False, 'cut': False}
+Problem: James catches 3 kinds of fish.  He catches 200 pounds of trout,  50% more pounds of salmon, and twice as much Tuna.  How many pounds of fish did he catch?
+Middle: andard convention for such word problems. Interpreting it as "twice as much as the salmon" requires assuming the comparison shifts, which makes the sentence structure less parallel and harder to parse. I will stick to the Trout baseline but perhaps i
+End: ext{ lbs} = 400 \text{ lbs}$$ *   **Tuna:** 400 lbs  **Step 4: Calculate the total weight.** Add the weights of all three fish together: $$200 \text{ (Trout)} + 300 \text{ (Salmon)} + 400 \text{ (Tuna)} = 900 \text{ lbs}$$  James caught a total of 900 pounds of fish.  \boxed{900}
+
+ gsm8k_train_5804 reference 2 {'pred': '3', 'correct': False, 'cut': False}
+Problem: Ziggy is a club DJ. Typically, Ziggy gets 30 song requests every night. Half the songs requested are electropop. A third of that amount are requests for dance music. Five song requests are rock music, and song requests f
+Middle:  5 + 2 = 27.         7.  Remaining requests = 30 - 27 = 3.         8.  The prompt states Ziggy "also sometimes gets rap song requests". This implies Rap accounts for the remainder of the requests.         9.  The sentence about "DJ's Choice" refers t
+End: ce the prompt mentions he "also sometimes gets rap song requests," Rap represents the remaining requests not accounted for by the other genres.  $$30 (\text{Total Requests}) - 27 (\text{Identified Requests}) = 3$$  Therefore, Ziggy gets 3 rap song requests every night.  \boxed{3}
+
+ math_train_intermediate_algebra_1046 reference (2,4) {'pred': '2 < x < 4', 'correct': False, 'cut': False}
+Problem: Find all values of $x$ that satisfy
+\[5x - 1 < (x + 1)^2 < 7x - 3.\]
+Middle: x + 1$     $0 < x^2 - 3x + 2$     Roots 1, 2. Opens up. Outside roots. Correct.     $(x+1)^2 < 7x - 3$     $x^2 + 2x + 1 < 7x - 3$     $0 < x^2 - 5x + 4$ (Wait, moving to RHS gives $>0$)     Original was $<$.     $x^2 + 2x + 1 - 7x + 3 < 0$     $x^2 
+End:  is not included.  Let's test \(x = 4\). *   \(5(4) - 1 = 19\) *   \((4 + 1)^2 = 25\) *   \(7(4) - 3 = 25\) The inequality becomes \(19 < 25 < 25\). The second part \(25 < 25\) is false. So \(x=4\) is not included.  The solution is the open interval \((2, 4)\).  \boxed{2 < x < 4}
+
+ aime_2008-II-13 reference 29 {'pred': None, 'correct': False, 'cut': True}
+Problem: A regular hexagon with center at the origin in the complex plane has opposite pairs of sides one unit apart. One pair of sides is parallel to the imaginary axis. Let $R$ be the region outside the hexagon, and let $S = \l
+Middle:  to the radius vector from center to 0. Center is $e^{-i \alpha_k}$. Vector to 0 is $-e^{-i \alpha_k}$. Tangent is $i e^{-i \alpha_k}$? No. The tangent at 0 is the line through 0 perpendicular to the line connecting center and 0. Center is at angle $
+End: ossible that the union of disks is not the correct shape? Let's check the condition $w \in D_k$. $w \in D_k \iff z \in H_k^c$. $S = \bigcup H_k^c$. This is correct. Wait, maybe the disks don't cover the whole union? The union of disks is the set of points $w$ such that $1/w \in \
+
+ aime_2006-I-15 reference 27 {'pred': None, 'correct': False, 'cut': True}
+Problem: Given that a sequence satisfies $x_0=0$ and $|x_k|=|x_{k-1}+3|$ for all integers $k\ge 1,$ find the minimum possible value of $|x_1+x_2+\cdots+x_{2006}|.$
+Middle: . This matches my expansion perfectly! So $S_N = \sum_{k=1}^N \sum_{j=k}^N \prod_{m=k}^j \sigma_m$. This represents the sum of all products of contiguous subsequences of $\sigma_1, \dots, \sigma_N$. We want to minimize $|S_N|$. Let $x_k = \prod_{m=k}
+End: 1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (
+
+ aime_2000-II-10 reference 647 {'pred': None, 'correct': False, 'cut': True}
+Problem: A circle is inscribed in quadrilateral $ABCD$ , tangent to $\overline{AB}$ at $P$ and to $\overline{CD}$ at $Q$ . Given that $AP=19$ , $PB=26$ , $CQ=37$ , and $QD=23$ , find the square of the radius of the circle.
+Middle: n^2 \phi + 19^2 + 2r \cdot 23 \sin \phi \cos \phi + 38 r \cos \phi + 380 \sin \phi$. Term 2: $r^2 \sin^2 \phi + 23^2 \cos^2 \phi + r^2 - 46 r \sin \phi \cos \phi - 46 r \cos \phi + 46 r \sin \phi$. Wait, $(r \sin \phi - 23 \cos \phi + r)^2 = (r(\sin 
+End: B^2 + CD^2}{something}$? Let's check the result from a known theorem. For a tangential quadrilateral, $r^2 = \frac{K^2}{s^2}$. We know $s = 105$. $K = 105 r$. This is circular. Is there a relation $r^2 = \frac{xy}{uv}$? Maybe $r^2 = \frac{AP \cdot QD}{PB \cdot CQ}$? No. Maybe $r^
+
+ aime_2018-II-11 reference 461 {'pred': None, 'correct': False, 'cut': True}
+Problem: Find the number of permutations of $1, 2, 3, 4, 5, 6$ such that for each $k$ with $1$ $\leq$ $k$ $\leq$ $5$ , at least one of the first $k$ terms of the permutation is greater than $k$ .
+Middle: n-1), pos(n))$. We need $\min(pos(n-1), pos(n)) \le n-2$. $x_{k} = \min(pos(k+1), \dots, pos(n))$. We need $\min(pos(k+1), \dots, pos(n)) \le k$. This looks like a very strong condition. Let's rewrite the condition. For every $k \in \{1, \dots, n-1\}
+End: check if this uniquely determines $\pi$. We have $j_1, \dots, j_n$. We know $j_1 \le 1 \implies j_1 = 1$. $j_2 \le 2$. ... $j_k \le k$. Also $j_1 \le j_2 \le \dots \le j_n$. This implies $j_k \in \{1, \dots, k\}$. Also $j_k$ is the minimum of $\pi(k+1), \dots, \pi(n)$. This means
+
+ aime_2022-I-8 reference 378 {'pred': None, 'correct': False, 'cut': True}
+Problem: Equilateral triangle $\triangle ABC$ is inscribed in circle $\omega$ with radius $18.$ Circle $\omega_A$ is tangent to sides $\overline{AB}$ and $\overline{AC}$ and is internally tangent to $\omega.$ Circles $\omega_B$ a
+Middle: prox 15$. Wait, $K_1 \approx (12, -6.9)$. Dist to $C$: $\approx 4.2$. So $K_1$ is close to $C$. $K_2$ is close to $A$. $L_1$ is close to $A$. $L_2$ is close to $B$. $M_1$ is close to $C$? No, $M_1$ is $(6.7, 3.9)$. Wait, $M_1$ is intersection of $\om
+End: is small, $I_A$ is close to $A$. If $I_A$ is close to $A$, then $OI_A \approx 18$. $r = 18 - 18 = 0$. So $r$ must be large. Wait, let's look at the diagram. $\omega_A$ is tangent to $AB, AC$. Center $I_A$ is on bisector. Distance from $I_A$ to $AB$ is $r$. Distance from $O$ to $I
+
+ aime_2002-II-15 reference 282 {'pred': None, 'correct': False, 'cut': True}
+Problem: Circles $\mathcal{C}_{1}$ and $\mathcal{C}_{2}$ intersect at two points, one of which is $(9,6)$ , and the product of the radii is $68$ . The x-axis and the line $y = mx$ , where $m > 0$ , are tangent to both circles. It
+Middle: . The set of radii $\{r_1, r_2\}$ must satisfy the condition that they are roots of the respective quadratics. Wait, the circles are fixed. If $\mathcal{C}_1$ is in Region 1, its radius $R_1$ must satisfy Eqn 1. If $\mathcal{C}_2$ is in Region 2, its
+End: e bisector. So $d$ is the distance along the bisector. For intersection, we need $d < r_1+r_2$. So $\frac{r_2-r_1}{r_2+r_1} \frac{\sqrt{k^2+1}}{k} < 1$. Let's check the example again. $k = \sqrt{2}-1 \approx 0.414$. $\frac{\sqrt{k^2+1}}{k} = \frac{\sqrt{2}}{\sqrt{2}-1} = \sqrt{2}
+
+ aime_2008-I-11 reference 172 {'pred': None, 'correct': False, 'cut': True}
+Problem: Consider sequences that consist entirely of $A$ 's and $B$ 's and that have the property that every run of consecutive $A$ 's has even length, and every run of consecutive $B$ 's has odd length. Examples of such sequence
+Middle: 2(0) - 1(1) + 1(0) = -1 \implies y_3 = 1$. $y_4 - 2(0) - 1(0) + 1(1) = 1 \implies y_4 = 0$. Wait, my previous $y$ values were: $y_0=1, y_1=1, y_2=0, y_3=2, y_4=1, y_5=3, y_6=2, y_7=4$. Let's check $y_3$. Eq: $y_3 - 2y_1 - y_0 = -1$? No. $D(z) = 1 - 2
+End: } = 2(11) + 10 - 5 = 22 + 5 = 27$. Correct. $c_{11} = 2c_9 + c_8 - c_7$. $c_9=21, c_8=11, c_7=10$. $c_{11} = 2(21) + 11 - 10 = 42 + 1 = 43$. Correct. $c_{12} = 2c_{10} + c_9 - c_8$. $c_{10}=27, c_9=21, c_8=11$. $c_{12} = 2(27) + 21 - 11 = 54 + 10 = 64$. Correct. $c_{13} = 2c_{11
+Successful forward passes: 1; Python calls: 4.
