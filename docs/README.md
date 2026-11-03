@@ -4,6 +4,8 @@
 
 **2026-11-03｜WSP 编程扩展 WCP-01（仅方案，未运行）：** [0.8B / 4B 独立痛点诊断与稀疏干预](wsp-coding-painpoint-v1-2026-11-03/PLAN.zh-CN.md)｜[完整设计自查](wsp-coding-painpoint-v1-2026-11-03/SELF_CHECK.zh-CN.md)｜[预算](wsp-coding-painpoint-v1-2026-11-03/BUDGET.json)。Python 函数任务，MBPP 开发、HumanEval+ 独立终验；最多12个候选，含随机/反号及原版非思考对照。全流程停止线4/10 GPUh，包含终验。逻辑自查通过，工程待验收；本轮0模型/GPU，数学50-pass与编程搜索均未启动。
 
+**2026-11-03｜NSR-01 方案（设计，未冻结、无 GPU 授权）：受损深层 S 能否把损伤带进干净运行。** [方案](cache-native-s-reverse-v1-2026-11-03/PLAN.zh-CN.md)。以 C 为接收者，在 τ 只换入同输入 T 的 G 层 S（主臂 CS），比较 CV/CK/CJ，并以另一条干净输入的 S（CSx）作失配对照；两针、48 条、主读数自然完整回答与异常类型（停止/错选/混合/其他）。估计 0.2–0.3 GPUh。
+
 **2026-11-03｜NCC-01 结果：只恢复深层递推 S，L0 与 L12 的完整回答都全部恢复；L0 上开头恢复（V 历史）与答案恢复（S）分开。** [报告](../experiments/cache-native-carrier-comparison-v1-2026-11-03/REPORT.zh-CN.md)。τ 在最后提示 token 前、浅层与入口保持受干预。L0：T 0、TV 16（已知）、TS 48、TK 3、TJ 48；L12：T 31，四个单组均 48。L0 的 TV 46/48 以编号开头但多选错编号，TS 多以重开 think/引导语开头却全对；首步分差排序两针相同（TJ>TV>TS>TK），与 L0 完整回答排序不同。登记的"TS 单独较弱"预测被否证（与先前首步分数结果不冲突：TS 只补回 L0 首步缺口约 33%）。约 0.17 GPUh，无偏离。候选：反向移植检验污染充分性。
 
 **2026-11-03｜NCC-01 已冻结上卡（合同 r01）：** [方案](cache-native-carrier-comparison-v1-2026-11-03/PLAN.zh-CN.md)／[合同](../experiments/cache-native-carrier-comparison-v1-2026-11-03/CONTRACT.zh-CN.md)。在第一个回答 token 前对 L0/N4146 与 L12/C3621 分别恢复深层卷积 V 历史、S、KV 或全部深层缓存（TJ 含卷积 q/k），比较原生首步与自然完整回答；TV 两针均桥接到既有 V 背景记录（已知参照）。CPU 6/6、冒烟闸门全过。结果另报。
