@@ -4,6 +4,8 @@
 
 **2026-11-03｜WSP 编程扩展 WCP-01（仅方案，未运行）：** [0.8B / 4B 独立痛点诊断与稀疏干预](wsp-coding-painpoint-v1-2026-11-03/PLAN.zh-CN.md)｜[完整设计自查](wsp-coding-painpoint-v1-2026-11-03/SELF_CHECK.zh-CN.md)｜[预算](wsp-coding-painpoint-v1-2026-11-03/BUDGET.json)。Python 函数任务，MBPP 开发、HumanEval+ 独立终验；最多12个候选，含随机/反号及原版非思考对照。全流程停止线4/10 GPUh，包含终验。逻辑自查通过，工程待验收；本轮0模型/GPU，数学50-pass与编程搜索均未启动。
 
+**2026-11-03｜NPC-01 方案（设计，未冻结、无 GPU 授权）：V、S、KV 两两组合的反向移植。** [方案](cache-native-pair-combination-v1-2026-11-03/PLAN.zh-CN.md)。干净接收者中换入受损的 S+V、S+KV、V+KV（每针 3 格），与单组、V+S+KV、全部深层逐条配对；回答“最少哪两块一起受损就致错、S 是否必须在场”。估计 0.2 GPUh。
+
 **2026-11-03｜NQK-01 结果：受损 q/k 历史单独不致错；不含 q/k 的 V＋S＋KV 组合足以致错，在 L0 上几乎逐条重现全部深层受损。** [报告](../experiments/cache-native-qk-history-v1-2026-11-03/REPORT.zh-CN.md)。C 为接收者：CQK 两针均 48/48；CVSK 在 L0 为 2/48（CJ 为 2，46 条改坏输入完全重合、41 条文本相同），在 L12 为 30/48（CJ 为 31，复现 15/17、新增 3）。联合致错不是因为漏测的 q/k。登记的"CQK 致错"预测落空。约 0.17 GPUh，无偏离。候选：V/S/KV 两两组合。
 
 **2026-11-03｜NSR-01 结果：受损深层 S（或 V、KV）单独放进干净运行都不致错，只有全部深层受损才出错；另一条输入的干净 S 会把答案改写成供体的答案。** [报告](../experiments/cache-native-s-reverse-v1-2026-11-03/REPORT.zh-CN.md)。C 为接收者：L0 的 CS/CV/CK 均 48、CJ 2（停止 18＋混合 28，T 为停止 47）；L12 的 CS/CV/CK 均 48、CJ 31（= T，逐位相同）；CSx 10 对、38 错选，其中 32 条正是供体答案。三条工作预测全部落空。**更正 NCC-01**：L12 的浅层与入口不受针影响，L12 的 TJ = C 是构造必然。约 0.21 GPUh，无偏离。
