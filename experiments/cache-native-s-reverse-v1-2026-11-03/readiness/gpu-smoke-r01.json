@@ -1,0 +1,26 @@
+{
+  "status": "passed",
+  "unit": "LVK-H-NA-NQ01-ABC-A",
+  "gates": {
+    "sources": "formation hashes == NCC-01; donor C formation hash == LVK; donor rule (same scenario, next ID, cyclic)",
+    "endpoints": "C and both T: t1 bf16 + natural tokens == NCC-01 formal (itself bridged to CGV / NVB)",
+    "replacement": "targets == donor (V: channels [V_LO:] only); all other tensors and bookkeeping bit-equal to the receiver C; donors unchanged",
+    "layout": "G == (13, 14, 16, 17, 18, 20, 21, 22, 24, 25, 26, 28, 29, 30); deep full-attention == (15, 19, 23, 27, 31); conv channels q|k = 4096; stop ids == parser",
+    "self_swap": "receiver-as-donor replacement (S, J): cache unchanged and t1 bf16 == C"
+  },
+  "counts": {
+    "formations": 4,
+    "prefix_prefills": 2,
+    "formation_token_forwards": 108,
+    "t1": 12,
+    "engineering": 2,
+    "n_steps": 86,
+    "trajectories": 10,
+    "decode_forwards": 100
+  },
+  "load_seconds": 9.077464554458857,
+  "item_seconds": 14.777736833319068,
+  "peak_memory_bytes": 9604498944,
+  "tensor_keys": 12,
+  "integrity_hooks_removed": true
+}

@@ -1,6 +1,7 @@
 # 实验目录：按研究问题查找
 
 - [DIV-01 第零步 4B L0 阈值附近同范数分裂普查](div01-threshold-split-survey-v1-2026-11-03/REPORT.zh-CN.md)（2026-11-03）：20 通道×{0.5,0.75}×8 题，只生成；够数闸 FAIL（0.5 STOP 5／CLEAN 0，0.75 全 STOP）；EOS 阈值全落在 0.5–0.75；复现闸 16/16。
+- [NSR-01 受损深层 S 的反向移植](cache-native-s-reverse-v1-2026-11-03/CONTRACT.zh-CN.md)（2026-11-03）：C 为接收者，换入两针 T 的 S/V/KV/全部深层，加跨输入 S 参照 CSx；主读数自然完整回答与异常类型；探索性。
 - [NCC-01 L0/L12 原生深层缓存承载比较](cache-native-carrier-comparison-v1-2026-11-03/CONTRACT.zh-CN.md)（2026-11-03）：τ 在最后提示 token 前；T/TV/TS/TK/TJ × 两针＋共享 C；主读数自然完整回答；探索性。
 - [NMT-01 状态增量幅度分布的双向匹配](cache-increment-norm-match-v2-2026-11-03/CONTRACT.zh-CN.md)（2026-11-03）：SIT 增量逐层逐头 UP/DN × 两接收背景＋UPG/RND 次要臂；冻结读法四档；探索性。
 - [SIT-01 写入增量跨输出背景转移](cache-state-increment-transfer-v1-2026-11-03/CONTRACT.zh-CN.md)（2026-11-03）：NVB 八格重放＋4 个 t1 后 ΔS 移植格（全 14 个 G 层，双向）；只报连续值；探索性。方案 [docs](../docs/cache-state-increment-transfer-v1-2026-11-03/PLAN.zh-CN.md)。
