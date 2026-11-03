@@ -1,0 +1,26 @@
+{
+  "status": "passed",
+  "unit": "LVK-H-NA-NQ01-ABC-A",
+  "gates": {
+    "sources": "C formation hash == LVK == CGV; L0 T == LVK; L12 T == CGV; C t1 bf16 + natural tokens == CGV G1 C",
+    "endpoints": "T t1 bf16 + natural tokens == NVB B000 (L0) / CGV L00 (L12); TV == LVK arm V (L0) / CGV L10 (L12), both = t1 on the V background",
+    "replacement": "targets == donor (V: channels [V_LO:] only, q/k kept); all other tensors and bookkeeping bit-equal to the receiver; donor and receiver unchanged",
+    "layout": "G == (13, 14, 16, 17, 18, 20, 21, 22, 24, 25, 26, 28, 29, 30); deep full-attention == (15, 19, 23, 27, 31); conv channels q|k = 4096, V = value_dim; stop ids == parser",
+    "self_swap": "receiver-as-donor replacement (V, J): cache unchanged and t1 bf16 == T"
+  },
+  "counts": {
+    "formations": 3,
+    "prefix_prefills": 1,
+    "formation_token_forwards": 81,
+    "t1": 11,
+    "engineering": 4,
+    "n_steps": 65,
+    "trajectories": 9,
+    "decode_forwards": 80
+  },
+  "load_seconds": 9.04048446752131,
+  "item_seconds": 11.845639551058412,
+  "peak_memory_bytes": 9603613696,
+  "tensor_keys": 11,
+  "integrity_hooks_removed": true
+}
