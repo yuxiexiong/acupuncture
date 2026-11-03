@@ -2,6 +2,8 @@
 
 **2026-11-03｜WSP 编程扩展 WCP-01（仅方案，未运行）：** [0.8B / 4B 独立痛点诊断与稀疏干预](wsp-coding-painpoint-v1-2026-11-03/PLAN.zh-CN.md)｜[完整设计自查](wsp-coding-painpoint-v1-2026-11-03/SELF_CHECK.zh-CN.md)｜[预算](wsp-coding-painpoint-v1-2026-11-03/BUDGET.json)。Python 函数任务，MBPP 开发、HumanEval+ 独立终验；最多12个候选，含随机/反号及原版非思考对照。全流程停止线4/10 GPUh，包含终验。逻辑自查通过，工程待验收；本轮0模型/GPU，数学50-pass与编程搜索均未启动。
 
+**2026-11-03｜NMT-01 v2 已冻结上卡（合同 r01，冻结 86827bd6）：** [方案 v2](cache-increment-norm-match-v2-2026-11-03/PLAN.zh-CN.md)／[自查](cache-increment-norm-match-v2-2026-11-03/SELF_CHECK.zh-CN.md)／[合同](../experiments/cache-increment-norm-match-v2-2026-11-03/CONTRACT.zh-CN.md)。固定接收背景，SIT 增量逐层逐头双向缩放（UP/DN × r × b，8 格），次要 UPG 与 RND(K=5)；一阶参照数据前已登记（缺口方向 Φ_up 0.84–1.24、Φ_dn 0.90–1.07、Φ_UPG 0.25–0.54，只作参照）。CPU 13/13、真实模型冒烟 r03 闸门全过（r01/r02 冒烟为冻结前工程失败，已修，DECISIONS D7–D8）。结果另报。
+
 **2026-11-03｜NMT-01 范数匹配实验卡（设计，未冻结、无 GPU 授权）：** [实验卡](cache-increment-norm-match-v1-2026-11-03/PLAN.zh-CN.md)。固定接收背景，把原生来源状态增量逐层逐头放大到恢复来源幅度（UP）、反向把恢复来源缩小（DN），两接收背景各 b=0/1；次要臂：写入位置保留、内容随机（K=5）与总范数统一缩放。读法分“幅度复现 / 幅度不足 / 单侧 / 背景依赖”，各对应下一步；不证明单调性。估计 0.4–0.7 GPUh。另：零 GPU 三件已加作者更正（DIV-01 收窄“层内差异只能来自方向”）。
 
 **2026-11-03｜跨条件预测线：零 GPU 三件已交付，未冻结、无计算授权。** [检验集盘点](cross-condition-predictor-v1-2026-11-03/INVENTORY.zh-CN.md)／[竞争候选](cross-condition-predictor-v1-2026-11-03/CANDIDATES.zh-CN.md)／[预注册草稿](cross-condition-predictor-v1-2026-11-03/PREREG_DRAFT.zh-CN.md)。调查中同层同剂量的写入范数恒为 d·m，层内通道差异（如 9B L0 首步 EOS [0,8,8,0,8,0,5,0,8,8]）只能来自方向；四个候选：幅度/位置、停止 token 对齐（静态权重）、传播放大、输入压平后回落默认输出。三阶段：回顾性盲算（0 GPU，结局多已见过）→ 新通道前瞻 → 针对候选的因果干预。待审定判据与规模。
