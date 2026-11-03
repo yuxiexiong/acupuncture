@@ -1,0 +1,93 @@
+{
+  "design_id": "WCP-01-v1-20261103",
+  "status": "plan_only_not_runner_config",
+  "authorized": false,
+  "model_calls_this_delivery": 0,
+  "gpu_seconds_this_delivery": 0,
+  "model_profiles": {
+    "0p8b": {
+      "revision": "2fc06364715b967f1860aea9cf38778875588b17",
+      "layers": 24,
+      "stage_gpu_hours": {
+        "A": 0.5,
+        "B": 1.5,
+        "C": 2
+      },
+      "gpu_hours_cap": 4,
+      "new_data_bytes_cap": 25000000000,
+      "start_free_bytes": 75000000000,
+      "historical_short_output_tokens_per_second": 14045
+    },
+    "4b": {
+      "revision": "851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a",
+      "layers": 32,
+      "stage_gpu_hours": {
+        "A": 1,
+        "B": 4,
+        "C": 5
+      },
+      "gpu_hours_cap": 10,
+      "new_data_bytes_cap": 40000000000,
+      "start_free_bytes": 90000000000,
+      "historical_short_output_tokens_per_second": 5124
+    }
+  },
+  "per_model": {
+    "generation_counts": {
+      "diagnosis": 256,
+      "screen": 384,
+      "validation": 768,
+      "final_coding": 1312,
+      "math_guard": 256,
+      "acceptance": 32
+    },
+    "total_generation_samples_cap": 3008,
+    "coding_generation_samples_cap": 2720,
+    "coding_max_new_tokens": 16384,
+    "math_guard_max_new_tokens": 32768,
+    "acceptance_max_new_tokens": 128,
+    "worst_case_output_tokens": 52957184,
+    "teacher_forced_input_tokens_cap": 2000000,
+    "candidate_configs_cap": 12,
+    "support_sizes": [
+      8,
+      32
+    ],
+    "layers_per_candidate": 1,
+    "screen_gains": [
+      -0.5,
+      0.5
+    ],
+    "second_stage_gains": [
+      -1,
+      1
+    ],
+    "cpu_core_hours_cap": 60,
+    "code_execution_workers_cap": 4,
+    "code_execution_memory_bytes_cap": 4294967296,
+    "code_execution_seconds_per_program_cap": 60,
+    "editor_turns_cap": 100,
+    "editor_python_calls_cap": 120,
+    "editor_input_tokens_cap": 1500000,
+    "editor_output_tokens_cap": 150000,
+    "disk_free_reserve_bytes": 50000000000
+  },
+  "both_models": {
+    "gpu_hours_cap": 14,
+    "cpu_core_hours_cap": 120,
+    "new_data_plus_shared_reserve_bytes": 115000000000
+  },
+  "sources": {
+    "mbpp_revision": "f46ca8374b4cddef97ca4208ad986049d74d296a",
+    "evalplus_revision": "26d6d00bb1fd0fa37f39c99d5290da67891d1c5e",
+    "humaneval_plus_version": "v0.1.10",
+    "humaneval_plus_variant": "full",
+    "download_hashes_status": "pending_data_acceptance"
+  },
+  "limitations": [
+    "Resource stops, not performance promises; attempts and failures spend the same total budget.",
+    "No execution authorized; no runnable search config created.",
+    "Cash cost needs actual hardware and editor account rates.",
+    "Final task count and dataset hashes require CPU acceptance before any generation."
+  ]
+}
