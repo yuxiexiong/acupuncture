@@ -1,5 +1,7 @@
 # 项目文档目录
 
+**2026-11-03｜WCP-01 编程工程验收：** [数据、评分/隔离、0.8B与4B编译干预及资源复核](../experiments/wsp-coding-painpoint-v1-2026-11-03/REPORT.zh-CN.md)。四类模块验收通过；保留BF16运行时/编译不等价反例。新增约0.458GB、磁盘余量约269.57GB；4/10 GPUh仅停止线，完整ETA未验证。正式搜索未启动，WCP阶段调度与编辑器阶段权限仍待接入。
+
 **2026-11-03｜WSP 编程扩展 WCP-01（仅方案，未运行）：** [0.8B / 4B 独立痛点诊断与稀疏干预](wsp-coding-painpoint-v1-2026-11-03/PLAN.zh-CN.md)｜[完整设计自查](wsp-coding-painpoint-v1-2026-11-03/SELF_CHECK.zh-CN.md)｜[预算](wsp-coding-painpoint-v1-2026-11-03/BUDGET.json)。Python 函数任务，MBPP 开发、HumanEval+ 独立终验；最多12个候选，含随机/反号及原版非思考对照。全流程停止线4/10 GPUh，包含终验。逻辑自查通过，工程待验收；本轮0模型/GPU，数学50-pass与编程搜索均未启动。
 
 **2026-11-03｜NMT-01 v2 已冻结上卡（合同 r01，冻结 86827bd6）：** [方案 v2](cache-increment-norm-match-v2-2026-11-03/PLAN.zh-CN.md)／[自查](cache-increment-norm-match-v2-2026-11-03/SELF_CHECK.zh-CN.md)／[合同](../experiments/cache-increment-norm-match-v2-2026-11-03/CONTRACT.zh-CN.md)。固定接收背景，SIT 增量逐层逐头双向缩放（UP/DN × r × b，8 格），次要 UPG 与 RND(K=5)；一阶参照数据前已登记（缺口方向 Φ_up 0.84–1.24、Φ_dn 0.90–1.07、Φ_UPG 0.25–0.54，只作参照）。CPU 13/13、真实模型冒烟 r03 闸门全过（r01/r02 冒烟为冻结前工程失败，已修，DECISIONS D7–D8）。结果另报。

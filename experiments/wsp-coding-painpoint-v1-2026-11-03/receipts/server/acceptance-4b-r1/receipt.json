@@ -1,0 +1,99 @@
+{
+  "profile": "4b",
+  "scope": "synthetic_engineering_only",
+  "formal_search_started": false,
+  "gpu": 0,
+  "generated_samples": 32,
+  "tf_input_tokens": 266,
+  "checks": [
+    {
+      "name": "zero_identity",
+      "passed": true
+    },
+    {
+      "name": "runtime_compiled_diagnostic",
+      "gain": -1,
+      "branch_relative_l2": 0.0,
+      "max_logprob_error": 0.0,
+      "matches_original_equivalence_gate": true
+    },
+    {
+      "name": "runtime_compiled_diagnostic",
+      "gain": -0.5,
+      "branch_relative_l2": 0.0,
+      "max_logprob_error": 0.0,
+      "matches_original_equivalence_gate": true
+    },
+    {
+      "name": "runtime_compiled_diagnostic",
+      "gain": 0.5,
+      "branch_relative_l2": 0.00097609031945467,
+      "max_logprob_error": 0.11931729316711426,
+      "matches_original_equivalence_gate": false
+    },
+    {
+      "name": "runtime_compiled_diagnostic",
+      "gain": 1,
+      "branch_relative_l2": 0.0,
+      "max_logprob_error": 0.0,
+      "matches_original_equivalence_gate": true
+    },
+    {
+      "name": "fp32_local_equivalence",
+      "relative_l2": 6.742902680656471e-09,
+      "passed": true
+    },
+    {
+      "name": "streaming_activation_summary",
+      "passed": true
+    },
+    {
+      "name": "all_tensor_identity_and_gain_roundtrip",
+      "arm": "minus",
+      "changed_tensors": [
+        "model.language_model.layers.0.mlp.down_proj.weight"
+      ],
+      "passed": true
+    },
+    {
+      "name": "all_tensor_identity_and_gain_roundtrip",
+      "arm": "plus",
+      "changed_tensors": [
+        "model.language_model.layers.0.mlp.down_proj.weight"
+      ],
+      "passed": true
+    },
+    {
+      "name": "paired_vllm_gain_generation",
+      "passed": true
+    }
+  ],
+  "generation": [
+    {
+      "arm": "original",
+      "seconds": 4.049551010131836,
+      "answers": 8,
+      "tokens": 1024
+    },
+    {
+      "arm": "zero",
+      "seconds": 4.054080486297607,
+      "answers": 8,
+      "tokens": 1024
+    },
+    {
+      "arm": "minus",
+      "seconds": 4.005630731582642,
+      "answers": 8,
+      "tokens": 1024
+    },
+    {
+      "arm": "plus",
+      "seconds": 4.078888416290283,
+      "answers": 8,
+      "tokens": 1024
+    }
+  ],
+  "device_seconds": 226.90923909284174,
+  "status": "passed"
+}

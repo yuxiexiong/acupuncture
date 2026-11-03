@@ -1,9 +1,7 @@
 {
   "design_id": "WCP-01-v1-20261103",
-  "status": "plan_only_not_runner_config",
+  "status": "engineering_accepted_formal_search_disabled",
   "authorized": false,
-  "model_calls_this_delivery": 0,
-  "gpu_seconds_this_delivery": 0,
   "model_profiles": {
     "0p8b": {
       "revision": "2fc06364715b967f1860aea9cf38778875588b17",
@@ -16,7 +14,12 @@
       "gpu_hours_cap": 4,
       "new_data_bytes_cap": 25000000000,
       "start_free_bytes": 75000000000,
-      "historical_short_output_tokens_per_second": 14045
+      "historical_short_output_tokens_per_second": 14045,
+      "engineering_gpu_seconds_spent": 201.420917827636,
+      "remaining_stage_A_gpu_seconds": 1598.579082172364,
+      "remaining_total_gpu_seconds": 14198.579082172364,
+      "measured_synthetic_decode_tokens_per_second": 261.28606362823314,
+      "long_output_completion_eta_verified": false
     },
     "4b": {
       "revision": "851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a",
@@ -29,7 +32,12 @@
       "gpu_hours_cap": 10,
       "new_data_bytes_cap": 40000000000,
       "start_free_bytes": 90000000000,
-      "historical_short_output_tokens_per_second": 5124
+      "historical_short_output_tokens_per_second": 5124,
+      "engineering_gpu_seconds_spent": 226.90923909284174,
+      "remaining_stage_A_gpu_seconds": 3373.0907609071583,
+      "remaining_total_gpu_seconds": 35773.09076090716,
+      "measured_synthetic_decode_tokens_per_second": 253.02457890343643,
+      "long_output_completion_eta_verified": false
     }
   },
   "per_model": {
@@ -82,12 +90,25 @@
     "evalplus_revision": "26d6d00bb1fd0fa37f39c99d5290da67891d1c5e",
     "humaneval_plus_version": "v0.1.10",
     "humaneval_plus_variant": "full",
-    "download_hashes_status": "pending_data_acceptance"
+    "download_hashes_status": "verified_in_sources-manifest_and_data-freeze_receipts"
   },
   "limitations": [
-    "Resource stops, not performance promises; attempts and failures spend the same total budget.",
-    "No execution authorized; no runnable search config created.",
-    "Cash cost needs actual hardware and editor account rates.",
-    "Final task count and dataset hashes require CPU acceptance before any generation."
-  ]
+    "Formal search remains unauthorized; bounded engineering acceptance only has run.",
+    "4/10 GPU hours are unchanged total caps including engineering failures, not completion ETA.",
+    "128-token batch-8 eager acceptance cannot verify 16k throughput; historical batch throughput is not a valid point estimate for this coding workload.",
+    "Calibrate ETA from the first already-budgeted D batch only after formal authorization; no extra benchmark run.",
+    "Cash cost remains unknown without actual hardware and editor account rates."
+  ],
+  "engineering": {
+    "authorization": "user authorized engineering acceptance; subsequently selected compiled BF16 intervention, not runtime equivalence",
+    "formal_search_started": false,
+    "gpu_seconds_total": 428.33015692047775,
+    "generated_samples_total": 64,
+    "tf_input_tokens_total": 724,
+    "reference_programs_checked": 538,
+    "cpu_acceptance_checks": 14,
+    "workspace_free_bytes_at_audit": 269566660608,
+    "wcp_files_bytes_at_audit": 457892866,
+    "audit_time_utc": "2026-11-03T13:35:07.695039+00:00"
+  }
 }
