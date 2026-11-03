@@ -26,9 +26,11 @@ TH = {
     "F2_gt": 0.5,
     "F4_logprob_max": 1e-3,    # recomputed logprob from hidden_states[L] vs token_logprobs
     "F4_mlp_rel": 1e-2,        # ||down_proj(mlp_act) - mlp_out|| / ||mlp_out||
-    "F6_max": 0.1,             # batched vs single max |dlogprob|
+    "F6_max": 0.1,             # r1 only (bf16); replaced by F6_fp32_max in r2 (deviation D1)
     "F6_mean": 0.005,
-    "F7_identical": 0.9,       # A/A share of byte-identical texts
+    "F6_fp32_max": 1e-3,       # float32 batched vs single max |dlogprob|
+    "F7_identical": 0.9,       # r1 only; not achievable (vLLM GDN has no batch-invariant mode), deviation D3
+    "F7_z": 2.5,               # r2: A/A paired difference within 2.5 standard errors of 0
     "F8_rel": 2e-2,            # gen activation vs independent teacher-forced recomputation
 }
 
@@ -63,6 +65,11 @@ def judge_identical(share):
     return {"pass": share >= TH["F7_identical"], "identical_share": share}
 
 
+def judge_aa(diff, se):
+    ok = diff == 0 if not se else abs(diff) <= TH["F7_z"] * se
+    return {"pass": bool(ok), "difference": diff, "se": se}
+
+
 def demo():
     """6.2: each judge must be satisfiable and violable on synthetic data."""
     rng = np.random.default_rng(0)
@@ -73,7 +80,7 @@ def demo():
         "F4_logprob": (judge_maxabs(base, base + 1e-5, TH["F4_logprob_max"]), judge_maxabs(base, base + 1e-2, TH["F4_logprob_max"])),
         "F4_mlp": (judge_rel(base, base * (1 + 1e-3), TH["F4_mlp_rel"]), judge_rel(base, base * 1.1, TH["F4_mlp_rel"])),
         "F6": (judge_padding(base, base + rng.normal(0, 1e-3, 5000)), judge_padding(base, base + rng.normal(0, 0.05, 5000))),
-        "F7": (judge_identical(1.0), judge_identical(0.5)),
+        "F7": (judge_aa(0.01, 0.02), judge_aa(0.15, 0.03)),
         "F8": (judge_rel(base, base + 1e-4, TH["F8_rel"]), judge_rel(base, base[::-1], TH["F8_rel"])),
     }
     ok = True
@@ -183,12 +190,24 @@ def run(a):
     f4 = {"logprob_from_hidden_L_max_abs": worst_lp, "mlp_down_proj_rel": worst_mlp, "embedding_equal": bool(emb_ok)}
     f4["pass"] = worst_lp <= TH["F4_logprob_max"] and worst_mlp <= TH["F4_mlp_rel"] and emb_ok
     check("F4_index_identity", f4)
-    # F6 padding: all texts in one right-padded batch vs single
+    # F6 (r2, deviation D1): padding logic tested in float32; the bfloat16 batch-shape difference is only measured
+    # (it is the batch null for F2; r1 showed bf16 max 0.33 while float32 max was 4e-5)
     r = R.run(ids, want_last=True)
     batched = [x[0].numpy() for x in R.logprobs(r["last"], ids)]
-    check("F6_padding", judge_padding(np.concatenate([b[1:] for b in batched]), np.concatenate([s["lp"][1:] for s in single])))
+    d16 = np.abs(np.concatenate([b[1:] for b in batched]) - np.concatenate([s["lp"][1:] for s in single]))
+    rec["measurements"]["bf16_batch_null"] = {"max": float(np.nanmax(d16)), "mean": float(np.nanmean(d16)),
+                                              "p99": float(np.nanpercentile(d16, 99)),
+                                              "share_gt_0.5": float(np.nanmean(d16 > 0.5))}
     hf_orig = np.concatenate([s["lp"][1:] for s in single])
     del R, r
+    torch.cuda.empty_cache()
+    R32 = FS.Reader(prof["model"], "cuda:0")
+    R32.model.to(torch.float32)
+    s32 = np.concatenate([R32.logprobs(R32.run([s], want_last=True)["last"], [s])[0][0].numpy()[1:] for s in ids])
+    r = R32.run(ids, want_last=True)
+    b32 = np.concatenate([x[0].numpy()[1:] for x in R32.logprobs(r["last"], ids)])
+    check("F6_padding_fp32", judge_maxabs(b32, s32, TH["F6_fp32_max"]))
+    del R32, r
     torch.cuda.empty_cache()
     R2 = FS.Reader(ck_fix, "cuda:0")
     hf_fix = np.concatenate([R2.logprobs(R2.run([s], want_last=True)["last"], [s])[0][0].numpy()[1:] for s in ids])
@@ -199,12 +218,12 @@ def run(a):
     def vllm_prompt_lp(ckpt, tag):
         script = out / f"vllm_lp_{tag}.py"
         script.write_text(
-            "import json,sys\nfrom vllm import LLM, SamplingParams\n"
-            f"ids=json.load(open({str(out / 'ids.json')!r}))\n"
-            f"llm=LLM(model={str(ckpt)!r},dtype='bfloat16',seed=0,gpu_memory_utilization=0.6,max_model_len=8192,enable_prefix_caching=False)\n"
-            "o=llm.generate([{'prompt_token_ids':s} for s in ids],SamplingParams(max_tokens=1,prompt_logprobs=0,temperature=0),use_tqdm=False)\n"
-            "res=[[None]+[d[t].logprob for d,t in zip(x.prompt_logprobs[1:],s[1:])] for x,s in zip(o,ids)]\n"
-            f"json.dump(res,open({str(out / f'vllm_lp_{tag}.json')!r},'w'))\n")
+            "import json,sys\nfrom vllm import LLM, SamplingParams\nif __name__ == '__main__':\n"
+            f"    ids=json.load(open({str(out / 'ids.json')!r}))\n"
+            f"    llm=LLM(model={str(ckpt)!r},dtype='bfloat16',seed=0,gpu_memory_utilization=0.6,max_model_len=8192,enable_prefix_caching=False)\n"
+            "    o=llm.generate([{'prompt_token_ids':s} for s in ids],SamplingParams(max_tokens=1,prompt_logprobs=0,temperature=0),use_tqdm=False)\n"
+            "    res=[[None]+[d[t].logprob for d,t in zip(x.prompt_logprobs[1:],s[1:])] for x,s in zip(o,ids)]\n"
+            f"    json.dump(res,open({str(out / f'vllm_lp_{tag}.json')!r},'w'))\n")
         (out / "ids.json").write_text(json.dumps(ids))
         t0 = time.time()
         subprocess.run([sys.executable, str(script)], check=True, env=dict(os.environ, CUDA_VISIBLE_DEVICES="0"),
@@ -238,7 +257,12 @@ def run(a):
     rec["measurements"]["aa_serve_seconds"] = time.time() - t0
     res = json.loads((arch / "pass_1.result.json").read_text())
     pr = res["paired"]
-    f7 = judge_identical(pr["identical_texts"] / pr["answers"])
+    f7 = judge_aa(pr["accuracy_difference"], pr["standard_error"])
+    f7["identical_share_descriptive"] = pr["identical_texts"] / pr["answers"]
+    ro = {(r["key"], r["sample"]): r["token_ids"] for r in map(json.loads, open(arch / "gen_1_original.raw.jsonl"))}
+    re_ = {(r["key"], r["sample"]): r["token_ids"] for r in map(json.loads, open(arch / "gen_1_edited.raw.jsonl"))}
+    f7["first_divergence_descriptive"] = sorted(next((i for i, (x, y) in enumerate(zip(ro[k], re_[k])) if x != y),
+                                                     min(len(ro[k]), len(re_[k]))) for k in ro)
     f7["paired"] = pr
     f7["arms"] = res["arms"]
     check("F7_aa_both", f7)
