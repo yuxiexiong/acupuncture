@@ -1,5 +1,6 @@
 # 实验目录：按研究问题查找
 
+- [SIT-01 写入增量跨输出背景转移](cache-state-increment-transfer-v1-2026-11-03/CONTRACT.zh-CN.md)（2026-11-03）：NVB 八格重放＋4 个 t1 后 ΔS 移植格（全 14 个 G 层，双向）；只报连续值；探索性。方案 [docs](../docs/cache-state-increment-transfer-v1-2026-11-03/PLAN.zh-CN.md)。
 - [NBR-01 NVB 八格只记录重放](cache-native-bridge-record-v1-2026-11-03/CONTRACT.zh-CN.md)（2026-11-03）：不加条件；端点状态差、t2 读出分解、同一 q 交叉读取、∂M/∂o；探索性。
 
 - [NVB-01 原生输出下的留存 v 用途](cache-native-bridge-v1-2026-11-03/CONTRACT.zh-CN.md)（2026-11-03）：LVK 新面板 48 条×4 方向；8 个用途格（4 个重放 LVK）＋匹配随机留存族 K=19；主读数 DS0＝e(0,1)−e(0,0)。计划 [v2](../docs/cache-native-bridge-plan-v2-2026-11-03.zh-CN.md)。
