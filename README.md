@@ -1,5 +1,7 @@
 # Acupuncture｜少数通道干预：缓存机制与稳定副作用控制
 
+**2026-11-05｜当前交付改为论文写作，第一步已完成。** [论文工作稿：摘要、论证、结果正文与图表骨架](docs/mechanism-paper-skeleton-2026-11-05.zh-CN.md) · [更新至KVC与旧数据审计的理论—证据骨干](docs/cache-mechanism-theory-evidence-spine-2026-11-03.zh-CN.md) · [124目录资产表](docs/RESEARCH_ASSET_CATALOG_2026-11-04.zh-CN.md) · [结果归档](docs/RESEARCH_ARCHIVE_2026-11-04.zh-CN.md)。已接入全部后继机制实验、失败与更正，分清同端点计算链、原生约束和WIN/KVC桥接；没有将它们拼成统一原生机制。**下方v7及更早“下一比较”均保留计划身份，当前不推进WPC或局部细拆。** 本次无新实验、模型/GPU调用。
+
 **2026-11-05｜下半场v7：具体比较已补齐，未运行。** [WPC-01旧数据审计、设计、判读与停止](docs/mechanism-second-half-v1-2026-11-03/WINDOW_COMPARISON.zh-CN.md) · [Proposal](docs/mechanism-second-half-v1-2026-11-03/PROPOSAL.zh-CN.md) · [Roadmap](docs/cache-mechanism-broadening-roadmap-2026-11-04.zh-CN.md) · [To-do](docs/cache-mechanism-todo.zh-CN.md)。H1是研究方向，尚无核心主张；已审计WIN的384旧输出。下一比较固定一个L0方向、两任务、四臂及共同形成/幅度/次数/128上限，所有结果收尾后回横向取舍，不默认续局部拆解。作者逻辑自查通过，工程/模型验收未完成，无新模型/GPU运行或授权。
 
 **历史方向记录｜2026-11-04 v3（当前以顶部v7为准）：** [Proposal](docs/mechanism-second-half-v1-2026-11-03/PROPOSAL.zh-CN.md) · [Roadmap](docs/cache-mechanism-broadening-roadmap-2026-11-04.zh-CN.md) · [当前 To-do](docs/cache-mechanism-todo.zh-CN.md)。跨层、多针比较穿插早期任务检查；共同响应和分叉决定深入，跨模型按条件接入。第一步研究思路继续讨论，未设计新实验卡或新增模型/GPU运行。CGV 三种新结构仍输出编号，不冒充非编号任务。

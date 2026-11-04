@@ -1,5 +1,7 @@
 # 项目文档目录
 
+**2026-11-05｜论文写作入口：** [论文工作稿与完整图表骨架](mechanism-paper-skeleton-2026-11-05.zh-CN.md) · [更新后的理论与证据链](cache-mechanism-theory-evidence-spine-2026-11-03.zh-CN.md) · [124目录资产表](RESEARCH_ASSET_CATALOG_2026-11-04.zh-CN.md) · [结果与更正](RESEARCH_ARCHIVE_2026-11-04.zh-CN.md)。当前按用户要求先把全部已有机制结果写成连续论证；下方旧方案不自动执行，没有新增模型实验。
+
 **2026-11-05｜WSP B/C 准备 v2：** [B全量审核、C统计验收与剩余工作](../experiments/wsp-vlm-screen-prep-v2-2026-11-05/README.zh-CN.md) · [自查](../experiments/wsp-vlm-screen-prep-v2-2026-11-05/SELF_CHECK.zh-CN.md)。B按实际合格146组冻结（D58/H88），18组不纳入、不补题；C保留160组，补齐配对统计与离线验收。466张图哈希核对、9项CPU测试通过。B改写/评分后端与模型工程仍待完成；目标模型加载与推理均为0。
 
 **历史准备记录（已由顶部v2更新）｜WSP 行为筛查 B/C 数据实审：** [下载、配对、标签审核与 CPU 准备回执](../experiments/wsp-vlm-screen-data-v1-2026-11-05/README.zh-CN.md)。B 排除 5 个来源组后至多 159 组，不足 160；C 助手逐图审核 166 组通过，冻结 D64/H96，生成 6400 条输入。无目标模型加载或实验；独立人工复核与完整筛查后端尚未验收。

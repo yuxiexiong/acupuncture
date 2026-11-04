@@ -1,5 +1,7 @@
 # 缓存机制研究路线图：从局部解释到跨层、跨通道的共同机制
 
+**当前阶段更新（2026-11-05）：先把已有成果写成论文，不继续排下一张实验卡。** 第一阶段交付已完成：[正文工作稿与图表骨架](mechanism-paper-skeleton-2026-11-05.zh-CN.md)、[完整理论—证据连接](cache-mechanism-theory-evidence-spine-2026-11-03.zh-CN.md)、[资产盘点](RESEARCH_ASSET_CATALOG_2026-11-04.zh-CN.md)。写清已支持结论与承重缺口后，才能判断哪项证据真正决定论文贡献；不因写作自动开启测量。下方v7为保留的研究路线，WPC未实现／未运行，KV细拆与SDM无默认队列。无新模型/GPU调用。
+
 日期：2026-11-05；v7。当前下一比较已具体化为[WPC-01：旧数据审计、统一协议比较、判读与停止](mechanism-second-half-v1-2026-11-03/WINDOW_COMPARISON.zh-CN.md)。H1是研究方向，尚无核心主张；P-WPC是有限面板上的可失败预测。与[Proposal v7](mechanism-second-half-v1-2026-11-03/PROPOSAL.zh-CN.md)、[自查](mechanism-second-half-v1-2026-11-03/SELF_CHECK.zh-CN.md)、[To-do](cache-mechanism-todo.zh-CN.md)同步。作者设计审查通过；实现/模型验收未完成；无新实验或模型/GPU授权。旧R1–R5仅保留历史，当前以§4为准。
 
 ## 1. 课题现状：观察范围较宽，具体机制解释仍然局部

@@ -1,10 +1,31 @@
-# Acupuncture：全目录资产表（2026-11-04）
+# Acupuncture：全目录资产表（更新至2026-11-05）
 
 本表覆盖交付树内全部一级实验目录，既有报告、设计、审计、工具和工程材料均列入。**目录数、文件数不是独立实验或样本数。** 分类描述材料身份，不以文件存在判定科学阳性；完成、失败、停止与更正应连同报告／收据阅读。
 
 [理论与结果总览](RESEARCH_ARCHIVE_2026-11-04.zh-CN.md) · [逐文件SHA-256](../migration/2026-11-04-evidence-archive-r01/assets.jsonl) · [归档范围与例外](../migration/2026-11-04-evidence-archive-r01/README.zh-CN.md)
 
-共 **116 个一级目录**。实验目录文件共 62,356 个；同一记录的来源副本保留，所以不能按文件数推导实验工作量。
+**当前目录覆盖：124个一级实验目录＝下方11-04快照116项＋本节新增8项。** 对照证据树 `02c6beff778446d0a75caf760b2e92443c06bcd8` 的一级目录逐项核对。它们包含设计、工程、审计和结果，不是124次独立模型实验。
+
+旧快照的实验文件数62,356及逐文件SHA清单只覆盖11-04归档范围，**不作为当前树总文件数／哈希认证**。本轮没有重新打包原始数据或复算全仓库哈希；新增来源以本表、各报告、冻结清单和回执定位。同一记录的来源副本不能推导额外实验工作量。
+
+## 11-05新增资产与论文用途
+
+[论文工作稿](mechanism-paper-skeleton-2026-11-05.zh-CN.md)给出完整章节与图表落位；[理论—证据骨干](cache-mechanism-theory-evidence-spine-2026-11-03.zh-CN.md)已补E9–E14。已在旧116目录中的NVB/NBR/SIT/NMT、CGV与NCC–NPC不是新目录，但本轮已全部接入论文论证。
+
+| 新增目录 | 材料身份与当前状态 | 已解决的问题／仍不能说什么 | 论文落位与来源 |
+|---|---|---|---|
+| [cache-mechanism-alignment-r1-v1-2026-11-04](../experiments/cache-mechanism-alignment-r1-v1-2026-11-04/) | 旧数据对齐；无新模型实验 | 事实全层与编号深层的恢复／污染差异及协议混淆；不能归因纯任务因素 | 正文4.4与协议附表；[报告](../experiments/cache-mechanism-alignment-r1-v1-2026-11-04/REPORT.zh-CN.md)、[差异清单](../experiments/cache-mechanism-alignment-r1-v1-2026-11-04/PROTOCOL_DIFFS.zh-CN.md) |
+| [cache-mechanism-broadening-audit-v1-2026-11-04](../experiments/cache-mechanism-broadening-audit-v1-2026-11-04/) | CPU旧记录审计 | 240份JSON、432行库存；144行M可复用、288行缺失；不是新增样本或新矩阵 | 可复现性附录；[说明](../experiments/cache-mechanism-broadening-audit-v1-2026-11-04/README.zh-CN.md)、[派生审计](../experiments/cache-mechanism-broadening-audit-v1-2026-11-04/existing-readouts-audit.json) |
+| [window-recovery-win01-v1-2026-11-04](../experiments/window-recovery-win01-v1-2026-11-04/) | 已完成探索性模型实验；判读偏离和更正保留 | 任务内窗口影响恢复关系；全KV事实转移，不是已定位记录句KV；跨任务协议不同 | 正文4.4；[报告](../experiments/window-recovery-win01-v1-2026-11-04/REPORT.zh-CN.md)、[合同](../experiments/window-recovery-win01-v1-2026-11-04/CONTRACT.zh-CN.md)、[偏离](../experiments/window-recovery-win01-v1-2026-11-04/DEVIATIONS.zh-CN.md)、[正式回执](../experiments/window-recovery-win01-v1-2026-11-04/runs/formal-r01/) |
+| [window-prediction-win02-v1-2026-11-04](../experiments/window-prediction-win02-v1-2026-11-04/) | 已完成探索性预测检验；已见面板 | M四格支持、四格天花板；P4未获支持，P5联合预测仅部分兑现；不是八次独立成功 | 正文4.4；[报告及更正](../experiments/window-prediction-win02-v1-2026-11-04/REPORT.zh-CN.md)、[合同](../experiments/window-prediction-win02-v1-2026-11-04/CONTRACT.zh-CN.md)、[正式回执](../experiments/window-prediction-win02-v1-2026-11-04/runs/formal-r01/) |
+| [kvpre-content-kvc01-v1-2026-11-05](../experiments/kvpre-content-kvc01-v1-2026-11-05/) | 已完成探索性模型实验；22对已见事实 | 事实段KV在固定恢复背景定向影响答案，三条件42–43/44；不识别唯一载体、共同读取或原链推广 | 正文4.5；[报告](../experiments/kvpre-content-kvc01-v1-2026-11-05/REPORT.zh-CN.md)、[合同](../experiments/kvpre-content-kvc01-v1-2026-11-05/CONTRACT.zh-CN.md)、[偏离](../experiments/kvpre-content-kvc01-v1-2026-11-05/DEVIATIONS.zh-CN.md)、[正式回执](../experiments/kvpre-content-kvc01-v1-2026-11-05/runs/formal-r01/) |
+| [window-protocol-audit-v1-2026-11-05](../experiments/window-protocol-audit-v1-2026-11-05/) | CPU复核72份记录、384旧输出；无新模型实验 | 核对WIN分叉、截断／停止、名义幅度与次数；共同协议结果不存在 | 正文4.4限制与附录；[audit.json](../experiments/window-protocol-audit-v1-2026-11-05/audit.json)、[脚本](../experiments/window-protocol-audit-v1-2026-11-05/audit_existing.py)；[WPC设计](mechanism-second-half-v1-2026-11-03/WINDOW_COMPARISON.zh-CN.md)未运行 |
+| [wsp-vlm-screen-data-v1-2026-11-05](../experiments/wsp-vlm-screen-data-v1-2026-11-05/) | 旁线数据准备／审核，无目标模型结果 | C已固定160组；B的v1上限159不是合格数，后继v2已全量审核并修订 | 项目资产旁线，不纳入机制结果；[v1说明](../experiments/wsp-vlm-screen-data-v1-2026-11-05/README.zh-CN.md) |
+| [wsp-vlm-screen-prep-v2-2026-11-05](../experiments/wsp-vlm-screen-prep-v2-2026-11-05/) | 旁线数据与CPU统计验收；未加载目标模型 | B固定146合格来源组（D58/H88）；C沿用160组D64/H96、6400输入；合成夹具不是模型结果 | 项目资产旁线；[v2说明](../experiments/wsp-vlm-screen-prep-v2-2026-11-05/README.zh-CN.md)、[离线回执](../experiments/wsp-vlm-screen-prep-v2-2026-11-05/audit/offline_acceptance.json) |
+
+## 11-04原目录快照（116项，原文件计数保留）
+
+以下数目与材料状态属于当时归档；当前机制结论以新版骨干、论文工作稿和报告更正为准。WSP运行进度也不能从这一历史快照推断。
 
 | 目录 | 材料身份 | 文件数／字节 | 报告、合同与数据入口 |
 |---|---|---:|---|

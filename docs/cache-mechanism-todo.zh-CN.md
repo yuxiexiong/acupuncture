@@ -1,6 +1,15 @@
 # 缓存机制线 To-do
 
-## 当前推进（2026-11-05，v7）
+## 当前交付：先写论文（2026-11-05）
+
+- [x] 将SRU之后全部机制结果及WIN/KVC、R1、旧数据审计纳入[理论—证据骨干](cache-mechanism-theory-evidence-spine-2026-11-03.zh-CN.md)，逐接口写清已接通与未闭合关系。
+- [x] 将[资产目录](RESEARCH_ASSET_CATALOG_2026-11-04.zh-CN.md)从116项历史快照补齐为124目录覆盖，区分结果、失败、审计、设计和旁线工程。
+- [x] 完成[论文工作稿](mechanism-paper-skeleton-2026-11-05.zh-CN.md)：摘要、引言、方法、五节结果、讨论、图表安排、主张／反例／缺口和真实覆盖账本。
+- [x] 同步归档与索引，保留旧机制作为计算主体，不把WIN/KVC桥接冒充完整机制推广。
+- 当前没有新增模型测量。WPC、KV读取和其他旧卡保留原身份，不能从本写作交付推导运行授权。
+
+
+## 历史储备（2026-11-05，v7；非当前执行队列）
 
 依据[Proposal v7](mechanism-second-half-v1-2026-11-03/PROPOSAL.zh-CN.md)、[Roadmap v7](cache-mechanism-broadening-roadmap-2026-11-04.zh-CN.md)、[WPC-01比较及自查](mechanism-second-half-v1-2026-11-03/WINDOW_COMPARISON.zh-CN.md)。**H1仅为研究方向，尚无核心主张；P-WPC是下一有限比较的可失败预测。**
 

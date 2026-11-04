@@ -1,5 +1,7 @@
 # 从局部链条到跨条件机制
 
+**执行优先级更新（2026-11-05，论文写作）：** 用户要求先把已有资产直接组织成论文。第一步[论文工作稿](../mechanism-paper-skeleton-2026-11-05.zh-CN.md)、[理论—证据骨干](../cache-mechanism-theory-evidence-spine-2026-11-03.zh-CN.md)与[资产目录](../RESEARCH_ASSET_CATALOG_2026-11-04.zh-CN.md)已完成，纳入全部后继机制结果、联系、反例和缺口。下方v7关于WPC的比较设计保留为**未运行储备**，不是当前下一动作；本轮不改判据、不新增卡、不跑模型。工作稿以局部计算链及其边界为现有经验主体，并不将H1改称已确立通用主张。
+
 **Acupuncture 课题下半场 Proposal · v7 · 2026-11-05**
 
 状态：**旧数据审计与WPC-01具体横向比较已交付；H1明确降为研究方向，尚无已确定核心主张。** 本版续接远端[v5](https://github.com/yuxiexiong/acupuncture/blob/37011a7ab35c76f1312e231821d06a48f4a8d393/docs/mechanism-second-half-v1-2026-11-03/PROPOSAL.zh-CN.md)，保留其“按关键不确定性推进、取消默认KV细拆”的改进，纠正“停止/内容是不同状态承载的两个分量”等过强归因。当前证据与排序见[核心主张审计](CORE_CLAIMS.zh-CN.md)；[原候选表](CLAIMS.zh-CN.md)保留历史，不沿用其未通过识别检查的处置表。与[Roadmap v7](../cache-mechanism-broadening-roadmap-2026-11-04.zh-CN.md)、[To-do](../cache-mechanism-todo.zh-CN.md)、[v7自查入口](SELF_CHECK.zh-CN.md)同步。**本次无新实验、模型/GPU运行或运行授权。** [WPC-01设计与自查](WINDOW_COMPARISON.zh-CN.md)已规定比较、缺测、判读与停止；尚未实现或完成模型验收。旧v6及其文献审计保留历史身份。
