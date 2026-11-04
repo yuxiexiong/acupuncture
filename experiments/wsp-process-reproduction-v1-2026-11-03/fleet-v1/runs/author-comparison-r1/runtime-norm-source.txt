@@ -1,0 +1,21 @@
+/workspace/acupuncture/.venv-wsp/lib/python3.11/site-packages/transformers/models/qwen3_5/modeling_qwen3_5.py
+827: class Qwen3_5RMSNorm(nn.Module):
+828:     def __init__(self, dim: int, eps: float = 1e-6):
+829:         super().__init__()
+830:         self.eps = eps
+831:         self.weight = nn.Parameter(torch.zeros(dim))
+832: 
+833:     def _norm(self, x):
+834:         return x * torch.rsqrt(x.pow(2).mean(-1, keepdim=True) + self.eps)
+835: 
+836:     def forward(self, x):
+837:         output = self._norm(x.float())
+838:         # Llama does x.to(float16) * w whilst Qwen3_5 is (x * w).to(float16)
+839:         # See https://github.com/huggingface/transformers/pull/29402
+840:         output = output * (1.0 + self.weight.float())
+841:         return output.type_as(x)
+842: 
+843:     def extra_repr(self):
+844:         return f"{tuple(self.weight.shape)}, eps={self.eps}"
+845: 
+846: 

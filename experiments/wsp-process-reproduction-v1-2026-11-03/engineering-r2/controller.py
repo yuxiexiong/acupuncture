@@ -24,6 +24,8 @@ def parse_action(text, explanations=False):
     if len(blocks)!=1 or text.count('```')!=2:
         raise ValueError('Exactly one action block is required')
     b=blocks[0]
+    if explanations and not text[:b.start()].strip():
+        raise ValueError('Missing explanation before action block')
     if text[b.end():].strip() or (not explanations and text[:b.start()].strip()):
         raise ValueError('Unexpected text outside action block')
     if b[1]=='python': return {'kind':'python','code':b[2]}
@@ -36,9 +38,10 @@ def editor_turn(prompt, out, cwd, thread=None):
     out.mkdir()
     (out/'prompt.txt').write_text(prompt)
     instructions=cwd/'instructions.txt'
-    instructions.write_text('Follow the supplied experiment task. Do not use native tools. All actions must be emitted as the specified fenced text for an external executor.\n')
+    instructions.write_text("Answer the user's request.\n")
     cmd=[CLI,'exec','--ignore-user-config','--ignore-rules','--strict-config','--skip-git-repo-check',
          '--json','-s','read-only','-C',str(cwd),'-m','gpt-6-astra','-c','model_reasoning_effort="max"',
+         '-c','model_context_window=872000','-c','model_auto_compact_token_limit=1000000',
          '-c','project_doc_max_bytes=0','-c','web_search="disabled"','-c',f'model_instructions_file={json.dumps(str(instructions))}']
     for feature in ['shell_tool','code_mode','code_mode_host','apps','plugins','hooks','memories','multi_agent',
                     'browser_use','computer_use','image_generation','view_image','skill_search','goals','artifact']:
@@ -170,7 +173,7 @@ def main():
         out.mkdir(parents=True,exist_ok=False)
         (out/'config.json').write_text(json.dumps(cfg,indent=2))
     cwd=Path(tempfile.mkdtemp(prefix='wsp-clean-editor-'))
-    remote=Remote(cfg,out); thread=None; previous=''; successes=0; nudges=0
+    remote=Remote(cfg,out); thread=None; previous=''; successes=0; nudges=0; explanation_retries=0
     initial=ENGINEERING if cfg['mode']=='engineering' else Path(cfg['initial_prompt']).read_text()
     try:
         if editor_resume:
@@ -184,7 +187,7 @@ def main():
             response=remote.reconcile(action)
             (d/'tool_result.json').write_text(json.dumps(response,indent=2))
             thread=json.loads((d/'receipt.json').read_text())['thread'];successes=response['state']['forward_success']
-            previous='Transport recovered from a saved completed result, without rerunning the action. Python kernel variables are lost; /work files persist.\n'+response['editor_output']
+            previous='Recovered a saved action response, without rerunning the action. Python kernel variables are lost; /work files persist.\n'+response['editor_output']
             previous+=f'\nSuccessful forward passes: {successes}; Python calls: {response["state"]["python_attempts"]}.'
         for turn in range(editor_resume or resume+1,cfg['turn_limit']+1):
             prompt=initial if turn==1 else previous
@@ -207,9 +210,15 @@ def main():
             else:reply,thread=editor_turn(prompt,out/f'turn-{turn:03d}',cwd,thread)
             try: action=parse_action(reply,explanations=(cfg['mode']=='search' and turn>=29))
             except (ValueError,json.JSONDecodeError) as e:
+                if str(e)=='Missing explanation before action block':
+                    explanation_retries+=1
+                    if explanation_retries>2:raise RuntimeError('missing explanation after two reminders')
+                    previous=EXPLAIN+'\nYour action block was not executed. Please include an explanation before resubmitting it.'
+                    continue
                 previous='Invalid response: '+str(e); nudges+=1
                 if nudges>10: raise RuntimeError('too many invalid replies')
                 continue
+            explanation_retries=0
             if action is None:
                 if cfg['mode']=='engineering':
                     if successes!=1 or reply.strip()!='ENGINEERING_COMPLETE': raise RuntimeError('engineering probe ended prematurely')
