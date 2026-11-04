@@ -1,5 +1,19 @@
 # 缓存机制线 To-do
 
+## 当前：核心贡献与最小补证 v8（2026-11-05）
+
+- [x] 核对LVK/SRU源合同，纠正整段V历史恢复与T底座局部写入端点的混称；纳入远端论文v1.1/NWR草案。
+- [x] 明确H-WR候选、两篇最近邻增量及最强反例，见[Proposal](mechanism-second-half-v1-2026-11-03/PROPOSAL.zh-CN.md)。
+- [x] 收敛NWR主比较A；写清实质选择错误、D/E/随机用途对照、开发外横向B及停止；完成[作者自查](mechanism-second-half-v1-2026-11-03/CORE_CONTRIBUTION_SELF_CHECK.zh-CN.md)。
+- [ ] 未来如进入实施：先按本版修订NWR合同、来源manifest、解析与代码/数值验收；原草案与本矩阵不双跑。当前不运行模型。
+- [ ] 只有A过全部预定门槛才进入冻结操作的横向B；B完成即整稿。A弱/反向/仅停止/不明则收缩主张，不续局部。
+
+当前[Roadmap v8](cache-mechanism-broadening-roadmap-2026-11-04.zh-CN.md)替代下方旧队列。WPC、KV读头和其他旧卡保留历史身份；另起t1整组历史读取路线已取消且未运行。0新模型/GPU实验。
+
+---
+
+以下为历史交付记录，旧“当前/下一步”不是执行队列。
+
 ## 当前交付：先写论文（2026-11-05）
 
 - [x] 将SRU之后全部机制结果及WIN/KVC、R1、旧数据审计纳入[理论—证据骨干](cache-mechanism-theory-evidence-spine-2026-11-03.zh-CN.md)，逐接口写清已接通与未闭合关系。

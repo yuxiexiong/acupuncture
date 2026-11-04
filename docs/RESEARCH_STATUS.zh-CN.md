@@ -1,5 +1,7 @@
 # Acupuncture：研究状态与后续方向
 
+**2026-11-05｜当前决策：Proposal / Roadmap v8。** [候选H-WR与逐臂补证](mechanism-second-half-v1-2026-11-03/PROPOSAL.zh-CN.md) · [路线图](cache-mechanism-broadening-roadmap-2026-11-04.zh-CN.md) · [作者自查](mechanism-second-half-v1-2026-11-03/CORE_CONTRIBUTION_SELF_CHECK.zh-CN.md)。纳入论文v1.1背景更正：LVK/SRU为T底座上的局部写入端点。最值得补的是原生L00写入来源通过同一t2读取造成选择错误，接收者仍是已开口L11，不能称原生自然全链。NWR主比较A未过即停强路线；过后冻结操作做横向B，B结束即整稿，不返回局部细拆。**当前无新实验，旧优先级不再构成执行队列。**
+
 **2026-11-05｜当前为论文写作阶段，第一步证据体系已交付。** [论文工作稿](mechanism-paper-skeleton-2026-11-05.zh-CN.md)已写出摘要、引言、五节结果、讨论、覆盖账本及图表安排；[骨干](cache-mechanism-theory-evidence-spine-2026-11-03.zh-CN.md)纳入SRU之后至KVC和WIN协议审计的结果，[资产表](RESEARCH_ASSET_CATALOG_2026-11-04.zh-CN.md)覆盖124目录。当前已有条件性计算链与横向边界，尚无统一原生机制或开发外确认。WPC和KV读取设计保持未运行；**下方“下一项”不是当前执行队列。** 本轮只整理已有证据，无模型/GPU调用。
 
 **2026-11-05｜下半场v7：具体比较已补齐，未运行。** [WPC-01旧数据审计、设计、判读与停止](mechanism-second-half-v1-2026-11-03/WINDOW_COMPARISON.zh-CN.md) · [Proposal](mechanism-second-half-v1-2026-11-03/PROPOSAL.zh-CN.md) · [Roadmap](cache-mechanism-broadening-roadmap-2026-11-04.zh-CN.md) · [To-do](cache-mechanism-todo.zh-CN.md)。H1是研究方向，尚无核心主张；已审计WIN的384旧输出。下一比较固定一个L0方向、两任务、四臂及共同形成/幅度/次数/128上限，所有结果收尾后回横向取舍，不默认续局部拆解。作者逻辑自查通过，工程/模型验收未完成，无新模型/GPU运行或授权。
