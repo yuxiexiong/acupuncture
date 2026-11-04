@@ -1,8 +1,8 @@
 # Acupuncture｜少数通道干预：缓存机制与稳定副作用控制
 
-**2026-11-05｜核心主张审计与下半场v6：** [候选、支持、最强反例与缺失](docs/mechanism-second-half-v1-2026-11-03/CORE_CLAIMS.zh-CN.md) · [Proposal](docs/mechanism-second-half-v1-2026-11-03/PROPOSAL.zh-CN.md) · [Roadmap](docs/cache-mechanism-broadening-roadmap-2026-11-04.zh-CN.md) · [自查](docs/mechanism-second-half-v1-2026-11-03/SELF_CHECK.zh-CN.md) · [To-do](docs/cache-mechanism-todo.zh-CN.md)。优先检验状态作用随历史形成与使用背景改变的条件规律；尚非已确立结论。当前先回横向，不默认续做KVC读取或SDM扫描。旧链为工具、KVC为桥接；核心贡献仍有成败风险。本轮无新实验。下方早期方向与队列保留历史身份。
+**2026-11-05｜下半场v7：具体比较已补齐，未运行。** [WPC-01旧数据审计、设计、判读与停止](docs/mechanism-second-half-v1-2026-11-03/WINDOW_COMPARISON.zh-CN.md) · [Proposal](docs/mechanism-second-half-v1-2026-11-03/PROPOSAL.zh-CN.md) · [Roadmap](docs/cache-mechanism-broadening-roadmap-2026-11-04.zh-CN.md) · [To-do](docs/cache-mechanism-todo.zh-CN.md)。H1是研究方向，尚无核心主张；已审计WIN的384旧输出。下一比较固定一个L0方向、两任务、四臂及共同形成/幅度/次数/128上限，所有结果收尾后回横向取舍，不默认续局部拆解。作者逻辑自查通过，工程/模型验收未完成，无新模型/GPU运行或授权。
 
-**历史方向记录｜2026-11-04 v3（当前以顶部v6为准）：** [Proposal](docs/mechanism-second-half-v1-2026-11-03/PROPOSAL.zh-CN.md) · [Roadmap](docs/cache-mechanism-broadening-roadmap-2026-11-04.zh-CN.md) · [当前 To-do](docs/cache-mechanism-todo.zh-CN.md)。跨层、多针比较穿插早期任务检查；共同响应和分叉决定深入，跨模型按条件接入。第一步研究思路继续讨论，未设计新实验卡或新增模型/GPU运行。CGV 三种新结构仍输出编号，不冒充非编号任务。
+**历史方向记录｜2026-11-04 v3（当前以顶部v7为准）：** [Proposal](docs/mechanism-second-half-v1-2026-11-03/PROPOSAL.zh-CN.md) · [Roadmap](docs/cache-mechanism-broadening-roadmap-2026-11-04.zh-CN.md) · [当前 To-do](docs/cache-mechanism-todo.zh-CN.md)。跨层、多针比较穿插早期任务检查；共同响应和分叉决定深入，跨模型按条件接入。第一步研究思路继续讨论，未设计新实验卡或新增模型/GPU运行。CGV 三种新结构仍输出编号，不冒充非编号任务。
 
 **2026-11-04｜统一归档入口：** [理论、实验结果与证据边界](docs/RESEARCH_ARCHIVE_2026-11-04.zh-CN.md) · [全部实验资产目录](docs/RESEARCH_ASSET_CATALOG_2026-11-04.zh-CN.md)。已纳入NVW/LVK/SRU、NVB/NBR/SIT/NMT、CGV与NCC/NSR/NQK/NPC，补齐本地遗漏原件和失败记录。SDT未运行，实际后继为SIT；WSP工程验收与运行中快照单列，不作能力结论。下方旧“当前／下一步／未运行”均为历史快照，最新状态以本次总览及各实验收据为准。本次无模型/GPU运行。
 

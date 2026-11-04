@@ -1,3 +1,15 @@
+# Proposal v7 / Roadmap v7 与WPC-01自查入口
+
+2026-11-05。当前完整设计卡、C01–C14逐项理由、E01–E26处理、与v6/截图建议的比较及实质反方检查，集中在[WPC-01 §7](WINDOW_COMPARISON.zh-CN.md#7-作者设计自查非独立评审)。
+
+**作者逻辑设计通过；不是独立评审。** 72份原记录读取与384输出派生汇总完成；派生账本重算检查通过。没有新模型调用、数值复现、实现验收或运行授权。H1已明确为研究方向；有限P-WPC预测、四臂操作、共同策略、统计单位、资源与停止规则已具体给出。
+
+本版纠正：v6未选具体比较；截图建议32上限可能改变事实交付、三恢复臂多问一个问题、“同尺度”未落实。现在统一128、删浅层单臂、固定幅度与25次，承认共同策略与旧完整W_post不同、不能唯一归因协议因素。所有结果退出，不继续无限局部拆解。
+
+下方是v6方向自查历史，不再代表当前“尚无具体卡”的状态。
+
+---
+
 # Proposal v6、核心主张审计与Roadmap v6自查
 
 2026-11-05；规范：[experiment-design-self-check v1](../experiment-design-self-check.zh-CN.md)及[已知基础审计](../cache-mechanism-known-basics-audit-2026-10-31.zh-CN.md)。审查对象：[候选核心主张](CORE_CLAIMS.zh-CN.md)、[Proposal](PROPOSAL.zh-CN.md)、[Roadmap](../cache-mechanism-broadening-roadmap-2026-11-04.zh-CN.md)、[To-do](../cache-mechanism-todo.zh-CN.md)。同一助手的作者自查，非独立评审。[v4记录](https://github.com/yuxiexiong/acupuncture/blob/83e82b054fe16fec6cc057ad0cbd6a6394d60089/docs/mechanism-second-half-v1-2026-11-03/SELF_CHECK.zh-CN.md)保留。
