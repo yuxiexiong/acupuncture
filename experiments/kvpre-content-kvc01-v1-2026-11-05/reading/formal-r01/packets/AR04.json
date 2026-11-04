@@ -1,0 +1,44 @@
+{
+ "base_id": "AR04",
+ "instructions": "逐条阅读每个回答，只依据题面判断，不猜测它来自何种条件。每条输出一行 JSON：{\"id\":..., \"fact\": follows_fact|other_fact|other_wrong|not_delivered|unclear, \"contradiction\": bool, \"repetition\": bool, \"note\": \"≤30字具体描述\"}。截断规则（阅读前写死）：答案写出前就截断（只有推导、算式或箭头链，没写出答案）→ not_delivered；先给出结论、随后在修正或否定它的过程中截断 → unclear；答案已明确写出、之后才截断 → 按该答案判。判读规则（阅读前写死）：统一规则（阅读前写死）：核心答案=回答中最后一个明确结论。最后结论与 expected_answer 一致→follows_fact；与 other_fact_answer 一致→other_fact；其他具体答案→other_wrong；最后结论是“无法确定/题目矛盾/不能回答”→other_wrong；回答在给出任何最终结论前中断且出现了相互冲突的候选→unclear；没有任何可判定答案（空、乱码、跑题、只复述题目、中断前未出现答案）→not_delivered。contradiction=回答中出现相互冲突的核心结论（如先答错再改对、先说无法确定再算出答案）；repetition=明显循环重复。",
+ "items": [
+  {
+   "item_id": "AR04-f0-required",
+   "prompt": "把18个苹果平均分给3个人，全部分完。\n问题：每个人分到多少个苹果？\n请根据上述信息回答，可以简短说明。",
+   "expected_answer": "每个人分到6个苹果。",
+   "other_fact_answer": "每个人分到9个苹果。",
+   "truth_explanation": "18÷3=6。",
+   "responses": [
+    {
+     "id": "Kfb34cb456a",
+     "text": "要把 18 个苹果平均分给 2 个人，计算如下：\n\n$$18 \\div 2 = 9$$\n\n所以，每个人可以分到 **9** 个苹果。"
+    },
+    {
+     "id": "Ka37f50456b",
+     "text": "<think>\n\n</think>\n\n要把 18 个苹果平均分给 2 个人，只需将总数除以人数：\n\n$$18 \\div 2 = 9$$\n\n所以，每个人分到 **9** 个苹果。"
+    }
+   ]
+  },
+  {
+   "item_id": "AR04-f1-required",
+   "prompt": "把18个苹果平均分给2个人，全部分完。\n问题：每个人分到多少个苹果？\n请根据上述信息回答，可以简短说明。",
+   "expected_answer": "每个人分到9个苹果。",
+   "other_fact_answer": "每个人分到6个苹果。",
+   "truth_explanation": "18÷2=9。",
+   "responses": [
+    {
+     "id": "Ka5e64d9ac3",
+     "text": "18 ÷ 3 = 6\n\n**答：每人分 6 个苹果。**"
+    },
+    {
+     "id": "K51716a4719",
+     "text": "要把 18 个苹果平均分给 3 个人，计算方法是：\n\n$$18 \\div 3 = 6$$\n\n所以，每个人可以分到 **6** 个苹果。"
+    },
+    {
+     "id": "K8081402d02",
+     "text": "<think>\n\n</think>\n\n要把 18 个苹果平均分给 3 个人，只需将总数除以人数：\n\n$$18 \\div 3 = 6$$\n\n所以，每个人分到 **6** 个苹果。"
+    }
+   ]
+  }
+ ]
+}

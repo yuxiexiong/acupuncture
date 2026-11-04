@@ -1,0 +1,40 @@
+{
+ "base_id": "CRD04",
+ "instructions": "逐条阅读每个回答，只依据题面判断，不猜测它来自何种条件。每条输出一行 JSON：{\"id\":..., \"fact\": follows_fact|other_fact|other_wrong|not_delivered|unclear, \"contradiction\": bool, \"repetition\": bool, \"note\": \"≤30字具体描述\"}。截断规则（阅读前写死）：答案写出前就截断（只有推导、算式或箭头链，没写出答案）→ not_delivered；先给出结论、随后在修正或否定它的过程中截断 → unclear；答案已明确写出、之后才截断 → 按该答案判。判读规则（阅读前写死）：统一规则（阅读前写死）：核心答案=回答中最后一个明确结论。最后结论与 expected_answer 一致→follows_fact；与 other_fact_answer 一致→other_fact；其他具体答案→other_wrong；最后结论是“无法确定/题目矛盾/不能回答”→other_wrong；回答在给出任何最终结论前中断且出现了相互冲突的候选→unclear；没有任何可判定答案（空、乱码、跑题、只复述题目、中断前未出现答案）→not_delivered。contradiction=回答中出现相互冲突的核心结论（如先答错再改对、先说无法确定再算出答案）；repetition=明显循环重复。",
+ "items": [
+  {
+   "item_id": "CRD04-f0-required",
+   "prompt": "记录写道：桌上有一个纸盒和一个布袋；前者装票根，后者装钥匙。\n问题：布袋里装的是什么？\n请根据上述信息回答，可以简短说明。",
+   "expected_answer": "布袋里装的是钥匙。",
+   "other_fact_answer": "布袋里装的是印章。",
+   "truth_explanation": "布袋是后提到的物品，后者指布袋，所装物为钥匙。",
+   "responses": [
+    {
+     "id": "K847453dc65",
+     "text": "<think>\n\n</think>\n\n根据记录中的描述，布袋里装的是**印章**。\n\n文中明确提到“前者（纸盒）装票根，后者（布袋）装印章”。"
+    },
+    {
+     "id": "Ke7a5cff45d",
+     "text": "根据记录，布袋里装的是**印章**。"
+    }
+   ]
+  },
+  {
+   "item_id": "CRD04-f1-required",
+   "prompt": "记录写道：桌上有一个纸盒和一个布袋；前者装票根，后者装印章。\n问题：布袋里装的是什么？\n请根据上述信息回答，可以简短说明。",
+   "expected_answer": "布袋里装的是印章。",
+   "other_fact_answer": "布袋里装的是钥匙。",
+   "truth_explanation": "布袋是后提到的物品，后者指布袋，所装物为印章。",
+   "responses": [
+    {
+     "id": "Kec0c5846e2",
+     "text": "根据记录，布袋里装的是**钥匙**。"
+    },
+    {
+     "id": "Ka092048b54",
+     "text": "<think>\n\n</think>\n\n根据记录中的描述，布袋里装的是**钥匙**。\n\n文中明确区分了两种容器及其用途：“前者（纸盒）装票根，后者（布袋）装钥匙”。"
+    }
+   ]
+  }
+ ]
+}

@@ -49,15 +49,17 @@ def build(run, out):
             rows += [(u, cell, x, bridged) for cell, x, bridged in cells]
     for u, cell, x, bridged in [r for r in rows if r[3]]:          # pass 1: bridged cells take their source label
         k = A.text_key(u, x['answer_text'])
+        if k in conflict:                                           # DEVIATIONS V1: WIN-01/02 disagree on this text -> read it fresh
+            continue
         assert k in source[cell], ('bridged answer without a prior label', cell, u)
         assert reused.get(k, source[cell][k]) == source[cell][k], ('bridged label clash', cell, u)
         reused[k] = source[cell][k]
         must += 1
-    for u, cell, x, bridged in [r for r in rows if not r[3]]:      # pass 2: reuse only agreeing prior labels; else read
+    for u, cell, x, bridged in [r for r in rows if not r[3] or A.text_key(r[0], r[2]['answer_text']) in conflict]:      # pass 2
         k = A.text_key(u, x['answer_text'])
         if k in reused:
             continue
-        if k in prior:
+        if k in prior and k not in conflict:
             reused[k] = prior[k]
         else:
             new.setdefault(k, {'item_id': u, 'text': x['answer_text'], 'cells': []})['cells'].append(cell)
