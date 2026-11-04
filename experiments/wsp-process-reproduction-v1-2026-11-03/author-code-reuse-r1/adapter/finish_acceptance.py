@@ -8,6 +8,7 @@ import sys
 import time
 
 here=Path(__file__).resolve().parent
+assert not (here.parent/'PAUSED_BY_USER.json').exists(), 'PAUSED_BY_USER: do not resume acceptance'
 cfgpath=here.parent/'acceptance-config.json'
 cfg=json.loads(cfgpath.read_text()); root=Path(cfg['run_root'])
 assert cfg['forward_limit']==3 and cfg['gpu_seconds_limit']==3000 and not cfg['authorized']
@@ -18,6 +19,7 @@ fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
 def idle(count):
     deadline=time.monotonic()+1800
     while time.monotonic()<deadline:
+        assert not (here.parent/'PAUSED_BY_USER.json').exists(), 'PAUSED_BY_USER: stop waiting'
         rows=subprocess.check_output(['nvidia-smi','--query-gpu=index,memory.used,utilization.gpu','--format=csv,noheader,nounits'],text=True)
         cards=[int(a) for a,b,c in (s.split(',') for s in rows.splitlines()) if int(b)<128 and int(c)==0]
         if len(cards)>=count:

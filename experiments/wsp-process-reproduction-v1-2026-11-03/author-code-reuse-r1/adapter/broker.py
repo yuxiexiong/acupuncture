@@ -43,6 +43,8 @@ def stop(proc):
 
 class Broker:
     def __init__(self, config):
+        if (HERE.parent/'PAUSED_BY_USER.json').exists():
+            raise RuntimeError('PAUSED_BY_USER: require explicit user restart before any acceptance or formal action')
         if config['forward_limit']>3 and not config.get('authorized',False):
             raise ValueError('FORMAL_SEARCH_DISABLED at broker gate')
         if config['forward_limit']>3 and not config.get('authorization_record'):
