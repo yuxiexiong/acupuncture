@@ -1,6 +1,8 @@
 # 项目文档目录
 
-**2026-11-05｜WSP 行为筛查 B/C 数据实审：** [下载、配对、标签审核与 CPU 准备回执](../experiments/wsp-vlm-screen-data-v1-2026-11-05/README.zh-CN.md)。B 排除 5 个来源组后至多 159 组，不足 160；C 助手逐图审核 166 组通过，冻结 D64/H96，生成 6400 条输入。无目标模型加载或实验；独立人工复核与完整筛查后端尚未验收。
+**2026-11-05｜WSP B/C 准备 v2：** [B全量审核、C统计验收与剩余工作](../experiments/wsp-vlm-screen-prep-v2-2026-11-05/README.zh-CN.md) · [自查](../experiments/wsp-vlm-screen-prep-v2-2026-11-05/SELF_CHECK.zh-CN.md)。B按实际合格146组冻结（D58/H88），18组不纳入、不补题；C保留160组，补齐配对统计与离线验收。466张图哈希核对、9项CPU测试通过。B改写/评分后端与模型工程仍待完成；目标模型加载与推理均为0。
+
+**历史准备记录（已由顶部v2更新）｜WSP 行为筛查 B/C 数据实审：** [下载、配对、标签审核与 CPU 准备回执](../experiments/wsp-vlm-screen-data-v1-2026-11-05/README.zh-CN.md)。B 排除 5 个来源组后至多 159 组，不足 160；C 助手逐图审核 166 组通过，冻结 D64/H96，生成 6400 条输入。无目标模型加载或实验；独立人工复核与完整筛查后端尚未验收。
 
 **2026-11-05｜核心主张审计与下半场v6：** [候选、支持、最强反例与缺失](mechanism-second-half-v1-2026-11-03/CORE_CLAIMS.zh-CN.md) · [Proposal](mechanism-second-half-v1-2026-11-03/PROPOSAL.zh-CN.md) · [Roadmap](cache-mechanism-broadening-roadmap-2026-11-04.zh-CN.md) · [自查](mechanism-second-half-v1-2026-11-03/SELF_CHECK.zh-CN.md) · [To-do](cache-mechanism-todo.zh-CN.md)。优先检验状态作用随历史形成与使用背景改变的条件规律；尚非已确立结论。当前先回横向，不默认续做KVC读取或SDM扫描。旧链为工具、KVC为桥接；核心贡献仍有成败风险。本轮无新实验。下方早期方向与队列保留历史身份。
 
