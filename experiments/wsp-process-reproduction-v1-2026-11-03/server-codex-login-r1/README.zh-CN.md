@@ -1,0 +1,27 @@
+# 服务器 Codex 登录与连接验收
+
+观测日期：2026-11-05，北京时间约01:30。用户授权配置服务器登录；没有授权恢复数学或编程实验。
+
+## 已完成
+
+- 复用 H20 上原有官方 Codex CLI 0.166.0-alpha.5.1，未升级或重装。
+- 新增 `/usr/local/bin/codex` 命令入口，指向原有二进制。
+- 按官方 headless 登录说明，通过 SSH 将 Mac 的现有登录缓存复制到服务器 `/root/.codex/auth.json`。目录权限0700、文件0600；凭据未显示、未写入项目、未提交Git。旧编程目录的历史登录文件未改。
+- `codex login status` 返回 `Logged in using ChatGPT`。这仅证明 CLI 识别登录缓存，不证明线上认证和模型调用已成功。
+
+## 连接验收未通过
+
+- 服务器系统DNS对 chatgpt.com 返回的地址与 Mac 查询结果不同；未修改服务器DNS或hosts。
+- 默认连接超时，显式IPv4连接被拒绝。
+- 一次无凭据诊断采用 Mac 解析到的官方地址，保持 chatgpt.com 域名与证书验证，TCP约0.167秒建立，但TLS失败（SSL_ERROR_SYSCALL）。因此不能把问题归结为仅DNS，也未查明完整根因。
+- 服务器访问 npm 返回200；auth.openai.com TLS连接成功、HTTP403。后者仅用于连通性诊断，不能据此认定账户或地区被拒绝。
+- 一次只要求回复 CODEX_SERVER_OK 的 gpt-6-astra/low 连接测试，read-only、ephemeral、未读项目、未运行实验。45秒timeout退出124，没有最终回答；日志报告模型列表和官方MCP连接超时。未成功验证服务器独立Codex调用。
+- 原始最小测试事件与错误日志留在服务器私有目录 `/root/.codex/server-login-check/`，不包含凭据值；不将其当科学实验数据。
+
+## 当前状态与下一步
+
+登录已部署，联网调用受阻。未建立依赖Mac的转发，未修改全局网络配置，未部署代理。需有能正常访问Codex的持续在线环境，或由网络管理员解决当前官方服务连通性后，再做最小调用验收。不是增加sudo权限即可解决。
+
+数学PAUSED_BY_USER标记仍存在；测试退出后未见相关实验/验收控制器运行，两个编程实验也未恢复。固定作者代码的数学过程不需要自主Codex编辑器；以后经用户明确启动，可把计算及调度直接放在服务器后台，不能将本次登录配置描述为数学任务已经迁移或启动。
+
+依据：[OpenAI 官方无浏览器登录缓存说明](https://developers.openai.com/codex/auth#fallback-authenticate-locally-and-copy-your-auth-cache)。
