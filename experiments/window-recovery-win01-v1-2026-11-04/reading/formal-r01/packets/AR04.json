@@ -1,0 +1,156 @@
+{
+ "base_id": "AR04",
+ "instructions": "逐条阅读每个回答，只依据题面判断，不猜测它来自何种条件。每条输出一行 JSON：{\"id\":..., \"fact\": follows_fact|other_fact|other_wrong|not_delivered|unclear, \"contradiction\": bool, \"repetition\": bool, \"note\": \"≤30字具体描述\"}。判读规则（阅读前写死）：统一规则（阅读前写死）：核心答案=回答中最后一个明确结论。最后结论与 expected_answer 一致→follows_fact；与 other_fact_answer 一致→other_fact；其他具体答案→other_wrong；最后结论是“无法确定/题目矛盾/不能回答”→other_wrong；回答在给出任何最终结论前中断且出现了相互冲突的候选→unclear；没有任何可判定答案（空、乱码、跑题、只复述题目、中断前未出现答案）→not_delivered。contradiction=回答中出现相互冲突的核心结论（如先答错再改对、先说无法确定再算出答案）；repetition=明显循环重复。",
+ "items": [
+  {
+   "item_id": "AR04-f0-required",
+   "prompt": "把18个苹果平均分给3个人，全部分完。\n问题：每个人分到多少个苹果？\n请根据上述信息回答，可以简短说明。",
+   "expected_answer": "每个人分到6个苹果。",
+   "other_fact_answer": "每个人分到9个苹果。",
+   "truth_explanation": "18÷3=6。",
+   "responses": [
+    {
+     "id": "W2fb2e8a315",
+     "text": "<think>\n\n</think>\n\n要把 18 个苹果平均分给 3 个人，只需要用总数除以人数：\n\n$$18 \\div 3 = 6$$\n\n所以，每个人分到 **6** 个苹果。"
+    },
+    {
+     "id": "W10c4ce9e1f",
+     "text": "每个人分到 **4** 个苹果。\n\n计算过程：共有 16 个苹果，分给 4 个人，即 $16 \\div 4 = 4$。"
+    },
+    {
+     "id": "Wccbf9edcac",
+     "text": "要把 18 个苹果平均分给 3 个人，计算方法是：\n\n$$18 \\div 3 = 6$$\n\n所以，每个人可以分到 **6** 个苹果。"
+    },
+    {
+     "id": "W4eed181cd8",
+     "text": "您提供的文本中**没有包含任何关于苹果数量或分配规则的信息**（例如：总共有多少个苹果？分给多少人？），因此无法计算出每个人分到多少个苹果。\n\n如果您能补充具体的数字或条件，我可以立即为您解答。"
+    },
+    {
+     "id": "Wc0da734af0",
+     "text": "<think>\n\n</think>\n\n要计算每个人分到多少个苹果，我们可以用苹果的总数除以人数：\n\n$$18 \\div 3 = 6$$\n\n所以，每个人分到 **6** 个苹果。"
+    },
+    {
+     "id": "W8297019625",
+     "text": "<think>\nThinking Process:\n\n1.  **Analyze the Request:**\n    *   Input: \"把 18 个苹果平均分给 3 个人，全部分完。\" (Distribute 18 apples equally among 3 people, all apples must be distributed.)\n    *   Follow-up text: \"问题：每个人分到多少个苹果？\" (Question: How many apples does each person get?)\n    *   Note: The user's input contains a lot of repeated text \"问题：每个人分到多少个苹果？\" followed by a long string of \"问题：每个人分到多少个苹果？\""
+    },
+    {
+     "id": "W87557a7e8f",
+     "text": "每个人分到 **9** 个苹果。\n\n计算过程：$18 \\div 2 = 9$。"
+    },
+    {
+     "id": "W11ccf68ecd",
+     "text": "您提供的信息中**缺少关键数据**：只知道苹果总数（18 个）和人数（3 人），但未说明是否“全部分完”或是否有剩余/不足的情况。\n\n不过，若按常规理解“平均分给 3 个人且全部分完”，则计算如下：\n**18 ÷ 3 = 6**  \n→ 每个人分到 **6 个** 苹果。"
+    },
+    {
+     "id": "We21b8ce87d",
+     "text": "您提供的信息中缺少关键数据：**苹果的总数**和**分给的人数**。\n\n目前已知：\n- 苹果数量：18 个\n- 人数：3 人\n\n若按此计算：\n$$18 \\div 3 = 6$$\n\n**答案：每个人分到 6 个苹果。**"
+    },
+    {
+     "id": "W81f623996d",
+     "text": "每个人分到 **6** 个苹果。\n\n计算过程：18 ÷ 3 = 6。"
+    },
+    {
+     "id": "W335fe7c787",
+     "text": "这是一个简单的除法问题。\n\n**计算过程：**\n1.  **总数**：18 个苹果\n2.  **人数**：3 个人\n3.  **计算**：$18 \\div 3 = 6$\n\n**结果：**\n每个人可以分到 **6** 个苹果。"
+    },
+    {
+     "id": "W871f1bbf60",
+     "text": "每个人分到 **3** 个苹果。\n\n**计算过程：**\n题目中隐含了“把苹果平均分给 3 个人”的条件（通常此类问题总数为 9 个，即 $9 \\div 3 = 3$）。\n- 苹果总数：9 个\n- 人数：3 人\n- 每人数量：$9 \\div 3 = 3$（个）"
+    },
+    {
+     "id": "W54d1279d58",
+     "text": "<think>\nThinking Process:\n\n1.  **Analyze the Request:**\n    *   Input: A string of repeated Chinese characters \"把 18 个苹果\" (Wait, looking closely at the input).\n    *   Input Text: \"把 18 个苹果\" (Wait, no, the input is \"把 18 个苹果\" repeated? No, let me re-read the input provided in the prompt).\n    *   Actual Input: \"把 18 个苹果\" is NOT the input. The input is a long string of \"把 18 个"
+    },
+    {
+     "id": "W4f495f9a6a",
+     "text": "这是一个经典的数学应用题。\n\n**已知条件：**\n*   苹果总数：18 个\n*   分配对象：3 个人\n*   分配要求：平均分\n\n**计算过程：**\n$$18 \\div 3 = 6$$\n\n**答案：**\n每个人分到 **6** 个苹果。"
+    },
+    {
+     "id": "W43377507e6",
+     "text": "每个人分到 **4** 个苹果。\n\n计算过程：共有 8 个苹果，分给 2 个人，即 $8 \\div 2 = 4$。"
+    },
+    {
+     "id": "W6bc417da4a",
+     "text": "<think>\n\n</think>\n\n18 ÷ 3 = 6\n\n每个人分到 **6** 个苹果。"
+    },
+    {
+     "id": "W9e101adfee",
+     "text": "您提供的文本中**缺少了具体的数字**（例如：总共有多少个苹果？一共有多少人？），因此无法计算出每个人分到多少个苹果。\n\n请补充以下信息，我即可为您计算：\n1. 苹果的总数\n2. 分给的人数"
+    }
+   ]
+  },
+  {
+   "item_id": "AR04-f1-required",
+   "prompt": "把18个苹果平均分给2个人，全部分完。\n问题：每个人分到多少个苹果？\n请根据上述信息回答，可以简短说明。",
+   "expected_answer": "每个人分到9个苹果。",
+   "other_fact_answer": "每个人分到6个苹果。",
+   "truth_explanation": "18÷2=9。",
+   "responses": [
+    {
+     "id": "W3a43156ccd",
+     "text": "<think>\n\n</think>\n\n要把 18 个苹果平均分给 2 个人，只需要用总数除以人数：\n\n$$18 \\div 2 = 9$$\n\n所以，每个人可以分到 **9** 个苹果。"
+    },
+    {
+     "id": "W06344708e4",
+     "text": "<think>\nThinking Process:\n\n1.  **Analyze the Request:**\n    *   Input: A string of repeated Chinese characters \"把 18 个苹果\" (Wait, looking closely at the input).\n    *   Input Text: \"把 18 个苹果\" (Wait, no, the input is \"把 18 个苹果\" repeated? No, let me re-read the input provided in the prompt).\n    *   Actual Input: \"把 18 个苹果\" is NOT the input. The input is a long string of \"把 18 个"
+    },
+    {
+     "id": "W791cb71ac9",
+     "text": "<think>\n\n</think>\n\n18 ÷ 2 = 9\n\n每个人分到 **9** 个苹果。"
+    },
+    {
+     "id": "Wdd81d0f640",
+     "text": "<think>\nThinking Process:\n\n1.  **Analyze the Request:**\n    *   Input: \"把 18 个苹果平均分给 2 个人，全部分完。\" (Distribute 18 apples equally among 2 people, all distributed.)\n    *   Follow-up text: \"问题：每个人分到多少个苹果？\" (Question: How many apples does each person get?)\n    *   Note: The user's input contains a lot of repeated text \"问题：每个人分到多少个苹果？\" followed by a long string of \"问题：每个人分到多少个苹果？\" repeated many times"
+    },
+    {
+     "id": "Wa062c03244",
+     "text": "每个人分到 **2** 个苹果。\n\n计算过程：共有 4 个苹果（由“把”、“个”、“个”等量词推断语境，通常此类题目总数为 4 或 8，但根据常见逻辑题“把 4 个苹果分给 2 人”或“把 8 个苹果分给 4 人”，若题目隐含总数为 4 个苹果分给 2 人，则 $4 \\div 2 = 2$；若总数为 8 个分给 4 人，则 $8"
+    },
+    {
+     "id": "W9bfd2eb33c",
+     "text": "每个人分到 **6** 个苹果。\n\n计算过程：$18 \\div 3 = 6$。"
+    },
+    {
+     "id": "We0be52e242",
+     "text": "您提供的信息中缺少关键数据：**苹果的总数**和**分给的人数**。\n\n目前已知：\n- 苹果数量：18 个\n- 人数：2 人\n\n若按字面意思计算（18 个苹果分给 2 人）：\n$$18 \\div 2 = 9$$\n\n**答案：每个人分到 9 个苹果。**\n\n*(注：如果您原本想表达的是其他数字，请补充完整，我会重新为您计算。)*"
+    },
+    {
+     "id": "W4f0df18eba",
+     "text": "您提供的文本中**没有包含任何关于苹果数量或分配规则的信息**（例如：总共有多少个苹果？分给多少人？），因此无法计算每个人分到多少个苹果。\n\n如果您能补充具体的数字或情境，我可以立即为您解答。"
+    },
+    {
+     "id": "W10eb6712a3",
+     "text": "每个人分到 **9** 个苹果。\n\n计算过程：18 ÷ 2 = 9。"
+    },
+    {
+     "id": "W587a77dec9",
+     "text": "18 个苹果平均分给 2 个人，每人分得：\n$$18 \\div 2 = 9$$\n\n所以，**每人分得 9 个苹果**。"
+    },
+    {
+     "id": "Wf79807a392",
+     "text": "每个人分到 **2** 个苹果。\n\n**计算过程：**\n题目中隐含了“每个人”和“苹果”的数量关系。通常这类问题若未给出具体总数，而是直接问“每个人分到多少个”，往往意味着总数与人数相等（即每人 1 个），或者题目本身有缺失信息。\n\n但根据常见的数学题逻辑，如果题目是“有 4 个苹果，分给 2 个人”，答案是 2 个。\n如果题目是“有 6 个苹果，分给 3 个人”，答案是 2 个。\n\n**由于您"
+    },
+    {
+     "id": "W94bf82e676",
+     "text": "您提供的文本中**缺少了具体的数字**（例如：总共有多少个苹果？一共有多少人？），因此无法计算出每个人分到多少个苹果。\n\n请补充以下信息，我即可为您计算：\n1. **苹果的总数**\n2. **分给的人数**\n\n公式为：**苹果总数 ÷ 人数 = 每人分到的苹果数**。"
+    },
+    {
+     "id": "W418912b9b2",
+     "text": "<think>\n\n</think>\n\n要把 18 个苹果平均分给 2 个人，只需要用总数除以人数：\n\n$$18 \\div 2 = 9$$\n\n所以，每个人分到 **9** 个苹果。"
+    },
+    {
+     "id": "Wc08bf86d11",
+     "text": "您提供的信息中**缺少关键数据**：只知道苹果总数（18 个）和人数（2 人），但未说明是否“全部分完”或是否有剩余。\n\n不过，若按“平均分且全部分完”的常规理解计算：\n**18 ÷ 2 = 9（个）**\n\n即：每个人分到 **9 个** 苹果。"
+    },
+    {
+     "id": "W5a46f9bd3e",
+     "text": "每个人分到 **4** 个苹果。\n\n计算过程：共有 8 个苹果，分给 2 个人，即 $8 \\div 2 = 4$。"
+    },
+    {
+     "id": "W43fac9941e",
+     "text": "<think>\n\n</think>\n\n这是一个经典的数学除法问题。\n\n**分析步骤：**\n1.  **提取关键信息**：\n    *   总数：18 个苹果\n    *   分配对象：2 个人\n    *   分配方式：平均分\n\n2.  **列式计算**：\n    $$18 \\div 2 = 9$$\n\n**结论：**\n每个人分到 **9** 个苹果。"
+    }
+   ]
+  }
+ ]
+}

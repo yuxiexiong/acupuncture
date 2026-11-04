@@ -1,0 +1,36 @@
+{
+ "base_id": "AR04",
+ "instructions": "逐条阅读每个回答，只依据题面判断，不猜测它来自何种条件。每条输出一行 JSON：{\"id\":..., \"fact\": follows_fact|other_fact|other_wrong|not_delivered|unclear, \"contradiction\": bool, \"repetition\": bool, \"note\": \"≤30字具体描述\"}。判读规则（阅读前写死）：统一规则（阅读前写死）：核心答案=回答中最后一个明确结论。最后结论与 expected_answer 一致→follows_fact；与 other_fact_answer 一致→other_fact；其他具体答案→other_wrong；最后结论是“无法确定/题目矛盾/不能回答”→other_wrong；回答在给出任何最终结论前中断且出现了相互冲突的候选→unclear；没有任何可判定答案（空、乱码、跑题、只复述题目、中断前未出现答案）→not_delivered。contradiction=回答中出现相互冲突的核心结论（如先答错再改对、先说无法确定再算出答案）；repetition=明显循环重复。",
+ "items": [
+  {
+   "item_id": "AR04-f0-required",
+   "prompt": "把18个苹果平均分给3个人，全部分完。\n问题：每个人分到多少个苹果？\n请根据上述信息回答，可以简短说明。",
+   "expected_answer": "每个人分到6个苹果。",
+   "other_fact_answer": "每个人分到9个苹果。",
+   "truth_explanation": "18÷3=6。",
+   "responses": [
+    {
+     "id": "W2fb2e8a315",
+     "text": "<think>\n\n</think>\n\n要把 18 个苹果平均分给 3 个人，只需要用总数除以人数：\n\n$$18 \\div 3 = 6$$\n\n所以，每个人分到 **6** 个苹果。"
+    },
+    {
+     "id": "W9e101adfee",
+     "text": "您提供的文本中**缺少了具体的数字**（例如：总共有多少个苹果？一共有多少人？），因此无法计算出每个人分到多少个苹果。\n\n请补充以下信息，我即可为您计算：\n1. 苹果的总数\n2. 分给的人数"
+    }
+   ]
+  },
+  {
+   "item_id": "AR04-f1-required",
+   "prompt": "把18个苹果平均分给2个人，全部分完。\n问题：每个人分到多少个苹果？\n请根据上述信息回答，可以简短说明。",
+   "expected_answer": "每个人分到9个苹果。",
+   "other_fact_answer": "每个人分到6个苹果。",
+   "truth_explanation": "18÷2=9。",
+   "responses": [
+    {
+     "id": "We0be52e242",
+     "text": "您提供的信息中缺少关键数据：**苹果的总数**和**分给的人数**。\n\n目前已知：\n- 苹果数量：18 个\n- 人数：2 人\n\n若按字面意思计算（18 个苹果分给 2 人）：\n$$18 \\div 2 = 9$$\n\n**答案：每个人分到 9 个苹果。**\n\n*(注：如果您原本想表达的是其他数字，请补充完整，我会重新为您计算。)*"
+    }
+   ]
+  }
+ ]
+}

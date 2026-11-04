@@ -1,0 +1,52 @@
+{
+ "base_id": "AR01",
+ "instructions": "逐条阅读每个回答，只依据题面判断，不猜测它来自何种条件。每条输出一行 JSON：{\"id\":..., \"fact\": follows_fact|other_fact|other_wrong|not_delivered|unclear, \"contradiction\": bool, \"repetition\": bool, \"note\": \"≤30字具体描述\"}。判读规则（阅读前写死）：统一规则（阅读前写死）：核心答案=回答中最后一个明确结论。最后结论与 expected_answer 一致→follows_fact；与 other_fact_answer 一致→other_fact；其他具体答案→other_wrong；最后结论是“无法确定/题目矛盾/不能回答”→other_wrong；回答在给出任何最终结论前中断且出现了相互冲突的候选→unclear；没有任何可判定答案（空、乱码、跑题、只复述题目、中断前未出现答案）→not_delivered。contradiction=回答中出现相互冲突的核心结论（如先答错再改对、先说无法确定再算出答案）；repetition=明显循环重复。",
+ "items": [
+  {
+   "item_id": "AR01-f0-required",
+   "prompt": "书架原有12本书，又放入5本书。\n问题：书架现在共有多少本书？\n请根据上述信息回答，可以简短说明。",
+   "expected_answer": "现在共有17本书。",
+   "other_fact_answer": "现在共有18本书。",
+   "truth_explanation": "12+5=17。",
+   "responses": [
+    {
+     "id": "We079232f0e",
+     "text": "您只提供了“原有 12 本”和“放入 5 本”这两个条件，但未说明是否有书被拿走或损坏。\n\n**计算如下：**\n12（原有） + 5（放入） = **17 本**\n\n书架现在共有 **17** 本书。"
+    },
+    {
+     "id": "Wd8033b3e1b",
+     "text": "书架原有 12 本书，又放入 5 本，现在的总数是：\n12 + 5 = 17（本）\n\n答：书架现在有 17 本书。"
+    },
+    {
+     "id": "Wcfa84e3c0e",
+     "text": "书架现在共有 **11** 本书。\n\n**计算过程：**\n题目中“原有 5 本”加上“又放入 6 本”，即 $5 + 6 = 11$ 本。"
+    }
+   ]
+  },
+  {
+   "item_id": "AR01-f1-required",
+   "prompt": "书架原有12本书，又放入6本书。\n问题：书架现在共有多少本书？\n请根据上述信息回答，可以简短说明。",
+   "expected_answer": "现在共有18本书。",
+   "other_fact_answer": "现在共有17本书。",
+   "truth_explanation": "12+6=18。",
+   "responses": [
+    {
+     "id": "Wfa0427465c",
+     "text": "<think>\n\n</think>\n\n书架现在有 **18** 本书。\n\n计算过程：原有 12 本 + 放入 6 本 = 18 本。"
+    },
+    {
+     "id": "W2f93fbe41d",
+     "text": "<think>\n\n</think>\n\n书架现在共有 **18** 本书。\n\n计算过程：原有 12 本 + 放入 6 本 = 18 本。"
+    },
+    {
+     "id": "Wb0b2212e9a",
+     "text": "书架现在共有多少本书？"
+    },
+    {
+     "id": "W9adb0bfbd3",
+     "text": "<think>\n\n</think>\n\n书架现在共有 18 本书。"
+    }
+   ]
+  }
+ ]
+}

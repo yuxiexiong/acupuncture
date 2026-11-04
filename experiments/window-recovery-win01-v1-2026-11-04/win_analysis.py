@@ -22,7 +22,7 @@ def load_records(run):
     ver = json.load(open(run / 'verification.json'))
     assert ver['status'] == 'passed' and ver['stage'] == 'formal'
     recs = []
-    for w in sorted(run.glob('worker-*')):
+    for w in sorted(x for x in run.glob('worker-*') if x.is_dir()):   # DEVIATIONS V1: skip worker-*.log files
         r = json.load(open(w / 'receipt.json'))
         for rel, dg in r['record_hashes'].items():
             data = (w / rel).read_bytes()
