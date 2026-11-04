@@ -1,0 +1,44 @@
+{
+  "status": "PLANNING_ONLY_NOT_AUTHORIZATION",
+  "successful_forward": 50,
+  "generation": 34,
+  "teacher_forced": 16,
+  "cache": false,
+  "baseline": "new run; do not merge old 28 passes",
+  "rate_model": "min(4200, 52 * answers_per_arm) tokens/s; crude extrapolation from previous H20 long outputs (48 answers ~2509, 128 ~4349, 240-256 ~4008-4303); 60 s startup per arm",
+  "scenarios": {
+    "author_observed_lengths": {
+      "answers": 5984,
+      "tokens_estimated": 145468288,
+      "decode_gpu_hours": 11.69140125152625,
+      "generation_reserved_gpu_hours": 14.990182926332928,
+      "generation_wall_hours": 7.596843844118844
+    },
+    "all_answers_at_request_cap": {
+      "answers": 5984,
+      "tokens_estimated": 187695104,
+      "decode_gpu_hours": 15.063010826210807,
+      "generation_reserved_gpu_hours": 16.179677492877506,
+      "generation_wall_hours": 8.202197476597485
+    }
+  },
+  "proposed_total_budget_gpu_hours": 24,
+  "rough_expected_gpu_hours": [
+    16,
+    23
+  ],
+  "rough_expected_wall_hours": [
+    9,
+    12
+  ],
+  "excludes_wall_queue_and_divergence_review": true,
+  "includes_margin_for_build_TF_activation_reads": true,
+  "additional_disk_reserve_gb": 20,
+  "not_a_confidence_interval": true,
+  "limitations": [
+    "32/64-answer throughput extrapolated, not newly benchmarked",
+    "original answers may differ",
+    "failure-side-effect schedule and historical outcome assertions need decision",
+    "no GPU used for this estimate"
+  ]
+}

@@ -75,6 +75,20 @@ def prepare(root):
                             "Exp8 generation/teacher-forced server not published",
                             "Published evaluator imports unavailable modules"]}
     (root / "receipt.json").write_text(json.dumps(receipt, ensure_ascii=False, indent=2) + "\n")
+    # CPU acceptance fixtures: unchanged function definitions, never author output.
+    fixtures = []
+    for line, names in ((13, ("clear_edits", "mlp_direction_edit")), (98, ("set_subset_edit",))):
+        code = (root / "actions" / f"{line:03d}-python.py").read_text()
+        for node in ast.parse(code).body:
+            if isinstance(node, ast.FunctionDef) and node.name in names:
+                source = ast.get_source_segment(code, node)
+                fixtures.append({"action": line, "name": node.name, "source": source,
+                                 "sha256": hashlib.sha256(source.encode()).hexdigest()})
+    (root / "function-fixture.json").write_text(json.dumps(fixtures, indent=2) + "\n")
+    requests = [{"source_pass": r["k"], "request": r["request"], "author_lengths": r["result"].get("lengths")}
+                for r in (json.loads(s) for s in log.read_text().splitlines())
+                if r["kind"] == "forward" and r["result"].get("ok")]
+    (root / "interface-requests.json").write_text(json.dumps(requests, indent=2) + "\n")
     return receipt
 
 
