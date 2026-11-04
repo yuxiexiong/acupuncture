@@ -1,0 +1,80 @@
+# B 输入/统计与 B/C 运行器准备 v3
+
+2026-11-05。**数据与代码离线验收完成；目标模型、processor和tokenizer均未加载，模型推理0次，GPU时间0。** 本轮授权是准备、离线验收、自查及GitHub交付，不是执行筛查。
+
+接续[v2审核](../wsp-vlm-screen-prep-v2-2026-11-05/README.zh-CN.md)，使用其146个B来源组（D58/H88），不补题、不改标签、不重划集合。C仍为160组（D64/H96），全部原输入和gold与v1逐记录相同。
+
+## 已完成
+
+| 交付 | 内容 |
+|---|---|
+| [292条改写及审核记录](audit/B_rewrites.jsonl) | 每个来源组的全数/子集两问各一条T1；同时保留T0。规则辅助起草后，本助手逐条语义审核，非独立人工复核。 |
+| [B完整输入](prepared/B_inputs.jsonl)与[独立gold](prepared/B_gold.jsonl) | 146×2条件×2模板×2提示＝1,168条；D464、H704。模型输入仅有text/image，request_id用于记录，不进入对话。 |
+| [生成脚本](prepare_inputs.py) | 锁定v2选择文件哈希；检查292条覆盖、原问句未变；生成B完整包及B/C分阶段队列，保存文件哈希。 |
+| [B评分统计](statistics_b.py) | 严格整数解析、实际来源组分母、配对检验/区间、联合正确率、分层与错误模式、提示修对/改错和模板一致性。 |
+| [B/C运行器](runner.py) | 默认离线验证；后续显式执行路径支持单图/无图、P0/D/H分段、固定配置、原始输出与token记录、预算计账、失败停止。 |
+| [独立64条工程样例](prepared/P0_inputs.jsonl) | 8张程序绘制的几何图，B32/C32请求（其中C无图16条），附独立gold；只为工程预检，不作为A、B或C科学样本，不补入146组。 |
+| [离线验收](audit/offline_receipt.json) | 12项新增测试通过；五个队列的ID/路径/图片哈希验证；B完整包与生成结果匹配；C输入/gold不变；合成阳性/阴性统计通过。 |
+
+改写保留类别、属性、空间条件、参照物、观察视角和范围。特别保留长颈鹿自身距离比较、对象自身左右、顶视图竖轴、食物准备区范围；“更远栏杆上的乌鸦”不改成“距栏杆更远的乌鸦”。修正少数原句语法/拼写时不改变标注对象。T1是有限的预冻结措辞稳健性对照，不能代表任意自然语言泛化。
+
+B/C分阶段队列与完整包重复，故不重复提交这些约2.5MB的派生文件；生成脚本与[输入收据](audit/input_receipt.json)可精确重建。B完整1,168条输入和gold已直接提交。原始第三方B/C图片仍在external，不进入Git；图像来源及校验清单沿用v1/v2。
+
+## 统计口径
+
+B解析只接受首尾空白之外完全由ASCII数字组成的非负整数；允许前导零，不从解释、算式、范围、单位或多个答案中提取数字。`2.`、`two`、`2 objects`均判格式失败；规则在模型输出前固定。截断即使文本是正确整数也记错并单列。缺失、重复、未知ID、基础设施错误直接阻止统计，不缩小分母。
+
+复用v2的单侧精确McNemar、来源组bootstrap（10,000次，seed=20261105）、固定A/B/C三项Holm及Wilson下界。B主格为H/B0/T0，**n=88**；B1/T1与位置/距离、ego/allo、总数/子集数/差值、零子集、同答案分层分别呈现，分层结果是描述，不增加可挑选的主检验。控制与挑战联合正确率、B1修对与改错都报告。
+
+146组中42组全数=子集，仍进入总体正确率；仅另外104组能支持“全数正确、子集错答成全数”的行为模式。该模式排除截断输出，且不是已证实的内部“忽略条件”机制。其D≥8/H≥12的诊断线索要求沿用原方案，模式不足不会把已确认的整体差异删掉。
+
+主差15pp、挑战错误20%、控制正确70%、其他B0变体方向一致等门槛不变。整臂格式失败或截断>5%先判测量问题。默认只统计D；完整分析须包含D与H。C统计继续用[v2入口](../wsp-vlm-screen-prep-v2-2026-11-05/statistics_c.py)。B/C各自的 `--family-pvalues` 接受固定A/B/C原始p值，缺测候选为1；正式汇总须互相提供B/C实测p值，A仍为1，不能删A放松门槛。
+
+## 运行器做了什么、尚未证明什么
+
+目标固定 `Qwen/Qwen3-VL-4B-Instruct`，revision `ebb281ec70b05090aa6165b016eac8ec08e71b17`。拟沿用已登记环境版本torch2.14.0、transformers5.20.2；本轮本机未安装/导入这两个库，也没有在服务器重验它们。运行时版本不符即停，不顺手升级。单GPU、batch1、BF16、SDPA、greedy、128新token、独立会话、无量化；显存至少48GB（十进制字节）。
+
+未来加载仅使用固定revision的本地缓存，`local_files_only=True`，不会自动联网下载模型。会记录权重分片/配置文件哈希、软件版本、processor/chat template哈希、原始文本、生成token ID、停止原因、输入长度/哈希、image_grid_thw、视觉token数、处理后尺寸及耗时。每个请求只尝试一次；基础设施失败写入原记录后停止，不把错误回答重试成正确。已有输出目录不覆盖。
+
+处理器像素面积固定65,536–1,048,576；patch16、merge2来自[固定模型处理器配置](https://huggingface.co/Qwen/Qwen3-VL-4B-Instruct/blob/ebb281ec70b05090aa6165b016eac8ec08e71b17/preprocessor_config.json)。API依据[transformers5.20.2 Qwen3-VL文档](https://huggingface.co/docs/transformers/v5.20.2/model_doc/qwen3_vl)、[图像处理源码](https://github.com/huggingface/transformers/blob/v5.20.2/src/transformers/models/qwen2_vl/image_processing_qwen2_vl.py)和[多模态processor源码](https://github.com/huggingface/transformers/blob/v5.20.2/src/transformers/models/qwen3_vl/processing_qwen3_vl.py)核对。源码支持这些调用，不等于已通过本环境兼容性验收。
+
+阶段顺序已写入运行器：
+
+1. **未来processor-only准备**：为466张科学图＋8张工程图输出缩放预览、grid和哈希；审核可辨认性，记录 `processor_review.json`，再允许任何模型输出。本轮没有执行这个processor加载路径。
+2. **未来P0预检**：独立64条工程请求。检查图像/无图路径、格式/截断、数值/设备状态和吞吐，在 `P0_acceptance.json`登记验收；吞吐外推含20%余量。
+3. **未来B_D与C_D**：两个开发集均完成。分析后按任务登记诊断描述，绑定D原始输出SHA。
+4. **未来H**：运行器验证D已完成与相应登记文件，再读取该任务完整H队列。时间顺序的真实执行仍需保留运行收据；文件声明不构成独立审查。
+
+所有真实运行须使用同一run_root，累计B/C正式7,568请求＋P0 64＋基础设施恢复预留256＝最多7,888次尝试，输出上限1,009,664 token。累计12 GPU小时包含加载/计账开销；达到预算不开始下条请求，并给生成设置剩余时间停止条件。库的停止检测可能在一次前向结束后才生效，不能保证硬件故障/卡死时精确秒级终止；正式部署还需调度器超时保护。恢复没有自动执行入口，须先核对历史失败和剩余预算，不能新建run_root绕过总量。
+
+离线测试只覆盖输入、控制流程、接口约定与统计；**没有证明真实框架加载、CUDA生成、图像缩放、模型输出或吞吐正确**。这些是模型端工程待验收，不是已观察到的科学阴性。
+
+## 可复核命令（不加载模型）
+
+在仓库根目录、原始external图片已就位时：
+
+```bash
+python3 experiments/wsp-vlm-screen-ready-v3-2026-11-05/prepare_inputs.py
+python3 experiments/wsp-vlm-screen-ready-v3-2026-11-05/prepare_p0.py
+python3 experiments/wsp-vlm-screen-ready-v3-2026-11-05/accept_offline.py
+python3 experiments/wsp-vlm-screen-ready-v3-2026-11-05/runner.py --task B --stage D --out /tmp/B-dry.json
+```
+
+离线验收断言进程没有导入torch、transformers、huggingface_hub。验收中的回答由确定性合成夹具产生，收据显式标为 `SYNTHETIC_NOT_MODEL_RESULTS`，不是真实Qwen回答。测试覆盖错误/缺失/重复、EOS在第128位、短序列非EOS异常、实际88组分母、同答案组不误算模式、变体方向不稳与格式失败。
+
+真实运行的 `--execute` 路径已写好但本轮未调用；它不代表新的用户授权。验收登记JSON的最低字段：
+
+- `processor_review.json`：`accepted`、`manifest_sha256`，另应附审核人/时间、逐图问题记录。
+- `P0_acceptance.json`：`accepted`、`predictions_sha256`，另应附格式/截断、显存、吞吐及数值核验记录。
+- 每任务诊断登记：`task`、`D_predictions_sha256`、`description`，另应附规则、D计数与时间；使用 `--diagnosis`传入H运行器。
+
+这三类文件现在均未伪造为通过。
+
+## 仍缺什么
+
+1. 固定revision完整模型/processor/tokenizer缓存与服务器资源检查；运行器不会替用户自动下载。
+2. 实际processor加载、474张缩放预览及视觉复核；必要的图像可辨认性判断不能靠本次哈希检查代替。
+3. 后续获准后的64条P0真实预检，包括框架兼容性、BF16/输出接口、数值合理性、显存、吞吐与调度器超时保护。
+4. B/C开发集实测、诊断登记、留出确认和正式结果卡；至今均为0次。
+
+数据改写、B输入包、B统计和运行器代码这些本次指定的准备项已补齐。WSP仍出现在筛查之后：研究者AI依据真实失败反馈定位，再选择稀疏权重修补并迭代；此处不预设两层、不把探针阳性当可修证明、不把行为缺口当补丁成功。[自查记录](SELF_CHECK.zh-CN.md)区分设计、离线验收、模型端待验收与运行授权。
