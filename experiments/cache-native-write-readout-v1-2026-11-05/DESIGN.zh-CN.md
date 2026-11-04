@@ -1,6 +1,6 @@
 # NWR-01 设计：原生写入项写出的状态，经 t2 直接读取是否足以致错
 
-状态：**设计稿 r01，未冻结、未授权、未运行。** 2026-11-05。**同日晚：远端 [Proposal v8](../../docs/mechanism-second-half-v1-2026-11-03/PROPOSAL.zh-CN.md)（5bc1e5f）已把本草案收敛为其主比较 A（保留 L11 接收者、L00 供体、D/E 格；删次接收者 L10、干净供体、L00 强制前缀臂；随机对照改为输出空间 D 幅度匹配；判读改为明确错误编号 E_num 与停止分类，不沿用 2/48 标签与 5 种子均值±2SD）。实施前按 v8 修订合同，不双跑两版。本草案保留为历史。**引用规范 `docs/experiment-design-self-check.zh-CN.md` v1。同一助手撰写与自查，不是独立审查。依据：[LVK 合同/报告](../cache-local-v-k-v1-2026-11-03/)、[SRU 合同/报告](../cache-state-read-use-v1-2026-11-03/)、[论文工作稿 v1.1 §4.2/§8/§12](../../docs/mechanism-paper-skeleton-2026-11-05.zh-CN.md)。
+状态：**设计稿 r01，未运行，保留为历史。实际执行的是 [合同 r02](CONTRACT-r02.zh-CN.md)，结果见 [报告](REPORT.zh-CN.md)。** 2026-11-05。**同日晚：远端 [Proposal v8](../../docs/mechanism-second-half-v1-2026-11-03/PROPOSAL.zh-CN.md)（5bc1e5f）已把本草案收敛为其主比较 A（保留 L11 接收者、L00 供体、D/E 格；删次接收者 L10、干净供体、L00 强制前缀臂；随机对照改为输出空间 D 幅度匹配；判读改为明确错误编号 E_num 与停止分类，不沿用 2/48 标签与 5 种子均值±2SD）。实施前按 v8 修订合同，不双跑两版。本草案保留为历史。**引用规范 `docs/experiment-design-self-check.zh-CN.md` v1。同一助手撰写与自查，不是独立审查。依据：[LVK 合同/报告](../cache-local-v-k-v1-2026-11-03/)、[SRU 合同/报告](../cache-state-read-use-v1-2026-11-03/)、[论文工作稿 v1.1 §4.2/§8/§12](../../docs/mechanism-paper-skeleton-2026-11-05.zh-CN.md)。
 
 ## 1. 设计卡
 
