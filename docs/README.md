@@ -1,5 +1,7 @@
 # 项目文档目录
 
+**2026-11-05｜论文工作稿 v1.1 与原生连接卡（第二轮）：** [工作稿 v1.1（§12 更正记录）](mechanism-paper-skeleton-2026-11-05.zh-CN.md) · [NWR-01 设计与自查](../experiments/cache-native-write-readout-v1-2026-11-05/DESIGN.zh-CN.md) · [NWR-01 合同草案](../experiments/cache-native-write-readout-v1-2026-11-05/CONTRACT.zh-CN.md)。坏消息先说：v1 把 LVK→SRU 主链写成"恢复背景"是措辞错误，按 LVK/SRU 合同四格全在原生 T 上、只换 t1 写入项，S₁ 差按构造即写入差；原生首步线（FC/SP/FX/NFC）此前未入稿，已补入 §4.1 并加 t1 结构句。原生连接真正没做的只有一件：原生写入项写出的 S₁(L00) 经 t2 直接读取是否足以致错——NWR-01 设计通过逻辑自查、判读离线预演四档可达，合同草案未冻结、未授权、未运行。痛点仍推测档，七步查重另记。
+
 **2026-11-05｜WSP B/C 准备 v3：** [B改写、输入包、统计与运行器](../experiments/wsp-vlm-screen-ready-v3-2026-11-05/README.zh-CN.md) · [自查](../experiments/wsp-vlm-screen-ready-v3-2026-11-05/SELF_CHECK.zh-CN.md)。固定B146组，292条等义改写、1168条完整输入和B评分统计已补齐；B/C分阶段运行器、独立64条工程样例就位，12项离线测试通过。真实processor、模型、CUDA、吞吐和D/H实测仍未验收；本轮模型加载/推理/GPU均0。
 
 **2026-11-05｜论文写作入口：** [论文工作稿与完整图表骨架](mechanism-paper-skeleton-2026-11-05.zh-CN.md) · [更新后的理论与证据链](cache-mechanism-theory-evidence-spine-2026-11-03.zh-CN.md) · [124目录资产表](RESEARCH_ASSET_CATALOG_2026-11-04.zh-CN.md) · [结果与更正](RESEARCH_ARCHIVE_2026-11-04.zh-CN.md)。当前按用户要求先把全部已有机制结果写成连续论证；下方旧方案不自动执行，没有新增模型实验。
