@@ -1,5 +1,7 @@
 # 项目文档目录
 
+**2026-11-05｜WSP 三候选行为筛查（仅方案，未运行）：** [模型、数据、对照、判据、预算及WSP修复衔接](wsp-vlm-behavior-screen-v1-2026-11-05.zh-CN.md) · [C01–C14与反方自查](wsp-vlm-behavior-screen-self-check-v1-2026-11-05.zh-CN.md)。Qwen3-VL-4B-Instruct；混合类别计数、空间条件计数、反事实图下常识干扰；每候选D64/H96，至多10,560回答，12GPUh为待吞吐验收的停止线。筛查后由研究者AI诊断定位、选择稀疏编辑并用反馈迭代，不预设两层；本次无模型/GPU运行。本版替代WSP-VE-01的下一步安排，旧自查结论不再作为实施依据。
+
 **2026-11-04｜下半场方向 v3：** [Proposal](mechanism-second-half-v1-2026-11-03/PROPOSAL.zh-CN.md) · [Roadmap](cache-mechanism-broadening-roadmap-2026-11-04.zh-CN.md) · [方向自查](mechanism-second-half-v1-2026-11-03/SELF_CHECK.zh-CN.md) · [当前 To-do](cache-mechanism-todo.zh-CN.md)。前移任务边界检查，以关系自己的代表性证据决定深入；第一步思路讨论中，不直接进入实验设计。
 
 **2026-11-04｜统一归档入口：** [理论、实验结果与证据边界](RESEARCH_ARCHIVE_2026-11-04.zh-CN.md) · [全部实验资产目录](RESEARCH_ASSET_CATALOG_2026-11-04.zh-CN.md)。已纳入NVW/LVK/SRU、NVB/NBR/SIT/NMT、CGV与NCC/NSR/NQK/NPC，补齐本地遗漏原件和失败记录。SDT未运行，实际后继为SIT；WSP工程验收与运行中快照单列，不作能力结论。下方旧“当前／下一步／未运行”均为历史快照，最新状态以本次总览及各实验收据为准。本次无模型/GPU运行。
