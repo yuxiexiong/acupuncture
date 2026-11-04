@@ -1,5 +1,7 @@
 # 实验目录：按研究问题查找
 
+**2026-11-04｜拓宽方向的资产核对：** [旧记录 CPU 审计](cache-mechanism-broadening-audit-v1-2026-11-04/README.zh-CN.md)核对四轮原生缓存实验及 LVK 的 240 份记录；不是新模型实验。研究推进见[Roadmap](../docs/cache-mechanism-broadening-roadmap-2026-11-04.zh-CN.md)。
+
 **2026-11-04｜统一归档入口：** [理论、实验结果与证据边界](../docs/RESEARCH_ARCHIVE_2026-11-04.zh-CN.md) · [全部实验资产目录](../docs/RESEARCH_ASSET_CATALOG_2026-11-04.zh-CN.md)。已纳入NVW/LVK/SRU、NVB/NBR/SIT/NMT、CGV与NCC/NSR/NQK/NPC，补齐本地遗漏原件和失败记录。SDT未运行，实际后继为SIT；WSP工程验收与运行中快照单列，不作能力结论。下方旧“当前／下一步／未运行”均为历史快照，最新状态以本次总览及各实验收据为准。本次无模型/GPU运行。
 
 - [DIV-01 第零步 4B L0 阈值附近同范数分裂普查](div01-threshold-split-survey-v1-2026-11-03/REPORT.zh-CN.md)（2026-11-03）：20 通道×{0.5,0.75}×8 题，只生成；够数闸 FAIL（0.5 STOP 5／CLEAN 0，0.75 全 STOP）；EOS 阈值全落在 0.5–0.75；复现闸 16/16。
