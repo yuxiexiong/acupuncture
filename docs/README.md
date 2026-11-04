@@ -1,5 +1,7 @@
 # 项目文档目录
 
+**2026-11-05｜WSP 三候选筛查准备检查：** [现有模型、数据、代码、具体待办与工作量](wsp-vlm-screen-readiness-2026-11-05.zh-CN.md)。只读核对本地与H20；目标VLM及合格题单未就位，旧后端为纯文本。通用环境和统计部件可复用；先核SPHERE/CounterFact独立组数。预计CPU/数据/代码准备28–46人时，含人工审核8–13人时；模型冒烟与正式筛查均未运行。
+
 **2026-11-05｜WSP 三候选行为筛查（仅方案，未运行）：** [模型、数据、对照、判据、预算及WSP修复衔接](wsp-vlm-behavior-screen-v1-2026-11-05.zh-CN.md) · [C01–C14与反方自查](wsp-vlm-behavior-screen-self-check-v1-2026-11-05.zh-CN.md)。Qwen3-VL-4B-Instruct；混合类别计数、空间条件计数、反事实图下常识干扰；每候选D64/H96，至多10,560回答，12GPUh为待吞吐验收的停止线。筛查后由研究者AI诊断定位、选择稀疏编辑并用反馈迭代，不预设两层；本次无模型/GPU运行。本版替代WSP-VE-01的下一步安排，旧自查结论不再作为实施依据。
 
 **2026-11-04｜下半场方向 v3：** [Proposal](mechanism-second-half-v1-2026-11-03/PROPOSAL.zh-CN.md) · [Roadmap](cache-mechanism-broadening-roadmap-2026-11-04.zh-CN.md) · [方向自查](mechanism-second-half-v1-2026-11-03/SELF_CHECK.zh-CN.md) · [当前 To-do](cache-mechanism-todo.zh-CN.md)。前移任务边界检查，以关系自己的代表性证据决定深入；第一步思路讨论中，不直接进入实验设计。
