@@ -1,6 +1,8 @@
 # Acupuncture：研究状态与后续方向
 
-**2026-11-04｜当前研究推进 v3：** [Proposal](mechanism-second-half-v1-2026-11-03/PROPOSAL.zh-CN.md)与[Roadmap](cache-mechanism-broadening-roadmap-2026-11-04.zh-CN.md)同步：R2 跨层、多针比较与 R4 早期任务检查同行；R3 解释共同关系和分叉；R5 按计算对象与工程条件接入，R4 后续独立确认。A–D 主线保留。当前只讨论首个关系检验如何推进，未冻结实验或新增模型/GPU运行。
+**2026-11-05｜核心主张审计与下半场v6：** [候选、支持、最强反例与缺失](mechanism-second-half-v1-2026-11-03/CORE_CLAIMS.zh-CN.md) · [Proposal](mechanism-second-half-v1-2026-11-03/PROPOSAL.zh-CN.md) · [Roadmap](cache-mechanism-broadening-roadmap-2026-11-04.zh-CN.md) · [自查](mechanism-second-half-v1-2026-11-03/SELF_CHECK.zh-CN.md) · [To-do](cache-mechanism-todo.zh-CN.md)。优先检验状态作用随历史形成与使用背景改变的条件规律；尚非已确立结论。当前先回横向，不默认续做KVC读取或SDM扫描。旧链为工具、KVC为桥接；核心贡献仍有成败风险。本轮无新实验。下方早期方向与队列保留历史身份。
+
+**历史推进记录｜2026-11-04 v3（当前以顶部v6为准）：** [Proposal](mechanism-second-half-v1-2026-11-03/PROPOSAL.zh-CN.md)与[Roadmap](cache-mechanism-broadening-roadmap-2026-11-04.zh-CN.md)同步：R2 跨层、多针比较与 R4 早期任务检查同行；R3 解释共同关系和分叉；R5 按计算对象与工程条件接入，R4 后续独立确认。A–D 主线保留。当前只讨论首个关系检验如何推进，未冻结实验或新增模型/GPU运行。
 
 **2026-11-04｜统一归档入口：** [理论、实验结果与证据边界](RESEARCH_ARCHIVE_2026-11-04.zh-CN.md) · [全部实验资产目录](RESEARCH_ASSET_CATALOG_2026-11-04.zh-CN.md)。已纳入NVW/LVK/SRU、NVB/NBR/SIT/NMT、CGV与NCC/NSR/NQK/NPC，补齐本地遗漏原件和失败记录。SDT未运行，实际后继为SIT；WSP工程验收与运行中快照单列，不作能力结论。下方旧“当前／下一步／未运行”均为历史快照，最新状态以本次总览及各实验收据为准。本次无模型/GPU运行。
 
