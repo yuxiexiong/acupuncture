@@ -1,6 +1,6 @@
 # Acupuncture｜少数通道干预：缓存机制与稳定副作用控制
 
-**2026-11-04｜当前主线与 Roadmap：** [从局部解释到跨层、跨通道的共同机制](docs/cache-mechanism-broadening-roadmap-2026-11-04.zh-CN.md)。现状是广泛调查与局部计算证据尚未接通；目标是模型家族或架构类型内可检验的机制解释。近期复用全层资产，补齐全层、多针的可比关系，再解释分叉并以新条件验证。本文仅研究思路，无新增模型/GPU运行。
+**2026-11-04｜下半场方向 v3：** [Proposal](docs/mechanism-second-half-v1-2026-11-03/PROPOSAL.zh-CN.md) · [Roadmap](docs/cache-mechanism-broadening-roadmap-2026-11-04.zh-CN.md) · [当前 To-do](docs/cache-mechanism-todo.zh-CN.md)。跨层、多针比较穿插早期任务检查；共同响应和分叉决定深入，跨模型按条件接入。第一步研究思路继续讨论，未设计新实验卡或新增模型/GPU运行。CGV 三种新结构仍输出编号，不冒充非编号任务。
 
 **2026-11-04｜统一归档入口：** [理论、实验结果与证据边界](docs/RESEARCH_ARCHIVE_2026-11-04.zh-CN.md) · [全部实验资产目录](docs/RESEARCH_ASSET_CATALOG_2026-11-04.zh-CN.md)。已纳入NVW/LVK/SRU、NVB/NBR/SIT/NMT、CGV与NCC/NSR/NQK/NPC，补齐本地遗漏原件和失败记录。SDT未运行，实际后继为SIT；WSP工程验收与运行中快照单列，不作能力结论。下方旧“当前／下一步／未运行”均为历史快照，最新状态以本次总览及各实验收据为准。本次无模型/GPU运行。
 

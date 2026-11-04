@@ -1,6 +1,6 @@
 # Acupuncture 缓存机制线：理论与实验证据骨干
 
-**2026-11-04 横向延伸入口：** [机制拓宽 Roadmap](cache-mechanism-broadening-roadmap-2026-11-04.zh-CN.md)将本骨架接到全层、多针、任务与模型条件；后续实验结果以统一归档及各报告更正为准。本文仍为截至 SRU 的历史骨架，不因新增链接升级其证据范围。
+**2026-11-04 横向延伸入口：** [Proposal v3](mechanism-second-half-v1-2026-11-03/PROPOSAL.zh-CN.md)、[Roadmap v3](cache-mechanism-broadening-roadmap-2026-11-04.zh-CN.md)及[当前 To-do](cache-mechanism-todo.zh-CN.md)共同指导后续：横向比较穿插任务检查，按关系决定深入。本页以下仍为截至 SRU 的历史骨架，“三项 To-do／下一步”不作为当前排队顺序；不因更新导航升级已有证据范围。
 
 > 历史证据快照。后续实验、解释更正和当前边界见[2026-11-04统一归档](RESEARCH_ARCHIVE_2026-11-04.zh-CN.md)。本页原数值与日期保留；旧“尚未／下一步”不作为当前状态。
 

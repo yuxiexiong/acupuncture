@@ -1,6 +1,6 @@
 # Acupuncture：研究状态与后续方向
 
-**2026-11-04｜当前研究推进顺序：** [机制拓宽 Roadmap](cache-mechanism-broadening-roadmap-2026-11-04.zh-CN.md)。保留干预—传播—写入/历史—读取—回答主线；近期优先全层、层内多针的机制比较，不以先完成 L0/L12 局部解释为前提。范围是研究方向与证据衔接，未冻结完整实验计划，未新增运行。
+**2026-11-04｜当前研究推进 v3：** [Proposal](mechanism-second-half-v1-2026-11-03/PROPOSAL.zh-CN.md)与[Roadmap](cache-mechanism-broadening-roadmap-2026-11-04.zh-CN.md)同步：R2 跨层、多针比较与 R4 早期任务检查同行；R3 解释共同关系和分叉；R5 按计算对象与工程条件接入，R4 后续独立确认。A–D 主线保留。当前只讨论首个关系检验如何推进，未冻结实验或新增模型/GPU运行。
 
 **2026-11-04｜统一归档入口：** [理论、实验结果与证据边界](RESEARCH_ARCHIVE_2026-11-04.zh-CN.md) · [全部实验资产目录](RESEARCH_ASSET_CATALOG_2026-11-04.zh-CN.md)。已纳入NVW/LVK/SRU、NVB/NBR/SIT/NMT、CGV与NCC/NSR/NQK/NPC，补齐本地遗漏原件和失败记录。SDT未运行，实际后继为SIT；WSP工程验收与运行中快照单列，不作能力结论。下方旧“当前／下一步／未运行”均为历史快照，最新状态以本次总览及各实验收据为准。本次无模型/GPU运行。
 

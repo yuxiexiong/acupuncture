@@ -145,7 +145,7 @@ NVB→NBR→SIT→NMT沿用已见面板并逐轮改操作，不能算四次独�
 | [跨模型基础F1](../experiments/cross-model-foundation-common-v1-2026-11-02/PREFLIGHT_R02.zh-CN.md) | 四模型预检有记录；写入1%容差存在未过项，后续决策未完成 | 跨模型科学结果或完整执行就绪；不同计算路径差不是同路径零分布 |
 | [DIV-01](../experiments/div01-threshold-split-survey-v1-2026-11-03/REPORT.zh-CN.md) | 336条，第零步够数闸FAIL；未构成所需STOP/CLEAN对照，按合同停止 | 理论假设已否证。离散剂量/有限题集也不足以证明所有通道阈值都严格落在0.5–0.75，更不足以证明停止“只由幅度决定” |
 | [跨条件预测草稿](cross-condition-predictor-v1-2026-11-03/INVENTORY.zh-CN.md) | 零GPU资产与候选整理，未确认预测规律 | 跨条件可预测性结果 |
-| [机制后半段提案](mechanism-second-half-v1-2026-11-03/PROPOSAL.zh-CN.md)、[Pirate修复概念](pirate-persona-capability-repair-mini-proposal-2026-11-03.zh-CN.md) | 设计／概念历史材料 | 已运行结果或默认待执行队列 |
+| [机制后半段提案历史 v2](https://github.com/yuxiexiong/acupuncture/blob/ec6dbf4b1c481c02d9530cfe9ac70a1054eee7cb/docs/mechanism-second-half-v1-2026-11-03/PROPOSAL.zh-CN.md)、[Pirate修复概念](pirate-persona-capability-repair-mini-proposal-2026-11-03.zh-CN.md) | 设计／概念历史材料 | 已运行结果或默认待执行队列 |
 | [WSP FA-01](../experiments/wsp-process-reproduction-v1-2026-11-03/HANDOFF-2026-11-03-fa01.zh-CN.md) | 双模型前向工程验收，保留首轮失败与数值限制 | 作者WSP效果复现或能力提高 |
 | [WCP-01](../experiments/wsp-coding-painpoint-v1-2026-11-03/REPORT.zh-CN.md) | 数据、评分隔离、编译权重干预接口验收；运行时针与编译针数值不等价 | 编程正式搜索完成／编程能力改善 |
 | [WSP车队快照](../experiments/wsp-process-reproduction-v1-2026-11-03/local-runtime-archive-r01/README.zh-CN.md) | 用户此前另行授权后启动；0.8B数学保留1/50 pass并因编辑器拒绝阻断；4B数学在快照中running；后续[恢复记录](../experiments/wsp-process-reproduction-v1-2026-11-03/fleet-v1/runs/diagnostic-r1/README.zh-CN.md)将0.8B续接排到队尾，尚非第2 pass完成；编程未有本轮完成收据 | 四项已完成、科学阴性或稳定方法收益；此处不改动正在运行的队列 |

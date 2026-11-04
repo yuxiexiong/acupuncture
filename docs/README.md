@@ -1,6 +1,6 @@
 # 项目文档目录
 
-**2026-11-04｜研究主线与路线图：** [课题现状、拓宽目标、研究骨架横向延伸和推进顺序](cache-mechanism-broadening-roadmap-2026-11-04.zh-CN.md)。基于统一归档与全层资产，区分已有观察、局部机制、待检验推广；不是实验合同。
+**2026-11-04｜下半场方向 v3：** [Proposal](mechanism-second-half-v1-2026-11-03/PROPOSAL.zh-CN.md) · [Roadmap](cache-mechanism-broadening-roadmap-2026-11-04.zh-CN.md) · [方向自查](mechanism-second-half-v1-2026-11-03/SELF_CHECK.zh-CN.md) · [当前 To-do](cache-mechanism-todo.zh-CN.md)。前移任务边界检查，以关系自己的代表性证据决定深入；第一步思路讨论中，不直接进入实验设计。
 
 **2026-11-04｜统一归档入口：** [理论、实验结果与证据边界](RESEARCH_ARCHIVE_2026-11-04.zh-CN.md) · [全部实验资产目录](RESEARCH_ASSET_CATALOG_2026-11-04.zh-CN.md)。已纳入NVW/LVK/SRU、NVB/NBR/SIT/NMT、CGV与NCC/NSR/NQK/NPC，补齐本地遗漏原件和失败记录。SDT未运行，实际后继为SIT；WSP工程验收与运行中快照单列，不作能力结论。下方旧“当前／下一步／未运行”均为历史快照，最新状态以本次总览及各实验收据为准。本次无模型/GPU运行。
 
