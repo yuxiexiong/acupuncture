@@ -1,0 +1,147 @@
+# Final direct-weight experiment report
+
+## Submission
+No edits retained. All seven remaining candidate tensors were removed using drop_edit,
+and their current values were verified exactly equal to load_original. The edited directory is empty.
+The experiment did not establish an improvement in mathematical accuracy.
+
+## Diagnostic path
+- Baseline diagnostic generation: 192 cases, 14 failures, including 9 token-limit cutoffs.
+  Repeated reconsideration and explicit loops motivated repetition-focused interventions.
+- Matched-token probes localized repetition-associated late MLP channels and induction-like
+  attention heads. Sparse ablations and both attenuation/amplification of selected heads
+  did not establish accuracy gains; some harmed generation.
+- A layer-24 DeltaNet head-9 decay intervention was tested at 4x, 16x, and 64x.
+  The 16x candidate improved the tuning sample but failed a frozen independent 1024-item validation.
+- Distributed rank-one edits targeted MLP output projections at layers 19,27,28,29,30
+  and attention output projections at layers 27,30. Suppression and amplification changed
+  measured residual accumulation, but that did not establish selective control of harmful loops.
+- The frozen final candidate used W'=W+u(u^T W) at those seven matrices.
+  No embedding, output readout, final norm, or tensor-wide scaling was submitted.
+
+## Independent validation
+The final candidate was frozen before eight preselected 256-item paired batches.
+All 2048 items were used without stopping or retuning.
+{
+  "all": {
+    "n": 2048,
+    "original_correct": 1956,
+    "edited_correct": 1953,
+    "original_accuracy_pct": 95.5078,
+    "edited_accuracy_pct": 95.3613,
+    "delta_pp": -0.1465,
+    "se_pp": 0.3937,
+    "ci95_pp": [
+      -0.9182,
+      0.6253
+    ],
+    "rescues": 31,
+    "regressions": 34,
+    "mcnemar_exact_p": 0.80432,
+    "cut_original": 53,
+    "cut_edited": 54,
+    "mean_tokens_original": 7130.6,
+    "mean_tokens_edited": 7155.6
+  },
+  "gsm8k": {
+    "n": 512,
+    "original_correct": 491,
+    "edited_correct": 487,
+    "original_accuracy_pct": 95.8984,
+    "edited_accuracy_pct": 95.1172,
+    "delta_pp": -0.7812,
+    "se_pp": 0.6764,
+    "ci95_pp": [
+      -2.1069,
+      0.5444
+    ],
+    "rescues": 4,
+    "regressions": 8,
+    "mcnemar_exact_p": 0.3877,
+    "cut_original": 11,
+    "cut_edited": 10,
+    "mean_tokens_original": 4248.1,
+    "mean_tokens_edited": 4114.2
+  },
+  "math": {
+    "n": 1536,
+    "original_correct": 1465,
+    "edited_correct": 1466,
+    "original_accuracy_pct": 95.3776,
+    "edited_accuracy_pct": 95.4427,
+    "delta_pp": 0.0651,
+    "se_pp": 0.4741,
+    "ci95_pp": [
+      -0.8642,
+      0.9944
+    ],
+    "rescues": 27,
+    "regressions": 26,
+    "mcnemar_exact_p": 1.0,
+    "cut_original": 42,
+    "cut_edited": 44,
+    "mean_tokens_original": 8091.5,
+    "mean_tokens_edited": 8169.4
+  }
+}
+
+The final candidate failed the precommitted gain > 2 SE retention rule.
+The 95% paired interval includes both modest harm and modest benefit; there is no demonstrated gain.
+Cutoffs were 53 original versus 54 edited, so there was no aggregate truncation reduction either.
+
+## Prior DeltaNet candidate
+{
+  "n": 1024,
+  "delta_pp": -0.6836,
+  "se_pp": 0.5436,
+  "rescues": 12,
+  "regressions": 19
+}
+
+## Final dense audit
+Passes 49 and 50 compared original and frozen edited weights on controlled raw-text probes.
+One pair accidentally differed in repetition count and was excluded entirely.
+The remaining 15 pairs had identical token sequences.
+{
+  "productive": {
+    "n_probes": 4,
+    "body_delta_nat_per_token": 0.021629,
+    "close_token_delta_nat": -0.814933,
+    "body_direction_delta": -2.112657
+  },
+  "correction": {
+    "n_probes": 4,
+    "body_delta_nat_per_token": 0.035432,
+    "close_token_delta_nat": -0.80983,
+    "body_direction_delta": -3.139441,
+    "incorrect_prefix_delta_nat_per_token": 0.113626,
+    "correction_delta_nat_per_token": 0.010343
+  },
+  "unfinished": {
+    "n_probes": 4,
+    "body_delta_nat_per_token": 0.041108,
+    "close_token_delta_nat": -1.097248,
+    "body_direction_delta": -3.151061
+  },
+  "loop": {
+    "n_probes": 3,
+    "body_delta_nat_per_token": 0.024735,
+    "close_token_delta_nat": -0.191729,
+    "body_direction_delta": 1.991295,
+    "first_repeat_delta_nat_per_token": -0.000807,
+    "last_repeat_delta_nat_per_token": 0.010384,
+    "direction_accumulation_original": 14.633666,
+    "direction_accumulation_edited": 25.875552
+  }
+}
+
+These small synthetic probes are diagnostic only and cannot override independent generation accuracy.
+Activation association, successful manipulation of a residual direction, and improved
+teacher-forced likelihood are each insufficient by themselves to establish a mathematical repair.
+
+## Artifacts
+- /work/notes.md
+- /work/final_accuracy_audit.json
+- /work/final_specificity_audit.json
+- /work/final_audit_alignment.json
+- /work/final_restoration_checks.json
