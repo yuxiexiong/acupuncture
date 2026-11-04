@@ -4,6 +4,7 @@
 
 **2026-11-04｜统一归档入口：** [理论、实验结果与证据边界](../docs/RESEARCH_ARCHIVE_2026-11-04.zh-CN.md) · [全部实验资产目录](../docs/RESEARCH_ASSET_CATALOG_2026-11-04.zh-CN.md)。已纳入NVW/LVK/SRU、NVB/NBR/SIT/NMT、CGV与NCC/NSR/NQK/NPC，补齐本地遗漏原件和失败记录。SDT未运行，实际后继为SIT；WSP工程验收与运行中快照单列，不作能力结论。下方旧“当前／下一步／未运行”均为历史快照，最新状态以本次总览及各实验收据为准。本次无模型/GPU运行。
 
+- [R1 对齐：阶段二事实全层缓存矩阵 × 编号 NCC/NSR/NQK/NPC](cache-mechanism-alignment-r1-v1-2026-11-04/REPORT.zh-CN.md)（2026-11-04）：零 GPU；共同：L0 首步停止、恢复递推消除停止、单类污染可容忍；可靠分歧：L0 恢复递推后事实 8/24、2/24 对编号 48/48（事实范围更大）；KV 污染受浅层 KV 范围混淆；候选：任务×范围同协议桥。
 - [DIV-01 第零步 4B L0 阈值附近同范数分裂普查](div01-threshold-split-survey-v1-2026-11-03/REPORT.zh-CN.md)（2026-11-03）：20 通道×{0.5,0.75}×8 题，只生成；够数闸 FAIL（0.5 STOP 5／CLEAN 0，0.75 全 STOP）；EOS 阈值全落在 0.5–0.75；复现闸 16/16。
 - [NPC-01 V、S、KV 两两组合的反向移植](cache-native-pair-combination-v1-2026-11-03/CONTRACT.zh-CN.md)（2026-11-03）：C 接收，换入两针 T 的 S+V、S+KV、V+KV；逐条最小致错组合；探索性。
 - [NQK-01 联合损伤中漏测的 q/k 历史](cache-native-qk-history-v1-2026-11-03/CONTRACT.zh-CN.md)（2026-11-03）：C 接收，换入两针 T 的卷积 q/k 历史（CQK）或 V+S+KV（CVSK）；与 NSR-01 的 CJ/T 逐条配对；探索性。
