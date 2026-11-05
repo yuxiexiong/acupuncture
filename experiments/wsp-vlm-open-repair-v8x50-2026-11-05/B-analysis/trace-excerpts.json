@@ -1,0 +1,280 @@
+[
+  {
+    "path": "experiments/wsp-vlm-open-repair-v8-2026-11-05/search-B/conversation/turn-0001/prompt.txt",
+    "sha256": "33fdcb7af1e8e7cfb5c884ebdca44f7a238bdbe0966fc88dbb0bb3ec0349821c",
+    "text": "You are the researcher. The human fixes task, evaluation, data access and costs.\nYou diagnose failures, choose measurements, select parameters, calculate edits and\nrevise your ideas using actual feedback. No layer, neuron ranking, or edit schedule\nhas been prescribed. No successful patch is required. You may stop with a negative\nor inconclusive result. Explain your evidence, next action and expected observation\nbefore exactly one fenced `python` or `forward` block. A plain final reply stops.\n\nPython runs persistently on CPU in an isolated directory. NumPy is `np`.\n`catalog()`, `NAMES`, `load_original(name)`, `load(name)`, `save_edit(name,array)`,\n`drop_edit(name)`, `edited()` expose parameter inspection and staging.\nYou write the selection and modification algorithm yourself. No target-model\ntraining or unmetered model execution is allowed. Disclose any labels/fitting used.\n`EVIDENCE` contains only permitted development data; `ARTIFACTS` contains complete\ntool feedback. Successful controls and failures are equally available. No sealed\nconfirmation data is accessible. Target-model prompts never receive gold labels.\n\n`forward` JSON takes `op` and relevant fields:\n\n- `status`: current, best, resource use. Start here or with `evidence`/`catalog`.\n- `evidence`, optional `ids`: input, gold, prior raw answers; initial answers may\n  be absent until original evaluation. Large results are paginated, not discarded.\n- `image`, `request_id`, `kind` = `input` or `preview`: attaches a verified image\n  to your next turn. You may request any allowed development example.\n- `catalog`: parameter names/shapes/dtypes/tied aliases from the checkpoint.\n- `runtime_catalog`: actual runtime named modules/parameters; counts wall/load cost.\n- `measure`, `candidate`, `ids`, `spec`: teacher-forced internal readout. `spec`\n  supports `continuation`, `score_token_ids`, `capture` and `interventions`.\n  A capture supplies `module`, `where` (`input`/`kwargs`/`output`), `path` (tuple/dict keys),\n  optional `flat_indices`. Results retain actual tensor shape, input token IDs,\n  decoder image-token positions and image grid. Vision tensor axes require\n  inspection; do not assume they are decoder-token axes. No arbitrary gradient\n  diagnostic or attention-probability extractor is implemented yet.\n  Temporary interventions additionally supply explicit `flat_indices`, `values`\n  and `operation` (`add`, `replace`, `scale`); arbitrary replacement values may be\n  calculated in Python. They do not become weight edits or best candidates.\n- `commit`, `parent`, `rationale`: validate staged tensors and create an immutable\n  candidate. Parent must equal current checkout. Actual effective scalars are\n  counted against W0; tied parameters count once. Staging clears on commit.\n- `checkout`, `candidate`: return to any recorded candidate or W0; clears staging.\n  Python variables remain, so explicitly refresh arrays after checkout.\n- `evaluate`, `candidate`, optional `ids`: paired original/parent/candidate outputs\n  under identical inputs. Omitting ids evaluates the fixed full development pack.\n  Local subsets are diagnostic only; raw answers and repaired/worsened IDs return.\n- `accept`, `candidate`: observer applies the frozen full-development selection\n  and protection rules. Failures do not automatically expand budgets or scope.\n- `artifact`, `name`, optional `offset`/`length`: read a page of full returned JSON.\n- `freeze`: freeze the current best within the final sparsity budget; ends search.\n  This is a development selection, not evidence of independent generalization.\n- `stop`, `reason`: end with an honest negative/inconclusive result.\n\nEvery tool operation (including errors), selected parent, code and result is logged.\nWeight edits preserve architecture, tensor names and shapes. Do not alter scoring,\ninput images, generation settings or budgets. Final deployment must be ordinary\ninference from a reloaded static patch with no diagnostic hooks. An engineering\ntool error is not evidence against the scientific hypothesis.\n\nThis is the first bounded development exploration after original-model screening.\nUse all available development successes and failures, not only a preselected error\npattern. Read /evidence/bundle.json using Python for the complete package; it\nincludes previous_predictions. The human has not established a failure mechanism.\nB concerns total vs spatially conditioned counts. C concerns visual vs usual\nsize judgments under original/counterfactual images and no-image controls.\nDo not assume a missing neuron, a particular layer, or one shared cause.\n\nSelection: ordinary-prompt joint correctness, averaging wording/order within each\nsource group then groups equally. B pairs total/subset; C pairs counterfactual\nusual/visual. All conditions and both prompt arms are protected per wording/order\ncell: maximum 0.035 accuracy loss vs original, format/truncation each <= 0.01.\nOnly full fixed development evaluation can select a best candidate. Ties prefer\nfewer changed scalars. C's original/no-image controls and five-way correctness\nmust also be reported. View raw responses and repaired/worsened IDs.\nTemporary support <=4,000,000 and final support <=1,000,000 actual BF16 scalars\nrelative to W0, across any legitimate parameter locations. Wall limit 7200 seconds\nincludes your thinking time, model loading, diagnostics and evaluations. No need\nto use all 100 turns. Budget exhausted or no useful patch is a valid outcome.\nYour persistent CPU workspace has NumPy only; use the metered observer for every\nmodel forward. Select your own observations and edit computation. You may change\nyour hypothesis using feedback; an engineering error is not a task failure.\n\nBranch B, physical GPU 0, inference batch 64. User explicitly requests 30 rounds: a distinct nonzero weight repair plus completed full development evaluation is one round. Diagnostic/readout tools, partial evaluations, cached repeats and identical weights do not count. Aim to complete 30 genuine hypotheses and evaluations; do not fabricate gains or make cosmetic duplicate patches. There is no session wall cutoff. The observer automatically selects by the same frozen score/protection rules and freezes the best at round 30. Unsuccessful full evaluations count. Explain a concrete blocker if unable to continue, and never claim 30 when fewer were completed. The complete W0 baseline was freshly evaluated with this batching regime.\nFrozen contract: {\"actions\": 2000, \"final_scalars\": 1000000, \"forwards\": 69600, \"max_format_rate\": 0.01, \"max_input_tokens\": 4096, \"max_measure_elements\": 2000000, \"max_protection_drop\": 0.035, \"protection_conditions\": [\"total\", \"subset\"], \"python_seconds\": 36000, \"repair_rounds\": 30, \"researcher_tokens\": 50000000, \"researcher_turn_reserve_usd\": null, \"researcher_turns\": 2000, \"researcher_usd\": null, \"samples\": 69600, \"target_tokens\": 293990400, \"temporary_scalars\": 4000000, \"wall_seconds\": null}\nPrior exploratory B evaluation is available at ARTIFACTS/history-B-v7-first-evaluation.json. This is seen-development history, not confirmation or a mandated edit recipe. Read evidence and choose your own next hypothesis. Previous slow-run rounds are not counted in this new 30-round phase."
+  },
+  {
+    "path": "experiments/wsp-vlm-open-repair-v8-2026-11-05/search-B/conversation/turn-0006/reply.txt",
+    "sha256": "eaf46e44f84100733d3100c0d1e5f3d0a529c6104b4784aa87f6e5d60302e5eb",
+    "text": "The baseline’s ordinary-arm joint correctness is 46.55%; total accuracy is much higher than subset accuracy. The instruction arm helps some spatial cases but hurts others, so instruction-following alone is not an established cause. The earlier patch repaired 26 cells and worsened 15 under its older baseline.\n\nNext I’ll inspect those exact changes and the checkpoint’s parameter families. This will identify small, interpretable edit locations without inheriting the previous patch as a recipe.\n\n```python\nprint(\"PARAMETER_FAMILIES\")\nfamilies = defaultdict(list)\nfor name, meta in cat.items():\n    parts = name.split(\".\")\n    family = \".\".join(\"#\" if p.isdigit() else p for p in parts)\n    families[family].append((name, meta))\nfor family, members in families.items():\n    name, meta = members[0]\n    print(family, \"count\", len(members), \"example\", name, json.dumps(meta))\n\nprint(\"HISTORY_SUMMARIES\")\nfor cid, result in hv[\"results\"].items():\n    print(cid, json.dumps(result[\"summary\"], sort_keys=True))\nhistory_candidate = hv[\"candidate\"]\nhistory_preds = {p[\"request_id\"]: p for p in hv[\"results\"][history_candidate][\"predictions\"]}\nhistory_base_preds = {p[\"request_id\"]: p for p in hv[\"results\"][W0][\"predictions\"]}\nprint(\"HISTORY_REPAIRS_AND_REGRESSIONS\")\nfor kind in [\"repaired\", \"worsened\"]:\n    for rid in hv[\"vs_original\"][kind]:\n        print(kind, rid, \"gold\", record_by_id[rid][\"gold\"][\"answer\"],\n              \"old\", repr(history_base_preds[rid][\"text\"]),\n              \"patch\", repr(history_preds[rid][\"text\"]),\n              \"fresh_W0\", repr(base_preds[rid][\"text\"]))\n\nprint(\"FRESH_BASELINE_ERROR_DIRECTIONS\")\nfor condition in [\"total\", \"subset\"]:\n    rows = [s for s in base_scored.values() if s[\"condition\"] == condition]\n    print(condition, dict(Counter(\"correct\" if s[\"correct\"] else\n                                  \"over\" if s[\"parsed\"] > s[\"answer\"] else \"under\"\n                                  for s in rows)))\n```\n"
+  },
+  {
+    "path": "experiments/wsp-vlm-open-repair-v8-2026-11-05/search-B/conversation/turn-0007/reply.txt",
+    "sha256": "6bed312d44fb49d3cb0abff106584968c4b5b34ef0b7d84dab8af79b277f1e68",
+    "text": "The history’s gains and regressions all move answers toward zero, consistent with a response bias rather than a demonstrated spatial repair. Fresh W0 has 34 total undercounts versus 8 overcounts, but subset errors go both ways (64 over, 38 under).\n\nI’ll inspect runtime module names before measuring number-token margins and internal representations. The next measurement will test whether wrong answers are close competitors or confident errors; neither outcome by itself identifies a defective neuron.\n\n```forward\n{\"op\":\"runtime_catalog\"}\n```"
+  },
+  {
+    "path": "experiments/wsp-vlm-open-repair-v8-2026-11-05/search-B/conversation/turn-0010/reply.txt",
+    "sha256": "6c983c8c79d9dec97ab966d7ca9b5e98ee63edc499c34d307b13068be2b5dc08",
+    "text": "The first measured failure is confident: B-662’s wrong total “2” exceeds gold “3” by 13.75 logits. Thus small output-prior adjustments cannot explain every error.\n\nFor round 1, I’ll test **slightly sharper decoder attention** by scaling every query-normalization weight by 1.10. This changes attention concentration without changing value projections or number embeddings. It uses no label fitting. I expect possible gains in selecting spatial references, with a risk of losing context or obscured objects. I’ll also read the complete diagnostic margins before committing.\n\n```python\nwith open(os.path.join(ARTIFACTS, \"turn-0009.json\")) as f:\n    measured = json.load(f)[\"value\"][\"results\"]\nprint(\"COMPLETE_DIAGNOSTIC_MARGINS\")\nfor r in measured:\n    rid = r[\"request_id\"]\n    logits = np.array([r[\"next_token_logits\"][str(i)] for i in range(15, 25)])\n    gold = record_by_id[rid][\"gold\"][\"answer\"]\n    order = np.argsort(logits)[::-1]\n    other = max(logits[i] for i in range(10) if i != gold)\n    print(rid, \"gold\", gold, \"top2\", order[:2].tolist(),\n          \"top_margin\", float(logits[order[0]] - logits[order[1]]),\n          \"gold_margin\", float(logits[gold] - other))\n\nqnorm_names = [f\"model.language_model.layers.{i}.self_attn.q_norm.weight\"\n               for i in range(36)]\nround_specs = {}\nround_specs[1] = {\"family\": \"decoder_qnorm\", \"layers\": list(range(36)), \"scale\": 1.10}\nfor name in qnorm_names:\n    w = load_original(name)\n    save_edit(name, np.asarray(w, dtype=np.float32) * np.float32(1.10))\nprint(\"ROUND_1_SPEC\", round_specs[1])\nprint(\"INTENDED_SUPPORT\", sum(np.prod(cat[n][\"shape\"]) for n in qnorm_names))\nprint(\"STAGED\", edited())\n```\n"
+  },
+  {
+    "path": "experiments/wsp-vlm-open-repair-v8-2026-11-05/search-B/conversation/turn-0037/reply.txt",
+    "sha256": "a46ec31c08c94dc1ca5b54c40ff7d60f25d97692dd71d09bb051dad322b80fc7",
+    "text": "The shapes are verified: main-merger normalization is **[1,200 patches, 1,024 channels]**, auxiliary normalization is **[300 merged patches, 4,096 channels]**, and main output is **[300, 2,560]**. These are not decoder-token axes.\n\nRound 9 will scale the main merger’s normalization weight **and bias by 1.10**, leaving auxiliary paths and decoder weights at W0. This amplifies its normalized input to the merger MLP—not necessarily its final output uniformly. I expect stronger primary visual features may help missed-instance counts, with protection guarding against overcounting.\n\n```python\nmain_norm_names = [f\"model.visual.merger.norm.{s}\" for s in [\"weight\", \"bias\"]]\nround_specs[9] = {\"family\": \"main_visual_merger_norm\", \"scale\": 1.10,\n                  \"weight_and_bias\": True}\nstage_scales_from_w0({n: 1.10 for n in main_norm_names})\nprint(\"ROUND_9_SPEC\", round_specs[9])\n```\n"
+  },
+  {
+    "path": "experiments/wsp-vlm-open-repair-v8-2026-11-05/search-B/conversation/turn-0104/reply.txt",
+    "sha256": "d03672a5f2cf8df86c1cc638392ed421af9a56cfa7b572145f9b34b82ace3fff",
+    "text": "Round 30 reached 57/116 joint correctness, below the selected patch’s 58/116. The observer confirms the search is reopened. I’ll now test early decoder MLP-input gain—a different intervention from query normalization—with a paired attenuation/amplification comparison.\n\n```python\nactive_names = {\n    name for commit in round_commits.values()\n    for name in commit[\"tensors\"]\n}\nactive_names.update(edited())\n\ndef stage_scales_from_w0(scales):\n    global active_names\n    for name in sorted(active_names | set(scales)):\n        w0 = np.asarray(load_original(name), dtype=np.float32)\n        save_edit(name, w0 * np.float32(scales.get(name, 1.0)))\n    active_names = set(scales)\n    print(\"NONIDENTITY_TENSORS\", len(scales))\n    print(\"SUPPORT_UPPER_BOUND\",\n          int(sum(np.prod(cat[n][\"shape\"]) for n in scales)))\n\npostnorm_names = [\n    f\"model.language_model.layers.{i}.post_attention_layernorm.weight\"\n    for i in range(36)\n]\ninputnorm_names = [\n    f\"model.language_model.layers.{i}.input_layernorm.weight\"\n    for i in range(36)\n]\nround_specs[31] = {\n    \"family\": \"decoder_mlp_input_norm\",\n    \"layers\": list(range(6)),\n    \"scale\": 0.95\n}\nstage_scales_from_w0({postnorm_names[i]: 0.95 for i in range(6)})\nprint(\"ROUND_31_SPEC\", round_specs[31])\nprint(\"PLANNED_DIRECTIONAL_CONTROL\",\n      {\"layers\": list(range(6)), \"scale\": 1.05})\n```\n"
+  },
+  {
+    "path": "experiments/wsp-vlm-open-repair-v8-2026-11-05/search-B/turn-0009-response.json",
+    "sha256": "b50d4c6a59f75eae8223da5c37186dbccacf16cbdc977801ce310c7100aa380f",
+    "extraction": "failed flag and all 16 next-token-logit results; omitted token positions and unrelated fields",
+    "failed": false,
+    "results": [
+      {
+        "request_id": "B-662:total:T0:B0",
+        "next_token_logits": {
+          "15": 27.125,
+          "16": 31.75,
+          "17": 50.25,
+          "18": 36.5,
+          "19": 29.875,
+          "20": 26.375,
+          "21": 24.625,
+          "22": 23.875,
+          "23": 22.5,
+          "24": 22.0
+        }
+      },
+      {
+        "request_id": "B-662:subset:T0:B0",
+        "next_token_logits": {
+          "15": 35.5,
+          "16": 39.0,
+          "17": 42.5,
+          "18": 37.0,
+          "19": 30.5,
+          "20": 26.5,
+          "21": 24.875,
+          "22": 24.375,
+          "23": 23.625,
+          "24": 23.5
+        }
+      },
+      {
+        "request_id": "B-488899:total:T0:B0",
+        "next_token_logits": {
+          "15": 25.125,
+          "16": 28.25,
+          "17": 43.25,
+          "18": 55.25,
+          "19": 29.625,
+          "20": 23.0,
+          "21": 20.75,
+          "22": 19.75,
+          "23": 19.25,
+          "24": 19.125
+        }
+      },
+      {
+        "request_id": "B-488899:subset:T0:B0",
+        "next_token_logits": {
+          "15": 26.5,
+          "16": 30.125,
+          "17": 41.0,
+          "18": 36.5,
+          "19": 28.0,
+          "20": 23.5,
+          "21": 21.625,
+          "22": 20.75,
+          "23": 20.125,
+          "24": 19.75
+        }
+      },
+      {
+        "request_id": "B-347540:total:T0:B0",
+        "next_token_logits": {
+          "15": 23.5,
+          "16": 26.375,
+          "17": 26.5,
+          "18": 28.5,
+          "19": 35.5,
+          "20": 43.75,
+          "21": 35.5,
+          "22": 29.5,
+          "23": 25.625,
+          "24": 23.5
+        }
+      },
+      {
+        "request_id": "B-347540:subset:T0:B0",
+        "next_token_logits": {
+          "15": 29.625,
+          "16": 28.25,
+          "17": 31.0,
+          "18": 33.75,
+          "19": 37.5,
+          "20": 34.0,
+          "21": 26.875,
+          "22": 23.75,
+          "23": 22.0,
+          "24": 20.875
+        }
+      },
+      {
+        "request_id": "B-425919:total:T0:B0",
+        "next_token_logits": {
+          "15": 25.625,
+          "16": 30.25,
+          "17": 39.75,
+          "18": 42.5,
+          "19": 43.75,
+          "20": 37.25,
+          "21": 34.5,
+          "22": 30.375,
+          "23": 28.875,
+          "24": 26.125
+        }
+      },
+      {
+        "request_id": "B-425919:subset:T0:B0",
+        "next_token_logits": {
+          "15": 33.25,
+          "16": 33.5,
+          "17": 37.5,
+          "18": 36.25,
+          "19": 34.25,
+          "20": 31.25,
+          "21": 30.25,
+          "22": 28.875,
+          "23": 28.125,
+          "24": 26.375
+        }
+      },
+      {
+        "request_id": "B-397001:subset:T0:B0",
+        "next_token_logits": {
+          "15": 35.5,
+          "16": 34.25,
+          "17": 35.0,
+          "18": 24.125,
+          "19": 20.5,
+          "20": 18.25,
+          "21": 17.25,
+          "22": 17.0,
+          "23": 17.0,
+          "24": 17.125
+        }
+      },
+      {
+        "request_id": "B-397001:subset:T0:B1",
+        "next_token_logits": {
+          "15": 34.0,
+          "16": 34.5,
+          "17": 37.25,
+          "18": 26.625,
+          "19": 22.625,
+          "20": 20.125,
+          "21": 19.0,
+          "22": 18.75,
+          "23": 18.75,
+          "24": 18.625
+        }
+      },
+      {
+        "request_id": "B-387053:total:T0:B0",
+        "next_token_logits": {
+          "15": 21.875,
+          "16": 25.5,
+          "17": 25.375,
+          "18": 28.625,
+          "19": 34.75,
+          "20": 39.5,
+          "21": 36.75,
+          "22": 31.875,
+          "23": 27.0,
+          "24": 24.25
+        }
+      },
+      {
+        "request_id": "B-387053:subset:T0:B0",
+        "next_token_logits": {
+          "15": 28.625,
+          "16": 29.75,
+          "17": 34.75,
+          "18": 35.75,
+          "19": 34.0,
+          "20": 30.5,
+          "21": 27.5,
+          "22": 25.625,
+          "23": 24.0,
+          "24": 22.75
+        }
+      },
+      {
+        "request_id": "B-129884:total:T0:B0",
+        "next_token_logits": {
+          "15": 26.25,
+          "16": 28.0,
+          "17": 27.375,
+          "18": 30.5,
+          "19": 35.75,
+          "20": 44.25,
+          "21": 42.0,
+          "22": 35.25,
+          "23": 28.625,
+          "24": 25.0
+        }
+      },
+      {
+        "request_id": "B-129884:subset:T0:B0",
+        "next_token_logits": {
+          "15": 36.25,
+          "16": 34.0,
+          "17": 34.75,
+          "18": 35.5,
+          "19": 35.0,
+          "20": 33.25,
+          "21": 30.25,
+          "22": 27.5,
+          "23": 24.5,
+          "24": 23.125
+        }
+      },
+      {
+        "request_id": "B-509:total:T0:B0",
+        "next_token_logits": {
+          "15": 24.25,
+          "16": 26.625,
+          "17": 27.5,
+          "18": 32.25,
+          "19": 44.75,
+          "20": 39.0,
+          "21": 30.125,
+          "22": 25.375,
+          "23": 22.125,
+          "24": 20.25
+        }
+      },
+      {
+        "request_id": "B-509:subset:T0:B0",
+        "next_token_logits": {
+          "15": 32.25,
+          "16": 40.25,
+          "17": 35.5,
+          "18": 29.375,
+          "19": 25.875,
+          "20": 23.375,
+          "21": 22.5,
+          "22": 22.25,
+          "23": 21.5,
+          "24": 21.125
+        }
+      }
+    ]
+  }
+]
