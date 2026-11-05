@@ -1,5 +1,7 @@
 # 项目文档目录
 
+**2026-11-05｜WSP-VLM已授权上卡：** [执行、P0验收与bug恢复记录](../experiments/wsp-vlm-failure-discovery-run-v1-2026-11-05/README.zh-CN.md)。真实P0 64/64通过；首次缓存缺两份说明文件的零调用失败已保留并修复；同一累计预算继续B/C发现与留出确认，无WSP修改。
+
 **2026-11-05｜先发现原版VLM失败（规划，未运行）：** [B/C失败发现执行计划与完整自查](wsp-vlm-failure-discovery-plan-v1-2026-11-05.zh-CN.md)。固定Qwen3-VL-4B-Instruct，B146组空间条件计数、C160组反事实图干扰通常常识；P0 64条→D发现→两任务错误登记→H确认，正式7,568请求、累计12 GPU小时。保留全部成功/失败及强提示对照，本轮止于失败结果卡，不启动选点或权重修补。
 
 **2026-11-05｜WSP-VLM v6开放修补工具（离线交付）：** [代码与剩余缺口](../experiments/wsp-vlm-open-repair-v6-2026-11-05/README.zh-CN.md) · [自查](../experiments/wsp-vlm-open-repair-v6-2026-11-05/SELF_CHECK.zh-CN.md) · [26项离线验收](../experiments/wsp-vlm-open-repair-v6-2026-11-05/audit/offline_receipt.json)。复用旧数学开放动作解析/会话模式与VLM输入、B/C评分，接入开发图文证据、自由Python选点、分片权重候选、内部测量、配对评价、回滚/冻结与反馈。B_D58组/464输入、C_D64组/2560输入已导出，尚无真实回答。两条合成反馈选不同模块，只证明工具闭环；真实模型、处理器、研究者调用及GPU运行均为0。真实数值/隔离验收、搜索数值合同及新确认数据仍待准备，默认禁止执行。

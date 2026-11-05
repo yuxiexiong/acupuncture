@@ -1,0 +1,25 @@
+{
+  "timestamp_utc": "2026-11-05T03:03:12.333282+00:00",
+  "H_unopened": true,
+  "interpretation": "Observable behavior only; no claim about internal causes or WSP repairability; primary tests and thresholds unchanged",
+  "task": "B",
+  "D_predictions_sha256": "00a03a341722f29331fd3317402226c6c832612232d846277a23930ea5843147",
+  "description": "D普通提示T0：全数47/58正确、子集31/58正确，控制对挑战错20组、反向4组。差异在位置/距离均为正，T1差同为27.6pp；明确规则提示T0仅净修复1个子集答案。错成总数仅4/45适用组，不足以把全部失败归因为忽略条件。其余错误保持未分类；空间关系、参照物、计数或零集合处理原因尚未知。",
+  "rules": [
+    {
+      "name": "total_correct_subset_wrong",
+      "condition": "B0/T0同来源组total.correct and not subset.correct",
+      "denominator": "all source groups",
+      "D_count": 20,
+      "D_n": 58
+    },
+    {
+      "name": "subset_wrong_equals_total",
+      "condition": "gold total != gold subset; total correct; subset incorrect, valid and not truncated; subset parsed == total gold",
+      "denominator": "source groups whose total gold differs from subset gold",
+      "D_count": 4,
+      "D_n": 45
+    }
+  ],
+  "additional_checks": "Report existing strata and B1 repaired/worsened; no new confirmatory test."
+}
