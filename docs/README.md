@@ -284,3 +284,5 @@ Acupuncture 当前有两条分别立项的研究线。缓存机制线解释干�
 - [设计自查 v1](cache-query-layout-coverage-self-check-v1-2026-11-02.zh-CN.md)：C01–C14、历史错误、对抗反例、预算与退出；文档交付不构成模型运行授权。
 
 - [B/C 运行通道准备 v5：CPU 等价复核、进程期限与待做 P0](../experiments/wsp-vlm-channel-prep-v5-2026-11-05/README.zh-CN.md)（2026-11-05；未加载模型或运行推理）。
+
+- [B/C筛查时间计划与自查](wsp-vlm-bc-timeline-v1-2026-11-05.zh-CN.md)（2026-11-05；两工作日目标、12 GPU小时上限；未运行）。
