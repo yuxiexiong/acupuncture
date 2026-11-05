@@ -1,69 +1,89 @@
-"""NWC-01 frozen read-outs (CONTRACT §5).  Effect-size gates and cluster-bootstrap lower bounds; not a claim of independence beyond the stated unit.
+"""NWC-01 r02 frozen read-outs (CONTRACT §5).  Each label is tied to the measurement it is computed from; the sentence a label licenses is in
+the contract, not here.
 
-Unit: 24 base situations (4 per structure family), each with 2 code-mapping versions; every input has its target NOT first-listed.
-Rates are family-equal: mean over the 6 families of the within-family mean over inputs.
-Bootstrap: resample the 4 base situations within each family with replacement (both versions travel together), 10000 draws, seed 20261105,
-percentile bounds.
+Unit: 24 base situations (4 per structure family).  Stratum N: versions a, b (target second / third listed) -> 48 inputs, all gates except P6.
+Stratum F: version c (target first-listed) -> 24 inputs, P6 only.  Rates are family-equal (mean over the 6 families of the within-family mean).
+Bootstrap: resample the 4 base situations within each family with replacement (all versions travel together), 10000 draws, seed 20261105.
 
-Per direction, from per-input outcomes (Y = full answer correct, E = explicit wrong number) and C-route margins M:
-  b = Y(L11) - Y(L00);  l_X = Y(L11) - Y(X);  e_X = E(X) - E(L11);  l_R, e_R = mean over the five natural random arms R1..R5.
-  P1/P2 (v8 gates):  point b >= 0.25, l_D >= 0.20, e_D >= 0.15, and the 95% lower bounds of l_D - 0.5 b, l_D - l_E, l_D - l_R, e_D - e_R all > 0.
-  P3 (the larger v component is the less effective one):  lower bound of (l_D10 - l_DV) > 0 and |dM(DV)| <= 0.5 |dM(D10)|;
-      unjudgeable if the median norm ratio |DV patch| / |D10 patch| < 1, or l_D10 < 0.20, or the receiver is unreachable.
-  P4 (efficiency per unit norm):  among K random directions at the D10 patch norm, the fraction whose mean dM <= 0.5 * dM(D10) is <= 0.05;
-      unjudgeable if dM(D10) > -0.5.
-  P5 (fixed offset):  l_DX >= 0.75 l_D and e_DX >= 0.75 e_D;  unjudgeable if l_D < 0.20, or e_D < 0.15, or the receiver is unreachable.
-Labels: 'holds' / 'fails' / 'unjudgeable' for each of P12, P3, P4, P5.  Confirmation of the central sentence = P12 holds in both main directions.
+  b = Y(L11) - Y(L00);  l_X = Y(L11) - Y(X);  e_X = E(X) - E(L11);  l_R, e_R = mean over the five natural random arms R1..R5 (D00 patch norm).
+  P12  point b >= 0.25, l_D >= 0.20, e_D >= 0.15, and 95% lower bounds of l_D - 0.5 b, l_D - l_E, l_D - l_R, e_D - e_R all > 0.
+  P3   lower bound of (l_D10 - l_DV) > 0 and |dM(DV)| <= 0.5 |dM(D10)|.   (DV = endpoint state difference L00 - L10 read through D.)
+  P4M  count of the 40 random directions at the D10 patch norm whose family-equal mean dM <= 0.5 dM(D10) is <= 2.
+  P4Y  count of the 20 natural random directions at the D10 patch norm whose l >= 0.5 l_D10 is <= 1.
+  P5   rho = dM(DX) / dM(D00) in [0.75, 1.25] and |l_DXh - l_D00h| <= 0.15 (half amplitude).
+  P6   stratum F: Y_F(L11) - Y_F(D00) <= 0.10.
+Unjudgeable: see decide().  Every count is reported with a two-sided 95% Clopper-Pearson upper bound for the population fraction.
 """
+import math
 import random
 
-TH = {'b': 0.25, 'l': 0.20, 'e': 0.15, 'unreached': 0.25, 'p3_half': 0.5, 'p4_frac': 0.05, 'p4_half': 0.5, 'p4_min': -0.5, 'p5': 0.75}
+TH = {'b': 0.25, 'l': 0.20, 'e': 0.15, 'unreached': 0.25, 'half': 0.5, 'p4m_max': 2, 'p4y_max': 1, 'dM_min': -0.5,
+      'rho_lo': 0.75, 'rho_hi': 1.25, 'p5_y': 0.15, 'p6': 0.10, 'p6_base': 0.75}
 RAND = tuple(f'R{j}' for j in range(1, 6))
-NAT = ('L00', 'L11', 'D00', 'E00', 'D10', 'DV', 'DX') + RAND
+QNAT = tuple(f'Q{j}' for j in range(1, 21))
+NAT_N = ('L00', 'L11', 'D00', 'E00', 'D10', 'DV', 'DX', 'D00h', 'DXh') + RAND + QNAT
+NAT_F = ('L11', 'D00')
 
 
-def fam_eq(vals, meta, sits=None):
-    """vals: {input: number}; meta: {input: (family, situation)}; sits: optional {family: [situation, ...]} multiset (bootstrap draw)."""
+def cp_upper(k, n, alpha=0.05):
+    """Two-sided (1 - alpha) Clopper-Pearson upper bound for a binomial proportion."""
+    if k >= n:
+        return 1.0
+    cdf = lambda p: sum(math.comb(n, i) * p ** i * (1 - p) ** (n - i) for i in range(k + 1))   # noqa: E731
+    lo, hi = k / n, 1.0
+    for _ in range(60):
+        mid = (lo + hi) / 2
+        lo, hi = (mid, hi) if cdf(mid) > alpha / 2 else (lo, mid)
+    return hi
+
+
+def fam_eq(vals, meta, stratum, sits=None):
+    """vals: {input: number}; meta: {input: (family, situation, stratum)}; sits: optional {family: [situation, ...]} (bootstrap multiset)."""
     by = {}
     for i, v in vals.items():
-        f, s = meta[i]
-        by.setdefault(f, {}).setdefault(s, []).append(v)
+        f, s, st = meta[i]
+        if st == stratum:
+            by.setdefault(f, {}).setdefault(s, []).append(v)
     out = []
     for f, d in sorted(by.items()):
-        pick = sits[f] if sits else sorted(d)
-        xs = [v for s in pick for v in d[s]]
+        xs = [v for s in (sits[f] if sits else sorted(d)) for v in d[s]]
         out.append(sum(xs) / len(xs))
     return sum(out) / len(out)
 
 
 def quantities(Y, E, meta, sits=None):
-    y = {a: fam_eq(Y[a], meta, sits) for a in NAT}
-    e = {a: fam_eq(E[a], meta, sits) for a in NAT}
+    y = {a: fam_eq(Y[a], meta, 'N', sits) for a in NAT_N}
+    e = {a: fam_eq(E[a], meta, 'N', sits) for a in ('L11', 'D00') + RAND}
     lR = sum(y['L11'] - y[r] for r in RAND) / len(RAND)
     eR = sum(e[r] - e['L11'] for r in RAND) / len(RAND)
     q = {'b': y['L11'] - y['L00'], 'l_D': y['L11'] - y['D00'], 'l_E': y['L11'] - y['E00'], 'l_R': lR, 'e_D': e['D00'] - e['L11'], 'e_R': eR,
-         'l_D10': y['L11'] - y['D10'], 'l_DV': y['L11'] - y['DV'], 'l_DX': y['L11'] - y['DX'], 'e_DX': e['DX'] - e['L11']}
+         'l_D10': y['L11'] - y['D10'], 'l_DV': y['L11'] - y['DV'], 'l_DX': y['L11'] - y['DX'], 'l_D00h': y['L11'] - y['D00h'], 'l_DXh': y['L11'] - y['DXh'],
+         'l_Q': [y['L11'] - y[a] for a in QNAT],
+         'YF_L11': fam_eq(Y['L11'], meta, 'F', sits), 'YF_D00': fam_eq(Y['D00'], meta, 'F', sits)}
     q.update({'l_D-0.5b': q['l_D'] - 0.5 * q['b'], 'l_D-l_E': q['l_D'] - q['l_E'], 'l_D-l_R': q['l_D'] - q['l_R'], 'e_D-e_R': q['e_D'] - q['e_R'],
-              'l_D10-l_DV': q['l_D10'] - q['l_DV']})
+              'l_D10-l_DV': q['l_D10'] - q['l_DV'], 'lF_D': q['YF_L11'] - q['YF_D00']})
     return q
+
+
+BOOT_KEYS = ('b', 'l_D', 'e_D', 'l_D-0.5b', 'l_D-l_E', 'l_D-l_R', 'e_D-e_R', 'l_D10-l_DV', 'lF_D')
 
 
 def boot(Y, E, meta, n=10000, seed=20261105):
     rng = random.Random(seed)
     fam = {}
-    for f, s in meta.values():
+    for f, s, _ in meta.values():
         fam.setdefault(f, set()).add(s)
     fam = {f: sorted(s) for f, s in fam.items()}
     draws = [quantities(Y, E, meta, {f: [rng.choice(s) for _ in s] for f, s in fam.items()}) for _ in range(n)]
     out = {}
-    for k in draws[0]:
+    for k in BOOT_KEYS:
         v = sorted(d[k] for d in draws)
         out[k] = {'lo': v[int(0.025 * n)], 'hi': v[int(0.975 * n) - 1]}
     return out
 
 
-def decide(Y, E, meta, dM_D10, dM_DV, dM_rand, norm_ratio_DV, unreached_frac=0.0, n_boot=10000):
-    """dM_D10, dM_DV: family-equal mean dM of the D10 / DV arms; dM_rand: K family-equal mean dM of the random directions at the D10 norm."""
+def decide(Y, E, meta, dM, dM_rand, norm_ratio_DV, unreached_frac=0.0, n_boot=10000):
+    """dM: family-equal mean dM (stratum N) of arms D00, D10, DV, DX; dM_rand: the 40 family-equal mean dM at the D10 patch norm."""
     q, bt = quantities(Y, E, meta), boot(Y, E, meta, n=n_boot)
     lo = lambda k: bt[k]['lo']   # noqa: E731
     unreach = unreached_frac >= TH['unreached']
@@ -74,8 +94,17 @@ def decide(Y, E, meta, dM_D10, dM_DV, dM_rand, norm_ratio_DV, unreached_frac=0.0
     if norm_ratio_DV < 1 or q['l_D10'] < TH['l'] or unreach:
         p3 = 'unjudgeable'
     else:
-        p3 = 'holds' if (lo('l_D10-l_DV') > 0 and abs(dM_DV) <= TH['p3_half'] * abs(dM_D10)) else 'fails'
-    frac = sum(1 for x in dM_rand if x <= TH['p4_half'] * dM_D10) / len(dM_rand)
-    p4 = 'unjudgeable' if dM_D10 > TH['p4_min'] else ('holds' if frac <= TH['p4_frac'] else 'fails')
-    p5 = 'unjudgeable' if (q['l_D'] < TH['l'] or q['e_D'] < TH['e'] or unreach) else ('holds' if (q['l_DX'] >= TH['p5'] * q['l_D'] and q['e_DX'] >= TH['p5'] * q['e_D']) else 'fails')
-    return {'P12': p12, 'P3': p3, 'P4': p4, 'P5': p5, 'q': q, 'boot': bt, 'p4_fraction': frac, 'dM_D10': dM_D10, 'dM_DV': dM_DV, 'norm_ratio_DV': norm_ratio_DV}
+        p3 = 'holds' if (lo('l_D10-l_DV') > 0 and abs(dM['DV']) <= TH['half'] * abs(dM['D10'])) else 'fails'
+    cM = sum(1 for x in dM_rand if x <= TH['half'] * dM['D10'])
+    p4m = 'unjudgeable' if dM['D10'] > TH['dM_min'] else ('holds' if cM <= TH['p4m_max'] else 'fails')
+    cY = sum(1 for x in q['l_Q'] if x >= TH['half'] * q['l_D10'])
+    p4y = 'unjudgeable' if (q['l_D10'] < TH['l'] or unreach) else ('holds' if cY <= TH['p4y_max'] else 'fails')
+    if dM['D00'] > TH['dM_min'] or unreach:
+        p5, rho = 'unjudgeable', None
+    else:
+        rho = dM['DX'] / dM['D00']
+        p5 = 'holds' if (TH['rho_lo'] <= rho <= TH['rho_hi'] and abs(q['l_DXh'] - q['l_D00h']) <= TH['p5_y']) else 'fails'
+    p6 = 'unjudgeable' if (q['YF_L11'] < TH['p6_base'] or unreach) else ('holds' if q['lF_D'] <= TH['p6'] else 'fails')
+    return {'P12': p12, 'P3': p3, 'P4M': p4m, 'P4Y': p4y, 'P5': p5, 'P6': p6, 'q': q, 'boot': bt, 'dM': dM, 'rho': rho,
+            'p4m_count': cM, 'p4m_upper': cp_upper(cM, len(dM_rand)), 'p4y_count': cY, 'p4y_upper': cp_upper(cY, len(q['l_Q'])),
+            'norm_ratio_DV': norm_ratio_DV}
