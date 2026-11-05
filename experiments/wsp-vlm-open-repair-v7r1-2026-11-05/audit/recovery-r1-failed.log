@@ -1,0 +1,23 @@
+Traceback (most recent call last):
+  File "/Users/ruizhixu/Documents/ChatGPT/acupuncture/experiments/wsp-vlm-open-repair-v7r1-2026-11-05/recovery.py", line 94, in <module>
+    if a.worker:worker(a.worker)
+                ~~~~~~^^^^^^^^^^
+  File "/Users/ruizhixu/Documents/ChatGPT/acupuncture/experiments/wsp-vlm-open-repair-v7r1-2026-11-05/recovery.py", line 72, in worker
+    start_broker(task,deadline)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/ruizhixu/Documents/ChatGPT/acupuncture/experiments/wsp-vlm-open-repair-v7r1-2026-11-05/recovery.py", line 59, in start_broker
+    r=subprocess.run(['ssh','gqa-h20',command],capture_output=True,text=True,timeout=30)
+  File "/opt/anaconda3/lib/python3.13/subprocess.py", line 556, in run
+    stdout, stderr = process.communicate(input, timeout=timeout)
+                     ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.13/subprocess.py", line 1222, in communicate
+    stdout, stderr = self._communicate(input, endtime, timeout)
+                     ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.13/subprocess.py", line 2129, in _communicate
+    self._check_timeout(endtime, orig_timeout, stdout, stderr)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.13/subprocess.py", line 1269, in _check_timeout
+    raise TimeoutExpired(
+    ...<2 lines>...
+            stderr=b''.join(stderr_seq) if stderr_seq else None)
+subprocess.TimeoutExpired: Command '['ssh', 'gqa-h20', 'cd /workspace/acupuncture/ && nohup timeout 4089 .venv-bench/bin/python -u experiments/wsp-vlm-open-repair-v7r1-2026-11-05/broker.py --config experiments/wsp-vlm-open-repair-v7-2026-11-05/config-B.json > experiments/wsp-vlm-open-repair-v7r1-2026-11-05/broker-B.log 2>&1 < /dev/null &']' timed out after 30 seconds
