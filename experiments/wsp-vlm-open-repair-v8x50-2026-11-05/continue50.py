@@ -5,7 +5,6 @@ HERE=Path(__file__).resolve().parent
 OLD=HERE.parent/'wsp-vlm-open-repair-v8-2026-11-05'
 sys.path.insert(0,str(OLD))
 from common import write_json,packed
-from run_rounds import Remote,ssh_python
 from controller import CodexResearcher,run_session
 
 def transition(state,contract):
@@ -37,6 +36,7 @@ def broker(task):
  finally:service.close()
 
 def run(task):
+ from run_rounds import Remote,ssh_python
  cfg=json.loads((OLD/f'search-{task}/local_config.json').read_text());remote=cfg['run_root']
  marker=HERE/f'continuation-{task}.json'
  write_json(marker,dict(status='waiting_for_original_30_rounds',total_target=50,pid=os.getpid(),time_unix=time.time()))
