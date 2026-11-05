@@ -1,0 +1,31 @@
+**Negative result: retain W0; no patch selected.**
+
+| Edit | Ordinary joint | Ordinary five-way | Outcome |
+|---|---:|---:|---|
+| W0 | 33.98% | 29.30% | Retained |
+| Projector gain 1.2× | 34.77% | 30.08% | Two protected cells lose 4.69 pp |
+| Projector gain 0.8× | 32.42% | 28.52% | Lower joint; protection violation |
+| Projector gain 1.1× | 32.81% | 28.91% | Lower joint |
+| Visual-cue embeddings 1.25× | 33.59% | 28.91% | Lower joint |
+
+**Retained W0 controls**
+
+| Metric | Ordinary B0 | Explicit-scope B1 |
+|---|---:|---:|
+| No-image usual | 77.73% | 84.77% |
+| Original usual | 89.06% | 92.97% |
+| Counterfactual usual | 64.06% | 57.81% |
+| Original visual | 95.70% | 96.09% |
+| Counterfactual visual | 67.58% | 65.63% |
+| Counterfactual joint | 33.98% | 25.39% |
+| Five-way correctness | 29.30% | 24.22% |
+
+Raw transitions showed both repairs and regressions. Both opposite projector gains repaired the same C-007 visual error, undermining a simple monotonic image-strength explanation. Cue amplification preserved ordinary usual responses but did not improve joint correctness. W0’s overall format-error rate is 0.39%, with no truncation.
+
+Development labels informed analysis and adaptive coefficient selection; no label-vector fitting or target-model training was used. All four candidates received full evaluation. This is development evidence only.
+
+I will stop with W0 restored and zero deployed edits. Budgets remain: **4/30** candidate evaluations and **12,802/384,000** forwards used. No engineering blocker or budget exhaustion occurred; other edit mechanisms remain untested.
+
+```forward
+{"op":"stop","reason":"Voluntary negative result for tested projector-gain and visual-scope embedding-amplitude edits. Four full-development candidates produced no protected ordinary-prompt joint improvement: the sole joint gain failed protected accuracy cells; other candidates reduced joint correctness. W0 is restored and remains best, with zero deployed edits. Failures and raw feedback retained. Budgets are not exhausted; broader sparse-repair feasibility and independent generalization remain unresolved."}
+```
