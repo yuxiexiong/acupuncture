@@ -1,5 +1,7 @@
 # 项目文档目录
 
+**2026-11-06｜第一轮 C 冻结补丁验证（仅方案，未运行）：** [新来源、新问法与提示/PvP/Nullu比较](wsp-c-frozen-validation-v1-2026-11-06/PLAN.zh-CN.md) · [C01–C14与反方自查](wsp-c-frozen-validation-v1-2026-11-06/SELF_CHECK.zh-CN.md) · [证据与哈希](wsp-c-frozen-validation-v1-2026-11-06/sources.json)。固定v8 R45；目标T200，旧H已见；先验收新数据容量与基线适配，再考虑运行。主指标沿用反事实常识/视觉两题联合；逻辑自查通过，数据/工程待验收，无新模型或GPU授权。
+
 **2026-11-05｜WSP v9工程与无损存储：** [B/C各30轮合同、验收与状态](../experiments/wsp-vlm-mechanism-repair-v9-2026-11-05/README.zh-CN.md)。内部定位证据与行为收益分别验收，AI自主选点；旧C去重76.81GiB保留全部路径与hash，新版不再复制整张候选矩阵。
 
 **2026-11-05｜C内部定向修补与方法外推路线（未运行）：** [原作者对齐审计、方向/通道发现流程与完整自查](wsp-c-directional-repair-method-roadmap-v1-2026-11-05.zh-CN.md)。C已有词语表示与模块校准，尚无失败相关MLP方向/通道证据；拟冻结AI发现程序、逐模型重新定位并用新来源组封存测试。旧2B/8B队列不改，数值合同与工程验收待完成，无新增运行授权。
