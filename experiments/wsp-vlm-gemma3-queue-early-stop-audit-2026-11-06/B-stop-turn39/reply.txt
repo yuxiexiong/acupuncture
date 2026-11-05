@@ -1,0 +1,21 @@
+**Negative result for the tested edits; W0 retained.**
+
+| Edit | Joint correctness | Repairs / regressions |
+|---|---:|---:|
+| W0 | 16.38% | — |
+| Visual gain ×1.10 | 15.52% | 6 / 17 |
+| Visual gain ×0.90 | 16.38% | 7 / 3 |
+| Query gain ×1.05 | 16.38% | 7 / 9 |
+| Query gain ×0.95 | 15.52% | 2 / 9 |
+
+All evaluations covered all 464 development examples. Raw changes and failures were inspected and retained. No candidate improved the frozen objective; the reduced visual-gain candidate was explicitly rejected on the tie rule.
+
+The strongest diagnostic finding is **0/92 correct empty-spatial-subset cells across 23 groups**, unchanged by every edit. Successful strict-subset cases show that filtering is not uniformly absent. These observations do not identify a particular defective layer or establish that sparse repair is impossible.
+
+Gold labels informed diagnosis and development comparisons; no training or label-based parameter fitting occurred. One near-tie readout/generation discrepancy remains unresolved because the repeat evaluation was cached. C was not assessed: this package contains B only.
+
+I’ll stop voluntarily after 4/30 candidate evaluations and 2,329 metered forwards, not because of budget exhaustion. Expected final state: W0, zero deployed edits, all artifacts retained. No independent-generalization claim is warranted.
+
+```forward
+{"op":"stop","reason":"Negative bounded exploration of uniform visual gain and decoder query gain. Four full-development candidates failed to improve ordinary-prompt joint correctness; the tied reduced-visual-gain candidate was rejected by the frozen selection rule. Empty spatial subsets remained 0/92 cells across 23 groups. W0 has been restored and remains best; no patch is selected. Budgets are not exhausted. Failure mechanism remains unresolved, and results do not rule out other sparse edits. A near-tie diagnostic readout discrepancy could not be independently checked because evaluation reused cached W0 outputs."}
+```
