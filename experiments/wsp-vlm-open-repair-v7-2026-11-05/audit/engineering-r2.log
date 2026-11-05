@@ -1,0 +1,23 @@
+
+Loading weights:   0%|          | 0/713 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 713/713 [00:00<00:00, 11902.31it/s]
+Traceback (most recent call last):
+  File "/workspace/acupuncture/experiments/wsp-vlm-open-repair-v7-2026-11-05/engineering.py", line 128, in <module>
+    checks=run(json.loads((HERE/'config-B.json').read_text()),root);status='complete'
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/acupuncture/experiments/wsp-vlm-open-repair-v7-2026-11-05/engineering.py", line 48, in run
+    catalog=backend.catalog();write_json(root/'runtime_catalog.json',catalog)
+            ^^^^^^^^^^^^^^^^^
+  File "/workspace/acupuncture/experiments/wsp-vlm-open-repair-v7-2026-11-05/backend.py", line 83, in catalog
+    self.initialize()
+  File "/workspace/acupuncture/experiments/wsp-vlm-open-repair-v7-2026-11-05/backend.py", line 36, in initialize
+    self._initialize()
+  File "/workspace/acupuncture/experiments/wsp-vlm-open-repair-v7-2026-11-05/backend.py", line 69, in _initialize
+    canonicals = {self.source.canonical(n) for n in names}
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/acupuncture/experiments/wsp-vlm-open-repair-v7-2026-11-05/backend.py", line 69, in <setcomp>
+    canonicals = {self.source.canonical(n) for n in names}
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/acupuncture/experiments/wsp-vlm-open-repair-v7-2026-11-05/weights.py", line 74, in canonical
+    raise KeyError(name)
+KeyError: 'lm_head.weight'
