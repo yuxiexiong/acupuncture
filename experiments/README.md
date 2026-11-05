@@ -1,5 +1,7 @@
 # 实验目录：按研究问题查找
 
+**2026-11-05｜WSP C 跨家族复用：** [Gemma 3 4B：50 轮与逐轮曲线](wsp-vlm-c-gemma3-4b-v1-2026-11-05/README.zh-CN.md)。准备及 CPU 验收完成；用户随后叫停全部卡上实验，三条新模型队列及控制器已停止，两卡空闲，见 [叫停回执](wsp-vlm-c-gemma3-4b-v1-2026-11-05/STOPPED.zh-CN.md)。
+
 **2026-11-05｜WSP C 两模型复用：** [Qwen3-VL 2B / 8B 各 50 轮](wsp-vlm-c-scale-v1-2026-11-05/README.zh-CN.md)。用户已确认模型适配与逐轮正确率折线图，自动队列先等待下载校验再领取空卡；运行状态见该目录 audit/deployment.json 的时间戳快照，不能把已排队写成已完成。
 
 **2026-11-04｜当前推进入口：** [Proposal v3](../docs/mechanism-second-half-v1-2026-11-03/PROPOSAL.zh-CN.md) · [Roadmap v3](../docs/cache-mechanism-broadening-roadmap-2026-11-04.zh-CN.md) · [To-do](../docs/cache-mechanism-todo.zh-CN.md)。第一步研究思路讨论中，尚无新实验设计或执行队列。[旧记录 CPU 审计](cache-mechanism-broadening-audit-v1-2026-11-04/README.zh-CN.md)仅是已完成的资产核对。
