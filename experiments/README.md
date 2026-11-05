@@ -1,5 +1,7 @@
 # 实验目录：按研究问题查找
 
+**2026-11-05｜WSP C 两模型复用：** [Qwen3-VL 2B / 8B 各 50 轮](wsp-vlm-c-scale-v1-2026-11-05/README.zh-CN.md)。用户已确认模型适配与逐轮正确率折线图，自动队列先等待下载校验再领取空卡；运行状态见该目录 audit/deployment.json 的时间戳快照，不能把已排队写成已完成。
+
 **2026-11-04｜当前推进入口：** [Proposal v3](../docs/mechanism-second-half-v1-2026-11-03/PROPOSAL.zh-CN.md) · [Roadmap v3](../docs/cache-mechanism-broadening-roadmap-2026-11-04.zh-CN.md) · [To-do](../docs/cache-mechanism-todo.zh-CN.md)。第一步研究思路讨论中，尚无新实验设计或执行队列。[旧记录 CPU 审计](cache-mechanism-broadening-audit-v1-2026-11-04/README.zh-CN.md)仅是已完成的资产核对。
 
 **2026-11-04｜统一归档入口：** [理论、实验结果与证据边界](../docs/RESEARCH_ARCHIVE_2026-11-04.zh-CN.md) · [全部实验资产目录](../docs/RESEARCH_ASSET_CATALOG_2026-11-04.zh-CN.md)。已纳入NVW/LVK/SRU、NVB/NBR/SIT/NMT、CGV与NCC/NSR/NQK/NPC，补齐本地遗漏原件和失败记录。SDT未运行，实际后继为SIT；WSP工程验收与运行中快照单列，不作能力结论。下方旧“当前／下一步／未运行”均为历史快照，最新状态以本次总览及各实验收据为准。本次无模型/GPU运行。
