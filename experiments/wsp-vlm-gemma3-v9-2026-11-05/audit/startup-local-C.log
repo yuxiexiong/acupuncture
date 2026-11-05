@@ -1,0 +1,15 @@
+Traceback (most recent call last):
+  File "/Users/ruizhixu/Documents/ChatGPT/acupuncture/experiments/wsp-vlm-gemma3-v9-2026-11-05/queue_run.py", line 183, in <module>
+    server(a.task) if a.server else controller(a.task)
+                                    ~~~~~~~~~~^^^^^^^^
+  File "/Users/ruizhixu/Documents/ChatGPT/acupuncture/experiments/wsp-vlm-gemma3-v9-2026-11-05/queue_run.py", line 154, in controller
+    mark('waiting_server')
+    ~~~~^^^^^^^^^^^^^^^^^^
+  File "/Users/ruizhixu/Documents/ChatGPT/acupuncture/experiments/wsp-vlm-gemma3-v9-2026-11-05/queue_run.py", line 152, in mark
+    ssh_python("import json,pathlib,sys,os;x=json.load(sys.stdin);p=pathlib.Path(x['root'])/'controller-status.json';q=p.with_suffix('.tmp');q.write_text(json.dumps(x['status']));os.replace(q,p);print('{}')",dict(root=remote,status=d))
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ruizhixu/Documents/ChatGPT/acupuncture/experiments/wsp-vlm-gemma3-v9-2026-11-05/queue_run.py", line 112, in ssh_python
+    if r.returncode:raise ConnectionError(r.stderr[-1200:])
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ConnectionError: Connection closed by 124.174.22.123 port 22
+

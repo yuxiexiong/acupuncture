@@ -140,3 +140,7 @@
 | `receipt.json`、`verification.json`、`freeze.json` | 实际收据、验收和冻结身份；保留原始字节以便追溯 |
 
 `toy`、`early`、`v1` 等是历史身份的一部分，不用于判断当前覆盖或完成程度。精确范围以上表和对应合同为准。
+
+## Gemma 3 4B：两版 B/C 各30轮（2026-11-05排队）
+
+[四组合同、自查与单卡效率验收](wsp-vlm-gemma3-v8-2026-11-05-r02/README.zh-CN.md) · [v9执行目录](wsp-vlm-gemma3-v9-2026-11-05-r02/README.zh-CN.md)。仅Gemma四组、共120轮；等待已有Qwen4B已授权续跑结束，再v8→v9。原生CPU检查及离线测试通过，GPU吞吐校准/真实验收待空卡。首次SSH启动失败保留原版本；当前r02队列和控制器均已核对存活。未启动Qwen2B/8B。
