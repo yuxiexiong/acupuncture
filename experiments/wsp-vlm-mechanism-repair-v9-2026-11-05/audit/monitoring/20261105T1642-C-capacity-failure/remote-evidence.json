@@ -1,0 +1,433 @@
+{
+  "time_unix": 1793896835.58073,
+  "ps": "    PID    PPID     ELAPSED COMMAND\n1852016       1    05:30:14 .venv-bench/bin/python -u experiments/wsp-vlm-mechanism-repair-v9-2026-11-05/round_broker.py --config experiments/wsp-vlm-mechanism-repair-v9-2026-11-05/config-C.json\n1959329       1       30:33 .venv-bench/bin/python -u /workspace/acupuncture/experiments/wsp-vlm-mechanism-repair-v9x50-2026-11-05/continue50.py --task B --broker\n",
+  "runs": {
+    "B": {
+      "disk_allocated_bytes": 1369313280,
+      "pending": [],
+      "incomplete": [],
+      "boundary_files": {
+        "broker-50-ready.json": {
+          "baseline_replayed": false,
+          "pid": 1959329,
+          "resumed_at": 30,
+          "round_target": 50,
+          "time_unix": 1793895010.91695
+        },
+        "frozen-candidate.json": null,
+        "mechanism-report.json": null
+      },
+      "eval_times": [
+        1793878828.182647,
+        1793879084.3805676,
+        1793879323.4502263,
+        1793879580.1311543,
+        1793879747.9397223,
+        1793880699.5141943,
+        1793880877.9749317,
+        1793881038.3053906,
+        1793881308.020527,
+        1793881709.22668,
+        1793881859.0309775,
+        1793882169.7827399,
+        1793882315.0249655,
+        1793882470.3433456,
+        1793883139.7025928,
+        1793883519.3514023,
+        1793883812.825893,
+        1793884223.3091736,
+        1793884727.0708814,
+        1793885040.83568,
+        1793885991.362205,
+        1793886330.961379,
+        1793886586.1382668,
+        1793886846.6842372,
+        1793887280.724876,
+        1793887513.7194397,
+        1793887847.3485427,
+        1793888599.8881,
+        1793889085.6735423,
+        1793889449.786123
+      ]
+    },
+    "C": {
+      "disk_allocated_bytes": 2021285888,
+      "pending": [],
+      "incomplete": [],
+      "boundary_files": {
+        "broker-50-ready.json": null,
+        "frozen-candidate.json": null,
+        "mechanism-report.json": null
+      },
+      "last_report_request": {
+        "id": "turn-0166",
+        "kind": "forward",
+        "request": {
+          "candidate": "c-9652d71dc3f8671029f03a284ca51fb4e013a51510c29e99d4fe3ae3424dd53d",
+          "op": "mechanism_report",
+          "report": {
+            "alternative_and_negative_outcomes": {
+              "all_candidates": "Every candidate scored 0/8 on the focal T1 answer set. No candidate solves the motivating focal failure.",
+              "round28": "The opposed-sign factorial candidate produced 10 repairs and zero damage on development, including five counterfactual-visual repairs, but its broker score 0.59375 is below round23. It also repairs none of the eight focal answers.",
+              "round30": "Both removal produced 11 counterfactual-visual repairs without visual damage, but 23 counterfactual-usual errors and a worst cell loss of 8/64. Its repair score is 0.5703125 and it fails the preservation audit."
+            },
+            "artifacts": [
+              "/work/study_provenance.json",
+              "/work/final_30_candidate_audit.json",
+              "/work/round23_analysis.json",
+              "/work/H7_final_factorial_results.json",
+              "/work/round30_factorial_test.json"
+            ],
+            "audit": {
+              "all_evaluation_prompt_hashes_match_W0": true,
+              "audit_artifact": "/work/final_30_candidate_audit.json",
+              "completed_candidate_count": 30,
+              "full_development_requests_per_candidate": 2560,
+              "preservation_audit": "All 40 arm/template/order/condition cells, each with 64 sources, were checked. The selected candidate's largest loss is 2/64 = 0.03125, below 0.035. Effective support is below one million; format errors and truncations are zero.",
+              "selection_metric_recomputed": "B0 joint correctness across the four image conditions, grouped by source, template and option order.",
+              "staging_empty_after_round30": true
+            },
+            "component_hypothesis": "Selected layer-21 attention-output and MLP-output projections contribute to a shared decision direction that favors usual-size answers but can oppose image-grounded answers. Their sign- and dose-dependent effects support a causal contribution to the trade-off, not a unique error-only circuit or a sufficient explanation of the focal failures.",
+            "contrasts": {
+              "construction_excluded_replication_groups": [
+                "C-076",
+                "C-077",
+                "C-328",
+                "C-368"
+              ],
+              "design": "Compare counterfactual versus original images, visual versus usual-size questions, T1 versus T0 wording, both option orders, and no-image usual-size controls. A bigger/larger lexical crossover did not eliminate the focal template difference.",
+              "focal_groups": [
+                "C-520",
+                "C-227",
+                "C-053",
+                "C-632"
+              ],
+              "replication_caveat": "The four replication sources were excluded from component construction, but their development behavior was already observable. They are not an independent held-out test.",
+              "successful_comparison_groups": [
+                "C-234",
+                "C-041",
+                "C-007",
+                "C-114"
+              ]
+            },
+            "experiments": [
+              {
+                "evidence_actions": [
+                  "turn-0020",
+                  "turn-0024",
+                  "turn-0028",
+                  "turn-0031"
+                ],
+                "hypothesis": "H1: a layer-19 attention-head explanation",
+                "result": "Head-31 attenuation produced mixed repairs and damage, with no focal answer repair. Amplification and a random-head control also improved some development answers. The evidence does not establish head-31-specific repair.",
+                "rounds": [
+                  1,
+                  2,
+                  3,
+                  4
+                ]
+              },
+              {
+                "evidence_actions": [
+                  "turn-0040",
+                  "turn-0044",
+                  "turn-0050",
+                  "turn-0054",
+                  "turn-0058",
+                  "turn-0062",
+                  "turn-0119",
+                  "turn-0123"
+                ],
+                "hypothesis": "H2: layer-21 attention projection",
+                "result": "Removal improved the focal T1 mean first-token margin at doses 0.5, 1 and 2 by 1.09375, 2.125 and 3.8125, respectively, without correcting any focal answer. Amplification at magnitudes 0.5, 1 and 2 worsened that margin by 1.125, 2.3671875 and 4.7265625. Usual-size accuracy showed the opposing trade-off. Norm-matched orthogonal-output and random-column controls did not reproduce the targeted focal effect.",
+                "rounds": [
+                  5,
+                  6,
+                  7,
+                  8,
+                  9,
+                  10,
+                  22,
+                  23
+                ]
+              },
+              {
+                "evidence_actions": [
+                  "turn-0068",
+                  "turn-0072",
+                  "turn-0076"
+                ],
+                "hypothesis": "H3: early generic wording direction",
+                "result": "Layer-3 interventions changed the local generic wording-related write but did not produce the predicted focal benefit or a consistent sign-reversing downstream effect. This proposed explanation was not supported.",
+                "rounds": [
+                  11,
+                  12,
+                  13
+                ]
+              },
+              {
+                "evidence_actions": [
+                  "turn-0083",
+                  "turn-0087",
+                  "turn-0091",
+                  "turn-0095"
+                ],
+                "hypothesis": "H4: attention coefficients orthogonal to usual/no-image control means",
+                "result": "Mean-null attention edits retained small sign-dependent focal margin effects, but the positive replication prediction failed: unit and double removal changed replication visual margins by -0.078125 and -0.28125. Mean nulling is not per-example preservation or evidence of a general repair.",
+                "rounds": [
+                  14,
+                  15,
+                  16,
+                  17
+                ]
+              },
+              {
+                "evidence_actions": [
+                  "turn-0101",
+                  "turn-0105",
+                  "turn-0109",
+                  "turn-0113"
+                ],
+                "hypothesis": "H5: layer-21 MLP projection",
+                "result": "Unit and double removal improved focal T1 mean margins by 1.875 and 3.578125; unit amplification worsened them by 1.90625. Replication visual margins changed in the same directions. Removal repaired some nonfocal visual answers but damaged usual-size answers. MLP inputs were unchanged for MLP-only interventions, and the effective weight delta closely reconstructed the local residual change. Orthogonal-output controls had much smaller focal effects.",
+                "rounds": [
+                  18,
+                  19,
+                  20,
+                  21
+                ]
+              },
+              {
+                "evidence_actions": [
+                  "turn-0129",
+                  "turn-0133",
+                  "turn-0137"
+                ],
+                "hypothesis": "H6: mean-null MLP coefficients",
+                "result": "Unit removal, amplification and the orthogonal-output control changed focal T1 mean margins by 0.375, -0.3125 and 0.0390625. These small, partly sign-specific effects did not repair any focal answer. Small predicted writes made full-vector reconstruction less reliable than for the natural component.",
+                "rounds": [
+                  24,
+                  25,
+                  26
+                ]
+              },
+              {
+                "conditional_residual_mean_cosines": [
+                  0.9981750076323948,
+                  0.99824441951057,
+                  0.9975768851596554,
+                  0.9974874162683545
+                ],
+                "design": "Use unchanged original attention and MLP components, with dose pairs (-1,-1), (-1,+1), (+1,-1), (+1,+1), without refitting.",
+                "equations": [
+                  "conditional observed = y(A,M) - y(A,0); predicted = delta_W_M @ x_A",
+                  "interaction observed = y(A,M) - y(A,0) - y(0,M) + y(0,0); predicted = delta_W_M @ (x_A - x_0)"
+                ],
+                "evidence_actions": [
+                  "turn-0139",
+                  "turn-0140",
+                  "turn-0148",
+                  "turn-0149",
+                  "turn-0152",
+                  "turn-0153",
+                  "turn-0156",
+                  "turn-0157",
+                  "turn-0160",
+                  "turn-0161"
+                ],
+                "focal_T1_mean_margin_deltas": [
+                  -4.4140625,
+                  -0.109375,
+                  0.5,
+                  3.59375
+                ],
+                "hypothesis": "H7: fixed attention-by-MLP sign factorial",
+                "result": "All 64 combined-condition MLP inputs exactly matched the corresponding attention-only reference. The conditional residual increment was closely predicted by the effective MLP weight delta applied to that input. Opposed signs attenuated the attention-only focal effect; equal signs strengthened it. Both removal remained subadditive in final margin: 3.59375 versus 2.125 + 1.875. Projected interaction effects matched predictions better than the small, BF16-noisy full interaction vectors. These results support local composition, not complete mediation of final logits.",
+                "rounds": [
+                  27,
+                  28,
+                  29,
+                  30
+                ]
+              }
+            ],
+            "failure_behavior": "For C-520, C-227, C-053 and C-632, the baseline answers counterfactual visual-size questions correctly under T0 but chooses the ordinarily larger object under T1, in both option orders in B0. The eight T1 failures remain incorrect for every one of the 30 candidates. First-token margin improvements must not be described as repairs of these answers.",
+            "finalization_status": "Report submission requested. Freeze has not yet been confirmed.",
+            "intervention_definition": {
+              "application_scope": "Static weights act at all token positions. Last-prompt captures measure local consequences but do not isolate the causal role of that token alone.",
+              "attention_parameter": "model.language_model.layers.21.self_attn.o_proj.weight",
+              "construction": "The layer-21 direction was derived from the focal counterfactual-visual T1-minus-T0 interaction relative to original-visual wording effects. Selected natural projection coefficients and 128 input columns defined each rank-one intervention.",
+              "dose_convention": "Selected columns use effective BF16 rounding of W0 - dose * outer(direction, coefficients). Positive dose removes the selected natural projection; negative dose amplifies it. Edits are absolute relative to W0, not cumulative.",
+              "mlp_parameter": "model.language_model.layers.21.mlp.down_proj.weight"
+            },
+            "limitations": [
+              "All model selection and hypothesis development used seen development evidence. Thirty adaptive candidate evaluations do not establish out-of-sample improvement.",
+              "Templates, orders, arms and conditions share source groups; the 2560 requests are not independent observations.",
+              "The focal panel was outcome-selected. Four construction-excluded replication sources are still development data.",
+              "First-token gold-minus-competitor logits are diagnostic margins, not complete sequence probabilities or substitutes for generated-answer accuracy.",
+              "A local residual reconstruction does not establish complete downstream mediation, unique necessity, or sufficiency of the selected components.",
+              "Static weight edits affect all token positions. Image recognition, upstream representations and other distributed pathways have not been ruled out.",
+              "Mean-null constraints protect aggregate construction means, not every individual example or unseen distribution.",
+              "Random-direction and random-column controls use limited draws, not a comprehensive null distribution.",
+              "Small interaction vectors are sensitive to BF16 numerical effects; projected agreement is stronger than full-vector agreement in several categories."
+            ],
+            "scope": {
+              "baseline": "w0-72b28080bcd9951ceeeebfb62a5fd532cb3d52e4714ea3baedea3796b650ed06",
+              "branch": "C",
+              "completed_candidates": 30,
+              "development_design": "64 source groups, five conditions, two templates, two option orders and two instruction arms: 2560 scored requests per candidate.",
+              "evaluation_protocol_sha256": "19bd385548e9abb64cc4d9173f27f93378e25c517606c6aeb6eeed98a445afcd",
+              "independent_test": false,
+              "stopping_rule": "Exactly 30 total completed candidates. No further candidates or model inference."
+            },
+            "selected_candidate": {
+              "B0_five_condition_joint": {
+                "baseline": 142,
+                "candidate": 148,
+                "denominator": 256
+              },
+              "B0_four_image_joint": {
+                "baseline": 149,
+                "candidate": 156,
+                "denominator": 256
+              },
+              "B1_five_condition_joint": {
+                "baseline": 148,
+                "candidate": 152,
+                "denominator": 256
+              },
+              "B1_four_image_joint": {
+                "baseline": 151,
+                "candidate": 158,
+                "denominator": 256
+              },
+              "candidate": "c-9652d71dc3f8671029f03a284ca51fb4e013a51510c29e99d4fe3ae3424dd53d",
+              "counterfactual_visual_damage": 6,
+              "counterfactual_visual_repairs": 0,
+              "damage": 10,
+              "edit": "Layer-21 attention component amplification, dose -2; only the selected o_proj columns are changed.",
+              "effective_changed_scalars": 323956,
+              "effective_weight_delta_l2": 2.199869051554772,
+              "evidence_actions": [
+                "turn-0121",
+                "turn-0122",
+                "turn-0123",
+                "turn-0162",
+                "turn-0164"
+              ],
+              "focal_T1_correct": {
+                "baseline": 0,
+                "candidate": 0,
+                "denominator": 8
+              },
+              "format_errors": 0,
+              "interpretation": "The aggregate improvement is driven principally by usual-size gains, not a selective visual-size repair. The selected edit worsens all eight focal margins and damages six previously correct counterfactual-visual answers. This trade-off must accompany any presentation of the score gain.",
+              "maximum_accuracy_loss_across_40_cells": 0.03125,
+              "overall_accuracy": {
+                "baseline": 0.88515625,
+                "candidate": 0.8921875
+              },
+              "primary_joint": {
+                "baseline": 0.75,
+                "candidate": 0.78125
+              },
+              "repairs": 28,
+              "round": 23,
+              "selection_reason": "Highest broker repair score among the 30 completed candidates; passes the support and all-40-cell preservation audit.",
+              "truncated": 0
+            },
+            "title": "C: wording-sensitive visual-size errors and a shared layer-21 decision trade-off"
+          }
+        }
+      },
+      "last_report_response": {
+        "budget": {
+          "actions": 163,
+          "actual_target_tokens": 10844818,
+          "actual_visual_tokens": 6410844,
+          "best": "c-9652d71dc3f8671029f03a284ca51fb4e013a51510c29e99d4fe3ae3424dd53d",
+          "completed_repair_candidates": {
+            "173fa3ce89a6b6dffeb07ce19b74a5526d55d6ba3a2a0ba5dab790c062ea4c38": "c-ebc8b9866a167afb804d78c59e5a047ccc43ec65b93ec49e262f2c0d3e8822b6",
+            "19afdfdcbbc119d9bcc0969e593f0f880a6e3b29671ed819cf07123ef90ad750": "c-92353818af49361c066343c06696cc111c1b62435851de6ebf5eb46f584f8ea8",
+            "21d57a43fc6e2c8ea53a2cad99a9943d54785e88b4098a38386c96b9c650ca21": "c-8c7f139cfe1801ba1614bc353a8ec3101b4925791c39caed18924b8cf8a2a4e8",
+            "2c8792b1ac02cc76cf528caa663650e2239fcaf35b18ceb098afb2d38f26a33e": "c-9eb101e364b5298f5b0c928f7ec7123bd275284d3e90b5168775ddbc3de09013",
+            "2d2d643fe7257f5dddab35dba854a66e7bf5ba1f36fa42393e2213564b77c0b5": "c-47da33c531b25b4be4ca066ead6afbeaf04b9885ba6726c020a9c5229b1d25fa",
+            "3773317d79f6adb942bcd3647ad234ba2a75a86b652f2e9dcc3ae4eea3aea72f": "c-871b2d385216931fbed86a24b4de8dbc0effc34f128b7269aa59d63a413599fa",
+            "3e519f0a40ab57b5da78e9caf40ab52718c0a15327fcf4484ec3e2ca4e379918": "c-ed4169011dcf38aa1c3a4933d92ee7418c8362a79e5ef0f5cd09b69fc48f009f",
+            "420a932102de80aa55a7eac230914dfa9f68484175f6bb731b9e1c4644e0c700": "c-d63ab02f94402967e9f9c461869b2e73d6630815bbf570885b5c863482f1ca85",
+            "54efe1dddc921c44e0163e5cf84b346410c9bf33ac795756a05ee2aa7a96b347": "c-be1b686068c83a165056441926e73ba8b8b22ac9fb48c14768e29168f3a55577",
+            "5d88c5e5e6981a960d27c61c1c9a837bef844ed3c58df23b86024276caa342b0": "c-5dd18666d85ca4145527324acd3d8702907b530f199debcf03779985d10bc88d",
+            "63ed70cf8c73ea0521ec7d9e4c9349cee1cbcb683c9a8a9029b60928c057daf6": "c-62fefa5231c53dedb33c8e6c47e01c671a9345ddbafdfc69e9672431ccb9266d",
+            "691a0e0383b6bceb5e2dc6cc0f73967d440657aeadea7b16c89fbff68c5ce123": "c-e5a70aaf8c745ff627c39102070d8e927d480cb63d1703296202f063015613ef",
+            "6df7b7c26ce68ce46243c98374eab027c21e7eac6b477239dfd6cfbb08dc9c3f": "c-623fabb1714010e428d15afe552c9315a18e258ccb9bc14ca82d48085ce2997a",
+            "74e2dd81620aa93c1524a79aeb80dde081cdc4787247daa5286507ae968daea3": "c-df5bc2da4bb2092a354e13a46792600583e2d04bf4bd65d2e94cf5595173eb84",
+            "7c463c93bab902badf3fb3155f0a0e7ce8160c96b8594affb1237f5efe48699c": "c-a65f9fb93eaecf755bcf7107ddfb0a6b278ffa2d1ca62d771106709fb0cd2f58",
+            "8aaa7079eef7d6148a1346899da8ea3aa7fc6258b514aa582a03cd9dfc6361f8": "c-5104c445e9c09230c1db823f22144c0f22e0ed43cc0751a127b5e249e0ffe2d5",
+            "8e7d729c313b8d64caf2a6881f2f102b9a91a8fefdd67bc05c189c54fe4975aa": "c-2b2241a0351e2652595374fbdf70aff9d13deeda2c3cb3c478296bc15d539a22",
+            "a1efbba16611f5d1d99f21660704ffd75f51d6bc9da2f74f296000cad25025ca": "c-1eb8a499468ca6a937e8d951e2e4a92a5e63c1a6ac56a369d5e9cf4cbd6fb2ab",
+            "a355c57ac1df6cdab52a22b4ae911a8900307dbdea21828c68bb25649055180d": "c-60058b638402c047f4f437263d333d8d6a856ad1dee2ccfa9ccbf285d88f203d",
+            "a7cf2cb113edcd0d2bed91fe2fba53992f4c094646793b3d4bb73baba25b1ccc": "c-50b63a80a75c143aea8b5b448e00da6645b08247e1e1e5e4249ddfcfcdbf177f",
+            "afda1cea030d740a9f83befb5cdef26b9bd0605b9d789657a748e47c7054eaa5": "c-328b6ed7faf0ca02f547dad547680e82d7bce1dbcb6a47ed83cee89eb4499b7f",
+            "c04a8bf679f8f450dbe3cdd9aecc3597bbfc8c85209899b74c8d6c8deb101b74": "c-7877560048b35f59d200b51466fc47a58354196c6297ffdfede2879d61b713f6",
+            "c21e5cfd274926e8d26e0af82b1860e7a6fa4fa2dac78037110991e6628d2f62": "c-76de5f8396ab03a50e8daefbd2d1831abe7884b907f710253a97fa41b98dcf1a",
+            "c627ca13bf0a9a6260821da547ff69b8d29be234a36ef54d093c91f200ebedf7": "c-ffc4d6e2a1b29f3ada56cf2c3c56d7ca7b2d702f9e94cf3bb693c6cc654a7655",
+            "ca6f0b43faf6e1eb423e409016aa5de1d7bd0a870d2e0df74a570a46347a135b": "c-9652d71dc3f8671029f03a284ca51fb4e013a51510c29e99d4fe3ae3424dd53d",
+            "d0ae1fc6fccf4d7926cda6b8a977b96e76d25b276fe53291bbd40cd03dd00dfb": "c-6fc12077d830a7e8498fb264c9e42c3e41bc12976001b9a5d247692b23abcd37",
+            "d71366758b499366f83518cae7b1c480d26f0ef894ca5e89c4d1921f8d22cc76": "c-96c7f83f2ec18a79cb3d64d30dfdf2cf025ebe0e05b14b50742fa29738071561",
+            "e941e10a05322553b4472c90e13d6fd22d9a686c9bafa4b7615aad6989e04e2d": "c-d286ecdf8fe05fad98dfc4fc6433a088455edc6a0408fcc2406cd056c1c65dbe",
+            "f3199065fb14f16b70413a501dc24d2bb828ed1af487996ddd1e3d1e1ff7cc0c": "c-fe7105f305005bda16c91d20f8196fb618d22b68da6593e3c1bc9dd7a44b7cdb",
+            "f419221e4ef3a5e04c99ccdf9e8c5b25aefcd0584f9ca8440e068ee6930d5a4a": "c-3028debe65ac5977e092d2f76f7a2fcc00f304dd5e5925ba5de6f94bad45268f"
+          },
+          "current": "c-3028debe65ac5977e092d2f76f7a2fcc00f304dd5e5925ba5de6f94bad45268f",
+          "forwards": 80956,
+          "frozen": null,
+          "python_seconds": 94.2232219837606,
+          "repair_rounds_completed": 30,
+          "research_done": false,
+          "reserved_target_tokens": 341958144,
+          "round_budget_reached": true,
+          "samples": 80956,
+          "started_unix": 1793877029.990033,
+          "storage_bytes": 2019647488
+        },
+        "elapsed_seconds": 1.1267140507698059e-05,
+        "error": "ValueError('Mechanism report requires candidate')",
+        "failed": true,
+        "id": "turn-0166"
+      },
+      "turn167_dispatched": false,
+      "eval_times": [
+        1793878113.1616774,
+        1793878361.2044833,
+        1793878572.6467273,
+        1793878761.0876186,
+        1793879362.1268182,
+        1793879695.3239172,
+        1793880208.1737096,
+        1793880505.417217,
+        1793880780.8384416,
+        1793881024.374177,
+        1793881473.7220683,
+        1793881957.8054917,
+        1793882213.7114131,
+        1793882770.93095,
+        1793883291.1039097,
+        1793883623.1589906,
+        1793884032.4522533,
+        1793884576.1245718,
+        1793885216.07036,
+        1793885592.8951228,
+        1793886032.0888255,
+        1793886874.8176675,
+        1793887183.2643852,
+        1793887742.8699448,
+        1793888136.781007,
+        1793888750.4724064,
+        1793890630.591214,
+        1793891342.5601199,
+        1793893089.3648782,
+        1793893797.66372
+      ]
+    }
+  }
+}
