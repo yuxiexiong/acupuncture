@@ -1,0 +1,27 @@
+I’ll finish only candidates27–30, then report and freeze. Turn142 failed while treating the margin helper’s return value as a list; staging had not been reached. I’ll inspect its saved output and partial namespace before making a targeted correction.
+
+```python
+feedback142 = json.loads((A / "turn-0142.json").read_text())
+print("SAVED_FAILURE", feedback142["value"]["output"])
+print("PARTIAL_NAMESPACE", {
+    name: name in globals()
+    for name in ("h7_category", "read_h7_measure", "h7_attention_refs",
+                 "h7_mlp_refs", "stage_h7", "stats27")
+})
+print("STAGED_NOW", edited())
+margin_path = work / "h7_attention_amplified_reference_margins.json"
+print("MARGIN_ARTIFACT_EXISTS", margin_path.exists())
+if margin_path.exists():
+    margin_artifact = json.loads(margin_path.read_text())
+    print("MARGIN_ARTIFACT_TYPE", type(margin_artifact).__name__)
+    if isinstance(margin_artifact, dict):
+        print("MARGIN_ARTIFACT_KEYS", list(margin_artifact))
+        for key, value in margin_artifact.items():
+            print("FIELD", key, "TYPE", type(value).__name__,
+                  "EXAMPLE", value[:1] if isinstance(value, list) else
+                  list(value.items())[:1] if isinstance(value, dict) else value)
+    else:
+        print("MARGIN_ARTIFACT_FIRST", margin_artifact[:1])
+print("MARGIN_TEST_CACHE_TYPE",
+      type(margin_tests.get("h7_attention_amplified_reference")).__name__)
+```
