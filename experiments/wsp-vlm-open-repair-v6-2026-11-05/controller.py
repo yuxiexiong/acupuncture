@@ -1,0 +1,132 @@
+"""Open research loop adapted from math engineering-r2/controller.py.
+
+No prewritten neuron selection or edit schedule. The researcher supplies Python
+or JSON actions; all outputs are fed back. This file has no execution entry point.
+"""
+import json
+import subprocess
+import time
+from pathlib import Path
+
+from common import legacy, packed, write_json, file_hash, require_live
+
+
+def parse_action(text):
+    old = legacy('wsp-process-reproduction-v1-2026-11-03/engineering-r2/controller.py', 'math_open_controller')
+    return old.parse_action(text, explanations=True)
+
+
+class CodexResearcher:
+    """Explicitly authorized future transport; offline tests supply ScriptedResearcher.
+
+    Image CLI flags verified using exec/resume --help only. No live call performed.
+    A provider/account spend cap is required: CLI usage events are not invoices.
+    """
+    def __init__(self, config, root):
+        require_live(config)
+        if not config.get('researcher_external_spend_cap_record'):
+            raise PermissionError('External researcher spend cap not recorded')
+        self.config, self.root = config, Path(root)
+        self.root.mkdir(parents=True, exist_ok=False)
+        self.thread = None
+        self.used_turns, self.reserved_usd = 0, 0.
+        if file_hash(config['researcher_cli']) != config['researcher_cli_sha256']:
+            raise ValueError('Researcher CLI build changed')
+        (self.root/'instructions.txt').write_text('Answer the research request. Use only the fenced action protocol.\n')
+
+    def turn(self, prompt, images, out):
+        c, contract = self.config, self.config['contract']
+        if self.used_turns >= contract['researcher_turns'] or self.reserved_usd + contract['researcher_turn_reserve_usd'] > contract['researcher_usd']:
+            raise ValueError('Researcher turn/cost reservation exhausted')
+        out.mkdir(exist_ok=False)
+        self.used_turns += 1
+        self.reserved_usd += contract['researcher_turn_reserve_usd']
+        write_json(out/'input.json', dict(prompt=prompt, images=[dict(name=p.name, sha256=file_hash(p)) for p in images],
+                                        thread=self.thread, reserved_usd=self.reserved_usd))
+        (out/'prompt.txt').write_text(prompt)
+        cmd = [c['researcher_cli'], 'exec', '--ignore-user-config', '--ignore-rules', '--strict-config',
+               '--skip-git-repo-check', '--json', '-s', 'read-only', '-C', str(self.root),
+               '-m', c['researcher_model'], '-c', 'project_doc_max_bytes=0', '-c', 'web_search="disabled"',
+               '-c', 'model_instructions_file='+json.dumps(str(self.root/'instructions.txt'))]
+        for feature in ('shell_tool', 'code_mode', 'code_mode_host', 'apps', 'plugins', 'hooks', 'memories',
+                        'multi_agent', 'browser_use', 'computer_use', 'image_generation', 'view_image',
+                        'skill_search', 'goals', 'artifact'):
+            cmd += ['--disable', feature]
+        for feature in ('skip_host_skill_discovery', 'omit_skill_descriptions'):
+            cmd += ['--enable', feature]
+        if self.thread:
+            cmd += ['resume', self.thread]
+        for path in images:
+            cmd += ['--image', str(path)]
+        cmd += ['-']
+        write_json(out/'command.json', cmd)
+        started = time.monotonic()
+        with (out/'events.jsonl').open('w') as stdout, (out/'stderr.txt').open('w') as stderr:
+            p = subprocess.run(cmd, input=prompt, text=True, stdout=stdout, stderr=stderr,
+                               timeout=min(contract['wall_seconds'], c['researcher_turn_seconds']))
+        events = [json.loads(x) for x in (out/'events.jsonl').read_text().splitlines()]
+        replies, usage, thread = [], None, None
+        for e in events:
+            if e['type'] == 'thread.started': thread = e['thread_id']
+            if e['type'] == 'turn.completed': usage = e.get('usage')
+            item = e.get('item', {})
+            if item.get('type') not in (None, 'agent_message', 'reasoning', 'error'):
+                raise RuntimeError('Unexpected native tool event; stop researcher')
+            if e['type'] == 'item.completed' and item.get('type') == 'agent_message':
+                replies.append(item['text'])
+        if p.returncode or not replies or usage is None or not thread or (self.thread and thread != self.thread):
+            raise RuntimeError('Researcher failed/uncertain; no automatic paid retry')
+        self.thread = thread
+        receipt = dict(thread=thread, usage=usage, elapsed_seconds=time.monotonic()-started,
+                       reserved_usd=self.reserved_usd, cost_is_reservation_not_invoice=True)
+        write_json(out/'receipt.json', receipt)
+        (out/'reply.txt').write_text(replies[-1])
+        return replies[-1]
+
+
+def run_session(service, researcher, out, instructions):
+    out = Path(out)
+    out.mkdir(parents=True, exist_ok=False)
+    prompt, images = instructions, []
+    for turn in range(1, service.contract['researcher_turns'] + 1):
+        if service.remaining() <= 0:
+            raise TimeoutError('Session wall budget exhausted')
+        folder = out/f'turn-{turn:04d}'
+        reply = researcher.turn(prompt, images, folder)
+        # Fakes also get full transcript persistence from the observer.
+        folder.mkdir(exist_ok=True)
+        (folder/'reply.txt').write_text(reply)
+        (folder/'feedback_received.txt').write_text(prompt)
+        images = []
+        try:
+            action = parse_action(reply)
+        except (ValueError, json.JSONDecodeError) as e:
+            prompt = 'Action not executed: '+str(e)+'. Give one action with explanation, or finish honestly.'
+            write_json(folder/'rejected.json', dict(error=str(e)))
+            continue
+        if action is None:
+            # Unlike the old controller: no forced 50-pass completion and no implied successful patch.
+            receipt = dict(status='researcher_stopped', turns=turn, best=service.state['best'],
+                           frozen=service.state['frozen'], independent_confirmation=False)
+            service.state['research_done'] = True
+            service.save()
+            write_json(out/'receipt.json', receipt)
+            return receipt
+        action['id'] = f'turn-{turn:04d}'
+        result = service.dispatch(action)
+        write_json(folder/'tool_result.json', result)
+        if action['kind']=='forward' and action['request']['op']=='image' and not result['failed']:
+            req = action['request']
+            images = [service.evidence.image(req['request_id'], req.get('kind', 'input'))]
+        serialized = packed(result).decode()
+        prompt = serialized if len(serialized) <= 16000 else (
+            serialized[:16000] + '\n[PREVIEW TRUNCATED: full result in ARTIFACTS/'+action['id']+
+            '.json; use Python or forward op=artifact to inspect all evidence. Do not infer omitted results.]')
+        if service.state['research_done']:
+            receipt = dict(status='stopped_or_frozen', turns=turn, best=service.state['best'],
+                           frozen=service.state['frozen'], independent_confirmation=False)
+            write_json(out/'receipt.json', receipt)
+            return receipt
+    receipt = dict(status='turn_budget_exhausted', best=service.state['best'], independent_confirmation=False)
+    write_json(out/'receipt.json', receipt)
+    return receipt
