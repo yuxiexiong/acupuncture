@@ -1,0 +1,11 @@
+--- experiments/wsp-vlm-gemma3-v9-2026-11-05-r02/queue_run.py
++++ experiments/wsp-vlm-gemma3-v9-2026-11-05-r02/queue_run.py
+@@ -19 +19 @@
+-    # Existing authorized Qwen v9 50-round continuations have priority across their reload gaps.
++    # Preserve B50 priority; explicit user stop ends C at 30 without claiming a freeze.
+@@ -25 +25,4 @@
+-            if not (d.get('research_done') and d.get('repair_rounds_completed',0)>=50):
++            stop=old/task/'actions/user-stop-C30-20261106/response.json'
++            released_C=(task=='C' and d.get('repair_rounds_completed')==30 and stop.exists()
++                and json.loads(stop.read_text()).get('value',{}).get('stopped') is True)
++            if not (d.get('research_done') and (d.get('repair_rounds_completed',0)>=50 or released_C)):
