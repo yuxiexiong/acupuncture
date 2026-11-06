@@ -1,0 +1,50 @@
+The diagnostic returned generations and captures, but no digit logits; I will not infer missing margins. I will identify which failure/success pairs still reproduce and exclude non-reproducing pairs from the next fit while preserving the original results.
+
+```python
+import re
+d68 = json.loads((Path(ARTIFACTS) / "turn-0068.json").read_text())["value"]["results"]
+live68 = {r["request_id"]: r for r in d68}
+
+def exact_count(text, gold):
+    return re.fullmatch(r"\s*[0-9]+\s*", text) is not None and int(text) == int(gold)
+
+validation68 = []
+for r in d68:
+    rid = r["request_id"]
+    text68 = r["diagnostic_generation"]["text"]
+    row = {
+        "id": rid,
+        "gold": score0[rid]["answer"],
+        "cached_W0": pred0[rid]["text"],
+        "live_W0": text68,
+        "live_correct": exact_count(text68, score0[rid]["answer"]),
+        "input_hash_equal": r["input_ids_sha256"] == pred0[rid]["input_ids_sha256"],
+        "chat_hash_equal": r["rendered_chat_sha256"] == pred0[rid]["rendered_chat_sha256"]
+    }
+    if rid in w0_check:
+        row["equals_previous_live_W0"] = text68 == w0_check[rid]["diagnostic_generation"]["text"]
+    validation68.append(row)
+    print(json.dumps(row))
+
+verified_pair_indices = [
+    i for i, (fail, success) in enumerate(balanced_pairs)
+    if not exact_count(live68[fail]["diagnostic_generation"]["text"], score0[fail]["answer"])
+    and exact_count(live68[success]["diagnostic_generation"]["text"], score0[success]["answer"])
+]
+verified_stable_pairs = [
+    (a, b) for a, b in stable_word_pairs
+    if exact_count(live68[a]["diagnostic_generation"]["text"], score0[a]["answer"])
+    and exact_count(live68[b]["diagnostic_generation"]["text"], score0[b]["answer"])
+]
+print("REPRODUCING CONTRAST INDICES:", verified_pair_indices)
+print("REPRODUCING STABLE PAIRS:", verified_stable_pairs)
+a68 = capture_matrix([live68[rid] for rid in balanced_ids], "model.language_model.layers.10.mlp.down_proj")
+print("L10 CAPTURES MATCH PREVIOUS 28 INPUTS:", bool(np.array_equal(a68, A41[10])))
+(work / "contrast_revalidation_68.json").write_text(json.dumps({
+    "action": "turn-0068",
+    "rows": validation68,
+    "verified_pair_indices": verified_pair_indices,
+    "verified_stable_pairs": verified_stable_pairs,
+    "limitation": "Selected development inputs, not an independent test; original official baseline and selection remain unchanged."
+}, indent=2))
+```
