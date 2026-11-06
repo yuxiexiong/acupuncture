@@ -1,0 +1,103 @@
+"""Post-run hash and arithmetic audit; no model calls or new scientific rules.
+
+Usage: python analysis/postrun/audit.py READOUT_JSON OUTPUT_JSON
+The frozen parser is reused. This is an author check, not independent review.
+"""
+import hashlib
+import json
+from pathlib import Path
+import sys
+
+HERE = Path(__file__).resolve().parents[2]
+REPO = HERE.parent.parent
+sys.path.insert(0, str(HERE))
+import dwb_analysis as A
+
+
+def read(path):
+    return json.loads(Path(path).read_text())
+
+
+def sha(path):
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+
+def audit(readout_path, output_path):
+    result = read(readout_path)
+    freeze = HERE / 'freeze-r02.json'
+    files = read(freeze)['files']
+    assert all(sha(REPO / p) == h for p, h in files.items())
+    run = HERE / 'runs/formal-r02'
+    verification, records = A.load(run)
+    assert verification['freeze_sha256'] == sha(freeze)
+    assert len(records) == 48
+    assert len({r['scenario'] for r in records.values()}) == 6
+    assert sum(len(r['donors']) for r in records.values()) == 348
+    assert sum(r['n_runs'] for r in records.values()) == 3816
+    bridges = {k: sum(r['gates']['bridges'][k] for r in records.values())
+               for k in next(iter(records.values()))['gates']['bridges']}
+    assert bridges == dict(lvk_C=48, lvk_L00=96, lvk_F=96, lvk_L11=96, spf_DD=696)
+    delivery = {}
+    for direction, report in result['directions'].items():
+        delivery[direction] = {}
+        for arm, expected in report['categories'].items():
+            counts = dict.fromkeys(A.CATS, 0)
+            conflict = dict(n=0, valid=0, self=0, first_not_self=0,
+                            other_row=0, stop=0, other=0)
+            for record in records.values():
+                runs = record['once'] if arm == 'C0' else record['directions'][direction]
+                donors = {d['id']: d for d in record['donors']}
+                for key, value in runs.items():
+                    if key != arm and not key.startswith(arm + '|'):
+                        continue
+                    row = A.A.row_out(value['N'], record['item'])
+                    category = A.A.bucket(row, record['self_row'])
+                    counts[category] += 1
+                    if '|' not in key or donors[key.split('|', 1)[1]]['type'] not in ('AL', 'BD'):
+                        continue
+                    conflict['n'] += 1
+                    conflict['valid'] += int(row in (0, 1, 2))
+                    conflict[category] += 1
+            assert counts == expected, (direction, arm, counts, expected)
+            if arm in report['cells']:
+                cell = report['cells'][arm]
+                assert conflict['n'] == cell['delivery_n']
+                assert conflict['valid'] / conflict['n'] == cell['valid_answer']
+                assert conflict['self'] / conflict['n'] == cell['y_self']
+            delivery[direction][arm] = {'all': counts, 'conflict_pairs': conflict}
+    cost = {}
+    for name in ('preflight-r02', 'preflight-r03', 'formal-r02'):
+        worker = HERE / 'runs' / name / 'worker-0'
+        receipt = read(worker / 'receipt.json')
+        assert receipt['status'] == 'completed'
+        assert all(sha(worker / p) == h for p, h in receipt['record_hashes'].items())
+        assert receipt['integrity']['target_weight_sha256_after'] == read(worker / 'metadata.json')['target_weight_sha256_before']
+        assert receipt['integrity']['hooks_removed'] is True
+        if name != 'preflight-r02':
+            assert receipt['authorization_sha256'] == sha(worker / 'authorization.json')
+        cost[name] = {'worker_wall_seconds': receipt['wall_seconds'],
+                      'controller_status': read(worker.parent / 'controller.json')['status'],
+                      'controller_wall_seconds': read(worker.parent / 'controller.json')['wall_seconds'],
+                      't1_runs': receipt['model_calls']['t1'],
+                      'peak_memory_bytes': receipt['peak_memory_bytes']}
+    total = sum(x['worker_wall_seconds'] for x in cost.values())
+    assert total <= 3.1 * 3600
+    assert cost['formal-r02']['worker_wall_seconds'] <= 2.5 * 3600
+    assert cost['formal-r02']['controller_status'] == 'completed'
+    out = {'status': 'passed', 'kind': 'author_postrun_hash_and_arithmetic_check',
+           'freeze_sha256': sha(freeze), 'frozen_files_checked': len(files),
+           'readout_sha256': sha(readout_path), 'receivers': 48, 'scenarios': 6,
+           'ordered_donor_pairs': 348, 'formal_t1_runs': 3816,
+           'bridge_comparisons': bridges, 'delivery_counts': delivery,
+           'cost': cost, 'total_worker_wall_seconds': total,
+           'total_gpu_process_hours': total / 3600,
+           'notes': ['No model calls; frozen full-answer parser reused.',
+                     'Failed preflight retained and included in cost; see D1.',
+                     '348 ordered pairs are not 348 independent inputs.']}
+    with open(output_path, 'x') as f:
+        f.write(json.dumps(out, ensure_ascii=False, indent=2) + '\n')
+    print(json.dumps({k: v for k, v in out.items() if k != 'delivery_counts'}, indent=2))
+
+
+if __name__ == '__main__':
+    audit(*sys.argv[1:3])
