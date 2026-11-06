@@ -1,5 +1,7 @@
 # 实验目录：按研究问题查找
 
+**2026-11-06｜第一轮 C 冻结验证 v2：** [独立 AI 复核、冻结题包与修订方案](wsp-c-frozen-validation-v2-2026-11-06/README.zh-CN.md)：80 个 ROME 主来源＋10 组 VLind 五条件扩展，2,320 输入/方法；自查与 CPU 验收通过，非人工双审，未运行待测模型。
+
 **2026-11-06｜第一轮 C 外部数据容量：** [WhatIfVis / VLind-Bench 核查](wsp-c-external-data-audit-v1-2026-11-06/REPORT.zh-CN.md)：保守候选 447 / 162 组，跨库去重后大小任务 112 组、其他扩展 469 组；单助手审核，完整五条件未就绪，未运行模型。
 
 **2026-11-05｜WSP v9 B/C各30轮：** [内部证据合同、精确稀疏存储与启动状态](wsp-vlm-mechanism-repair-v9-2026-11-05/README.zh-CN.md)。旧C全哈希无损去重回收76.81GiB；新版35项离线与真实工程验收通过，[B/C已启动及首份回执](wsp-vlm-mechanism-repair-v9-2026-11-05/EXECUTION.zh-CN.md)，旧2B/8B/Gemma保持暂停。

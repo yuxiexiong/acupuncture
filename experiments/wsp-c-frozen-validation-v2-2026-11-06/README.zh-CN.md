@@ -1,0 +1,23 @@
+# C-FV-02：第一轮 C 外部验证冻结包
+
+**已完成数据与方案准备，未运行待测模型。** AI 独立盲审后，主集 80 个 ROME 新来源；扩展为 10 组 VLind 正常/反事实配对。不是人工双审，也不将两层合并作 n=90。
+
+- [修订方案及数据结论](PLAN.zh-CN.md)：条件矩阵、七臂比较、统计与停止规则。
+- [完整设计自查](SELF_CHECK.zh-CN.md)：C01–C14、E01–E26、反方与前版差异。
+- [冻结清单](freeze.json)：本包文件 SHA、上游固定证据与执行边界。
+- [CPU 验收](validation.json)：2,320 输入配对、评分自测、分词、100 图新旧库重核。
+- [来源](sources.json)、[图像清单](assets.json)、[输入](inputs.jsonl)、[独立答案](gold.jsonl)、[排除账本](exclusions.json)。
+- [复核规则](REVIEW_PROTOCOL.zh-CN.md)、[盲审分工](review-provenance.json)、[逐图比对](review-decisions.json)及 review-A/B/C、review-parent-vlind.json 保留审查原文。
+
+图像与 tokenizer 留在 external 缓存，不进 Git；assets.json 给公开固定版本下载位置/压缩包内部路径、文件及像素 SHA。来源归属与许可证沿用作者声明；本包未另行授权原始图片。重建旧缓存可参照上一轮 [公开审计](../wsp-c-external-data-audit-v1-2026-11-06/REPORT.zh-CN.md) 的 provenance 与下载脚本。新 tokenizer 的固定 revision URL 与哈希在 freeze 中。没有模型权重下载或加载步骤。
+
+从仓库根目录，仅运行 CPU 题包重建/核验：
+
+```sh
+python experiments/wsp-c-frozen-validation-v2-2026-11-06/freeze_packet.py
+python experiments/wsp-c-frozen-validation-v2-2026-11-06/verify_packet.py
+```
+
+需要已有公开图像/元数据缓存、旧库本地素材、tokenizer，以及环境现有的 Pillow、numpy、scipy、tokenizers、Jinja2。前者只按已经完成的审查记录生成题包，不重新执行 AI 审查；后者核对数据/矩阵与评分器，并重做旧库图像去重。未提供目标模型执行入口。不要将 gold、request_id 或来源说明加入模型提示。
+
+原 T200 不再是本版目标；最大终验 16,240 个自然回答，开发/工程加总上限 61,296，另 3,072 表征序列，均尚未执行。方法实现和数值验收仍待完成，正式运行需要后续授权。
