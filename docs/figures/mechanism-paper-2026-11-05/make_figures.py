@@ -97,7 +97,7 @@ DIRS = [('N_L00_C4146_D-1', 'N4146'), ('N_L00_C1210_D-1', 'N1210'), ('R0_L00_D-1
 def fig2():
     en = J('enum-offline-r01.json')
     s = Svg(820)
-    s.text(18, 24, 'Write at t1, read at t2: outcomes of 48 inputs per arm (specified receivers)', 13, weight='bold')
+    s.text(18, 24, 'Write at t1, read at t2: outcomes of 48 inputs per arm (native intervened run)', 13, weight='bold')
     y = legend(s, 18, 46, LEG) + 4
     d = [('#', 'A  Replace v and/or k in the t1 write of the 14 recurrent layers (LVK)')]
     for key, nm in DIRS:
@@ -116,7 +116,7 @@ def fig2():
     p = DATA / 'nwr-readouts-r01.json'
     if p.exists():
         r = json.load(open(p))['rates']
-        d = [('#', 'C  NWR: native donor state read by a v-and-k repaired receiver (N4146)'),
+        d = [('#', 'C  At t2, read the state written by the native run itself (NWR; N4146)'),
              ('receiver v-and-k: none', cats(r['L11']['counts'])), ('+ D from native write', cats(r['D00']['counts'])),
              ('+ E from native write', cats(r['E00']['counts'])), ('+ D from v-only (SRU replay)', cats(r['D10']['counts']))]
         d += [(f'+ random patch {j}, same norm', cats(r[f'R{j}']['counts'])) for j in range(1, 6)]
@@ -253,7 +253,7 @@ def fig1():
     BX, BW, BH, Y0 = [18, 180, 342, 504, 666], 136, 62, 60
     boxes = [('Sparse intervention', 'layer 0, prompt window', 'one coordinate or a', 'random direction'),
              ('t1: write of the', 'recurrent layers', 'first such layer: native', 'and v-fix differ only in v'),
-             ('Written state S1', 'update of shared S0:', 'decay, correction,', 'and new-value write'),
+             ('Written state S1', 'beta k v^T added to', 'the shared history S0', ''),
              ('t2: direct read', 'alpha S1^T q', '(the other use, E, is', 'weak or opposite)'),
              ('Answer', 'target record, or', 'fall back to the', 'first-listed record')]
     for x, b in zip(BX, boxes):
@@ -275,15 +275,15 @@ def fig1():
     s.text(xb, Y0 + BH + 78, 'first-step stop, 47 of 48', 10.5, anchor='middle', fill=INK2)
     y = Y0 + BH + 122
     s.line(18, y - 14, 60, y - 14, stroke=INK2, width=1.6)
-    s.text(68, y - 10, 'evidence at specified endpoints', 11, fill=INK2)
+    s.text(68, y - 10, 'operation evidence on the native intervened run', 11, fill=INK2)
     s.line(400, y - 14, 442, y - 14, stroke=INK2, width=1.6, dash='5 4')
     s.text(450, y - 10, 'not identified', 11, fill=INK2)
     notes = [('Entry (dashed)', 'why the intervention changes v and k at t1 is not explained.'),
-             ('t1 write (LVK)', 'local v/k operations on shared native history: 0 to 16 to 39 correct, of 48 (N4146).'),
-             ('t2 read (SRU)', 'local write endpoints as receivers; direct-read swaps: 39 to 18, 16 to 34 (N4146).'),
-             ('t2 read (NWR)', 'native donor, repaired receiver: 39 to 16 of 48 correct; all 48 select the first record.'),
-             ('Control (NWR)', 'same-norm random patches: mean scene-weighted loss 0.033; one adds 18 errors.'),
-             ('Not reached', 'native L00 stops at t1 on 47/48 inputs; its natural t2 read is not measured here.')]
+             ('t1 write (LVK)', 'replacing v opens the first step; replacing v and k gives 39 of 48 correct. Native run: 0 of 48.'),
+             ('t2 read (SRU)', 'reading the other written state through the direct read moves answers both ways: 39 to 18, 16 to 34.'),
+             ('t2 read (NWR)', 'reading the state written by the native run takes 39 of 48 to 16 of 48; all 48 outputs are the first-listed record.'),
+             ('Control (NWR)', 'five random patches of the same norm lose 0.03 on average, but one of the five loses 18 answers.'),
+             ('Not reached', 'the native run stops at t1, so its own t2 read cannot be observed without forcing a first token.')]
     for a, b in notes:
         s.text(18, y + 12, a, 11, weight='bold')
         s.text(138, y + 12, b, 11, fill=INK2)
@@ -291,8 +291,40 @@ def fig1():
     s.save('fig1-chain-overview.svg', 'Figure 1: chain from sparse intervention to answer, with evidence status')
 
 
+def fig7():
+    r = J('nwc-readouts-r01.json')
+    s = Svg(820)
+    s.text(18, 24, 'Confirmation on 48 new inputs (target not first-listed), receiver = repaired run, patch at t2 only', 13, weight='bold')
+    y = legend(s, 18, 46, LEG[:3]) + 4
+    names = [('L11', 'repaired receiver, no patch'), ('D00', '+ native-source state, direct read'), ('E00', '+ same state, correction use'),
+             ('D10', '+ state of the v-only run'), ('DV', '+ endpoint difference native - v-only'), ('DX', '+ difference from another input'),
+             ('D00h', '+ native-source state, half amplitude')]
+    x0, width = 262, 380
+    for key, nm in (('N_L00_C4146_D-1', 'N4146'), ('N_L00_C1210_D-1', 'N1210'), ('R0_L00_D-1', 'R0 (random intervention direction)')):
+        c = r['directions'][key]['counts']
+        d = [('#', nm)] + [(lab, cats(c[a]['N'])) for a, lab in names]
+        y = rows(s, y, d, 48)
+        for lab, arms, note in (('10 random patches, native-patch norm', [f'R{j}' for j in range(1, 11)], 'each dot: correct answers of one random direction'),
+                                ('20 random patches, v-only-patch norm', [f'Q{j}' for j in range(1, 21)], '')):
+            vals = sorted(c[a]['N']['correct'] for a in arms)
+            s.text(x0 - 10, y + 11, lab, 11.5, anchor='end', fill=INK2)
+            s.line(x0, y + 7, x0 + width, y + 7)
+            for v in vals:
+                s.raw(f"<circle cx='{x0 + width * v / 48:.1f}' cy='{y + 7:.1f}' r='4.5' fill='{COL['correct']}' fill-opacity='0.75' stroke='{SURF}' stroke-width='2'/>", y + 12)
+            med = vals[len(vals) // 2]
+            s.text(x0 + width + 8, y + 11, f"median {med}/48, min {vals[0]}", 11, fill=INK2)
+            y += 21
+        y += 8
+    s.line(x0, y, x0 + width, y)
+    s.text(x0, y + 13, '0', 10, fill=INK2)
+    s.text(x0 + width, y + 13, '48 correct', 10, anchor='end', fill=INK2)
+    s.text(18, y + 34, 'The native-source patch is among the strongest tested, but many random patches of the same size also push answers to the first-listed record.', 10.5, fill=INK2)
+    s.text(18, y + 50, 'The 24 inputs whose target is first-listed stay correct under every patch (not shown).', 10.5, fill=INK2)
+    s.save('fig7-confirmation.svg', 'Figure 7: out-of-development confirmation and random-patch controls')
+
+
 if __name__ == '__main__':
     OUT.mkdir(parents=True, exist_ok=True)
-    for f in (fig1, fig2, fig3, fig4, fig5, fig6):
+    for f in (fig1, fig2, fig3, fig4, fig5, fig6, fig7):
         f()
         print('ok', f.__name__)
