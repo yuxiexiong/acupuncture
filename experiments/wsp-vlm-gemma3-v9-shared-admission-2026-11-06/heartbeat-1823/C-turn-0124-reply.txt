@@ -1,0 +1,121 @@
+There are now 26 completed candidates. After checking the matched-channel outcome, I will use existing W0 captures to examine whether round 22’s weight change is concentrated in a few channels or acts mainly on a shared activation pattern. These are alternative explanations to test, not established mechanisms.
+
+```python
+cid26, r26 = review_eval(
+    "turn-0123", "r26_mlp15_matched_channel_orthogonal_remove"
+)
+repairs26 = {x["id"] for x in r26["changes"] if x["effect"] == "repair"}
+prediction26 = {
+    "retained_reference_repairs": sorted(reference_ids & repairs26),
+    "retained_count": len(reference_ids & repairs26),
+    "criterion_met": len(reference_ids & repairs26) < 6,
+    "net_counterfact_visual_correctness":
+        int(r26["conditions"]["counterfact_visual"]) - baseline_cv,
+    "captured_baseline_failure_repairs": sorted(set(failids) & repairs26),
+}
+Path("/work/r26_channel_specificity_check.json").write_text(
+    json.dumps(prediction26, indent=2)
+)
+print("MATCHED_CHANNEL_CHECK", json.dumps(prediction26))
+
+old11 = measurement_rows("turn-0011")
+old13 = measurement_rows("turn-0013")
+assert not set(old11).intersection(old13)
+analysis_rows = {**old11, **old13}
+analysis_ids = sorted(analysis_rows)
+assert len(analysis_ids) == 96
+A_selected = np.stack([
+    captured(analysis_rows[i], 15, "a")[selected22] for i in analysis_ids
+]).astype(np.float32)
+
+delta22 = absolute22 - original22
+channel_energy = (
+    np.mean(A_selected.astype(np.float64) ** 2, axis=0)
+    * np.sum(delta22.astype(np.float64) ** 2, axis=0)
+)
+energy_order = np.argsort(-channel_energy, kind="stable")
+energy_cumulative = np.cumsum(channel_energy[energy_order]) / channel_energy.sum()
+energy_half_count = int(np.searchsorted(energy_cumulative, 0.5) + 1)
+energy_component = energy_order[:energy_half_count]
+energy_complement = energy_order[energy_half_count:]
+
+mean_input_direction = A_selected.mean(axis=0)
+assert np.linalg.norm(mean_input_direction) > 0
+mean_input_direction /= np.linalg.norm(mean_input_direction)
+delta_mean_input = np.outer(delta22 @ mean_input_direction, mean_input_direction)
+delta_residual_input = delta22 - delta_mean_input
+writes_full = A_selected @ delta22.T
+writes_mean = A_selected @ delta_mean_input.T
+writes_residual = A_selected @ delta_residual_input.T
+
+decomposition_stats = {
+    "measurement_actions": ["turn-0011", "turn-0013"],
+    "n": len(analysis_ids),
+    "energy_definition": "E[a_j^2] * ||effective_delta_column_j||^2; excludes cross terms.",
+    "channels_covering_half_individual_write_energy": energy_half_count,
+    "energy_component_channels": selected22[energy_component].tolist(),
+    "energy_component_fraction": float(energy_cumulative[energy_half_count - 1]),
+    "energy_component_weight_delta_norm": float(
+        np.linalg.norm(delta22[:, energy_component])
+    ),
+    "energy_complement_weight_delta_norm": float(
+        np.linalg.norm(delta22[:, energy_complement])
+    ),
+    "common_input_patch_norm": float(np.linalg.norm(delta_mean_input)),
+    "residual_input_patch_norm": float(np.linalg.norm(delta_residual_input)),
+    "mean_input_capture_fraction": float(
+        np.sum((A_selected @ mean_input_direction) ** 2)
+        / np.sum(A_selected ** 2)
+    ),
+    "residual_write_energy_fraction": float(
+        np.sum(writes_residual ** 2) / np.sum(writes_full ** 2)
+    ),
+    "limitations": (
+        "Descriptive last-prompt statistics on 96 previously seen diagnostic "
+        "inputs. The original channel selection was supervised. Individual "
+        "channel energy ignores interference; shared-mean direction uses no "
+        "new correctness labels but is not independent validation."
+    ),
+}
+np.savez(
+    "/work/r22_input_channel_decomposition.npz",
+    selected=selected22,
+    ids=np.asarray(analysis_ids),
+    activations=A_selected,
+    effective_delta=delta22,
+    channel_energy=channel_energy,
+    energy_order=energy_order,
+    energy_component=energy_component,
+    energy_complement=energy_complement,
+    mean_input_direction=mean_input_direction,
+    delta_mean_input=delta_mean_input,
+    delta_residual_input=delta_residual_input,
+)
+Path("/work/r22_input_channel_decomposition.json").write_text(
+    json.dumps(decomposition_stats, indent=2)
+)
+print("DECOMPOSITION_STATISTICS", json.dumps(decomposition_stats))
+
+length_groups = {}
+for i, row in fresh0.items():
+    if ":counterfact_visual:" in i:
+        length_groups.setdefault(int(row["prompt_tokens"]), []).append(i)
+common_length = sorted(length_groups, key=lambda n: (-len(length_groups[n]), n))[0]
+norm_probe_ids = sorted(length_groups[common_length])[:12]
+norm_probe_plan = {
+    "ids": norm_probe_ids,
+    "last_prompt_position": common_length - 1,
+    "selection": (
+        "Largest common-length counterfactual-visual subset of the existing "
+        "fresh audit, allowing explicit identical last-token capture indices."
+    ),
+    "purpose": (
+        "Compare post-feedforward normalization input and output under W0 "
+        "and round 22; distinguish raw linear write changes from residual-scale changes."
+    ),
+}
+Path("/work/mlp15_normalization_probe_plan.json").write_text(
+    json.dumps(norm_probe_plan, indent=2)
+)
+print("NORMALIZATION_PROBE_PLAN", json.dumps(norm_probe_plan))
+```

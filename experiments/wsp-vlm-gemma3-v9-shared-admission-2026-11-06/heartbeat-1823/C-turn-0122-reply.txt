@@ -1,0 +1,30 @@
+Randomized retention reproduced all nine reference repairs and the same +4 net visual gain. The nominated retained direction is therefore not necessary for that pattern in these tests.
+
+The matched-channel control changes channel identities while preserving the projector; its perturbation norm is 0.34% smaller. I will commit it with the previously fixed prediction.
+
+```forward
+{
+  "op": "commit",
+  "parent": "c-246fd1db2feabde137f587879fe6c0a287b7a71e85cf2e45ac61f07ca8c40254",
+  "rationale": "Round 26: same-projector matched-channel control for round 22, using the disjoint channel set fixed before round 20 and independently reconstructing from W0.",
+  "evidence": {
+    "failure_behavior": "The selected-channel near-ablation repairs a reproducible subset of pictured-size errors, but randomized retained orientation reproduces all nine reference repairs, undermining output-direction specificity.",
+    "component_hypothesis": "The original selected channel identities may contribute to the particular repair pattern even though the retained output orientation is not necessary.",
+    "expected_change": "Retain fewer than six of the nine reference visual repair identities, as registered before round-25 evaluation. Aggregate gain alone will not establish channel specificity.",
+    "dose": "Apply W_selected = u(u^T W0_selected) to 64 disjoint matched alternative channels. BF16 support 163832; effective L2 approximately 2.116384; norm ratio to round 22 approximately 0.9966375. Original selected channels and all other weights are W0.",
+    "control_plan": "Compare with round 22 and matched full ablation round 21. The fixed matching used weight norm, activation RMS and signed mean/RMS; median weight-norm ratio 0.998926 and activation-RMS ratio 0.967735. Report mismatches, all repair/damage identities, and shared focal repairs. One matched set does not establish population-level specificity.",
+    "contrast_ids": [
+      "C-125:counterfact_visual:T1:O1:B0",
+      "C-125:counterfact_visual:T1:O0:B0",
+      "C-626:counterfact_visual:T0:O1:B0"
+    ],
+    "measurement_actions": [
+      "turn-0011",
+      "turn-0013",
+      "turn-0104",
+      "turn-0105"
+    ],
+    "role": "control"
+  }
+}
+```

@@ -1,0 +1,314 @@
+{
+  "B": {
+    "status": {
+      "error": "RuntimeError('Researcher failed/uncertain; no automatic paid retry')",
+      "pid": 57718,
+      "stage": "failed",
+      "time_unix": 1793945766.790303
+    },
+    "astra_elapsed": 0,
+    "ops": {},
+    "tool_wait": 0,
+    "start_turn": 155,
+    "replies": [],
+    "process": "",
+    "latest_receipt": {
+      "turn": 154,
+      "billing": "existing_chatgpt",
+      "cost_is_reservation_not_invoice": true,
+      "cumulative_tokens": 25903845,
+      "elapsed_seconds": 52.531157374964096,
+      "monetary_cost_unknown": true,
+      "reserved_usd": 0.0,
+      "thread": "01a1aeef-627e-7242-8c95-75a7018058bd",
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 24434048,
+        "input_tokens": 25784321,
+        "output_tokens": 119524,
+        "reasoning_output_tokens": 56307
+      },
+      "usage_delta": {
+        "cached_input_tokens": 204160,
+        "input_tokens": 213149,
+        "output_tokens": 1586
+      },
+      "usage_mode": "thread_cumulative"
+    },
+    "recent_evaluations": [
+      {
+        "id": "turn-0120",
+        "op": "evaluate",
+        "complete": true,
+        "failed": false,
+        "nested_failed": null,
+        "elapsed": 54.518084520474076,
+        "mtime": 1793943333.794005,
+        "rounds": 23
+      },
+      {
+        "id": "turn-0123",
+        "op": "evaluate",
+        "complete": true,
+        "failed": false,
+        "nested_failed": null,
+        "elapsed": 101.02484510280192,
+        "mtime": 1793943520.648866,
+        "rounds": 24
+      },
+      {
+        "id": "turn-0126",
+        "op": "evaluate",
+        "complete": true,
+        "failed": false,
+        "nested_failed": null,
+        "elapsed": 78.61327549256384,
+        "mtime": 1793944023.65357,
+        "rounds": 25
+      },
+      {
+        "id": "turn-0136",
+        "op": "evaluate",
+        "complete": true,
+        "failed": false,
+        "nested_failed": null,
+        "elapsed": 102.10451370291412,
+        "mtime": 1793944544.6705556,
+        "rounds": 26
+      },
+      {
+        "id": "turn-0139",
+        "op": "evaluate",
+        "complete": true,
+        "failed": false,
+        "nested_failed": null,
+        "elapsed": 53.79709642380476,
+        "mtime": 1793944673.7975354,
+        "rounds": 27
+      },
+      {
+        "id": "turn-0144",
+        "op": "evaluate",
+        "complete": true,
+        "failed": false,
+        "nested_failed": null,
+        "elapsed": 100.67317513003945,
+        "mtime": 1793945207.8477209,
+        "rounds": 28
+      },
+      {
+        "id": "turn-0147",
+        "op": "evaluate",
+        "complete": true,
+        "failed": false,
+        "nested_failed": null,
+        "elapsed": 62.787551302462816,
+        "mtime": 1793945347.188857,
+        "rounds": 29
+      },
+      {
+        "id": "turn-0150",
+        "op": "evaluate",
+        "complete": true,
+        "failed": false,
+        "nested_failed": null,
+        "elapsed": 100.16808940842748,
+        "mtime": 1793945519.6445017,
+        "rounds": 30
+      }
+    ],
+    "cycles": [
+      186.85486102104187,
+      503.0047039985657,
+      521.0169856548309,
+      129.12697982788086,
+      534.0501854419708,
+      139.3411362171173,
+      172.45564460754395
+    ]
+  },
+  "C": {
+    "status": {
+      "broker_pid": 2386898,
+      "pid": 45613,
+      "resumed_at": 20,
+      "stage": "running",
+      "thread": "01a1aef4-3987-7b91-8771-d353858cfe77",
+      "time_unix": 1793956646.315157,
+      "total_target": 30
+    },
+    "astra_elapsed": 509.7504003737122,
+    "ops": {
+      "commit": 14.801363211125135,
+      "evaluate": 852.0062831044197,
+      "python": 12.715008199214935
+    },
+    "tool_wait": 72.19987346604466,
+    "start_turn": 112,
+    "replies": [
+      {
+        "turn": 112,
+        "text": "The half-strength edit has L2 norm 1.061745, approximately half round 22’s perturbation, on the same 64 columns. I will commit it to test whether partial suppression retains repairs with less damage.\n\n```forward\n{\n  \"op\": \"commit\",\n  \"parent\": \"c-d973e57d57effa31b57ed6b15387931d0505a6e251fd1e089e1e1bd3a71301be\",\n  \"rationale\": \"Round 23: meaningful half-strength test of the orthogonal-component removal, independently reconstructed from W0 rather than accumulated on round 22.\",\n  \"evidence\": {\n    \"failure_behavior\": \"Counterfactual-visual answers can favor usual object size. Full orthogonal-component removal retained all nine registered visual repair identities but damaged 14 previously correct development answers.\",\n    \"component_hypothesis\": \"Partial suppression of the same selected-channel orthogonal writes may preserve some visual repairs while reducing collateral damage; this tests dose dependence rather than assuming full ablation is necessary.\",\n    \"expected_change\": \"Retain at least five of the nine reference repairs registered in turn-0111, produce positive net counterfactual-visual correctness, and cause fewer than 14 total correctness damages relative to official W0.\",\n    \"dose\": \"W_selected = W0_selected - 0.5*(I-uu^T)*W0_selected on 64 layer-15 MLP down-projection columns. BF16 effective support 163803, effective L2 approximately 1.061745, rounding-error norm 0.001782.\",\n    \"control_plan\": \"Compare with full orthogonal removal, full-column ablation, and the preregistered equal-norm opposite-sign augmentation. Inspect repair identities and all damaged conditions; retain cached-versus-fresh limitations.\",\n    \"contrast_ids\": [\n      \"C-125:counterfact_visual:T1:O1:B0\",\n      \"C-125:counterfact_visual:T1:O0:B0\",\n      \"C-626:counterfact_visual:T0:O1:B0\"\n    ],\n    \"measurement_actions\": [\n      \"turn-0011\",\n      \"turn-0013\",\n      \"turn-0104\",\n      \"turn-0105\"\n    ],\n    \"role\": \"targeted\"\n  }\n}\n```"
+      },
+      {
+        "turn": 113,
+        "text": "Round 23 is committed. I will evaluate all 2,560 development inputs to test repair retention and collateral damage, without changing the evaluation protocol.\n\n```forward\n{\n  \"op\": \"evaluate\",\n  \"candidate\": \"c-f5a0776ef2e8ddd779be2a480f597528c4102b1cc1952ed03fc6224abac0ac25\"\n}\n```"
+      },
+      {
+        "turn": 114,
+        "text": "Round 23 has completed evaluation; its detailed outcome is still omitted from the preview. I will check its prediction and all repairs/damages, then stage the already registered opposite-sign control at round 22’s intended perturbation norm.\n\n```python\ncid23, r23 = review_eval(\"turn-0113\", \"r23_mlp15_orthogonal_half\")\nrepairs23 = {x[\"id\"] for x in r23[\"changes\"] if x[\"effect\"] == \"repair\"}\nreference_ids = set(plan22[\"reference_repair_ids\"])\nprediction23 = {\n    \"retained_reference_repairs\": sorted(reference_ids & repairs23),\n    \"retained_count\": len(reference_ids & repairs23),\n    \"net_counterfact_visual_correctness\":\n        int(r23[\"conditions\"][\"counterfact_visual\"]) - baseline_cv,\n    \"total_damages\": r23[\"damage_count\"],\n    \"criterion_met\": (\n        len(reference_ids & repairs23) >= 5\n        and int(r23[\"conditions\"][\"counterfact_visual\"]) > baseline_cv\n        and r23[\"damage_count\"] < 14\n    ),\n}\nPath(\"/work/r23_prediction_check.json\").write_text(\n    json.dumps(prediction23, indent=2)\n)\nprint(\"HALF_DOSE_PREDICTION_CHECK\", json.dumps(prediction23))\n\nmetrics24, absolute24 = stage_columns(\n    \"model.language_model.layers.15.mlp.down_proj.weight\",\n    selected22,\n    original22 + orthogonal22,\n    \"r24_mlp15_orthogonal_augmentation\",\n    {\n        \"reference\": \"r22_mlp15_orthogonal_component_remove\",\n        \"dose\": -1.0,\n        \"operation\": \"Add the original orthogonal component on the same 64 columns.\",\n        \"construction\": \"Independent W0 reconstruction, not cumulative.\",\n        \"prediction_source\": \"/work/r23_r24_mlp15_dose_plan.json\",\n        \"control\": \"Equal intended perturbation norm, opposite sign to round 22.\",\n    },\n)\nprint(\"SIGN_CONTROL_EFFECTIVE_NORM_RATIO\",\n      metrics24[\"effective_norm\"] / metrics22[\"effective_norm\"])\n```"
+      },
+      {
+        "turn": 115,
+        "text": "Half-strength removal retained only four of nine reference repairs, failing that prediction, although net visual correctness remained +4 and total damages fell to five. The opposite-sign control is norm matched within 0.004%; I will commit it without revising its registered prediction.\n\n```forward\n{\n  \"op\": \"commit\",\n  \"parent\": \"c-f5a0776ef2e8ddd779be2a480f597528c4102b1cc1952ed03fc6224abac0ac25\",\n  \"rationale\": \"Round 24: preregistered opposite-sign control for layer-15 selected-column orthogonal removal, reconstructed independently from W0.\",\n  \"evidence\": {\n    \"failure_behavior\": \"Selected counterfactual-visual errors improved under full and partial orthogonal removal, but repair identities and collateral damage differed substantially across doses.\",\n    \"component_hypothesis\": \"If suppressing these orthogonal writes matters, equal-norm augmentation should not reproduce the majority of the registered visual repairs.\",\n    \"expected_change\": \"Retain fewer than six of the nine reference visual repair identities and produce no positive net counterfactual-visual correctness change, as registered in turn-0111.\",\n    \"dose\": \"Add (I-uu^T)W0_selected on the original 64 layer-15 MLP down-projection columns. Effective BF16 support 163812; L2 approximately 2.123604; effective norm ratio to round 22 is 1.0000373. Reconstructed from W0, not cumulative.\",\n    \"control_plan\": \"Compare against rounds 22 and 23 using all condition counts, reference repair identities, shared changes, and newly damaged IDs. Shared effects are not evidence for sign specificity. This is one deterministic control, not a randomization significance test.\",\n    \"contrast_ids\": [\n      \"C-125:counterfact_visual:T1:O1:B0\",\n      \"C-125:counterfact_visual:T1:O0:B0\",\n      \"C-626:counterfact_visual:T0:O1:B0\"\n    ],\n    \"measurement_actions\": [\n      \"turn-0011\",\n      \"turn-0013\",\n      \"turn-0104\",\n      \"turn-0105\"\n    ],\n    \"role\": \"control\"\n  }\n}\n```"
+      },
+      {
+        "turn": 116,
+        "text": "Round 24 is committed. Full-development evaluation will test whether opposite-sign augmentation fails to reproduce the removal’s repair pattern, as predicted.\n\n```forward\n{\n  \"op\": \"evaluate\",\n  \"candidate\": \"c-4792719116ae823897fb02e18cc615ff678f240f7a146749fb9bd97d995d9c1e\"\n}\n```"
+      },
+      {
+        "turn": 117,
+        "text": "The opposite-sign candidate has completed evaluation, bringing the total to 24. I will inspect its full repair/damage pattern and compare it with removal; a lower score alone would not establish the proposed mechanism.\n\n```python\ncid24, r24 = review_eval(\"turn-0116\", \"r24_mlp15_orthogonal_augmentation\")\nrepairs24 = {x[\"id\"] for x in r24[\"changes\"] if x[\"effect\"] == \"repair\"}\ndamages24 = {x[\"id\"] for x in r24[\"changes\"] if x[\"effect\"] == \"damage\"}\nreference_ids = set(plan22[\"reference_repair_ids\"])\nnet_cv24 = int(r24[\"conditions\"][\"counterfact_visual\"]) - baseline_cv\nprediction24 = {\n    \"retained_reference_repairs\": sorted(reference_ids & repairs24),\n    \"retained_count\": len(reference_ids & repairs24),\n    \"net_counterfact_visual_correctness\": net_cv24,\n    \"criterion_met\": len(reference_ids & repairs24) < 6 and net_cv24 <= 0,\n    \"shared_repairs_with_removal\": sorted(repairs24 & repairs22),\n    \"shared_damages_with_removal\": sorted(damages24 & damages22),\n    \"removal_repairs_damaged_by_augmentation\": sorted(repairs22 & damages24),\n    \"augmentation_repairs_damaged_by_removal\": sorted(repairs24 & damages22),\n}\nPath(\"/work/r24_sign_prediction_check.json\").write_text(\n    json.dumps(prediction24, indent=2)\n)\nprint(\"OPPOSITE_SIGN_COMPARISON\", json.dumps(prediction24))\nprint(\"R22_VS_R20_PREVIOUSLY_UNDISPLAYED_ROWS\",\n      json.dumps(sequence_differences22[25:30]))\n```"
+      },
+      {
+        "turn": 118,
+        "text": "Augmentation retained none of the nine reference repairs and changed counterfactual-visual correctness by −1, supporting sign sensitivity for this selected pattern—not a general “size circuit.”\n\nNext I will randomize the small retained output direction while preserving its coefficients and norm. Because full ablation also retained all nine repairs, I predict this control will retain at least six. I will also fix the same-operation, matched-channel control before either result.\n\n```python\nseed25 = 20261110\nrng25 = np.random.default_rng(seed25)\nsigns25 = rng25.choice(np.array([-1.0, 1.0], dtype=np.float32),\n                       size=direction22.shape)\nrandom_direction25 = direction22 * signs25\nrandom_direction25 /= np.linalg.norm(random_direction25)\ncoefficients25 = direction22 @ original22\nretained_random25 = np.outer(random_direction25, coefficients25)\n\nwith np.load(\n    \"/work/r21_mlp15_matched_channel_ablation_edit.npz\",\n    allow_pickle=False\n) as z:\n    selected26 = z[\"selected\"].astype(np.int64)\n    original26 = z[\"original_columns\"].astype(np.float32)\nassert len(selected26) == 64\nassert not np.intersect1d(selected22, selected26).size\nparallel26 = np.outer(direction22, direction22 @ original26)\n\ncontrols_plan = {\n    \"reference\": \"r22_mlp15_orthogonal_component_remove\",\n    \"reference_repair_ids\": plan22[\"reference_repair_ids\"],\n    \"random_retained_direction\": {\n        \"label\": \"r25_mlp15_random_retained_direction\",\n        \"seed\": seed25,\n        \"operation\": (\n            \"Replace the same 64 original columns by v(u^T W0_selected), \"\n            \"where v is a fixed random coordinate-sign version of u.\"\n        ),\n        \"prediction\": (\n            \"Retain at least six of the nine reference visual repairs and \"\n            \"positive net counterfactual-visual correctness. Meeting this \"\n            \"prediction would weaken a special role for the retained direction.\"\n        ),\n        \"matching\": (\n            \"Same columns, input coefficients, and intended retained-write \"\n            \"norm. Total perturbation norm is measured, not assumed identical.\"\n        ),\n        \"direction_cosine\": float(direction22 @ random_direction25),\n    },\n    \"matched_channels\": {\n        \"label\": \"r26_mlp15_matched_channel_orthogonal_remove\",\n        \"operation\": (\n            \"Apply the same orthogonal-removal projector using u to the fixed \"\n            \"64 alternative channels selected before round 20; restore the \"\n            \"original selected channels to W0.\"\n        ),\n        \"prediction\": (\n            \"Retain fewer than six of the nine reference visual repair \"\n            \"identities. Equal aggregate gain alone will not establish \"\n            \"channel-specific repair.\"\n        ),\n        \"matching_source\": \"/work/mlp15_matched_channel_plan.json\",\n        \"intended_perturbation_norm\": float(\n            np.linalg.norm(parallel26 - original26)\n        ),\n        \"retained_write_norm\": float(np.linalg.norm(parallel26)),\n    },\n    \"limitations\": (\n        \"Single fixed random direction and one previously fixed matched set; \"\n        \"not a randomization significance test. Outcome-selected seen-development \"\n        \"reference identities and unresolved cached-versus-fresh discrepancies.\"\n    ),\n}\nPath(\"/work/r25_r26_specificity_controls_plan.json\").write_text(\n    json.dumps(controls_plan, indent=2)\n)\nnp.savez(\n    \"/work/r25_retained_direction_control.npz\",\n    selected=selected22,\n    reference_direction=direction22,\n    random_direction=random_direction25,\n    signs=signs25,\n    input_coefficients=coefficients25,\n)\nprint(\"PREREGISTERED_SPECIFICITY_CONTROLS\", json.dumps(controls_plan))\n\nmetrics25, absolute25 = stage_columns(\n    \"model.language_model.layers.15.mlp.down_proj.weight\",\n    selected22,\n    retained_random25,\n    \"r25_mlp15_random_retained_direction\",\n    {\n        \"reference\": \"r22_mlp15_orthogonal_component_remove\",\n        \"seed\": seed25,\n        \"direction_cosine\": float(direction22 @ random_direction25),\n        \"intended_retained_write_norm\": float(np.linalg.norm(retained_random25)),\n        \"reference_retained_write_norm\": float(np.linalg.norm(parallel22)),\n        \"construction\": \"Independent reconstruction from W0.\",\n        \"control\": \"Random retained output orientation with fixed input coefficients.\",\n    },\n)\nprint(\"TOTAL_PERTURBATION_NORM_RATIO_TO_R22\",\n      metrics25[\"effective_norm\"] / metrics22[\"effective_norm\"])\n```"
+      },
+      {
+        "turn": 119,
+        "text": "The randomized retained direction has cosine 0.0224 with the nominated direction. Retained-write norms match; total perturbation norm differs by 0.30%. I will commit this control to test whether the retained orientation is necessary for the observed repair pattern.\n\n```forward\n{\n  \"op\": \"commit\",\n  \"parent\": \"c-4792719116ae823897fb02e18cc615ff678f240f7a146749fb9bd97d995d9c1e\",\n  \"rationale\": \"Round 25: random retained-output-direction control for the selected-channel near-ablation, independently reconstructed from W0.\",\n  \"evidence\": {\n    \"failure_behavior\": \"Full selected-column ablation and orthogonal-component removal retained the same nine registered counterfactual-visual repair identities, suggesting the retained direction may not be necessary.\",\n    \"component_hypothesis\": \"Most of this repair pattern may reflect broad suppression of the selected columns rather than their small retained output orientation.\",\n    \"expected_change\": \"Retain at least six of the nine reference visual repairs and positive net counterfactual-visual correctness. Meeting this prediction weakens direction-specific interpretation of round 22.\",\n    \"dose\": \"Replace the original 64 selected layer-15 down-projection columns with v(u^T W0_selected). Fixed coordinate-sign seed 20261110; cosine(u,v)=0.0223573. Retained-write norm 0.1190853 matches round 22. BF16 support 163818, perturbation L2 approximately 2.129881, norm ratio to round 22 approximately 1.002993.\",\n    \"control_plan\": \"Compare with round 22, full ablation round 20, and the already fixed same-projector matched-channel control. Keep input coefficients and column identities fixed here. One random direction is not a randomization significance test; inspect shared repairs and all damages.\",\n    \"contrast_ids\": [\n      \"C-125:counterfact_visual:T1:O1:B0\",\n      \"C-125:counterfact_visual:T1:O0:B0\",\n      \"C-626:counterfact_visual:T0:O1:B0\"\n    ],\n    \"measurement_actions\": [\n      \"turn-0011\",\n      \"turn-0013\",\n      \"turn-0104\",\n      \"turn-0105\"\n    ],\n    \"role\": \"control\"\n  }\n}\n```"
+      },
+      {
+        "turn": 120,
+        "text": "Round 25 is committed. I will evaluate it on the complete development set, testing repair retention and measuring damage under the randomized retained direction.\n\n```forward\n{\n  \"op\": \"evaluate\",\n  \"candidate\": \"c-246fd1db2feabde137f587879fe6c0a287b7a71e85cf2e45ac61f07ca8c40254\"\n}\n```"
+      },
+      {
+        "turn": 121,
+        "text": "Round 25 is complete. I will check whether randomized retention reproduced the reference repairs, then stage the preregistered matched-channel test using the same projector. That test restores the original selected channels to W0.\n\n```python\ncid25, r25 = review_eval(\"turn-0120\", \"r25_mlp15_random_retained_direction\")\nrepairs25 = {x[\"id\"] for x in r25[\"changes\"] if x[\"effect\"] == \"repair\"}\ndamages25 = {x[\"id\"] for x in r25[\"changes\"] if x[\"effect\"] == \"damage\"}\nreference_ids = set(plan22[\"reference_repair_ids\"])\nnet_cv25 = int(r25[\"conditions\"][\"counterfact_visual\"]) - baseline_cv\nprediction25 = {\n    \"retained_reference_repairs\": sorted(reference_ids & repairs25),\n    \"retained_count\": len(reference_ids & repairs25),\n    \"net_counterfact_visual_correctness\": net_cv25,\n    \"criterion_met\": len(reference_ids & repairs25) >= 6 and net_cv25 > 0,\n    \"shared_repairs_with_round22\": sorted(repairs25 & repairs22),\n    \"shared_damages_with_round22\": sorted(damages25 & damages22),\n}\nPath(\"/work/r25_direction_specificity_check.json\").write_text(\n    json.dumps(prediction25, indent=2)\n)\nprint(\"RANDOM_RETAINED_DIRECTION_CHECK\", json.dumps(prediction25))\n\nmatch26 = json.loads(Path(\"/work/mlp15_matched_channel_plan.json\").read_text())\nmetrics26, absolute26 = stage_columns(\n    \"model.language_model.layers.15.mlp.down_proj.weight\",\n    selected26,\n    parallel26,\n    \"r26_mlp15_matched_channel_orthogonal_remove\",\n    {\n        \"reference\": \"r22_mlp15_orthogonal_component_remove\",\n        \"operation\": \"Same projector on the fixed, disjoint 64 matched channels.\",\n        \"construction\": \"Rebuilt from W0; original selected channels restored.\",\n        \"prediction_source\": \"/work/r25_r26_specificity_controls_plan.json\",\n        \"channel_matching\": match26,\n        \"retained_write_norm\": float(np.linalg.norm(parallel26)),\n    },\n)\nprint(\"MATCHED_CHANNEL_PERTURBATION_NORM_RATIO_TO_R22\",\n      metrics26[\"effective_norm\"] / metrics22[\"effective_norm\"])\n```"
+      },
+      {
+        "turn": 122,
+        "text": "Randomized retention reproduced all nine reference repairs and the same +4 net visual gain. The nominated retained direction is therefore not necessary for that pattern in these tests.\n\nThe matched-channel control changes channel identities while preserving the projector; its perturbation norm is 0.34% smaller. I will commit it with the previously fixed prediction.\n\n```forward\n{\n  \"op\": \"commit\",\n  \"parent\": \"c-246fd1db2feabde137f587879fe6c0a287b7a71e85cf2e45ac61f07ca8c40254\",\n  \"rationale\": \"Round 26: same-projector matched-channel control for round 22, using the disjoint channel set fixed before round 20 and independently reconstructing from W0.\",\n  \"evidence\": {\n    \"failure_behavior\": \"The selected-channel near-ablation repairs a reproducible subset of pictured-size errors, but randomized retained orientation reproduces all nine reference repairs, undermining output-direction specificity.\",\n    \"component_hypothesis\": \"The original selected channel identities may contribute to the particular repair pattern even though the retained output orientation is not necessary.\",\n    \"expected_change\": \"Retain fewer than six of the nine reference visual repair identities, as registered before round-25 evaluation. Aggregate gain alone will not establish channel specificity.\",\n    \"dose\": \"Apply W_selected = u(u^T W0_selected) to 64 disjoint matched alternative channels. BF16 support 163832; effective L2 approximately 2.116384; norm ratio to round 22 approximately 0.9966375. Original selected channels and all other weights are W0.\",\n    \"control_plan\": \"Compare with round 22 and matched full ablation round 21. The fixed matching used weight norm, activation RMS and signed mean/RMS; median weight-norm ratio 0.998926 and activation-RMS ratio 0.967735. Report mismatches, all repair/damage identities, and shared focal repairs. One matched set does not establish population-level specificity.\",\n    \"contrast_ids\": [\n      \"C-125:counterfact_visual:T1:O1:B0\",\n      \"C-125:counterfact_visual:T1:O0:B0\",\n      \"C-626:counterfact_visual:T0:O1:B0\"\n    ],\n    \"measurement_actions\": [\n      \"turn-0011\",\n      \"turn-0013\",\n      \"turn-0104\",\n      \"turn-0105\"\n    ],\n    \"role\": \"control\"\n  }\n}\n```"
+      },
+      {
+        "turn": 123,
+        "text": "Round 26 is committed. I will run full-development evaluation to test whether the matched alternative channels reproduce the selected set’s repair identities or produce a different trade-off.\n\n```forward\n{\n  \"op\": \"evaluate\",\n  \"candidate\": \"c-006b4912e8447781a5c96725e3e95951f6dcf14783af6b54cd8f33b0af82e46c\"\n}\n```"
+      }
+    ],
+    "process": "45613 01:06:50 /opt/anaconda3/bin/python -u /Users/ruizhixu/Documents/ChatGPT/acupuncture/experiments/wsp-vlm-gemma3-v9-quota-recovery-2026-11-06/resume_C_r2.py --task C\n",
+    "latest_receipt": {
+      "turn": 123,
+      "billing": "existing_chatgpt",
+      "cost_is_reservation_not_invoice": true,
+      "cumulative_tokens": 19468769,
+      "elapsed_seconds": 16.09575554204639,
+      "monetary_cost_unknown": true,
+      "reserved_usd": 0.0,
+      "thread": "01a1aef4-3987-7b91-8771-d353858cfe77",
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 18322048,
+        "input_tokens": 19385004,
+        "output_tokens": 83765,
+        "reasoning_output_tokens": 33979
+      },
+      "usage_delta": {
+        "cached_input_tokens": 224768,
+        "input_tokens": 227674,
+        "output_tokens": 97
+      },
+      "usage_mode": "thread_cumulative"
+    },
+    "recent_evaluations": [
+      {
+        "id": "turn-0090",
+        "op": "evaluate",
+        "complete": true,
+        "failed": false,
+        "nested_failed": null,
+        "elapsed": 224.13374056480825,
+        "mtime": 1793944927.9264307,
+        "rounds": 18
+      },
+      {
+        "id": "turn-0093",
+        "op": "evaluate",
+        "complete": true,
+        "failed": false,
+        "nested_failed": null,
+        "elapsed": 272.9732958190143,
+        "mtime": 1793945304.225198,
+        "rounds": 19
+      },
+      {
+        "id": "turn-0096",
+        "op": "evaluate",
+        "complete": true,
+        "failed": false,
+        "nested_failed": null,
+        "elapsed": 265.5423939861357,
+        "mtime": 1793945673.2538571,
+        "rounds": 20
+      },
+      {
+        "id": "turn-0101",
+        "op": "evaluate",
+        "complete": true,
+        "failed": false,
+        "nested_failed": null,
+        "elapsed": 663.7826144769788,
+        "mtime": 1793957376.067324,
+        "rounds": 21
+      },
+      {
+        "id": "turn-0109",
+        "op": "evaluate",
+        "complete": true,
+        "failed": false,
+        "nested_failed": null,
+        "elapsed": 418.6805833540857,
+        "mtime": 1793958645.5166643,
+        "rounds": 22
+      },
+      {
+        "id": "turn-0113",
+        "op": "evaluate",
+        "complete": true,
+        "failed": false,
+        "nested_failed": null,
+        "elapsed": 275.23825909383595,
+        "mtime": 1793959144.7592483,
+        "rounds": 23
+      },
+      {
+        "id": "turn-0116",
+        "op": "evaluate",
+        "complete": true,
+        "failed": false,
+        "nested_failed": null,
+        "elapsed": 217.70849558152258,
+        "mtime": 1793959469.6511807,
+        "rounds": 24
+      },
+      {
+        "id": "turn-0120",
+        "op": "evaluate",
+        "complete": true,
+        "failed": false,
+        "nested_failed": null,
+        "elapsed": 359.0595284290612,
+        "mtime": 1793960124.2650867,
+        "rounds": 25
+      }
+    ],
+    "cycles": [
+      376.29876732826233,
+      369.0286591053009,
+      11702.813466787338,
+      1269.4493403434753,
+      499.24258399009705,
+      324.8919324874878,
+      654.6139059066772
+    ]
+  }
+}

@@ -1,0 +1,100 @@
+Augmentation retained none of the nine reference repairs and changed counterfactual-visual correctness by −1, supporting sign sensitivity for this selected pattern—not a general “size circuit.”
+
+Next I will randomize the small retained output direction while preserving its coefficients and norm. Because full ablation also retained all nine repairs, I predict this control will retain at least six. I will also fix the same-operation, matched-channel control before either result.
+
+```python
+seed25 = 20261110
+rng25 = np.random.default_rng(seed25)
+signs25 = rng25.choice(np.array([-1.0, 1.0], dtype=np.float32),
+                       size=direction22.shape)
+random_direction25 = direction22 * signs25
+random_direction25 /= np.linalg.norm(random_direction25)
+coefficients25 = direction22 @ original22
+retained_random25 = np.outer(random_direction25, coefficients25)
+
+with np.load(
+    "/work/r21_mlp15_matched_channel_ablation_edit.npz",
+    allow_pickle=False
+) as z:
+    selected26 = z["selected"].astype(np.int64)
+    original26 = z["original_columns"].astype(np.float32)
+assert len(selected26) == 64
+assert not np.intersect1d(selected22, selected26).size
+parallel26 = np.outer(direction22, direction22 @ original26)
+
+controls_plan = {
+    "reference": "r22_mlp15_orthogonal_component_remove",
+    "reference_repair_ids": plan22["reference_repair_ids"],
+    "random_retained_direction": {
+        "label": "r25_mlp15_random_retained_direction",
+        "seed": seed25,
+        "operation": (
+            "Replace the same 64 original columns by v(u^T W0_selected), "
+            "where v is a fixed random coordinate-sign version of u."
+        ),
+        "prediction": (
+            "Retain at least six of the nine reference visual repairs and "
+            "positive net counterfactual-visual correctness. Meeting this "
+            "prediction would weaken a special role for the retained direction."
+        ),
+        "matching": (
+            "Same columns, input coefficients, and intended retained-write "
+            "norm. Total perturbation norm is measured, not assumed identical."
+        ),
+        "direction_cosine": float(direction22 @ random_direction25),
+    },
+    "matched_channels": {
+        "label": "r26_mlp15_matched_channel_orthogonal_remove",
+        "operation": (
+            "Apply the same orthogonal-removal projector using u to the fixed "
+            "64 alternative channels selected before round 20; restore the "
+            "original selected channels to W0."
+        ),
+        "prediction": (
+            "Retain fewer than six of the nine reference visual repair "
+            "identities. Equal aggregate gain alone will not establish "
+            "channel-specific repair."
+        ),
+        "matching_source": "/work/mlp15_matched_channel_plan.json",
+        "intended_perturbation_norm": float(
+            np.linalg.norm(parallel26 - original26)
+        ),
+        "retained_write_norm": float(np.linalg.norm(parallel26)),
+    },
+    "limitations": (
+        "Single fixed random direction and one previously fixed matched set; "
+        "not a randomization significance test. Outcome-selected seen-development "
+        "reference identities and unresolved cached-versus-fresh discrepancies."
+    ),
+}
+Path("/work/r25_r26_specificity_controls_plan.json").write_text(
+    json.dumps(controls_plan, indent=2)
+)
+np.savez(
+    "/work/r25_retained_direction_control.npz",
+    selected=selected22,
+    reference_direction=direction22,
+    random_direction=random_direction25,
+    signs=signs25,
+    input_coefficients=coefficients25,
+)
+print("PREREGISTERED_SPECIFICITY_CONTROLS", json.dumps(controls_plan))
+
+metrics25, absolute25 = stage_columns(
+    "model.language_model.layers.15.mlp.down_proj.weight",
+    selected22,
+    retained_random25,
+    "r25_mlp15_random_retained_direction",
+    {
+        "reference": "r22_mlp15_orthogonal_component_remove",
+        "seed": seed25,
+        "direction_cosine": float(direction22 @ random_direction25),
+        "intended_retained_write_norm": float(np.linalg.norm(retained_random25)),
+        "reference_retained_write_norm": float(np.linalg.norm(parallel22)),
+        "construction": "Independent reconstruction from W0.",
+        "control": "Random retained output orientation with fixed input coefficients.",
+    },
+)
+print("TOTAL_PERTURBATION_NORM_RATIO_TO_R22",
+      metrics25["effective_norm"] / metrics22["effective_norm"])
+```

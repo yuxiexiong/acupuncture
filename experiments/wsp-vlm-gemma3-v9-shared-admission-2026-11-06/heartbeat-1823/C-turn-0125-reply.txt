@@ -1,0 +1,37 @@
+Matched channels retained only two reference repairs but achieved the same +4 net visual gain, so the selected set is not uniquely effective.
+
+Within the selected set, three channels account for 51.4% of summed individual write energy. A shared mean-input component leaves only 3.5% residual write energy on the 96 captured prompts. Before testing those decompositions, I will audit normalization: predicted \(\Delta W a\) should match the measured pre-normalization change up to numerical error, but need not match residual-stream scale.
+
+```forward
+{
+  "op": "diagnose",
+  "candidate": "w0-a8a8df63cbfe2a4bfa07bf8ace8660b3758297bf43daf2025fe2f98cb562fc5f",
+  "ids": [
+    "C-053:counterfact_visual:T1:O0:B0",
+    "C-053:counterfact_visual:T1:O1:B0",
+    "C-125:counterfact_visual:T1:O1:B0",
+    "C-288:counterfact_visual:T1:O0:B0",
+    "C-288:counterfact_visual:T1:O1:B0",
+    "C-455:counterfact_visual:T1:O0:B0",
+    "C-479:counterfact_visual:T1:O1:B0"
+  ],
+  "spec": {
+    "layers": [15],
+    "token_positions": [290],
+    "capture": [
+      {
+        "module": "model.language_model.layers.15.post_feedforward_layernorm",
+        "where": "input",
+        "path": [0],
+        "token_positions": [290]
+      },
+      {
+        "module": "model.language_model.layers.15.post_feedforward_layernorm",
+        "where": "output",
+        "path": [],
+        "token_positions": [290]
+      }
+    ]
+  }
+}
+```
