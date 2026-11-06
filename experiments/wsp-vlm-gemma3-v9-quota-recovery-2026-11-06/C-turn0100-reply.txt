@@ -1,0 +1,24 @@
+I’ll verify candidate 21’s preserved commit before evaluating it. I will not replay turn 99 or count candidate 21 as complete; failed-call usage remains unknown pending reconciliation.
+
+```python
+import json
+from pathlib import Path
+import numpy as np
+
+a98 = json.loads((Path(ARTIFACTS) / "turn-0098.json").read_text())
+manifest21 = a98["value"]
+expected21 = "c-5c85854a703c36d010d3eba22aae73665efa7bf769b53d8857afdcf0e5d33adb"
+assert manifest21["id"] == expected21
+assert manifest21["changed_scalars"] == 163840
+print("PRESERVED_CANDIDATE_21_MANIFEST", json.dumps(manifest21, indent=2))
+for filename in [
+    "evaluation_ledger.json",
+    "r20_mlp15_selected_channel_ablation_evaluation_review.json",
+    "r21_mlp15_matched_channel_ablation_metrics.json",
+    "mlp15_matched_channel_plan.json",
+    "mlp_L15_projection_plan.npz"
+]:
+    path = Path("/work") / filename
+    print("PRESERVED_FILE", filename, "exists", path.exists())
+print("RECOVERY_NOTE: turn 99 had no confirmed remote action; failed-call researcher usage is unknown, not zero.")
+```
