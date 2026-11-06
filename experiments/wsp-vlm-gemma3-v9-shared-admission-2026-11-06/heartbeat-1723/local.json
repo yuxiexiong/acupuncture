@@ -1,0 +1,272 @@
+{
+  "B": {
+    "status": {
+      "error": "RuntimeError('Researcher failed/uncertain; no automatic paid retry')",
+      "pid": 57718,
+      "stage": "failed",
+      "time_unix": 1793945766.790303
+    },
+    "astra_elapsed": 0,
+    "ops": {},
+    "tool_wait": 0,
+    "start_turn": 155,
+    "replies": [],
+    "process": "",
+    "latest_receipt": {
+      "turn": 154,
+      "billing": "existing_chatgpt",
+      "cost_is_reservation_not_invoice": true,
+      "cumulative_tokens": 25903845,
+      "elapsed_seconds": 52.531157374964096,
+      "monetary_cost_unknown": true,
+      "reserved_usd": 0.0,
+      "thread": "01a1aeef-627e-7242-8c95-75a7018058bd",
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 24434048,
+        "input_tokens": 25784321,
+        "output_tokens": 119524,
+        "reasoning_output_tokens": 56307
+      },
+      "usage_delta": {
+        "cached_input_tokens": 204160,
+        "input_tokens": 213149,
+        "output_tokens": 1586
+      },
+      "usage_mode": "thread_cumulative"
+    },
+    "recent_evaluations": [
+      {
+        "id": "turn-0120",
+        "op": "evaluate",
+        "complete": true,
+        "failed": false,
+        "nested_failed": null,
+        "elapsed": 54.518084520474076,
+        "mtime": 1793943333.794005,
+        "rounds": 23
+      },
+      {
+        "id": "turn-0123",
+        "op": "evaluate",
+        "complete": true,
+        "failed": false,
+        "nested_failed": null,
+        "elapsed": 101.02484510280192,
+        "mtime": 1793943520.648866,
+        "rounds": 24
+      },
+      {
+        "id": "turn-0126",
+        "op": "evaluate",
+        "complete": true,
+        "failed": false,
+        "nested_failed": null,
+        "elapsed": 78.61327549256384,
+        "mtime": 1793944023.65357,
+        "rounds": 25
+      },
+      {
+        "id": "turn-0136",
+        "op": "evaluate",
+        "complete": true,
+        "failed": false,
+        "nested_failed": null,
+        "elapsed": 102.10451370291412,
+        "mtime": 1793944544.6705556,
+        "rounds": 26
+      },
+      {
+        "id": "turn-0139",
+        "op": "evaluate",
+        "complete": true,
+        "failed": false,
+        "nested_failed": null,
+        "elapsed": 53.79709642380476,
+        "mtime": 1793944673.7975354,
+        "rounds": 27
+      },
+      {
+        "id": "turn-0144",
+        "op": "evaluate",
+        "complete": true,
+        "failed": false,
+        "nested_failed": null,
+        "elapsed": 100.67317513003945,
+        "mtime": 1793945207.8477209,
+        "rounds": 28
+      },
+      {
+        "id": "turn-0147",
+        "op": "evaluate",
+        "complete": true,
+        "failed": false,
+        "nested_failed": null,
+        "elapsed": 62.787551302462816,
+        "mtime": 1793945347.188857,
+        "rounds": 29
+      },
+      {
+        "id": "turn-0150",
+        "op": "evaluate",
+        "complete": true,
+        "failed": false,
+        "nested_failed": null,
+        "elapsed": 100.16808940842748,
+        "mtime": 1793945519.6445017,
+        "rounds": 30
+      }
+    ],
+    "cycles": [
+      186.85486102104187,
+      503.0047039985657,
+      521.0169856548309,
+      129.12697982788086,
+      534.0501854419708,
+      139.3411362171173,
+      172.45564460754395
+    ]
+  },
+  "C": {
+    "status": {
+      "broker_pid": 2386898,
+      "pid": 45613,
+      "resumed_at": 20,
+      "stage": "running",
+      "thread": "01a1aef4-3987-7b91-8771-d353858cfe77",
+      "time_unix": 1793956646.315157,
+      "total_target": 30
+    },
+    "astra_elapsed": 53.04709641588852,
+    "ops": {
+      "python": 7.155361397191882
+    },
+    "tool_wait": 2.5962455440312624,
+    "start_turn": 100,
+    "replies": [
+      {
+        "turn": 100,
+        "text": "I’ll verify candidate 21’s preserved commit before evaluating it. I will not replay turn 99 or count candidate 21 as complete; failed-call usage remains unknown pending reconciliation.\n\n```python\nimport json\nfrom pathlib import Path\nimport numpy as np\n\na98 = json.loads((Path(ARTIFACTS) / \"turn-0098.json\").read_text())\nmanifest21 = a98[\"value\"]\nexpected21 = \"c-5c85854a703c36d010d3eba22aae73665efa7bf769b53d8857afdcf0e5d33adb\"\nassert manifest21[\"id\"] == expected21\nassert manifest21[\"changed_scalars\"] == 163840\nprint(\"PRESERVED_CANDIDATE_21_MANIFEST\", json.dumps(manifest21, indent=2))\nfor filename in [\n    \"evaluation_ledger.json\",\n    \"r20_mlp15_selected_channel_ablation_evaluation_review.json\",\n    \"r21_mlp15_matched_channel_ablation_metrics.json\",\n    \"mlp15_matched_channel_plan.json\",\n    \"mlp_L15_projection_plan.npz\"\n]:\n    path = Path(\"/work\") / filename\n    print(\"PRESERVED_FILE\", filename, \"exists\", path.exists())\nprint(\"RECOVERY_NOTE: turn 99 had no confirmed remote action; failed-call researcher usage is unknown, not zero.\")\n```"
+      },
+      {
+        "turn": 101,
+        "text": "The manifest confirms candidate 21 is committed and still unevaluated. The receipt retains 20 completed candidates and unchanged target-inference totals; it does not resolve failed-call researcher usage. I’ll now evaluate candidate 21 once.\n\n```forward\n{\"op\":\"evaluate\",\"candidate\":\"c-5c85854a703c36d010d3eba22aae73665efa7bf769b53d8857afdcf0e5d33adb\"}\n```"
+      }
+    ],
+    "process": "45613 06:38 /opt/anaconda3/bin/python -u /Users/ruizhixu/Documents/ChatGPT/acupuncture/experiments/wsp-vlm-gemma3-v9-quota-recovery-2026-11-06/resume_C_r2.py --task C\n",
+    "latest_receipt": {
+      "turn": 101,
+      "billing": "existing_chatgpt",
+      "cost_is_reservation_not_invoice": true,
+      "cumulative_tokens": 15202914,
+      "elapsed_seconds": 16.717515707947314,
+      "monetary_cost_unknown": true,
+      "reserved_usd": 0.0,
+      "thread": "01a1aef4-3987-7b91-8771-d353858cfe77",
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 14324096,
+        "input_tokens": 15141935,
+        "output_tokens": 60979,
+        "reasoning_output_tokens": 24381
+      },
+      "usage_delta": {
+        "cached_input_tokens": 202112,
+        "input_tokens": 204713,
+        "output_tokens": 142
+      },
+      "usage_mode": "thread_cumulative"
+    },
+    "recent_evaluations": [
+      {
+        "id": "turn-0072",
+        "op": "evaluate",
+        "complete": true,
+        "failed": false,
+        "nested_failed": null,
+        "elapsed": 265.41178306750953,
+        "mtime": 1793942894.1792753,
+        "rounds": 13
+      },
+      {
+        "id": "turn-0075",
+        "op": "evaluate",
+        "complete": true,
+        "failed": false,
+        "nested_failed": null,
+        "elapsed": 243.52270387671888,
+        "mtime": 1793943246.4896684,
+        "rounds": 14
+      },
+      {
+        "id": "turn-0078",
+        "op": "evaluate",
+        "complete": true,
+        "failed": false,
+        "nested_failed": null,
+        "elapsed": 264.60158815421164,
+        "mtime": 1793943621.8584154,
+        "rounds": 15
+      },
+      {
+        "id": "turn-0082",
+        "op": "evaluate",
+        "complete": true,
+        "failed": false,
+        "nested_failed": null,
+        "elapsed": 240.45132577046752,
+        "mtime": 1793943998.4411838,
+        "rounds": 16
+      },
+      {
+        "id": "turn-0087",
+        "op": "evaluate",
+        "complete": true,
+        "failed": false,
+        "nested_failed": null,
+        "elapsed": 265.8626196999103,
+        "mtime": 1793944621.459733,
+        "rounds": 17
+      },
+      {
+        "id": "turn-0090",
+        "op": "evaluate",
+        "complete": true,
+        "failed": false,
+        "nested_failed": null,
+        "elapsed": 224.13374056480825,
+        "mtime": 1793944927.9264307,
+        "rounds": 18
+      },
+      {
+        "id": "turn-0093",
+        "op": "evaluate",
+        "complete": true,
+        "failed": false,
+        "nested_failed": null,
+        "elapsed": 272.9732958190143,
+        "mtime": 1793945304.225198,
+        "rounds": 19
+      },
+      {
+        "id": "turn-0096",
+        "op": "evaluate",
+        "complete": true,
+        "failed": false,
+        "nested_failed": null,
+        "elapsed": 265.5423939861357,
+        "mtime": 1793945673.2538571,
+        "rounds": 20
+      }
+    ],
+    "cycles": [
+      352.3103930950165,
+      375.3687469959259,
+      376.5827684402466,
+      623.0185492038727,
+      306.4666976928711,
+      376.29876732826233,
+      369.0286591053009
+    ]
+  }
+}
