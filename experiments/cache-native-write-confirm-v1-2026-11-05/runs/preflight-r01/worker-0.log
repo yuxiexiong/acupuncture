@@ -1,0 +1,24 @@
+Loading weights:   0%|          | 0/723 [00:00<?, ?it/s]Loading weights:   4%|▍         | 28/723 [00:00<00:02, 262.72it/s]Loading weights:   9%|▉         | 65/723 [00:00<00:02, 310.56it/s]Loading weights:  13%|█▎        | 97/723 [00:00<00:02, 289.02it/s]Loading weights:  19%|█▊        | 134/723 [00:00<00:01, 310.54it/s]Loading weights:  23%|██▎       | 167/723 [00:00<00:01, 316.33it/s]Loading weights:  28%|██▊       | 204/723 [00:00<00:01, 333.03it/s]Loading weights:  33%|███▎      | 241/723 [00:00<00:01, 339.85it/s]Loading weights:  45%|████▌     | 328/723 [00:00<00:00, 502.56it/s]Loading weights: 100%|██████████| 723/723 [00:00<00:00, 804.69it/s]
+[transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
+[transformers] `chunk_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.
+[transformers] `causal_conv1d_update` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
+[transformers] `fused_recurrent_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.
+Traceback (most recent call last):
+  File "/workspace/acupuncture/experiments/cache-native-write-confirm-v1-2026-11-05/nwc_run.py", line 756, in <module>
+    main()
+  File "/workspace/acupuncture/experiments/cache-native-write-confirm-v1-2026-11-05/nwc_run.py", line 748, in main
+    value = run(a.stage, a.worker, a.output, a.authorization)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/acupuncture/experiments/cache-native-write-confirm-v1-2026-11-05/nwc_run.py", line 618, in run
+    receipt['summary'] = execute(engine, stage, output, receipt, units, {'id': gpu, 't0': started, 'n_workers': n_workers})
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/acupuncture/experiments/cache-native-write-confirm-v1-2026-11-05/nwc_run.py", line 548, in execute
+    out = _execute_units(engine, stage, output, receipt, units, gpu, contexts, conds, totals, calib, qctok, vecs, refs, thr, hb, torch)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/acupuncture/experiments/cache-native-write-confirm-v1-2026-11-05/nwc_run.py", line 562, in _execute_units
+    body, tensors = run_item(engine, u, contexts, calib[rid], conds, qctok, output, stage, vecs=vecs, refs=refs)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/acupuncture/experiments/cache-native-write-confirm-v1-2026-11-05/nwc_run.py", line 408, in run_item
+    assert ident <= IDENT_TOL, ('DV + D10 != D00 patch', ident)
+           ^^^^^^^^^^^^^^^^^^
+AssertionError: ('DV + D10 != D00 patch', 0.05386766791343689)

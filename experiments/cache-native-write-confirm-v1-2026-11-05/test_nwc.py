@@ -128,6 +128,7 @@ class Wiring(unittest.TestCase):
         self.assertEqual((len(R.ARMS_F), len(R.ARMS_N), len(R.SEEDS_Q), len(set(R.SEEDS_Q) & set(R.SEEDS_R))), (17, 42, 40, 0))
         self.assertEqual((len(R.SEEDS_R), len(set(R.SEEDS_R) & set(R.N.SEEDS)), len(set(R.SEEDS_Q) & set(R.N.SEEDS))), (10, 0, 0))
         self.assertEqual(tuple(R.RAND), tuple(K.RAND))
+        self.assertEqual((len(R.ARMS_OLD), set(R.ARMS_OLD) - set(R.N.ARMS)), (17, set(R.CONSTRUCTED)))
         self.assertEqual(list(R.conditions()), list(R.DIRS3))
         f = R.LIMITS['formal']
         self.assertEqual(f['c_t2'], 48 * 99 * 3 + 24 * 14 * 3)

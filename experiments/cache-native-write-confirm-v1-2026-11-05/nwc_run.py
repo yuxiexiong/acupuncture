@@ -30,7 +30,7 @@ HERE = Path(__file__).resolve().parent
 S, LVKR = N.S, N.LVKR
 NWR_FORMAL = NWR_DIR / 'runs/formal-r01'
 INPUTS, NWC_LEDGER = HERE / 'data/nwc-inputs-r01.json', HERE / 'data/nwc-tokens-r01.json'
-PLAN_ID = 'NWC-01-NATIVE-WRITE-CONFIRM-r03'
+PLAN_ID = 'NWC-01-NATIVE-WRITE-CONFIRM-r03-fix1'
 DIRS3 = ('N_L00_C4146_D-1', 'N_L00_C1210_D-1', 'R0_L00_D-1')
 MAIN_DIRS = DIRS3[:2]
 BRIDGE_DIR = N.DIR
@@ -44,6 +44,8 @@ BASE_T2 = ('D00', 'E00', 'D10') + RAND
 EXTRA_T2 = ('DV', 'DX', 'D00h', 'DXh', 'D10h') + QN                 # stratum N only
 ARMS_F = ('C', 'L00', 'L10', 'L11') + BASE_T2
 ARMS_N = ARMS_F + EXTRA_T2
+CONSTRUCTED = ('DV', 'DX', 'D00h', 'DXh', 'D10h')
+ARMS_OLD = N.ARMS + CONSTRUCTED                                      # bridge inputs: NWR-01 arms + constructed donors (gate demonstration)
 BRIDGE_ITEMS = ('LVK-H-NA-NQ01-ABC-A', 'LVK-H-NA-NQ02-ABC-B')
 PREFLIGHT_NEW = ('NWC-NQ01-S1-a', 'NWC-NQ01-S1-c')
 PREFLIGHT_ITEMS = BRIDGE_ITEMS + PREFLIGHT_NEW
@@ -56,7 +58,7 @@ ND = len(DIRS3)
 # per-unit upper bounds (window <= 28 tokens per formation; natural trajectories <= 31 further forwards)
 _U = {'N': {'formations': 2 * (1 + ND), 'prefix_prefills': 2, 't1': 1 + 5 * ND, 'refs': 3 * ND, 'c_t2': 99 * ND, 'trajectories': 1 + 41 * ND, 'shadow': 84 * ND},
       'F': {'formations': 1 + ND, 'prefix_prefills': 1, 't1': 1 + 3 * ND, 'refs': 3 * ND, 'c_t2': 14 * ND, 'trajectories': 1 + 16 * ND, 'shadow': 56 * ND},
-      'old': {'formations': 2, 'prefix_prefills': 1, 't1': 4, 'refs': 3, 'c_t2': 9, 'trajectories': 12, 'shadow': 56},
+      'old': {'formations': 4, 'prefix_prefills': 2, 't1': 6, 'refs': 3, 'c_t2': 14, 'trajectories': 17, 'shadow': 84},
       'self': {'formations': 1 + ND, 'prefix_prefills': 1, 't1': 2 * ND, 'refs': 0, 'c_t2': 0, 'trajectories': 0, 'shadow': 28 * ND}}
 
 
@@ -257,9 +259,11 @@ def run_item(engine, unit, contexts, calib, conds, qctok, output, stage, vecs=No
     stratum = 'old' if old else led['plan']['stratum']
     cuse = {BRIDGE_DIR: conds[BRIDGE_DIR]} if old else dict(conds)
     full = stratum == 'N'
+    ext = full or old                                               # constructed donors (old inputs: gate demonstration only)
     counts = {k: 0 for k in COUNT_KEYS}
     tensors, gates, dirs_out = {}, {}, {}
     nz_total, err_max, ident_max, half_max = 0, 0.0, 0.0, 0.0
+    ident_layers, half_layers = {}, {}
     C, T, info = form_new(engine, led, contexts, calib, cuse, counts)
     hC, hT = comp_sha(C, types, ALLK, 0), {d: comp_sha(T[d], types, ALLK, 0) for d in cuse}
     it, code_tok, n = info['item'], info['code_tokens'], info['n']
@@ -284,7 +288,9 @@ def run_item(engine, unit, contexts, calib, conds, qctok, output, stage, vecs=No
         pled = refs['ledger'][led['plan']['partner_id']]
         assert pled['plan']['base_id'] == led['plan']['base_id'] and pled['plan']['version'] == led['plan']['version'] and pled['plan']['situation'] != led['plan']['situation']
         partner = endpoint_delta(engine, pled, contexts, calib, cuse, counts, vecs, G)
-    selfd = endpoint_delta(engine, led, contexts, calib, cuse, counts, vecs, G) if (full and stage == 'preflight') else None
+    selfd = endpoint_delta(engine, led, contexts, calib, cuse, counts, vecs, G) if (ext and stage == 'preflight') else None
+    if old:
+        partner = selfd                                             # no partner on the old panel: DX is its own endpoint difference
     _, u, sign = ARMS_ALL['Rk']
     for d in cuse:
         arms = {'C': clean}
@@ -326,14 +332,18 @@ def run_item(engine, unit, contexts, calib, conds, qctok, output, stage, vecs=No
         del cap0, cap1, o_
         f32 = lambda nm, l: S1[nm][l].to(torch.float32)   # noqa: E731
         dS = {'D00': {l: f32('L00', l) - f32('L11', l) for l in G}, 'D10': {l: f32('L10', l) - f32('L11', l) for l in G}}
-        if full:
+        if ext:
             dS['DV'] = {l: f32('L00', l) - f32('L10', l) for l in G}
             dS['DX'] = partner[d]
             if selfd is not None:
                 assert all(torch.equal(selfd[d][l], dS['D00'][l]) for l in G), 'endpoint_delta(self) != S1[L00] - S1[L11]'
+            # state-difference identity (holds in every layer): (L00 - L10) + (L10 - L11) == (L00 - L11)
+            sid = max(float((dS['DV'][l] + dS['D10'][l] - dS['D00'][l]).abs().max() / max(1e-30, float(dS['D00'][l].abs().max()))) for l in G)
+            assert sid <= IDENT_TOL, ('state-difference identity', sid)
+            ident_max = max(ident_max, sid)
         xr, cr, recv = x['L11'], c1['L11'], S1['L11']
         reached = xr not in STOP
-        Dcs, pn = {}, {}
+        Dcs, pn, pnl = {}, {}, {}
 
         def m_only(hook):
             _, zc = fwd(engine, copy.deepcopy(cr), fF, n, counts, 'c_t2', hook=hook)
@@ -346,6 +356,7 @@ def run_item(engine, unit, contexts, calib, conds, qctok, output, stage, vecs=No
             M, Mall = margins(zc, it, code_tok, comp)
             st = torch.stack([hk_c.stats[l] for l in G])
             pn[name] = float((st[..., 1] ** 2).sum().sqrt())
+            pnl[name] = (st[..., 1] ** 2).sum(-1).sqrt()                # per-layer patch norm
             if keep:
                 Dcs[name] = torch.stack([hk_c.Dc[l] for l in G])
             rec = {'C': {'M': M, 'M_all': Mall, 't2_sha': F.th(zc)}}
@@ -388,12 +399,25 @@ def run_item(engine, unit, contexts, calib, conds, qctok, output, stage, vecs=No
         for name, seed in (zip(OLD_RAND, OLD_SEEDS_R) if old else zip(RAND, SEEDS_R)):
             t2_arm(name, mk('D00', seed=seed))
         qk, qn = None, None
-        if full:
+        if ext:
             t2_arm('DV', mk('DV'), keep=True)
             t2_arm('DX', mk('DX'), keep=True)
             t2_arm('D00h', mk('D00', scale=0.5))
             t2_arm('DXh', mk('DX', scale=0.5))
             t2_arm('D10h', mk('D10', scale=0.5))
+            # Patch identities hold only where the receiver's q is the same in the compared arms, i.e. in the FIRST G layer: in higher layers each
+            # arm's q responds to that arm's own lower-layer patches.  Gate on the first layer; record the other layers.
+            pl = [float((Dcs['DV'][j] + Dcs['D10'][j] - Dcs['D00'][j]).abs().max() / max(1e-30, float(Dcs['D00'][j].abs().max()))) for j in range(len(G))]
+            assert pl[0] <= IDENT_TOL, ('DV + D10 != D00 patch in the first G layer', pl[0])
+            ident_max = max(ident_max, pl[0])
+            hl = {}
+            for full_, half_ in (('D00', 'D00h'), ('DX', 'DXh'), ('D10', 'D10h')):
+                hv = [abs(float(pnl[half_][j]) - 0.5 * float(pnl[full_][j])) / max(1e-30, 0.5 * float(pnl[full_][j])) for j in range(len(G))]
+                assert hv[0] <= TOL, ('half-amplitude patch in the first G layer', half_, hv[0])
+                half_max = max(half_max, hv[0])
+                hl[half_] = hv
+            ident_layers[d], half_layers[d] = pl, hl
+        if full:
             qk = [t2_arm(f'Q{j + 1}', mk('D10', seed=SEEDS_Q[j])) for j in range(N_QNAT)]
             for j in range(N_QNAT, len(SEEDS_Q)):
                 hk = GHook(model, G, dS['D10'], recv, seed=SEEDS_Q[j])
@@ -404,13 +428,6 @@ def run_item(engine, unit, contexts, calib, conds, qctok, output, stage, vecs=No
                 hk = GHook(model, G, dS['D00'], recv, seed=SEEDS_Q[j])
                 qn.append(margins(m_only(hk), it, code_tok, comp)[0])
                 err_max = max(err_max, max(hk.err.values()))
-            ident = float((Dcs['DV'] + Dcs['D10'] - Dcs['D00']).abs().max() / max(1e-30, float(Dcs['D00'].abs().max())))
-            assert ident <= IDENT_TOL, ('DV + D10 != D00 patch', ident)
-            ident_max = max(ident_max, ident)
-            for full_, half_ in (('D00', 'D00h'), ('DX', 'DXh'), ('D10', 'D10h')):
-                hrel = abs(pn[half_] - 0.5 * pn[full_]) / max(1e-30, 0.5 * pn[full_])
-                assert hrel <= TOL, ('half-amplitude patch', half_, hrel)
-                half_max = max(half_max, hrel)
         tensors[f'patch|D00|{d}'] = Dcs['D00'].to(torch.float16)
         tensors[f'struct|v_rel_diff|{d}'] = torch.tensor([struct[str(l)]['v_rel_diff'] for l in G])
         for name in c1:
@@ -424,7 +441,7 @@ def run_item(engine, unit, contexts, calib, conds, qctok, output, stage, vecs=No
                 assert a_['N']['ids'] == b_['N']['ids'] and a_['N']['termination'] == b_['N']['termination'], ('natural != NWR', name)
                 if 'C' in b_:
                     assert a_['C']['t2_sha'] == b_['C']['t2_sha'] and a_['C']['M'] == b_['C']['M'], ('C route t2 != NWR', name)
-        assert set(arms) == set(ARMS_N if full else (N.ARMS if old else ARMS_F))
+        assert set(arms) == set(ARMS_N if full else (ARMS_OLD if old else ARMS_F))
         dirs_out[d] = {'x': x, 'reached_t2': reached, 'arms': arms, 'structure_t1': struct, 'patch_norm': pn, 'M_Qk': qk, 'M_Qn': qn}
         del c1, S1, bT, dS
         torch.cuda.empty_cache()
@@ -433,8 +450,9 @@ def run_item(engine, unit, contexts, calib, conds, qctok, output, stage, vecs=No
     gates['panel'] = 'tokens == frozen ledger (old inputs: LVK ledger); formation hashes recorded'
     gates['hooks'] = 'replicated-order hook with a=b=0 == native t2 (C, N); t2 hook fires once per G layer; receiver state == S1[L11]; t3 onward no hook'
     gates['arithmetic'] = f'patch arithmetic vs FP64 / random-patch norm, max relative error {err_max:.3g} <= {TOL}'
-    gates['identities'] = ('not applicable (stratum without constructed donors)' if not full else
-                           f'DV + D10 == D00 patch, max relative error {ident_max:.3g}; half-amplitude norms, max relative error {half_max:.3g} <= {TOL}; identity tolerance {IDENT_TOL}'
+    gates['identities'] = ('not applicable (stratum without constructed donors)' if not ext else
+                           f'state differences: DV + D10 == D00 in every G layer; patches: DV + D10 == D00 in the first G layer; max relative error {ident_max:.3g} <= {IDENT_TOL}; '
+                           f'half-amplitude patch norm in the first G layer, max relative error {half_max:.3g} <= {TOL}; other layers recorded, not gated'
                            + ('; endpoint_delta(self) == S1[L00] - S1[L11] bit for bit' if selfd is not None else ''))
     gates['structure'] = 't1 kernel inputs L00 vs L10: first G layer q/k/g/beta/S0 bit-equal and v different; S0 bit-equal in every G layer'
     gates['bridge'] = 'NWR-01 record reproduced bit for bit (natural tokens, C-route t2 hash and M, 12 arms)' if old else 'not applicable (new input)'
@@ -443,7 +461,7 @@ def run_item(engine, unit, contexts, calib, conds, qctok, output, stage, vecs=No
             'version': None if old else led['plan']['version'], 'partner_id': None if old else led['plan']['partner_id'],
             'item': it, 'code_tokens': code_tok, 'competitor': comp, 'fF': fF, 'directions': dirs_out, 'formation_hashes': info['hashes'],
             'target_second_token': code_tok[it['target']], 'signed_zero_exceptions': nz_total, 'err_max': err_max, 'ident_max': ident_max,
-            'half_max': half_max, 'seeds_R': list(OLD_SEEDS_R if old else SEEDS_R), 'seeds_Q': list(SEEDS_Q), 'kernel_identity': kernel_identity(), 'calibration': calib,
+            'half_max': half_max, 'ident_layers': ident_layers, 'half_layers': half_layers, 'seeds_R': list(OLD_SEEDS_R if old else SEEDS_R), 'seeds_Q': list(SEEDS_Q), 'kernel_identity': kernel_identity(), 'calibration': calib,
             'counts': counts, 'gates': gates}
     return body, tensors
 
@@ -451,7 +469,7 @@ def run_item(engine, unit, contexts, calib, conds, qctok, output, stage, vecs=No
 # ---------------------------------------------------------------- freeze, authorization, workers
 
 def frozen_paths():
-    own = sorted(HERE.glob('*.py')) + sorted((HERE / 'readiness').glob('*.py')) + [HERE / 'CONTRACT.zh-CN.md', INPUTS, NWC_LEDGER]
+    own = sorted(HERE.glob('*.py')) + sorted((HERE / 'readiness').glob('*.py')) + [HERE / 'CONTRACT.zh-CN.md', HERE / 'DEVIATIONS.zh-CN.md', INPUTS, NWC_LEDGER]
     nwr = [NWR_DIR / 'nwr_run.py', NWR_DIR / 'nwr_core.py', NWR_DIR / 'freeze-r01.json', NWR_FORMAL / 'verification.json']
     nwr += [w / 'receipt.json' for w in sorted(NWR_FORMAL.glob('worker-*')) if w.is_dir()]
     return own + nwr
@@ -649,7 +667,7 @@ def verify_worker(path):
         assert list(rec['directions']) == want and rec['seeds_R'] == list(OLD_SEEDS_R if rec['panel'] == 'old' else SEEDS_R) and rec['seeds_Q'] == list(SEEDS_Q)
         for d in want:
             x = rec['directions'][d]
-            assert set(x['arms']) == set(ARMS_N if rec['stratum'] == 'N' else (N.ARMS if rec['panel'] == 'old' else ARMS_F))
+            assert set(x['arms']) == set(ARMS_N if rec['stratum'] == 'N' else (ARMS_OLD if rec['panel'] == 'old' else ARMS_F))
             assert struct_ok(x['structure_t1'], [int(k) for k in x['structure_t1']])
             assert (x['M_Qk'] is None) == (rec['stratum'] != 'N') and (x['M_Qk'] is None or (len(x['M_Qk']) == len(x['M_Qn']) == len(SEEDS_Q)))
         assert rec['err_max'] <= TOL and rec['ident_max'] <= IDENT_TOL and rec['half_max'] <= TOL
