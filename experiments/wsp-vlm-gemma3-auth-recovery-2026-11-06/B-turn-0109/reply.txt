@@ -1,0 +1,21 @@
+The service selected candidate 24 as the new best; its metrics are truncated here. I’ll inspect the full result and zero-answer tradeoffs, then stage the predeclared candidate 25: zero gain 1.55 with bridge gain 0.90.
+
+```python
+register_evaluation("turn-0108", "zero1.45_visual0.90", show_changes=False)
+report_zero_behavior("zero1.45_visual0.90")
+
+stage_zero_gain(1.55)
+save_edit(
+    bridge_name,
+    ((bridge_original + np.float32(1)) * np.float32(0.90) - np.float32(1)).astype(np.float32)
+)
+active_names.add(bridge_name)
+print("STAGED_COMBINATION", {
+    "number": 25,
+    "zero_gain": 1.55,
+    "bridge_gain": 0.90,
+    "maximum_support": 3712,
+    "all_other_parameters": "W0",
+    "parent": current_id
+})
+```
