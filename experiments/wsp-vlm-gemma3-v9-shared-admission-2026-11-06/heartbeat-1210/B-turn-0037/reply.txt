@@ -1,0 +1,21 @@
+Six full candidates are complete without a selected improvement. I will read the channel-control outcome and test a more specific confound: perhaps the useful-looking signal is generic instruction-following rather than correction of counting. Candidate 7 will substitute the stable-success B1–B0 write direction, keeping the same channels, coefficients, and norm. Prediction: reproducing the repairs would weaken the correction-specific interpretation.
+
+```python
+eval6, pred6, score6 = inspect_evaluation("turn-0036", 6)
+w15 = np.asarray(load_original(
+    "language_model.model.layers.15.mlp.down_proj.weight"), dtype=np.float32)
+prefix_d15 = unit(w15 @ (A[15][st1] - A[15][st0]).mean(0)).astype(np.float32)
+np.savez(work / "round_07_prefix_direction.npz",
+         prefix_direction=prefix_d15, measured_direction=d15,
+         coefficients=q15, channels=j15)
+print("PREFIX versus corrected-direction cosine:", float(prefix_d15 @ d15))
+stage_column_delta(
+    "language_model.model.layers.15.mlp.down_proj.weight",
+    j15, -np.outer(prefix_d15, q15), 7,
+    {"operation": "stable-success instruction-prefix direction control",
+     "commit_parent": eval6["candidate"],
+     "hypothesis": "If generic instruction-following explains the earlier effects, this norm/coefficient-matched prefix direction will reproduce the same repairs; that would weaken correction specificity.",
+     "provenance": "/work/round_07_prefix_direction.npz",
+     "measurement_actions": ["turn-0014"]})
+del w15
+```
