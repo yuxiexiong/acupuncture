@@ -1,0 +1,551 @@
+# 14 七步查重：A4 物体幻觉通路（偏文本的头 / 双通路 / 线性子空间 / 视觉 token 局部化）
+
+日期：2026-11-06。检索截至 2026-11。口径：`00_AUDIT_BRIEF.zh-CN.md`（七步顺序 6 → 5 → 1 → 2 → 3 → 4 → 7，八节输出结构）与 `00_BRIEF.zh-CN.md`（F/A/S 阅读层级）。本文件不给等级、分数或"值得做"的判断。
+
+**阅读层级约定**：F = 取到正文并核对了对应章节或表；A = 取到正文但只读了摘要与局限段；S = 只有检索片段或只在别人的表里见到。逐字英文引文均在下载的正文文本里做过字符串核对（双栏 PDF 用阅读顺序抽取后再核）；个别未做第二次核对或由分工检索者人工拼接的，在文中逐处标出。
+
+**分工说明（决策留痕）**：本候选文献量大，第 5 步（引用链与 OpenReview）、第 1/2 步（抽象阶梯与方法论）、修法六组数字表、评测饱和与评测产物四块由四个并行检索者各自取正文后交回草稿，我对其中承重条目做了抽查核对（19 项，清单见第 8 节）；第 6、3、4、7 步与最接近的 14 篇的精读由我本人完成。凡标"分工读"的条目，我没有通读原文。
+
+**坏消息先说**（事实约束与竞争解释，详见第 4 节）：
+1. 四种以上根因说法在同一模型同一协议下的因果比较或统一**未检出**（对象层；4 条蕴含查询 + 389 条被引标题 + 6 份参考文献表）；最接近的一篇（Role-Break）只把各家说法折算成注意力特征做检测对比，作者自认没有做头级干预。
+2. "头集合"随题型换格式几乎完全重排（LLaVA-1.5-7B：Yes/No 之间 0.82–0.84，换成多选 0.12，换成描述 0.17；Qwen-VL-Chat：0.79 / 0.67 → 0.05 / −0.01）。
+3. "中深层偏文本的头"与"幻觉通路在早层与网络两端"两个定位结论的层位相反，且前者在描述任务上用零消融得到、后者在 Yes/No 上用加噪修补得到，二者没有被对过。
+4. SSL 的"同一方向跨骨干迁移"在正文与公开代码里都没有随机方向对照，且代码是把 LLaVA-NeXT-8b（Llama-3）SAE 的解码行向量原样加进 Vicuna-7B 的残差流，没有任何对齐映射。
+5. 单一静态方向在五个新一代模型上只解释逐部件幻觉信号方差的 45–69%，均值差投影在留出集上不降幻觉。
+6. 评测一侧：对比解码在 POPE 上的收益可由"让模型多答 Yes 的提示"与"把采样退化成贪心"复现；六种推理时修法的 CHAIR 降幅与 recall 降幅相关 r = 0.73，且不迁移到 MMStar。
+7. 结论层已被占的一句："对比解码的收益来自解码行为的改变而不是幻觉抑制"已被写出两次（Mirage，旧模型的 POPE；2607.25196，Qwen2.5-VL-7B 与 InternVL3-8B 的 CHAIR）。对比解码以外的修法家族未检出同类重评（对象层，3 条查询）。
+8. POPE 在新一代模型上已量不出差别（F1 / Acc 85–91，剩余假阳性约一半是标注问题）；描述任务、难负例、属性、多轮上没有饱和，但 CHAIR 的读数主要由 token 上限决定。
+9. OpenReview 审稿讨论一条都没取到（接口返回人机验证，没有绕过）。
+
+**关键问题在哪一节回答**：修法分组与各组最强者——表 2B；收益是评测产物的逐条证据——4.1 的 F7；SSL 跨骨干迁移与"45–69% 方差"——F4 与 F3；头集合随题型变的出处与设定——F1；新一代模型是否饱和与剩余空间——F8；文本 LLM 内部定位与 VLM 结论的关系——F9；作者留下的开口——第 5 节；多种根因说法是否被比较或统一——4.0。
+
+---
+
+## 1. 候选定义
+
+**现象（一句）**：VLM 在图像描述或物体存在性问答里输出图像中没有的物体（CHAIR、POPE、AMBER-existence）。
+
+**根因主张（一句，合并自 03-C7、05-M6 / M9 / M10）**：幻觉物体词的概率主要由语言解码器里少数"偏文本"的部件贡献——中深层注意力头、幻觉通路部件、或一个低维线性方向 / 子空间；与之并列的说法是物体的视觉证据局部化在对应的视觉 token 上，可沿词表方向读出与擦除。
+
+**预期结论（用于第 3 步蕴含检索；是"如果做成了会写下的话"，不是已有结论）**：
+- E1："在 ≥N 个模型族、同一协议下，偏文本头、双通路部件、线性幻觉子空间、视觉 token 词表读出这几种说法定位到的是同一组（或可以分账的几组）部件；按其中一种定位出的部件做干预，能解释其余几种干预效果的 X%。"
+- E2："这组部件在 Yes/No、多选、自由描述三种题型之间、以及模型族之间是稳定的；或者：不稳定，而不稳定由某个具名因素解释。"
+- E3："针对该共用部件的一种干预，在 POPE、CHAIR、AMBER 上同时降低幻觉，不降低 recall / coverage 与一般能力，并且优于随机部件、随机方向与 Yes 偏置对照。"
+
+**本候选接受的检验量**：七步共 89 条查询（各步条数见第 8 节），取到正文 108 篇（F）、只读摘要与局限 55 篇（A）、只有片段或标题的具名约 85 条（S），另有被引扫描标题 389 条。存活不等于强：下面写"未找到"的地方，都只代表在这些查询里未找到。
+
+---
+
+## 2. 竞争者全景表
+
+共 71 个竞争者（定位 / 统一类 17 个，修复类 37 个，基准、评测批评与邻域约束类 17 个；同一工作只计一次，既定位又修复的计入定位类）。先列定位与统一类（表 2A；L1–L10、L12、L13 我本人读正文，L11、L14、L15 只读摘要与局限，L16、L17 由分工检索者读），再列修复类六组（表 2B）与评测类（表 2C）。
+
+### 表 2A 定位、统一与批评类
+
+| # | 工作 | 类型 | 模型族 | 干预类型 | 对照（随机部件 / 随机方向） | 评测稳健性 | 效果数字 | 自认局限（逐字） | 代码 | 层级 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| L1 | Yang et al., *Understanding and Mitigating Hallucination in LVLMs via Modular Attribution and Intervention*（ICLR 2025） | 定位 + 修复 | 归因：LLaVA-1.5-7B（Vicuna）主文、MiniGPT-4 附录；修法另测 Llama-3.2-11B-Vision、LLaVA-1.5-13B、Chameleon-30B、LLaVA-1.6-34B | 推理时（调头的文本注意力）+ 训练（只微调这些头） | 有：注意力缩放实验带 Random Heads 曲线（Fig. 6）；微调随机头 | 只在描述任务（COCO 1,500 张训练图定位，COCO / Nocaps 各 500 张评测，默认 max 128 token）；定位用零消融；**无 POPE**（正文无命中） | MHA 对幻觉词的影响约为 MLP 的 3.5×；取 top-20 头；LLaVA-7B 幻觉率最多降 1.7× | "increasing attention on image tokens has no effect. Importantly, this intervention is effective specifically for hallucination heads"；AD-HH 需显式算注意力权重，"incompatible with memory-efficient mechanisms like FlashAttention"；无单列局限节 | github.com/TianyunYoung/Hallucination-Attribution（200） | F |
+| L2 | *Dual-Pathway Circuits of Object Hallucination in VLMs*（arXiv 2605.13156 v2，2026-10，预印本） | 定位 + 因果验证（自称非修法） | Qwen3-VL-8B、LLaVA-v1.6-7B（Mistral）、Llama-3.2-Vision-11B（交叉注意力）、InternVL3-8B / 14B（Qwen2.5）——3 个语言骨干族、4 种融合方式 | 推理时（逐部件输出缩放 s ∈ {0, 0.25, 0.5, 0.75}） | 有：等量随机部件（5 种子，仅 3 个模型）；均值差投影（仅 3 个模型）与 ITI（5 个模型）作静态方向基线；接地通路置 0 作特异性对照 | **只有 Yes/No**：POPE-adversarial 上定位（n=1,000），留出 400 条评测、100 条选超参；迁移到 POPE 另两 split 与 AMBER 判别题；贪心解码；**无 CHAIR / 无描述任务**；部件粒度是整层的 attention 子层或 MLP 子层，不是头；腐蚀方式是视觉 token 加 3σ 高斯噪声 | 相对幻觉率 −40%（LLaVA-v1.6，5.0→3.0%）至 −76%（Llama-3.2，18.4→4.4%），准确率代价 ≤2pp；ITI 平均 \|ΔH\| 4.1pp、均值差投影 0.8pp、逐部件缩放 7.4pp、随机部件 +3.0pp；AMBER 属性题仅 2/5 个模型有改善 | "does not constitute a deployable mitigation method; designing one under this constraint is a separate engineering problem"；"direct circuit extraction on attribute- and relation-focused benchmarks is a natural next step"；无单列局限节 | github.com/jiaxin26/DualPath-VLM（200） | F（通读含附录） |
+| L3 | AllPath, *Intervene-All-Paths*（arXiv 2511.17254，NeurIPS 2025） | 定位 + 修复 | LLaVA-1.5-7B 主文；Qwen-VL-Chat、Qwen2.5-VL-7B / 72B 附录 | 推理时（按 T2T / I2T 分数选头后缩放） | 未见随机头对照（正文 grep "random heads / randomly select" 无命中） | 换题型：POPE（Yes/No）、MCQ-POPE、CHAIR、MME；**POPE / MCQ-POPE / MME 用 temperature=1 的 nucleus sampling 评测**，CHAIR 用贪心、max 512 | 头排名相关（见第 4 节 F2）；修复数字见表 2B | "we do not investigate what causal pathways are most effective for different types of questions, nor do we explore training strategies that could systematically improve the use of such pathways" | github.com/SooLab/AllPath（200） | F |
+| L4 | *Role-Break in Attention Heads*（arXiv 2607.29412，2026-07，预印本） | 定位（统一视角）+ 检测 | 分析：LLaVA-1.5-7B 与 Qwen3-VL-8B；检测器：另加 MiniGPT-4、InstructBLIP、LLaVA-1.5-13B、Qwen3.5-9B，共 6 个 | 无内部干预；"修复"是探针判为幻觉就翻转 Yes/No 答案 | 置换零分布（1,000 次符号翻转）；头身份 / 通道打乱的结构对照；5 个固定种子 | 两种协议并用：COCO-500 描述（CHAIR 式标注）与 POPE-9000（teacher-forcing Yes / No）；图像不相交划分 | 六种注意力特征（对应 PAI / VCD / HGAI / OPERA 等说法）在统一协议下无一稳定；检测 AUROC 平均 93.23；翻转带来 POPE +2.8 F1、AMBER +7.0 F1 | "our current evidence cannot distinguish whether Role-Break is a cause of hallucination, a downstream response to it, or a partial self-correction attempt by the model, as we have not performed controlled head-level interventions"；"we leave a generative-side intervention to future work" | 未找到 | F |
+| L5 | ProjectAway, *Interpreting and Editing Vision-Language Representations to Mitigate Hallucinations*（arXiv 2410.02762，ICLR 2025） | 定位 + 修复 | LLaVA-1.5、InstructBLIP 主文；LLaVA-NeXT-7B、Cambrian-1-8B（Llama-3）附录 A.5 | 推理时（把图像 token 表示对幻觉物体的文本方向正交化） | 未见"擦随机方向 / 擦随机物体"对照（HTML 正文 grep 无命中） | COCO2014 Karpathy val 5,000 图做检测；500 条含幻觉的训练样本上调超参；只测描述任务；需已知要擦哪个物体（由 internal confidence 阈值检出） | LLaVA 幻觉 −25.7%、InstructBLIP −38.5%（最佳超参）；LLaVA-NeXT CHAIR_S 改善 27.73%、Cambrian-1 28.86% | "The editing approach may struggle with highly abstract or longer sentences that involve attributes or interactions of objects"；多 token 物体词只做近似；属性幻觉只有定性例子 | github.com/nickjiang2378/vl-interp | F |
+| L6 | Nullu / HalluSpace（arXiv 2412.13817，CVPR 2025） | 定位（子空间）+ 修复 | LLaVA-1.5（Vicuna）、MiniGPT-4（Llama-2）、mPLUG-Owl2 | 静态权重（MLP 权重投到 HalluSpace 零空间，rank-4） | 无"投影掉随机子空间"的行为对照；仅有的随机向量比较是在 Nullu 已成功修好的 100 条样本上比投影分量大小（循环） | CHAIR 500 图 × 3 种子、POPE、MME、LLaVA-Bench | 数字见表 2B | "We show that HalluSpaces appear to form a prior closely related to the priors in LLMs causing OH"（依据是把子空间解码到词表，仅 LLaVA-1.5-7B） | github.com/Ziwei-Zheng/Nullu（200） | F |
+| L7 | VTI, *Reducing Hallucinations in VLMs via Latent Space Steering*（arXiv 2410.15778，ICLR 2025） | 修复（带根因主张：视觉特征不稳定） | InstructBLIP、LLaVA-1.5、Qwen-VL | 推理时（视觉编码器全层 + 解码器加固定方向；每个模型用 50 对样本单独估计） | 无随机方向对照（HTML 正文 grep 无命中） | POPE、CHAIR、MMHal；默认 beam search | 数字见表 2B | 无单列局限节 | github.com/shengliu66/VTI | F（方法与对照），数字归表 2B |
+| L8 | SSL, *Steering LVLMs via Sparse Autoencoder*（arXiv 2505.16146，Findings of EMNLP 2025） | 修复（带"方向跨架构迁移"主张） | LLaVA-NeXT-8b（Llama-3，SAE 在此训练）、LLaVA-1.5-7b（Vicuna）、InstructBLIP-7b（Vicuna）；另测 Llama-3.2-11B-Vision | 推理时（视觉 token 加 faithful 方向、生成 token 减 hall 方向，步长按残差范数自适应） | **迁移时无随机方向对照**；仅有的随机对照是同模型内随机 SAE 潜变量做分类（约 0.5）；有反向转向（Reverse-SSL） | CHAIR 500 图 × 5 种子（贪心，max 512）、POPE 三 split 平均 F1、LLaVA-Bench（GPT-4o 评分） | 详见第 4 节 F4 | "our study does not include a comparison of SAEs trained on other model architectures across different multimodal models" | github.com/huazhenglin2003/SSL（200；已读 main.py、utils.py、infer_chair.sh） | F（含代码） |
+| L9 | CRG, *Causal Route Gating*（arXiv 2605.24024，ICML 2026） | 定位（逐头视觉路 / 文本路的因果效应）+ 修复 | LLaVA-1.5-7B、Qwen-VL-Chat、Qwen2.5-VL-7B | 推理时（按一次前向 + 一次梯度估计的路由效应对头做门控） | 未见随机头对照（grep 无命中） | POPE 三 split、CHAIR（max 512，报 Recall 与长度）、MME、MMHal-Bench、AMBER；贪心 | LLaVA-1.5-7B CHAIR_S 52.8 → 34.2 | "CRG is targeted at conflict-mediated hallucinations, and is not expected to correct cases where both visual and textual routes share the same bias, or errors dominated by perception, OCR, or multi-step reasoning failures" | 未找到 | F（摘要、Table 2/3 局部、局限） |
+| L10 | *Where Hallucinations Live: A Cross-Architecture Circuit in VQ-Tokenized VLMs*（arXiv 2609.29048，2026-09，预印本） | 定位（跨架构回路）+ 修复 | **25 个模型、8 个 LLM 族**做激活修补；回路只在 VQ 离散化的统一模型里出现（5 个天然 + 5 个诱导变体），连续投影器模型（LLaVA-1.6、Qwen2.5-VL）被判为不带该回路 | 推理时（第 0 层注意力路由消融）；另有单变量架构替换 + 等计算量 MLP 对照 | 有：等计算量 MLP 对照；留出模型验证；与调过参的 VCD / DoLA 比 | Yes/No（POPE、AMBER）与描述（CHAIR）都测 | VILA-U 上 CHAIR_I 10.3 → 7.1；"tuned DoLA wins on binary calibration, but only L0 ablation reduces object hallucination in open-ended generation" | "the polarity association in Section 4.1 is associational, not causal" | 项目页 shamanthak-hegde.github.io/where-hallucinations-live | F（摘要、引言、贡献、局限） |
+| L11 | *System-Mediated Attention Imbalances Make VLMs Say Yes*（arXiv 2601.12430 v2，2026-04） | 定位（Yes 偏置的系统 token 说法） | 仅 LLaVA 系 | 推理时（模态间注意力权重转移；以零消融为主） | 模态两两转移的对照矩阵 | 7 个基准（POPE、MME 等）；只做单 token Yes/No | 后四分之一层的系统注意力重分配只在 POPE-adversarial 上涨分 | "Our work focusses on LLaVA-based architectures"；"We also restrict our scope to single-token generation in yes/no contexts" | github.com/anisha0325/（正文给出） | A+（摘要、局限、一处结果） |
+| L12 | *Same Attention, Different Truths*（arXiv 2608.07302，CVPR 2026 海报页为检索片段） | 定位（反驳"注意力量"）+ 检测 + 修复 | 分析在 LLaVA-1.5-7B；修法在 LLaVA-1.5-7B / 13B、Shikra-7B、Qwen2-VL-7B | 推理时 | 未核对 | COCO 500 图描述；CHAIR、AMBER | LLaVA-1.5-7B CHAIR_S 49.8 → 26.8（表内 Ours 列，读自打乱的表格文本，层级降为 A） | 无单列局限节 | github.com/wzczc/SADT | F（主张）/ A（数字） |
+| L13 | *Devils in Middle Layers*（arXiv 2411.16724，CVPR 2025） | 定位（中层视觉注意力不活跃）+ 检测 + 修复 | LLaVA-1.5、Shikra、MiniGPT-4 | 推理时（中层头注意力融合） | 未核对 | 描述任务 | 检测 AUROC 至 74%、mAP 至 88%（LLaVA-1.5-7B） | 第 0 层高注意力 "is not consistent across all LVLMs, as Shikra and MiniGPT-4 models fail to exhibit this pattern" | 未核对 | F（定点） |
+| L14 | CAS, *Rethinking Visual Neglect*（arXiv 2605.27993，2026-05，预印本） | 定位（反驳"视觉忽视"）+ 修复 | LLaVA-1.5、Qwen-VL 等（摘要图） | 推理时转向（第 11–14 层） | 未核对 | CHAIR 等 | 未摘录 | "pushing toward more visual reliance may exacerbate hallucinations on some models"；局限：范围主要是物体幻觉 | 未找到 | A |
+| L15 | *Causal Evidence for Attention Head Imbalance in Modality Conflict Hallucination*（arXiv 2605.19250） | 定位（驱动头 / 抵抗头）+ 修复；对象是"提示里的错误前提"，属 A2 邻域 | 5 个开源 MLLM（path patching） | 推理时（检出冲突时才抑制驱动头） | 有随机头对照 | MMMC、SCI-SemanticConflict；**无 POPE / CHAIR**（grep 无命中） | 物体冲突上找到的驱动头消融后属性 / 关系冲突的幻觉也降 | 无单列局限节 | "Code will be made publicly available upon acceptance" | A |
+
+**表 2A 补两行**（第 5 步引用链里找到、读到正文的）
+
+| # | 工作 | 类型 | 模型族 | 干预类型 | 对照 | 评测稳健性 | 效果数字 | 自认局限（逐字） | 代码 | 层级 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| L16 | *Targeting the Attention Heads Behind Object Hallucination in LLaVA*（arXiv 2608.24966，workshop） | 对 Yang 式选头的复核 + 只在选中头上做 LoRA | 仅 LLaVA-1.5-7B | 训练 | 有：逐层匹配的随机头 LoRA；定长 token 预算 | COCO 400 张留出 + 200 张对照；未检出 POPE | CHAIRs 0.370 → 0.230，物体召回 0.78 → 0.70 | "Its CHAIR gains therefore reflect two things at once, genuine hallucination reduction and a general shift toward saying less."；"This study focuses on one model family, one captioning prompt, and COCO-style object annotations." | 未记录 | F（分工读，我核两句） |
+| L17 | *The Evidence Anchoring Boundary*（arXiv 2610.12981） | 定位（视觉表示编辑的有效深度） | LLaVA-1.5-7B / 13B、Qwen2.5-VL-7B、InternVL3.5-8B | 推理时 | 未检出随机 / 等范数对照 | 校准题与评测题不相交 | 边界之前的编辑效应是之后的 13.78–26.10 倍 | "while universal subtraction is neutral or harmful" | 未记录 | F（分工读，我核一句） |
+
+
+### 表 2B 修复类（六组）
+
+口径提醒：同一基线在不同论文里差别极大（LLaVA-1.5-7B greedy 的 CHAIR_S：64 token 约 20，128 token 约 52，512 token 约 45–55；Qwen3-VL-8B：64 token 8.0–8.4，512 token 45.0–51.6，1024 token 51.4），所以下表每格都写明口径，**跨行不比涨幅**。"组内最强"只按单条轴陈述。数字由分工检索者从正文表格摘录（层级见末列），我抽查了其中 5 个数字与 4 句引文，全部对上（清单见第 8 节）。
+
+**第 1 组 解码类**——模型族最多：VCD、DeCo（各 3–4 个，仅到 Qwen-VL 一代）；新一代上有数字的只有 NoLan（Qwen2 / 2.5-VL，仅 POPE-random）；开销最低：DeCo 自报约 1.2×；本组所读各篇里未见"随机对比分支"对照。
+
+| 工作 | 模型族 | 口径与效果 | 开销 | 一般能力 / 在什么条件下失败 | 自认局限（逐字） | 代码 | 层级 |
+|---|---|---|---|---|---|---|---|
+| VCD（2311.16922，CVPR 2024） | LLaVA-1.5、InstructBLIP、Qwen-VL | POPE 27,000 条，**基线是 direct sampling**，5 次运行；LLaVA-1.5 GQA-random Acc 83.73→86.65。自家 Table 7：greedy 基线下只剩 87.10→88.49 | 别人实测 1.8×（DeCo）、2.04×（VISTA）、+95.7%（SPARC） | **以 greedy 为基线时在 CHAIR 上常高于基线**：ILVAD 表 48.6→48.4；VHR 表三个模型都更高（49.68→51.92 等）；Devils 表 53.0→58.6；AllPath 表 52.2→58.2；MESA 表 48.8→56.3；GIFT 表 50.2→52.2 且 POPE F1 82.4→80.9；REVIS 表 Qwen2.5-VL-7B 512 token 31→34；MME 1510.8→1488.5（SID 表）；见第 4 节 F7 | "more fine-grained techniques, like object-level blurring, hold the potential for improved outcomes" | github.com/DAMO-NLP-SG/VCD | F |
+| OPERA（2311.17911，CVPR 2024） | InstructBLIP、MiniGPT-4、LLaVA-1.5、Shikra（全 Vicuna 一代） | CHAIR 500 图，512 与 64 两档；LLaVA-1.5 greedy 45.0 → 44.6（beam 48.8）；Shikra 55.8 → 36.2；POPE 平均 F1 相对 beam 只 +0.4–0.5 | 别人实测 5.1×（DeCo）、+961%（SPARC）、494 s→2643 s（SID） | 输出变短（VHR 表 Len 83.06→75.88）；SPARC 表 CHAIR_S 53.96→55.68 且 recall 降；InstructBLIP beam 37.8→50.2（VISTA 表） | "OPERA demonstrates marginal gains when addressing hallucinations in short answers (< 10 tokens)"；"it can not address all kinds of the hallucinations of MLLMs" | 未在文本核到 | F |
+| DeCo（2410.11779，ICLR 2025） | InstructBLIP、MiniGPT-4、LLaVA-1.5、Qwen-VL | CHAIR 500 图（按逐数相同推断为 512 口径，推导）；LLaVA-1.5 greedy 45.0 → 37.8；POPE F1 82.2 → 86.7；有"随机扰动所选层"对照 | 自报约 1.2× | AMBER Cover 48.9→47.5；GPT-4o detailedness 略降；MM-Snowball 第 5 轮 3.15→3.10 | "we conduct experiments solely on limited MLLMs"；"our method has a little negative impact on the level of detailedness metric" | github.com/zjunlp/DeCo | F |
+| SID（2408.02032，ICLR 2025） | LLaVA-1.5、InstructBLIP、Shikra、LLaVA-NeXT | CHAIR 500 图 × 3 次，512；LLaVA-1.5 greedy 49.6 → 44.2；POPE greedy random Acc 88.8 → 89.3 | 494 s → 668–704 s | 见 Mirage：POPE 上的收益可被"多答 Yes 的提示"复现 | 超参手工设定（future work） | github.com/huofushuo/SID | F |
+| 其余：HALC（2403.00425）、M3ID（2403.14003）、ICD（2403.18715）、AGLA（2406.12718）、NoLan（2602.22144） | 均为 LLaVA-1.5 / InstructBLIP / MiniGPT-4 一代；NoLan 附录有 Qwen2-VL、Qwen2.5-VL（仅 POPE-random，采样基线：Qwen2.5-VL-7B Acc 83.70→88.63） | — | HALC、AGLA 依赖外部模型 | ICD greedy 下 POPE-random 88.8→87.9、MME 1510.8→1473.2（SID 表）；M3ID 在 InstructBLIP 上 CHAIR_S 55.6→72.8、LLaVA-NeXT 33→42（CAAC 表） | M3ID："sometimes M3ID may prevent the generation of objects that are highly likely under the unprompted language prior" | 各自仓库 | F（定点） |
+
+**第 2 组 注意力重分配类**——模型族最多且唯一覆盖 Qwen3 / InternVL3 一代：ILVAD；对照最严：VAR（随机头消融）、SPARC（把 recall 分开报）；开销最低：SPARC（+2.8%）。
+
+| 工作 | 模型族 | 口径与效果 | 开销 | 一般能力 / 在什么条件下失败 | 自认局限（逐字） | 代码 | 层级 |
+|---|---|---|---|---|---|---|---|
+| PAI（2407.21771） | LLaVA-1.5、MiniGPT-4、Shikra | CHAIR 512、500 图；LLaVA greedy 46.6 → 24.8 | 别人实测 +90.2%（SPARC）、2.02×（VISTA） | **recall 与长度掉**：SPARC 表 recall 79.46→72.44；Qwen-VL-Chat 上 CHAIR 43.4→17.2 但长度 98.1→36.8、MCQ-POPE 61.8→57.9（AllPath 表）；InternVL3.5-8B 上 41.4→45.6（SAVAA 表） | "When γ is too large, it can lead to uncontrollable model behavior." | 未找到 | F |
+| VAR（2503.03321，ICLR 2025） | LLaVA-1.5 7B/13B/HD、VILA-13B、Qwen2-VL-7B、InternVL2-8B | CHAIR：LLaVA-1.5-7B 45.0 → 43.2；Qwen2-VL-7B 30.5 → 30.1；InternVL2-8B 32.4 → 31.8；有随机头消融对照 | 未找到 | ILVAD 复测 LLaVA-1.5-7B 48.6 → 52.5（升高）；GIFT 表 54.0（基线 50.2） | "it is still worth exploring our methodology on different and larger LMMs" | 未找到 | F |
+| ILVAD（2605.20965，2026） | LLaVA-1.5、LLaVA-NeXT、Qwen2-VL、**Qwen3-VL-8B、InternVL3-8B**；附录 Qwen2.5-VL、Qwen3.5-9B、GLM-4.1V | CHAIR 512、greedy、3 组 × 500 图、报长度：LLaVA-1.5 48.6 → 32.6；Qwen3-VL-8B 51.6 → 45.2（长度 316.58 词）；InternVL3-8B 21.2 → 16.8；POPE Acc：Qwen3-VL-8B 89.19 → 89.80，InternVL3-8B 88.16 → 88.31 | 自称几乎无开销（无数字） | 新一代上 POPE 只涨 0.15–0.6；MME Count 158.33→153.33；无随机部件对照 | 未检到局限节 | github.com/ytx-ML/ILVAD | F |
+| SPARC（2502.01419） | LLaVA-1.5、LLaVA-NeXT、Qwen2-VL | 主指标 CLAIR（长描述）：LLaVA-1.5 IIW-400 56.36 → 61.49；Qwen2-VL 78.34 → 79.70；CHAIR 带 recall：53.96 → 51.52、recall 79.46 → 79.98 | 30.37 → 31.21 ms/token | ILVAD 复测 CHAIR_S 48.6 → 48.9 | 逐字："these methods significantly reduce model recall"（指别人） | github.com/mingi000508/SPARC | F |
+| Devils（2411.16724，CVPR 2025） | LLaVA-1.5 7B/13B、Shikra、MiniGPT-4 | CHAIR 512 greedy：53.0 → 25.0（F1 76.7 → 76.1） | — | α 从 0.5 调到 0.6 时 CHAIR_S 1.0、F1 49.3（描述塌缩）；LLaVA-1.5-13B 上 POPE Acc 82.6→71.4（HAVAE 表） | "identifying the specific range of these stages remains somewhat subjective." | github.com/ZhangqiJiang07/middle_layers_indicating_hallucinations | F（定点） |
+| TARAC（2504.04099） | LLaVA-1.5、Qwen2-VL、InternVL2 | LLaVA-1.5 45.4 → 30.0，recall 77.5 → 72.0 | 约 +4% | **AMBER：Qwen2-VL CHAIR 5.2→4.1 而 Cover 67.0→53.3；InternVL2 CHAIR 8.5→8.5 不变、Cover 73.4→70.4** | "A current limitation is the reliance on fixed hyperparameters." | 未找到 | F（定点） |
+| CAAC（2505.21472）、FarSight（2505.16652） | LLaVA-1.5 / NeXT、InstructBLIP；FarSight 含 Video-LLaVA | CAAC：LLaVA-1.5 55.2 → 39.2；FarSight：48.0 → 41.6 | — | CAAC 明写别的方法 "under Max New Tokens of 512" 失效 | — | github.com/mehrdadfazli/CAAC | F（定点） |
+
+**第 3 组 头消融或缩放类**——模型族最多：Yang（附录到 Llama-3.2-Vision、Chameleon-30B、LLaVA-1.6-34B）、SPIN（到 Qwen2.5-VL-7B）、Dual-Pathway（表 2A-L2）；对照最严：Dual-Pathway（随机部件 + 静态方向 + 接地通路特异性 + 留出集）、Yang（随机头）。
+
+| 工作 | 模型族 | 口径与效果 | 开销 | 一般能力 / 在什么条件下失败 | 自认局限（逐字） | 代码 | 层级 |
+|---|---|---|---|---|---|---|---|
+| AD-HH / TF-HH（Yang，表 2A-L1） | LLaVA-1.5-7B、MiniGPT-4；AD-HH 另测 4 个更大或更新的模型 | CHAIR **128 token**、greedy：LLaVA-7B 51.8 → 29.6（AD-HH）/ 35.0（TF-HH）；Llama-3.2-11B-Vision 28.4 → 22.6；Chameleon-30B 38.0 → 34.8（CHAIR_I 12.6 → 12.5）；微调随机头 54.4、全参数微调 56.3 | 未给数字 | **Yes/No 上无增益**：AllPath 表 POPE-random Acc 85.1 → 85.0；人工评测生成质量 3.99 → 3.85；Nocaps BLEU 24.6 → 23.1 | 需显式注意力权重，与 FlashAttention 不兼容 | 见表 2A | F |
+| SPIN（2505.16411） | LLaVA-1.5 7B/13B、MiniGPT-4、Shikra、Qwen-VL；附录 LLaVA-NeXT、**Qwen2.5-VL-7B** | CHAIR 500 图、报 F1：LLaVA-1.5-7B 44.4 → 26.4（F1 77.8 → 77.6）或 16.6（F1 74.6）；Qwen2.5-VL-7B 34.8 → 28.6（F1 75.7 → 74.0） | 相对基线未给 | 采样解码下减弱（MiniGPT-4 nucleus F1 66.4→62.9）；Qwen2.5-VL-7B MME 认知 590.7→552.5；Detailedness 6.83→6.12；无随机头对照 | "Our method's effectiveness is somewhat reduced when paired with sampling-based decoding strategies (e.g., nucleus sampling)." | 未找到 URL | F |
+| VHR（2412.13949） | InstructBLIP、LLaVA-1.5、LLaVA-NeXT | CHAIR 512、5 个随机划分均值 ± 标准差、报长度：LLaVA-1.5 49.68 ± 1.47 → 33.32 ± 1.31；POPE F1 +0.2–0.5 | 自称可忽略 | 加强过多层降质；无随机头对照；无 Qwen2 之后的模型 | "there may be other architectural factors—such as those in the vision encoder and the FFN module in the LLMs—that contribute to hallucinations but were not directly addressed in this study." | github.com/jinghan1he/VHR | F |
+| AllPath（表 2A-L3） | LLaVA-1.5-7B、Qwen-VL-Chat；附录 Qwen2.5-VL-7B / 72B（仅 POPE） | POPE（**nucleus sampling，temperature 1**）random Acc 85.1 → 87.2；MCQ-POPE 72.8 → 80.5；CHAIR 512 greedy 52.2 → 26.6；Qwen2.5-VL-7B POPE-random 87.6 → 90.6 | 单次前向 | Qwen2.5-VL-72B adversarial 85.6 → 85.7；新模型无 CHAIR | 见表 2A | 见表 2A | F |
+| HAVAE（2605.10622） | LLaVA-1.5 7B/13B、MiniGPT-4、Shikra、Qwen2-VL | CHAIR 512、报 F1：LLaVA-1.5-7B 48.2 → 18.2（F1 76.4 → 76.7）；Qwen2-VL 27.6 → 22.8 | 自称无 | Shikra F1 75.4→71.8；无随机头对照 | "its mechanistic origin remains to be fully elucidated" | github.com/lab-klc/HAVAE | F（定点） |
+| CRG（表 2A-L9）、Dual-Pathway（表 2A-L2） | 见表 2A | 见表 2A | CRG 自述随生成长度增长 | 见表 2A | 见表 2A | — | F |
+
+**第 4 组 子空间投影或静态权重编辑类**——对照最严且唯一在 Qwen2.5-VL / InternVL3 / Pixtral 成套报数：QK Product Steering；模型族最多：HIME（到 Qwen3-VL-8B）。Nullu 系三篇都用 **64 token** 口径。
+
+| 工作 | 模型族 | 口径与效果 | 开销 | 一般能力 / 在什么条件下失败 | 自认局限（逐字） | 代码 | 层级 |
+|---|---|---|---|---|---|---|---|
+| Nullu（表 2A-L6） | LLaVA-1.5、MiniGPT-4、mPLUG-Owl2 | CHAIR **64 token**：LLaVA-1.5 20.40 ± 2.80 → 15.20 ± 0.60；BLEU 持平 | 推理零额外 | **512 token 口径下别人复测**：LLaVA-1.5 48.8 → 44.8、recall 77.7 → 75.1；Qwen-VL POPE Acc 74.76 → 74.73（MESA 表） | 无局限节 | 见表 2A | F |
+| QK Product Steering（2606.20419，COLM 2026 Actionable Interpretability Workshop；第一轮笔记记作 Findings of EMNLP 2026，与 PDF 页眉不符，以 PDF 为准） | Qwen2.5-VL-7B、InternVL3-8B、Pixtral-12B | 全程 greedy，CHAIR N = 1,000 或 4,946，paired-bootstrap CI：Qwen 31.44 → 28.56（随机模 31.33）；InternVL3 33.81 → 33.23（随机 33.97）；Pixtral 34.14 → 33.81，ΔCHAIRs −0.36 [−0.85, +0.17] | 零 | **InternVL3 与 Pixtral 上降幅 <1 点、CI 含零或与随机对照分不开**；加大强度后 MMMU 51.56 → 43.78 | "it does not add new visual knowledge or improve the model's underlying perception."；"the optimal configuration may vary across architectures." | 未给 | F |
+| HIME（2602.18711） | LLaVA-1.5、MiniGPT-4、mPLUG-Owl2、Qwen2-VL、Qwen3-VL-8B | 64 token：LLaVA-1.5 20.40 → 13.80；Qwen3-VL 8.40 → 6.00（BLEU 9.81 → 8.89） | 零 | 无随机对照；无 POPE 主表 | 未检到 | 未找到 | F（定点） |
+| Per-Instance Disentangled Subspaces（2608.09344） | LLaVA-1.5、MiniGPT-4、mPLUG-Owl2 | 64 token：相对 Nullu 15.20 ± 0.60 → 14.60 ± 0.35 | 未找到 | 相对 Nullu 的差在 Nullu 的标准差之内 | 未检到 | 未找到 | F（定点） |
+| ProjectAway（表 2A-L5） | 见表 2A | LLaVA greedy 49.2 → 42.0；LLaVA-NeXT beam 23.8 → 17.2（recall 63.12 不变） | — | 见表 2A | 见表 2A | 见表 2A | F |
+
+**第 5 组 转向类**——模型族最多且覆盖新一代：Revis（Qwen2.5-VL 7B/32B、Qwen3-VL、InternVL3 / 3.5 等 7 个）；评测最细：MESA（1,000 图 + recall + 长度）、Revis（三档 token 上限）；**七篇转向论文（VTI、VISTA、DMAS、Revis、MESA、OSGA、SteerVLM）加 SSL、ASD 的正文里都未检出随机方向对照**；有随机门控对照的是 TruthProbe。
+
+| 工作 | 模型族 | 口径与效果 | 开销 | 一般能力 / 在什么条件下失败 | 自认局限（逐字） | 代码 | 层级 |
+|---|---|---|---|---|---|---|---|
+| VTI（表 2A-L7） | LLaVA-1.5、InstructBLIP、Qwen-VL | CHAIR 512、报 recall 与长度：LLaVA-1.5 51.0 → 35.8（recall 75.2 → 76.8，长度 102.2 → 93.8）；POPE Acc 79.8 → 86.5 | 预计算向量 | **换到 Qwen2.5-VL-7B：512 token CHAIR_S 31 → 35、POPE-adv 87.10 → 85.27、MME 2327.52 → 2083.82、MM-Vet 70.18 → 56.38**（REVIS 表）；LLaVA-1.5 上长度 98.7 → 80.3（MESA 表） | 无局限节 | github.com/shengliu66/VTI | F |
+| VISTA（2502.03628，ICML 2025） | LLaVA-1.5、MiniGPT-4、Shikra、InstructBLIP | CHAIR 512：LLaVA-1.5 greedy 46.4 → 20.4 | ×1.27 | CHAIR 口径 F1 76.4 → 67.3、POPE Acc 84.8 → 83.1（HAVAE 表） | "the current implementation focuses on addressing hallucination in single-round tasks"；"optimal settings may vary across different architectures" | github.com/LzVv123456/VISTA | F |
+| Revis（2602.11824，2026） | Qwen2.5-VL-7B / 32B、Qwen3-VL-8B、InternVL3 / 3.5-8B、LLaVA-1.5、LLaVA-NeXT | CHAIR **只用 100 张图**，64 / 128 / 512 三档；Qwen2.5-VL-7B 512：31.00 → 25.00（CHAIR_I 8.13 → 8.23）；Qwen3-VL 64 token 8.00 → 8.00 | 自称无额外前向 | InternVL3 POPE Acc 90.54 → 90.24；无随机方向对照 | "REVIS relies on the base model's representations, limiting its ability to rectify absolute perceptual blindness." | github.com/antgroup/Revis | F |
+| DMAS（2602.21704，ICLR 2026） | LLaVA-1.5、Qwen-VL；附录 Qwen2.5-VL、InternVL3、Mantis、Idefics3 | CHAIR：LLaVA-1.5 51.0 → 30.8；Qwen2.5-VL 47.4 → 43.2；InternVL3 28.4 → 26.4 | 只有图 | 新一代上只降 2.0–4.2 点；无随机方向 / 随机头对照；自述转向向量 "vary significantly across different semantic contexts" | 未检到局限节 | 未找到 | F |
+| MESA（2604.07914） | LLaVA-1.5、Qwen-VL | CHAIR 1,000 图、512、报 recall 与长度：LLaVA-1.5 48.80 → 31.00（recall 77.70 → 75.80） | — | 逐字（指 VTI / Nullu 类）："they lead to shorter outputs and systematically shifted token distributions in generative scenarios" | 未检到 | 未找到 | F（定点） |
+| OSGA（2601.23041）、SteerVLM（2510.26769） | LLaVA-1.5；OSGA 附录 Qwen2-VL-7B | OSGA：POPE 平均 Acc 79.83 → 86.29；SteerVLM 表里 CAA 使 POPE Acc 84.5 → 56.2 | — | OSGA 自认 Yes/No 上 "overfitting can easily occur during optimization, leading the model to consistently respond with "yes" or "no."" | 同左 | 未找到 | F（定点） |
+| SSL（表 2A-L8）、CAS（表 2A-L14） | 见表 2A | SSL 见第 4 节 F4 | — | — | — | — | F / A |
+| TruthProbe, *The Truth Stays in the Family*（2606.15821，ICML 2026） | Vicuna-7B → LLaVA-1.5 / NeXT；Qwen2.5 系；Qwen3-VL-8B；Mistral-7B 作无亲缘对照 | 用**基座文本 LLM** 的逐头 Truth Score 软门控 VLM：LLaVA-1.5 CHAIR（64 token）23.00 → 17.40；POPE Acc 86.9 → 86.7 | — | Qwen3-VL-8B：POPE 88.59 → 88.63，CHAIR_S 9.4 → 9.8（变差）；有随机门控对照（3 种子，低于原模型） | 未摘录 | github.com/miso-choi/TruthProbe | F（分工检索者读，我核了两句） |
+
+
+**第 5 组补一行**
+
+| 工作 | 模型族 | 口径与效果 | 开销 | 一般能力 / 在什么条件下失败 | 自认局限（逐字） | 代码 | 层级 |
+|---|---|---|---|---|---|---|---|
+| ASD（ACL 2025，2025.acl-long.634） | LLaVA-1.5-7B、Qwen-VL-Chat | POPE **greedy 与采样两种基线都报**：LLaVA-1.5 greedy 85.13 → 88.01；CHAIR 51.0 → 40.0（recall 82.8 → 82.0）。**同表 VCD：greedy 基线下 85.13 → 85.16，采样基线下 81.49 → 85.41** | +11.6% 至 +18.6% | Qwen-VL-Chat MME 1839.55 → 1825.20；无随机方向对照 | "our current approach primarily addresses object-level hallucination, as the steering vectors are extracted using only COCO object annotations."（分工检索者注明此句为跨栏人工拼接，未做整句匹配） | 未检到 | F（定点） |
+
+**第 6 组 微调 / 训练类**——模型族最多且覆盖新一代：ViPSy（附录 Qwen2.5-VL-7B、InternVL3.5-8B 等）、REVERSE（Qwen2.5-VL-3B）；一般能力查得最细：HALVA；除 REVERSE 外推理零额外开销。
+
+| 工作 | 模型族 | 口径与效果 | 开销 | 一般能力 / 在什么条件下失败 | 自认局限（逐字） | 代码 | 层级 |
+|---|---|---|---|---|---|---|---|
+| REVERSE（2504.13169） | LLaVA-1.5-7B、LLaVA-MORE-8B（Llama-3.1）、Qwen2.5-VL-3B（自行微调版） | CHAIR / AMBER 生成：LLaVA-1.5 CHAIRs 50.0 → 37.0，Cover 51.0 → 52.2；Qwen2.5-VL-3B 45.8 → 39.4，AMBER CHAIR 7.7 → 7.5 | 训练 130 万样本 + 推理 token 数 1.75–2.63× | 激进阈值档 CHAIRs 13.6 但 Cover 51.0 → 26.9 | "it does not improve performance on discriminative VQA tasks"；"REVERSE reduces the hallucination with the cost of more generated tokens." | github.com/tsunghan-wu/reverse_vlm | F |
+| HALVA（2405.18654，ICLR 2025） | LLaVA-1.5 7B / 13B、VILA-1.5-13B | CHAIR 带长度：50.0 → 41.4（长度 100.6 → 92.2）；MME-Hall 648.3 → 665.0 | 训练 | 同表别人：EOS 长度 100.6 → 79.7、MME-Hall 606.7；HA-DPO 618.3；VCD 604.7（均低于基线 648.3） | 对 POPE："we note a few key limitations and find it to be a not well suited benchmark for evaluating MLLMs"；"a rigorous exploration of those directions is left for future work" | github.com/pritamqu/HALVA | F |
+| CCA（2410.15926，NeurIPS 2024） | 仅 LLaVA-1.5-7B（从头重训） | CHAIR 512 greedy 46.2 → 43.0（recall 80.3 → 80.4）；beam 49.4 → 48.6；POPE 平均 Acc 81.38 → 86.86（基线取自 VCD 论文，即采样基线） | 重训整个模型 | 只有一个模型 | "our focus is only limited to handling of image-text inputs." | github.com/xing0047/cca-llava | F |
+| ViPSy（2606.28401，预印本） | LLaVA-1.5 7B / 13B；附录 Qwen2.5-VL-7B、mPLUG-Owl3、InternVL3.5-8B、Kimi-VL | Qwen2.5-VL-7B：AMBER CHAIR 5.0 → 4.1、Hal 26.4 → 23.3、HallusionBench 57.7 → 60.4；InternVL3.5-8B：AMBER Hal 24.6 → 17.3 | DPO 训练 | CV-Bench 78.3 → 78.0、81.6 → 81.4 | 未检到 | github.com/yunpal/ViPSy | F（定点） |
+| EOS-decision（2402.14545）、RLHF-V（2312.00849）、HA-DPO（2311.16839）、TF-HH（见第 3 组） | LLaVA-1.5 / Muffin | EOS：CHAIRs 40.2 而长度 79.7；RLHF-V：Object HalBench 50.5 → 12.2，LLaVA-Bench Comp. 97.7 → 91.6 | 训练 | EOS 自认 "our methods do not yield performance gains on these benchmarks"（指 MME 与 POPE；跨栏人工拼接，未做整句匹配） | 同左 | — | F（定点）/ A / S |
+
+
+### 表 2C 基准、评测批评与邻域约束类
+
+| # | 工作 | 类型 | 模型 | 测到什么（口径） | 自认局限 / 关键原话（逐字） | 代码 | 层级 |
+|---|---|---|---|---|---|---|---|
+| C1 | *The Mirage of Performance Gains*（2504.10020，NeurIPS 2025） | 评测批评 | LLaVA-1.5-7B / 13B、Qwen-VL-Chat | 对比解码在 POPE 上的收益来自两件事：单向把答案推向 Yes；adaptive plausibility constraint 把采样退化成贪心。两个"伪方法"（提示里加 "Answer Yes if possible"、把接近的 Yes/No 一律判 Yes）在 POPE-COCO 上涨幅与 VCD / SID 相当；只加该约束的采样在 GQA 上涨约 2.5%。贪心下 VCD 使 MME-P 1475.1 → 1389.9、CHAIR_S 21.6 → 25.4 | "the observed performance gains in contrastive decoding are entirely unrelated to its intended goal of mitigating hallucinations"；"contrastive decoding can only enhance performance in discriminative tasks where the initial output distribution is skewed towards "No."" | github.com/ustc-hyin/cd_rethink（200） | F（我读） |
+| C2 | *Does Playing it Safe Count as Faithfulness?*（2609.01888） | 评测批评 | LLaVA-1.5、LLaVA-NeXT、InstructBLIP（7B） | 6 种推理时修法（VCD、M3ID、AGLA、CAAC、CEI、AFTER）× 3 模型 × 3 基准 = 54 格：CHAIR_S 与 object recall 相关 r = 0.73，AMBER Hal 与 Cover 相关 r = 0.70；MMStar 上 18 个细粒度感知格只有 2 个涨超过 1% | "None of the evaluated methods could penetrate the upper-left quadrant and most followed the hallucination–informativeness diagonal"；局限："they do not cover all relevant axes of LVLM faithfulness, such as attribute-level or relational hallucination, video understanding, or long-form instruction following" | github.com/mehrdadfazli/AssessHalVLM（200） | F（我读） |
+| C3 | *Token-Set Choice Confounds POPE*（2610.25964） | 评测批评 | LLaVA-1.5-7B（4-bit）主实验；另 4 个 VLM | Yes/No 的读出 token 集合不同，POPE-adversarial F1 相差 6.13 点（0.761 对 0.8221） | "That 6.13-point adversarial shift exceeds the adversarial gain reported by five of the six papers we surveyed."；自认核不了任何已发表基线用的是哪种读出 | 未记录 | F（分工读，我核一句） |
+| C4 | HQH, *Measuring the Measurers*（2406.17115） | 评测批评 | MiniGPT-4、Qwen-VL、InstructBLIP 等旧模型 | POPE 平行形式信度 0.3563、AMBER 判别 0.3636、AMBER 生成 0.5333；换一句等义提示，InstructBLIP 长度 104.66 → 10.37 词、AMBER CHAIR 0.151 → 0.037 | "making it unclear whether the evaluation result truly reflects models’ hallucination level or is simply an artifact of their own response bias" | 未记录 | F（分工读） |
+| C5 | LeHaCE（NeurIPS 2024）、THRONE（2405.05256，CVPR 2024） | 评测批评 | 旧模型 | LeHaCE：描述长度与 CHAIR 近似线性，指令只经由长度起作用。THRONE：POPE 与自由生成幻觉的 Spearman 仅 0.2 | LeHaCE："there is a clear linear relation between them"；THRONE："the two forms of hallucinations are often anti-correlated" | 未记录 | F（分工读） |
+| C6 | RePOPE（2504.15707）、DASH（2503.23573）、HOPE（2508.06530） | 基准 | 17 个 / 约 10 个 / 6 个 2024–2025 开源模型，DASH 含 GPT-4o-mini | RePOPE：POPE 的 Yes 题 9.3% 标错、13.8% 歧义，改标后排名大变。DASH：POPE 上 TNR 96.0% ± 1.2%，DASH-B 上 48.6% ± 10.1%。HOPE：同一批模型 POPE-adv precision 88–94，HOPE 上 60–81 | RePOPE："suggests that the negative set is saturated on POPE random"；DASH："Contrary to the belief that object hallucinations are no longer an issue, we find that they persist extensively when using VLMs in an open world scenario." | github.com/YanNeu/RePOPE（200） | F（分工读，我核一句） |
+| C7 | MM-Snowball（2606.00622，ICML 2026） | 基准 | Qwen3-VL、Qwen2.5-VL、GPT-5 等 | 6 轮带诱导对话，第 5 轮准确率多数模型 3–11%；Qwen2.5-VL 基线 3.15，加 VCD 2.75、OPERA 2.90、DoLa 2.85、DeCo 3.10；作者自己的方法 3.50（都在噪声量级） | "Despite their success in single-turn tasks, the efficacy of these methods diminishes in multi-turn dialogues." | 未记录 | F（分工读，我核一句） |
+| C8 | HaloProbe（2604.06165） | 定位批评 | LLaVA-1.5-7B（其余未核） | "幻觉词的图像注意力更低"在控制 token 位置与是否首次提及后反转或消失（Simpson 悖论）；分析单位是第 5–18 层平均 | "when conditioning on token position, hallucinated tokens often exhibit comparable or higher image attention than correct tokens" | 未记录 | F（分工读，我核一句） |
+| C9 | *Prior Directions*（2607.26913） | 邻域约束（GUI grounding，不是物体幻觉） | 4 个模型（未核） | 配对打乱构造的子空间修复 59/66，匹配构造 60/66 | "the construction that best identifies recurrent representation change need not be uniquely more behaviorally effective"（未做第二次核对） | 未记录 | F（分工读） |
+| C10 | *Universal Boosts, Specific Suppressors*（2605.24977） | 邻域约束（胸片报告） | RadVLM（Qwen3-VL-8B）、LLaVA-Rad（Vicuna）、CheXOne（Qwen2.5-VL-3B），各自训练 SAE | 促进类特征跨骨干相似 0.91–0.95，幻觉相关的抑制类特征低至 0.25 | "each model develops its own hallucination pathways"；"hallucination-linked (suppress) directions are model-specific" | 未记录 | F（分工读，我核两句） |
+| C11 | *Encoded but Unused*（2610.29241）、CoSimUE（2605.30911） | 邻域 | LLaVA-1.6-7B、Qwen2.5-VL-7B；多模型 | 属性题上"编码了没用上"占错误的 84.4% / 70.0%（下界 77.5% / 61.0%）；参数量放大对三类幻觉作用有限 | 摘要句，未做第二次核对 | 未记录 | A（分工读） |
+
+**表 2C 补两行**
+
+| # | 工作 | 类型 | 模型 | 测到什么 | 关键原话（逐字） | 代码 | 层级 |
+|---|---|---|---|---|---|---|---|
+| C12 | *Rethinking the Effectiveness of Contrastive Decoding*（2607.25196） | 评测批评（新一代模型上的独立重评） | LLaVA-1.5-7B、**Qwen2.5-VL-7B、InternVL3-8B** | CHAIR（500 图）：Qwen2.5-VL-7B 采样 31.2、VCD 25.1–28.8、SID 27.8–29.6、只留约束 23.5、**greedy 22.8**；InternVL3-8B 33.5 / 33.1–33.5 / 33.0–33.2 / 29.7 / **29.4**；把对比项换成同幅度高斯噪声分数不降 | "these improvements reflect a change in decoding behaviour rather than genuine hallucination mitigation"；局限：机制分析只做了一个模型一个判别式基准，"Applying the same treatment to newer methods and larger models would establish how far these conclusions generalise."（后一句未做第二次核对） | 未记录 | F（分工读，我核一句） |
+| C13 | *When Visual Signals Mislead*（2608.11024，预印本） | 评测批评（属性） | Qwen2.5-VL-3B、InternVL3.5-4B、LLaVA-1.5-7B | VAW 颜色属性 Yes/No 探针：假阳性率 33.8% / 31.6% / 47.2%；VCD、ICD 对颜色的改变为 0.0 pp，Yes 比例上升被稳定的 F1 掩盖 | "VCD/ICD achieve 0.0 pp improvement on color." | 未记录 | F（定点，分工读） |
+
+---
+
+## 3. 各轴最高水位
+
+每条写"目前最好的是谁、做到什么"。同一条轴上若"定位"与"修复"的水位不在同一篇，分开写。
+
+| 轴 | 目前最好的是谁、做到什么 | 层级 |
+|---|---|---|
+| **模型族数量与多样性（定位，因果）** | Dual-Pathway：5 个模型，3 个语言骨干族（Qwen3、Mistral、Llama-3；InternVL3 用 Qwen2.5）、4 种视觉融合方式（含交叉注意力的 Llama-3.2-Vision），全部是 2024–2025 的新一代。另有 2609.29048 在 25 个模型、8 个 LLM 族上做激活修补，但其回路只属于 VQ 离散化模型，连续投影器模型被判为不带该回路。闭源模型：无 | F |
+| **模型族数量与多样性（修复）** | ILVAD：8 个模型，含 Qwen3-VL-8B、InternVL3-8B、Qwen3.5-9B、GLM-4.1V；Revis：7 个，含 Qwen2.5-VL-32B、InternVL3.5；静态权重编辑里 QK Product Steering：3 个互不同源的骨干（Qwen2.5-VL、InternVL3、Pixtral） | F |
+| **因果对照的严格程度** | Dual-Pathway：等量随机部件（5 种子）+ 两种静态方向基线 + 把接地通路置零的特异性对照 + 选超参与评测分开的留出集 + 阈值敏感性（Jaccard）；QK：同 k 随机模、bottom-k、paired-bootstrap 95% CI；2609.29048：单变量架构替换 + 等计算量对照 + 留出模型；TruthProbe：随机门控（3 种子）+ 无亲缘谱系作零带。**未见**：转向类的随机方向 / 配对打乱对照（所读 9 篇里 0 篇）；用"只差目标物体的对照图"代替高斯噪声的修补；逐样本反向比例 | F |
+| **评测稳健性** | 换题型：AllPath（Yes/No、四选一、描述三种）；recall / 长度 / 多种子：MESA（1,000 图 + recall + 长度）、VHR（5 个划分的均值 ± 标准差 + 长度）、ILVAD（3 组 × 500 图 + 长度）、SPARC（precision / recall 分报）；token 上限分档：Revis（64 / 128 / 512）；一般能力：QK（MME、MMMU、HallusionBench）、Revis（MME、MM-Vet、MMMU-Pro）；独立重评口径：C2 的"幻觉—信息量—一般能力"三联。**未见**：任何基于内部部件的修法在 RePOPE / DASH-B / HOPE、多轮、或固定读出 token 集合下的评测 | F |
+| **效果量（旧一代，LLaVA-1.5-7B，512 token CHAIR_S，各自口径）** | HAVAE 48.2 → 18.2（F1 76.4 → 76.7）；VISTA 46.4 → 20.4（别人复测 F1 掉 9 点）；PAI 46.6 → 24.8（别人复测 recall 掉 7 点）；Devils 53.0 → 25.0；AllPath 52.2 → 26.6 | F |
+| **效果量（新一代）** | 描述任务：ILVAD Qwen3-VL-8B 51.6 → 45.2、InternVL3-8B 21.2 → 16.8；SPIN Qwen2.5-VL-7B 34.8 → 28.6（F1 降 1.7）；DMAS Qwen2.5-VL 47.4 → 43.2；QK Qwen2.5-VL-7B 31.44 → 28.56（CI 不含零）。Yes/No：Dual-Pathway 假阳性率相对 −40% 至 −76%（准确率代价 ≤2pp，n = 400）；POPE 准确率类增益多在 +0.15 至 +3 点 | F |
+| **任务与数据广度** | CRG：POPE、CHAIR、MME、MMHal-Bench、AMBER；Dual-Pathway：POPE 三 split + AMBER 存在 / 属性 / 关系（只有判别题）。跨幻觉类型：Dual-Pathway 的回路迁移到关系（3/5 个模型）不迁移到属性；2605.19250 的驱动头从物体冲突迁移到属性 / 关系冲突。多轮、多图、视频：基于内部部件的工作里未见 | F / A |
+| **是否免训练** | 多数免训练。推理零额外开销的静态权重编辑：Nullu、HIME、QK。需训练的：TF-HH（只微调选中的头）、HWP（ACL Findings 2026）、REVERSE、HALVA、CCA、ViPSy 等微调类（表 2B 第 6 组） | F |
+| **是否给出统一解释** | 未检出在同一协议下**因果地**比较两种以上根因说法的工作（对象层，范围见 4.0）。最接近的三篇各差一截：Role-Break 把各家说法折算成注意力特征放进同一协议，但只做检测、没有头级干预、分析只在 2 个模型上；AllPath 把三条通路放进一个框架，但每种题型要重新找头；Dual-Pathway 在 5 个模型上给出同一组织，但只有 Yes/No、部件粒度是子层。CAS 提出"图像 / 参数知识 / 文本上下文三方竞争"的说法（A 级，未读实验） | F / A |
+
+---
+
+## 4. 竞争解释与事实约束
+
+先答专门问题，再逐条列。每条后标层级；我的推断标档位（推导 / 类比 / 推测）。
+
+### 4.0 专门问题：并存的根因说法有没有被直接比较或统一？
+
+**没有检出**在同一模型、同一协议下对两种以上说法做**因果**比较的工作（对象层；依据：第 3 步 4 条蕴含查询 + 第 5 步 346 条 Semantic Scholar 被引标题、43 条 OpenAlex 被引、6 份种子参考文献表、2 条专门查询）。最新三篇种子（Dual-Pathway、AllPath、Role-Break）的被引侧只有 5 / 11 / 0 条，这个范围对 2026 下半年覆盖很弱。
+
+已有的"接近统一"各差在哪：
+
+| 工作 | 把什么放在了一起 | 差在哪 | 层级 |
+|---|---|---|---|
+| Role-Break（2607.29412） | 把 PAI（视觉证据不足）、VCD（语言先验）、Devils（中层视觉注意力）、OPERA（锚点 token）四家说法折算成六个逐头注意力特征，在 2 个模型 × 2 种协议下比方向稳定性与预测力 | 只是**相关读数**的比较，没有头级干预（作者自认）；没有覆盖线性子空间与视觉 token 词表读出两种说法；分析只在 LLaVA-1.5-7B 与 Qwen3-VL-8B | F |
+| AllPath（2511.17254） | image→input-text、image→output-text、text→text 三条通路同框 | 每种题型要重新找头；没有随机头对照；没有与方向 / 子空间类说法比较 | F |
+| Dual-Pathway（2605.13156） | 在同一批部件上比较了"逐部件缩放"与"静态方向（均值差、ITI）" | 这是**头 / 部件说法对线性方向说法**的唯一一次同协议因果比较，结论是静态方向只拿到一部分；但只有 Yes/No，部件是子层不是头，没有与 Yang 的头或 ProjectAway 的视觉 token 读出对过 | F |
+| DMAS（2602.21704） | 同一模型里"真实性头"与"视觉感知头"是不同子集 | 两族都用多模态样本定义，没有与基座 LLM 或别家的头比重合 | A |
+| MACI（2605.19250） | 相关工作里并列 Yang、VHD、AllPath 三种头级说法 | 只并列，不同协议比较；任务是提示里的错误前提 | A / F |
+| 种子互引 | — | Dual-Pathway 的参考文献里没有 Yang、AllPath、Nullu、VTI、ProjectAway；Role-Break 同样一篇不引；AllPath 不引任何线性方向类（正文 grep，0 读作"未检出"） | F |
+
+并存的说法实际不止四种。按"位置"列出已发表的（每种至少一篇带干预）：(1) 中深层偏文本的头（Yang）；(2) 接地通路 / 幻觉通路与极性翻转（Dual-Pathway）；(3) 线性方向或子空间（VTI、Nullu、SSL、ASD、Revis、DMAS）；(4) 视觉 token 上的词表读出（ProjectAway、Same Attention）；(5) 三条通路随题型切换（AllPath）；(6) 逐头的视觉路 / 文本路竞争（CRG）；(7) 中层视觉注意力不活跃（Devils）；(8) 锚点 / 汇总 token（OPERA、TAME）；(9) 惰性 token 劫持（HAVAE）；(10) 系统 token 中介的 Yes 偏置（2601.12430）；(11) 视觉特征不稳定（VTI 的出发点）；(12) 图像 / 参数知识 / 文本上下文三方竞争（CAS）；(13) VQ 离散化造成的第 0 层路由（2609.29048）；(14) 继承自基座 LLM 的"语境忠实头"（TruthProbe）；(15) 多种图样的混合（Role-Break）。
+
+### 4.1 事实约束（实测否定或收窄了某条路）
+
+**F1 头集合随题型几乎完全重排**（回答"定位稳定性"一问）。出处与设定：AllPath §4、Fig. 3 与附录 Fig. 6。做法是对 1,024 个头按 text-to-text 重要性分数排名，以 POPE-COCO-adversarial 上的排名为参照，与另一数据集上的排名做线性回归相关。LLaVA-1.5-7B：对 POPE-COCO-random 0.8247（正文；图上印的是 0.8427，原文正文与图不一致）、对 POPE-GQA-adversarial 0.8358、对 MCQ-COCO-adversarial（同图同物体，只把 Yes/No 换成四选一）0.1233、对 CHAIR 描述 0.1650。Qwen-VL-Chat：0.7900 / 0.6709 / 0.0500 / −0.0100。原话："even with the same images and similar questions, when switching to MCQ format, the correlation coefficient between heads drops to only 0.1233"。旁证三条：在描述任务上找出的 AD-HH 头搬到 POPE 上准确率 85.1 → 85.0（AllPath Table 1）；Role-Break 报告图像注意力的方向"flips between POPE-9000 and COCO-500, and its peak-layer band shifts across models"；2609.29048 报告调过参的 DoLA 赢在 Yes/No 校准、只有第 0 层消融降低描述任务的 CHAIR。F。
+- 推导：AllPath 的相关只算了 text-to-text 头，且没有给出"同一格式内换随机种子或换图像子集"的零带；0.82 对 0.12 的落差本身成立，但"0.12 是否等于无关"缺标定。
+
+**F2 两个最强的定位结论在层位与部件类型上相反，且没有被对过**。Yang：幻觉头"concentrated in the middle and deeper layers"，MHA 的影响约为 MLP 的 3.5×（描述任务、零消融、LLaVA-1.5-7B）。Dual-Pathway：幻觉通路部件"concentrate at early layers and at network boundaries"，接地部件在中后层；各模型最强的幻觉部件里有 MLP（Llama-3.2 的 L16.mlp d = −0.889；InternVL3-8B 的 L27.mlp d = −0.870）（Yes/No、视觉 token 加 3σ 高斯噪声后做修补、子层粒度）。CRG 报告的最佳干预层段是 LLaVA-1.5 第 8–19 层、Qwen-VL-Chat 第 10–24 层，"very shallow or very late ranges are consistently less effective"；TruthProbe 报告 LLaVA-1.5 的 top-20 语境忠实头 80% 在第 10–31 层；2609.29048 的回路在第 0 层；2601.12430 的在后四分之一层的系统 token 注意力。F。
+- 推导：这些差异同时混着任务（描述 / Yes-No）、读出位置（物体词 / 末 token）、腐蚀方式（零消融 / 高斯噪声）、粒度（头 / 子层）四个因素，现有文献无法分账。
+
+**F3 单一静态方向不够，且方向的符号要靠网格找**。Dual-Pathway 附录 D：逐部件幻觉信号的首奇异方向只占方差 45.2%–68.8%（Qwen3-VL 63.4%、LLaVA-v1.6 45.2%、Llama-3.2 56.4%、InternVL3-8B 68.8%、InternVL3-14B 64.3%），participation ratio 2.4–6.8；均值差投影在 3 个模型的留出集上 ΔH 为 +0.0 / +1.0 / +1.5pp（不降）；ITI 平均 4.1pp，逐部件缩放 7.4pp；探针方向指向幻觉一侧，正 α 把 InternVL3-8B 的幻觉率从 20% 推到 74%，要取负 α 才降，且大幅度时"revealing an over-correction toward the “no” bias"（recall 0.94 → 0.78）。旁证：DMAS 自述转向向量"vary significantly across different semantic contexts"；2608.09344 自述单一全局子空间"failing to capture diverse hallucination modes across inputs"。F / A。
+- 类比：*Prior Directions*（GUI 任务）里配对打乱构造的子空间修复 59/66，与匹配构造的 60/66 几乎相同——"配对差分得到的子空间"的修复效果未必来自配对。物体幻觉上未见同类对照。
+
+**F4 SSL 的"同一方向跨骨干迁移"没有随机方向对照，且代码是无对齐地原样相加**（回答第三个关键问题）。
+- 论文怎么写：SAE 是别人在 LLaVA-NeXT-8b（Llama-3）第 25 层训练的；取激活频率差最大的两个潜变量（hall 36992、faithful 47230）的解码行向量当方向；"Notably, although the SAE from Zhang et al. (2024a) were trained on LLaVA-NeXT-8b, the identified semantic directions generalize well across different model architectures"。
+- 各模型的施加位置与强度各不相同："SSL is applied at 16th layer for LLaVA-NeXT, 31th layer for LLaVA-1.5 and 8th layer for InstructBLIP"；"We set γ to 0.6, 0.8, and 0.1 for LLaVA-NeXT, LLaVA-1.5, and InstructBLIP, respectively"；Llama-3.2-11B-Vision 用第 32 层、γ = 0.4。即便在训练 SAE 的那个模型上，施加层（16）也不是 SAE 所在层（25）。步长按残差范数自适应：扰动幅度 = γ × 该 token 的残差范数。
+- 公开代码（main.py、utils.py、scripts/infer_chair.sh，已读）：对所有模型都从同一个 `llama3-llava-next-8b-hf-sae-131k/model.layers.24` 读 `W_dec[36992]` 与 `W_dec[47230]`，直接加到 `language_model.layers[layer]` 的输出上；没有任何把 Llama-3 残差基映到 Vicuna 残差基的步骤。脚本里的设置与论文一致（LLaVA-1.5 第 30 号层、γ = 0.8；InstructBLIP 第 7 号层、γ = 0.10）。
+- 对照：唯一的随机对照是在 LLaVA-NeXT 上用随机 SAE 潜变量做幻觉 / 忠实二分类（约 0.5，对比 66.67% 与 69.54%），不是转向对照；另有 Reverse-SSL（反向施加使幻觉升高）。迁移到另两个模型时**没有**"同范数随机方向"或"随机潜变量方向"的转向对照（正文与附录 grep 无命中）。
+- 效果数字（Table 1，CHAIR 500 图 × 5 种子，512 token）：LLaVA-NeXT 29.60 ± 0.89 → 26.36 ± 1.94；LLaVA-1.5 49.44 ± 1.57 → 40.88 ± 2.11；**InstructBLIP 45.44 ± 2.43 → 44.04 ± 3.91（差值小于任一侧的标准差）**。POPE 平均 F1：89.10 → 89.66、84.99 → 85.47、85.37 → 85.56。LLaVA-Bench（GPT-4o 评分）：LLaVA-1.5 的 Accuracy 5.33 → 4.72（下降），LLaVA-NeXT 的 Detailedness 6.03 → 5.27（下降）。γ 加大到 1.5 时（LLaVA-NeXT）CHAIR_S 2.56 而平均长度 165.61 → 53.80。
+- 作者自认局限："our study does not include a comparison of SAEs trained on other model architectures across different multimodal models"。
+- 推导：Llama-3-8B 与 Vicuna-7B 是各自独立预训练的骨干，残差流的基没有理由对齐；在没有对齐映射、没有随机方向对照的情况下，"在 LLaVA-1.5 上有效"有一个未被排除的读法——在倒数第二层加一个幅度为残差范数 80% 的固定向量，本身就会改变输出分布。这是竞争解释，不是已证实的否定。
+- 相邻的正文级证据都指向"跨谱系不能直接搬"：TruthProbe 的逐头语境忠实打分在 Vicuna-7B 与其 LLaVA 后代之间相关约 0.51–0.64，与无亲缘的 Mistral-7B 之间"near-zero correlation (0.04–0.08)"；医学 VLM 上三个骨干各自训练 SAE 的比较里，幻觉相关的抑制类特征跨骨干相似度低至 0.25，"each model develops its own hallucination pathways"；文本侧迁移 steering 向量或 SAE 特征的先例都先学一个仿射或自编码映射（2503.04429、2506.06609，A）；SAE 换随机种子只有约 30% 的特征重合（2501.16615，F）。除 SSL 外，未找到"不经映射把一个预训练谱系上的 SAE 方向加到另一谱系残差流里"且带随机方向对照的先例，也未找到点名批评 SSL 这一步的论文（方法层与对象层，共 4 条查询）。
+
+**F5 跨模型：宏观组织一致、微观接线不一致，同族两个尺寸之间也不更像**。Dual-Pathway §5.4：逐层效应剖面的相关"uniformly low (|r| ≤ 0.33), and the within-family InternVL3-8B/14B comparison is no more similar than cross-family pairs"；Llama-3.2-Vision 上 logit lens 验证不显著（d = −0.18，p = 0.43）。Rudman et al.："Across models, PIH-heads mediate prompt copying in model-specific ways."。F。
+
+**F6 "注意力量"的读法被多条独立证据收窄**。*Same Attention, Different Truths*：真实物体与幻觉物体"receive equally strong visual attention in model’s mid-to-late layers"；HaloProbe：控制 token 位置与是否首次提及后，幻觉词的图像注意力"comparable or higher"（Simpson 悖论）；Yang："increasing attention on image tokens has no effect"；CAS："pushing toward more visual reliance may exacerbate hallucinations on some models"；SPARC：朴素放大注意力使 POPE 82.01 → 81.45。F / A。
+- 推导：凡是按"幻觉词附近图像注意力下降"来选头的做法（L16 就是这样选的），其选头读数正是 HaloProbe 指出有位置混杂的那个量。
+
+**F7 已有修法的收益里有多少是评测产物**（回答第二个关键问题；逐条，均核对过原文或由分工检索者核对、我抽查）。
+
+| # | 产物来源 | 证据 | 层级 |
+|---|---|---|---|
+| a | Yes 偏置 | Mirage：VCD / SID 主要把 No 改成 Yes；LLaVA-1.5-7B 在 POPE-COCO-random 上 Yes 比例 39.2% → 46.4%（准确率 +1.5），在本就偏 Yes 的 GQA-adversarial 上 54.0% → 63.3%（准确率 80.9 → 78.0）；提示里加一句让模型多答 Yes、或把接近的 Yes/No 一律判 Yes，涨幅与 VCD / SID 相当。属性题上同向：VCD / ICD 对颜色假阳性 0.0 pp 而 Yes 比例上升（C13） | F |
+| b | 采样基线（把采样退化成贪心） | Mirage：只加 adaptive plausibility constraint 的采样即涨约 2.5%。同向的独立表格：VCD 自己的 Table 7（greedy 基线下 87.10 → 88.49，Top-K 基线下 79.28 → 86.97）；ASD Table 1（greedy 下 85.13 → 85.16，采样下 81.49 → 85.41）；SID、VHR、Revis、GIFT 的表里 greedy 基线下 VCD 持平或更差 | F |
+| c | 新一代模型上 greedy 解释了对比解码的全部 CHAIR 收益 | C12：Qwen2.5-VL-7B 与 InternVL3-8B 上 greedy 的 CHAIR 优于 VCD / SID，对比项换成高斯噪声分数不降 | F（分工读） |
+| d | 长描述口径下对比解码的 CHAIR 不降反升 | 至少 10 张独立的表（DeCo、Devils、VHR、CAAC、VISTA、MESA、AllPath、SPARC、TARAC、Yang）里 VCD 的 CHAIR_S 高于各自的基线；ILVAD 表里 VCD / CODE / SPARC / ONLY 与 greedy 相差不到 1 点；Revis 表里 64 token 时五种基线都优于 Regular，512 token 时都不优于 | F（分工读，我抽查 3 处） |
+| e | 以信息量换幻觉率 | C2：r = 0.73 / 0.70；SPARC："these methods significantly reduce model recall"；PAI recall 79.46 → 72.44、Qwen-VL-Chat 上长度 98.1 → 36.8；TARAC 在 Qwen2-VL 上 AMBER Cover 67.0 → 53.3；VTI 长度 98.7 → 80.3；VISTA 的 F1 76.4 → 67.3；EOS 长度 100.6 → 79.7；L16 的头级 LoRA 召回 0.78 → 0.70；MESA 对转向类的总评 | F |
+| f | CHAIR 由长度与 token 上限决定 | LeHaCE：长度与 CHAIR 近似线性；HQH：换一句等义提示长度变 10 倍、CHAIR 0.151 → 0.037；同一 Qwen3-VL-8B 64 token 8.0–8.4、512 token 45.0–51.6、1024 token 51.4；Nullu 在自家 64 token 口径 20.40 → 15.20，被别人在 512 口径复测为 48.8 → 44.8 | F |
+| g | POPE 读出 token 的选择 | C3：两 token 读出与八 token 读出在 adversarial 上差 6.13 点 F1，超过其调查的 6 篇里 5 篇报告的收益；作者自认核不了已发表基线各用哪种读出 | F（分工读） |
+| h | POPE 自身的信度与标注噪声 | HQH：平行形式信度 0.3563；RePOPE：Yes 题 9.3% 标错、13.8% 歧义，改标后排名大变；DASH：PaliGemma 在 POPE 上的 137 个假阳性里 25.5% 图中其实有该物体、22.6% 歧义 | F（分工读） |
+| i | Yes/No 与自由生成不相通 | THRONE：两类幻觉 Spearman 0.2；AD-HH 在 POPE 上无增益；REVERSE、EOS、OSGA、OPERA 各自承认在 Yes/No 或短答上无增益；2609.29048 的二元校准与描述任务分离 | F |
+| j | 单轮到多轮失效 | MM-Snowball：Qwen2.5-VL 第 5 轮 3.15，加 VCD / OPERA / DoLa / DeCo 为 2.75–3.10（该基准有诱导者施压，量的是抗诱导；表内所有方法含作者自己的都在噪声量级） | F（分工读） |
+| k | 换到新一代模型后收益缩小或反向 | VAR：LLaVA-1.5 −1.8，Qwen2-VL −0.4；QK：InternVL3、Pixtral 上与随机对照分不开；VTI 在 Qwen2.5-VL-7B 上 512 token CHAIR 升高且 MM-Vet 掉 13.8 点；PAI / VAF 在 InternVL3.5-8B 上高于基线（SAVAA 表）；Revis 在 InternVL3 上 POPE 略降 | F（多为方法论文里的基线表，作者有动机） |
+| l | 一般能力 | C2：MMStar 不迁移；VCD 在 MME、MMBench、TextVQA、SEED、VizWiz 上多处下降；QK 加大强度 MMMU −7.8；SPIN 在 Qwen2.5-VL-7B 上 MME 认知 −38 | F |
+| m | 评测用采样解码的机制论文 | AllPath 的 POPE / MCQ-POPE / MME 全部在 temperature = 1 的 nucleus sampling 下评测 | F |
+
+- 推导（对 m）：按 a、b 两条，在采样基线下报告的 POPE 增益需要在 greedy 下复核后才可比；AllPath 的 POPE 数字是否受此影响，原文没有给 greedy 对照，未知。
+
+**F8 新一代模型上存在性 Yes/No 已量不出差别，其他轴没有**（回答"是否饱和"一问；"多少"轴逐条分开，不互推）。
+
+| 轴 | 现状 | 层级 |
+|---|---|---|
+| 存在性，Yes/No，COCO 自然图（POPE） | 2024 年末以后的开源模型平均 F1 / Acc 集中在 85–91；InternVL3 从 1B 到 78B 为 89.6–91.1（基本持平）；TNR 96.0% ± 1.2%，剩余假阳性约一半是标注错或歧义。Qwen3-VL 官方技术报告全文不再报 POPE 与 CHAIR | F |
+| 存在性，Yes/No，难负例 | DASH-B：开源模型 TNR 44.8–60.2，GPT-4o-mini 77.0；HOPE：precision 60–81（同一批模型 POPE-adv 88–94）。这是对抗筛出的最坏情况口径 | F |
+| 存在性，描述任务 | CHAIR_I 3–11；CHAIR_S 随 token 上限从 8 到 45–59；AMBER 生成式 Hal 率 Qwen3-VL-8B 59.24、InternVL3.5-8B 62.20。GIFT 作者把 Qwen3-VL 的高 CHAIR"attribute"给字符串匹配，没有实验区分 | F |
+| 关系 | CRPE relation 76–79，7B 到 78B 只涨约 3 点 | F（官方表） |
+| 属性 | 颜色 Yes/No 探针假阳性率 Qwen2.5-VL-3B 33.8%、InternVL3.5-4B 31.6%（预印本，小尺寸模型）；AMBER 判别式逐类表未找到含新模型的 | F（定点）/ 未找到 |
+| 长描述 | 人工逐句事实性（DOCCI-Critique，只有 2024 年及以前的模型）：Qwen2-VL-7B 87.6%、GPT-4o 97.1%；2025–2026 新模型未取到 | F（旧模型） |
+| 多图 | MIHBench：存在 Acc 64–76，计数 52–58（recall 9–18） | F |
+| 视频 | HAVEN 最好 61.29；其余只有检索片段 | F / S |
+| 多轮（带诱导） | 第 5 轮多数模型 3–11%，仅 GPT-5、Kimi K2.5、Seed-1.6 在 49–65% | F |
+| 推理型（HallusionBench） | 2025 年末旗舰 60–67 | F |
+
+没有找到明文写"物体幻觉已基本解决"的论文（结论层，1 条专门查询）；DASH 的原话方向相反。
+
+**F9 文本 LLM 上的内部定位与 VLM 结论的关系**（回答第六个关键问题）。
+- 已被直接检验的只有三件：(i) 基座 LLM 的逐头"语境忠实"打分在其 VLM 后代上保留、跨谱系不保留，用基座打分门控 VLM 在 LLaVA-1.5 上降 CHAIR、POPE 基本不动、Qwen3-VL-8B 上 CHAIR 略变差（TruthProbe，F）；(ii) Yang 报告幻觉头的注意力图样与基座 LLM 相似、指令微调后变化慢（F）；(iii) 文本骨干上取的概念向量可搬到其 VLM 后代，但任务是空间与计数，不是幻觉，且无随机方向对照（2505.14071，F）。
+- 没有找到的（对象层 / 结论层，共 7 条查询）：把文本 LLM 上按 Marks & Tegmark 或 Bürger 方式取的 truth direction 加到 VLM 上并报告物体幻觉指标成败；VLM 幻觉方向与底座 truth direction 的余弦或子空间重合度；VLM 幻觉头与文本侧 memory / context 头（Yu；Jin）、unknown-entity 潜变量（Ferrando；Anthropic）是否同一批部件。
+- 文本侧对"单一、通用方向"的已知限制：至少二维（Bürger，F）；对否定句不泛化（Levinstein & Herrmann，F）；只在需要相似技能的任务内泛化（Orgad，A）；随层、任务类型、难度、提示模板变（Poulis，A）；跨模型只有"各自找到同构结构"与"谱系内保留"的证据，没有无对齐跨谱系直接搬运成功的正文级证据。
+- 类比档的部件归属不一致：文本 RAG 幻觉上 ReDeEP 把先验来源放在 FFN、把证据来源放在抄写头（A）；VLM"偏文本头"说法把先验也放在头里；Nullu 改的是 MLP 权重；Dual-Pathway 的强幻觉部件里有 MLP。
+- 类比档的"少数头"反例：Lookback Lens 报告检测信号"is not concentrated only on a subset of heads"，top-10 头不如全部头（F）。
+
+**F10 仪器层的已知局限**（第 2 步，方法先例都在文本模型上，对本候选是类比或推导）。高斯噪声腐蚀"may break model’s internal mechanisms by introducing OOD inputs"，建议用分布内的对照输入（Zhang & Nanda，F）——Dual-Pathway 用的正是高斯噪声；抑制有效是必要性证据、补回有效是充分性证据，不是一回事（Heimersheim & Nanda，F）；消融会被下游补偿（Hydra，F）；零 / 均值 / 重采样消融给出的重要性不同（Li & Janson，F；Miller，A）；定位结论不告诉你该编辑哪里（Hase，F）；单输入因果中介分数方差大（Méloux，F）；steering 逐样本方差大且常反向（Tan、Braun，A）；概念转向上提示词优于所有表示类方法、SAE 不具竞争力（AxBench，F，Gemma-2）；logit lens 在视觉 token 上只判出 24% 可解释，对 LatentLens 的 68%（F）。
+
+### 4.2 竞争解释（同一现象的另一个已发表解释）
+
+4.0 末段列的 15 种说法里，与"偏文本的头 / 方向"直接竞争（即对同一批失败给出不同位置或不同变量）的是：
+- **Yes 偏置由系统 token 的注意力中介**（2601.12430，仅 LLaVA 系，A）——竞争的是 POPE 类失败的解释。
+- **不是长度本身而是对上文的依赖**（HalTrapper 2510.20229："the risk of hallucinations is not caused by length itself but by the increased reliance on context"，F 定点）——竞争的是长描述后段幻觉的解释。
+- **训练数据共现**（OPERA 自述一部分失败"should blame MLLM's strong bias between 'road' and 'cars', which is learned during the training phase"；OPERA 句本轮已核；LURE 为第一轮 F，本轮未重核）——竞争的是"部件"层解释的必要性。
+- **VQ 离散化**（2609.29048）——在统一 VQ 模型这一族里，根因被放在架构与预训练，且位置在第 0 层。
+- **编码器侧**（VTI 的视觉特征不稳定；第一轮笔记 KQ5 第 9 条）——与 07 筛选文件的第三条跨路约束相抵，本轮未重查。
+- **"说得更少"**（C2、MESA、L16）——竞争的是"修法有效"的解释，不是根因的解释。
+- **度量问题**（GIFT 把 Qwen3-VL 的高 CHAIR 归给字符串匹配；*Do More Details Always Introduce More Hallucinations?* 称 CHAIR 在详细描述上高估）——竞争的是"新模型描述任务上还有多少真幻觉"。
+
+---
+
+## 5. 作者留下的开口（逐字，带出处）
+
+均在下载的正文里做过字符串核对；例外单独标出。
+
+**关于根因与定位**
+1. Dual-Pathway（2605.13156，结论）："direct circuit extraction on attribute- and relation-focused benchmarks is a natural next step."
+2. Dual-Pathway（讨论）："One interpretation is that relational hallucination, like object-existence hallucination, is driven primarily by language priors such as co-occurrence statistics, whereas attribute hallucination may involve a different failure mode such as imprecise visual feature extraction."（作者用的是 "One interpretation"，没有实验区分。）
+3. Dual-Pathway（讨论）："does not constitute a deployable mitigation method; designing one under this constraint is a separate engineering problem."
+4. Role-Break（2607.29412）："our current evidence cannot distinguish whether Role-Break is a cause of hallucination, a downstream response to it, or a partial self-correction attempt by the model, as we have not performed controlled head-level interventions. Establishing this mechanistic account, and extending Role-Break to more targeted mitigation strategies, are promising directions for future work."
+5. Role-Break："we leave a generative-side intervention to future work."
+6. AllPath（2511.17254，附录 E）："we do not investigate what causal pathways are most effective for different types of questions, nor do we explore training strategies that could systematically improve the use of such pathways."
+7. HAVAE（2605.10622）："while this work uncovers the phenomenon of Vocabulary Hijacking, its mechanistic origin remains to be fully elucidated."
+8. HWP（Findings of ACL 2026，1016 号）："We do not investigate the underlying mechanisms behind why certain attention heads tend to underweight visual information."
+9. VHR（2412.13949）："there may be other architectural factors—such as those in the vision encoder and the FFN module in the LLMs—that contribute to hallucinations but were not directly addressed in this study."
+10. PAI（2407.21771）："It is worth exploring whether the issues of image neglect and text inertia are introduced by LLaMA."
+11. 2608.24966（对 Yang 式选头的复核，§6）："extending the pipeline to additional VLMs, prompts, and datasets would test whether hallucination-linked attention heads provide stable intervention targets beyond LLaVA on COCO captions."
+12. 2601.12430："The generality of our system-mediated account should therefore be tested on a broader variety of VLM families and in a wider range of settings."
+13. 2609.29048："the polarity association in Section 4.1 is associational, not causal"；两处异常"lack a mechanistic explanation"（后半句未单独核对）。
+14. MACI（2605.19250）："component identification relies on object-conflict data and the prefill stage."
+
+**关于方向、子空间与迁移**
+15. SSL（2505.16146，局限）："our study does not include a comparison of SAEs trained on other model architectures across different multimodal models."
+16. QK Product Steering（2606.20419）："Although we find that middle-layer dominant modes work well across multiple VLMs, the optimal configuration may vary across architectures."
+17. ProjectAway（2410.02762）："The editing approach may struggle with highly abstract or longer sentences that involve attributes or interactions of objects."；"We hope to explore the applications of our approach in other multimodal architectures."（后一句来自第一轮笔记，本轮未重核。）
+18. CRG（2605.24024）："CRG is targeted at conflict-mediated hallucinations, and is not expected to correct cases where both visual and textual routes share the same bias, or errors dominated by perception, OCR, or multi-step reasoning failures."
+
+**关于评测**
+19. *Does Playing it Safe*（2609.01888，局限）："they do not cover all relevant axes of LVLM faithfulness, such as attribute-level or relational hallucination, video understanding, or long-form instruction following. The patterns reported here may not extend uniformly to those settings."（第二句未单独核对。）
+20. 2607.25196（局限）："Applying the same treatment to newer methods and larger models would establish how far these conclusions generalise."（分工检索者肉眼对过，未做脚本匹配。）
+21. *Token-Set Choice Confounds POPE*（2610.25964）："We do not claim the official POPE code mandates this readout, and we could not verify the readout of any published baseline we survey."（分工检索者核对。）
+22. GIFT（2510.22067）："suggesting the metric may need refinement for modern models producing nuanced outputs."（指 CHAIR 在 Qwen3-VL 上偏高；作者用 "We attribute"，没有实验。）
+23. HALVA（2405.18654）："a rigorous exploration of those directions is left for future work."（指其他形式的幻觉；分工检索者核对。）
+24. VISTA（2502.03628）："the current implementation focuses on addressing hallucination in single-round tasks; adaptation to interactive scenarios like visual dialogue may require additional considerations."（分工检索者核对。）
+
+**没有取到的开口来源**：OpenReview 审稿讨论。Yang、ProjectAway、VTI、AllPath、DMAS、Mirage 六个论坛的 forum id 都已定位，但取审稿内容的接口对全部论坛返回人机验证（HTTP 403 ChallengeRequiredError），两位分工检索者都停在这里，没有绕过。审稿人对因果主张、随机对照、只做 LLaVA-1.5、评测口径的质疑与作者答复，本报告里是空的。
+
+---
+
+## 6. 三列表
+
+| 先例支持（现象已见 / 方法已有，不是坏消息） | 事实约束与竞争解释（坏消息） | 谁会因此改做法 |
+|---|---|---|
+| 头级因果定位在物体幻觉上已做到 5 个新一代模型（Dual-Pathway），带随机部件对照；代码公开 | 四种以上根因说法未被同协议因果比较（4.0）；头集合随题型重排（F1）；Yang 与 Dual-Pathway 层位相反（F2） | 做头级或部件级定位的作者：若有同协议比较，定位论文需要报告"换题型后的部件重合率"而不是只在一种题型上找头。具体到哪一步：选头数据集的构造。**这是我的推断，文献里没有人这样说**；直接证据是 AllPath 与 L16 的作者各自把它列为未做 |
+| 静态方向与逐部件缩放已在同一批部件上比过一次（Dual-Pathway） | 单一方向只占 45–69% 方差、均值差投影无效（F3）；8 篇转向论文无随机方向对照；SSL 跨骨干相加无对齐（F4）；跨谱系相关 0.04–0.08（TruthProbe） | 做转向 / 子空间编辑的作者：对照表里要不要加同范数随机方向与配对打乱。文献依据：ITI 在 2023 年、QK 与 TruthProbe 在 2026 年已这样做；*Prior Directions* 在 GUI 任务上显示配对打乱几乎等效。**谁会因此改用哪种修法：未找到** |
+| 基座 LLM 的头级打分可以搬到其 VLM 后代并降 CHAIR（TruthProbe）；文本骨干的概念向量可搬到 VLM（2505.14071） | 只在同谱系内成立；Qwen3-VL-8B 上 CHAIR 略变差；truth direction 在文本侧已被收窄为多维、任务相关（F9） | 未找到 |
+| 物体信息在视觉 token 上可局部读出与擦除（ProjectAway、Neo et al.），代码公开 | logit lens 在视觉 token 上漏读约三分之二（LatentLens）；过了某一层编辑基本失效、属性题上统一减除无益或有害（2610.12981）；Neo et al. 自限于 LLaVA 类 | 未找到 |
+| 多篇独立工作已建立"幻觉率—信息量—一般能力"三联评测与 greedy 基线、recall / 长度配报的做法（C2、SPARC、MESA、VHR、QK） | 对比解码收益是评测产物这句话已被写出两次（Mirage；2607.25196 在新一代模型上）；POPE 读出、信度、标注噪声（F7） | 做推理时修法的作者与审稿人：基线从采样换成 greedy、CHAIR 配报 recall 与长度、固定 token 上限。这一步已经在发生——表 2B 里 2025 年以后的方法论文有 10 篇以上配报了 recall、F1 或长度（VISTA、DMAS、Revis 等仍未报）。对"基于内部部件的修法"是否也该这样重评，**未找到做过的人** |
+| 难负例存在性基准（DASH-B、HOPE）、逐句人工标注的长描述集（DOCCI-Critique）、多轮（MM-Snowball）、多图（MIHBench）都已公开 | POPE 在新一代模型上已量不出差别（F8）；Qwen3-VL 官方报告不再报 POPE / CHAIR | 基准使用者：从 POPE 换到 DASH-B / HOPE / RePOPE。DASH 与 RePOPE 的作者明确这样建议；但在这些新基准上评过任何修法的工作**未找到**（对象层，分工检索者 3 条查询） |
+| 关系幻觉与物体存在共用一部分回路（Dual-Pathway 3/5 个模型；MACI 的驱动头跨物体 / 属性 / 关系冲突） | 属性幻觉基本不受物体回路干预影响（Dual-Pathway 仅 2/5 个模型有改善） | 未找到 |
+
+---
+
+## 7. 要构成足够贡献至少需要做到什么
+
+以"超过第 3 节各轴水位"的形式列。只写门槛，不评价能否做到。三种贡献形态分开。
+
+**(i) 定位或统一根因的发现——至少需要同时做到：**
+1. **模型**：≥5 个新一代模型、≥3 个语言骨干族、含一种非拼接式融合（Dual-Pathway 的水位）；若主张"跨模型"，要报告模型间部件剖面的相似度并给零带（Dual-Pathway 报了 |r| ≤ 0.33 与同族不更像；TruthProbe 用无亲缘谱系给出 0.04–0.08 的零带）。
+2. **对照**：等量随机部件（多种子）+ 至少一种静态方向基线 + 特异性对照 + 选超参与评测分离的留出集（Dual-Pathway 的水位）；若涉及方向或子空间，再加同范数随机方向与配对打乱（文本侧 ITI、邻域 *Prior Directions* 的水位，物体幻觉任务上未检出：对象层，8 篇转向论文正文 grep + 第 2 步 1 条专门查询）。
+3. **题型**：定位要在 Yes/No、多选、自由描述至少三种题型上做，并报告部件集合的跨题型重合（AllPath 已报 0.82 → 0.12，这是要超过的事实，不是可以绕开的事实）；读数要按 token 位置与首次提及分层（HaloProbe 的约束）。
+4. **统一**：在同一模型、同一协议下，把两种以上已发表的说法各自定位出的部件做因果比较（4.0 表里每一篇都差这一步）；至少覆盖"头 / 部件"与"线性方向"之外的第三种说法，才超过 Dual-Pathway 已做的那一次比较。
+5. **腐蚀方式**：不止高斯噪声；零消融、均值消融或对照图至少比较两种（Yang 附录有零 / 均值消融敏感性；Zhang & Nanda 的建议）。
+6. **粒度**：若主张在头级，需要头级干预（Dual-Pathway 是子层级，Role-Break 无干预）。
+
+**(ii) 修复方法——至少需要同时做到：**
+1. **模型**：在 Qwen2.5-VL / Qwen3-VL、InternVL3 / 3.5 与至少一个第三骨干上成套报数（ILVAD 8 个、Revis 7 个、QK 3 个互不同源骨干的水位）。
+2. **效果量与统计**：新一代模型上描述任务的降幅要超过随机对照且置信区间不含零（QK 在 Qwen2.5-VL 上做到，在 InternVL3、Pixtral 上没做到）；图数 ≥1,000 或多划分带标准差（MESA、QK、VHR 的水位；Revis 只用 100 张）。
+3. **评测口径**：greedy 基线；CHAIR 配报 recall 与长度；token 上限至少分两档（Revis、CAAC）；固定并写明 POPE 的读出 token 集合（C3 之后的要求）；一般能力至少一个"视觉不可或缺"的基准（C2 用 MMStar；QK 用 MMMU）。
+4. **不以信息量换幻觉率**：在 C2 的图上要落进"幻觉更低且 recall / Cover 不降"的象限——C2 的原话是六种修法 "None of the evaluated methods could penetrate the upper-left quadrant"，同文称只有 CAAC 与 CEI 在降幻觉时保住了 recall（这两种方法与 C2 有共同作者）。
+5. **超出 POPE**：存在性要在难负例集（DASH-B、HOPE、RePOPE 之一）上评；至少覆盖属性或关系之一；多轮或长描述之一（这些集合上尚未检出任何基于内部部件的修法的数字）。
+6. **便宜办法基线**：与"换提示"比较（AxBench 在文本侧显示提示词优于表示类转向；Mirage 用一句提示复现了对比解码的 POPE 增益）。
+7. **开销**：推理零额外（静态权重编辑：Nullu、HIME、QK）或接近零（SPARC +2.8%）是现有水位。
+
+**(iii) 测量或基准——至少需要同时做到：**
+1. 超过 C2 的 3 模型 × 6 方法 × 3 基准：纳入新一代模型与基于内部部件的修法（C2 只有旧模型与推理时方法；C12 只有对比解码）。
+2. 标注质量超过 POPE（RePOPE 已重标）并说明对问法、读出 token、token 上限的敏感性（DASH Tab.9、C3、LeHaCE 各自只做了一项）。
+3. 若主张"定位稳定性"这一可测量：给出跨题型、跨种子、跨数据子集的部件重合率及其零分布（现有只有 AllPath 的跨题型相关与 Dual-Pathway 的阈值 Jaccard；换种子重跑定位的重合率在第一轮 36 篇与本轮正文里都未见）。
+
+---
+
+## 8. 七步检索日志
+
+执行顺序 6 → 5 → 1 → 2 → 3 → 4 → 7。第 6、3、4 步由我本人做；第 5 步、第 1/2 步由分工检索者做，我核对了其交回的承重条目；另有两路补充检索（修法数字表、评测与饱和）归在第 6 步名下，因为它们回答的是对抗轮的问题（已有修法有多强、收益是否评测产物、基准是否饱和）。
+
+### 查询条数汇总
+
+| 步 | 谁做 | WebSearch 条数 | 其他检索动作 |
+|---|---|---|---|
+| 6 对抗式检索 | 我 | 15 | SSL 公开仓库读代码 3 个文件；10 个代码仓库 URL 探活 |
+| 6 的延伸：评测产物与饱和 | 分工 B | 29 | Semantic Scholar 被引 1 次成功（Mirage，7 条）；OpenReview 被人机验证挡住 |
+| 6 的延伸：修法六组 | 分工 A | 2 | 其余为对 41 篇正文的定点检索 |
+| 5 引用链 | 分工 C | 2 | Semantic Scholar 被引 8 篇种子共 346 条标题；OpenAlex 被引 43 条；6 份参考文献表；OpenReview 搜索 6 次成功、取审稿 6 次全部 403 |
+| 1 抽象阶梯 | 分工 D | 18 | — |
+| 2 方法论单独搜 | 分工 D | 12 | — |
+| 3 蕴含检索 | 我 | 4 | — |
+| 4 同义术语枚举 | 我 | 7 | — |
+| 7 边界申报 | 我 | 0 | — |
+| **合计** | | **89** | |
+
+### 第 6 步 查询清单（15 条）与命中 / 未命中
+
+- 6-1 contrastive decoding hallucination mitigation VLM gains misleading POPE yes bias "do not mitigate" rethinking evaluation
+- 6-2 hallucination mitigation LVLM "illusion of progress" OR "fail to generalize" training-free methods re-evaluation benchmark overfitting CHAIR POPE
+- 6-3 object hallucination benchmark saturated POPE Qwen2.5-VL InternVL3 newer VLMs near ceiling hallucination mitigation no longer helps
+- 6-4 steering vector hallucination VLM random direction baseline transfer across models fails "random" control latent steering critique
+- 6-5 hallucination attention heads identification unstable across prompts datasets VLM "hallucination heads" not consistent random heads baseline
+- 6-6 prompt instruction baseline matches hallucination mitigation methods LVLM "simple prompt" CHAIR caption length confound shorter captions
+- 6-7 unified benchmark comparison hallucination mitigation methods LVLM reproducibility fair comparison decoding steering attention 2026
+- 6-8 hallucination mitigation multi-turn dialogue fails LVLM single-turn methods snowballing existing methods ineffective
+- 6-9 RePOPE label errors POPE benchmark annotation noise changes model ranking
+- 6-10 object hallucination root cause vision encoder not language model LVLM CLIP features cause hallucination evidence against language prior explanation
+- 6-11 hallucination subspace LVLM not single direction multi-dimensional nonlinear "mean difference" steering fails held-out vision-language
+- 6-12 activation steering hallucination VLM newer models Qwen2.5-VL InternVL3 limited gains steering fails modern architectures hallucination mitigation evaluation
+- 6-13 "Steering LVLMs via Sparse Autoencoder" SSL follow-up limitations cross-architecture direction transfer hidden size mismatch critique
+- 6-14 LVLM object hallucination prompt engineering baseline "only describe" OR "do not mention objects" instruction reduces CHAIR comparable to decoding methods negative result
+- 6-15 object hallucination VLM cause training data caption noise co-occurrence statistics rather than architecture; retraining with clean data removes hallucination; inference-time mitigation unnecessary 2025 2026
+
+命中：Mirage 2504.10020（6-1）；*Does Playing it Safe* 2609.01888、Per-Instance Subspaces 2608.09344（6-2）；DASH、ClipCop（6-3）；OSGA 2601.23041（6-4）；Role-Break、VIB-Probe、HAVAE（6-5）；MM-Snowball 2606.00622（6-8）；RePOPE（6-9）；NoLan 2602.22144、2502.20034（6-10）；MESA 2604.07914、Revis 2602.11824（6-11）；DMAS 2602.21704、QK（6-12）。未命中：点名批评转向类缺随机方向对照的论文（6-4，1 条）；"头定位不稳定且与随机头分不开"的专门报告（6-5，1 条，只回到 AllPath 与 Role-Break）；用一句提示词即可达到修法效果的描述任务对照（6-6、6-14，2 条；Yes/No 上有 Mirage）；修法的统一公平对比基准（6-7，1 条）；对 SSL 跨架构迁移的后续复核或批评（6-13，1 条）；"换干净数据重训后推理时修法不再必要"的证据（6-15，1 条）。
+
+### 第 5 步 留痕
+
+种子 8 篇：Yang（ICLR 2025）、Dual-Pathway 2605.13156、AllPath 2511.17254、Nullu 2412.13817、ProjectAway 2410.02762、Role-Break 2607.29412，加 VTI 2410.15778、SSL 2505.16146。Semantic Scholar 被引标题逐条看过：62 / 5 / 11 / 70 / 129 / 0 / 63 / 6，共 346 条（有重叠，接口收录不全）；OpenAlex 43 条；参考文献表 6 份。WebSearch 2 条：(1) `"Dual-Pathway Circuits of Object Hallucination" OR "Intervene-All-Paths" OR "Role-Break in Attention Heads" hallucination vision-language cited comparison 2026`；(2) `object hallucination VLM "hallucination heads" "steering" "logit lens" same protocol comparison mechanistic explanations unified analysis reproducibility random baseline 2026 arXiv`。命中并读到正文的 7 篇：HaloProbe 2604.06165、2608.24966、*Prior Directions* 2607.26913、MACI 2605.19250、2610.12981、2609.29048、Rudman 2601.05201。未命中：同模型同协议比较多种根因说法的工作；复现失败类报告；综述对这些机制主张的评价原话（三篇综述定点 grep 只见罗列）。最可能改变结论而没读的（只有标题）：2609.00231（Visual-Origin Hallucinations）、2603.07619（Overthinking Causes Hallucination）、CausalLens（CVPR 2026）、D-LEAF、2511.09018、TRACE（ICLR 2027 在审，只见标题）。Google Scholar 未试。
+
+### 第 1 步 查询清单（18 条）
+
+- 1-1 truthfulness direction base LLM transfers to vision-language model hallucination "truth direction" VLM object hallucination linear probe same direction as text
+- 1-2 VLM hallucination attention heads inherited from base LLM "context heads" OR "memory heads" knowledge conflict same heads text-only LLM comparison
+- 1-3 "Textual Steering Vectors Can Improve Visual Understanding in Multimodal Large Language Models"
+- 1-4 vision-language model hallucination "unknown entity" OR "entity recognition" SAE latents "Do I Know This Entity" visual object hallucination sparse autoencoder base LLM features
+- 1-5 truth direction LLM does not generalize across tasks datasets "truthfulness" probe generalization failure negation multiple directions 2025 2026
+- 1-6 audio large language model hallucination mechanistic interpretability attention heads text prior "audio" LLM object hallucination internal analysis language prior heads
+- 1-7 video LLM hallucination mechanistic analysis attention heads language prior "video" large language model hallucination internal causal intervention heads
+- 1-8 "Lookback Lens" OR "ALTI" OR "source contribution" applied to vision-language model hallucination image token contribution per-head attention ratio transfer across models
+- 1-9 truth direction transfer across different LLMs cross-model universality truthfulness representation "across models" linear map probe transfer hallucination detection
+- 1-10 "Dynamic Multimodal Activation Steering" hallucination truthfulness visual perception different attention heads arXiv
+- 1-11 LVLM hallucination "parametric knowledge" FFN "copying heads" ReDeEP-style decomposition visual context vs parametric knowledge feed-forward attention heads vision-language
+- 1-12 hallucination direction LVLM compared with text truthfulness direction cosine similarity "ITI" text-only statements probe transfers to image inputs multimodal truthfulness probe modality transfer
+- 1-13 abstractive summarization hallucination mechanistic attribution "source contribution" OR "context attribution" attention heads parametric prior unfaithful generation internal localization LLM
+- 1-14 VQA language prior bias attention heads analysis transformer "reasoning patterns" Kervadec VQA-CP question-only shortcut internal analysis visual question answering
+- 1-15 Whisper hallucination attention heads "Calm-Whisper" decoder self-attention heads cause hallucination non-speech arXiv
+- 1-16 same LVLM hallucination direction shared between text-only inputs and image inputs "modality-agnostic" truthfulness subspace base language model probe transfer multimodal hallucination detection cross-modal
+- 1-17 Video-LLM hallucination "language prior" internal representation steering OR attention heads temporal hallucination mechanism video large multimodal model 2026
+- 1-18 hallucinated objects in LVLM captions predictable by text-only language model without image "blind" LLM continuation co-occurrence prior analysis object hallucination language prior quantify
+
+命中见 4.1 的 F9；未命中：视频 LLM 幻觉的内部部件定位（2 条）；摘要任务上按头 / 层分开源贡献与参数先验（1 条）；VQA-CP 时代的头级因果干预（1 条）；把 truth direction 搬到 VLM 幻觉上（4 条）；VLM 幻觉头与 memory / context 头、unknown-entity 潜变量的重合检验（3 条）。
+
+### 第 2 步 查询清单（12 条）
+
+- 2-1 sparse autoencoder trained on text LLM backbone applied to multimodal VLM residual stream transfer features "SAE" base LLM to VLM steering hallucination
+- 2-2 applying sparse autoencoder features or steering vectors from one model to a different model architecture cross-model transfer steering vectors "different models" representation alignment critique
+- 2-3 logit lens visual tokens VLM unreliable critique image token representations not aligned with vocabulary embedding space "logit lens" vision tokens limitation
+- 2-4 circuit discovery stability across random seeds prompts "circuit" overlap variance mechanistic interpretability reliability statistical "stability" attention head attribution
+- 2-5 steering vectors random direction baseline norm-matched control side effects general capabilities degrade "random vector" activation steering evaluation critique
+- 2-6 "SAEs (usually) transfer between base and chat models" OR "sparse autoencoder" transfer fine-tuned model reconstruction degrade base model SAE on finetuned different backbone fails
+- 2-7 model editing ROME MEMIT null-space projection side effects negative results "general abilities" collapse generalization failure evaluation pitfalls 2025
+- 2-8 "negative results" sparse autoencoders downstream tasks linear probes outperform SAE out-of-distribution harmful intent detection DeepMind mechanistic interpretability team
+- 2-9 activation patching Gaussian noise corruption out-of-distribution critique "counterfactual" patching unreliable localization causal tracing limitations mechanistic interpretability
+- 2-10 AlphaEdit null-space projection model editing fails critique reproducibility "null space" editing side effects sequential editing limitations 2025 2026
+- 2-11 attention weights head selection versus causal importance mismatch "attention" heads identified by attention ratio not causally important activation patching comparison vision-language OR LLM
+- 2-12 SAE steering direction trained on LLaVA-NeXT applied to LLaVA-1.5 InstructBLIP different backbone residual stream transfer without alignment critique random direction control hallucination steering cross-model
+
+命中见 4.1 的 F10 与 F4 末段；未命中：在 VLM 上直接比较"按图像注意力比选头"与"按修补效应选头"（1 条）；不经映射的跨谱系 SAE 方向相加的先例或批评（3 条）。
+
+### 第 3 步 查询清单（4 条）
+
+- 3-1 unified mechanistic account object hallucination vision-language models reconcile attention heads steering directions logit lens competing explanations same circuit
+- 3-2 hallucination heads overlap with hallucination direction subspace VLM "same components" OR "shared mechanism" head-level and representation-level interventions compared
+- 3-3 hallucination circuit transfers across task formats yes/no captioning multiple-choice VLM format-invariant mechanism discriminative generative hallucination same heads
+- 3-4 systematic comparison of hallucination localization methods VLM causal mediation activation patching attention heads many models 2026 "object hallucination" mechanistic benchmark
+
+要找的三句话是第 1 节的 E1–E3。命中（都只是部分）：Dual-Pathway 的"Matched static-direction baselines are consistently less effective than per-component scaling"（E1 的一角）；AllPath 的跨题型相关（E2 的反面）；CRG、2601.12430、2605.19250、2609.29048（新增竞争者）。未命中：E1 的完整形式（多种说法同协议因果比较）；E2 的正面形式（跨题型稳定的部件集合）；E3（同时过 POPE / CHAIR / AMBER、不降 recall、带三类对照的单一干预）。
+
+### 第 4 步 词表与查询清单（7 条）
+
+先列的词表——现象：object hallucination / existence hallucination / confabulation / ungrounded generation / unfaithful captioning / visual grounding failure；原因一侧：language prior / unimodal prior / text inertia / modality bias / text dominance / modality imbalance / visual neglect / image neglect / blind faith in text / co-occurrence bias；部件：hallucination heads / lazy heads / text-biased heads / T2T heads / memory heads / prior-override heads / hallucination neurons；方向：hallucination direction / truthfulness direction / factuality direction / faithful direction / HalluSpace / hallucination subspace / visual grounding direction / image reliance；视觉 token：logit lens / internal confidence / object token / patch-level decoding / visual evidence tokens。
+
+- 4-1 "language prior" OR "text inertia" OR "modality bias" heads multimodal LLM ungrounded generation "visual neglect" internal mechanism direction steering 2026
+- 4-2 "visual grounding direction" OR "faithfulness direction" OR "image reliance" linear probe residual stream MLLM confabulation objects absent, transfer across models
+- 4-3 sparse autoencoder hallucination features vision-language model cross-model transfer SAE latent steering "LLaVA" universal hallucination feature 2026
+- 4-4 "existence hallucination" OR "confabulation" vision-language "attention heads" OR "circuit" Gemma-3 OR PaliGemma OR "Qwen3-VL" mechanistic interpretability hallucinated objects causal
+- 4-5 "text dominance" OR "modality imbalance" OR "blind faith in text" multimodal LLM attention heads causal intervention ignores image 2025 2026 mechanism cross-model
+- 4-6 "object token" OR "visual token" logit lens unreliable OR "does not localize" object information distributed across image tokens VLM register tokens global information critique patch-level decoding
+- 4-7 "hallucination neurons" OR "hallucination-associated neurons" OR "H-neurons" vision-language model MLP neurons object hallucination causal 2026
+
+命中：CAS 2605.27993、VIP 2509.23050、PvP、跨语言转向（4-1）；Mirage Probes 2606.13870、文本转向向量 2505.14071（4-2）；SAVE 2512.07730、2602.00621（4-3）；2609.29048、2605.22902（4-4）；2605.19250、*When Language Overrules*（NeurIPS 2026）、2606.18924、2602.03677（4-5）；LatentLens 一线、*Preserving Localized Patch Semantics*（4-6）；2602.00621、CVPR 2026 hub neurons（4-7）。未命中：以 "H-neurons / hallucination neurons" 命名的 VLM 工作（1 条）；在 Gemma-3 / PaliGemma 上做物体幻觉回路的工作（1 条）。
+
+### 延伸检索（分工 B：评测产物与饱和）查询清单（29 条）
+
+- 1. POPE benchmark saturated newer VLMs Qwen2.5-VL InternVL3 object hallucination "saturated" 2025 2026 arXiv
+- 2. Qwen3-VL-8B CHAIR_S 51.6 hallucination mitigation CHAIR Qwen3-VL InternVL3.5 arXiv 2026
+- 3. hallucination mitigation LVLM evaluation flawed CHAIR caption length confound shorter captions recall "max_new_tokens" re-evaluation decoding methods
+- 4. POPE prompt sensitivity "Please answer" yes/no bias hallucination mitigation methods gains disappear prompt format evaluation artifact LVLM
+- 5. hallucination mitigation methods LVLM re-evaluation "fail to generalize" OR "do not transfer" newer models Qwen2.5-VL InternVL3 training-free decoding benchmark study 2025 2026
+- 6. AMBER attribute relation hallucination Qwen2.5-VL InternVL3 GPT-4o results "relation" hallucination remains challenging benchmark 2025
+- 7. MM-Snowball multimodal hallucination snowballing multi-turn mitigation methods fail arXiv 2606.00622
+- 8. detailed image caption hallucination benchmark modern VLMs GPT-4o Qwen2.5-VL long caption hallucination rate DOCCI CAPTURE DeCapBench 2025
+- 9. "hallucination" mitigation LVLM "fair comparison" OR "standardized evaluation" OR "unified benchmark" decoding methods VCD OPERA re-implementation gains inconsistent across models benchmarks 2025 2026 arXiv
+- 10. VCD baseline nucleus sampling vs greedy decoding hallucination gains vanish "greedy" baseline stronger contrastive decoding LVLM POPE CHAIR critique sampling baseline weak
+- 11. video hallucination benchmark results Qwen2.5-VL Gemini 2.5 GPT-4o accuracy human gap VideoHallucer EventHallusion 2025 2026 new benchmark
+- 12. multi-image hallucination benchmark MLLM Qwen2.5-VL InternVL3 GPT-4o existence count attribute hallucination multiple images 2025
+- 13. openreview "The Mirage of Performance Gains" contrastive decoding NeurIPS 2025 reviews
+- 14. "object hallucination" "largely solved" OR "no longer the bottleneck" OR "nearly solved" OR "has been largely addressed" modern vision-language models 2025 2026
+- 15. CHAIR metric limitation COCO 80 categories synonym list open-vocabulary hallucination evaluation ALOHa OpenCHAIR recall trade-off "CHAIR" unreliable modern captions
+- 16. "hallucination" LVLM mitigation "caption length" controlled CHAIR "same length" OR "length-controlled" OR "truncate" shorter outputs explain CHAIR reduction recall drop pitfalls evaluation 2025
+- 17. "Toward a Stable, Fair, and Comprehensive Evaluation of Object Hallucination in Large Vision-Language Models" arXiv instruction length LeHaCE
+- 18. hallucination mitigation methods "stronger models" OR "advanced LVLMs" VCD OPERA "limited improvement" OR "diminish" OR "no improvement" Qwen2.5-VL InternVL3 LLaVA-OneVision "even degrade" POPE CHAIR
+- 19. POPE evaluation "first token" OR "logit" yes no probability readout vs generated text answer parsing sensitivity prompt template "answer the question using a single word" hallucination benchmark VLM bias study
+- 20. Jung 2025 hallucination mitigation methods trade precision for recall CHAIR "recall" caption object coverage LVLM mitigation methods reduce recall evaluation
+- 21. AMBER discriminative existence attribute relation F1 table Qwen2.5-VL-7B InternVL3-8B Qwen3-VL "Relation" "Attribute" "Existence" hallucination 2026 arXiv
+- 22. hallucination benchmark performance does not correlate with general VLM capability MMBench "hallucination" leaderboard trade-off mitigation degrades general performance MME MMMU study 2025 2026
+- 23. counting hallucination OR "number hallucination" VLM benchmark 2025 2026 Qwen2.5-VL GPT-4o Gemini accuracy object counting hallucination remains
+- 24. "Mirage of Performance Gains" OR "RePOPE" cited hallucination mitigation evaluation 2026 "re-evaluate" existing methods RePOPE DASH-B results VCD OPERA steering "DASH-B" mitigation
+- 25. attribute hallucination benchmark 2025 2026 state-of-the-art VLMs GPT-4o Qwen2.5-VL InternVL3 "attribute" hallucination accuracy fine-grained still struggle color count state benchmark results
+- 26. POPE GPT-4o Gemini Claude accuracy F1 closed-source "POPE" results table 2025 Gemini 2.0 Claude 3.5 Sonnet object hallucination yes/no
+- 27. hallucination mitigation "no method" consistently improves benchmark of mitigation methods LVLM 2026 "HalluBench" OR "reproducibility" OR "sanity check" OR "pitfalls" OR "rethinking" training-free hallucination mitigation evaluation protocol
+- 28. VideoHallucer EventHallusion results table Qwen2.5-VL-7B InternVL3 LLaVA-Video Gemini 2.5 video hallucination mitigation 2026 "EventHallusion" "VideoHallucer" accuracy
+- 29. long detailed caption hallucination rate modern VLMs "DOCCI" OR "IIW" OR "CAPTURE" Qwen2.5-VL InternVL3 GPT-4o hallucination increases with caption length benchmark 2025 2026 "CapMAS" OR "DetailCaps" OR "CompreCap"
+
+延伸检索（分工 A：修法六组）查询 2 条：(1) `"Activation Steering Decoding" hallucination large vision-language models ACL 2025 arXiv`；(2) `hallucination mitigation fine-tuning preference optimization Qwen2.5-VL InternVL3 LLaVA-OneVision CHAIR AMBER 2025 2026 DPO object hallucination`。各组 2025–2026 的后继没有系统发查询，这是缺口。
+
+### 阅读层级计数（去重后）
+
+- **F（取到正文并核对了对应章节或表）：108 篇。** 其中我本人通读或读了方法、设定、对照、局限的 14 篇：2605.13156（含全部附录）、2607.29412、2504.10020、2609.01888、2505.16146（含附录与公开代码）、2511.17254、Yang et al.（ICLR 2025）、2410.02762、2412.13817、2410.15778、2609.29048、2605.24024、2608.07302、2411.16724。其余 94 篇由分工检索者读，**多数是定点阅读**（只核对了所引的表与相邻段，没有通读）：修法类 41 篇（2311.16922、2311.17911、2410.11779、2408.02032、2407.21771、2503.03321、2605.20965、2502.01419、2505.16411、2412.13949、2606.20419、2602.11824、2502.03628、2602.21704、2504.13169、2405.18654、2410.15926、2403.00425、2403.14003、2403.18715、2406.12718、2602.22144、2504.04099、2505.21472、2505.16652、2605.10622、2602.18711、2608.09344、2604.07914、2601.23041、2510.26769、ACL 2025.acl-long.634、2606.28401、2402.14545、2312.00849 等，与我的 14 篇有 6 篇重叠）；评测类 27 篇（2504.15707、2503.23573、2412.06775、2508.06530、2510.22067、2602.13600、2510.16596、2504.10479、2511.21631、2606.00622、2405.05256、2406.17115、LeHaCE（NeurIPS 2024）、2610.25964、2412.20622、2510.20229、2406.12663、2508.00726、2503.19622、2607.25196、2608.11024、2506.07631、2503.07906、2511.05017 等）；引用链 7 篇（2604.06165、2608.24966、2607.26913、2605.19250、2610.12981、2609.29048、2601.05201）；抽象阶梯与方法论 30 篇（2606.15821、2503.10602、2505.14071、2310.06824、2407.12831、2307.00175、2602.20273、2310.15910、2402.18154、2407.07071、2212.08597、1809.02156、2603.06854、2606.18924、2505.12969、Anthropic *On the Biology of a Large Language Model*、2605.24977、2309.16042、2404.15255、2307.15771、2409.09951、2301.04213、2501.17148、2410.06981、2501.16615、2410.07149、2602.00462、2510.00845、2606.26783 等）。
+- **A（取到正文但只读了摘要、引言或局限段）：55 篇。** 我本人 9 篇：2605.27993、2601.12430、2603.24058、2026.findings-acl.1016、2512.07730、2026.acl-long.1861（= 2505.14071，分工 D 读到 F）、2509.23050 等；其余为分工检索者的清单（文本 LLM 真值方向一线 17 篇、仪器局限 18 篇、引用链 10 篇、评测 4 篇、修法 2 篇）。
+- **S（只有检索片段、标题，或已下载未读）：** 具名约 85 条（各分工清单合计，未去重）；另有被引扫描的 346 + 43 条标题。我本人已下载未读的 6 篇：2511.05923、2602.00621、2606.13870、2026.findings-emnlp.1280、2026.findings-acl.425、2605.22902（PDF 404）。
+
+### 我对分工草稿的抽查（19 项，全部对上）
+
+数字 5 项：ILVAD Table 1 的 VCD 48.4 与 VAR 52.5；QK Table 5 的 Pixtral −0.36 [−0.85, +0.17]；Devils Table 12 的 α = 0.6 行（1.0 / 49.3）；AllPath Table 1 的 AD-HH 85.0；TARAC 的 Qwen2-VL Cover 53.3。另核 ILVAD 的 Qwen3-VL-8B 基线 51.6 / 9.84 / 316.58（分工 B 报告"没找到出处"，出处就是 ILVAD Table 1，缓存在第一轮目录里）。引文 14 项：TruthProbe 两句、2605.24977 两句、2610.25964、HaloProbe、RePOPE、MM-Snowball、Revis、MESA、2607.25196、2608.24966 两句、2610.12981。其中两句在版式抽取文本里被双栏打断，换用阅读顺序抽取后核到。我自己引用的 50 句逐字引文全部核到（35 + 15）。分工检索者自报：A 42 条里 36 条脚本命中、6 条为跨栏人工拼接（VCD、Revis、ASD、EOS 两句、AGLA 的局限句）；B 37 条全中另 4 条肉眼对；C 39 条全中；D 约 130 条归一化匹配。
+
+### 对第一轮笔记的更正
+
+1. QK Product Steering（2606.20419）的发表处：PDF 页眉为 "Published at the Workshop on Actionable Interpretability at COLM 2026"，第一轮 03 笔记记作 Findings of EMNLP 2026。
+2. 第一轮 05 笔记把 Dual-Pathway 与"偏文本的中深层头"并在同一条 M6 下；原文的幻觉部件在**早层与网络两端**，粒度是**子层**，任务只有 Yes/No，与 Yang 的"中深层头"不是同一个定位结论。
+3. AllPath 的 0.8247：正文是 0.8247，图 3 上印 0.8427，原文自身不一致。
+4. 第一轮 05 笔记称 SSL "未见跨模型迁移时的随机方向对照"——本轮通读正文、附录与代码后确认，并补充：代码是无对齐地原样相加；InstructBLIP 上的差值小于标准差。
+5. 第一轮 03 笔记写 Yang 的修法"LLaVA-v1.5-7B COCO 描述幻觉率最多降 1.7×"——口径是 128 token；该法在 POPE 上无增益（AllPath Table 1）。
+6. 第一轮 03 笔记 KQ4 的 Gaps 写"DARE editing 未核实其存在"——引用链扫描里出现了标题 *DARE to Mitigate Hallucination: Dual-path Auto-Regressive-aware Editing*（arXiv 2609.36440，Nullu 与 ProjectAway 的共同被引），只有标题，未取正文（S）。
+
+### 第 7 步 边界申报
+
+- **OpenReview 审稿讨论：零条。** 六个论坛的接口都返回人机验证，没有绕过。共用口径要求查最近 3–5 篇，这一项没有完成。
+- **在审稿件与并行未公开工作**：不可见。只见到一个在审标题（TRACE，ICLR 2027 投稿）。
+- **非 arXiv**：只取了 ACL Anthology 4 篇、NeurIPS 2024 论文集 1 篇、transformer-circuits.pub 1 页；CVPR / ICCV 2026 无预印本的论文、会议补充材料未覆盖。
+- **非英文文献**：未查。
+- **闭源模型**：内部不可验证；行为数字只有 GPT-4o 的 POPE 86.9（转引）、GPT-4o-mini 的 DASH-B、HallusionBench 上的几家旗舰。
+- **知识截止**：我的知识截止在 2026-06，之后的论文（本报告里约三分之一的承重条目，如 Role-Break、2607.25196、2608.24966、2609.01888、2609.29048、2610.x）完全依赖本次检索，漏检概率高于此前年份。一个实例：2607.25196 是被引扫描找到的，两条关键词查询都漏了它；RePOPE、DASH、Dual-Pathway、AllPath、Role-Break 的被引侧基本没扫成，那里可能还有同类漏网。
+- **引用链的覆盖**：Semantic Scholar 收录不全且限流；Google Scholar 未试；最新三篇种子的被引只有 5 / 11 / 0 条。
+- **阅读深度**：108 篇 F 里通读的只有约 14 篇加修法类的 21 篇；其余是定点摘录。"自家方法论文里的基线表"（F7 的 d、k 两条大量依赖它）里基线超参是否按原论文调过，没有核。
+- **没有专门检索的**：各修法组 2025–2026 的后继（只 2 条查询）；Gemma3、LLaVA-OneVision、InternVL2.5 上的修法数字（所读正文里没有，未单独发查询）；AMBER 判别式逐类的新模型数字；视频与多图幻觉的内部定位；RepE、refusal direction 一线。
+- **代码**：10 个仓库只做了 URL 探活（均返回 200 或 301），只有 SSL 的代码实际读过；没有运行任何代码。
+- **环境事故**：检索中途 /tmp 配额一度写满，分工检索者删除了各自下载的 PDF（文本保留）；四个分工检索者在 16:43 前后同时中断约半小时，经我催促后恢复并交回。草稿在 /tmp/a4_audit/（sub_a_methods.md、sub_b_eval.md、sub_c_citations.md、sub_d_ladder_methods.md），是临时目录，可能被清理；本文件已并入其承重内容，未并入的细节（分工 B 的模型 × 基准全表、分工 D 的文本 LLM 逐篇表、分工 C 的被引五类清单）只在草稿里。
+
+**本候选接受的检验量**：一轮七步，89 条查询（对抗 15 + 延伸 31，引用链 2 + 被引标题 389 条，阶梯 18，方法论 12，蕴含 4，术语 7）。存活不等于强：4.0 的"未检出同协议因果比较"与第 6 节的几处"未找到"，都只是这个量级下的未找到。

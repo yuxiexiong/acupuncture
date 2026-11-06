@@ -1,0 +1,304 @@
+# 02 视觉—语言连接处（投影器 / 嵌入错配 / 位置编码 / token 压缩）的跨模型失败候选
+
+检索者范围：根因位于连接处的候选。日期 2026-11-06。阅读层级标注：F = 取到正文并核对了对应章节或表；F浅 = 取到正文但只做了关键词定位，未通读该节；A = 只读摘要；S = 只有检索片段。逐字引文全部来自 `curl https://arxiv.org/html/<id>` 取回后本地去标签的正文（不经过摘要模型），未经此路径的一律标 S。
+
+## 先说不利的
+
+1. **"根因在连接处"这个前提本身被两篇跨多族的论文直接反驳**（C7）：探针显示视觉信息穿过投影器和 LLM 各层后仍可读出，微调 LLM 比微调投影器更能补上差距（Fu et al. 2506.08008，Prismatic 四个 VLM + InternVL / Phi-3-V / Qwen-VL；Zhang et al. 2405.18415，LLaVA-1.5 与 BLIP-2）。主张"连接器丢信息"的那篇（2509.11986）只有相关级证据，且作者自认分不清损失来自连接器还是来自他们训练的重建网络。
+2. **范数错配（C1）的行为级失败只在 LLaVA-1.5 上测过**，提出者自己写 "Our work is limited to the LLaVA style model… Recent VLMs train vision encoders from scratch and might not have the problem we mentioned"。跨族的只有"范数差存在"这一测量，以及重训对照下的通用基准涨点；还有一个反例（Ovis 2.5 范数差 64 对 1.38 但更新速率不失衡）。
+3. **RoPE 长程衰减（C2）的归因有已发表的竞争解释**：2509.21984 在 Qwen2.5-VL 上改分辨率，偏置形态不随 token 数变化，并写 "the bias should not be attributed to the long-term decay property of RoPE"；D²Pruner 报告 InternVL / Qwen 偏向图像外围而不是底部。
+4. 本笔记里所有"因果"级证据，除 FEATHER（推理期去掉 RoPE）、GAP（推理期改位置 id）、CMRM（推理期表示校准）、RoPE scaling（免训练）四项外，都是**重训对照**（换一个部件从头训两个模型再比），不是在固定模型上的激活级干预。按共用口径的"因果"定义，这些只能算弱因果，已逐条标出。
+5. 37 篇取到正文的论文都是关键词定位式阅读，没有一篇通读；OpenReview 审稿讨论一条没取到。
+
+---
+
+## 主表候选（现象与根因各有 ≥2 个模型族证据）
+
+### C1 视觉 token 范数远大于文本 token → 视觉 token 在 Pre-Norm 残差流里更新慢、位置信号被压
+
+- **现象**：(a) 表示层：投影器输出的视觉 token L2 范数比 LLM 文本嵌入大 1–2 个数量级；(b) 行为层：打乱视觉 token 顺序几乎不影响 VQA 类成绩（"bag-of-tokens"），空间关系题差。
+- **现象的跨模型证据**
+  - 范数差：LLaVA-v1.5 投影后 39.96±45.58 对文本 1.08；Qwen-2.5-VL 56.88±25.73 对 0.86；KimiVL 4.78±2.21 对 0.85；GLM-4.1V 4.58±2.03 对 0.80（2512.08374 Table 2，F）。编码器侧：CLIP-L 29.30、SigLIP-SO400M 71.78、SigLIP2 59.37、MoonViT 72.17；文本侧 Qwen2.5-7B 0.80、Qwen3-8B 1.38、Llama3.2-3B 1.09（同文 Table 1，F）。
+  - 受控 9 组合（OLMo-7B / LLaMA3-8B / Qwen2-7B × CLIP / DINOv2 / SigLIP，按 Molmo 配方训）："Vision tokens have larger L2 norms than text tokens across all models, often by 1–2 orders of magnitude"；LLaMA3-8B 与 Qwen2-7B 的视觉 token 最大范数 "exceeding 100,000 in some cases"，OLMo-7B 两种模态都小（max≈1000）（2602.00462 Appendix F，F）。
+  - LLaVA-1.5："vision embeddings are typically 1–2 orders of magnitude larger than text embeddings, with an upper tail approaching 3 orders"；残差流里失衡持续到约第 15 层（2503.17349 §4、Fig. 3–4，F）。
+  - 行为层（仅 LLaVA-1.5 7B）：随机置换视觉 token，VQAv2 78.2→77.35、POPE 87.3→87.10、GQA 61.36→58.62、CV-Bench 2D 56.59→56.26（2503.17349 Table 1，F）；576→1 个 token 最差掉 8.5%（同文 Fig. 2，F）。**行为层没有第二个模型族的数据。**
+- **根因主张**：Pre-Norm 结构下每层更新量与输入范数无关，高范数视觉 token 的方向变化慢（"representational inertia"），跨模态注意力信噪比下降（2512.08374 §3）；另一说法是高范数残差让 RoPE 对视觉 token 的作用被稀释（2503.17349 H1）。位置：投影器输出尺度 × LLM 归一化位置。
+- **根因的跨模型证据**
+  - 相关，≥4 族：层间余弦相似度（更新速率代理）视觉与文本分叉，范数差越大分叉越大（LLaVA-1.5、Qwen-2.5-VL、Kimi-VL、GLM-4.1V；2512.08374 RQ3 / Fig. 3，F）。
+  - 弱因果（重训对照），LLaVA-1.5 / Vicuna + CLIP：投影后加 RMS 归一化重训，Position Sensitivity Index 在 CV-Bench 2D 上 0.57→11.31、2DS 41.07→61.21；2DS 准确率 56.63→59.30，再加多层特征到 64.80；RoPE 敏感度探针在 0–5 层升高（2503.17349 Table 2–3、Fig. 8，F）。
+  - 弱因果（重训对照），Llama-3.2-3B + SigLIP 与 Qwen2.5-7B + SigLIP（均在 LLaVA-1.5 训练框架内）：投影后加 LayerNorm 并把增益初始化到文本范数。Llama：MMStar 37.72→41.19、OCRBench 40.70→45.60、九基准平均 59.01→62.04。Qwen：不加梯度补偿时 MMBench 76.80→75.60、MM-Star 50.34→48.08（变差），加 Global Weight Compensation 后 77.66 / 50.58（2512.08374 Table 4，F）。
+  - 级别判定：跨族的是"相关"；因果只有重训对照，且三个设置都是作者自训的 LLaVA 式模型。
+- **不同论文说法是否一致**
+  1. 注意力方向相反：2512.08374 沿用"视觉 token 得到的注意力少"；2503.17349 把系统提示剔除后发现视觉注意力占比高于用户文本（约 75%），认为这是高范数造成的"brute force"，归一化后降到约 54%。两者对"范数大 → 注意力多还是少"的说法不一致。
+  2. 反例：Ovis 2.5（离散视觉词表）范数 64.00 对 1.38，但 "the update rates … do not exhibit the marked asymmetry found in LLaVA-style architectures"（2512.08374 RQ4，F）。范数差不是更新失衡的充分条件。
+  3. 2512.08374 自己指出除 LLaVA-v1.5 外其余模型的投影器里已含归一化层，"simply inserting a normalization layer within the projector is not a guaranteed solution"。
+  4. 高范数的另一来源（ViT 内的离群高范数 token）：SHIELD 2510.16596 把幻觉与编码器内离群 token 范数挂钩（S，未取正文）。
+- **竞争者（已有修法）**
+  - Qi et al. *Beyond Semantics*（2503.17349）：投影后 RMS 归一化 + 中间层特征拼接；LLaVA-1.5 7B；数字见上；需重训两阶段。自认局限（逐字）："Our normalization is blunt and can reduce dynamic range, especially for 3D cues." "Future work should consider a more sophisticated normalization alignment." "Our work is limited to the LLaVA style model…"。项目页在 user074.github.io（URL 在正文里被截断，未核）。
+  - *The Unseen Bias*（2512.08374，检索结果显示为 ICLR 2026）：LayerNorm + Global Weight Compensation；Llama-3.2-3B、Qwen2.5-7B + SigLIP；数字见上；需重训。局限：理论依赖三条简化假设（Uniform Update Magnitude 等，§3.1）；正文未找到独立的 limitation 小节；代码链接未找到。
+  - 免训练的范数重缩放：未找到（方法层，查了 2 条查询："vision token norm normalization … inference-time"、"visual token embedding norm larger than text"）。
+- **剩余空间**：2DS 上最好 64.80%（合成二维空间题，上限 100）；CV-Bench 2D 等标准基准涨幅在附录，未核。3D 线索可能受损（作者自述）。
+- **便宜办法**：未找到换提示 / 提分辨率能否修的直接检验。
+- **数据与基准**：2DS（作者合成，是否公开未核）；COCO val 5k 用于范数统计；CV-Bench 2D、GQA、POPE、VQAv2；MMStar / OCRBench / MMBench 等。
+- **作者留的开口**：LatentLens "we crucially have not studied how or if certain LatentLens interpretations affect the downstream behavior of the VLM"；Beyond Semantics 对"从头训视觉编码器的新模型是否还有此问题"明说不知道。
+
+### C2 RoPE 长程衰减 × 光栅展平 → 指令 token 对图像 token 的注意力随序列距离衰减（偏向图像底部），造成位置依赖的物体幻觉与注意力式剪枝的定位崩溃
+
+- **现象**：(a) 同一物体贴在图像不同位置，"图里有没有 X"的正确率随位置系统变化；(b) 以最后一个文本 token 的注意力给视觉 token 打分时，序列靠后的（图像底部）token 得分系统性偏高。
+- **现象的跨模型证据**
+  - LLaVA-1.5（CLIP ViT-L + Vicuna-7B）：裁剪粘贴实验，基线模型物体在图像上部时更易答错、下部更易答对（2410.15926 §3 / Fig. 2，F）。
+  - SigLIP-SO400M + Llama 2 7B（Prismatic 式）：FastV 早层剪枝后 TextVQA、RefCOCO、RefCOCO+、RefCOCOg、OCID-Ref 分别下降 42.0%、88.9%、88.9%、91.0%、86.0%；"dropping 50% of tokens reduces average performance by 45%"；被剪掉的集中在图像上部（2412.13180 §3，F）。
+  - FastV 在 8,910 条 POPE 样本上的统计："tokens located toward the end of the visual token sequence were assigned significantly higher attention scores and were retained far more frequently"（2502.11501，F；该图用的是哪个模型未逐字核到，同文 Table 1 的 FastV 对照是 LLaVA-1.5-7B）。同文在 LLaVA-1.5-7B/13B、LLaVA-Next-7B、Qwen2-VL-7B/72B 上报告 Random 与 Pooling 胜过 FastV / SparseVLM（F浅）。
+  - 1,000 张 COCO 图平均注意力："corroborate LLaVA's bottom-focused tendency but also expose distinct biases in other models: InternVL and QwenVL, for instance, exhibit a pronounced preference for tokens near the image periphery"（2512.19443 引言，F）。**即 Qwen / InternVL 上现象形态不同（外围而非底部）。**
+  - 关键图块放 3×3 网格不同位置，Qwen2.5-VL-7B、Qwen3-VL-8B、Gemma3n-E4B、LLaVA-v1.6-Mistral-7B、InternVL3-8B 全部表现出位置敏感，"particularly LLaVA-v1.6"；Qwen2.5-VL "achieves the most consistent performance"，其 7B 版各网格位置间准确率波动 Δ=1.74，32B / 72B 更小（2509.21984 §3 / Table 1，F；原文列了五个模型名却写 "six"）。
+- **根因主张**：LLM 的一维 RoPE 使注意力随相对距离衰减；图像 token 光栅排在指令之前，左上角离指令最远。位置：位置编码 × 视觉 token 排列顺序。
+- **根因的跨模型证据**
+  - 弱因果（重训对照），LLaVA-1.5：按光栅与反光栅两种位置顺序各训一个模型，正确率的空间分布随之翻转（2410.15926 §3，F）。
+  - 因果（推理期干预），SigLIP + Llama 2：打分时不施加 RoPE（ϕ-R），K=3 时定位任务平均提升 183%，K=8 时 17%（2412.13180 Table 1 / §4，F）。
+  - 论证：MCA-LLaVA、PyPE、ASAP（2603.14549，S）沿用同一解释。
+  - 级别判定：因果，2 个设置（CLIP+Vicuna；SigLIP+Llama 2）。两者 LLM 同属 Llama 系一维 RoPE、同为 LLaVA 式 MLP 连接；按共用口径算两个族（编码器不同），但 LLM 位置编码方案相同，独立性有限。
+- **不同论文说法是否一致**（竞争解释，逐条）
+  1. **不是 RoPE，是因果注意力与 ViT 双向注意力的错配**（2509.21984，F）："we observe that the performance is not well correlated with token distance, suggesting that spatial bias might not stem from the long-term decay property of RoPE"；在 Qwen2.5-VL 上改输入分辨率，"the overall spatial bias patterns remain largely consistent across resolutions… lower-resolution inputs even exhibit more severe bias at positions farther away from the text tokens"。其修法 AGCI 需 LoRA 微调（10K 条），结果表里有 Gemma3n-E4B、LLaVA-v1.6-7B、InternVL3-8B、Qwen3-VL-8B 四个模型的 AGCI 行（F，数字未摘）。这给"因果注意力错配"提供了 4 族的弱因果证据（微调对照），但注入全局上下文有效并不能唯一指向因果掩码。
+  2. **来自位置嵌入类型**（2512.19443，F）："LLaVA's absolute embeddings foster a location-based shortcut (bottom-focus), while the relative embeddings (e.g., RoPE) in InternVL and QwenVL encourage a structural one (periphery-focus)"——作者用 "We posit"，无干预实验。
+  3. **衰减只在第一层起作用，之后是 LLM 的"聚集模式"**（2501.10967，F）：同心位置编码只在第一层缓解，"in the subsequent layers, both methods largely maintain…"；All-One PE（所有图像 token 同一位置）在粗粒度任务上仍有竞争力。
+  4. **LLM 位置对视觉 token 本来就没怎么被用上**（2503.17349）：置换几乎不掉点。与"位置造成强偏置"并不直接矛盾（一个说内容读取，一个说注意力幅度），但两篇对"LLM 位置信号对视觉 token 有多大作用"的量级判断不同。
+  5. 2509.21984 引 Zhu et al. (2025c) 称 CCA 的发现 "lack generalizability across architectures"（原文未取，S）。
+- **竞争者（已有修法）**
+  - CCA（2410.15926，NeurIPS 2024）：视觉 token 位置改为由外向内的同心环 + 相应因果掩码；LLaVA-1.5 7B 重训；POPE 三个数据集准确率 +5.48 / +7.86 / +6.70，F1 +5.89 / +7.71 / +6.19；CHAIR 长回答比基线好 3.2%。自认局限（逐字）："our focus is only limited to handling of image-text inputs. We consider positional alignment strategy for other modalities of input data as future works"。代码 https://github.com/xing0047/cca-llava。
+  - MCA-LLaVA（2507.09184）：一维衰减改为按曼哈顿距离的二维多向衰减；LLaVA-1.5 7B 重训；POPE F1 +6.7%、Acc +6.7%，CHAIR 句级 −9%、实例级 −2.9%。代码 github.com/ErikZ719/MCA-LLaVA（S）。
+  - PyPE（2501.10967）：位置由外围到中心逐层递减；TinyLLaVA（SigLIP + Phi-2，3B）与 LLaVA-1.5 7B / 13B 重训。自认局限（逐字）："it is currently limited to single-frame images and has not yet been extended to video and other modalities. Future research will focus on … extending PyPE to a broader range of VLMs."
+  - FEATHER（2412.13180，ICCV 2025 据检索）：去 RoPE 的打分 + 均匀采样 + 两阶段剪枝；免训练；检索摘要称定位提升 >5×（S）。作者开口："To accurately assess a wider range of visual capabilities, future work may explore how to resolve current dataset biases that models can exploit"；另指出 FasterVLM / VisionZip 在定位上"vastly worse"，"We expect this is because positional information is not maintained in these methods"。
+  - D²Pruner（2512.19443）：用 1,000 张图标定的位置先验去除注意力分数里的位置偏置；免训练；InternVL-2.5-8B 在 90% 剪枝率下保留 85.7% 定位性能，比此前两类方法高 63.5 与 51.2 个点。
+  - AGCI（2509.21984）：把全局视觉上下文按相似度注入每个图像 token；LoRA 微调。自认局限：只测了 3×3 网格；未含超大模型。
+- **剩余空间**：所有位置重排方法都要重训且只在 LLaVA-1.5 / TinyLLaVA 上验证；Qwen / InternVL 上偏置形态不同，现有修法未覆盖。CCA 的 POPE 提升是相对各自重训基线。
+- **便宜办法**：改分辨率不改变偏置形态（2509.21984，Qwen2.5-VL，F）。换提示：未找到。
+- **数据与基准**：POPE、CHAIR、RefCOCO / + / g、OCID-Ref、TextVQA；2509.21984 的 3×3 探针集（是否公开未核）。
+
+### C3 多模态位置索引的设计缺陷（文本与图像共用索引空间、MRoPE 频率分配、位置 id 重叠）→ 空间关系题与文档类任务退化
+
+- **现象**：(a) 文本 token 到同一图像内不同图块的 RoPE 距离不等，产生与语义无关的跨模态位置偏好；(b) 二维 RoPE 高频分量随距离衰减，远距离图块间相对方位信息丢失；(c) MRoPE 下注意力集中到每张图 / 每帧的左上角；(d) 位置 id 与生成文本的索引重叠时 DocVQA / InfoVQA / ChartQA 异常下降。
+- **现象的跨模型证据**
+  - Qwen2-VL-2B / 7B 在 What's Up、VSR、COCO-spatial、GQA-spatial 上的空间题（2509.19191 Table 2，F）；该文还在 LLaVA-1.5、Qwen2 / 2.5-VL、InternVL-2.5 上做位置表示几何分析（F浅）。
+  - Qwen 系 MRoPE："MRoPE exhibits a visual 'attention sink', where attention concentrates on the top-left corner of each image or video frame"；VideoRoPE 与 HoPE "exhibit anomalous degradation on DocVQA, InfoVQA, and ChartQA… overlap of position indices"（2510.23095，F浅；实验所用骨干未逐字核）。
+  - InternVL2："conventional positional encoding schemes fail to preserve vital 2D structural relationships when processing dynamic high-resolution images"（2506.06279，F浅，单族）；位置索引超出上下文窗口时性能骤降（2412.09616，InternVL2，F浅，单族）。
+- **根因主张**：位置编码方案把一维文本索引与二维图像结构硬拼在同一索引空间。位置：LLM 位置编码对视觉 token 的索引分配。
+- **根因的跨模型证据**
+  - 弱因果（重训对照），Qwen2.5-VL-3B 与 LLaVA-0.5B：只换位置编码模块、只更新 LLM。Qwen2.5-VL (SFT) → Circle-RoPE：MMMU val 51.56→52.11、MMMU-Pro 28.01→28.44；LLaVA-0.5B 三基准平均 1D-RoPE 26.95、M-RoPE 26.93、Circle-RoPE 27.36（2505.16416 Table 2 / 7，F）。**效应量在 0.4–0.6 个点，未见方差或多种子。**
+  - 因果（免训练干预），Qwen2-VL：RoPE scaling 后 2B 模型 What's Up A 74.61→77.27、B 53.16→58.25、VSR 73.30→73.75；7B 模型 A 98.06→98.86、B 87.84→88.97（2509.19191 Table 2，F）。单族。
+  - 级别判定：弱因果 2 族（Qwen2.5-VL、LLaVA），效应小；免训练因果只在 Qwen2-VL。
+- **不同论文说法是否一致**：2510.23095 批评 Circle-RoPE "the large interval between modalities may impede effective cross-modal interaction"，且无时间轴。Circle-RoPE 要文本到所有图块等距（PTD=0），C2 一系方法要缩短距离，2510.23095 要"positional coherence + 保留文本先验"，三者设计目标互不相同。
+- **竞争者**
+  - Circle-RoPE（2505.16416）：图像索引映射到与文本轴正交的环上；Qwen2.5-VL、LLaVA。开口（逐字）："we leave large-scale 3D/video evaluation to future work"。
+  - MHRoPE / MRoPE-I（2510.23095，检索显示 ICLR 2026，Qwen 团队）：不改结构的两种多模态 RoPE。代码 github.com/JJJYmmm/Multimodal-RoPEs（S）。
+  - RoPE scaling（2509.19191）：对高维频率分量缩放相对距离；免训练或 6 万条 GQA 微调。作者自评（逐字）："it serves only as a localized remedy for potential limitations in RoPE. We expect developments in positional encoding that can more effectively capture relative spatial relationships in the future."局限：只研究了 front / behind / left / right 四种关系。
+  - V2PE（2412.09616）：视觉 token 用更小的可变位置增量；InternVL2 微调。CoMemo / RoPE-DHR（2506.06279）：InternVL2。
+- **剩余空间**：Qwen2-VL-2B 在 What's Up B 上修后 58.25%，SFT+scaling 63.48%（上限 100）；COCO-spatial 1 仅 49.84→50.24。
+- **便宜办法**：未找到。
+- **数据与基准**：What's Up A/B、VSR、COCO-spatial、GQA-spatial（公开）；MMMU、MMMU-Pro、MathVista。
+
+### C4 压缩型连接器（Q-Former / Perceiver resampler）丢失空间局部性与细粒度属性 → 空间理解、定位、细节题差
+
+- **现象**：用少量可学习 query 压缩图块的连接器，其输出里读不出区域位置；换成保留一一对应的线性 / MLP 投影后空间类任务更好。
+- **现象的跨模型证据**
+  - BLIP-2 第一阶段 Q-Former 与 InstructBLIP Q-Former：冻结时线性探针在 RefCOCOg 上 "perform poorly… unable to perform explicit visual grounding"，VSR 等二分类任务上冻结与微调 "there is a significant gap"（2404.13594 §4，F；NAACL 2024）。
+  - CLIP ViT-L + Vicuna-7B 同配方换投影器：resampler 在六个空间理解任务上 "shows poor performance due to its lack of consideration for local context preservation"；同为 M=256 时 C-Abstractor 56.3 对 linear 52.6（2312.06742 Table 3，F；resampler 的具体分数未摘到）。
+  - LLaVA-1.5 框架换 Q-Former：query token "tend to lose fine-grained visual attributes"，"different query tokens show repetitive patterns across images"（2405.20985 §3，R-GAE 相关性图，F）。
+  - Idefics2（perceiver resampler）：投影后用作检索 R@5 下降 18.8%；LLaVA（MLP，不压缩）下降 41.4%；Qwen2.5-VL（patch merger）反而上升（2509.11986 Table 2，F）。**即"压缩型更差"在这个指标上不成立。**
+- **根因主张**：压缩与语义抽象绑在一起，连接器先做了一次"抽象"，位置与细节在进 LLM 之前已不可恢复。位置：连接器结构。
+- **根因的跨模型证据**
+  - 相关：探针（BLIP-2、InstructBLIP）；相关性图（LLaVA 框架 + Q-Former）。
+  - 弱因果（同配方换部件重训）：Honeybee（Vicuna-7B + CLIP）、DeCo（Vicuna-v1.5-7B + CLIP，另称对不同视觉骨干 / 分辨率 / LLM 稳健，F浅未核数字）。
+  - 级别判定：相关 ≥2 族；换部件的因果对照集中在 Vicuna + CLIP 一族。
+- **不同论文说法是否一致**
+  1. MM1（2403.09611，F）："VL Connector Lesson: Number of visual tokens and image resolution matters most, while the type of VL connector has little effect"，并写明 "contrary to what has been reported in the literature [12]"（[12] 即 Honeybee）。
+  2. Idefics2（2405.02246，F）：perceiver 学习式池化 "increases the performance by 8.5 points on average and reduces the number of visual tokens … from 729 to 64"，且 "we observe no gains when using more than 64 visual tokens"，与 MM1 "token 越多越好"相反。
+  3. Lost in Space：联合训练 resampler 与探针后大幅回升，"the compression achieved by the resamplers can in principle encode the requisite spatial information, but … more object-aware pretraining objectives are needed"——根因指向预训练目标，不是压缩本身。
+- **竞争者**：Honeybee C-/D-Abstractor（卷积 / 可变形注意力保局部性；重训）；DeCo（2D 自适应池化，把抽象留给 LLM；MLLM 基准 +0.9%、定位 +7.1%、开放 VQA +2.9%；重训）；TokenPacker、LaCo（S，未取正文）。DeCo 自述："The non-compressive linear projector preserves all vision information and achieves the best overall performance."
+- **剩余空间**：压缩型里最好的仍低于不压缩的线性投影（DeCo Table 1 自述）。
+- **便宜办法**：不适用（结构问题）；Idefics2 用切子图把 64 token 扩到 320 来补 OCR 类任务。
+- **数据与基准**：RefCOCOg、VSR、MME-Position、MMBench SR/OL/PR、SEED SR/IL。
+- **作者留的开口**：Lost in Space "Future work should build upon our findings and design objectives that incentivize disentangled representations"。
+
+### C5 LLM 内视觉 token 剪枝 / 合并 → 定位与 OCR 崩溃，而一般 VQA 基本不掉
+
+- **现象**：免训练的视觉 token 剪枝在多数 VQA 基准上保持成绩，但定位（REC）与 OCR 大幅下降；随机剪枝常不输精心设计的方法。
+- **现象的跨模型证据**
+  - SigLIP + Llama 2：见 C2（−42.0% 至 −91.0%；2412.13180，F）。
+  - LLaVA-v1.5、InternVL3、Qwen2.5-VL，10 种方法、10 个数据集："Random pruning is a surprisingly strong baseline"；"Instruction-following tasks remain robust, while OCR benchmarks suffer the most severe degradation"（2511.02650 引言与结论，F）。具体掉点幅度（检索摘要称 88.9% 剪枝率下掉 20–40 个点）为 S。
+  - Shikra、MiniGPTv2、LLaVA 系共五个模型："grounding task performance consistently dropped by more than 40% across all models under pruning, regardless of their architecture"；MiniGPTv2 上 "pruning as little as 1% of the tokens could lead to a dramatic performance decline, reducing accuracy from 87 to as low as 18"（2506.21873 §3 / Table 5，F）。
+  - LLaVA-1.5-7B 与 InternVL2.5-8B 定位、Qwen2.5-VL-7B 与 InternVL-2.5-8B 理解基准（2512.19443 Table 2–3，F浅）。
+- **根因主张**（三条，并存）：(i) 剪枝后保留 token 的位置 id 被重排 / 压紧，空间对应关系错位；(ii) 注意力打分自带位置偏置（即 C2）；(iii) 这些任务确实需要大量 token（能力型，非"干净"失败）。位置：视觉 token 的位置 id 与选择准则。
+- **根因的跨模型证据**
+  - (i) 因果（推理期干预，免训练），Shikra / MiniGPTv2 / LLaVA 系："misaligned position IDs are the primary cause of performance drops after pruning"；保持原位置 id 的顺序与数值（GAP）后提升 23%–75%（2506.21873 Table 5，F）；同样的错位对 GQA "minimal impact"。
+  - (ii) 见 C2。
+  - 级别判定：(i) 因果，≥2 族（Shikra、MiniGPTv2、LLaVA）。
+- **不同论文说法是否一致**：FEATHER 归因于打分的 RoPE 偏置并认为此前"浅层冗余低"的解释不对；GAP 归因于位置 id 错位；Wen et al. 归因于保留 token 的空间不均匀；D²Pruner 另提"多样性方法的结构盲"。这些可以并存，没有一篇把几条根因放在同一设置里分账。
+- **竞争者**：GAP（免训练）；FEATHER；D²Pruner；Wen et al.（指出评测问题）；UniPruneBench（基准）。GAP 的局限小节未摘到（F浅）。
+- **剩余空间**：GAP 之后与不剪枝的差距未摘到具体数（Table 5 未逐格核）；D²Pruner 在 90% 剪枝下保留 85.7%（InternVL-2.5-8B）。
+- **便宜办法**：不适用。
+- **数据与基准**：RefCOCO 系、OCRBench、SEED-Bench-2-Plus、UniPruneBench（称将公开实现）。
+
+### C6 图像输入的隐状态与同语义文本的隐状态不对齐 → LLM 自带的文本安全机制不迁移到图像
+
+- **现象**：同一有害语义，文本输入时 LVLM 的拒答率与其基座 LLM 接近，换成图像输入后拒答率接近 0。
+- **现象的跨模型证据**：Defence Success Rate（Porn 场景）——LLaVA-1.6-Mistral-7B：基座文本 27.45、LVLM 文本 26.78、LVLM 图像 1.05；InstructBLIP：17.98 / 15.46 / 1.28；Qwen-VL-Chat：72.96 / 70.64 / 4.23（2410.12662 Table 1，F；ICLR 2025 据检索）。LLaVA-1.5-7B / 13B、ShareGPT4V 上多模态输入 unsafe rate 显著高于纯文本（2410.09047 Table 1，F）。LLaVA 上加一张空白图即削弱有害 / 无害查询的可分性（2502.10486 Fig. 2，F浅）。
+- **根因主张**：投影器把图像对齐到了输入嵌入层，但没对齐到安全机制起作用的那些中间层的隐状态；多模态输入的表示整体偏离 LLM 被优化的分布。位置：连接器输出 → LLM 中间层表示。
+- **根因的跨模型证据**
+  - 相关，3 族：在安全机制激活层，同语义文本与图像的隐状态余弦相似度显著低于 CLIP score（2410.12662 Fig. 4，F）。安全层定位用了逐层遮蔽有害 token 信息流的扰动实验（同文 Fig. 3，F）。
+  - 因果（推理期干预），单族：CMRM 沿估计方向把多模态隐状态拉回文本分布，LLaVA-7B unsafe rate 61.53%→3.15%（2410.09047，F；LLaVA-1.5 与 ShareGPT4V 均为 Vicuna 骨干）。
+  - 弱因果（重训对照），单族：TGA 用检索文本引导投影，LLaVA-1.5 / Mistral-7B 配置下隐状态相似度与安全迁移率上升（2410.12662 Fig. 7，F）。
+  - 级别判定：跨族相关；因果仅 LLaVA 一族。
+- **不同论文说法是否一致**：三篇都归到表示间隙，但落点不同——TGA 说特定层语义错位；CMRM 说整体分布平移；VLM-Guard 说 modality gap 使有害 / 无害边界模糊。另一类解释（训练数据里几乎没有有害图像样本，所以没学到）在 TGA 引言里被承认为背景事实，未被排除。
+- **竞争者**：TGA（需重训；依赖 LLaVA-1.5-13B 生成的 caption，作者测了 caption 出错率的稳健性）；CMRM（免训练；自述 "does slightly increase the computational overhead during model inference"，并写 "We believe that the degradation phenomenon exists in other aspects of VLMs, such as reasoning ability and faithfulness"）；VLM-Guard（免训练；自述 "the influence of this gap on other capabilities such as reasoning and understanding remains to be investigated in future research"）。
+- **剩余空间**：未摘到 TGA 之后与基座 LLM 文本拒答率的差距数字。
+- **便宜办法**：未核。
+- **数据与基准**：TGA 自建有害图文对（来源含 HOD 等）；VLSafe、JailbreakLLMs。
+
+### C7 VLM 在视觉中心任务上远差于自己的视觉编码器（信息在、没用上）——"根因在连接器"的主张与反证
+
+- **现象**：深度序、对应点、分类等任务，直接读视觉编码器接近满分，同一编码器接进 VLM 后用问答方式测掉到接近随机。
+- **现象的跨模型证据**：Prismatic 的四个 VLM（DINOv2 / IN1k-ViT / CLIP / SigLIP 骨干）+ InternVL、Phi-3-V、Qwen-VL，"universal drop in performance, often to random chance"（2506.08008 Fig. 2–3，F）。分类：GPT-4 在 ImageNet 闭集 60.6% 对 EVA-G 79.2%；十个 VLM（含 GPT-4-Turbo、Gemini-Pro-Vision、Claude-3-Opus 与七个开源）都显著低于 CLIP（2405.18415 §2，F）。
+- **根因主张（连接器版）**：连接器投影扭曲了视觉表示的局部几何、丢了图块级细节（2509.11986）。
+- **根因的跨模型证据**
+  - 支持，相关，3 族（LLaVA、Idefics2、Qwen2.5-VL）：投影前后最近邻重合率低（"40-60% divergence in nearest-neighbor rankings"）；逐样本重建损失与 caption CIDEr 负相关（LLaVA、Idefics2）；答案相关图块的损失与 QA 正确率负相关（2509.11986，F；Findings of EMNLP 2025 据检索）。KNOR 与 R@5 的 Spearman 仅约 0.1（Qwen2.5-VL、LLaVA）与 0.3（Idefics2）。
+  - **反对**，探针 + 分部件微调，≥4 族："vision representations remain intact as they pass through the projector (gray region) and LLM (white region), suggesting that performance drops are not due to a loss of visual information"；"Across most tasks, finetuning the LLM results in a higher accuracy than finetuning the projector or vision encoder"（2506.08008 §4，F）。LLaVA1.5-7B 末层探针 ImageNet 77.1%，对 CLIP-L 85.2%，"information necessary for classification is largely preserved in the VLM's latent space; however, it cannot be effectively decoded"，BLIP2-2.7B 同结论；作者把主因归为训练数据（2405.18415 §3.2，F）。
+  - 级别判定：连接器版根因 = 相关（3 族），并有跨族反证。
+- **不同论文说法是否一致**：不一致。连接器丢信息（2509.11986）对 LLM 不会用（2506.08008）对数据不够（2405.18415）对纯文本监督使 LLM 内视觉表示漂离编码器特征（2509.07979 VIRAL，LLaVA，F浅）。2506.08008 有一个例外："with InternVL: when the vision representations themselves cannot easily complete the task, the VLM cannot rescue performance"。
+- **竞争者**：分类数据混入训练（2405.18415）；VIRAL 对齐损失（2509.07979；自述在 MMVP 上 "only marginal improvement or even a slight drop"）；LLaViT（2511.10301，视觉 token 独立 QKV + 双向注意力，重训；自述增加参数量）。
+- **剩余空间**：2506.08008 的微调只用每任务 5,000 例 LoRA，未报告是否追平视觉探针上限（未核）。
+- **便宜办法（已被证明修不了）**：prompt-tuning 1 / 5 / 10 个前缀嵌入 "improves performance only marginally… does not close the gap"（2506.08008 §4.2，F）；Zhang et al. 试了提示变体、标签集大小、推理策略，均非主因（F浅）。
+- **数据与基准**：BLINK 子任务、NYUv2 深度、HPatches 对应；ImageNet 等四个分类集、ImageWikiQA；CUB 检索、VizWiz Grounding VQA、SeedBench、VQAv2。代码 github.com/lyan62/vlm-info-loss（S）。
+- **作者留的开口**（2509.11986 Limitations，逐字）："our reconstruction experiments cannot conclusively determine whether the observed information loss stems from the connector layer itself or from potential learning limitations of the trained reconstruction network."
+
+---
+
+## 未达主表门槛的（单一模型族，或缺失败端的跨族实测）
+
+| 编号 | 现象｜根因 | 缺什么 | 出处与层级 |
+|---|---|---|---|
+| S1 | 视觉 token 在 LLM 输入层不对应词表里的词，中后层才与语言特征对齐｜投影器只做了尺度 / 位置上的接入，没做语义对齐 | 表示层发现跨族（见下文 KQ2），但"造成哪类失败"只有相关：Shukor & Cord 的 implicit alignment 分数与幻觉负相关（Vicuna 系，2405.16700，F浅）；MIR 与下游成绩相关（LLaVA-1.5 预训练设置，2410.07167，F浅） | 2410.07149、2506.11976、2602.00462 |
+| S2 | 因果掩码使靠前的视觉 token 看不到后面的图块 → 长上下文 / 多图推理受损｜LLM 因果注意力 | 只在 LLaVA 系做过（2505.18605，F浅）；2509.21984 给了 5 个模型的现象，并在 4 个模型上做了 AGCI 的 LoRA 微调对照（见 C2 竞争解释 1）；但把根因归到因果注意力的证据是"排除视觉编码器 + 注入全局上下文有效"，没有直接改掩码的干预。若把 2505.18605 的改掩码实验（LLaVA 系）与之合并，可视为主表边缘候选 | 2505.18605、2509.21984 |
+| S3 | 置换视觉 token 不掉点（bag-of-tokens） | 行为测量只有 LLaVA-1.5 7B（见 C1） | 2503.17349 |
+| S4 | 位置索引超出上下文窗口后性能骤降；长上下文里中段图像被忽略 | InternVL2 单族 | 2412.09616、2506.06279（F浅） |
+| S5 | pixel-shuffle / patch merger 的信息损失 | 没找到做分析的论文；LaCo（2507.02279）与 InternVL-X（2503.21307）只在动机段提到（S） | — |
+| S6 | 域特定属性不由投影器承载，而由 LLM 参数承载 | LLaVA 单族（2402.16832，ACL 2024，F浅）；属于对"投影器负责对齐"的反证 | 2402.16832 |
+| S7 | 投影出的视觉特征落在文本嵌入凸包之外 → 文档理解差 | 只有论证（AlignVLM 2502.01341 的动机段，F浅：MLP 连接器 "lack inductive bias … may fall outside the distribution the LLM was trained on"）；无内部测量把"落在凸包外"与失败挂钩 | 2502.01341、2408.11813（SEA） |
+
+---
+
+## 按 Key Question 作答
+
+### KQ1 范数 / 分布错配有多大，是否直接造成失败，归一化后是否改善
+
+**Takeaway**：范数差 1–2 个数量级在 ≥5 个模型族上被测到（F）。"造成失败"的证据是重训对照（加归一化后涨点），在 LLaVA-1.5 / Vicuna、Llama-3.2、Qwen2.5 三种骨干上有，但 Qwen 上朴素归一化反而变差，Ovis 2.5 是范数差存在而失衡不存在的反例。
+
+**Cited Findings**：见 C1 全部条目。补充：[2512.08374](https://arxiv.org/abs/2512.08374) 附录 C 报告 Qwen2.5-VL 的文本嵌入范数相对纯文本基座整体上移（0.80→0.90），作者解读为模型在被动补偿范数差。
+
+**Inferences**
+- "范数差是失败的充分原因"不成立（推导：Ovis 2.5 反例 + Qwen 朴素归一化负结果，均来自 2512.08374 正文）。
+- "空间位置被淹没"与"视觉证据被语言先验压过"是两条不同的下游主张，前者只有 LLaVA-1.5 的数据，后者在这两篇里没有直接测量（推导）。
+- 归一化改善可能部分来自优化动力学的改变而不是推理期机制（推测：两篇都需要重训，没有在固定权重上做缩放的对照）。
+
+**Gaps**：没找到在固定模型上推理期缩放视觉嵌入范数、看行为是否翻转的实验（2 条查询）。没找到 Qwen-VL / InternVL 上的置换不敏感测量。
+
+### KQ2 视觉 token 在语言模型嵌入空间里是什么，跨模型是否一致
+
+**Takeaway**：结论取决于用什么"镜头"。对输入词嵌入 / 输出词表做最近邻时多数视觉 token 不可解释且跨模型差异大；改用上下文化文本表示作参照后，15 个 VLM 上多数视觉 token 在所有层都可解释。几篇一致的是：视觉 token 在输入层更像 LLM 中间层的表示。
+
+**Cited Findings**
+- LLaVA 1.5 7B：视觉 token "are not interpretable through the vocabulary embedding"，但经 logit lens 在后层趋向可解释词；物体信息局限在对应图块位置的 token 上（消融）；中后层才被抽到最后一个 token（[2410.07149](https://arxiv.org/abs/2410.07149)，ICLR 2025 据检索，F）。
+- CLIP ViT-L + 冻结 Gemma-2-2b-it + 线性适配器：SAE 重建误差、稀疏度、语义对齐 "all converge around layer 18 (out of 26)"，"remaining misaligned in earlier layers"（[2506.11976](https://arxiv.org/abs/2506.11976)，F）。
+- 15 个 VLM（9 个受控组合 + Molmo-7B-D / 72B、LLaVA-1.5-7B、LLaVA-NeXT-34B、Qwen2-VL-7B、Qwen2.5-VL-32B）："LatentLens renders 68% of visual tokens interpretable"，EmbeddingLens 32%，LogitLens 24%；EmbeddingLens 下 OLMo 系 34–62%，Qwen2 系不到 20%，Llama3 系 20–50%；"early visual tokens, even at the input itself, align most to middle layers"（[2602.00462](https://arxiv.org/abs/2602.00462)，F）。
+- Vicuna-v1.5 等：感知 token 与文本 token "live in different narrow cones, and have different norms, rate of change and vocabulary distributions"，但激活相似的 LLM 权重（[2405.16700](https://arxiv.org/abs/2405.16700)，F浅）。
+- LLaVA 式输入层视觉 token 与词嵌入余弦相似度约 0.1（[2511.10301](https://arxiv.org/abs/2511.10301)，S：数字来自检索摘要，正文只核到公式定义）。
+
+**Inferences**
+- "输入层不可解释"与"所有层都可解释"不矛盾，是参照集不同（推导：LatentLens §3.1 自己做了这个区分）。
+- 输入层视觉 token 像中间层表示，意味着 LLM 前几层对视觉 token 做的事与对文本 token 不同（类比：来自语言模型 logit lens 文献的层级解释，跨到视觉 token 未被因果验证）。
+
+**Gaps**：没有一篇把"可解释 / 不可解释的视觉 token"与下游对错挂钩；LatentLens 明说没做。大模型（Qwen2.5-VL-32B、LLaVA-NeXT-34B）可解释率低到 33–35%，原因作者留作未来工作。
+
+### KQ3 二维排成一维与 LLM 位置编码是否造成空间 / 远距离区域失败
+
+**Takeaway**：位置依赖的失败在 ≥5 个模型族上被测到，但失败形态不统一（LLaVA 系偏底部，Qwen / InternVL 偏外围或很弱），对"是不是 RoPE 衰减造成的"有直接冲突的已发表结论。
+
+**Cited Findings**：见 C2、C3。补充一条张力：[2506.21873](https://arxiv.org/abs/2506.21873) 显示位置 id 错位对 GQA 几乎无影响但让 RefCOCO 崩溃，[2503.17349](https://arxiv.org/abs/2503.17349) 显示置换对 VQA 类几乎无影响——两篇合起来说明 LLM 位置信号对视觉 token 的作用高度依赖任务。
+
+**Inferences**
+- LLM 位置编码对视觉 token 是否"有用"不能用 VQA 类基准判断，定位类任务才敏感（推导：上述两篇的任务对比）。
+- LLaVA 系的"底部偏好"和 Qwen 系的"左上角注意力汇"可能是同一类问题（位置索引方案决定的与内容无关的注意力先验）在不同索引方案下的不同表现（推测：没有论文在同一框架下比较两者）。
+
+**Gaps**：没找到对行分隔符 / image-newline token 作用的消融（1 条查询）。没找到在 Qwen2-VL / InternVL 上复做 CCA 式"光栅对反光栅"或 FEATHER 式"去 RoPE"干预的论文。AnyRes / 切子图造成的二维结构断裂未检索。
+
+### KQ4 视觉 token 压缩 / 合并 / 剪枝造成哪些可复现失败
+
+**Takeaway**：两类失败可复现——连接器级压缩（Q-Former / resampler）伤空间与细粒度任务（C4，但 MM1 与 Idefics2 有相反结论）；LLM 内剪枝伤定位与 OCR（C5，≥5 个模型族），其中相当一部分可由不改变 token 集合、只修位置 id 或打分准则的免训练办法挽回。
+
+**Cited Findings**：见 C4、C5。
+
+**Inferences**
+- LLM 内剪枝的定位崩溃至少部分不是"信息量不够"，而是位置索引与选择准则的问题（推导：GAP 与 FEATHER 的免训练修复幅度）。
+- 连接器级压缩的损害更像训练目标 / 数据量的函数而非结构必然（推导：Lost in Space 的联合训练结果 + Idefics2 的正结果）。
+
+**Gaps**：pixel-shuffle / patch merger 没找到失败分析。UniPruneBench 的逐任务数字未逐格核。
+
+### KQ5 已有修法：在哪些模型上、涨多少、局限、是否免训练
+
+**Takeaway**：免训练的只有四类——FEATHER / D²Pruner（剪枝准则）、GAP（位置 id）、RoPE scaling（Qwen2-VL）、CMRM / VLM-Guard（安全）。其余（归一化、位置重排、换连接器、对齐损失）全部需要重训，且大多只在 LLaVA-1.5 上验证。逐项见各候选的"竞争者"字段。
+
+**Inferences**：重训类修法的涨幅都是相对各自重训基线，跨论文不可比（推导）。
+
+**Gaps**：多数论文没有 limitation 小节或我没定位到（Unseen Bias、MCA-LLaVA、D²Pruner、Wen et al.、TGA）。代码链接只核到 CCA 与 Neo et al. 两处（正文内），其余为 S。
+
+### KQ6 相互冲突的解释
+
+**Takeaway**：共六处，其中四处直接影响"根因在连接处"的成立。
+
+1. 连接器丢信息 对 LLM 不会用 对 数据不够（C7）。
+2. RoPE 长程衰减 对 因果注意力错配 对 位置嵌入类型（C2）。
+3. 范数大 → 视觉注意力少 对 范数大 → 视觉注意力多但"蛮力"（C1）。
+4. 连接器类型重要（Honeybee、DeCo）对 不重要（MM1）；token 越多越好（MM1）对 64 个就够（Idefics2）（C4）。
+5. 视觉 token 在输入层不可解释（Neo、Venhoff）对 全层可解释（LatentLens）（KQ2，参照集不同）。
+6. 投影器负责把视觉属性映到文本空间 对 域属性由 LLM 参数承载（Verma et al. 2402.16832）。
+
+---
+
+## 检索日志
+
+**查询（18 条 WebSearch）**
+1. "Beyond Semantics" spatial awareness vision-language models embedding norm
+2. RoPE long-term decay visual tokens hallucination Concentric Causal Attention follow-up
+3. visual token embedding norm larger than text embedding MLLM modality gap arXiv
+4. visual token pruning fails localization position bias FastV "Feather the Throttle"
+5. connector information loss vision-language models "Lost in Embeddings" projector k-NN patch reconstruction
+6. cross-modal positional bias RoPE image tokens text tokens MLLM Circle-RoPE OR "MCA-LLaVA" OR "PyPE"
+7. MCA-LLaVA Manhattan Causal Attention arXiv; Pyramid-descent Visual Position Encoding PyPE arXiv; V2PE
+8. visual token permutation shuffle VLM insensitive order spatial reasoning Qwen2-VL InternVL LLaVA-OneVision
+9. Q-Former resampler loses spatial locality … Honeybee DeCo "semantic abstraction"
+10. modality gap vision text hidden states MLLM safety mechanism fails to transfer images
+11. visual token compression benchmark MLLM pruning fails OCR grounding … unified benchmark 2025
+12. where does spatial position information of image tokens come from … image newline row separator tokens
+13. openreview "Norm Discrepancy" Pre-Norm MLLMs visual information loss reviews weaknesses
+14. modality gap LVLM hallucination … contrastive alignment HACL
+15. pixel shuffle OR "pixel unshuffle" OR "patch merger" visual token downsampling information loss
+16. "Revisiting Multimodal Positional Encoding in Vision-Language Models" arXiv
+17. vision token norm normalization LLaVA Qwen2-VL InternVL … inference-time
+18. VLM image tokens position bias … not caused by RoPE（对抗式）
+
+其中对抗式（显式找反证）的是 13、17、18 三条；18 找到了 2509.21984。引用链只做了被动挖掘（从取到的正文里顺着相关工作段找到 GAP、2509.21984 引的 Zhu et al.），没有系统扫任何一篇的被引列表。
+
+**取到正文并做过关键词定位的论文（37 篇；均非通读）**
+2503.17349、2512.08374、2602.00462、2410.15926、2507.09184、2501.10967、2412.13180、2502.11501、2512.19443、2506.21873、2511.02650、2505.16416、2510.23095、2509.19191、2509.21984、2412.09616、2506.06279、2505.18605、2404.13594、2312.06742、2405.20985、2405.02246、2403.09611（PDF）、2509.11986、2506.08008、2405.18415、2509.07979、2511.10301、2410.12662、2410.09047、2502.10486、2410.07149、2506.11976、2402.16832、2405.16700、2410.07167、2502.01341。
+其中核对了具体表格或章节数字的（F）约 22 篇；其余 15 篇只定位了摘要级主张与局限句（F浅）：2510.23095、2412.09616、2506.06279、2505.18605、2511.02650（部分）、2502.11501（部分）、2512.19443（部分）、2509.07979、2511.10301、2502.10486、2402.16832、2405.16700、2410.07167、2502.01341、2403.09611。另取到但只看了动机段的 2 篇：2408.11813（SEA）、2511.05017。
+
+**只有检索片段（S）的**：SHIELD 2510.16596、ASAP 2603.14549、LaCo 2507.02279、InternVL-X 2503.21307、RAVE 2605.18359、AdaVBoost 2602.13600、2605.30126、Zhu et al. 2025c（标题未取到）。
+
+**没覆盖的范围**
+- OpenReview 审稿讨论：0 条取到（查了 1 条，只返回论文本体）。
+- 会议正式版与 arXiv 版的差异未核；会议归属（NeurIPS 2024、ICLR 2025 / 2026、ICCV 2025、EMNLP Findings 2025、AAAI-26）均来自检索片段，未在正文核对。
+- GitHub 仓库未打开任何一个；"是否开源"除 CCA、Neo et al. 外均为 S。
+- 闭源模型（GPT / Gemini / Claude）内部无法验证，本笔记所有内部证据都来自开源权重模型。
+- 非英文、非 arXiv、在审未公开稿件未检索。
+- 视频 / 多图的位置问题（VideoRoPE、HoPE、多图顺序偏置 Tian et al.）只在他人论文的引述里出现，未单独检索。
+- AnyRes / 切子图、图像在提示中的先后位置、注意力汇 / register token 一类属于相邻范围，未展开。
+- 2026 年 6 月之后的论文只能依赖检索返回，覆盖度无法自评。

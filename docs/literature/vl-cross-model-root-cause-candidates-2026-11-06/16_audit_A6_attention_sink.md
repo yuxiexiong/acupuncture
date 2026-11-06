@@ -1,0 +1,308 @@
+# 16 七步查重：A6 注意力汇聚 token（visual / text attention sink，含编码器高范数伪影 token）
+
+检索日期 2026-11-06。结构按 `00_AUDIT_BRIEF` 的八节写（它与 `researcher.md` 冲突时为准）；七步顺序 6 → 5 → 1 → 2 → 3 → 4 → 7。阅读层级：**F** = 本轮取到正文并核对了对应章节或表；**A** = 取到正文但只读了摘要/引言或单处；**S** = 只有检索片段或题目。文中 54 处逐字引文都在本地正文文本里做过子串核对（`/tmp/a6_scripts/verify.py`，54/54 通过）。本文件不给等级、分数或值不值得做的判断。
+
+## 最不利的四点（先说）
+
+1. **结论层已被占一大块。** [2610.15855](https://arxiv.org/abs/2610.15855)（*Attention Sinks in VLMs Are Borrowed, Not Seen*，JHU，2026-10，arXiv 预印本）已经写出"视觉 sink = key 与语言模型 text-sink 的 key 同向的图像 token"，在 4 族 10 个模型上比了 6 种探测器，并做了带随机方向对照的必要性与充分性编辑。同一篇还实测：去掉 sink 后答案基本不变；把释放出的注意力强行分给图像，目标注意力升到 2.6 倍而准确率持平。A6 根因主张的前半句（继承自基座语言模型）被它逐字占位；后半句（吸走了本应给相关区域的注意力预算，因而造成失败）在它测的全注意力模型上被实测否定。
+2. **"重分配后 4 族涨分"只来自原作者。** VAR 在三处独立复现里接近零或为负：[2604.03316](https://arxiv.org/abs/2604.03316) Table 3（LLaVA-1.5-7B，MMStar −0.01、CV-Bench +0.75）；[2605.18359](https://arxiv.org/abs/2605.18359) Table 2（Mistral-7B 的 LLaVA 式模型，总平均 29.82 → 29.55）；TokenPenalty（Findings of ACL 2026）Figure 2（CHAIR 上变差，数字只在图里，未取到）。
+3. **第一轮笔记有两处要更正。** (a) 03 号笔记写"未见任何一篇在同一模型上对这四种定义求交集"——不成立：[2605.10622](https://arxiv.org/abs/2605.10622) 附录 C/D 的 Table 9 给了三种定义的两两 Jaccard 距离，2610.15855 的 Table 3/6 比了六种探测器。(b) 把 EVAS 列为"sink 有益"的证据不妥：EVAS 的"vision sink"是另一个对象（见 §4.1 第 7 行）。
+4. **两项要求没有完成。** OpenReview 的审稿内容被站点的浏览器验证挡住（API 与网页两条通道都返回验证要求），没有取到，我没有去绕它；只用检索接口确认了论坛 ID 与录用状态。WebSearch 的会话共享额度在第 4 步中途用尽，第 4 步 3 条、第 2 步 1 条查询没有执行，我没有换别的检索通道替代。
+
+---
+
+## 1. 候选定义
+
+- **现象**：VLM 的语言解码器把大量图像注意力分给少数与问题无关的图像 token（visual attention sink），或生成时过度依赖少数 summary / anchor token；另有视觉编码器的高范数伪影 token 经投影器传入后成为汇聚点的说法。
+- **根因主张**：汇聚维度继承自基座语言模型，或来自编码器伪影；它们吸走了本应给相关图像区域的注意力预算。
+- **预期结论（用于第 3 步的三句话）**
+  - E1：各篇论文里的视觉 sink 是同一机制的产物：图像 token 落到了语言模型 text-sink 的方向上；去掉它，注意力回到 text-sink，输出不变。
+  - E2："该抑制"与"有用"的冲突来自各篇的 sink 不是同一批 token 或不是同一种计算（编码器源对解码器源；空操作对广播）。
+  - E3：把 sink 上的注意力重分给图像 token，在严格对照下不提高准确率；已报告的涨分来自头选择、基准选择或保守生成。
+
+第 3 步结果：E1 在 2610.15855 里几乎逐字出现（"A visual attention sink is an image token whose key is aligned with the key of the language model’s text-sink"，F）；E2 的两半分别在 2604.03316（V-sink / L-sink）、2605.10622 Table 9、[2606.08105](https://arxiv.org/abs/2606.08105)（NOP 对 broadcast，仅 ViT）里出现；E3 在 2610.15855 附录 A.9（"Accuracy stays flat on both models for both variants."）出现，范围是 Qwen3-VL-8B 与 InternVL3.5-8B。
+
+---
+
+## 2. 竞争者全景表
+
+主表 14 行是本轮重读过的；其后是外围竞争者的压缩清单。"对照"列只记是否有随机部件或随机方向对照。"稳健性"列记是否换问法、换选项顺序、留出数据。代码 URL 都只是从正文或检索结果里抄下，没有逐个打开。
+
+| 工作 | 类型 | 模型族 | 干预类型 | 对照 | 评测稳健性 | 效果数字 | 自认局限（逐字） | 代码 | 层级 |
+|---|---|---|---|---|---|---|---|---|---|
+| Kang et al. [2503.03321](https://arxiv.org/abs/2503.03321)，ICLR 2025 Poster（VAR） | 定位 + 修复 | LLaVA-1.5-7B/13B/HD-13B、VILA-13B、Qwen2-VL-7B、InternVL2-8B；分析实验只在 LLaVA-1.5-7B | 推理时：注意力掩蔽；图像中心头里把 sink 的注意力按比例转给非 sink 图像 token | 掩蔽有同数量随机 token 对照（POPE）；头消融有随机头对照；VAR 本身没有"随机来源 token"对照 | 未换问法；ρ 按任务类型取 0.8 / 0.5 / 0.9，在基准 10% 样本上选 | LLaVA-1.5-7B：MME 1495.5→1513.8，POPE acc 84.76→85.87，CHAIR_S 45.0→43.2，MMVP 3.33→9.33；Qwen2-VL-7B：MME 1672.3→1688.5，CV-Bench2D 63.5→63.6；全头重分配 POPE/MME/MM-Vet 全为 0.0 | "induces out-of-distribution behavior"；"tokens are selected independently at each layer, leading to inconsistencies across layers compared to sink token knockout"；"the mechanisms behind how LMMs select visual sink tokens and how visual attention sinks emerge during the training process remain open questions"；"it is still worth exploring our methodology on different and larger LMMs" | github.com/seilk/VisAttnSink（由 2604.03316 附录给出） | F |
+| Luo et al. [2510.08510](https://arxiv.org/abs/2510.08510)，ICLR 2026 Poster（sink-to-the-front、DIYSink） | 定位 + 修复 | 分析：LLaVA-7B、TinyLLaVA-0.5B/3B、InternVL2.5-4B；免训练：InternVL2.5-4B、Phi-3.5-V、DeepSeek-VL-7B、Molmo-7B-D；训练：4 个 ViT–LLM 组合 | 输入级（只留 sink / 去掉 sink；把 ViT sink 挪到序列最前）；训练（双投影器 + 选择模块） | 探针有"5 个随机非 sink token 平均"作对照；sink-only / non-sink-only 无随机 token 对照 | 600 条 image–query 由 GPT-4o 标 global / local；未换问法 | sink-to-the-front 的 LLaVA-eval 平均：+0.02、+0.42、+0.21、+0.06；MathVista 最多 +1.8（Molmo）；DIYSink 在 TinyLLaVA-3B 上 LLaVA-eval 平均 +3.62 / +5.79 | "requires access to training data and certain amount of computational resources, as it involves training the model from scratch"；"Extending DIYSink to other modalities such as video and audio remains an open area" | 项目页 davidhalladay.github.io/diysink_demo | F（Fig.5B 所用模型与数值未取到） |
+| Choi et al. [2604.03316](https://arxiv.org/abs/2604.03316)，Semantic Scholar 标为 ECCV 2026（LSG） | 定位（统一两源）+ 修复 | LLaVA-1.5-7B 为主；LLaVA-OneVision-7B 复现剖面与 oracle 扫描；另两个 LLaVA 变体只在附录 | 推理时：按 token 组缩放 Key；修复要训练每层 26.2 万参数的门控，主干冻结 | 探针里普通 token 做 5 次随机采样；干预无随机组对照；oracle 在评测集上逐任务选最优 | 统一用 lmms-eval 复现三种前人方法；未换问法 | oracle：细粒度感知最多 +6.49%，粗粒度最多 −4.27%，逻辑推理 L4–L8 +7.07%；LSG 单层 L10：MMStar +0.72、CV-Bench +2.14；5 层：+1.55 / +3.08；同管线下 VAR −0.01 / +0.75，sink-to-the-front −0.13 / −0.39 | "This is a threshold artifact rather than genuine L-sink emergence."（Qwen2 深层）；跨架构只说 "providing preliminary evidence" | github.com/JH-GEECS/lsg_public（"will be released"） | F |
+| [2610.15855](https://arxiv.org/abs/2610.15855)，arXiv 2026-10（key edit + entropy-triggered re-look） | 定位 + 修复 | Qwen3-VL（2B/4B/8B 等）、InternVL3-8B、InternVL3.5、Gemma-4、Pixtral-12B，共 10 个；7 个有 sink、3 个没有 | 推理时：把被门控图像 token 的 key 沿 text-sink 方向的分量移到图像 key 的中位数；修复是清理后的注意力图选裁剪区再插入推理链 | 投影掉随机方向（份额不变）；写入同范数随机 key（≤9%）；另有"掩蔽代替编辑""重分配代替移除"两组替代干预；re-look 有 raw-map 对照 | 报告配对增益、KL、agreement；V*、HR-Bench 4K/8K、MME-RealWorld-Lite；未换问法；自述 "Every number below depends on that prompt." | sink 占图内注意力 1/4 到 4/5（Qwen3-VL-8B 66%、4B 73%、2B 12%；InternVL3-8B 2%、InternVL3.5-8B 24%）；探测器最小 AUC 99.0；写入方向后 8 个随机 token 拿到 91%–97% 图内注意力；编辑后准确率变动 ≤3 点、首 token KL 约 10⁻³ nats；re-look 40 对中 39 对上涨，均值 +4.3；清理图对原图是 4.1 对 2.9 | 没有独立的局限节。正文承认：编辑只在 4 个模型、20 张 V* 图、峰值层做；Qwen3-VL-2B 上编辑掉 7 点（HR-Bench 掉 13–14 点）；Gemma-4 不适用 | 未见 URL | F |
+| HAVAE [2605.10622](https://arxiv.org/abs/2605.10622) | 定位 + 修复 | LLaVA-1.5-7B/13B、Shikra-7B、MiniGPT-4-7B、Qwen2-VL-7B | 推理时：只强化不被劫持的头（按 NHAR 选 300 / 450 个头） | 背景率有随机 token 对照；零消融同时测了 Kang 的 sink；头选择有"不排除 Inert Token"的消融 | CHAIR、POPE、MME；未换问法 | LLaVA-1.5-7B CHAIR_S 48.2→18.2；惩罚 Inert Token 注意力（β 0.1–0.9）CHAIR_S 19.0–20.2 对 18.2，非单调 | "its mechanistic origin remains to be fully elucidated"；"it cannot deterministically localize all instances of attention misallocation"；只到 13B | github.com/lab-klc/HAVAE | F |
+| AvisC [2405.17820](https://arxiv.org/abs/2405.17820) | 定位 + 修复 | InstructBLIP、LLaVA-1.5；附录有 LLaVA-OneVision-Qwen2-7B、Qwen2.5-VL-7B 的 POPE | 推理时：对比解码（全图 logits 对只含 blind token 的 logits） | 把 blind 与 non-blind 分别置零作对照；未见随机 token 对照 | POPE、MME、AMBER；未换问法 | Qwen2.5-VL-7B POPE-random acc 88.84→92.36；LLaVA-OneVision 88.60→91.46；3.7% 的 blind token 与物体框重叠，物体区域只拿到 23.2% 的注意力 | "While establishing a definitive causal link is inherently challenging"；"its effectiveness declines in tasks requiring precise object counting"；"blind tokens may sometimes carry essential information for quantification" | 第一轮未记 | F |
+| DAMRO [2410.04514](https://arxiv.org/abs/2410.04514)，EMNLP 2024 | 定位 + 修复 | LLaVA-1.5-7B、LLaVA-NeXT-7B、InstructBLIP-7B（语言骨干全是 Vicuna）；分析只在 LLaVA-1.5 | 推理时：ViT 的 CLS 注意力 top-k token 当负样本做对比解码 | 未见随机对照 | CHAIR、POPE；未换问法 | ViT 里前三个 token 拿走 >99% 的 CLS 注意力；它们在 LLM 解码注意力里占 5.54%（幻觉句）对 5.39%（非幻觉句），物体级 6.05% 对 5.51%，无显著性检验 | "It relies solely on empirical analysis and lacks further theoretical proof."；未探索 Q-Former 类投影 | 第一轮未记 | F |
+| EVAS [2411.09968](https://arxiv.org/abs/2411.09968)，EMNLP 2025 | 定位 + 修复 | 分析以 LLaVA-1.5-7B 为主；称 MiniGPT-4、MiniGemini、InternVL 等同样 | 推理时：把浅层最"密"的头的注意力矩阵广播给同层其他头 | 未见随机头对照 | CHAIR、POPE | 结论："a lower density of vision sinks and fewer vision sink heads correlate with an increased likelihood of hallucinations" | 同等长度下 recall 低约 4 个百分点 | github.com/itsqyh/Shallow-Focus-Deep-Fixes | F |
+| TokenPenalty，[Findings of ACL 2026.628](https://aclanthology.org/2026.findings-acl.628.pdf) | 修复 | LLaVA-1.5-7B、Qwen2-VL-7B、Qwen2.5-VL-7B | 推理时：token 级惩罚 + 位置衰减补偿 | 未见随机对照 | 含 VAR、OPERA、TAME 等基线 | 称 VAR 在 GQA、SQA 有效而在 CHAIR 上变差（Figure 2，数字未取到） | "may not fully capture semantic importance in all modalities or tasks" | 未记 | F（部分） |
+| RAVE [2605.18359](https://arxiv.org/abs/2605.18359) | 修复（训练） | Mistral-v0.3-7B 的 LLaVA 式模型；Qwen2.5-VL-7B 续训 | 训练：对视觉 key 的 pre-softmax 分数加可学习的 query–key 门 | 有 Gated-Attn、D-Attn、VAR 作对照臂 | VLMEvalKit 九个基准 | 总平均 29.82→32.81；同表 VAR 29.55 | "we do not evaluate RAVE under such settings"（指从头训练或原生多模态骨干） | 未记 | F（Table 2 与设定） |
+| Test-time registers [2506.08010](https://arxiv.org/abs/2506.08010)，NeurIPS 2025 spotlight | 定位（编码器内）+ 修复 | OpenCLIP、DINOv2；VLM 只有 LLaVA-Llama-3-8B | 推理时：把 register 神经元的激活移到新增 token | 编码器内有神经元级干预 | 八个 VLM 基准 | 平均 46.2 → 46.2；作者称 "has only a minor impact on performance" | "We do not pass the register to the LLM" | github.com/nickjiang2378/test-time-registers | F（本轮只复核数字） |
+| SMART，[EMNLP 2026 main.2358](https://aclanthology.org/2026.emnlp-main.2358.pdf) | 基准 + 修复 | LLaVA-1.5-7B/13B、Qwen2-VL、MiniCPM-V-2.6、InternVL2-8B | 推理时：把模态专属 sink 上的冗余注意力转给被忽视的模态 | 未核到随机对照 | 自建 Banana-Counting（1026 条）；超参在基准 10% 上选 | LLaVA-1.5-7B 模态差 27.73 → 0.66 | 未核 | github.com/DianeYuu/SMART（"will be available"） | A |
+| Fazli et al. [2609.01888](https://arxiv.org/abs/2609.01888) | 评测复核 | LLaVA-1.5、LLaVA-NeXT、InstructBLIP（7B） | 不提方法；复评 VCD、M3ID、AGLA、CAAC、CEI、AFTER | — | 把幻觉指标与信息量指标配对；加 MMStar | CHAIR_S 与 object recall 相关 r = 0.73；54 个 MMStar 配置里没有一种方法在多于一个骨干上提高宏平均 | 只覆盖三个基准 | github.com/mehrdadfazli/AssessHalVLM | F |
+| [2606.08105](https://arxiv.org/abs/2606.08105)（A Unifying View of Attention Sinks） | 定位（统一解释） | 预训练 ViT 与合成任务；不含 VLM 解码器 | 架构干预：门控、register、无位置的全局通路 | 有因果干预 | — | 两种计算：NOP sink（value 范数可忽略）与 broadcast sink（低秩输出） | 摘要原话："registers relocate rather than remove sink computation" | 未记 | A |
+
+外围竞争者（本轮只到 A 或 S）：
+
+- 文本侧 sink 与输出 token：OPERA [2311.17911](https://arxiv.org/abs/2311.17911)、TAME、FarSight [2505.16652](https://arxiv.org/abs/2505.16652)、PAS [2511.11502](https://arxiv.org/abs/2511.11502)（均沿用第一轮层级，本轮未重读）；AttnReal [2503.08342](https://arxiv.org/abs/2503.08342)（把输出 token 上的多余注意力给图像，6 个 MLLM，A）；SAGE [2603.27898](https://arxiv.org/abs/2603.27898)（把标点类 sink token 当检查点，称 88.4% 的幻觉错误出现在 sink token 后 5 步内，A）；SinkTrack [2604.10027](https://arxiv.org/abs/2604.10027)（往 BOS 里注入上下文特征，Qwen2.5-VL-7B 在 M3CoT +22.8%，A）；Mirage in the Eyes [2501.15269](https://arxiv.org/abs/2501.15269)（USENIX Security 2025，用对抗图像诱导 sink 来触发幻觉，6 个 MLLM，A）。
+- 训练期处理：LASER [2607.01707](https://arxiv.org/abs/2607.01707)（RL 奖励含 sink 抑制；自认 "visual sink token identification relies on architecture-specific attention patterns"，A）。
+- 剪枝一线：SToP [2604.20937](https://arxiv.org/abs/2604.20937)（视频 LLM，A，github.com/rlqja1107/SToP）；OccamToken [2605.29657](https://arxiv.org/abs/2605.29657)（用 test-time register 作参照，LLaVA-NeXT、LLaVA-1.5、Qwen3-VL，A）；LearnPruner [2604.23950](https://arxiv.org/abs/2604.23950)（A）；[2508.17807](https://arxiv.org/abs/2508.17807)（注意力去偏，A）；IVC-Prune [2602.03060](https://arxiv.org/abs/2602.03060)（ICLR 2026，A）；[2608.04483](https://arxiv.org/abs/2608.04483)（A）。
+- 相邻模态：Omni-LLM [2603.14337](https://arxiv.org/abs/2603.14337)（A）；音视频 LLM [2605.10815](https://arxiv.org/abs/2605.10815)（A，github.com/kaistmm/crossmodal-hub）；扩散 Transformer [2605.09313](https://arxiv.org/abs/2605.09313)（ICML 2026，S）、RefAM [2509.22650](https://arxiv.org/abs/2509.22650)（A）；RetoVLA [2509.21243](https://arxiv.org/abs/2509.21243)（S）。
+- 其他定义：EmbedLens [2603.00510](https://arxiv.org/abs/2603.00510)（输入嵌入层把视觉 token 分成 sink / dead / alive，约 60% 为 alive，A）；IAVA [2503.18556](https://arxiv.org/abs/2503.18556)（按两种指令下注意力变化找无关 token，A）；Attention Hijackers [2503.08216](https://arxiv.org/abs/2503.08216)（指令 token 劫持视觉注意力，S）；SHIELD [2510.16596](https://arxiv.org/abs/2510.16596)（沿用第一轮）。
+- 文本 LLM 一侧的解释：Sun et al. [2402.17762](https://arxiv.org/abs/2402.17762)（F，部分）；Gu et al. [2410.10781](https://arxiv.org/abs/2410.10781)（A）；Barbero et al. [2504.02732](https://arxiv.org/abs/2504.02732)（COLM 2025，A）；[2603.11487](https://arxiv.org/abs/2603.11487)（A）；Catch, Tag, Release [2502.00919](https://arxiv.org/abs/2502.00919)（A）；SinkRouter [2604.16883](https://arxiv.org/abs/2604.16883)（A）；Jin et al. [2502.01563](https://arxiv.org/abs/2502.01563)（A）。
+
+**竞争者数量**：主表 14 个；外围清单 31 个；合计 45 个，其中直接处理"VLM 解码器里图像 token 汇聚"的 11 个（Kang、Luo、Choi、2610.15855、HAVAE、AvisC、DAMRO、TokenPenalty、SMART、LASER、EmbedLens）。
+
+---
+
+## 3. 各轴最高水位
+
+| 轴 | 目前最好的是谁、做到什么 |
+|---|---|
+| 模型族数量与多样性 | 2610.15855：10 个模型、4 族（Qwen3-VL、InternVL3 / 3.5、Gemma-4、Pixtral），含 3 个无 sink 的对照模型和 1 个非全注意力架构。Kang：6 个模型、4 族，但分析实验只在 LLaVA-1.5-7B。两批模型集合不相交：前者没有 Vicuna / LLaMA-2 系，后者没有 Qwen3、Gemma、Pixtral。 |
+| 因果对照的严格程度 | 2610.15855：必要性（把 text-sink 方向从 sink 的 key 里投影掉，图内注意力份额归零；投影掉随机方向不变）加充分性（把该方向写进 8 个随机图像 token，拿到 91%–97%；同范数随机 key ≤9%）。范围是 4 个模型、20 张 V* 图、峰值层。掩蔽类证据的水位是 Kang 的同数量随机 token 对照（LLaVA-1.5-7B、POPE），HAVAE 复现了它。 |
+| 不同 sink 定义的比对 | HAVAE Table 9：logit-lens 定义、隐藏维度定义、注意力阈值定义三者两两 Jaccard 距离 0.5596 / 0.8302 / 0.8852（LLaVA-1.5）。2610.15855 Table 3 / 6：六种 token 特征对"注意力 ≥100 倍均匀且在目标框外"这一行为定义的 AUC。编码器范数定义没有进入任何一张重合度表。 |
+| 评测稳健性 | 2610.15855：配对增益、KL、agreement、raw-map 对照、替代干预。2604.03316：同一管线复现三种前人方法。2609.01888：把幻觉指标与信息量指标配对。本轮读到的 sink 工作里没有一篇换问法或换选项顺序。 |
+| 效果量 | 免训练、通用基准：VAR 原文 MME +18.3（LLaVA-1.5-7B），独立复现约为零。免训练、细节 VQA：re-look 均值 +4.3，其中清理 sink 相对不清理的净差约 1.2 点（4.1 对 2.9）。需训练小模块：LSG 5 层 MMStar +1.55、CV-Bench +3.08。需从头训练：DIYSink 在 TinyLLaVA-3B 上 +3.62 / +5.79。幻觉基准：HAVAE CHAIR_S 48.2 → 18.2（受 2609.01888 的保守生成约束）。 |
+| 任务与数据广度 | Kang：10 个通用 + 3 个幻觉 + 3 个视觉中心基准。任务变号的最细刻画是 2604.03316：32 层 × 10 个子任务的 oracle 网格。 |
+| 是否免训练 | 免训练的有 VAR、sink-to-the-front、key edit、HAVAE、AvisC、DAMRO、SMART、SAGE、TokenPenalty；要训练的有 LSG、DIYSink、RAVE、LASER。 |
+| 是否给出统一解释 | VLM 解码器一侧：2610.15855（key 对齐 text-sink，一条方向）与 2604.03316（两个来源 + 任务 × 层变号）各占一半。Transformer 通用一侧：2606.08105（NOP 对 broadcast，只在 ViT 与合成任务上验证）。把编码器源 sink、key 对齐、任务变号放进同一框架并在同一批模型上检验的工作：结论层未找到（本轮 22 条网络查询 + 254 个被引题目）。 |
+
+---
+
+## 4. 竞争解释与事实约束
+
+### 4.1 专门回答一：各篇的"sink"是不是同一批 token
+
+不是同一批，至少有十一种操作定义。
+
+| # | 谁 | 操作定义 | 在哪量 |
+|---|---|---|---|
+| 1 | Kang | 隐藏状态在基座 LLM 的 sink 维度上的归一化激活 ϕ ≥ 20（LLaVA-1.5-7B 用维度 {1415, 2533}） | LLM 每层输入 |
+| 2 | Luo（ViT sink） | ViT 特征范数 ≥ 100（CLIP） | 视觉编码器出口 |
+| 3 | Choi（V-sink / L-sink） | V-sink：ViT 倒数第二层维度 650 ≥ 60；L-sink：在 ViT 出口是普通 token、在 LLM 某层维度 2533 ≥ 20 | 两处；按定义不相交 |
+| 4 | HAVAE（Inert Token） | 高注意力 token 中，logit-lens 逐层解码词落在 Hijacking Anchors 里的比例超过 Otsu 阈值 | LLM 各层 |
+| 5 | AvisC（blind token） | 注意力 > 均值 + 标准差 | LLM 选定层 |
+| 6 | DAMRO（outlier token） | ViT 倒数第二层 CLS 注意力 top-k | 视觉编码器 |
+| 7 | EVAS（vision sink） | 图像 token 范围内，某一列的平均注意力 > β = 0.0015；"dense vision sink head" 指 ≥15% 的列满足条件的头 | LLM 第 1–2 层 |
+| 8 | 2610.15855 | 行为定义：问题对它的注意力 ≥ 100 倍均匀且在目标框外；探测器：key 与 text-sink key 的中心化余弦 | LLM 峰值层，prefill |
+| 9 | HAVAE 的行为金标准 | 前 5 个解码步 top-10 被注意 token 的交集 | 生成阶段 |
+| 10 | EmbedLens | 输入嵌入与图像无关、跨图几乎相同的 token | LLM 输入层 |
+| 11 | IAVA | 换指令后注意力不变的图像 token | LLM |
+
+已有的重合度证据：
+
+- 三种定义的两两集合差异（LLaVA-1.5）：Inert Token 对 Kang 的 sink，Jaccard 距离 0.5596，"HABI achieves a Unique Ratio of 42.93%"；Inert Token 对 blind token 0.8302；Kang 的 sink 对 blind token 0.8852。背景率：Inert 78.91%、Kang 的 sink 79.19%、blind 69.75%、随机 68.99%。— [2605.10622](https://arxiv.org/abs/2605.10622) 附录 C、D，Table 9、10（F）
+- Kang 的隐藏态范数只在部分族能检出行为定义的 sink：Qwen3 骨干与 Pixtral 可以，Gemma-4 不可靠；"Only the centered cosine detects sinks in every sink-bearing model"。— [2610.15855](https://arxiv.org/abs/2610.15855) §3.3、Table 3（F）
+- 编码器源与解码器源在 LLM 里激活的维度不同：LLaVA-7B 的 LLM 原生 sink 维度是 {2533, 1415}，传入的 ViT sink 激活 {982, 2494, 3263}；作者据此批评 Kang："This may inadvenrtently conflate the effect of two different sinks."（原文拼写如此）— [2510.08510](https://arxiv.org/abs/2510.08510) §3.1（F）
+- Choi 对同一件事的描述不同："V-sinks arrive in the LLM embedding space with uniformly elevated norms rather than dimension-specific spikes"。— [2604.03316](https://arxiv.org/abs/2604.03316) §3.2（F）。与 Luo 的"激活特定维度"口径不一，两篇量的层不同（Luo 取 LLM 倒数第二层，Choi 说的是进入 LLM 时），不能直接算矛盾。
+- Kang 自己的背景率对照很弱：sink 在背景的比例 90.5%（VOC）/ 93.7%（COCO），全部图像 token 是 82.9% / 90.5%。— [2503.03321](https://arxiv.org/abs/2503.03321) Table 6（F）
+
+推断：
+
+- EVAS 的阈值 0.0015 低于 576 个 token 的均匀水平（1/576 ≈ 0.0017），它的"dense vision sink head"实际是"对图像 token 注意力铺得开的头"，与 Kang 的"少数 token 拿走大量注意力"方向相反。"EVAS 说 sink 有益"与"Kang 说 sink 无用"不构成冲突。【推导】
+- 第 1、4、5 三种定义在 LLaVA-1.5 上重合不到一半，所以"遮掉 sink 无影响"这类结论不能在定义之间互相借用。【推导】
+
+### 4.2 专门回答二：编码器来源的高范数 token 与解码器里的 sink 是否同一批位置
+
+部分是，且随模型变。
+
+- ViT 范数 >100 的 token 每图 3–5 个，拿到的 LLM 注意力约为其余 token 的 7 倍；每 token 平均注意力（LLaVA-7B）：传入的 ViT sink 1.13%、LLM 原生 sink 1.27%、普通 0.1532%；InternVL2.5-4B：1.17%、0.54%、0.32%。— [2510.08510](https://arxiv.org/abs/2510.08510) §3.1、Table A1（F）
+- LLaVA-1.5-7B 每图 V-sink 2.6 个（0.5%）、L-sink 每层约 7 个（1.2%），两组按定义不相交。— [2604.03316](https://arxiv.org/abs/2604.03316) 附录 A.2（F）
+- ViT 里 CLS 注意力最高的三个 token，在 LLM 解码注意力里合计占 5.4%–6.1%。— [2410.04514](https://arxiv.org/abs/2410.04514) Table 1（F）
+- InternVL3-8B 与 InternVL3.5-8B 共用视觉编码器、语言骨干分别是 Qwen2.5 与 Qwen3，视觉 sink 占图内注意力 2% 对 24%；"The language model largely decides which group a model falls in."— [2610.15855](https://arxiv.org/abs/2610.15855) §3.2（F）
+- Pixtral-12B 在固定网格位置有单个 sink，作者称之为 register。— 2610.15855 附录 A.1（F）
+
+推断：在 2610.15855 的这对 InternVL 模型上，sink 的有无不由编码器决定；在 LLaVA-1.5 上两种来源并存。两篇用的 sink 定义不同（注意力 ≥100 倍均匀 对 维度阈值），"编码器源 sink 是否就是 key 对齐的那批"没有同一模型上的数据。【推导】
+
+### 4.3 专门回答三："该抑制"与"有用、不该抑制"各自的证据
+
+| 一方 | 证据 | 怎么测的 | 层级 |
+|---|---|---|---|
+| 无用或该抑制 | 遮掉 sink 到文本的注意力，POPE 几乎不变；遮同数量随机图像 token 明显下降 | LLaVA-1.5-7B、POPE；作者自认掩蔽是分布外干预、随机组逐层独立抽取 | Kang，F |
+| 同上 | 零消融复现上一条，对 logit-lens 定义的 token 也成立 | LLaVA-1.5、POPE 子集 | HAVAE 附录 C，F |
+| 同上 | 把 blind token 置零，预测概率几乎不变；把其余 token 置零，概率塌到 50:50 | LLaVA-1.5、POPE-COCO；两组数量悬殊，无等量对照 | AvisC，F |
+| 同上 | 把 sink 的 key 方向移走：准确率变动 ≤3 点、KL 约 10⁻³；sink 占 29%–77% 的图内注意力，只贡献 3%–16% 的注意力输出范数 | 4 个全注意力模型、V* 与 HR-Bench | 2610.15855，F |
+| 同上 | 幻觉句里编码器离群 token 的注意力占比略高（5.54% 对 5.39%） | LLaVA-1.5、1000 张 COCO；差值小，无检验 | DAMRO，F |
+| 有用或不该抑制 | 只留 ViT sink 在 global 任务上强；去掉 sink 在 local 任务上变好 | 600 条 GPT-4o 分类的样本；Fig.5B，模型与数值未取到 | Luo，F |
+| 同上 | sink 特征的线性探针在物体类别与光照上比随机非 sink 高 20–30 个百分点 | CLIP、SigLIP 编码器出口，COCO | Luo 附录 A.3，F |
+| 同上 | V-sink 与 L-sink 的探针在计数、大小、颜色、形状上都高于普通 token，且随层不退化 | LLaVA-1.5-7B、CLEVR | Choi §3.3，F |
+| 同上 | 粗粒度感知上任何方向的调整都掉分（最多 −4.27%）；逻辑推理早层加强 sink +7.07% | LLaVA-1.5-7B；oracle 在评测集上选 | Choi §3.4，F |
+| 同上 | 对比解码压低 blind token 后计数类子任务下降 | MME Count、AMBER Number | AvisC 局限节，F |
+| 同上 | 惩罚 Inert Token 的注意力，CHAIR_S 从 18.2 变为 19.0–20.2 | LLaVA-1.5-7B；1–2 点，非单调 | HAVAE Table 6，F |
+| 同上 | VAR 在长描述（CHAIR）上变差；"扰动极值 token 掉分"的依据引自文本 LLM 的 Jin et al. | 图，数字未取到 | TokenPenalty，F（部分） |
+| 同上 | Gemma-4 的图像 sink 的 value 是正常大小，去掉后 KL 到 0.53；"so the model does read them" | 滑窗注意力层 | 2610.15855 §3.3–3.4，F |
+| 同上 | sink 的 value 向量是加到每个 token 上的共享偏置；跨模态信息主要存在 sink token 里 | Omni-LLM；音视频 LLM | 2603.14337、2605.10815，A |
+| 同上（文本 LLM） | 把 massive activation 置零性能崩溃，置为均值几乎无变化 | LLaMA2-7B 等 | Sun et al.，F（部分） |
+
+推断：
+
+- "遮掉无影响"与"探针可读"并不矛盾。Choi 自己写了 "the presence of information does not imply that the model actively exploits it during inference"。【推导】
+- 冲突的一部分来自对象不同：EVAS 是另一种定义；Luo 说的是编码器源，Kang 说的是解码器源。另一部分来自架构：全注意力模型里不读，Gemma-4 的滑窗层里读。【推导】
+- 2606.08105 的 NOP 对 broadcast 区分可以把两方同时容纳，但它只在 ViT 上验证，搬到 VLM 解码器是跨对象外推。【类比】
+
+### 4.4 事实约束
+
+1. 在 Qwen3-VL-8B、InternVL3.5-8B 上，把 sink 的注意力按 Kang 的方式重分给图像：目标注意力升到 2.6 倍（InternVL3.5-8B 翻两到三倍），"Accuracy stays flat on both models for both variants."— [2610.15855](https://arxiv.org/abs/2610.15855) 附录 A.9（F）
+2. 去掉 sink 后注意力回到 text-sink，不是回到目标区域；text-sink 的份额上升 0.10–0.21，目标框上的注意力不变。作者的结论："The harm sinks do is therefore to anything that reads the map from outside the model."— 同上 §3.4、§4（F）
+3. VAR 的独立复现：MMStar −0.01、CV-Bench +0.75（[2604.03316](https://arxiv.org/abs/2604.03316) Table 3，F）；总平均 29.82 → 29.55（[2605.18359](https://arxiv.org/abs/2605.18359) Table 2，F）。sink-to-the-front 的独立复现：−0.13 / −0.39（2604.03316 Table 3，F）。
+4. Test-time register 装进 LLaVA-Llama-3-8B：八基准平均 46.2 对 46.2。— [2506.08010](https://arxiv.org/abs/2506.08010)（F）
+5. 效应随任务和层变号："Rebalancing sink vs. ordinary attention does not uniformly help or hurt; its effect reverses across tasks."— 2604.03316 §3.4（F）
+6. sink 并不普遍：10 个模型里 3 个没有；同族内小模型弱（Qwen3-VL-2B 12%、InternVL3.5-2B 8%）。— 2610.15855 §3.2（F）
+7. 阈值式识别不稳：Qwen2 第 25 层同一阈值判出 1,497 个 L-sink（第 5 层 407 个），作者称 "This is a threshold artifact rather than genuine L-sink emergence."— 2604.03316 附录 E（F）
+8. 幻觉基准上的涨分与保守生成耦合，且不迁移到 MMStar："current evaluation protocols may overestimate progress by rewarding conservative generation"。它复评的六种方法不含 VAR、AvisC、HAVAE。— [2609.01888](https://arxiv.org/abs/2609.01888)（F）
+9. 掩蔽与置零的证据有方法学上限：DINOv2 的 register 置零掉 36.6 个百分点，换成均值、噪声或跨图置换则在约 1 个百分点内（[2604.14433](https://arxiv.org/abs/2604.14433)，A）；"ablation-based interventions can reveal what models could do rather than what they normally do"（[2607.03358](https://arxiv.org/abs/2607.03358)，A）。
+10. 把学到的注意力权重换成预设值（如高斯噪声）"yields comparable or even superior performance across a majority of datasets relative to vanilla models"。— [2605.05668](https://arxiv.org/abs/2605.05668)（A，只读摘要，设定未核）
+11. 第一轮的约束仍在：以"图像注意力量少"为根因的读法已被多篇反驳（见 03 号笔记 KQ5）。
+
+### 4.5 竞争解释
+
+1. **继承自语言模型的 key 偏置**：视觉 sink 的 key 指向 text-sink 的 key。— 2610.15855（F）；Kang 的同维度证据（F）
+2. **视觉编码器的高范数伪影经投影器传入**："We attribute to the unexpected attention distribution to an inherent flaw in the visual encoder itself"。— DAMRO（F）；Luo（F）；SHIELD（第一轮）
+3. **两个来源并存，作用随任务与层变号**。— Choi（F）
+4. **对齐预训练阶段学到的词表捷径**：只做过多模态预训练的 LLaVA-1.5 上现象更重；作者原话以 "We hypothesize" 开头。— HAVAE §6（F）
+5. **微调早期才出现**：投影器预训练阶段没有突出维度，"ViT sink tokens begin to propagate during the early iterations of fine-tuning"（DIYSink-Qwen2-3B）。— Luo 附录 A.4（F）。与第 4 条方向相反，但两篇量的东西不同（logit-lens 解码词 对 隐藏维度），不能直接算矛盾。
+6. **位置编码**：RoPE 的特定位置充当隐式视觉坐标，对空间推理必要（[2602.03060](https://arxiv.org/abs/2602.03060)，A）；末尾图像 token 的近因偏置与 padding token 的 sink（[2508.17807](https://arxiv.org/abs/2508.17807)，A）；Inert Token 集中在特定下标段（HAVAE 附录 B.3，F）。
+7. **够不着 text-sink 时由图像 token 顶替**：Gemma-4 的滑窗层。— 2610.15855（F）
+8. **softmax 归一化下的空操作与防过度混合**："Attention sinks help construct approximate no-ops."（Barbero，A）；单层 softmax 注意力在触发条件任务上必须把注意力放到固定 sink（[2603.11487](https://arxiv.org/abs/2603.11487)，A）；"attention sink acts more like key biases"（Gu，A）；"Massive activations act as fixed but important biases in LLMs"（Sun，F 部分）。
+9. **同一注意力图样对应两种计算**：NOP 与 broadcast。— 2606.08105（A，仅 ViT）
+
+### 4.6 文本 LLM 的解释是否使 VLM 上的结论成为推论
+
+- 已成为推论的：sink token 不贡献输出、遮掉影响小（Gu 的 key 偏置、Sun 的偏置说）；sink 维度与基座一致（Kang 自己引 Sun）；去掉后注意力回到 text-sink（2610.15855 已实测）。【推导】
+- 可由空操作说推出、但没人直接检验的：Kang 的"全头重分配后得分归零"——本来在做空操作的头被迫去混合图像信息。【推导，未见实测】
+- 不是推论的：哪些图像 token 会成为 sink（内容、位置还是编码器范数决定）；编码器源 sink 里可读的全局信息有没有被用；任务 × 层变号；Gemma-4 型例外；训练中在哪一步形成。
+
+### 4.7 在"注意力量 ≠ 失败"的背景下，sink 作为根因还剩哪些未被反驳的具体主张
+
+1. **污染一切从外部读注意力图的方法**（裁剪、剪枝、接地、解释）。未被反驳，但已被 2610.15855 占位并给了修法；剪枝一线有 SToP、OccamToken、LearnPruner。这是仪器问题，不是模型答错的原因。
+2. **编码器源 sink 在局部细节任务上的干扰**。Luo 的去 sink 实验与 Choi 的细粒度 +6.49% 没有被否定；证据是输入级删除与评测集上选出的 oracle，只在 LLaVA-1.5 一族有推理期内部干预，干预没有随机 token 组对照。
+3. **非全注意力架构里 sink 被模型读取**（Gemma-4）。只有一族；作者没有展开它是否造成失败。
+4. **文本侧 sink（summary / anchor / 输出 token）与幻觉**。Mirage 称诱导 sink 后幻觉句与幻觉词最多增加 10.90% 与 12.74%（A，对抗图像同时改了别的东西）；SAGE 的 88.4% 是时间相关。Vicuna 系之外的内部干预：对象层未找到，本轮没有为它单独发查询（0 条），只在 254 个被引题目里看过。
+5. **小模型上动 sink 方向会掉分**（Qwen3-VL-2B 掉 7 点，HR-Bench 掉 13–14 点）。作者归因于门控误伤并造出新 sink；没有独立检验。
+6. **模态偏置与模态专属 sink 相关**（SMART）。单一作者组、自建数据集、超参在基准子集上选。
+7. **形成机制**。Kang、HAVAE 都留作开口；Luo 只给了一个自训模型的维度轨迹。
+
+---
+
+## 5. 作者留下的开口（逐字，均已在本地正文核对）
+
+- Kang et al.（2503.03321）："We leave the investigation of how visual tokens are recognized as sink tokens during training as future work."；"the mechanisms behind how LMMs select visual sink tokens and how visual attention sinks emerge during the training process remain open questions"；"it is still worth exploring our methodology on different and larger LMMs"。
+- Choi et al.（2604.03316）："what these L-sinks actually encode remains uncharacterized"（指 Kang 之后的状态；该文随后只用 CLEVR 探针回答）；跨架构结论自评为 "providing preliminary evidence"。
+- HAVAE（2605.10622）："its mechanistic origin remains to be fully elucidated"；"it cannot deterministically localize all instances of attention misallocation"；"activation magnitude is an insufficient proxy for attention anomalies"。
+- AvisC（2405.17820）："While establishing a definitive causal link is inherently challenging"；"blind tokens may sometimes carry essential information for quantification"。
+- DAMRO（2410.04514）："It relies solely on empirical analysis and lacks further theoretical proof."
+- Luo et al.（2510.08510）："Extending DIYSink to other modalities such as video and audio remains an open area"。
+- 2610.15855："none of these studies has examined what a visual attention sink is or what makes an image token become one"；"it is unclear whether the sinks reported in different VLMs are the same phenomenon and whether they carry useful information"（这两句是它对前人的判断，它自己回答了前一句和后一句的一部分）；"Every number below depends on that prompt."
+- LASER（2607.01707）："visual sink token identification relies on architecture-specific attention patterns"。
+- Test-time registers（2506.08010）："We do not pass the register to the LLM"。
+- 2603.14337："high sink attention does not solely indicate head redundancy"。
+- 2606.08105："the same attention pattern can reflect two very different computations"。
+
+没有文字开口、但从设定能看出的空白：2610.15855 不含 LLaVA-1.5 / Vicuna 系，也没有把编码器范数当探测器；它的 sink 定义依赖 V* 的目标框与 prefill 阶段问题 token 的注意力，生成阶段没有量。【推导】
+
+---
+
+## 6. 三列表
+
+| 先例支持 | 事实约束与竞争解释 | 谁会因此改做法 |
+|---|---|---|
+| 现象在 Vicuna 系、Qwen2 / Qwen3 系、InternVL2 / 2.5 / 3.5、Pixtral、Gemma-4、Phi、Molmo 上都被报告过 | 10 个模型里 3 个没有 sink；有无随语言骨干与规模变（§4.4 第 6 条） | 未找到 |
+| 掩蔽对照在两篇论文、LLaVA-1.5 上复现 | 掩蔽是分布外干预；置零会高估依赖（第 9 条） | 用 attention knockout 做 VLM 机制分析的人：加替换型对照。这是从 2604.14433 与 2607.03358 推出来的，未见 sink 论文已这样做 |
+| key 方向编辑有必要性、充分性与随机方向对照 | 只在 4 个模型、20 张图、峰值层 | 用注意力图选裁剪区、做接地或剪枝的人：读图前先清 sink。2610.15855 已给出做法与数字（Qwen3-VL-8B 裁剪未命中 78% → 10%） |
+| 注意力重分配类方法至少 5 个（VAR、SMART、AttnReal、TokenPenalty、PAR） | 强行重分配准确率持平；VAR 独立复现约为零；幻觉基准涨分与保守生成耦合（第 1、3、8 条） | 做注意力重分配式幻觉缓解的人。未找到已发表的改动 |
+| register 类修法在编码器内有效 | 装进 VLM 总分不变（第 4 条）；register 是搬走而不是消除 sink 计算（2606.08105） | 选视觉编码器或决定是否加 register 的 VLM 训练者：未找到会因此改做法的证据 |
+| 两源分类（V-sink / L-sink）已有 | 作用随任务与层变号（第 5 条）；阈值不稳（第 7 条） | 未找到 |
+| 文本 LLM 一侧有成套解释（偏置、空操作、防过混合、softmax 必然性） | VLM 上"无贡献、遮掉影响小、回到 text-sink"已成推论（§4.6） | 未找到 |
+
+---
+
+## 7. 要构成足够贡献至少需要做到什么
+
+只写门槛，对应第 3 节各轴。
+
+1. **模型族**：超过 10 个模型、4 族；并且同一项研究里同时包含 Vicuna / LLaMA-2 系（LLaVA-1.5）与 Qwen3、Gemma-4、Pixtral、InternVL3.5 这一代，外加至少一个无 sink 的对照骨干和一个非全注意力架构。现有两批文献的模型集合不相交。
+2. **因果对照**：至少达到"必要性 + 充分性 + 随机方向对照 + 同范数随机 key 对照"，并在多于 4 个模型、多于 20 张图、不止峰值层上做；掩蔽之外补替换型对照（均值、噪声、跨图置换）。
+3. **定义比对**：在同一模型上把隐藏维度、编码器范数、logit-lens、注意力阈值、key 余弦、输入嵌入聚类至少五种定义做全交叉重合度，并报告同一干预在各定义下的行为效应。现有水位是三种定义的单模型 Jaccard 与六种探测器对单一行为定义的 AUC，编码器范数不在其中。
+4. **结论层**：必须给出 2610.15855 没有给出的内容。可检验的缺口有四处：编码器源 sink 与 key 对齐 sink 是否同一批；任务 × 层变号在 key 方向框架下如何解释；Gemma-4 型例外的机理；训练中在哪一步形成。只写"继承自语言模型、去掉不影响输出"已被占位。
+5. **若主张"造成失败"**：需要双向翻转（加重 sink 后指定失败出现，减轻后消失），在至少 2 族上、带随机对照，并且指标不能被保守生成解释。现有证据在 Qwen3-VL-8B 与 InternVL3.5-8B 上指向相反。
+6. **修复方法的效果量**：在独立评测管线下超过 VAR 的复现值（约为零）、LSG（+1.55 / +3.08，需训练）和 re-look（+4.3，其中清理 sink 的净差约 1.2 点）；分列细粒度、粗粒度、推理三类任务；同时报告 recall 或 coverage 不降。
+7. **评测稳健性**：换问法、换选项顺序、留出数据；超参不在测试基准的子集上选。本轮读到的 sink 工作里没有一篇做到前两项。
+8. **统一解释**：同时容纳四组事实——全注意力模型里 sink 不被读；Gemma-4 里被读；编码器源 sink 可线性读出全局属性；任务 × 层变号。
+
+---
+
+## 8. 七步检索日志
+
+本候选本轮接受的检验：22 条执行成功的 WebSearch、4 条 OpenReview 标题检索、5 份被引清单（254 个题目逐条看过）、1 份参考文献清单（48 条）；第一轮里与 sink 相关的查询 3 条。
+
+**第 6 步 对抗式检索（13 条）**
+1. visual attention sink tokens VLM are useful not harmful removing sink hurts performance
+2. attention sink vision-language model critique "random token" control attention reallocation does not improve
+3. register tokens vision encoder VLM LLaVA training with registers no improvement high-norm tokens multimodal LLM
+4. attention sink language model BOS token no-op mechanism "attention sink" explanation over-mixing representational collapse
+5. "See What You Are Told" visual attention sink openreview review weaknesses
+6. visual sink tokens overlap high-norm ViT tokens massive activation same tokens comparison LVLM 2026
+7. attention sink multimodal LLM 2026 arXiv hallucination "sink" Qwen2.5-VL InternVL3 intervention
+8. "Mirage in the Eyes" hallucination attack multi-modal large language models "attention sink"
+9. LLaVA trained with DINOv2 registers vision encoder ablation "with registers" VLM benchmark difference
+10. visual attention redistribution VAR baseline fails Qwen2.5-VL LLaVA-OneVision "VAR" attention sink comparison limited gains 2026
+11. LVLM high-attention image tokens fixed positions caused by position embedding RoPE not content "sink" image token index bias attention artifacts
+12. visual attention sink disappears blank image OR "different prompt" OR "system prompt" sink tokens input-agnostic vision-language model analysis
+13. openreview "To Sink or Not to Sink" Visual Information Pathways reviewers
+
+- 命中：2604.03316、2605.18359（VAR 复现）、TokenPenalty、2609.01888、2501.15269、2602.03060、2508.17807、2507.09071、2605.29657、2604.23950、2604.16883。
+- 未命中：用带 register 的编码器从头训 VLM 并与不带的对照（第 3、9 条）；"换提示能否消除 sink"的直接测试（第 12 条）；直接批评 Kang 随机对照的论文（第 2 条）。
+
+**第 5 步 引用链挖掘**
+- Semantic Scholar 被引清单：2503.03321（169 条）、2405.17820（61 条）、2510.08510（21 条）、2604.03316（2 条）、2605.10622（1 条），254 个题目逐条看过。OpenAlex 被引清单：2503.03321（16 条，只含有 DOI 的）。
+- 参考文献清单：只取到 2604.03316 的（48 条）；其余四篇的接口被限流，没取到。
+- OpenReview：标题检索 4 条，确认 7uDI7w5RQA（Kang，ICLR 2025 Poster）、sQGlhjKUC0（Luo，ICLR 2026 Poster）、bA02DmQN5d（Test-time registers，NeurIPS 2025 spotlight）、tu4dFUsW5z（Barbero，COLM 2025）。论坛内容请求返回浏览器验证，未取到审稿意见。
+- 命中：2610.15855（由 Luo 与 Choi 的被引清单找到）、2606.08105、2603.14337、2605.10815、2603.00510、2604.20937、2608.04483、2603.27898、2502.00919、2607.03358、2605.05668、2610.13111、2610.12981、SMART、VDAHM。
+- 只见题目未取正文：2508.02546（What are you sinking?，NeurIPS 2025 spotlight）、2507.16018、2505.05892、2508.04257、2605.08453、2606.03712、2610.13337、2607.16824、2607.19139、2510.09017、2602.01984、2606.12412、"Garbage Attention in Large Language Models"、"Interpreting Attention Sink Neurons in Large Language Models"、"RAR: Reversing Visual Attention Re-Sinking"。
+
+**第 1 步 抽象阶梯（4 条）**。模板："Transformer 里少数内容贫乏的 token 吸收大量注意力；它是在偷预算，还是在做空操作、偏置或广播；去掉或重分配后行为怎样变。"
+1. "Attention Sinks in Diffusion Transformers: A Causal Analysis"
+2. attention sink speech OR audio language model Whisper encoder "attention sink" tokens analysis removal
+3. explicit null token softmax attention "attend to nothing" heads no-op BOS sink theory "softmax-1" OR "null attention" emergence
+4. vision-language-action model OR video LLM "attention sink" OR "register tokens" visual tokens analysis 2026
+- 命中：2605.09313（扩散）、2603.11487、2606.08105、RetoVLA。未命中：语音编码器或 ASR 模型里的 sink 分析。
+
+**第 2 步 方法论单独搜（执行 2 条，1 条未执行）**
+1. attention knockout ablation out-of-distribution pitfalls zero ablation vs mean ablation vs resample ablation interpretability critique
+2. attention weights are not contribution "value norm" norm-based analysis sink tokens small value vectors Kobayashi attention reweighting steering limitations
+3. （未执行，额度用尽）post-hoc attention steering reweighting LLM PASTA limitations head selection
+- 命中：置零、均值、重采样消融的差异；Kobayashi 的范数分析；另由引用链得到 2604.14433、2607.03358、2610.13111。未命中：专门讨论 attention knockout 有效性的论文。
+
+**第 3 步 蕴含检索（2 条）**
+1. visual sink "text sink" key direction image tokens VLM "inherited" language model BOS key cosine sink removal "output unchanged"
+2. redistributing attention from sink tokens to image tokens "does not improve" OR "accuracy stays flat" OR "no gain" vision-language model replication VAR
+- 网络检索两条都没有直接命中；三句预期结论的占位情况是靠第 5 步找到的正文核对出来的（见 §1）。
+
+**第 4 步 同义术语枚举（执行 1 条，3 条未执行）**
+- 词表：attention sink、visual sink、sink token、register、artifact token、outlier token、high-norm token、massive activation、blind token、inert token、vocabulary hijacking、attention hijacker、summary token、anchor token、aggregation pattern、attention magnet、global attention sink、dead / alive token、dummy token、null token、garbage attention、hub token、information hub、delimiter token、attention collapse、attention drift、attention dilution、extreme-token phenomenon、attention budget。
+1. "attention hijackers" LVLM instruction tokens hijack visual attention hallucination
+2. （未执行）"artifact tokens" OR "outlier tokens" OR "high-norm tokens" multimodal LLM projector … SigLIP2 Qwen-VL native ViT
+3. （未执行）"dead tokens" OR "dummy tokens" OR "null tokens" OR "garbage tokens" visual tokens VLM
+4. （未执行）"attention collapse" OR "attention dumping" OR "attention black hole" OR "over-attended" image tokens LVLM
+- 替代动作：用词表在已取到的 254 个被引题目里筛，Kang 的清单命中 42 条，其余 127 条也逐条看过。这不等于网络检索，覆盖只限于引用了这五篇的论文。
+
+**阅读量（分开数）**
+- **F：13 篇**。其中通读方法、设定、对照、局限的 5 篇：2503.03321、2510.08510、2604.03316、2605.10622（重点在附录 C、D 与消融）、2610.15855。核对了具体章节或表的 8 篇：2405.17820、2410.04514、2411.09968、TokenPenalty、2605.18359、2609.01888、2402.17762、2506.08010。
+- **A：31 篇**。2504.02732、2604.14433、2606.08105、2607.03358、2605.05668、2603.14337、2605.10815、2603.00510、2604.20937、2608.04483、2603.27898、2502.00919、2501.15269、2503.08342、2604.10027、2605.29657、2604.23950、2604.16883、2509.22650、2512.18813、2503.18556、2602.03060、2507.09071、2508.17807、SMART（EMNLP 2026）、2410.10781、2603.11487、2502.01563、2607.01707、2610.13111、2610.12981。
+- **S：21 篇**。2511.17722、VDAHM、2406.15765（这三篇取到正文但没读）、2605.09313、2503.08216、2509.21243，以及第 5 步列出的 15 个只见题目的。
+- 沿用第一轮层级、本轮未重读：2510.16596、2309.16588、2311.17911、TAME、2505.16652、2511.11502、2501.12206、2608.07302、2410.07149、2503.17349。
+
+**第 7 步 边界申报**
+- OpenReview 审稿讨论：未取到（站点要求浏览器验证）。任务要求查最近 3–5 篇的审稿讨论，这一项是零。
+- WebSearch：会话共享额度用尽，第 4 步 3 条、第 2 步 1 条未执行。同义术语覆盖不足，尤其是"artifact / outlier token × 新一代编码器（SigLIP2、Qwen 原生 ViT、InternViT）"这一格。
+- 参考文献清单只系统扫了 1 篇；Google Scholar 未用。2610.15855 自己的被引清单没有查。
+- GitHub 仓库：只抄了 URL，没有打开核对代码是否存在或可用。
+- 2610.15855、2609.01888 等是未见同行评审信息的 arXiv 预印本；2604.03316 的 ECCV 标注来自 Semantic Scholar，未在正文核对。
+- 在审稿件、未公开并行工作、非 arXiv 且非 ACL Anthology 的来源、非英文文献：未覆盖。
+- 闭源模型：无内部数据。
+- 知识截止：2026-06 之后的论文完全依赖检索与引用链；2026-10 至 11 月的新稿只通过被引清单见到，覆盖取决于索引。
+- 工作文件：正文文本存于 `/tmp/a6/papers`（共享的 /tmp 配额一度写满，我删了自己下载的原始 HTML / PDF，只留文本）；被引清单在 `/tmp/a6/s2`。
