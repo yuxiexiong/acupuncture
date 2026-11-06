@@ -1,0 +1,315 @@
+{
+  "B": {
+    "status": {
+      "error": "RuntimeError('Researcher failed/uncertain; no automatic paid retry')",
+      "pid": 57718,
+      "stage": "failed",
+      "time_unix": 1793945766.790303
+    },
+    "astra_elapsed": 0,
+    "ops": {},
+    "tool_wait": 0,
+    "start_turn": 155,
+    "replies": [],
+    "process": "",
+    "latest_receipt": {
+      "turn": 154,
+      "billing": "existing_chatgpt",
+      "cost_is_reservation_not_invoice": true,
+      "cumulative_tokens": 25903845,
+      "elapsed_seconds": 52.531157374964096,
+      "monetary_cost_unknown": true,
+      "reserved_usd": 0.0,
+      "thread": "01a1aeef-627e-7242-8c95-75a7018058bd",
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 24434048,
+        "input_tokens": 25784321,
+        "output_tokens": 119524,
+        "reasoning_output_tokens": 56307
+      },
+      "usage_delta": {
+        "cached_input_tokens": 204160,
+        "input_tokens": 213149,
+        "output_tokens": 1586
+      },
+      "usage_mode": "thread_cumulative"
+    },
+    "recent_evaluations": [
+      {
+        "id": "turn-0120",
+        "op": "evaluate",
+        "complete": true,
+        "failed": false,
+        "nested_failed": null,
+        "elapsed": 54.518084520474076,
+        "mtime": 1793943333.794005,
+        "rounds": 23
+      },
+      {
+        "id": "turn-0123",
+        "op": "evaluate",
+        "complete": true,
+        "failed": false,
+        "nested_failed": null,
+        "elapsed": 101.02484510280192,
+        "mtime": 1793943520.648866,
+        "rounds": 24
+      },
+      {
+        "id": "turn-0126",
+        "op": "evaluate",
+        "complete": true,
+        "failed": false,
+        "nested_failed": null,
+        "elapsed": 78.61327549256384,
+        "mtime": 1793944023.65357,
+        "rounds": 25
+      },
+      {
+        "id": "turn-0136",
+        "op": "evaluate",
+        "complete": true,
+        "failed": false,
+        "nested_failed": null,
+        "elapsed": 102.10451370291412,
+        "mtime": 1793944544.6705556,
+        "rounds": 26
+      },
+      {
+        "id": "turn-0139",
+        "op": "evaluate",
+        "complete": true,
+        "failed": false,
+        "nested_failed": null,
+        "elapsed": 53.79709642380476,
+        "mtime": 1793944673.7975354,
+        "rounds": 27
+      },
+      {
+        "id": "turn-0144",
+        "op": "evaluate",
+        "complete": true,
+        "failed": false,
+        "nested_failed": null,
+        "elapsed": 100.67317513003945,
+        "mtime": 1793945207.8477209,
+        "rounds": 28
+      },
+      {
+        "id": "turn-0147",
+        "op": "evaluate",
+        "complete": true,
+        "failed": false,
+        "nested_failed": null,
+        "elapsed": 62.787551302462816,
+        "mtime": 1793945347.188857,
+        "rounds": 29
+      },
+      {
+        "id": "turn-0150",
+        "op": "evaluate",
+        "complete": true,
+        "failed": false,
+        "nested_failed": null,
+        "elapsed": 100.16808940842748,
+        "mtime": 1793945519.6445017,
+        "rounds": 30
+      }
+    ],
+    "cycles": [
+      186.85486102104187,
+      503.0047039985657,
+      521.0169856548309,
+      129.12697982788086,
+      534.0501854419708,
+      139.3411362171173,
+      172.45564460754395
+    ]
+  },
+  "C": {
+    "status": {
+      "broker_pid": 2386898,
+      "pid": 45613,
+      "resumed_at": 20,
+      "stage": "running",
+      "thread": "01a1aef4-3987-7b91-8771-d353858cfe77",
+      "time_unix": 1793956646.315157,
+      "total_target": 30
+    },
+    "astra_elapsed": 900.3184612909099,
+    "ops": {
+      "python": 17.484354101121426,
+      "evaluate": 1082.4631978310645,
+      "diagnose": 95.22833704948425,
+      "commit": 3.7811196725815535
+    },
+    "tool_wait": 69.58225316368043,
+    "start_turn": 100,
+    "replies": [
+      {
+        "turn": 100,
+        "text": "I’ll verify candidate 21’s preserved commit before evaluating it. I will not replay turn 99 or count candidate 21 as complete; failed-call usage remains unknown pending reconciliation.\n\n```python\nimport json\nfrom pathlib import Path\nimport numpy as np\n\na98 = json.loads((Path(ARTIFACTS) / \"turn-0098.json\").read_text())\nmanifest21 = a98[\"value\"]\nexpected21 = \"c-5c85854a703c36d010d3eba22aae73665efa7bf769b53d8857afdcf0e5d33adb\"\nassert manifest21[\"id\"] == expected21\nassert manifest21[\"changed_scalars\"] == 163840\nprint(\"PRESERVED_CANDIDATE_21_MANIFEST\", json.dumps(manifest21, indent=2))\nfor filename in [\n    \"evaluation_ledger.json\",\n    \"r20_mlp15_selected_channel_ablation_evaluation_review.json\",\n    \"r21_mlp15_matched_channel_ablation_metrics.json\",\n    \"mlp15_matched_channel_plan.json\",\n    \"mlp_L15_projection_plan.npz\"\n]:\n    path = Path(\"/work\") / filename\n    print(\"PRESERVED_FILE\", filename, \"exists\", path.exists())\nprint(\"RECOVERY_NOTE: turn 99 had no confirmed remote action; failed-call researcher usage is unknown, not zero.\")\n```"
+      },
+      {
+        "turn": 101,
+        "text": "The manifest confirms candidate 21 is committed and still unevaluated. The receipt retains 20 completed candidates and unchanged target-inference totals; it does not resolve failed-call researcher usage. I’ll now evaluate candidate 21 once.\n\n```forward\n{\"op\":\"evaluate\",\"candidate\":\"c-5c85854a703c36d010d3eba22aae73665efa7bf769b53d8857afdcf0e5d33adb\"}\n```"
+      },
+      {
+        "turn": 102,
+        "text": "Candidate 21 is now the 21st completed evaluation. Since the Python kernel reset, I’ll inspect the saved result and plan schemas before rebuilding the review helpers—without rerunning any inference or edits.\n\n```python\na101 = json.loads((Path(ARTIFACTS) / \"turn-0101.json\").read_text())\nv101 = a101[\"value\"]\nres21 = v101[\"results\"][v101[\"candidate\"]]\nw0_id = \"w0-a8a8df63cbfe2a4bfa07bf8ace8660b3758297bf43daf2025fe2f98cb562fc5f\"\nres0 = v101[\"results\"][w0_id]\nprint(\"ROUND21_SUMMARY\", json.dumps(res21[\"summary\"]))\nprint(\"ROUND21_PROTOCOL\", json.dumps(res21[\"protocol\"]))\nprint(\"REPAIRED_IDS\", json.dumps(v101[\"vs_original\"][\"repaired\"]))\nprint(\"WORSENED_IDS\", json.dumps(v101[\"vs_original\"][\"worsened\"]))\nfor field in [\"predictions\", \"scored\"]:\n    obj = res21[field]\n    first = obj[0] if isinstance(obj, list) else next(iter(obj.values()))\n    print(\"SCHEMA\", field, type(obj).__name__, json.dumps(first))\nevaluation_ledger = json.loads(Path(\"/work/evaluation_ledger.json\").read_text())\nprint(\"LEDGER_SCHEMA\", type(evaluation_ledger).__name__, len(evaluation_ledger))\nprint(\"LEDGER_FIRST\", json.dumps(evaluation_ledger[0])[:1800])\nfor filename in [\"mlp_L15_projection_plan.npz\", \"r17_mlp15_direction_remove_edit.npz\",\n                 \"attn_L6_projection_plan.npz\"]:\n    with np.load(Path(\"/work\") / filename, allow_pickle=False) as z:\n        print(\"PLAN_SCHEMA\", filename, {key: list(z[key].shape) for key in z.files})\nprint(\"RECEIPT_RECONCILIATION\", json.dumps({\n    \"completed_rounds\": a101[\"budget\"][\"repair_rounds_completed\"],\n    \"new_target_forwards_since_recovery_receipt\": a101[\"budget\"][\"forwards\"] - 54024,\n    \"failed_call_researcher_usage\": \"unknown; these receipts report target-model usage, not a recovered researcher usage receipt\"\n}))\n```"
+      },
+      {
+        "turn": 103,
+        "text": "The matched alternative ablation also repaired captured failures, so the original channel identities are not uniquely supported. I’ll restore the paired review and prepare a fresh W0-versus-best audit covering every round-20 correctness change, plus the captured failures and stable anchors.\n\n```python\npreds0 = {x[\"request_id\"]: x for x in res0[\"predictions\"]}\nscores0 = {x[\"request_id\"]: x for x in res0[\"scored\"]}\nconditions = [\"no_image_usual\", \"original_usual\", \"counterfact_usual\",\n              \"original_visual\", \"counterfact_visual\"]\ngroup_ids = sorted({x[\"group_id\"] for x in res0[\"scored\"]})\n\ndef review_eval(action, label):\n    artifact = json.loads((Path(ARTIFACTS) / (action + \".json\")).read_text())\n    value = artifact[\"value\"]\n    cid = value[\"candidate\"]\n    result = value[\"results\"][cid]\n    assert result[\"full_development\"] and result[\"summary\"][\"n\"] == 2560\n    predictions = {x[\"request_id\"]: x for x in result[\"predictions\"]}\n    scored = {x[\"request_id\"]: x for x in result[\"scored\"]}\n    changes = [\n        {\"id\": rid, \"effect\": \"repair\" if scored[rid][\"correct\"] else \"damage\",\n         \"gold\": scored[rid][\"answer\"], \"w0\": preds0[rid][\"text\"],\n         \"new\": predictions[rid][\"text\"]}\n        for rid in result[\"ids\"] if scored[rid][\"correct\"] != scores0[rid][\"correct\"]\n    ]\n    counts = {c: sum(int(x[\"correct\"]) for x in scored.values()\n                     if x[\"condition\"] == c) for c in conditions}\n    joints = {}\n    for t in [\"T0\", \"T1\"]:\n        for o in [0, 1]:\n            for b in [\"B0\", \"B1\"]:\n                joints[f\"{b}:{t}:O{o}\"] = float(np.mean([\n                    all(scored[f\"{g}:{c}:{t}:O{o}:{b}\"][\"correct\"] for c in conditions)\n                    for g in group_ids]))\n    cell_delta = {\n        k: v[\"correct\"] / v[\"n\"] - res0[\"summary\"][\"cells\"][k][\"correct\"] / res0[\"summary\"][\"cells\"][k][\"n\"]\n        for k, v in result[\"summary\"][\"cells\"].items()\n    }\n    info = {\"label\": label, \"action\": action, \"candidate\": cid,\n            \"summary\": result[\"summary\"], \"conditions\": counts,\n            \"five_way_joint\": joints,\n            \"cell_delta\": {k: v for k, v in cell_delta.items() if v != 0},\n            \"changes\": changes,\n            \"repair_count\": sum(x[\"effect\"] == \"repair\" for x in changes),\n            \"damage_count\": sum(x[\"effect\"] == \"damage\" for x in changes)}\n    assert not any(x[\"candidate\"] == cid for x in evaluation_ledger)\n    evaluation_ledger.append(info)\n    Path(\"/work/evaluation_ledger.json\").write_text(json.dumps(evaluation_ledger, indent=2))\n    Path(f\"/work/{label}_evaluation_review.json\").write_text(json.dumps(info, indent=2))\n    print(\"SUMMARY\", json.dumps({k: v for k, v in result[\"summary\"].items() if k != \"cells\"}))\n    print(\"CONDITION_COUNTS\", json.dumps(counts), \"FIVE_WAY\", json.dumps(joints))\n    print(\"CELL_DELTAS\", json.dumps(info[\"cell_delta\"]))\n    print(\"REPAIRS\", info[\"repair_count\"], \"DAMAGES\", info[\"damage_count\"])\n    for start in range(0, len(changes), 30):\n        print(\"CHANGES\", start, json.dumps(changes[start:start + 30]))\n    print(\"BEST\", artifact[\"budget\"][\"best\"], \"ROUNDS\", artifact[\"budget\"][\"repair_rounds_completed\"])\n    return cid, info\n\ncid21, r21 = review_eval(\"turn-0101\", \"r21_mlp15_matched_channel_ablation\")\nr20 = json.loads(Path(\"/work/r20_mlp15_selected_channel_ablation_evaluation_review.json\").read_text())\nprobe_groups = [\"C-125\", \"C-232\", \"C-288\", \"C-479\", \"C-706\", \"C-053\", \"C-101\", \"C-626\"]\nprobe_ids = [f\"{g}:counterfact_visual:{t}:O{o}:B0\"\n             for g in probe_groups for t in [\"T0\", \"T1\"] for o in [0, 1]]\nfailids = [rid for rid in probe_ids if not scores0[rid][\"correct\"]]\nbest_audit_ids = list(dict.fromkeys(\n    [x[\"id\"] for x in r20[\"changes\"]] + failids +\n    [\"C-626:counterfact_visual:T0:O1:B0\", \"C-101:counterfact_visual:T0:O0:B0\"]))\nassert len(best_audit_ids) <= 64\naudit_plan = {\n    \"candidate\": r20[\"candidate\"], \"ids\": best_audit_ids,\n    \"selection\": \"All round-20 correctness flips, all captured baseline counterfactual-visual failures, and two stable anchors.\",\n    \"comparison\": \"Fresh ordinary generation under W0 and round 20 using identical diagnostic requests; retain official cached results separately.\",\n    \"limitation\": \"Outcome-selected development audit, not an independent efficacy estimate.\",\n    \"failed_turn99_researcher_usage\": \"Unknown; no recovered researcher usage receipt.\"\n}\nPath(\"/work/r20_fresh_audit_plan.json\").write_text(json.dumps(audit_plan, indent=2))\nprint(\"FRESH_AUDIT_PLAN\", json.dumps(audit_plan))\n```"
+      },
+      {
+        "turn": 104,
+        "text": "I’ll first obtain fresh W0 generations and layer-14–16 readouts for the fixed 56-request audit. The following candidate call will use identical requests and capture settings.\n\n```forward\n{\"op\":\"diagnose\",\"candidate\":\"w0-a8a8df63cbfe2a4bfa07bf8ace8660b3758297bf43daf2025fe2f98cb562fc5f\",\"ids\":[\"C-271:counterfact_usual:T1:O0:B0\",\"C-271:counterfact_usual:T1:O0:B1\",\"C-328:counterfact_usual:T1:O1:B0\",\"C-373:no_image_usual:T1:O1:B0\",\"C-373:original_usual:T1:O1:B1\",\"C-588:counterfact_usual:T1:O0:B0\",\"C-588:counterfact_visual:T1:O1:B1\",\"C-608:counterfact_usual:T0:O0:B1\",\"C-608:counterfact_usual:T0:O1:B0\",\"C-291:no_image_usual:T0:O1:B1\",\"C-053:counterfact_visual:T0:O0:B1\",\"C-411:original_visual:T1:O1:B1\",\"C-288:counterfact_visual:T1:O1:B1\",\"C-353:counterfact_visual:T1:O1:B0\",\"C-615:counterfact_visual:T1:O0:B1\",\"C-479:counterfact_visual:T1:O1:B1\",\"C-125:counterfact_visual:T1:O1:B0\",\"C-514:original_usual:T1:O1:B1\",\"C-514:counterfact_usual:T1:O0:B0\",\"C-368:counterfact_visual:T1:O1:B1\",\"C-232:counterfact_visual:T0:O0:B0\",\"C-060:original_visual:T0:O1:B0\",\"C-077:no_image_usual:T0:O1:B0\",\"C-617:no_image_usual:T1:O1:B0\",\"C-688:no_image_usual:T0:O1:B0\",\"C-688:original_usual:T0:O0:B0\",\"C-455:counterfact_usual:T1:O0:B1\",\"C-455:counterfact_visual:T1:O0:B0\",\"C-584:no_image_usual:T0:O0:B0\",\"C-584:counterfact_visual:T1:O1:B1\",\"C-606:counterfact_usual:T0:O0:B1\",\"C-278:counterfact_visual:T1:O0:B1\",\"C-114:counterfact_usual:T1:O1:B0\",\"C-114:original_visual:T1:O1:B1\",\"C-076:no_image_usual:T1:O1:B1\",\"C-505:counterfact_visual:T1:O0:B0\",\"C-348:no_image_usual:T1:O1:B0\",\"C-227:no_image_usual:T0:O0:B0\",\"C-227:counterfact_visual:T0:O1:B0\",\"C-119:counterfact_visual:T0:O1:B1\",\"C-293:no_image_usual:T0:O0:B0\",\"C-671:counterfact_visual:T1:O0:B1\",\"C-125:counterfact_visual:T0:O1:B0\",\"C-232:counterfact_visual:T0:O1:B0\",\"C-232:counterfact_visual:T1:O1:B0\",\"C-288:counterfact_visual:T0:O1:B0\",\"C-288:counterfact_visual:T1:O0:B0\",\"C-288:counterfact_visual:T1:O1:B0\",\"C-479:counterfact_visual:T1:O1:B0\",\"C-706:counterfact_visual:T1:O0:B0\",\"C-706:counterfact_visual:T1:O1:B0\",\"C-053:counterfact_visual:T0:O1:B0\",\"C-053:counterfact_visual:T1:O0:B0\",\"C-053:counterfact_visual:T1:O1:B0\",\"C-626:counterfact_visual:T0:O1:B0\",\"C-101:counterfact_visual:T0:O0:B0\"],\"spec\":{\"layers\":[14,15,16],\"token_positions\":\"last_prompt\"}}\n```"
+      },
+      {
+        "turn": 105,
+        "text": "I’ll now run the same audit under round 20. Matching upstream activations with downstream changes would verify where the static edit takes effect; fresh answer pairs will separately test whether cached repairs reproduce.\n\n```forward\n{\"op\":\"diagnose\",\"candidate\":\"c-e9fcea94ac4ab2707f9680b593fd98d545416c0f6abe03d8307da18ef8f45b20\",\"ids\":[\"C-271:counterfact_usual:T1:O0:B0\",\"C-271:counterfact_usual:T1:O0:B1\",\"C-328:counterfact_usual:T1:O1:B0\",\"C-373:no_image_usual:T1:O1:B0\",\"C-373:original_usual:T1:O1:B1\",\"C-588:counterfact_usual:T1:O0:B0\",\"C-588:counterfact_visual:T1:O1:B1\",\"C-608:counterfact_usual:T0:O0:B1\",\"C-608:counterfact_usual:T0:O1:B0\",\"C-291:no_image_usual:T0:O1:B1\",\"C-053:counterfact_visual:T0:O0:B1\",\"C-411:original_visual:T1:O1:B1\",\"C-288:counterfact_visual:T1:O1:B1\",\"C-353:counterfact_visual:T1:O1:B0\",\"C-615:counterfact_visual:T1:O0:B1\",\"C-479:counterfact_visual:T1:O1:B1\",\"C-125:counterfact_visual:T1:O1:B0\",\"C-514:original_usual:T1:O1:B1\",\"C-514:counterfact_usual:T1:O0:B0\",\"C-368:counterfact_visual:T1:O1:B1\",\"C-232:counterfact_visual:T0:O0:B0\",\"C-060:original_visual:T0:O1:B0\",\"C-077:no_image_usual:T0:O1:B0\",\"C-617:no_image_usual:T1:O1:B0\",\"C-688:no_image_usual:T0:O1:B0\",\"C-688:original_usual:T0:O0:B0\",\"C-455:counterfact_usual:T1:O0:B1\",\"C-455:counterfact_visual:T1:O0:B0\",\"C-584:no_image_usual:T0:O0:B0\",\"C-584:counterfact_visual:T1:O1:B1\",\"C-606:counterfact_usual:T0:O0:B1\",\"C-278:counterfact_visual:T1:O0:B1\",\"C-114:counterfact_usual:T1:O1:B0\",\"C-114:original_visual:T1:O1:B1\",\"C-076:no_image_usual:T1:O1:B1\",\"C-505:counterfact_visual:T1:O0:B0\",\"C-348:no_image_usual:T1:O1:B0\",\"C-227:no_image_usual:T0:O0:B0\",\"C-227:counterfact_visual:T0:O1:B0\",\"C-119:counterfact_visual:T0:O1:B1\",\"C-293:no_image_usual:T0:O0:B0\",\"C-671:counterfact_visual:T1:O0:B1\",\"C-125:counterfact_visual:T0:O1:B0\",\"C-232:counterfact_visual:T0:O1:B0\",\"C-232:counterfact_visual:T1:O1:B0\",\"C-288:counterfact_visual:T0:O1:B0\",\"C-288:counterfact_visual:T1:O0:B0\",\"C-288:counterfact_visual:T1:O1:B0\",\"C-479:counterfact_visual:T1:O1:B0\",\"C-706:counterfact_visual:T1:O0:B0\",\"C-706:counterfact_visual:T1:O1:B0\",\"C-053:counterfact_visual:T0:O1:B0\",\"C-053:counterfact_visual:T1:O0:B0\",\"C-053:counterfact_visual:T1:O1:B0\",\"C-626:counterfact_visual:T0:O1:B0\",\"C-101:counterfact_visual:T0:O0:B0\"],\"spec\":{\"layers\":[14,15,16],\"token_positions\":\"last_prompt\"}}\n```"
+      },
+      {
+        "turn": 106,
+        "text": "I’ll compare all 56 fresh answer pairs with the cached evaluations and check that the edit first changes the captured computation at layer 15. Diagnostic exact-label matches will remain separate from official scoring.\n\n```python\ndef measurement_rows(action):\n    value = json.loads((Path(ARTIFACTS) / (action + \".json\")).read_text())[\"value\"]\n    return {x[\"request_id\"]: x for x in value[\"results\"]}\n\ndef captured(row, layer, kind):\n    module = f\"model.language_model.layers.{layer}\"\n    where = \"output\"\n    if kind == \"a\":\n        module += \".mlp.down_proj\"\n        where = \"input\"\n    entries = [x for x in row[\"captures\"] if x[\"module\"] == module and x[\"where\"] == where]\n    assert len(entries) == 1\n    return np.load(Path(ARTIFACTS) / entries[0][\"array_file\"], allow_pickle=False).reshape(-1)\n\nfresh0 = measurement_rows(\"turn-0104\")\nfresh20 = measurement_rows(\"turn-0105\")\neval20 = json.loads((Path(ARTIFACTS) / \"turn-0096.json\").read_text())[\"value\"][\"results\"][r20[\"candidate\"]]\npreds20 = {x[\"request_id\"]: x for x in eval20[\"predictions\"]}\nwith np.load(\"/work/r20_mlp15_selected_channel_ablation_edit.npz\", allow_pickle=False) as z:\n    s15 = z[\"selected\"].copy()\n    original15_columns = z[\"original_columns\"].copy()\nwith np.load(\"/work/mlp_L15_projection_plan.npz\", allow_pickle=False) as z:\n    u15 = z[\"direction\"].copy()\n\npaired20 = []\nfor rid in best_audit_ids:\n    x, y = fresh0[rid], fresh20[rid]\n    gx, gy = x[\"diagnostic_generation\"], y[\"diagnostic_generation\"]\n    a0, a1 = captured(x, 15, \"a\"), captured(y, 15, \"a\")\n    predicted_write_change = -original15_columns @ a0[s15]\n    paired20.append({\n        \"id\": rid, \"gold\": scores0[rid][\"answer\"],\n        \"cached_W0\": preds0[rid][\"text\"], \"cached_R20\": preds20[rid][\"text\"],\n        \"fresh_W0\": gx[\"text\"], \"fresh_R20\": gy[\"text\"],\n        \"W0_matches_cached_ids\": gx[\"generated_ids\"] == preds0[rid][\"generated_ids\"],\n        \"R20_matches_cached_ids\": gy[\"generated_ids\"] == preds20[rid][\"generated_ids\"],\n        \"input_hashes_equal\": all(gx[k] == gy[k] == preds0[rid][k] for k in [\n            \"input_ids_sha256\", \"rendered_chat_sha256\", \"token_type_ids_sha256\"]),\n        \"layer14_equal\": bool(np.array_equal(captured(x, 14, \"h\"), captured(y, 14, \"h\"))),\n        \"mlp15_input_equal\": bool(np.array_equal(a0, a1)),\n        \"predicted_linear_write_change_norm\": float(np.linalg.norm(predicted_write_change)),\n        \"layer15_residual_change_norm\": float(np.linalg.norm(captured(y, 15, \"h\") - captured(x, 15, \"h\"))),\n        \"layer16_residual_change_norm\": float(np.linalg.norm(captured(y, 16, \"h\") - captured(x, 16, \"h\"))),\n        \"fresh_W0_exact_label\": gx[\"text\"].strip().casefold() == scores0[rid][\"answer\"].casefold(),\n        \"fresh_R20_exact_label\": gy[\"text\"].strip().casefold() == scores0[rid][\"answer\"].casefold()\n    })\naudit_summary20 = {\n    \"n\": len(paired20),\n    \"W0_cached_sequence_matches\": sum(x[\"W0_matches_cached_ids\"] for x in paired20),\n    \"R20_cached_sequence_matches\": sum(x[\"R20_matches_cached_ids\"] for x in paired20),\n    \"equal_input_hashes\": sum(x[\"input_hashes_equal\"] for x in paired20),\n    \"equal_layer14_outputs\": sum(x[\"layer14_equal\"] for x in paired20),\n    \"equal_mlp15_inputs\": sum(x[\"mlp15_input_equal\"] for x in paired20),\n    \"fresh_exact_label_repairs\": sum(not x[\"fresh_W0_exact_label\"] and x[\"fresh_R20_exact_label\"] for x in paired20),\n    \"fresh_exact_label_damages\": sum(x[\"fresh_W0_exact_label\"] and not x[\"fresh_R20_exact_label\"] for x in paired20),\n    \"interpretation\": \"Selected development audit; exact-label diagnostic comparison is not the official grader or an efficacy estimate.\"\n}\nPath(\"/work/r20_fresh_paired_audit.json\").write_text(json.dumps(\n    {\"summary\": audit_summary20, \"rows\": paired20}, indent=2))\nprint(\"FRESH_PAIRED_AUDIT_SUMMARY\", json.dumps(audit_summary20))\nfor start in range(0, len(paired20), 20):\n    print(\"ANSWER_PAIRS\", start, json.dumps([\n        {k: x[k] for k in [\"id\", \"gold\", \"cached_W0\", \"cached_R20\", \"fresh_W0\", \"fresh_R20\"]}\n        for x in paired20[start:start + 20]]))\nprint(\"CAPTURE_CHANGE_RANGES\", json.dumps({\n    k: [min(x[k] for x in paired20), max(x[k] for x in paired20)]\n    for k in [\"predicted_linear_write_change_norm\", \"layer15_residual_change_norm\", \"layer16_residual_change_norm\"]\n}))\n```"
+      },
+      {
+        "turn": 107,
+        "text": "The fresh audit supports some round-20 effects, but cached sequences differed in 9/56 W0 and 4/56 edited cases. Matched-channel ablation also gained four counterfactual-visual answers, weakening channel-specific claims.\n\nRound 22 will remove the selected columns’ **orthogonal component**, retaining their projection onto the nominated direction. This tests whether round 20’s effects extend beyond that direction. Before evaluation, I predict retention of at least six of the nine fresh counterfactual-visual repairs and positive net counterfactual-visual correctness. This is an exploratory, seen-development prediction—not independent validation.\n\n```python\nimport json\nfrom pathlib import Path\nimport numpy as np\n\ndef bf16_round(x):\n    a = np.array(x, dtype=np.float32, copy=True)\n    bits = a.view(np.uint32)\n    bits += np.uint32(0x7fff) + ((bits >> np.uint32(16)) & np.uint32(1))\n    bits &= np.uint32(0xffff0000)\n    return a\n\ndef stage_columns(name, selected, desired_columns, label, metadata):\n    selected = np.asarray(selected, dtype=np.int64)\n    w = np.array(load_original(name), dtype=np.float32, copy=True)\n    original_columns = w[:, selected].copy()\n    tensor_norm = float(np.linalg.norm(w))\n    desired_columns = np.asarray(desired_columns, dtype=np.float32)\n    assert desired_columns.shape == original_columns.shape\n    assert len(np.unique(selected)) == len(selected)\n    assert np.isfinite(desired_columns).all()\n\n    absolute = bf16_round(desired_columns)\n    intended_delta = desired_columns - original_columns\n    effective_delta = absolute - original_columns\n    support = int(np.count_nonzero(effective_delta))\n    assert 0 < support <= 1_000_000\n\n    metrics = {\n        \"label\": label,\n        \"name\": name,\n        \"columns\": int(len(selected)),\n        \"effective_support\": support,\n        \"intended_norm\": float(np.linalg.norm(intended_delta)),\n        \"effective_norm\": float(np.linalg.norm(effective_delta)),\n        \"relative_tensor_norm\": float(np.linalg.norm(effective_delta)) / tensor_norm,\n        \"rounding_error_norm\": float(np.linalg.norm(effective_delta - intended_delta)),\n        **metadata,\n    }\n    np.savez(\n        Path(\"/work\") / (label + \"_edit.npz\"),\n        selected=selected,\n        original_columns=original_columns,\n        absolute_bf16_columns=absolute,\n    )\n    (Path(\"/work\") / (label + \"_metrics.json\")).write_text(\n        json.dumps(metrics, indent=2)\n    )\n    w[:, selected] = absolute\n    save_edit(name, w)\n    print(\"STAGED\", json.dumps(metrics), \"EDITED\", edited())\n    return metrics, absolute\n\nwith np.load(\"/work/mlp_L15_projection_plan.npz\", allow_pickle=False) as z:\n    selected22 = z[\"selected\"].astype(np.int64)\n    direction22 = z[\"direction\"].astype(np.float32)\nwith np.load(\"/work/r17_mlp15_direction_remove_edit.npz\", allow_pickle=False) as z:\n    assert np.array_equal(selected22, z[\"selected\"])\n    original22 = z[\"original_columns\"].astype(np.float32)\n    r17_columns = z[\"absolute_bf16_columns\"].astype(np.float32)\n\ndirection22 /= np.linalg.norm(direction22)\nparallel22 = np.outer(direction22, direction22 @ original22)\northogonal22 = original22 - parallel22\nfresh_visual_repairs20 = [\n    r[\"id\"] for r in paired20\n    if \":counterfact_visual:\" in r[\"id\"]\n    and not r[\"fresh_W0_exact_label\"] and r[\"fresh_R20_exact_label\"]\n]\n\nplan22 = {\n    \"label\": \"r22_mlp15_orthogonal_component_remove\",\n    \"hypothesis\": (\n        \"The broader selected-column ablation affects behavior through writes \"\n        \"outside the nominated success-associated output direction.\"\n    ),\n    \"operation\": (\n        \"Reconstruct W0; replace only the original 64 selected layer-15 MLP \"\n        \"down-projection columns by u(u^T W_selected), rounded to BF16.\"\n    ),\n    \"prediction\": (\n        \"Retain at least six of the nine fresh round-20 counterfactual-visual \"\n        \"repair identities in full-development evaluation, with positive net \"\n        \"counterfactual-visual correctness relative to the official W0 baseline.\"\n    ),\n    \"reference_repair_ids\": fresh_visual_repairs20,\n    \"comparators\": {\n        \"parallel_component_removal\": \"turn-0087\",\n        \"full_selected_column_ablation\": \"turn-0096\",\n        \"matched_column_ablation\": \"turn-0101\",\n        \"fresh_paired_audit\": [\"turn-0104\", \"turn-0105\", \"turn-0106\"],\n    },\n    \"limitations\": (\n        \"Seen-development outcome-selected prediction. Natural component \"\n        \"magnitudes, not norm-matched interventions. BF16 component decomposition \"\n        \"is approximate. Cached-versus-fresh discrepancies remain unresolved.\"\n    ),\n}\nassert len(fresh_visual_repairs20) == 9\nPath(\"/work/r22_mlp15_orthogonal_component_plan.json\").write_text(\n    json.dumps(plan22, indent=2)\n)\nprint(\"PREREGISTERED_TEST\", json.dumps(plan22))\n\nmetrics22, absolute22 = stage_columns(\n    \"model.language_model.layers.15.mlp.down_proj.weight\",\n    selected22,\n    parallel22,\n    plan22[\"label\"],\n    {\n        \"reference\": \"r20_mlp15_selected_channel_ablation\",\n        \"paired_component\": \"r17_mlp15_direction_remove\",\n        \"parallel_component_norm\": float(np.linalg.norm(parallel22)),\n        \"orthogonal_component_norm\": float(np.linalg.norm(orthogonal22)),\n        \"dose_note\": \"Remove the natural orthogonal component; no rescaling.\",\n        \"construction\": \"Independent reconstruction from W0, not cumulative.\",\n    },\n)\ndecomposition22 = {\n    \"BF16_additive_decomposition_error_norm\": float(\n        np.linalg.norm(r17_columns + absolute22 - original22)\n    ),\n    \"retained_projection_error_norm\": float(\n        np.linalg.norm(direction22 @ (absolute22 - original22))\n    ),\n    \"note\": (\n        \"The first quantity measures departure of the two quantized component \"\n        \"edits' sum from the full-column ablation; neither equality is assumed.\"\n    ),\n}\nPath(\"/work/r22_mlp15_decomposition_audit.json\").write_text(\n    json.dumps(decomposition22, indent=2)\n)\nprint(\"DECOMPOSITION_AUDIT\", json.dumps(decomposition22))\n```"
+      },
+      {
+        "turn": 108,
+        "text": "The staged edit preserves the nominated projection to an error norm of \\(6.26\\times10^{-6}\\), while removing the much larger orthogonal component. I will commit this component test; its behavioral prediction remains untested.\n\n```forward\n{\n  \"op\": \"commit\",\n  \"parent\": \"c-5c85854a703c36d010d3eba22aae73665efa7bf769b53d8857afdcf0e5d33adb\",\n  \"rationale\": \"Round 22: separate the broader selected-channel ablation from removal of the nominated output direction by retaining the parallel component and removing its orthogonal complement, independently reconstructed from W0.\",\n  \"evidence\": {\n    \"failure_behavior\": \"Counterfactual pictured-size questions sometimes elicit the usual-size object. Round 20 repaired some such answers, including nine counterfactual-visual identities reproduced in the selected fresh paired audit, but also damaged correct answers.\",\n    \"component_hypothesis\": \"Round-20 effects may depend on selected-column writes outside the nominated success-associated direction. Directional removal alone failed its focal prediction; matched-channel ablation also improved counterfactual-visual counts, so neither direction nor channel specificity is established.\",\n    \"expected_change\": \"Retain at least six of the nine reference counterfactual-visual repair identities registered in turn-0107, with positive net counterfactual-visual correctness relative to the official W0 baseline.\",\n    \"dose\": \"Natural orthogonal-component removal on 64 layer-15 MLP down-projection columns: W_selected becomes BF16(u(u^T W_selected)). Effective support 163812; effective L2 approximately 2.123525. Retained-projection error norm 0.000006259; additive BF16 decomposition error norm 0.003547.\",\n    \"control_plan\": \"Compare repair and damage identities with round 17 parallel-component removal, round 20 full selected-column ablation, and round 21 fixed matched-channel ablation. Natural component magnitudes are not norm matched. Preserve cached-versus-fresh discrepancies and do not interpret this seen-development test as generalization.\",\n    \"contrast_ids\": [\n      \"C-125:counterfact_visual:T1:O1:B0\",\n      \"C-125:counterfact_visual:T1:O0:B0\",\n      \"C-626:counterfact_visual:T0:O1:B0\"\n    ],\n    \"measurement_actions\": [\n      \"turn-0011\",\n      \"turn-0013\",\n      \"turn-0104\",\n      \"turn-0105\"\n    ],\n    \"role\": \"targeted\"\n  }\n}\n```"
+      },
+      {
+        "turn": 109,
+        "text": "Round 22 is committed with 163,812 changed BF16 scalars and L2 norm 2.123524. Full-development evaluation will test the registered repair-retention prediction and measure damage across every condition.\n\n```forward\n{\n  \"op\": \"evaluate\",\n  \"candidate\": \"c-d973e57d57effa31b57ed6b15387931d0505a6e251fd1e089e1e1bd3a71301be\"\n}\n```"
+      },
+      {
+        "turn": 110,
+        "text": "The receipt confirms 22 completed candidates and selects round 22 as best, but the preview omits its outcomes. I will inspect every correctness change and check the registered six-of-nine prediction before choosing the next test.\n\n```python\ncid22, r22 = review_eval(\n    \"turn-0109\", \"r22_mlp15_orthogonal_component_remove\"\n)\nplan22 = json.loads(\n    Path(\"/work/r22_mlp15_orthogonal_component_plan.json\").read_text()\n)\nrepairs22 = {x[\"id\"] for x in r22[\"changes\"] if x[\"effect\"] == \"repair\"}\ndamages22 = {x[\"id\"] for x in r22[\"changes\"] if x[\"effect\"] == \"damage\"}\nreference22 = set(plan22[\"reference_repair_ids\"])\nbaseline_cv = sum(\n    bool(s[\"correct\"]) for s in scores0.values()\n    if s[\"condition\"] == \"counterfact_visual\"\n)\nnet_cv22 = int(r22[\"conditions\"][\"counterfact_visual\"]) - baseline_cv\nprediction22 = {\n    \"reference_repairs_retained\": sorted(reference22 & repairs22),\n    \"reference_repairs_not_retained\": sorted(reference22 - repairs22),\n    \"retained_count\": len(reference22 & repairs22),\n    \"net_counterfact_visual_correctness\": net_cv22,\n    \"criterion_met\": len(reference22 & repairs22) >= 6 and net_cv22 > 0,\n    \"captured_baseline_failure_repairs\": sorted(set(failids) & repairs22),\n}\nPath(\"/work/r22_prediction_check.json\").write_text(\n    json.dumps(prediction22, indent=2)\n)\nprint(\"ROUND22_PREDICTION_CHECK\", json.dumps(prediction22))\n\nr20 = json.loads(\n    Path(\"/work/r20_mlp15_selected_channel_ablation_evaluation_review.json\").read_text()\n)\nrepairs20 = {x[\"id\"] for x in r20[\"changes\"] if x[\"effect\"] == \"repair\"}\ndamages20 = {x[\"id\"] for x in r20[\"changes\"] if x[\"effect\"] == \"damage\"}\ncomparison22 = {\n    \"shared_repairs_with_full_ablation\": sorted(repairs22 & repairs20),\n    \"orthogonal_removal_only_repairs\": sorted(repairs22 - repairs20),\n    \"full_ablation_only_repairs\": sorted(repairs20 - repairs22),\n    \"shared_damages\": sorted(damages22 & damages20),\n    \"orthogonal_removal_only_damages\": sorted(damages22 - damages20),\n    \"full_ablation_only_damages\": sorted(damages20 - damages22),\n}\nPath(\"/work/r22_vs_r20_identity_comparison.json\").write_text(\n    json.dumps(comparison22, indent=2)\n)\nprint(\"COMPONENT_COMPARISON\", json.dumps(comparison22))\n\nv20 = json.loads((Path(ARTIFACTS) / \"turn-0096.json\").read_text())[\"value\"]\nv22 = json.loads((Path(ARTIFACTS) / \"turn-0109.json\").read_text())[\"value\"]\nresult20 = v20[\"results\"][v20[\"candidate\"]]\nresult22 = v22[\"results\"][v22[\"candidate\"]]\np20 = {p[\"request_id\"]: p for p in result20[\"predictions\"]}\np22 = {p[\"request_id\"]: p for p in result22[\"predictions\"]}\nsequence_differences22 = [\n    {\n        \"id\": i,\n        \"gold\": scores0[i][\"answer\"],\n        \"full_ablation\": p20[i][\"text\"],\n        \"orthogonal_removal\": p22[i][\"text\"],\n    }\n    for i in result22[\"ids\"]\n    if p20[i][\"generated_ids\"] != p22[i][\"generated_ids\"]\n]\nPath(\"/work/r22_vs_r20_sequence_differences.json\").write_text(\n    json.dumps(sequence_differences22, indent=2)\n)\nprint(\"SEQUENCE_DIFFERENCE_COUNT\", len(sequence_differences22))\nfor start in range(0, len(sequence_differences22), 30):\n    print(\"SEQUENCE_DIFFERENCES\", start,\n          json.dumps(sequence_differences22[start:start + 30]))\nprint(\"LAYER15_PARAMETER_NAMES\",\n      [n for n in NAMES if \".layers.15.\" in n and \"vision\" not in n])\n```"
+      },
+      {
+        "turn": 111,
+        "text": "Round 22 retained all nine reference visual repairs, meeting its prediction, but introduced 14 damages. It ties round 20’s selection score and wins on slightly smaller support—not higher overall accuracy.\n\nNext I will test half-strength orthogonal removal. I predict at least five reference repairs, positive net counterfactual-visual correctness, and fewer than 14 damages. An independently reconstructed opposite-sign edit will test whether removal, rather than perturbation alone, matters.\n\n```python\nprint(\"REMAINING_R22_VS_R20_SEQUENCE_DIFFERENCES\",\n      json.dumps(sequence_differences22[30:]))\nprint(\"LAYER15_NORM_PARAMETERS\", [\n    n for n in NAMES\n    if \".layers.15.\" in n and \"vision\" not in n and \"norm\" in n\n])\n\ndose_plan = {\n    \"reference\": \"r22_mlp15_orthogonal_component_remove\",\n    \"reference_repair_ids\": plan22[\"reference_repair_ids\"],\n    \"half_removal\": {\n        \"label\": \"r23_mlp15_orthogonal_half\",\n        \"formula\": \"W_selected = W0_selected - 0.5 * (I - uu^T) W0_selected\",\n        \"prediction\": (\n            \"At least five of the nine registered reference visual repairs, \"\n            \"positive net counterfactual-visual correctness, and fewer than \"\n            \"14 total correctness damages relative to official W0.\"\n        ),\n    },\n    \"opposite_control\": {\n        \"label\": \"r24_mlp15_orthogonal_augmentation\",\n        \"formula\": \"W_selected = W0_selected + (I - uu^T) W0_selected\",\n        \"prediction\": (\n            \"Fail to retain six of the nine reference visual repairs and \"\n            \"produce no positive net counterfactual-visual correctness change.\"\n        ),\n        \"matching\": \"Same columns and intended perturbation norm as round 22.\",\n    },\n    \"limitations\": (\n        \"Exploratory seen-development dose and sign tests, not a significance \"\n        \"test. Both candidates will be independently reconstructed from W0. \"\n        \"Official cached results remain distinct from fresh diagnostics.\"\n    ),\n}\nPath(\"/work/r23_r24_mlp15_dose_plan.json\").write_text(\n    json.dumps(dose_plan, indent=2)\n)\nprint(\"PREREGISTERED_DOSE_AND_SIGN_TESTS\", json.dumps(dose_plan))\n\nmetrics23, absolute23 = stage_columns(\n    \"model.language_model.layers.15.mlp.down_proj.weight\",\n    selected22,\n    original22 - np.float32(0.5) * orthogonal22,\n    \"r23_mlp15_orthogonal_half\",\n    {\n        \"reference\": \"r22_mlp15_orthogonal_component_remove\",\n        \"dose\": 0.5,\n        \"operation\": \"Remove half the orthogonal component on the same 64 columns.\",\n        \"construction\": \"Rebuilt from W0; no retained round-22 edit.\",\n        \"control_plan\": \"Full removal, full-column ablation, and opposite-sign augmentation.\",\n    },\n)\n```"
+      }
+    ],
+    "process": "45613 36:43 /opt/anaconda3/bin/python -u /Users/ruizhixu/Documents/ChatGPT/acupuncture/experiments/wsp-vlm-gemma3-v9-quota-recovery-2026-11-06/resume_C_r2.py --task C\n",
+    "latest_receipt": {
+      "turn": 111,
+      "billing": "existing_chatgpt",
+      "cost_is_reservation_not_invoice": true,
+      "cumulative_tokens": 17099191,
+      "elapsed_seconds": 64.94908449996728,
+      "monetary_cost_unknown": true,
+      "reserved_usd": 0.0,
+      "thread": "01a1aef4-3987-7b91-8771-d353858cfe77",
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 16018560,
+        "input_tokens": 17024429,
+        "output_tokens": 74762,
+        "reasoning_output_tokens": 29666
+      },
+      "usage_delta": {
+        "cached_input_tokens": 155776,
+        "input_tokens": 162567,
+        "output_tokens": 1293
+      },
+      "usage_mode": "thread_cumulative"
+    },
+    "recent_evaluations": [
+      {
+        "id": "turn-0078",
+        "op": "evaluate",
+        "complete": true,
+        "failed": false,
+        "nested_failed": null,
+        "elapsed": 264.60158815421164,
+        "mtime": 1793943621.8584154,
+        "rounds": 15
+      },
+      {
+        "id": "turn-0082",
+        "op": "evaluate",
+        "complete": true,
+        "failed": false,
+        "nested_failed": null,
+        "elapsed": 240.45132577046752,
+        "mtime": 1793943998.4411838,
+        "rounds": 16
+      },
+      {
+        "id": "turn-0087",
+        "op": "evaluate",
+        "complete": true,
+        "failed": false,
+        "nested_failed": null,
+        "elapsed": 265.8626196999103,
+        "mtime": 1793944621.459733,
+        "rounds": 17
+      },
+      {
+        "id": "turn-0090",
+        "op": "evaluate",
+        "complete": true,
+        "failed": false,
+        "nested_failed": null,
+        "elapsed": 224.13374056480825,
+        "mtime": 1793944927.9264307,
+        "rounds": 18
+      },
+      {
+        "id": "turn-0093",
+        "op": "evaluate",
+        "complete": true,
+        "failed": false,
+        "nested_failed": null,
+        "elapsed": 272.9732958190143,
+        "mtime": 1793945304.225198,
+        "rounds": 19
+      },
+      {
+        "id": "turn-0096",
+        "op": "evaluate",
+        "complete": true,
+        "failed": false,
+        "nested_failed": null,
+        "elapsed": 265.5423939861357,
+        "mtime": 1793945673.2538571,
+        "rounds": 20
+      },
+      {
+        "id": "turn-0101",
+        "op": "evaluate",
+        "complete": true,
+        "failed": false,
+        "nested_failed": null,
+        "elapsed": 663.7826144769788,
+        "mtime": 1793957376.067324,
+        "rounds": 21
+      },
+      {
+        "id": "turn-0109",
+        "op": "evaluate",
+        "complete": true,
+        "failed": false,
+        "nested_failed": null,
+        "elapsed": 418.6805833540857,
+        "mtime": 1793958645.5166643,
+        "rounds": 22
+      }
+    ],
+    "cycles": [
+      376.5827684402466,
+      623.0185492038727,
+      306.4666976928711,
+      376.29876732826233,
+      369.0286591053009,
+      11702.813466787338,
+      1269.4493403434753
+    ]
+  }
+}
