@@ -1,0 +1,89 @@
+Both capture batches succeeded. I’ll validate the full artifacts and fix two label-independent channel sets: the 144 highest and lowest spatial-mean energy fractions. The planned comparison attenuates each set’s effective gain by 20%. These are count-matched controls—not necessarily energy-matched—and spatially constant features are not necessarily irrelevant.
+
+```python
+bridge_capture_rows = []
+for turn in ("turn-0088", "turn-0089"):
+    result = read_artifact(turn)
+    assert not result["failed"]
+    for row in result["value"]["results"]:
+        assert row["candidate"] == w0
+        assert len(row["captures"]) == 1
+        capture = row["captures"][0]
+        assert capture["module"] == "model.multi_modal_projector.mm_soft_emb_norm"
+        assert capture["where"] == "output"
+        assert capture["path"] == [] and capture["invocation"] == 0
+        assert capture["flat_indices"] is None
+        assert capture["shape"] == [1, 256, 1152]
+        x = np.asarray(capture["values"], dtype=np.float64).reshape(256, 1152)
+        assert np.isfinite(x).all()
+        bridge_capture_rows.append((row["request_id"], x))
+
+captured_ids = [rid for rid, _ in bridge_capture_rows]
+assert len(captured_ids) == 8 and len(set(captured_ids)) == 8
+assert set(captured_ids) == set(bridge_sample_ids)
+
+bridge_patch_means = np.stack([x.mean(axis=0) for _, x in bridge_capture_rows])
+bridge_second_moments = np.stack([(x * x).mean(axis=0) for _, x in bridge_capture_rows])
+bridge_common_energy = (bridge_patch_means ** 2).mean(axis=0)
+bridge_total_energy = bridge_second_moments.mean(axis=0)
+bridge_live = np.flatnonzero(bridge_total_energy > 0)
+assert len(bridge_live) >= 288
+
+bridge_common_fraction = np.zeros(1152, dtype=np.float64)
+bridge_common_fraction[bridge_live] = (
+    bridge_common_energy[bridge_live] / bridge_total_energy[bridge_live]
+)
+assert np.all(bridge_common_fraction[bridge_live] <= 1 + 1e-12)
+
+high_order = bridge_live[np.lexsort((bridge_live, -bridge_common_fraction[bridge_live]))]
+low_order = bridge_live[np.lexsort((bridge_live, bridge_common_fraction[bridge_live]))]
+bridge_high_common = np.sort(high_order[:144])
+bridge_low_common = np.sort(low_order[:144])
+assert not np.intersect1d(bridge_high_common, bridge_low_common).size
+
+loo_overlap = []
+for i in range(8):
+    numerator = (bridge_patch_means ** 2).sum(axis=0) - bridge_patch_means[i] ** 2
+    denominator = bridge_second_moments.sum(axis=0) - bridge_second_moments[i]
+    live = np.flatnonzero(denominator > 0)
+    fraction = numerator[live] / denominator[live]
+    selected = live[np.lexsort((live, -fraction))[:144]]
+    loo_overlap.append(int(np.intersect1d(selected, bridge_high_common).size))
+
+bridge_channel_diagnostic = {
+    "source_turns": ["turn-0088", "turn-0089"],
+    "sample_ids": captured_ids,
+    "selection_used_labels": False,
+    "statistic": "mean_images(mean_patches(x)^2) / mean_images(mean_patches(x^2))",
+    "excluded_zero_energy_channels": np.flatnonzero(bridge_total_energy == 0).tolist(),
+    "high_common_channels": bridge_high_common.tolist(),
+    "low_common_channels": bridge_low_common.tolist(),
+    "planned_effective_gain": 0.8,
+    "high_set_leave_one_image_out_overlap_counts": loo_overlap,
+}
+for label, indices in (
+    ("high_common", bridge_high_common),
+    ("low_common", bridge_low_common),
+):
+    bridge_channel_diagnostic[label + "_statistics"] = {
+        "n": int(indices.size),
+        "common_fraction_min_median_max": np.quantile(
+            bridge_common_fraction[indices], [0, 0.5, 1]
+        ).tolist(),
+        "share_of_total_output_energy": float(
+            bridge_total_energy[indices].sum() / bridge_total_energy.sum()
+        ),
+        "share_of_spatial_mean_energy": float(
+            bridge_common_energy[indices].sum() / bridge_common_energy.sum()
+        ),
+    }
+
+diagnostic_path = Path(ARTIFACTS) / "bridge_channel_diagnostic.json"
+diagnostic_path.write_text(json.dumps(bridge_channel_diagnostic, indent=2))
+print("BRIDGE_CHANNEL_DIAGNOSTIC", json.dumps({
+    key: value for key, value in bridge_channel_diagnostic.items()
+    if key not in ("high_common_channels", "low_common_channels")
+}))
+print("CHANNEL_SETS_SAVED", str(diagnostic_path))
+print("NO_EDITS_STAGED", "candidate 19 not yet committed")
+```

@@ -1,0 +1,30 @@
+The calculation reached the save step, but `/artifacts` is read-only. I’ll preserve the diagnostic in this action’s output instead, then stage the predeclared high-fraction channel edit with every other parameter restored to W0.
+
+```python
+print("BRIDGE_CHANNEL_DIAGNOSTIC", json.dumps(bridge_channel_diagnostic))
+
+assert current_id == "c-7013b048a3d311c60d171b65bcfe5ba148c0a0c9cf8bd10e15c86fe5c984b0a9"
+for name in sorted(active_names - {bridge_name}):
+    save_edit(name, load_original(name))
+
+bridge_original = load_original(bridge_name)
+bridge_proposed = bridge_original.copy()
+bridge_proposed[bridge_high_common] = (
+    (bridge_original[bridge_high_common] + np.float32(1))
+    * np.float32(0.8) - np.float32(1)
+)
+assert np.isfinite(bridge_proposed).all()
+assert np.count_nonzero(bridge_proposed != bridge_original) <= 144
+save_edit(bridge_name, bridge_proposed)
+active_names = {bridge_name}
+
+print("STAGED_SELECTIVE_BRIDGE", {
+    "candidate_number": 19,
+    "set": "highest spatial-mean energy fraction",
+    "channels": bridge_high_common.tolist(),
+    "effective_gain": 0.8,
+    "maximum_support": 144,
+    "all_other_parameters": "W0",
+    "parent": current_id,
+})
+```
