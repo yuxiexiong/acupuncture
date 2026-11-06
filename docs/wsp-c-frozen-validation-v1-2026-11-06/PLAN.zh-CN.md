@@ -1,5 +1,7 @@
 # 第一轮 C 冻结补丁：新来源、新问法与已有方法验证
 
+> **2026-11-06 容量实审更新：** [新数据容量报告](../../experiments/wsp-c-data-capacity-audit-v1-2026-11-06/REPORT.zh-CN.md)已否决本版T200在现有数据上的可行性：新素材质量前最多52个不复用配对，单人逐图审核后24个候选；尚未双审或运行。下文保留原计划，不自动将200改成24执行。
+
 ## Material Passport
 
 - Origin Skill / Mode：academic-research-suite / experiment-agent / plan。
