@@ -1,0 +1,59 @@
+Ten full evaluations are complete; the preview does not expose round 10’s outcomes. I’ll inspect them and stage a second seed of the matched-channel control, keeping the output direction and coefficient magnitudes fixed.
+
+```python
+cid10, r10 = review_eval("turn-0060", "r10_attn10_random_direction_seed2")
+if len(r10["changes"]) > 40:
+    print("REMAINING_CHANGES", json.dumps(r10["changes"][40:]))
+
+plan = attn_plans[10]
+selected = np.asarray(plan["selected"], dtype=np.int64)
+coeff = np.asarray(plan["p"][selected], dtype=np.float32)
+with np.load("/work/attn10_random_channels_seed20261106.npz", allow_pickle=False) as z:
+    matching_features = z["features"].copy()
+    first_random_channels = z["selected"].copy()
+
+rng = np.random.default_rng(20261107)
+excluded = set(selected.tolist())
+used = set()
+matched = []
+for j in selected:
+    pool = np.array([
+        k for k in range((int(j) // 256) * 256, (int(j) // 256 + 1) * 256)
+        if k not in excluded and k not in used
+    ], dtype=np.int64)
+    distances = np.sum((matching_features[pool] - matching_features[j]) ** 2, axis=1)
+    nearest = pool[np.argsort(distances, kind="stable")[:8]]
+    k = int(rng.choice(nearest))
+    matched.append(k)
+    used.add(k)
+random_channels2 = np.asarray(matched, dtype=np.int64)
+assert len(np.unique(random_channels2)) == 64
+assert not set(random_channels2.tolist()).intersection(excluded)
+
+W10 = np.asarray(load_original(plan["name"]), dtype=np.float32)
+column_norms = np.linalg.norm(W10, axis=0)
+activation_rms = np.sqrt(np.mean(A10 ** 2, axis=0))
+metadata = {
+    "seed": 20261107,
+    "reference": "r04_attn10_direction_remove",
+    "matching": "Same head; random among eight nearest unused channels in the original standardized matching features; exclude original channels.",
+    "overlap_with_first_random_set": int(len(set(random_channels2.tolist()).intersection(first_random_channels.tolist()))),
+    "median_column_norm_ratio": float(np.median(column_norms[random_channels2] / column_norms[selected])),
+    "median_activation_rms_ratio": float(np.median(activation_rms[random_channels2] / activation_rms[selected])),
+    "original_mean_input_write": float(np.mean(A10[:, selected] @ coeff)),
+    "random_mean_input_write": float(np.mean(A10[:, random_channels2] @ coeff)),
+    "limitation": "Cached versus fresh diagnostic response discrepancies remain unresolved."
+}
+np.savez(
+    "/work/attn10_random_channels_seed20261107.npz",
+    selected=random_channels2,
+    reference_selected=selected,
+    features=matching_features,
+    direction=plan["u"],
+    input_coefficients=coeff
+)
+stage_delta(
+    plan["name"], random_channels2, -np.outer(plan["u"], coeff),
+    "r11_attn10_random_channels_seed2", metadata
+)
+```

@@ -1,0 +1,75 @@
+The artifact directory is a string, so the read failed before analysis ran. I’ll retry with an explicit `Path`.
+
+```python
+m94 = json.loads((Path(ARTIFACTS) / "turn-0094.json").read_text())["value"]["results"]
+assert [x["request_id"] for x in m94] == balanced_ids
+
+generation_differences94 = []
+for result in m94:
+    rid = result["request_id"]
+    generated = result["diagnostic_generation"]["text"]
+    if generated != pred17[rid]["text"]:
+        generation_differences94.append({
+            "id": rid,
+            "full_D": pred17[rid]["text"],
+            "diagnostic": generated
+        })
+
+weight7 = np.asarray(load_original(attention7_name), dtype=np.float32)
+gain7 = 1.0 + np.asarray(
+    load_original("language_model.model.layers.7.post_attention_layernorm.weight"),
+    dtype=np.float32
+)
+raw7 = O41[7] @ weight7.T
+contribution7 = O41[7][:, head3_columns] @ head3_weights.T
+
+def normalize_attention7(x):
+    return x / np.sqrt(np.mean(x.astype(np.float64)**2, axis=1, keepdims=True) + 1e-6) * gain7
+
+local_movement17 = normalize_attention7(raw7 - 0.5 * contribution7) - normalize_attention7(raw7)
+measured17 = {}
+for layer in [7, 10, 33]:
+    hidden = capture_matrix(m94, f"model.language_model.layers.{layer}")
+    movement = hidden - H41[layer]
+    target = verified_changes(H41[layer])
+    alignment = np.sum(movement[vf] * target, axis=1) / np.maximum(
+        np.linalg.norm(movement[vf], axis=1) * np.linalg.norm(target, axis=1), 1e-12
+    )
+    reductions = 1.0 - np.linalg.norm(target - movement[vf], axis=1) / np.maximum(
+        np.linalg.norm(target, axis=1), 1e-12
+    )
+    row = {
+        "target_alignment_cosines": alignment.tolist(),
+        "target_relative_residual_error_reductions": reductions.tolist(),
+        "mean_target_movement": float(np.mean(np.linalg.norm(movement[vf], axis=1))),
+        "mean_control_movement": float(np.mean(np.linalg.norm(movement[vc], axis=1)))
+    }
+    if layer == 7:
+        row["local_proxy_vs_actual_movement_cosines"] = (
+            np.sum(local_movement17[vf] * movement[vf], axis=1) /
+            np.maximum(
+                np.linalg.norm(local_movement17[vf], axis=1) *
+                np.linalg.norm(movement[vf], axis=1), 1e-12
+            )
+        ).tolist()
+    measured17[str(layer)] = row
+    print("MEASURED ROUND 17", layer, json.dumps(row))
+
+check17 = {
+    "candidate": eval17["candidate"],
+    "action": "turn-0094",
+    "W0_capture_action": "turn-0041",
+    "diagnostic_generation_differences": generation_differences94,
+    "input_hashes_equal_W0": all(
+        result["input_ids_sha256"] == m41[i]["input_ids_sha256"]
+        for i, result in enumerate(m94)
+    ),
+    "measurements": measured17,
+    "interpretation_limit": "Moving toward a successful wording's residual does not by itself establish correct counting or selective mediation."
+}
+(work / "round_17_measured_residual_check.json").write_text(json.dumps(check17, indent=2))
+print("GENERATION DIFFERENCES:", json.dumps(generation_differences94))
+print("INPUT HASHES EQUAL W0:", check17["input_hashes_equal_W0"])
+print("STAGED ROUND 18:", edited())
+del weight7
+```

@@ -1,0 +1,36 @@
+W0 reproduced only 9/16 audited answers despite identical prompt, input-token, and token-type hashes. This is a serious limitation: several apparent repairs and damages occur without an edit. I will preserve the frozen evaluation baseline, investigate where repeatability breaks, and treat small score gains as unvalidated. The 30-candidate requirement remains in force unless this proves to be an execution blocker.
+
+```python
+print("W0_CAPTURE_REPEATABILITY")
+repeat_capture_audit=[]
+for r in m53:
+    rid=r["request_id"]
+    for cap in r["captures"]:
+        module=cap["module"]
+        if module.endswith(".self_attn.o_proj") and cap["where"]=="input":
+            l,kind=10,"attn"
+        elif ".mlp.down_proj" in module:
+            l,kind=int(module.split(".layers.")[1].split(".")[0]),"a"
+        elif module.rsplit(".",1)[-1].isdigit():
+            l,kind=int(module.rsplit(".",1)[-1]),"h"
+        else:
+            continue
+        if (rid,l,kind) in capture_index:
+            fresh=np.load(Path(ARTIFACTS)/cap["array_file"],allow_pickle=False).reshape(-1)
+            old=vec(rid,l,kind); delta=fresh-old
+            item={"id":rid,"layer":l,"kind":kind,
+                  "changed":int(np.count_nonzero(delta)),
+                  "delta_norm":float(np.linalg.norm(delta)),
+                  "old_norm":float(np.linalg.norm(old)),
+                  "fresh_sha":cap["array_sha256"],
+                  "original_sha":capture_index[(rid,l,kind)]["array_sha256"]}
+            repeat_capture_audit.append(item)
+            print(json.dumps(item,separators=(",",":")))
+Path("/work/w0_capture_repeatability.json").write_text(json.dumps(repeat_capture_audit,indent=2))
+print("INITIAL_VS_FRESH_ANCHOR_LOGITS")
+for r in m53:
+    rid=r["request_id"]
+    if rid in logits0:
+        ids=answer_tokens[rid.split(":")[0]]
+        print(rid,{str(t):[logits0[rid][str(t)],r["next_token_logits"][str(t)]] for t in ids})
+```

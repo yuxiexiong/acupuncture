@@ -1,0 +1,53 @@
+I’ll inspect the sign control, record the repeated diagnostic discrepancy, and stage the preselected head-4 control with the same update norm as strong head-3 attenuation.
+
+```python
+eval18, pred18, score18 = inspect_reproduced_round("turn-0099", 18)
+
+repeat97 = json.loads((Path(ARTIFACTS) / "turn-0097.json").read_text())["value"]["results"][0]
+previous94 = next(x for x in m94 if x["request_id"] == repeat97["request_id"])
+repeat_check17 = {
+    "id": repeat97["request_id"],
+    "full_D": pred17[repeat97["request_id"]]["text"],
+    "first_diagnostic": previous94["diagnostic_generation"]["text"],
+    "repeat_diagnostic": repeat97["diagnostic_generation"]["text"],
+    "same_input_hash": previous94["input_ids_sha256"] == repeat97["input_ids_sha256"],
+    "same_chat_hash": previous94["rendered_chat_sha256"] == repeat97["rendered_chat_sha256"],
+    "capture_hashes_equal": {
+        a["module"]: a["array_sha256"] == b["array_sha256"]
+        for a, b in zip(previous94["captures"], repeat97["captures"])
+    },
+    "cause": "Unresolved; no robust target repair is inferred from the full-D-only flip."
+}
+check17["repeat_check"] = repeat_check17
+(work / "round_17_measured_residual_check.json").write_text(json.dumps(check17, indent=2))
+print("ROUND 17 REPEAT CHECK:", json.dumps(repeat_check17))
+
+weight19 = np.asarray(load_original(attention7_name), dtype=np.float32)
+columns19 = np.arange(matched_head7 * 256, (matched_head7 + 1) * 256, dtype=np.int64)
+block19 = weight19[:, columns19].copy()
+attenuation19 = 0.5 * head3_norm / np.linalg.norm(block19.astype(np.float64))
+delta19 = (-attenuation19 * block19).astype(np.float32)
+np.savez(
+    work / "round_19_matched_head_control.npz",
+    columns=columns19,
+    delta=delta19,
+    attenuation_fraction=np.array(attenuation19)
+)
+stage_column_delta(
+    attention7_name, columns19, delta19, 19,
+    {
+        "operation": "norm-matched alternative attention-head attenuation control",
+        "layer": 7,
+        "head": int(matched_head7),
+        "attenuation_fraction": float(attenuation19),
+        "commit_parent": eval18["candidate"],
+        "hypothesis": "Comparable effects from a preselected matched head would weaken head-3 specificity.",
+        "matching": "Head 4 selected before these evaluations by weight norm and input RMS proximity; pre-rounding delta norm matched to round 17.",
+        "provenance": "/work/round_19_matched_head_control.npz",
+        "measurement_actions": ["turn-0041", "turn-0043", "turn-0068"],
+        "control_plan": "/work/attention7_head_control_plan.json"
+    }
+)
+print("EDITED:", edited())
+del weight19
+```

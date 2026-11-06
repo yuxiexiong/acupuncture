@@ -1,0 +1,69 @@
+Round 16 will attenuate only layer 7 head 3’s output columns by 10%. The prediction is improvement across both overcounts and undercounts; damage to successful counterparts would count against a selective repair.
+
+```python
+attention7_name = "language_model.model.layers.7.self_attn.o_proj.weight"
+attention7_w0 = np.asarray(load_original(attention7_name), dtype=np.float32)
+head3_columns = np.arange(3 * 256, 4 * 256, dtype=np.int64)
+head3_weights = attention7_w0[:, head3_columns].copy()
+head3_norm = float(np.linalg.norm(head3_weights.astype(np.float64)))
+head3_input_rms = float(np.sqrt(np.mean(O41[7][:, head3_columns].astype(np.float64)**2)))
+
+head_matching = []
+for head in range(8):
+    columns = np.arange(head * 256, (head + 1) * 256)
+    weight_norm = float(np.linalg.norm(attention7_w0[:, columns].astype(np.float64)))
+    input_rms = float(np.sqrt(np.mean(O41[7][:, columns].astype(np.float64)**2)))
+    screen = next(x for x in attention_screen if x["layer"] == 7 and x["head"] == head)
+    head_matching.append({
+        "head": head,
+        "weight_norm": weight_norm,
+        "input_rms": input_rms,
+        "matching_distance": float(
+            np.log(weight_norm / head3_norm)**2 +
+            np.log(input_rms / head3_input_rms)**2
+        ),
+        "mean_alignment": screen["mean_alignment"],
+        "positive_alignments": screen["positive_alignments"]
+    })
+matched_head7 = min(
+    (x for x in head_matching if x["head"] != 3),
+    key=lambda x: x["matching_distance"]
+)["head"]
+
+np.savez(
+    work / "attention7_head3_intervention.npz",
+    columns=head3_columns,
+    original_columns=head3_weights
+)
+(work / "attention7_head_control_plan.json").write_text(json.dumps({
+    "selected_head": 3,
+    "selection": "Positive local target alignment on all seven reproduced contrasts, not highest mean alignment.",
+    "planned_attenuation_fractions": [0.1, 0.5],
+    "opposite_sign_fraction": -0.5,
+    "matched_head": matched_head7,
+    "matching": head_matching,
+    "additional_control": "Seeded output-coordinate permutation of the head-3 update, preserving column norms before BF16 rounding.",
+    "limitations": "Control movements are almost as large as target movements; no selective mechanism is established."
+}, indent=2))
+
+stage_column_delta(
+    attention7_name, head3_columns, -0.1 * head3_weights, 16,
+    {
+        "operation": "selected attention-head output attenuation",
+        "layer": 7,
+        "head": 3,
+        "attenuation_fraction": 0.1,
+        "commit_parent": W0_ID,
+        "hypothesis": "Attenuating this head may reduce wording-dependent counting errors in both directions.",
+        "provenance": "/work/attention7_head3_intervention.npz",
+        "screening_file": "/work/verified_attention_head_screen.json",
+        "measurement_actions": ["turn-0041", "turn-0043", "turn-0068"],
+        "control_plan": "/work/attention7_head_control_plan.json",
+        "counterevidence": "Local control movement is comparable to target movement; screening is supervised and omits downstream computation."
+    }
+)
+print("HEAD MATCHING:", json.dumps(head_matching))
+print("PRESELECTED MATCHED HEAD:", matched_head7)
+print("EDITED:", edited())
+del attention7_w0
+```

@@ -1,0 +1,45 @@
+I will quantify the fresh W0–candidate-4 differences and verify that the measured projection change agrees with the saved BF16 weight delta. Separately, candidate 10 will replicate the random-direction control with a second fixed seed; its prediction remains failure to reproduce the specific visual benefit.
+
+```python
+m56=json.loads((Path(ARTIFACTS)/"turn-0056.json").read_text())["value"]["results"]
+r53={r["request_id"]:r for r in m53}
+def captured(row,module,where):
+    c=next(c for c in row["captures"] if c["module"]==module and c["where"]==where)
+    return np.load(Path(ARTIFACTS)/c["array_file"],allow_pickle=False).reshape(-1)
+
+e4=np.load("/work/r04_attn10_direction_remove_edit.npz",allow_pickle=False)
+dw4=e4["absolute_bf16_columns"]-e4["original_columns"]
+sel4=e4["selected"]
+paired_audit=[]
+for r in m56:
+    rid=r["request_id"]; b=r53[rid]
+    module="model.language_model.layers.10.self_attn.o_proj"
+    x=captured(b,module,"input")
+    dx=captured(r,module,"input")-x
+    predicted=dw4@x[sel4]
+    actual=captured(r,module,"output")-captured(b,module,"output")
+    normmodule="model.language_model.layers.10.post_attention_layernorm"
+    dn=captured(r,normmodule,"output")-captured(b,normmodule,"output")
+    changes={"id":rid,"baseline":preds0[rid]["text"],
+             "fresh_W0":b["diagnostic_generation"]["text"],
+             "fresh_R4":r["diagnostic_generation"]["text"],
+             "input_delta_norm":float(np.linalg.norm(dx)),
+             "projection_delta_norm":float(np.linalg.norm(actual)),
+             "predicted_actual_cos":cos(predicted,actual),
+             "post_norm_delta_norm":float(np.linalg.norm(dn))}
+    paired_audit.append(changes)
+print("PAIRED_AUDIT",json.dumps(paired_audit,separators=(",",":")))
+Path("/work/r04_fresh_paired_mechanism_audit.json").write_text(json.dumps(paired_audit,indent=2))
+
+plan=attn_plans[10]; coeff=plan["p"][plan["selected"]]
+rng=np.random.default_rng(20261107)
+randdir2=(plan["u"]*rng.choice(np.array([-1,1],dtype=np.float32),size=2560)).astype(np.float32)
+np.savez("/work/attn10_random_direction_seed20261107.npz",direction=randdir2,
+         reference_direction=plan["u"],input_coefficients=coeff,selected=plan["selected"])
+stage_delta(plan["name"],plan["selected"],-np.outer(randdir2,coeff),
+            "r10_attn10_random_direction_seed2",
+            {"seed":20261107,"reference":"r04_attn10_direction_remove",
+             "direction_cosine":cos(randdir2,plan["u"]),
+             "randomization":"Second preregistered row-sign randomization; same channels and input coefficients.",
+             "limitation":"Stored W0 versus fresh diagnostic generation mismatches retained in /work/w0_reproducibility_audit.json."})
+```

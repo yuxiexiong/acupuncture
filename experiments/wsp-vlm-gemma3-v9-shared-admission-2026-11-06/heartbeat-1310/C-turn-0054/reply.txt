@@ -1,0 +1,28 @@
+The first displayed W0 diagnostic differs from its stored baseline answer (grasshopper versus skunk). I will inspect all 16 cases and verify prompt/token hashes before attributing any small candidate gain to weight changes. I will not replace the fixed baseline or change evaluation conditions.
+
+```python
+m53=json.loads((Path(ARTIFACTS)/"turn-0053.json").read_text())["value"]["results"]
+repro_audit=[]
+for r in m53:
+    rid=r["request_id"]; g=r["diagnostic_generation"]; b=preds0[rid]
+    entry={"id":rid,"baseline":b["text"],"fresh_W0":g["text"],
+           "same_answer":b["text"]==g["text"],
+           "same_prompt_hash":b["rendered_chat_sha256"]==g["rendered_chat_sha256"],
+           "same_input_ids_hash":b["input_ids_sha256"]==g["input_ids_sha256"],
+           "same_token_type_hash":b["token_type_ids_sha256"]==g["token_type_ids_sha256"],
+           "same_generated_ids":b["generated_ids"]==g["generated_ids"],
+           "baseline_generated_ids":b["generated_ids"],"fresh_generated_ids":g["generated_ids"]}
+    repro_audit.append(entry)
+print(json.dumps(repro_audit,separators=(",",":")))
+print("EXACT_ANSWER_MATCHES",sum(x["same_answer"] for x in repro_audit),"/",len(repro_audit))
+print("MEASUREMENT_REPRODUCTION_FOR_EXISTING_ANCHORS")
+for r in m53:
+    rid=r["request_id"]
+    if (rid,9,"h") in capture_index:
+        cap=next(c for c in r["captures"] if c["module"]=="model.language_model.layers.9")
+        new=np.load(Path(ARTIFACTS)/cap["array_file"],allow_pickle=False).reshape(-1)
+        old=vec(rid,9,"h")
+        print(rid,"residual9_changed",int(np.count_nonzero(new-old)),
+              "delta_norm",float(np.linalg.norm(new-old)))
+Path("/work/w0_reproducibility_audit.json").write_text(json.dumps(repro_audit,indent=2))
+```
