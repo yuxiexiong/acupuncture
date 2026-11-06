@@ -39,6 +39,7 @@ def main():
     print('scenarios', {s: len(v) for s, v in scen.items()})
     tot = {t: 0 for t in K.DONOR_TYPES}
     n_tr = n_rk = n_cf = 0
+    n_pair = {'KS': 0, 'RS': 0, 'OS': 0}
     bad = []
     first_target = 0
     rows_hist = {t: [0, 0, 0] for t in K.DONOR_TYPES}
@@ -56,6 +57,9 @@ def main():
         n_cf += int(len(al) == 2)
         if not ok_tr:
             bad.append(rid)
+        n_pair['KS'] += int(K.d_pair(D, {d['id']: 0 for d in D}, 'KS', 'row') is not None)
+        n_pair['RS'] += int(K.d_pair(D, {d['id']: 0 for d in D}, 'RS', 'key') is not None)
+        n_pair['OS'] += int(K.d_pair(D, {d['id']: 0 for d in D}, 'OS', 'row') is not None)
         # exact null: any donor-independent output (each row, stop) gives 0 for every statistic that is defined
         for const in (0, 1, 2, 'stop'):
             o = {d['id']: const for d in D}
@@ -63,6 +67,18 @@ def main():
                 assert abs(K.d_transfer(D, o)) < 1e-12, (rid, const)
             if K.rk_balanced(D):
                 assert abs(K.d_reading(D, o)) < 1e-12, (rid, const)
+            for typ, f in (('KS', 'row'), ('RS', 'key'), ('OS', 'row')):
+                x = K.d_pair(D, o, typ, f)
+                assert x is None or abs(x) < 1e-12, (rid, const, typ)
+            ps = K.conflict_pairs(D)
+            if ps:
+                assert abs(K.w_conflict(D, {(s['id'], b['id']): const for s, b in ps})) < 1e-12
+        # under pure key-following the KS statistic is 0 and the RS statistic is 1; under pure row-following the reverse
+        ok = {d['id']: (d['key'] if d['key'] is not None else d['row']) for d in D}
+        orow = {d['id']: d['row'] for d in D}
+        for typ, f, want_row, want_key in (('KS', 'row', 1.0, 0.0), ('RS', 'key', 0.0, 1.0)):
+            if K.d_pair(D, orow, typ, f) is not None:
+                assert K.d_pair(D, orow, typ, f) == want_row and K.d_pair(D, ok, typ, f) == want_key, (rid, typ)
         # pure readings give the expected signs
         if ok_tr:
             assert K.d_transfer(D, {d['id']: d['row'] for d in D}) > 0.99
@@ -75,6 +91,8 @@ def main():
     print('receivers with a computable transfer statistic D_tr', n_tr, '| not computable:', bad)
     print('receivers with a balanced both-differ set (reading statistic D_rk)', n_rk)
     print('receivers with two aligned donors (conflict cells)', n_cf)
+    print('receivers with a usable donor pair for D_ks / D_rs / D_os', n_pair)
+    print('arms per direction', {d: len(K.arms_for(d)) for d in K.DIRS})
     # per-scenario view
     for s in order:
         rid = scen[s][0]

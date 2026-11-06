@@ -1,48 +1,58 @@
-flip            outcome=precedence_flip        cells={'a': 'SELF', 'b': 'FOLLOW', 'c': 'SELF', 'd': 'FOLLOW'} D_tr(T_Bd)=+1.00 [+1.00,+1.00] D_rk=+1.00 D_os=+1.00
-                labels {'R_S': 'FOLLOW', 'R_S4': 'FOLLOW', 'R_So': 'SELF', 'R_QK': 'SELF', 'V': 'holds', 'VQ': 'holds', 'S_T': 'FOLLOW', 'KV': 'DEGRADED', 'OPEN': 'holds', 'READ': 'row', 'X_C': 'state_wins', 'X_T': 'state_wins'}
-flip_key        outcome=precedence_flip        cells={'a': 'SELF', 'b': 'FOLLOW', 'c': 'SELF', 'd': 'FOLLOW'} D_tr(T_Bd)=+1.00 [+1.00,+1.00] D_rk=-1.00 D_os=+0.00
-                labels {'R_S': 'FOLLOW', 'R_S4': 'FOLLOW', 'R_So': 'SELF', 'R_QK': 'SELF', 'V': 'holds', 'VQ': 'holds', 'S_T': 'FOLLOW', 'KV': 'DEGRADED', 'OPEN': 'holds', 'READ': 'key', 'X_C': 'state_wins', 'X_T': 'state_wins'}
-buffer_general  outcome=buffer_general         cells={'a': 'FOLLOW', 'b': 'FOLLOW', 'c': 'FOLLOW', 'd': 'FOLLOW'} D_tr(T_Bd)=+1.00 [+1.00,+1.00] D_rk=+1.00 D_os=+1.00
-                labels {'R_S': 'SELF', 'R_S4': 'SELF', 'R_So': 'SELF', 'R_QK': 'SELF', 'V': 'holds', 'VQ': 'holds', 'S_T': 'FOLLOW', 'KV': 'DEGRADED', 'OPEN': 'holds', 'READ': 'row', 'X_C': 'buffer_wins', 'X_T': 'buffer_wins'}
-background      outcome=background_dependent   cells={'a': 'SELF', 'b': 'SELF', 'c': 'FOLLOW', 'd': 'FOLLOW'} D_tr(T_Bd)=+1.00 [+1.00,+1.00] D_rk=+1.00 D_os=+1.00
-                labels {'R_S': 'FOLLOW', 'R_S4': 'FOLLOW', 'R_So': 'SELF', 'R_QK': 'SELF', 'V': 'holds', 'VQ': 'holds', 'S_T': 'FOLLOW', 'KV': 'DEGRADED', 'OPEN': 'holds', 'READ': 'row', 'X_C': 'state_wins', 'X_T': 'buffer_wins'}
-state_only      outcome=no_transfer            cells={'a': 'SELF', 'b': 'DEGRADED', 'c': 'SELF', 'd': 'DEGRADED'} D_tr(T_Bd)=+0.00 [+0.00,+0.00] D_rk=+0.00 D_os=+0.00
-                labels {'R_S': 'FOLLOW', 'R_S4': 'FOLLOW', 'R_So': 'SELF', 'R_QK': 'SELF', 'V': 'unjudgeable', 'VQ': 'holds', 'S_T': 'FOLLOW', 'KV': 'DEGRADED', 'OPEN': 'holds', 'READ': 'unjudgeable', 'X_C': 'state_wins', 'X_T': 'state_wins'}
-never           outcome=no_transfer            cells={'a': 'SELF', 'b': 'DEGRADED', 'c': 'SELF', 'd': 'DEGRADED'} D_tr(T_Bd)=+0.00 [+0.00,+0.00] D_rk=+0.00 D_os=+0.00
-                labels {'R_S': 'SELF', 'R_S4': 'SELF', 'R_So': 'SELF', 'R_QK': 'SELF', 'V': 'unjudgeable', 'VQ': 'holds', 'S_T': 'DEGRADED', 'KV': 'DEGRADED', 'OPEN': 'holds', 'READ': 'unjudgeable', 'X_C': 'neither', 'X_T': 'neither'}
-weak            outcome=indeterminate          cells={'a': 'SELF', 'b': 'INTERMEDIATE', 'c': 'SELF', 'd': 'INTERMEDIATE'} D_tr(T_Bd)=+0.32 [+0.28,+0.37] D_rk=+0.22 D_os=+0.22
-                labels {'R_S': 'INTERMEDIATE', 'R_S4': 'INTERMEDIATE', 'R_So': 'SELF', 'R_QK': 'SELF', 'V': 'unjudgeable', 'VQ': 'holds', 'S_T': 'INTERMEDIATE', 'KV': 'DEGRADED', 'OPEN': 'holds', 'READ': 'unjudgeable', 'X_C': 'neither', 'X_T': 'neither'}
-half            outcome=precedence_flip        cells={'a': 'SELF', 'b': 'FOLLOW', 'c': 'SELF', 'd': 'FOLLOW'} D_tr(T_Bd)=+0.60 [+0.49,+0.76] D_rk=+0.38 D_os=+0.45
-                labels {'R_S': 'INTERMEDIATE', 'R_S4': 'INTERMEDIATE', 'R_So': 'SELF', 'R_QK': 'SELF', 'V': 'holds', 'VQ': 'holds', 'S_T': 'INTERMEDIATE', 'KV': 'DEGRADED', 'OPEN': 'holds', 'READ': 'row', 'X_C': 'neither', 'X_T': 'neither'}
-leaky           outcome=partial                cells={'a': 'INTERMEDIATE', 'b': 'FOLLOW', 'c': 'SELF', 'd': 'FOLLOW'} D_tr(T_Bd)=+1.00 [+1.00,+1.00] D_rk=+1.00 D_os=+1.00
-                labels {'R_S': 'FOLLOW', 'R_S4': 'FOLLOW', 'R_So': 'SELF', 'R_QK': 'SELF', 'V': 'holds', 'VQ': 'holds', 'S_T': 'FOLLOW', 'KV': 'DEGRADED', 'OPEN': 'holds', 'READ': 'row', 'X_C': 'state_wins', 'X_T': 'state_wins'}
-prefail         outcome=prerequisite_fail      cells={'a': 'SELF', 'b': 'FOLLOW', 'c': 'SELF', 'd': 'FOLLOW'} D_tr(T_Bd)=+1.00 [+1.00,+1.00] D_rk=+1.00 D_os=+1.00
-                labels {'R_S': 'FOLLOW', 'R_S4': 'FOLLOW', 'R_So': 'SELF', 'R_QK': 'SELF', 'V': 'holds', 'VQ': 'holds', 'S_T': 'FOLLOW', 'KV': 'DEGRADED', 'OPEN': 'holds', 'READ': 'row', 'X_C': 'state_wins', 'X_T': 'state_wins'}
-kv              outcome=precedence_flip        cells={'a': 'SELF', 'b': 'FOLLOW', 'c': 'SELF', 'd': 'FOLLOW'} D_tr(T_Bd)=+1.00 [+1.00,+1.00] D_rk=+1.00 D_os=+1.00
-                labels {'R_S': 'FOLLOW', 'R_S4': 'FOLLOW', 'R_So': 'SELF', 'R_QK': 'SELF', 'V': 'holds', 'VQ': 'holds', 'S_T': 'FOLLOW', 'KV': 'FOLLOW', 'OPEN': 'holds', 'READ': 'row', 'X_C': 'state_wins', 'X_T': 'state_wins'}
-qk_carrier      outcome=precedence_flip        cells={'a': 'SELF', 'b': 'FOLLOW', 'c': 'SELF', 'd': 'FOLLOW'} D_tr(T_Bd)=+1.00 [+1.00,+1.00] D_rk=+1.00 D_os=+1.00
-                labels {'R_S': 'FOLLOW', 'R_S4': 'FOLLOW', 'R_So': 'SELF', 'R_QK': 'FOLLOW', 'V': 'fails', 'VQ': 'holds', 'S_T': 'FOLLOW', 'KV': 'DEGRADED', 'OPEN': 'holds', 'READ': 'row', 'X_C': 'state_wins', 'X_T': 'state_wins'}
-v_alone         outcome=precedence_flip        cells={'a': 'SELF', 'b': 'FOLLOW', 'c': 'SELF', 'd': 'FOLLOW'} D_tr(T_Bd)=+1.00 [+1.00,+1.00] D_rk=+1.00 D_os=+1.00
-                labels {'R_S': 'FOLLOW', 'R_S4': 'FOLLOW', 'R_So': 'SELF', 'R_QK': 'SELF', 'V': 'holds', 'VQ': 'fails', 'S_T': 'FOLLOW', 'KV': 'DEGRADED', 'OPEN': 'holds', 'READ': 'row', 'X_C': 'state_wins', 'X_T': 'state_wins'}
-no_open         outcome=no_transfer            cells={'a': 'SELF', 'b': 'FOLLOW', 'c': 'SELF', 'd': 'DEGRADED'} D_tr(T_Bd)=+0.00 [+0.00,+0.00] D_rk=+0.00 D_os=+0.00
-                labels {'R_S': 'FOLLOW', 'R_S4': 'FOLLOW', 'R_So': 'SELF', 'R_QK': 'SELF', 'V': 'unjudgeable', 'VQ': 'fails', 'S_T': 'FOLLOW', 'KV': 'DEGRADED', 'OPEN': 'fails', 'READ': 'unjudgeable', 'X_C': 'state_wins', 'X_T': 'state_wins'}
+flip            outcome=source_modulates         D(a,b,c,d)=+0.00 +1.00 +0.00 +1.00 | D_needle=+1.00[+1.00,+1.00]p=0.031 D_clean=+1.00[+1.00,+1.00]p=0.031 | null arm +0.00[+0.00,+0.00]p=1.000 anchor +1.00[+1.00,+1.00]p=0.031
+                labels {'E': 'holds', 'D_needle': 'holds', 'D_clean': 'holds', 'buffer_in_clean': 'below', 'margin_check': 'passed', 'R_S': 'holds', 'R_S4': 'holds', 'R_So': 'below', 'R_QK': 'holds', 'V': 'holds', 'OPEN': 'holds', 'READ': 'row', 'VQ': 'holds', 'S_T': 'holds', 'KV': 'below', 'X_C': 'state', 'X_T': 'state'}
+flip_key        outcome=source_modulates         D(a,b,c,d)=+0.00 +1.00 +0.00 +1.00 | D_needle=+1.00[+1.00,+1.00]p=0.031 D_clean=+1.00[+1.00,+1.00]p=0.031 | null arm +0.00[+0.00,+0.00]p=1.000 anchor +1.00[+1.00,+1.00]p=0.031
+                labels {'E': 'holds', 'D_needle': 'holds', 'D_clean': 'holds', 'buffer_in_clean': 'below', 'margin_check': 'passed', 'R_S': 'holds', 'R_S4': 'holds', 'R_So': 'below', 'R_QK': 'holds', 'V': 'holds', 'OPEN': 'holds', 'READ': 'key', 'VQ': 'holds', 'S_T': 'holds', 'KV': 'below', 'X_C': 'state', 'X_T': 'state'}
+kv              outcome=source_modulates         D(a,b,c,d)=+0.00 +1.00 +0.00 +1.00 | D_needle=+1.00[+1.00,+1.00]p=0.031 D_clean=+1.00[+1.00,+1.00]p=0.031 | null arm +0.00[+0.00,+0.00]p=1.000 anchor +1.00[+1.00,+1.00]p=0.031
+                labels {'E': 'holds', 'D_needle': 'holds', 'D_clean': 'holds', 'buffer_in_clean': 'below', 'margin_check': 'passed', 'R_S': 'holds', 'R_S4': 'holds', 'R_So': 'below', 'R_QK': 'holds', 'V': 'holds', 'OPEN': 'holds', 'READ': 'row', 'VQ': 'holds', 'S_T': 'holds', 'KV': 'holds', 'X_C': 'state', 'X_T': 'state'}
+qk_carrier      outcome=source_modulates         D(a,b,c,d)=+0.00 +1.00 +0.00 +1.00 | D_needle=+1.00[+1.00,+1.00]p=0.031 D_clean=+1.00[+1.00,+1.00]p=0.031 | null arm +1.00[+1.00,+1.00]p=0.031 anchor +1.00[+1.00,+1.00]p=0.031
+                labels {'E': 'holds', 'D_needle': 'holds', 'D_clean': 'holds', 'buffer_in_clean': 'below', 'margin_check': 'passed', 'R_S': 'holds', 'R_S4': 'holds', 'R_So': 'below', 'R_QK': 'fails', 'V': 'fails', 'OPEN': 'holds', 'READ': 'row', 'VQ': 'holds', 'S_T': 'holds', 'KV': 'below', 'X_C': 'state', 'X_T': 'state'}
+v_alone         outcome=source_modulates         D(a,b,c,d)=+0.00 +1.00 +0.00 +1.00 | D_needle=+1.00[+1.00,+1.00]p=0.031 D_clean=+1.00[+1.00,+1.00]p=0.031 | null arm +0.00[+0.00,+0.00]p=1.000 anchor +1.00[+1.00,+1.00]p=0.031
+                labels {'E': 'holds', 'D_needle': 'holds', 'D_clean': 'holds', 'buffer_in_clean': 'below', 'margin_check': 'passed', 'R_S': 'holds', 'R_S4': 'holds', 'R_So': 'below', 'R_QK': 'holds', 'V': 'holds', 'OPEN': 'holds', 'READ': 'row', 'VQ': 'fails', 'S_T': 'holds', 'KV': 'below', 'X_C': 'state', 'X_T': 'state'}
+needs_both      outcome=restore_suppresses_only  D(a,b,c,d)=+0.00 +0.00 +0.00 +1.00 | D_needle=+1.00[+1.00,+1.00]p=0.031 D_clean=+0.00[+0.00,+0.00]p=1.000 | null arm +0.00[+0.00,+0.00]p=1.000 anchor +1.00[+1.00,+1.00]p=0.031
+                labels {'E': 'holds', 'D_needle': 'holds', 'D_clean': 'below', 'buffer_in_clean': 'below', 'margin_check': 'passed', 'R_S': 'holds', 'R_S4': 'holds', 'R_So': 'below', 'R_QK': 'holds', 'V': 'holds', 'OPEN': 'holds', 'READ': 'row', 'VQ': 'holds', 'S_T': 'holds', 'KV': 'below', 'X_C': 'state', 'X_T': 'state'}
+buffer_general  outcome=not_source_dependent     D(a,b,c,d)=+1.00 +1.00 +1.00 +1.00 | D_needle=+0.00[+0.00,+0.00]p=1.000 D_clean=+0.00[+0.00,+0.00]p=1.000 | null arm +0.00[+0.00,+0.00]p=1.000 anchor +0.00[+0.00,+0.00]p=1.000
+                labels {'E': 'holds', 'D_needle': 'below', 'D_clean': 'below', 'buffer_in_clean': 'holds', 'margin_check': 'passed', 'R_S': 'below', 'R_S4': 'below', 'R_So': 'below', 'R_QK': 'holds', 'V': 'holds', 'OPEN': 'holds', 'READ': 'row', 'VQ': 'holds', 'S_T': 'holds', 'KV': 'below', 'X_C': 'buffer', 'X_T': 'buffer'}
+background      outcome=not_source_dependent     D(a,b,c,d)=+0.00 +0.00 +1.00 +1.00 | D_needle=+0.00[+0.00,+0.00]p=1.000 D_clean=+0.00[+0.00,+0.00]p=1.000 | null arm +0.00[+0.00,+0.00]p=1.000 anchor +1.00[+1.00,+1.00]p=0.031
+                labels {'E': 'holds', 'D_needle': 'below', 'D_clean': 'below', 'buffer_in_clean': 'below', 'margin_check': 'passed', 'R_S': 'holds', 'R_S4': 'holds', 'R_So': 'below', 'R_QK': 'holds', 'V': 'holds', 'OPEN': 'holds', 'READ': 'row', 'VQ': 'holds', 'S_T': 'holds', 'KV': 'below', 'X_C': 'state', 'X_T': 'buffer'}
+state_only      outcome=no_transfer              D(a,b,c,d)=+0.00 +0.00 +0.00 +0.00 | D_needle=+0.00[+0.00,+0.00]p=1.000 D_clean=+0.00[+0.00,+0.00]p=1.000 | null arm +0.00[+0.00,+0.00]p=1.000 anchor +1.00[+1.00,+1.00]p=0.031
+                labels {'E': 'below', 'D_needle': 'below', 'D_clean': 'below', 'buffer_in_clean': 'below', 'margin_check': 'passed', 'R_S': 'holds', 'R_S4': 'holds', 'R_So': 'below', 'R_QK': 'holds', 'V': 'unjudgeable', 'OPEN': 'holds', 'READ': 'unjudgeable', 'VQ': 'holds', 'S_T': 'holds', 'KV': 'below', 'X_C': 'state', 'X_T': 'state'}
+never           outcome=no_transfer              D(a,b,c,d)=+0.00 +0.00 +0.00 +0.00 | D_needle=+0.00[+0.00,+0.00]p=1.000 D_clean=+0.00[+0.00,+0.00]p=1.000 | null arm +0.00[+0.00,+0.00]p=1.000 anchor +0.00[+0.00,+0.00]p=1.000
+                labels {'E': 'below', 'D_needle': 'below', 'D_clean': 'below', 'buffer_in_clean': 'below', 'margin_check': 'passed', 'R_S': 'below', 'R_S4': 'below', 'R_So': 'below', 'R_QK': 'holds', 'V': 'unjudgeable', 'OPEN': 'holds', 'READ': 'unjudgeable', 'VQ': 'holds', 'S_T': 'below', 'KV': 'below', 'X_C': 'undetermined', 'X_T': 'undetermined'}
+no_open         outcome=no_transfer              D(a,b,c,d)=+0.00 +1.00 +0.00 +0.00 | D_needle=+0.00[+0.00,+0.00]p=1.000 D_clean=+1.00[+1.00,+1.00]p=0.031 | null arm +0.00[+0.00,+0.00]p=1.000 anchor +1.00[+1.00,+1.00]p=0.031
+                labels {'E': 'below', 'D_needle': 'below', 'D_clean': 'holds', 'buffer_in_clean': 'below', 'margin_check': 'passed', 'R_S': 'holds', 'R_S4': 'holds', 'R_So': 'below', 'R_QK': 'holds', 'V': 'unjudgeable', 'OPEN': 'fails', 'READ': 'unjudgeable', 'VQ': 'indeterminate', 'S_T': 'holds', 'KV': 'below', 'X_C': 'state', 'X_T': 'state'}
+faint           outcome=no_transfer              D(a,b,c,d)=+0.00 +0.11 +0.00 +0.15 | D_needle=+0.15[+0.10,+0.22]p=0.031 D_clean=+0.11[+0.03,+0.19]p=0.125 | null arm +0.00[+0.00,+0.00]p=1.000 anchor +0.08[+0.02,+0.16]p=0.125
+                labels {'E': 'below', 'D_needle': 'below', 'D_clean': 'below', 'buffer_in_clean': 'below', 'margin_check': 'passed', 'R_S': 'below', 'R_S4': 'below', 'R_So': 'below', 'R_QK': 'holds', 'V': 'unjudgeable', 'OPEN': 'holds', 'READ': 'unjudgeable', 'VQ': 'holds', 'S_T': 'indeterminate', 'KV': 'below', 'X_C': 'undetermined', 'X_T': 'undetermined'}
+patchy          outcome=indeterminate            D(a,b,c,d)=+0.00 +0.50 +0.00 +0.50 | D_needle=+0.50[+0.12,+0.88]p=0.250 D_clean=+0.50[+0.12,+0.88]p=0.250 | null arm +0.00[+0.00,+0.00]p=1.000 anchor +0.50[+0.12,+0.88]p=0.250
+                labels {'E': 'indeterminate', 'D_needle': 'indeterminate', 'D_clean': 'indeterminate', 'buffer_in_clean': 'below', 'margin_check': 'passed', 'R_S': 'indeterminate', 'R_S4': 'indeterminate', 'R_So': 'below', 'R_QK': 'holds', 'V': 'unjudgeable', 'OPEN': 'holds', 'READ': 'unjudgeable', 'VQ': 'holds', 'S_T': 'indeterminate', 'KV': 'below', 'X_C': 'undetermined', 'X_T': 'undetermined'}
+leaky_c         outcome=partial                  D(a,b,c,d)=+0.00 +1.00 +0.74 +1.00 | D_needle=+0.26[+0.16,+0.37]p=0.062 D_clean=+1.00[+1.00,+1.00]p=0.031 | null arm +0.00[+0.00,+0.00]p=1.000 anchor +1.00[+1.00,+1.00]p=0.031
+                labels {'E': 'holds', 'D_needle': 'indeterminate', 'D_clean': 'holds', 'buffer_in_clean': 'below', 'margin_check': 'passed', 'R_S': 'holds', 'R_S4': 'holds', 'R_So': 'below', 'R_QK': 'holds', 'V': 'holds', 'OPEN': 'holds', 'READ': 'row', 'VQ': 'holds', 'S_T': 'holds', 'KV': 'below', 'X_C': 'state', 'X_T': 'state'}
+prefail         outcome=prerequisite_fail        D(a,b,c,d)=+0.00 +1.00 +0.00 +1.00 | D_needle=+1.00[+1.00,+1.00]p=0.031 D_clean=+1.00[+1.00,+1.00]p=0.031 | null arm +0.00[+0.00,+0.00]p=1.000 anchor +1.00[+1.00,+1.00]p=0.031
+                labels {'E': 'holds', 'D_needle': 'holds', 'D_clean': 'holds', 'buffer_in_clean': 'below', 'margin_check': 'passed', 'R_S': 'holds', 'R_S4': 'holds', 'R_So': 'below', 'R_QK': 'holds', 'V': 'holds', 'OPEN': 'holds', 'READ': 'row', 'VQ': 'holds', 'S_T': 'holds', 'KV': 'below', 'X_C': 'state', 'X_T': 'state'}
+weak            outcome=source_modulates         D(a,b,c,d)=+0.00 +0.32 +0.00 +0.32 | D_needle=+0.32[+0.28,+0.37]p=0.031 D_clean=+0.32[+0.29,+0.35]p=0.031 | null arm +0.00[+0.00,+0.00]p=1.000 anchor +0.25[+0.14,+0.36]p=0.062
+                labels {'E': 'holds', 'D_needle': 'holds', 'D_clean': 'holds', 'buffer_in_clean': 'below', 'margin_check': 'passed', 'R_S': 'indeterminate', 'R_S4': 'indeterminate', 'R_So': 'below', 'R_QK': 'holds', 'V': 'indeterminate', 'OPEN': 'holds', 'READ': 'undetermined', 'VQ': 'holds', 'S_T': 'indeterminate', 'KV': 'below', 'X_C': 'undetermined', 'X_T': 'undetermined'}
+half            outcome=source_modulates         D(a,b,c,d)=+0.00 +0.54 +0.00 +0.60 | D_needle=+0.60[+0.49,+0.76]p=0.031 D_clean=+0.54[+0.43,+0.64]p=0.031 | null arm +0.00[+0.00,+0.00]p=1.000 anchor +0.47[+0.42,+0.54]p=0.031
+                labels {'E': 'holds', 'D_needle': 'holds', 'D_clean': 'holds', 'buffer_in_clean': 'below', 'margin_check': 'passed', 'R_S': 'holds', 'R_S4': 'holds', 'R_So': 'below', 'R_QK': 'holds', 'V': 'holds', 'OPEN': 'holds', 'READ': 'row', 'VQ': 'holds', 'S_T': 'holds', 'KV': 'below', 'X_C': 'state', 'X_T': 'state'}
 
-outcomes seen ['background_dependent', 'buffer_general', 'indeterminate', 'no_transfer', 'partial', 'precedence_flip', 'prerequisite_fail']
-  KV         ['DEGRADED', 'FOLLOW']
-  OPEN       ['fails', 'holds']
-  READ       ['key', 'row', 'unjudgeable']
-  R_QK       ['FOLLOW', 'SELF']
-  R_S        ['FOLLOW', 'INTERMEDIATE', 'SELF']
-  R_S4       ['FOLLOW', 'INTERMEDIATE', 'SELF']
-  R_So       ['SELF']
-  S_T        ['DEGRADED', 'FOLLOW', 'INTERMEDIATE']
-  V          ['fails', 'holds', 'unjudgeable']
-  VQ         ['fails', 'holds']
-  X_C        ['buffer_wins', 'neither', 'state_wins']
-  X_T        ['buffer_wins', 'neither', 'state_wins']
-  cell_a     ['FOLLOW', 'INTERMEDIATE', 'SELF']
-  cell_b     ['DEGRADED', 'FOLLOW', 'INTERMEDIATE', 'SELF']
-  cell_c     ['FOLLOW', 'SELF']
-  cell_d     ['DEGRADED', 'FOLLOW', 'INTERMEDIATE']
+second direction (reduced arm set), flip world: source_modulates {'E': 'holds', 'D_needle': 'holds', 'D_clean': 'holds', 'buffer_in_clean': 'below', 'margin_check': 'passed', 'R_S': 'holds', 'R_S4': 'holds', 'R_So': 'below', 'R_QK': 'holds', 'V': 'holds', 'OPEN': 'holds', 'READ': 'row', 'X_C': 'state'}
+chaos world: D(d)=+0.04[-0.01,+0.10]p=0.438 permutation-null 97.5% over the four cells = +0.163 margin_check=passed outcome=no_transfer
+flip world with the permutation null forced to 0.30: indeterminate {'margin_check': 'failed', 'E': 'indeterminate', 'D_needle': 'indeterminate', 'D_clean': 'indeterminate', 'R_S': 'indeterminate'}
+outcomes seen ['indeterminate', 'no_transfer', 'not_source_dependent', 'partial', 'prerequisite_fail', 'restore_suppresses_only', 'source_modulates']
+  D_clean          ['below', 'holds', 'indeterminate']
+  D_needle         ['below', 'holds', 'indeterminate']
+  E                ['below', 'holds', 'indeterminate']
+  KV               ['below', 'holds']
+  OPEN             ['fails', 'holds']
+  READ             ['key', 'row', 'undetermined', 'unjudgeable']
+  R_QK             ['fails', 'holds']
+  R_S              ['below', 'holds', 'indeterminate']
+  R_S4             ['below', 'holds', 'indeterminate']
+  R_So             ['below']
+  S_T              ['below', 'holds', 'indeterminate']
+  V                ['fails', 'holds', 'indeterminate', 'unjudgeable']
+  VQ               ['fails', 'holds', 'indeterminate']
+  X_C              ['buffer', 'state', 'undetermined']
+  X_T              ['buffer', 'state', 'undetermined']
+  buffer_in_clean  ['below', 'holds']
+  margin_check     ['failed', 'passed']
 label values required but not reached: {}
 REHEARSAL PASS: every outcome and every required label value is reachable and avoidable

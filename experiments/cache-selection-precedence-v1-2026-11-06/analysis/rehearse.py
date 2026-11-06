@@ -1,4 +1,4 @@
-"""SPF-01 offline rehearsal of the frozen read-outs on the REAL design table with SYNTHETIC outputs (no model).
+"""SPF-01 offline rehearsal of the frozen read-outs (draft r02) on the REAL design table with SYNTHETIC outputs (no model).
 
 Each "world" is a rule that turns (arm, receiver, donor) into an output.  The rehearsal must show every outcome and every label value both
 reachable and avoidable.  Run from the experiment directory:  python3 analysis/rehearse.py
@@ -28,7 +28,7 @@ def pred(d, reading):
 
 
 def world_out(world, arm, r, d=None, d2=None, rng=None):
-    S, Bv, Bqk, Kk, _donors, _pd = K.ARMS[arm]
+    S, Bv, Bqk, Kk, _donors, _scope = K.ARMS[arm]
     bg = arm[0]                                                  # 'C' or 'T'
     base = 'oc' if bg == 'C' else 'on'
     S = base if S == '-' else S
@@ -44,29 +44,40 @@ def world_out(world, arm, r, d=None, d2=None, rng=None):
     if v_clean and k_clean:
         b_sel = SELF[r] if Bv == 'oc' else pred(bdon, reading)
     opens = v_clean or S in ('oc', 'd', 'd4')
+    donor_buf = Bv in ('d', 'd2')
     if w == 'qk_carrier' and v_clean and k_clean:                # the selection travels with the q/k channels, not with V
         b_sel = SELF[r] if Bqk == 'oc' else pred(d, reading)
     if w == 'v_alone' and v_clean:                               # donor V redirects even with needle-formed q/k
         b_sel = SELF[r] if Bv == 'oc' else pred(bdon, reading)
-    if w == 'no_open' and bg == 'T' and Bv in ('d', 'd2') and s_sel is None:
+    if w == 'no_open' and bg == 'T' and donor_buf and s_sel is None:
         return 'stop'                                            # a donor buffer does not even open the answer
     if w == 'prefail' and arm == 'C0':
         return SELF[r] if rng.random() < 0.5 else 'other'
-    if w in ('flip', 'prefail', 'weak', 'half', 'leaky', 'qk_carrier', 'v_alone', 'no_open'):
+    if w == 'chaos':                                             # outputs unrelated to anything: a random listed row
+        return rng.choice((0, 1, 2)) if d is not None else world_out('flip', arm, r, d, d2, rng)
+    if w == 'patchy':                                            # the hypothesis holds in half of the scenarios, nothing transfers in the others
+        return world_out('flip' if CLU[r] in ORDER[:3] else 'never', arm, r, d, d2, rng)
+    if w in ('flip', 'prefail', 'weak', 'half', 'faint', 'leaky_c', 'qk_carrier', 'v_alone', 'no_open'):
         out = s_sel if s_sel is not None else (b_sel if b_sel is not None else (0 if opens else 'stop'))
-        if w in ('weak', 'half') and d is not None and rng.random() < {'weak': 0.72, 'half': 0.5}[w]:   # some donor selections do not transfer
+        if w in ('weak', 'half', 'faint') and d is not None and rng.random() < {'weak': 0.72, 'half': 0.5, 'faint': 0.9}[w]:   # some donor selections do not transfer
             out = SELF[r] if S == 'oc' or Bv == 'oc' else 0
-        if w == 'leaky' and bg == 'C' and S == 'oc' and b_sel is not None and Bv != 'oc' and rng.random() < 0.35:
-            out = b_sel                                                          # the donor buffer sometimes wins even with an intact state
+        if w == 'leaky_c' and bg == 'T' and S == 'oc' and donor_buf and b_sel is not None and rng.random() < 0.7:
+            out = b_sel                                          # restoring the state suppresses the donor buffer only part of the time
         return out
-    if w == 'buffer_general':
+    if w == 'buffer_general':                                    # a clean buffer always decides
         return b_sel if b_sel is not None else (s_sel if s_sel is not None else (0 if opens else 'stop'))
-    if w == 'background':                                        # the buffer decides whenever the rest of the run is intervened
+    if w == 'background':                                        # the buffer decides whenever the rest of the run is intervened, whatever the state
         if bg == 'T' and b_sel is not None:
             return b_sel
         if s_sel is not None:
             return s_sel
         return SELF[r] if (bg == 'C' and v_clean and k_clean) else (0 if opens else 'stop')
+    if w == 'needs_both':                                        # the buffer decides only with a needle-formed state AND an intervened rest
+        if bg == 'T' and S == 'on' and b_sel is not None:
+            return b_sel
+        if s_sel is not None:
+            return s_sel
+        return SELF[r] if bg == 'C' else (0 if opens else 'stop')
     if w == 'state_only':                                        # donor state redirects, a donor buffer never does
         if s_sel is not None:
             return s_sel
@@ -83,10 +94,11 @@ def world_out(world, arm, r, d=None, d2=None, rng=None):
     raise ValueError(world)
 
 
-def run(world, dirn=K.DIRS[0]):
+def run(world, dirn=K.MAIN):
     rng = random.Random(7)
     Y, cells, conflicts = {}, {}, {}
-    for arm, (_S, _v, _q, _k, donors, _pd) in K.ARMS.items():
+    for arm in K.arms_for(dirn):
+        donors = K.ARMS[arm][4]
         if donors is None:
             Y[arm] = {r: int(world_out(world, arm, r, rng=rng) == SELF[r]) for r in items}
         elif donors == 'pair':
@@ -96,37 +108,55 @@ def run(world, dirn=K.DIRS[0]):
                 o = {(s['id'], b['id']): world_out(world, arm, r, s, b, rng) for s, b in ps}
                 conflicts[arm][r] = K.w_conflict(TAB[r], o)
         else:
-            out = {}
-            for r in items:
-                out[r] = {d['id']: world_out(world, arm, r, d, rng=rng) for d in TAB[r] if donors == 'same+os' or d['type'] != 'OS'}
-            cells[arm] = K.cell(out, TAB, CLU, SELF, N_BOOT)
-    return K.decide(dirn, Y, cells, conflicts, CLU, N_BOOT), cells
+            use_os = donors == 'same+os' and dirn == K.MAIN
+            out = {r: {d['id']: world_out(world, arm, r, d, rng=rng) for d in TAB[r] if use_os or d['type'] != 'OS'} for r in items}
+            cells[arm] = K.cell(out, TAB, CLU, SELF, N_BOOT, n_perm=200 if arm in K.CELLS.values() else 0)   # the real analysis uses 2000
+    return K.decide(dirn, Y, cells, conflicts, CLU, N_BOOT), (Y, cells, conflicts)
 
 
-EXPECT = {'flip': 'precedence_flip', 'flip_key': 'precedence_flip', 'buffer_general': 'buffer_general', 'background': 'background_dependent',
-          'state_only': 'no_transfer', 'never': 'no_transfer', 'weak': 'indeterminate', 'half': None, 'leaky': 'partial', 'prefail': 'prerequisite_fail',
-          'kv': 'precedence_flip', 'qk_carrier': 'precedence_flip', 'v_alone': 'precedence_flip', 'no_open': 'no_transfer'}
+def fmt(b):
+    return 'None' if b is None else f"{b['mean']:+.2f}[{b['lo']:+.2f},{b['hi']:+.2f}]p={b['perm_p']:.3f}"
+
+
+EXPECT = {'flip': 'source_modulates', 'flip_key': 'source_modulates', 'kv': 'source_modulates', 'qk_carrier': 'source_modulates', 'v_alone': 'source_modulates',
+          'needs_both': 'restore_suppresses_only', 'buffer_general': 'not_source_dependent', 'background': 'not_source_dependent',
+          'state_only': 'no_transfer', 'never': 'no_transfer', 'no_open': 'no_transfer', 'faint': 'no_transfer', 'patchy': 'indeterminate',
+          'leaky_c': 'partial', 'prefail': 'prerequisite_fail', 'weak': None, 'half': None}
 seen_outcomes, seen = set(), {}
 for world, want in EXPECT.items():
-    dec, cells = run(world)
+    dec, _parts = run(world)
     seen_outcomes.add(dec['outcome'])
-    for k, v in list(dec['labels'].items()) + [('cell_' + k, v) for k, v in dec['cells'].items()]:
+    for k, v in dec['labels'].items():
         seen.setdefault(k, set()).add(v)
-    d = cells['T_Bd']
-    print(f"{world:15s} outcome={dec['outcome']:22s} cells={dec['cells']} D_tr(T_Bd)={d['D_tr']['mean']:+.2f} [{d['D_tr']['lo']:+.2f},{d['D_tr']['hi']:+.2f}] "
-          f"D_rk={d['D_rk']['mean']:+.2f} D_os={d['D_os']['mean']:+.2f}")
+    print(f"{world:15s} outcome={dec['outcome']:24s} D(a,b,c,d)=" + ' '.join(f"{dec['D'][k]['mean']:+.2f}" for k in 'abcd')
+          + f" | D_needle={fmt(dec['D_needle'])} D_clean={fmt(dec['D_clean'])} | null arm {fmt(dec['null_arm'])} anchor {fmt(dec['anchor_arm'])}")
     print('                labels', dec['labels'])
-    assert want is None or dec['outcome'] == want, (world, dec['outcome'], want)     # 'half' is shown for threshold calibration only
+    assert want is None or dec['outcome'] == want, (world, dec['outcome'], want)     # 'half' is shown for calibration only
 print()
+sec, _p = run('flip', K.SECOND)
+print('second direction (reduced arm set), flip world:', sec['outcome'], sec['labels'])
+assert sec['outcome'] == 'source_modulates' and 'KV' not in sec['labels']
+# margin check.  (1) what the by-construction null looks like on this panel when outputs are unrelated to the donor
+ch, _p = run('chaos')
+print(f"chaos world: D(d)={fmt(ch['D']['d'])} permutation-null 97.5% over the four cells = {ch['perm_null_hi']:+.3f} margin_check={ch['labels']['margin_check']} "
+      f"outcome={ch['outcome']}")
+assert ch['labels']['margin_check'] == 'passed' and ch['outcome'] in ('no_transfer', 'indeterminate') and ch['labels']['E'] != 'holds'
+# (2) if that null reached the margin, every 'holds' is downgraded
+ok, (Y_, cells_, conf_) = run('flip')
+cells_['T_Bd']['perm_null']['hi'] = 0.30
+bad = K.decide(K.MAIN, Y_, cells_, conf_, CLU, N_BOOT)
+print('flip world with the permutation null forced to 0.30:', bad['outcome'], {k: bad['labels'][k] for k in ('margin_check', 'E', 'D_needle', 'D_clean', 'R_S')})
+assert ok['outcome'] == 'source_modulates' and bad['outcome'] == 'indeterminate' and bad['labels']['margin_check'] == 'failed' and 'holds' not in (
+    bad['labels']['E'], bad['labels']['D_needle'], bad['labels']['D_clean'], bad['labels']['R_S'])
+seen.setdefault('margin_check', set()).update({'passed', 'failed'})
 print('outcomes seen', sorted(seen_outcomes))
-assert seen_outcomes == {'precedence_flip', 'buffer_general', 'background_dependent', 'no_transfer', 'indeterminate', 'partial', 'prerequisite_fail'}
+assert seen_outcomes >= {'source_modulates', 'restore_suppresses_only', 'not_source_dependent', 'no_transfer', 'indeterminate', 'partial', 'prerequisite_fail'}
 for k, v in sorted(seen.items()):
-    print(f'  {k:10s} {sorted(v)}')
-need = {'R_S': {'FOLLOW', 'SELF'}, 'R_QK': {'SELF', 'FOLLOW'}, 'V': {'holds', 'fails', 'unjudgeable'}, 'VQ': {'holds', 'fails'},
-        'S_T': {'FOLLOW', 'DEGRADED'}, 'KV': {'FOLLOW', 'DEGRADED'}, 'OPEN': {'holds', 'fails'}, 'READ': {'row', 'key', 'unjudgeable'},
-        'X_C': {'state_wins', 'buffer_wins', 'neither'},
-        'X_T': {'state_wins', 'buffer_wins', 'neither'}, 'cell_a': {'SELF', 'FOLLOW'}, 'cell_b': {'FOLLOW', 'SELF'}, 'cell_c': {'SELF', 'FOLLOW'},
-        'cell_d': {'FOLLOW', 'DEGRADED', 'INTERMEDIATE'}}
+    print(f'  {k:16s} {sorted(v)}')
+need = {'E': {'holds', 'below', 'indeterminate'}, 'D_needle': {'holds', 'below', 'indeterminate'}, 'D_clean': {'holds', 'below'},
+        'buffer_in_clean': {'holds', 'below'}, 'R_S': {'holds', 'below'}, 'R_QK': {'holds', 'fails'}, 'V': {'holds', 'fails', 'unjudgeable'},
+        'VQ': {'holds', 'fails'}, 'S_T': {'holds', 'below'}, 'KV': {'holds', 'below'}, 'OPEN': {'holds', 'fails'}, 'READ': {'row', 'key', 'unjudgeable'},
+        'X_C': {'state', 'buffer', 'undetermined'}, 'X_T': {'state', 'buffer', 'undetermined'}}
 missing = {k: sorted(v - seen.get(k, set())) for k, v in need.items() if v - seen.get(k, set())}
 print('label values required but not reached:', missing)
 assert not missing, missing
