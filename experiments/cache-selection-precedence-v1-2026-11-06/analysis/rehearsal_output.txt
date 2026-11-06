@@ -1,0 +1,48 @@
+flip            outcome=precedence_flip        cells={'a': 'SELF', 'b': 'FOLLOW', 'c': 'SELF', 'd': 'FOLLOW'} D_tr(T_Bd)=+1.00 [+1.00,+1.00] D_rk=+1.00 D_os=+1.00
+                labels {'R_S': 'FOLLOW', 'R_S4': 'FOLLOW', 'R_So': 'SELF', 'R_QK': 'SELF', 'V': 'holds', 'VQ': 'holds', 'S_T': 'FOLLOW', 'KV': 'DEGRADED', 'OPEN': 'holds', 'READ': 'row', 'X_C': 'state_wins', 'X_T': 'state_wins'}
+flip_key        outcome=precedence_flip        cells={'a': 'SELF', 'b': 'FOLLOW', 'c': 'SELF', 'd': 'FOLLOW'} D_tr(T_Bd)=+1.00 [+1.00,+1.00] D_rk=-1.00 D_os=+0.00
+                labels {'R_S': 'FOLLOW', 'R_S4': 'FOLLOW', 'R_So': 'SELF', 'R_QK': 'SELF', 'V': 'holds', 'VQ': 'holds', 'S_T': 'FOLLOW', 'KV': 'DEGRADED', 'OPEN': 'holds', 'READ': 'key', 'X_C': 'state_wins', 'X_T': 'state_wins'}
+buffer_general  outcome=buffer_general         cells={'a': 'FOLLOW', 'b': 'FOLLOW', 'c': 'FOLLOW', 'd': 'FOLLOW'} D_tr(T_Bd)=+1.00 [+1.00,+1.00] D_rk=+1.00 D_os=+1.00
+                labels {'R_S': 'SELF', 'R_S4': 'SELF', 'R_So': 'SELF', 'R_QK': 'SELF', 'V': 'holds', 'VQ': 'holds', 'S_T': 'FOLLOW', 'KV': 'DEGRADED', 'OPEN': 'holds', 'READ': 'row', 'X_C': 'buffer_wins', 'X_T': 'buffer_wins'}
+background      outcome=background_dependent   cells={'a': 'SELF', 'b': 'SELF', 'c': 'FOLLOW', 'd': 'FOLLOW'} D_tr(T_Bd)=+1.00 [+1.00,+1.00] D_rk=+1.00 D_os=+1.00
+                labels {'R_S': 'FOLLOW', 'R_S4': 'FOLLOW', 'R_So': 'SELF', 'R_QK': 'SELF', 'V': 'holds', 'VQ': 'holds', 'S_T': 'FOLLOW', 'KV': 'DEGRADED', 'OPEN': 'holds', 'READ': 'row', 'X_C': 'state_wins', 'X_T': 'buffer_wins'}
+state_only      outcome=no_transfer            cells={'a': 'SELF', 'b': 'DEGRADED', 'c': 'SELF', 'd': 'DEGRADED'} D_tr(T_Bd)=+0.00 [+0.00,+0.00] D_rk=+0.00 D_os=+0.00
+                labels {'R_S': 'FOLLOW', 'R_S4': 'FOLLOW', 'R_So': 'SELF', 'R_QK': 'SELF', 'V': 'unjudgeable', 'VQ': 'holds', 'S_T': 'FOLLOW', 'KV': 'DEGRADED', 'OPEN': 'holds', 'READ': 'unjudgeable', 'X_C': 'state_wins', 'X_T': 'state_wins'}
+never           outcome=no_transfer            cells={'a': 'SELF', 'b': 'DEGRADED', 'c': 'SELF', 'd': 'DEGRADED'} D_tr(T_Bd)=+0.00 [+0.00,+0.00] D_rk=+0.00 D_os=+0.00
+                labels {'R_S': 'SELF', 'R_S4': 'SELF', 'R_So': 'SELF', 'R_QK': 'SELF', 'V': 'unjudgeable', 'VQ': 'holds', 'S_T': 'DEGRADED', 'KV': 'DEGRADED', 'OPEN': 'holds', 'READ': 'unjudgeable', 'X_C': 'neither', 'X_T': 'neither'}
+weak            outcome=indeterminate          cells={'a': 'SELF', 'b': 'INTERMEDIATE', 'c': 'SELF', 'd': 'INTERMEDIATE'} D_tr(T_Bd)=+0.32 [+0.28,+0.37] D_rk=+0.22 D_os=+0.22
+                labels {'R_S': 'INTERMEDIATE', 'R_S4': 'INTERMEDIATE', 'R_So': 'SELF', 'R_QK': 'SELF', 'V': 'unjudgeable', 'VQ': 'holds', 'S_T': 'INTERMEDIATE', 'KV': 'DEGRADED', 'OPEN': 'holds', 'READ': 'unjudgeable', 'X_C': 'neither', 'X_T': 'neither'}
+half            outcome=precedence_flip        cells={'a': 'SELF', 'b': 'FOLLOW', 'c': 'SELF', 'd': 'FOLLOW'} D_tr(T_Bd)=+0.60 [+0.49,+0.76] D_rk=+0.38 D_os=+0.45
+                labels {'R_S': 'INTERMEDIATE', 'R_S4': 'INTERMEDIATE', 'R_So': 'SELF', 'R_QK': 'SELF', 'V': 'holds', 'VQ': 'holds', 'S_T': 'INTERMEDIATE', 'KV': 'DEGRADED', 'OPEN': 'holds', 'READ': 'row', 'X_C': 'neither', 'X_T': 'neither'}
+leaky           outcome=partial                cells={'a': 'INTERMEDIATE', 'b': 'FOLLOW', 'c': 'SELF', 'd': 'FOLLOW'} D_tr(T_Bd)=+1.00 [+1.00,+1.00] D_rk=+1.00 D_os=+1.00
+                labels {'R_S': 'FOLLOW', 'R_S4': 'FOLLOW', 'R_So': 'SELF', 'R_QK': 'SELF', 'V': 'holds', 'VQ': 'holds', 'S_T': 'FOLLOW', 'KV': 'DEGRADED', 'OPEN': 'holds', 'READ': 'row', 'X_C': 'state_wins', 'X_T': 'state_wins'}
+prefail         outcome=prerequisite_fail      cells={'a': 'SELF', 'b': 'FOLLOW', 'c': 'SELF', 'd': 'FOLLOW'} D_tr(T_Bd)=+1.00 [+1.00,+1.00] D_rk=+1.00 D_os=+1.00
+                labels {'R_S': 'FOLLOW', 'R_S4': 'FOLLOW', 'R_So': 'SELF', 'R_QK': 'SELF', 'V': 'holds', 'VQ': 'holds', 'S_T': 'FOLLOW', 'KV': 'DEGRADED', 'OPEN': 'holds', 'READ': 'row', 'X_C': 'state_wins', 'X_T': 'state_wins'}
+kv              outcome=precedence_flip        cells={'a': 'SELF', 'b': 'FOLLOW', 'c': 'SELF', 'd': 'FOLLOW'} D_tr(T_Bd)=+1.00 [+1.00,+1.00] D_rk=+1.00 D_os=+1.00
+                labels {'R_S': 'FOLLOW', 'R_S4': 'FOLLOW', 'R_So': 'SELF', 'R_QK': 'SELF', 'V': 'holds', 'VQ': 'holds', 'S_T': 'FOLLOW', 'KV': 'FOLLOW', 'OPEN': 'holds', 'READ': 'row', 'X_C': 'state_wins', 'X_T': 'state_wins'}
+qk_carrier      outcome=precedence_flip        cells={'a': 'SELF', 'b': 'FOLLOW', 'c': 'SELF', 'd': 'FOLLOW'} D_tr(T_Bd)=+1.00 [+1.00,+1.00] D_rk=+1.00 D_os=+1.00
+                labels {'R_S': 'FOLLOW', 'R_S4': 'FOLLOW', 'R_So': 'SELF', 'R_QK': 'FOLLOW', 'V': 'fails', 'VQ': 'holds', 'S_T': 'FOLLOW', 'KV': 'DEGRADED', 'OPEN': 'holds', 'READ': 'row', 'X_C': 'state_wins', 'X_T': 'state_wins'}
+v_alone         outcome=precedence_flip        cells={'a': 'SELF', 'b': 'FOLLOW', 'c': 'SELF', 'd': 'FOLLOW'} D_tr(T_Bd)=+1.00 [+1.00,+1.00] D_rk=+1.00 D_os=+1.00
+                labels {'R_S': 'FOLLOW', 'R_S4': 'FOLLOW', 'R_So': 'SELF', 'R_QK': 'SELF', 'V': 'holds', 'VQ': 'fails', 'S_T': 'FOLLOW', 'KV': 'DEGRADED', 'OPEN': 'holds', 'READ': 'row', 'X_C': 'state_wins', 'X_T': 'state_wins'}
+no_open         outcome=no_transfer            cells={'a': 'SELF', 'b': 'FOLLOW', 'c': 'SELF', 'd': 'DEGRADED'} D_tr(T_Bd)=+0.00 [+0.00,+0.00] D_rk=+0.00 D_os=+0.00
+                labels {'R_S': 'FOLLOW', 'R_S4': 'FOLLOW', 'R_So': 'SELF', 'R_QK': 'SELF', 'V': 'unjudgeable', 'VQ': 'fails', 'S_T': 'FOLLOW', 'KV': 'DEGRADED', 'OPEN': 'fails', 'READ': 'unjudgeable', 'X_C': 'state_wins', 'X_T': 'state_wins'}
+
+outcomes seen ['background_dependent', 'buffer_general', 'indeterminate', 'no_transfer', 'partial', 'precedence_flip', 'prerequisite_fail']
+  KV         ['DEGRADED', 'FOLLOW']
+  OPEN       ['fails', 'holds']
+  READ       ['key', 'row', 'unjudgeable']
+  R_QK       ['FOLLOW', 'SELF']
+  R_S        ['FOLLOW', 'INTERMEDIATE', 'SELF']
+  R_S4       ['FOLLOW', 'INTERMEDIATE', 'SELF']
+  R_So       ['SELF']
+  S_T        ['DEGRADED', 'FOLLOW', 'INTERMEDIATE']
+  V          ['fails', 'holds', 'unjudgeable']
+  VQ         ['fails', 'holds']
+  X_C        ['buffer_wins', 'neither', 'state_wins']
+  X_T        ['buffer_wins', 'neither', 'state_wins']
+  cell_a     ['FOLLOW', 'INTERMEDIATE', 'SELF']
+  cell_b     ['DEGRADED', 'FOLLOW', 'INTERMEDIATE', 'SELF']
+  cell_c     ['FOLLOW', 'SELF']
+  cell_d     ['DEGRADED', 'FOLLOW', 'INTERMEDIATE']
+label values required but not reached: {}
+REHEARSAL PASS: every outcome and every required label value is reachable and avoidable
