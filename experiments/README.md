@@ -1,5 +1,7 @@
 # 实验目录：按研究问题查找
 
+**2026-11-06｜第一轮 C 外部数据容量：** [WhatIfVis / VLind-Bench 核查](wsp-c-external-data-audit-v1-2026-11-06/REPORT.zh-CN.md)：保守候选 447 / 162 组，跨库去重后大小任务 112 组、其他扩展 469 组；单助手审核，完整五条件未就绪，未运行模型。
+
 **2026-11-05｜WSP v9 B/C各30轮：** [内部证据合同、精确稀疏存储与启动状态](wsp-vlm-mechanism-repair-v9-2026-11-05/README.zh-CN.md)。旧C全哈希无损去重回收76.81GiB；新版35项离线与真实工程验收通过，[B/C已启动及首份回执](wsp-vlm-mechanism-repair-v9-2026-11-05/EXECUTION.zh-CN.md)，旧2B/8B/Gemma保持暂停。
 
 **2026-11-05｜WSP C 跨家族复用：** [Gemma 3 4B：50 轮与逐轮曲线](wsp-vlm-c-gemma3-4b-v1-2026-11-05/README.zh-CN.md)。准备及 CPU 验收完成；用户随后叫停全部卡上实验，三条新模型队列及控制器已停止，两卡空闲，见 [叫停回执](wsp-vlm-c-gemma3-4b-v1-2026-11-05/STOPPED.zh-CN.md)。
