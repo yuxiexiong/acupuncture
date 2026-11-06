@@ -1,9 +1,10 @@
-"""NWC-01 r02 (CONTRACT r02): out-of-development confirmation of the NWR-01 relation on 72 new inputs (stratum N: target not first-listed, 48;
+"""NWC-01 r03 (CONTRACT r03): out-of-development confirmation of the NWR-01 relation on 72 new inputs (stratum N: target not first-listed, 48;
 stratum F: target first-listed, 24), three directions, receiver L11, patches only at t2 in the 14 G layers.
 All patches are built from float32 state differences dS and the receiver's own q / k / alpha / beta:
   use 'D': scale * alpha dS^T q            use 'E': -scale * alpha beta (k^T q) dS^T k            unit u: u * |alpha dS^T q| (norm source dS)
   D00 / E00: dS = S1[L00] - S1[L11]     D10: S1[L10] - S1[L11]     DV: S1[L00] - S1[L10]     DX: partner's S1[L00] - S1[L11]
-  halves: scale 0.5;  R1..R5: unit at the D00 norm (NWR-01 seeds);  Q1..Q40: unit at the D10 norm (@k) and at the D00 norm (@n).
+  halves: scale 0.5;  R1..R10: unit at the D00 norm, FRESH seeds on the new panel (the five NWR-01 seeds are used only on the two bridge
+  inputs);  Q1..Q40: unit at the D10 norm (@k) and at the D00 norm (@n).
 New inputs have no earlier records: gates are internal (hook identities, FP64 patch arithmetic, patch identities, t1 structure).
 The preflight additionally runs two NWR-01 inputs through this runner and requires bit-for-bit agreement with the NWR-01 records.
 python nwc_run.py freeze PATH | run ... | verify WORKER_DIR | launch ..."""
@@ -29,16 +30,17 @@ HERE = Path(__file__).resolve().parent
 S, LVKR = N.S, N.LVKR
 NWR_FORMAL = NWR_DIR / 'runs/formal-r01'
 INPUTS, NWC_LEDGER = HERE / 'data/nwc-inputs-r01.json', HERE / 'data/nwc-tokens-r01.json'
-PLAN_ID = 'NWC-01-NATIVE-WRITE-CONFIRM-r02'
+PLAN_ID = 'NWC-01-NATIVE-WRITE-CONFIRM-r03'
 DIRS3 = ('N_L00_C4146_D-1', 'N_L00_C1210_D-1', 'R0_L00_D-1')
 MAIN_DIRS = DIRS3[:2]
 BRIDGE_DIR = N.DIR
-SEEDS_R = N.SEEDS
-RAND = N.RAND
+SEEDS_R = tuple(202611061 + j for j in range(10))                    # fresh: not the NWR-01 seeds
+RAND = tuple(f'R{j}' for j in range(1, 11))
+OLD_SEEDS_R, OLD_RAND = N.SEEDS, N.RAND                              # bridge inputs only
 SEEDS_Q = tuple(202611101 + j for j in range(40))
 N_QNAT = 20
 QN = tuple(f'Q{j}' for j in range(1, N_QNAT + 1))
-BASE_T2 = ('D00', 'E00', 'D10') + RAND                              # the NWR-01 t2 arms
+BASE_T2 = ('D00', 'E00', 'D10') + RAND
 EXTRA_T2 = ('DV', 'DX', 'D00h', 'DXh', 'D10h') + QN                 # stratum N only
 ARMS_F = ('C', 'L00', 'L10', 'L11') + BASE_T2
 ARMS_N = ARMS_F + EXTRA_T2
@@ -52,8 +54,8 @@ STAGES = ('preflight', 'formal')
 MAX_WORKERS = {'preflight': 1, 'formal': 2}
 ND = len(DIRS3)
 # per-unit upper bounds (window <= 28 tokens per formation; natural trajectories <= 31 further forwards)
-_U = {'N': {'formations': 2 * (1 + ND), 'prefix_prefills': 2, 't1': 1 + 5 * ND, 'refs': 3 * ND, 'c_t2': 94 * ND, 'trajectories': 1 + 36 * ND, 'shadow': 84 * ND},
-      'F': {'formations': 1 + ND, 'prefix_prefills': 1, 't1': 1 + 3 * ND, 'refs': 3 * ND, 'c_t2': 9 * ND, 'trajectories': 1 + 11 * ND, 'shadow': 56 * ND},
+_U = {'N': {'formations': 2 * (1 + ND), 'prefix_prefills': 2, 't1': 1 + 5 * ND, 'refs': 3 * ND, 'c_t2': 99 * ND, 'trajectories': 1 + 41 * ND, 'shadow': 84 * ND},
+      'F': {'formations': 1 + ND, 'prefix_prefills': 1, 't1': 1 + 3 * ND, 'refs': 3 * ND, 'c_t2': 14 * ND, 'trajectories': 1 + 16 * ND, 'shadow': 56 * ND},
       'old': {'formations': 2, 'prefix_prefills': 1, 't1': 4, 'refs': 3, 'c_t2': 9, 'trajectories': 12, 'shadow': 56},
       'self': {'formations': 1 + ND, 'prefix_prefills': 1, 't1': 2 * ND, 'refs': 0, 'c_t2': 0, 'trajectories': 0, 'shadow': 28 * ND}}
 
@@ -68,7 +70,7 @@ def _lim(mix):
 
 
 LIMITS = {'preflight': _lim({'old': 2, 'N': 1, 'F': 1, 'self': 1}), 'formal': _lim({'N': 48, 'F': 24})}
-GPU_CAP_S = {'preflight': 0.3 * 3600, 'formal': 2.0 * 3600}
+GPU_CAP_S = {'preflight': 0.3 * 3600, 'formal': 2.2 * 3600}
 STORAGE_LIMIT = 16 * 2 ** 30
 
 
@@ -348,7 +350,7 @@ def run_item(engine, unit, contexts, calib, conds, qctok, output, stage, vecs=No
                 Dcs[name] = torch.stack([hk_c.Dc[l] for l in G])
             rec = {'C': {'M': M, 'M_all': Mall, 't2_sha': F.th(zc)}}
             err_max = max(err_max, max(hk_c.err.values()))
-            if name in ARMS_F or name in ('DV', 'DX', 'D00h', 'DXh', 'D10h'):
+            if not name.startswith('Q'):
                 tensors[f'C|{name}|{d}'] = zc.to(torch.bfloat16).cpu()
                 tensors[f'stats|C|{name}|{d}'] = st
             if natural_too:
@@ -383,7 +385,7 @@ def run_item(engine, unit, contexts, calib, conds, qctok, output, stage, vecs=No
         t2_arm('D00', mk('D00'), keep=True)
         t2_arm('E00', mk('D00', use='E'))
         t2_arm('D10', mk('D10'), keep=True)
-        for name, seed in zip(RAND, SEEDS_R):
+        for name, seed in (zip(OLD_RAND, OLD_SEEDS_R) if old else zip(RAND, SEEDS_R)):
             t2_arm(name, mk('D00', seed=seed))
         qk, qn = None, None
         if full:
@@ -422,7 +424,7 @@ def run_item(engine, unit, contexts, calib, conds, qctok, output, stage, vecs=No
                 assert a_['N']['ids'] == b_['N']['ids'] and a_['N']['termination'] == b_['N']['termination'], ('natural != NWR', name)
                 if 'C' in b_:
                     assert a_['C']['t2_sha'] == b_['C']['t2_sha'] and a_['C']['M'] == b_['C']['M'], ('C route t2 != NWR', name)
-        assert set(arms) == set(ARMS_N if full else ARMS_F)
+        assert set(arms) == set(ARMS_N if full else (N.ARMS if old else ARMS_F))
         dirs_out[d] = {'x': x, 'reached_t2': reached, 'arms': arms, 'structure_t1': struct, 'patch_norm': pn, 'M_Qk': qk, 'M_Qn': qn}
         del c1, S1, bT, dS
         torch.cuda.empty_cache()
@@ -441,7 +443,7 @@ def run_item(engine, unit, contexts, calib, conds, qctok, output, stage, vecs=No
             'version': None if old else led['plan']['version'], 'partner_id': None if old else led['plan']['partner_id'],
             'item': it, 'code_tokens': code_tok, 'competitor': comp, 'fF': fF, 'directions': dirs_out, 'formation_hashes': info['hashes'],
             'target_second_token': code_tok[it['target']], 'signed_zero_exceptions': nz_total, 'err_max': err_max, 'ident_max': ident_max,
-            'half_max': half_max, 'seeds_R': list(SEEDS_R), 'seeds_Q': list(SEEDS_Q), 'kernel_identity': kernel_identity(), 'calibration': calib,
+            'half_max': half_max, 'seeds_R': list(OLD_SEEDS_R if old else SEEDS_R), 'seeds_Q': list(SEEDS_Q), 'kernel_identity': kernel_identity(), 'calibration': calib,
             'counts': counts, 'gates': gates}
     return body, tensors
 
@@ -644,10 +646,10 @@ def verify_worker(path):
         rel_t = rec['tensor_file']
         assert exp.sha(path / rel_t) == r['tensor_hashes'][rel_t], rel_t
         want = [BRIDGE_DIR] if rec['panel'] == 'old' else list(DIRS3)
-        assert list(rec['directions']) == want and rec['seeds_R'] == list(SEEDS_R) and rec['seeds_Q'] == list(SEEDS_Q)
+        assert list(rec['directions']) == want and rec['seeds_R'] == list(OLD_SEEDS_R if rec['panel'] == 'old' else SEEDS_R) and rec['seeds_Q'] == list(SEEDS_Q)
         for d in want:
             x = rec['directions'][d]
-            assert set(x['arms']) == set(ARMS_N if rec['stratum'] == 'N' else ARMS_F)
+            assert set(x['arms']) == set(ARMS_N if rec['stratum'] == 'N' else (N.ARMS if rec['panel'] == 'old' else ARMS_F))
             assert struct_ok(x['structure_t1'], [int(k) for k in x['structure_t1']])
             assert (x['M_Qk'] is None) == (rec['stratum'] != 'N') and (x['M_Qk'] is None or (len(x['M_Qk']) == len(x['M_Qn']) == len(SEEDS_Q)))
         assert rec['err_max'] <= TOL and rec['ident_max'] <= IDENT_TOL and rec['half_max'] <= TOL

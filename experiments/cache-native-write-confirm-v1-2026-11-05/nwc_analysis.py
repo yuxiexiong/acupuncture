@@ -1,4 +1,4 @@
-"""NWC-01 r02 consumer (CPU).  python nwc_analysis.py RUN_DIR OUT_JSON [STAGE]"""
+"""NWC-01 r03 consumer (CPU).  python nwc_analysis.py RUN_DIR OUT_JSON [STAGE]"""
 import hashlib
 import json
 import statistics as st
@@ -137,7 +137,7 @@ def main(run_dir, out_path, stage='formal'):
         print(d, res['labels'][d])
         print('   b', r3(q['b']), 'l_D', r3(q['l_D']), 'l_E', r3(q['l_E']), 'l_R', r3(q['l_R']), 'e_D', r3(q['e_D']), 'e_R', r3(q['e_R']), '| l_D10', r3(q['l_D10']), 'l_DV', r3(q['l_DV']),
               'l_DX', r3(q['l_DX']), 'l_D00h', r3(q['l_D00h']), 'l_DXh', r3(q['l_DXh']), '| F:', r3(q['YF_L11']), '->', r3(q['YF_D00']))
-        print('   dM', {k: r3(v) for k, v in dc['dM'].items()}, 'rho', r3(dc['rho']), '| P4M', dc['p4m_count'], '/40 upper', r3(dc['p4m_upper']), '| P4Y', dc['p4y_count'], '/20 upper', r3(dc['p4y_upper']),
+        print('   dM', {k: r3(v) for k, v in dc['dM'].items()}, 'rho', r3(dc['rho']), '| P4M', dc['p4m_count'], '/40 upper', r3(dc['p4m_upper']), '| P4Y', dc['p4y_count'], '/20 upper', r3(dc['p4y_upper']), '| R>=half', dc['r_half_count'], '/10 upper', r3(dc['r_half_upper']),
               '| norm DV/D10', r3(dc['norm_ratio_DV']))
         print('   boot lo', {k: r3(v['lo']) for k, v in dc['boot'].items()})
         print('   Qk', {k: r3(v) for k, v in x['descriptive']['D10_among_Qk'].items()}, '| cos', x['descriptive']['patch_cosine_D00'])

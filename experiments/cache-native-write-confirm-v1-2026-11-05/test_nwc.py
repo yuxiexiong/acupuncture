@@ -1,4 +1,4 @@
-"""CPU tests for NWC-01 r02: labels reachable; read_gen bit-equal to the frozen NWR-01 / SRU-01 read functions for the D, E and random arms;
+"""CPU tests for NWC-01 r03: labels reachable; read_gen bit-equal to the frozen NWR-01 / SRU-01 read functions for the D, E and random arms;
 constructed-donor identities; half amplitude; plan, partners and budget; the consumer runs on fabricated records.
 CUDA_VISIBLE_DEVICES= python test_nwc.py [RECEIPT]"""
 import json
@@ -125,11 +125,13 @@ class Wiring(unittest.TestCase):
             else:
                 self.assertIsNone(p['partner_id'])
             self.assertEqual(v['item']['target'] == v['item']['first_listed'], p['stratum'] == 'F')
-        self.assertEqual((len(R.ARMS_F), len(R.ARMS_N), len(R.SEEDS_Q), len(set(R.SEEDS_Q) & set(R.SEEDS_R))), (12, 37, 40, 0))
+        self.assertEqual((len(R.ARMS_F), len(R.ARMS_N), len(R.SEEDS_Q), len(set(R.SEEDS_Q) & set(R.SEEDS_R))), (17, 42, 40, 0))
+        self.assertEqual((len(R.SEEDS_R), len(set(R.SEEDS_R) & set(R.N.SEEDS)), len(set(R.SEEDS_Q) & set(R.N.SEEDS))), (10, 0, 0))
+        self.assertEqual(tuple(R.RAND), tuple(K.RAND))
         self.assertEqual(list(R.conditions()), list(R.DIRS3))
         f = R.LIMITS['formal']
-        self.assertEqual(f['c_t2'], 48 * 94 * 3 + 24 * 9 * 3)
-        self.assertEqual(f['trajectories'], 48 * (1 + 36 * 3) + 24 * (1 + 11 * 3))
+        self.assertEqual(f['c_t2'], 48 * 99 * 3 + 24 * 14 * 3)
+        self.assertEqual(f['trajectories'], 48 * (1 + 41 * 3) + 24 * (1 + 16 * 3))
         self.assertLessEqual(R.GPU_CAP_S['formal'] + R.GPU_CAP_S['preflight'], 2.5 * 3600)
 
     def test_consumer_on_fabricated_records(self):

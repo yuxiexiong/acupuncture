@@ -1,11 +1,12 @@
-"""NWC-01 r02 frozen read-outs (CONTRACT §5).  Each label is tied to the measurement it is computed from; the sentence a label licenses is in
+"""NWC-01 r03 frozen read-outs (CONTRACT §5).  Each label is tied to the measurement it is computed from; the sentence a label licenses is in
 the contract, not here.
 
 Unit: 24 base situations (4 per structure family).  Stratum N: versions a, b (target second / third listed) -> 48 inputs, all gates except P6.
 Stratum F: version c (target first-listed) -> 24 inputs, P6 only.  Rates are family-equal (mean over the 6 families of the within-family mean).
 Bootstrap: resample the 4 base situations within each family with replacement (all versions travel together), 10000 draws, seed 20261105.
 
-  b = Y(L11) - Y(L00);  l_X = Y(L11) - Y(X);  e_X = E(X) - E(L11);  l_R, e_R = mean over the five natural random arms R1..R5 (D00 patch norm).
+  b = Y(L11) - Y(L00);  l_X = Y(L11) - Y(X);  e_X = E(X) - E(L11);  l_R, e_R = mean over the ten natural random arms R1..R10 (D00 patch norm,
+  directions drawn fresh for this panel; the five NWR-01 directions are not used in any gate).
   P12  point b >= 0.25, l_D >= 0.20, e_D >= 0.15, and 95% lower bounds of l_D - 0.5 b, l_D - l_E, l_D - l_R, e_D - e_R all > 0.
   P3   lower bound of (l_D10 - l_DV) > 0 and |dM(DV)| <= 0.5 |dM(D10)|.   (DV = endpoint state difference L00 - L10 read through D.)
   P4M  count of the 40 random directions at the D10 patch norm whose family-equal mean dM <= 0.5 dM(D10) is <= 2.
@@ -19,7 +20,7 @@ import random
 
 TH = {'b': 0.25, 'l': 0.20, 'e': 0.15, 'unreached': 0.25, 'half': 0.5, 'p4m_max': 2, 'p4y_max': 1, 'dM_min': -0.5,
       'rho_lo': 0.75, 'rho_hi': 1.25, 'p5_y': 0.15, 'p6': 0.10, 'p6_base': 0.75}
-RAND = tuple(f'R{j}' for j in range(1, 6))
+RAND = tuple(f'R{j}' for j in range(1, 11))
 QNAT = tuple(f'Q{j}' for j in range(1, 21))
 NAT_N = ('L00', 'L11', 'D00', 'E00', 'D10', 'DV', 'DX', 'D00h', 'DXh') + RAND + QNAT
 NAT_F = ('L11', 'D00')
@@ -58,7 +59,7 @@ def quantities(Y, E, meta, sits=None):
     eR = sum(e[r] - e['L11'] for r in RAND) / len(RAND)
     q = {'b': y['L11'] - y['L00'], 'l_D': y['L11'] - y['D00'], 'l_E': y['L11'] - y['E00'], 'l_R': lR, 'e_D': e['D00'] - e['L11'], 'e_R': eR,
          'l_D10': y['L11'] - y['D10'], 'l_DV': y['L11'] - y['DV'], 'l_DX': y['L11'] - y['DX'], 'l_D00h': y['L11'] - y['D00h'], 'l_DXh': y['L11'] - y['DXh'],
-         'l_Q': [y['L11'] - y[a] for a in QNAT],
+         'l_Q': [y['L11'] - y[a] for a in QNAT], 'l_Rj': [y['L11'] - y[r] for r in RAND],
          'YF_L11': fam_eq(Y['L11'], meta, 'F', sits), 'YF_D00': fam_eq(Y['D00'], meta, 'F', sits)}
     q.update({'l_D-0.5b': q['l_D'] - 0.5 * q['b'], 'l_D-l_E': q['l_D'] - q['l_E'], 'l_D-l_R': q['l_D'] - q['l_R'], 'e_D-e_R': q['e_D'] - q['e_R'],
               'l_D10-l_DV': q['l_D10'] - q['l_DV'], 'lF_D': q['YF_L11'] - q['YF_D00']})
@@ -105,6 +106,8 @@ def decide(Y, E, meta, dM, dM_rand, norm_ratio_DV, unreached_frac=0.0, n_boot=10
         rho = dM['DX'] / dM['D00']
         p5 = 'holds' if (TH['rho_lo'] <= rho <= TH['rho_hi'] and abs(q['l_DXh'] - q['l_D00h']) <= TH['p5_y']) else 'fails'
     p6 = 'unjudgeable' if (q['YF_L11'] < TH['p6_base'] or unreach) else ('holds' if q['lF_D'] <= TH['p6'] else 'fails')
+    cR = sum(1 for x in q['l_Rj'] if x >= TH['half'] * q['l_D'])                 # descriptive: fresh random arms reaching half of the main loss
     return {'P12': p12, 'P3': p3, 'P4M': p4m, 'P4Y': p4y, 'P5': p5, 'P6': p6, 'q': q, 'boot': bt, 'dM': dM, 'rho': rho,
+            'r_half_count': cR, 'r_half_upper': cp_upper(cR, len(q['l_Rj'])),
             'p4m_count': cM, 'p4m_upper': cp_upper(cM, len(dM_rand)), 'p4y_count': cY, 'p4y_upper': cp_upper(cY, len(q['l_Q'])),
             'norm_ratio_DV': norm_ratio_DV}

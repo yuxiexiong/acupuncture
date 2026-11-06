@@ -1,6 +1,6 @@
 # NWC-01 设计 r02：开发外确认——原生来源状态经 t2 直接读取致错，及四条补充预测
 
-状态：**设计 r02；合同已冻结，未获运行授权、未运行。** 2026-11-05。引用规范 `docs/experiment-design-self-check.zh-CN.md` v1。同一助手撰写与自查，不是独立审查。依据：[NWR-01 报告与事后剖析](../cache-native-write-readout-v1-2026-11-05/REPORT.zh-CN.md)、[Proposal v8 §5](../../docs/mechanism-second-half-v1-2026-11-03/PROPOSAL.zh-CN.md)、[工作稿 v1.2.1 §13–§14](../../docs/mechanism-paper-skeleton-2026-11-05.zh-CN.md)。合同草案见 [CONTRACT.zh-CN.md](CONTRACT.zh-CN.md)。
+状态：**设计 r02，合同为 r03 并已冻结（freeze-r02），已获运行授权。** 2026-11-05。r03 相对 r02 只改一处：中心预测的随机对照由开发面板用过的五个方向换成十个新抽方向，见合同状态行与 §9。引用规范 `docs/experiment-design-self-check.zh-CN.md` v1。同一助手撰写与自查，不是独立审查。依据：[NWR-01 报告与事后剖析](../cache-native-write-readout-v1-2026-11-05/REPORT.zh-CN.md)、[Proposal v8 §5](../../docs/mechanism-second-half-v1-2026-11-03/PROPOSAL.zh-CN.md)、[工作稿 v1.2.1 §13–§14](../../docs/mechanism-paper-skeleton-2026-11-05.zh-CN.md)。合同草案见 [CONTRACT.zh-CN.md](CONTRACT.zh-CN.md)。
 
 ## 0. r01 的自查结论撤回，以及 r02 改了什么
 
