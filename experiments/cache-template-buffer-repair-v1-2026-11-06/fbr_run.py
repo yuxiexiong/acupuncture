@@ -432,7 +432,7 @@ def _execute_units(engine, stage, output, receipt, units, gpu, contexts, conds, 
 
 def run(stage, worker, output, authorization):
     auth = authorize(authorization, stage)
-    n_workers, gpu = auth['maximum_workers'], worker % 2
+    n_workers, gpu = auth['maximum_workers'], int(auth.get('gpu_map', {}).get(str(worker), worker % 2))     # DEVIATIONS D2: the authorization may pin workers to a card
     output = Path(output).resolve()
     assert output == (HERE / auth['output_root'] / f'worker-{worker}').resolve()
     import fcntl
