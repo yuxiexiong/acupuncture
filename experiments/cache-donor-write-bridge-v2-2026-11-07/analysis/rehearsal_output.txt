@@ -1,0 +1,24 @@
+design: receivers 48 | same-scenario donors per receiver [5, 8] | receivers with a computable D_tr 48
+trajectories {'once': 48, 'per_direction': 1884, 'hooked_per_direction': 1092, 'total': 3816, 'hooked_total': 2184}
+write_supported_with_self_recovery 2x2=write_supported_with_self_recovery local=local_write_redirects          state=own_answer_after_state_swap      | D: DD=+1.00 DO=+1.00 OD=+0.00 L11d=+1.00 CSTd=+0.00 | NEC +1.00[+1.00,+1.00] holds | null97.5 0.153
+OD_stops               2x2=transfer_reduced_with_degradation local=local_write_redirects          state=own_answer_after_state_swap      | D: DD=+1.00 DO=+1.00 OD=+0.00 L11d=+1.00 CSTd=+0.00 | NEC +1.00[+1.00,+1.00] holds | null97.5 0.153
+OD_first               2x2=transfer_reduced_without_self_recovery local=local_write_redirects          state=own_answer_after_state_swap      | D: DD=+1.00 DO=+1.00 OD=+0.00 L11d=+1.00 CSTd=+0.00 | NEC +1.00[+1.00,+1.00] holds | null97.5 0.153
+both_routes            2x2=both_routes              local=local_write_redirects          state=own_answer_after_state_swap      | D: DD=+1.00 DO=+1.00 OD=+1.00 L11d=+1.00 CSTd=+0.00 | NEC +0.00[+0.00,+0.00] below | null97.5 0.153
+retained_buffer        2x2=retained_buffer_carries  local=local_write_does_not_redirect  state=own_answer_after_state_swap      | D: DD=+1.00 DO=+0.00 OD=+1.00 L11d=+0.00 CSTd=+0.00 | NEC +0.00[+0.00,+0.00] below | null97.5 0.153
+neither_alone          2x2=neither_alone            local=local_write_does_not_redirect  state=own_answer_after_state_swap      | D: DD=+1.00 DO=+0.00 OD=+0.00 L11d=+0.00 CSTd=+0.00 | NEC +1.00[+1.00,+1.00] holds | null97.5 0.153
+reference_absent       2x2=reference_absent         local=local_write_does_not_redirect  state=own_answer_after_state_swap      | D: DD=+0.00 DO=+0.00 OD=+0.00 L11d=+0.00 CSTd=+0.00 | NEC +0.00[+0.00,+0.00] below | null97.5 0.000
+needle_state_carries   2x2=write_supported_with_self_recovery local=local_write_redirects          state=needle_state_carries_selection   | D: DD=+1.00 DO=+1.00 OD=+0.00 L11d=+1.00 CSTd=+1.00 | NEC +1.00[+1.00,+1.00] holds | null97.5 0.153
+state_swap_degrades    2x2=write_supported_with_self_recovery local=local_write_redirects          state=degraded                         | D: DD=+1.00 DO=+1.00 OD=+0.00 L11d=+1.00 CSTd=+0.00 | NEC +1.00[+1.00,+1.00] holds | null97.5 0.153
+patchy                 2x2=indeterminate            local=indeterminate                  state=indeterminate                    | D: DD=+1.00 DO=+0.50 OD=+0.00 L11d=+0.50 CSTd=+0.50 | NEC +1.00[+1.00,+1.00] holds | null97.5 0.153
+weak_write             2x2=both_routes              local=local_write_redirects          state=own_answer_after_state_swap      | D: DD=+1.00 DO=+0.40 OD=+0.42 L11d=+1.00 CSTd=+0.00 | NEC +0.58[+0.46,+0.71] holds | null97.5 0.153
+own_local_fails        2x2=write_supported_with_self_recovery local=unjudgeable                    state=own_answer_after_state_swap      | D: DD=+1.00 DO=+1.00 OD=+0.00 L11d=+1.00 CSTd=+0.00 | NEC +1.00[+1.00,+1.00] holds | null97.5 0.153
+no_damage              2x2=prerequisite_fail        local=unjudgeable                    state=own_answer_after_state_swap      | D: DD=+1.00 DO=+1.00 OD=+0.00 L11d=+1.00 CSTd=+0.00 | NEC +1.00[+1.00,+1.00] holds | null97.5 0.153
+clean_fails            2x2=prerequisite_fail        local=unjudgeable                    state=unjudgeable                      | D: DD=+1.00 DO=+1.00 OD=+0.00 L11d=+1.00 CSTd=+0.00 | NEC +1.00[+1.00,+1.00] holds | null97.5 0.153
+margin check forced to fail: indeterminate indeterminate own_answer_after_state_swap {'REF': 'indeterminate', 'SUF': 'indeterminate', 'RET': 'below', 'NEC': 'indeterminate', 'LOC': 'indeterminate', 'SRC': 'below', 'margin_check': 'failed'}
+
+  bridge_2x2   ['both_routes', 'indeterminate', 'neither_alone', 'prerequisite_fail', 'reference_absent', 'retained_buffer_carries', 'transfer_reduced_with_degradation', 'transfer_reduced_without_self_recovery', 'write_supported_with_self_recovery']
+  local_form   ['indeterminate', 'local_write_does_not_redirect', 'local_write_redirects', 'unjudgeable']
+  needle_state ['degraded', 'indeterminate', 'needle_state_carries_selection', 'own_answer_after_state_swap', 'unjudgeable']
+  NEC          ['below', 'holds']
+outcomes required but not reached: {}
+REHEARSAL PASS: every outcome of the three readings is reachable and avoidable
