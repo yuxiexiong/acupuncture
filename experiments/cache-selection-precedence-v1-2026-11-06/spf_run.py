@@ -29,7 +29,7 @@ from fbr_run import *  # noqa: E402,F401,F403
 HERE = Path(__file__).resolve().parent
 import spf_core as K  # noqa: E402  (frozen read-outs; arms, donor rule and statistics are defined there)
 
-PLAN_ID = 'SPF-01-STATE-SOURCE-A-r01'
+PLAN_ID = 'SPF-01-STATE-SOURCE-A-r02'                                 # r02: one formal worker (DEVIATIONS D1)
 MAIN, SECOND = K.MAIN, K.SECOND
 DIRS = tuple(K.DIRS)
 G14, G4, KL = tuple(K.G), tuple(K.G4), tuple(K.ATTN)
@@ -42,7 +42,7 @@ NCC_FORMAL = NCC_DIR / 'runs/formal-r01'
 NSR_FORMAL = NSR_DIR / 'runs/formal-r01'
 PREFLIGHT_SCENARIO = 'NQ02'
 STAGES = ('preflight', 'formal')
-MAX_WORKERS = {'preflight': 1, 'formal': 2}
+MAX_WORKERS = {'preflight': 1, 'formal': 1}                           # DEVIATIONS D1: measured 0.84 s per run; two workers on one shared card would break the 2.0 h cap
 N_RECEIVERS = {'preflight': 6, 'formal': 48}
 PRE_ARMS = ('C0', 'T0', 'T_Bown', 'T_Sown')                           # prerequisite arms run first
 GPU_CAP_S = {'preflight': 0.3 * 3600, 'formal': 2.0 * 3600}           # wall-clock on SHARED cards, summed over workers (CONTRACT §8)

@@ -49,8 +49,9 @@ class Design(unittest.TestCase):
         self.assertEqual((got[None], got[R.MAIN], got[R.SECOND]), (tot['once'], tot[R.MAIN], tot[R.SECOND]))
         self.assertEqual(tot['total'], 6780)
         self.assertEqual(R.limits('formal')['t1'], 6780)
-        w0, w1 = R.plan('formal', 0, 2), R.plan('formal', 1, 2)
-        self.assertEqual((sum(len(u['item_ids']) for u in w0), sum(len(u['item_ids']) for u in w1)), (27, 21))
+        self.assertEqual(R.MAX_WORKERS, {'preflight': 1, 'formal': 1})
+        self.assertEqual(sum(len(u['item_ids']) for u in R.plan('formal', 0, 1)), 48)
+        self.assertLessEqual(0.85 * R.limits('formal')['t1'] + 60, R.GPU_CAP_S['formal'])     # the preflight-measured cost per run fits the cap with one worker
         pre = R.plan('preflight', 0, 1)
         self.assertEqual([u['base_id'] for u in pre], [R.PREFLIGHT_SCENARIO])
         self.assertEqual(R.dirs_for('preflight'), (R.MAIN,))
