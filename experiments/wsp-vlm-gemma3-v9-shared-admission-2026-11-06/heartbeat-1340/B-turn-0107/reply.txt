@@ -1,0 +1,101 @@
+The naïve normalization inversion failed its local check, so I will not use it. I’ll test a gain-weighted projection instead, then check the sparse fit on held-out pairs before staging anything.
+
+```python
+gain21 = late_gain.astype(np.float64)
+gain_squared21 = gain21 ** 2
+late_raw_targets21 = []
+projection_checks21 = []
+
+for i, source_index in enumerate(vf):
+    raw = late_raw[source_index]
+    denominator = np.sqrt(np.mean(raw ** 2) + 1e-6)
+    normalized = raw / denominator
+    radius_squared = float(normalized @ normalized)
+    desired_branch = late_branch[source_index] + late_residual_targets[i]
+    numerator = gain21 * desired_branch
+
+    # Minimize ||gain*z - desired_branch||² at the original raw RMS.
+    lower = -float(gain_squared21.min()) + float(gain_squared21.min()) * 1e-12
+    upper = max(1.0, float(np.linalg.norm(numerator) / np.sqrt(radius_squared)))
+    assert np.sum((numerator / (gain_squared21 + lower)) ** 2) > radius_squared
+    assert np.sum((numerator / (gain_squared21 + upper)) ** 2) <= radius_squared
+
+    for _ in range(100):
+        midpoint = (lower + upper) / 2.0
+        squared_norm = np.sum((numerator / (gain_squared21 + midpoint)) ** 2)
+        if squared_norm > radius_squared:
+            lower = midpoint
+        else:
+            upper = midpoint
+
+    projected = numerator / (gain_squared21 + (lower + upper) / 2.0)
+    raw_change = projected * denominator - raw
+    movement = late_normalize(raw + raw_change) - late_branch[source_index]
+    improvement = 1.0 - (
+        np.linalg.norm(movement - late_residual_targets[i])
+        / np.linalg.norm(late_residual_targets[i])
+    )
+    assert improvement >= -1e-7
+    late_raw_targets21.append(raw_change)
+    projection_checks21.append({
+        "id": verified_pairs[i][0],
+        "relative_residual_error_reduction": float(improvement),
+        "alignment": float(np.dot(unit(movement), unit(late_residual_targets[i]))),
+        "relative_radius_error": float(
+            abs(projected @ projected - radius_squared) / radius_squared
+        )
+    })
+
+late_raw_targets21 = np.stack(late_raw_targets21)
+late_input_differences21 = verified_changes(A41[33])
+columns21, delta21, raw_fit_norm21, shrinkage21 = fit_conditional_write(
+    A41[33], late_input_differences21, late_raw_targets21,
+    np.arange(len(verified_pairs)), vc, 0.02 * late_weight_norm
+)
+effective21 = (
+    bf16_round(late_w0[:, columns21] + delta21)
+    - late_w0[:, columns21]
+)
+local_movement21 = (
+    late_normalize(late_raw + A41[33][:, columns21] @ effective21.T)
+    - late_branch
+)
+loo21 = []
+for held_out in range(len(verified_pairs)):
+    training_pairs = np.delete(np.arange(len(verified_pairs)), held_out)
+    training_controls = np.asarray([
+        j for j in vc if j not in (vf[held_out], vs[held_out])
+    ], dtype=np.int64)
+    columns, delta, _, _ = fit_conditional_write(
+        A41[33], late_input_differences21, late_raw_targets21,
+        training_pairs, training_controls, 0.02 * late_weight_norm
+    )
+    effective = bf16_round(late_w0[:, columns] + delta) - late_w0[:, columns]
+    source_index = vf[held_out]
+    movement = (
+        late_normalize(late_raw[source_index] + A41[33][source_index, columns] @ effective.T)
+        - late_branch[source_index]
+    )
+    loo21.append(float(
+        1.0 - np.linalg.norm(movement - late_residual_targets[held_out])
+        / np.linalg.norm(late_residual_targets[held_out])
+    ))
+
+late_fit_diagnostics21 = {
+    "projection_checks": projection_checks21,
+    "unbounded_fit_norm": float(raw_fit_norm21),
+    "shrinkage": float(shrinkage21),
+    "effective_BF16_support": int(np.count_nonzero(effective21)),
+    "effective_delta_norm": float(np.linalg.norm(effective21.astype(np.float64))),
+    "in_fit_residual_error_reductions": (
+        1.0 - np.linalg.norm(local_movement21[vf] - late_residual_targets, axis=1)
+        / np.linalg.norm(late_residual_targets, axis=1)
+    ).tolist(),
+    "held_out_pair_residual_error_reductions": loo21,
+    "mean_target_movement": float(np.linalg.norm(local_movement21[vf], axis=1).mean()),
+    "mean_success_control_movement": float(np.linalg.norm(local_movement21[vc], axis=1).mean()),
+    "interpretation": "Supervised local calculations from saved W0 captures; no behavioral validation."
+}
+print("GAIN-WEIGHTED FINAL-MLP FIT", json.dumps(late_fit_diagnostics21))
+print("STAGED", edited())
+```

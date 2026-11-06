@@ -1,0 +1,39 @@
+I’ll inspect round 14, then split round 4’s exact edit into two disjoint parts. Head 7 had the largest individual share of selected projection energy; testing it separately from the remaining heads checks concentration without assigning it a semantic role.
+
+```python
+cid14, r14 = review_eval("turn-0075", "r14_attn10_matched_channel_ablation")
+if len(r14["changes"]) > 40:
+    print("REMAINING_CHANGES", json.dumps(r14["changes"][40:]))
+
+with np.load("/work/r04_attn10_direction_remove_edit.npz", allow_pickle=False) as z:
+    r4_selected = z["selected"].astype(np.int64)
+    r4_old = z["original_columns"].copy()
+    r4_absolute = z["absolute_bf16_columns"].copy()
+r4_delta = r4_absolute - r4_old
+head7_mask = (r4_selected // 256) == 7
+assert int(head7_mask.sum()) == 24
+assert np.array_equal(bf16_round(r4_old + r4_delta), r4_absolute)
+head_energy = [
+    float(np.sum(r4_delta[:, (r4_selected // 256) == h] ** 2))
+    for h in range(8)
+]
+print("EXACT_R4_HEAD_PARTITION", {
+    "head_counts": [int(np.sum(r4_selected // 256 == h)) for h in range(8)],
+    "effective_energy_by_head": head_energy,
+    "head7_energy_fraction": float(head_energy[7] / sum(head_energy)),
+    "complement_columns": int((~head7_mask).sum())
+})
+np.savez("/work/attn10_exact_head_partition.npz",
+         selected=r4_selected, delta=r4_delta, head7_mask=head7_mask)
+stage_delta(
+    attn_plans[10]["name"], r4_selected[head7_mask], r4_delta[:, head7_mask],
+    "r15_attn10_head7_component",
+    {
+        "reference": "r04_attn10_direction_remove",
+        "partition": "Only the 24 originally edited columns in head 7, at their exact round-4 BF16 values.",
+        "selection_basis": "Largest individual projected-energy share before the partition experiment, not a headwise behavioral search.",
+        "control_plan": "Evaluate the complementary 40-column edit separately; the two disjoint patches reconstruct round 4 exactly.",
+        "dose_note": "Natural component magnitude, not rescaled to match the full edit norm."
+    }
+)
+```

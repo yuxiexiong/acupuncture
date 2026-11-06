@@ -1,0 +1,48 @@
+I’ll compare the repeat with the first fresh W0 run. The next control attenuates only the selected columns’ component orthogonal to the proposed direction, at the same edit norm; similar benefits would weaken the directional explanation.
+
+```python
+m66 = json.loads((Path(ARTIFACTS) / "turn-0066.json").read_text())["value"]["results"]
+old_audit = {r["request_id"]: r for r in m53}
+repeat_audit = []
+for row in m66:
+    rid = row["request_id"]
+    old = old_audit[rid]["diagnostic_generation"]
+    new = row["diagnostic_generation"]
+    repeat_audit.append({
+        "id": rid,
+        "first_fresh_W0": old["text"],
+        "repeat_W0": new["text"],
+        "same_generated_ids": old["generated_ids"] == new["generated_ids"],
+        "same_input_ids_hash": old["input_ids_sha256"] == new["input_ids_sha256"],
+        "same_prompt_hash": old["rendered_chat_sha256"] == new["rendered_chat_sha256"],
+        "same_token_type_hash": old["token_type_ids_sha256"] == new["token_type_ids_sha256"],
+        "matches_cached_baseline_ids": preds0[rid]["generated_ids"] == new["generated_ids"]
+    })
+print("W0_DIAGNOSTIC_REPEAT", json.dumps(repeat_audit))
+print("REPEAT_EXACT_MATCHES", sum(r["same_generated_ids"] for r in repeat_audit), "/", len(repeat_audit))
+Path("/work/w0_diagnostic_repeat_audit.json").write_text(json.dumps(repeat_audit, indent=2))
+
+plan = attn_plans[10]
+selected = np.asarray(plan["selected"], dtype=np.int64)
+W10 = np.asarray(load_original(plan["name"]), dtype=np.float32)
+old_columns = W10[:, selected].copy()
+u = plan["u"]
+parallel = np.outer(u, u @ old_columns)
+orthogonal = old_columns - parallel
+scale = float(np.linalg.norm(parallel) / np.linalg.norm(orthogonal))
+delta = -scale * orthogonal
+effective = bf16_round(old_columns + delta) - old_columns
+metadata = {
+    "reference": "r04_attn10_direction_remove",
+    "control": "Attenuate the orthogonal complement within the same 64 columns, leaving the nominated directional component unchanged before BF16 rounding.",
+    "attenuation": scale,
+    "intended_directional_leakage_norm": float(np.linalg.norm(u @ delta)),
+    "effective_directional_leakage_norm": float(np.linalg.norm(u @ effective)),
+    "reference_intended_norm": float(np.linalg.norm(parallel)),
+    "limitation": "Diagnostic repeats do not replace the fixed cached evaluation baseline."
+}
+np.savez("/work/attn10_orthogonal_control_plan.npz",
+         selected=selected, direction=u, delta=delta, attenuation=np.array(scale))
+stage_delta(plan["name"], selected, delta,
+            "r12_attn10_orthogonal_component_control", metadata)
+```

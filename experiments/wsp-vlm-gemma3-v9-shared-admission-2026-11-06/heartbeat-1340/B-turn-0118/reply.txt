@@ -1,0 +1,66 @@
+The analysis failed because gold labels are structured records, not integers. I’ll preserve those labels and rerun the comparison; the staged model edit is unchanged.
+
+```python
+behavior116 = [{
+    "id": row["request_id"],
+    "gold": records[row["request_id"]]["gold"],
+    "live_W0": live68[row["request_id"]]["diagnostic_generation"]["text"],
+    "full_D_round22": pred22[row["request_id"]]["text"],
+    "diagnostic_round22": row["diagnostic_generation"]["text"],
+    "same_input_hash": (
+        row["input_ids_sha256"]
+        == live68[row["request_id"]]["input_ids_sha256"]
+    ),
+    "same_chat_hash": (
+        row["rendered_chat_sha256"]
+        == live68[row["request_id"]]["rendered_chat_sha256"]
+    )
+} for row in m116]
+
+check22 = {
+    "candidate": eval22["candidate"],
+    "measurement_action": "turn-0116",
+    "W0_state_reference": "turn-0041",
+    "W0_generation_reference": "turn-0068",
+    "MLP_inputs_exactly_equal": bool(np.array_equal(actual_inputs116, A41[33])),
+    "maximum_MLP_input_difference": float(np.max(np.abs(actual_inputs116 - A41[33]))),
+    "target_alignment_cosines": [
+        float(np.dot(unit(a), unit(b)))
+        for a, b in zip(actual_movement116[vf], late_residual_targets)
+    ],
+    "target_residual_error_reductions": (
+        1.0 - np.linalg.norm(actual_movement116[vf] - late_residual_targets, axis=1)
+        / np.linalg.norm(late_residual_targets, axis=1)
+    ).tolist(),
+    "mean_target_movement": float(np.linalg.norm(actual_movement116[vf], axis=1).mean()),
+    "mean_success_control_movement": float(np.linalg.norm(actual_movement116[vc], axis=1).mean()),
+    "local_vs_measured_target_cosines": [
+        float(np.dot(unit(a), unit(b)))
+        for a, b in zip(local_movement22[vf], actual_movement116[vf])
+    ],
+    "changed_residual_coordinates_by_input": np.count_nonzero(
+        actual_movement116, axis=1
+    ).tolist(),
+    "behavior": behavior116,
+    "limitation": "Residual movement verifies intervention effects, not a counting mechanism or behavioral repair."
+}
+(work / "round_22_measured_residual_check.json").write_text(
+    json.dumps(check22, indent=2)
+)
+print("MEASURED ROUND 22", json.dumps({
+    key: value for key, value in check22.items() if key != "behavior"
+}))
+print("FULL-D/DIAGNOSTIC DIFFERENCES", json.dumps([
+    row for row in behavior116
+    if row["full_D_round22"] != row["diagnostic_round22"]
+]))
+print("LIVE-W0/EDITED DIAGNOSTIC CHANGES", json.dumps([
+    row for row in behavior116
+    if row["live_W0"] != row["diagnostic_round22"]
+]))
+print("SEVEN TARGETS", json.dumps([
+    row for row in behavior116
+    if row["id"] in {pair[0] for pair in verified_pairs}
+]))
+print("STAGED ROUND 23", edited())
+```
