@@ -1,0 +1,81 @@
+Round 29 is evaluated, and round 28 remains selected best. I will inspect round 29’s outcomes and stage the final, fixed residual-input component. Before completing round 30, I will also verify round 28 directly on the seven existing normalization probes, keeping that selected audit separate from efficacy claims.
+
+```python
+cid29, r29 = review_eval("turn-0137", "r29_mlp15_common_input_component")
+repairs29 = {x["id"] for x in r29["changes"] if x["effect"] == "repair"}
+damages29 = {x["id"] for x in r29["changes"] if x["effect"] == "damage"}
+retained29 = sorted(reference_ids & repairs29)
+net_cv29 = int(r29["conditions"]["counterfact_visual"] - baseline_cv)
+check29 = {
+    "prediction_source": "/work/r27_r30_decomposition_plan.json",
+    "candidate": cid29,
+    "retained_reference_repairs": retained29,
+    "retained_count": len(retained29),
+    "net_counterfact_visual_correctness": net_cv29,
+    "criterion_met": len(retained29) >= 6 and net_cv29 > 0,
+    "shared_repairs_with_round22": sorted(repairs22 & repairs29),
+    "shared_damages_with_round22": sorted(damages22 & damages29),
+    "captured_baseline_failure_repairs": sorted(set(failids) & repairs29)
+}
+Path("/work/r29_common_input_check.json").write_text(
+    json.dumps(check29, indent=2)
+)
+print("COMMON_INPUT_PREDICTION_CHECK", json.dumps(check29))
+
+metrics30, absolute30 = stage_columns(
+    "model.language_model.layers.15.mlp.down_proj.weight",
+    selected22,
+    original22 + delta_residual_input,
+    "r30_mlp15_residual_input_component",
+    {
+        "reference": "r22_mlp15_orthogonal_component_remove",
+        "operation": "Apply D_residual=D-(Dq)q^T on the original 64 columns.",
+        "construction": "Independent W0 reconstruction, not cumulative on round 29.",
+        "prediction_source": "/work/r27_r30_decomposition_plan.json",
+        "dose_note": "Native component magnitude; static edit applies at every token.",
+        "paired_control": "r29_mlp15_common_input_component"
+    }
+)
+assert np.array_equal(absolute30, planned_residual_columns)
+input_partition_audit = {
+    "round29_matches_registered_columns": bool(
+        np.array_equal(absolute29, planned_common_columns)
+    ),
+    "round30_matches_registered_columns": True,
+    "BF16_additive_decomposition_error_norm": float(np.linalg.norm(
+        (absolute29 - original22) + (absolute30 - original22) - delta22
+    )),
+    "effective_residual_write_on_mean_direction_norm": float(np.linalg.norm(
+        (absolute30 - original22) @ mean_input_direction
+    )),
+    "full_patch_write_on_mean_direction_norm": float(np.linalg.norm(
+        delta22 @ mean_input_direction
+    )),
+    "limitation": "Approximate BF16 decomposition; last-prompt input statistics do not establish all-token behavioral sufficiency."
+}
+Path("/work/r29_r30_input_partition_audit.json").write_text(
+    json.dumps(input_partition_audit, indent=2)
+)
+print("INPUT_PARTITION_AUDIT", json.dumps(input_partition_audit))
+
+best28_audit_plan = {
+    "candidate": cid28,
+    "ids": list(norm_probe_ids),
+    "baseline_measurement": "turn-0125",
+    "comparison_measurement": "turn-0126",
+    "capture_last_position": 290,
+    "selection": "Reuse the seven normalization-probe IDs fixed before round 28.",
+    "prediction": (
+        "Equal MLP inputs and a raw write change aligned with the exact 61-column delta. "
+        "Fresh generation retains the cached Camera-to-Ring and Fish-to-Nail repairs "
+        "at C-125:T1:O1:B0 and C-288:T1:O0:B0, while C-455:T1:O0:B0 remains Lime."
+    ),
+    "limitation": "Post-selection verification on seen requests, not independent efficacy or mechanism validation."
+}
+Path("/work/r28_direct_audit_plan.json").write_text(
+    json.dumps(best28_audit_plan, indent=2)
+)
+print("SELECTED_BEST_VERIFICATION_PLAN", json.dumps(best28_audit_plan))
+assert len(evaluation_ledger) == 29
+print("ROUND_LIMIT: Round 30 is staged but not committed or evaluated; no round 31 will be constructed.")
+```

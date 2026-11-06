@@ -1,0 +1,28 @@
+Round 28’s raw write changes reproduced, but its C-125 repair did not: fresh output was “Camera,” not cached “Ring.” C-288’s repair and C-455’s preservation did reproduce. I will retain this limitation and commit the final residual-input test without changing its preregistered prediction.
+
+```forward
+{
+  "op": "commit",
+  "parent": "c-6270cac07ebf70b52f0bd725f9436aabb916c1209fd29a623ae6db7e055aee44",
+  "rationale": "Round 30: complete the preregistered input-space decomposition of round 22 with its residual-input component, independently reconstructed from W0. This is the final candidate; no round 31 will be constructed.",
+  "evidence": {
+    "failure_behavior": "The common-input component retained only two of nine reference repairs and had negative net counterfactual-visual correctness, despite its large share of recorded last-prompt write energy.",
+    "component_hypothesis": "Input-specific variation or effects at other token positions may be required beyond the common-input component. Removing that shared component from the patch tests the complementary explanation.",
+    "expected_change": "Retain fewer than six of nine reference counterfactual-visual repairs, preserving the prediction registered in turn-0129 before either input-component evaluation.",
+    "dose": "Apply D_residual=D-(Dq)q^T on the original 64 columns: 163,811 effective changed scalars, L2 approximately 2.109565. Effective write on q has norm 0.000156 versus 0.243133 for the full patch.",
+    "control_plan": "Compare with W0, full round 22, and common-input round 29. Report native dose differences and BF16 additive decomposition error 0.003215. Retain the actual harness-selected best after exactly 30 full-development evaluations; do not reinterpret diagnostic generations as official scores.",
+    "contrast_ids": [
+      "C-125:counterfact_visual:T1:O1:B0",
+      "C-288:counterfact_visual:T1:O0:B0"
+    ],
+    "measurement_actions": [
+      "turn-0011",
+      "turn-0013",
+      "turn-0125",
+      "turn-0126",
+      "turn-0139"
+    ],
+    "role": "diagnostic"
+  }
+}
+```

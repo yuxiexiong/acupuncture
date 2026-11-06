@@ -1,0 +1,95 @@
+The round-28 diagnostic completed. I will inspect all seven generations and captures, checking the exact column-delta prediction and the registered answer comparisons. Any mismatches will be retained rather than replacing the official evaluation.
+
+```python
+norm_r28 = measurement_rows("turn-0139")
+assert set(norm_r28) == set(norm_probe_ids)
+result28 = json.loads(
+    (Path(ARTIFACTS) / "turn-0134.json").read_text()
+)["value"]["results"][cid28]
+p28 = {p["request_id"]: p for p in result28["predictions"]}
+delta28_selected = (
+    absolute28 - original22[:, energy_complement]
+).astype(np.float64)
+selected28 = selected22[energy_complement]
+
+audit28_rows = []
+for rid in norm_probe_ids:
+    b, e = norm_w0[rid], norm_r28[rid]
+    assert e["candidate"] == cid28
+    a0 = captured(b, 15, "a").astype(np.float64)
+    a1 = captured(e, 15, "a").astype(np.float64)
+    dx = norm_capture(e, "input") - norm_capture(b, "input")
+    dy = norm_capture(e, "output") - norm_capture(b, "output")
+    dh = (
+        captured(e, 15, "h").astype(np.float64)
+        - captured(b, 15, "h").astype(np.float64)
+    )
+    predicted = delta28_selected @ a0[selected28]
+    equal_inputs = bool(np.array_equal(a0, a1))
+    audit28_rows.append({
+        "id": rid,
+        "equal_prompt_hashes": all(
+            b[k] == e[k] for k in [
+                "input_ids_sha256", "rendered_chat_sha256",
+                "token_type_ids_sha256"
+            ]
+        ),
+        "equal_mlp_inputs": equal_inputs,
+        "predicted_raw_delta_norm": float(np.linalg.norm(predicted)),
+        "measured_raw_delta_norm": float(np.linalg.norm(dx)),
+        "raw_delta_cosine": vector_cosine(predicted, dx) if equal_inputs else None,
+        "raw_delta_relative_error": (
+            float(np.linalg.norm(dx - predicted) / np.linalg.norm(predicted))
+            if equal_inputs else None
+        ),
+        "normalization_output_delta_norm": float(np.linalg.norm(dy)),
+        "normalization_delta_gain": float(np.linalg.norm(dy) / np.linalg.norm(dx)),
+        "residual_delta_norm": float(np.linalg.norm(dh)),
+        "normalization_vs_residual_delta_cosine": vector_cosine(dy, dh),
+        "fresh_W0": b["diagnostic_generation"]["text"],
+        "fresh_R22": norm_r22[rid]["diagnostic_generation"]["text"],
+        "cached_R28": p28[rid]["text"],
+        "fresh_R28": e["diagnostic_generation"]["text"],
+        "R28_cached_sequence_match": (
+            e["diagnostic_generation"]["generated_ids"] == p28[rid]["generated_ids"]
+        )
+    })
+
+audit28_by_id = {r["id"]: r for r in audit28_rows}
+focal_expectations28 = {
+    "C-125:counterfact_visual:T1:O1:B0": ("camera", "ring"),
+    "C-288:counterfact_visual:T1:O0:B0": ("fish", "nail"),
+    "C-455:counterfact_visual:T1:O0:B0": ("lime", "lime")
+}
+focal_checks28 = {
+    rid: (
+        audit28_by_id[rid]["fresh_W0"].strip().casefold() == expected[0]
+        and audit28_by_id[rid]["fresh_R28"].strip().casefold() == expected[1]
+    )
+    for rid, expected in focal_expectations28.items()
+}
+audit28_report = {
+    "candidate": cid28,
+    "actions": ["turn-0125", "turn-0126", "turn-0139"],
+    "n": len(audit28_rows),
+    "equal_prompt_hashes": sum(r["equal_prompt_hashes"] for r in audit28_rows),
+    "equal_mlp_inputs": sum(r["equal_mlp_inputs"] for r in audit28_rows),
+    "R28_cached_sequence_matches": sum(
+        r["R28_cached_sequence_match"] for r in audit28_rows
+    ),
+    "registered_focal_checks": focal_checks28,
+    "all_registered_answer_checks_met": all(focal_checks28.values()),
+    "rows": audit28_rows,
+    "limitations": (
+        "Seven previously selected development requests; fresh W0 is from turn-0125. "
+        "Local write propagation and answer reproduction are not independent efficacy "
+        "or proof of a uniquely size-specific causal mechanism. Official cached "
+        "evaluation remains unchanged."
+    )
+}
+Path("/work/r28_direct_mechanism_audit.json").write_text(
+    json.dumps(audit28_report, indent=2)
+)
+print("ROUND28_DIRECT_AUDIT", json.dumps(audit28_report))
+print("STAGING_UNMODIFIED_BY_ANALYSIS", edited())
+```

@@ -1,5 +1,7 @@
 # 实验目录：按研究问题查找
 
+**2026-11-06｜Gemma r02四组最终交付：** [v8/v9 B/C各30轮结果、原始证据与成本总入口](wsp-gemma-v8-v9-final-comparison-2026-11-06/REPORT.zh-CN.md) · [外部审阅风险核对、有效操作共性与优化优先级](wsp-gemma-v8-v9-final-comparison-2026-11-06/RISK_REVIEW.zh-CN.md)。四组120候选评价结束；v8 B/C及v9 C冻结并退出，v9 B收尾额度失败保留机制报告/冻结缺项；均非独立泛化。旧队列不恢复，新策略/外部验证未启动。以下历史“运行中/暂停”须按对应日期与最新交付区分。
+
 **2026-11-05｜WSP v9 B/C各30轮：** [内部证据合同、精确稀疏存储与启动状态](wsp-vlm-mechanism-repair-v9-2026-11-05/README.zh-CN.md)。旧C全哈希无损去重回收76.81GiB；新版35项离线与真实工程验收通过，[B/C已启动及首份回执](wsp-vlm-mechanism-repair-v9-2026-11-05/EXECUTION.zh-CN.md)，旧2B/8B/Gemma保持暂停。
 
 **2026-11-05｜WSP C 跨家族复用：** [Gemma 3 4B：50 轮与逐轮曲线](wsp-vlm-c-gemma3-4b-v1-2026-11-05/README.zh-CN.md)。准备及 CPU 验收完成；用户随后叫停全部卡上实验，三条新模型队列及控制器已停止，两卡空闲，见 [叫停回执](wsp-vlm-c-gemma3-4b-v1-2026-11-05/STOPPED.zh-CN.md)。

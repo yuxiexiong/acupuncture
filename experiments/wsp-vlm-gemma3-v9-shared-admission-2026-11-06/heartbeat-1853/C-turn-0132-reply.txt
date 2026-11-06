@@ -1,0 +1,59 @@
+Round 27’s full evaluation is complete; the preview does not reveal its outcomes. I will check the registered criterion and stage the fixed 61-channel complement from W0. The complement prediction remains fewer than six reference repairs, regardless of round 27’s result.
+
+```python
+cid27, r27 = review_eval("turn-0131", "r27_mlp15_high_energy_three")
+repairs27 = {x["id"] for x in r27["changes"] if x["effect"] == "repair"}
+damages27 = {x["id"] for x in r27["changes"] if x["effect"] == "damage"}
+retained27 = sorted(reference_ids & repairs27)
+net_cv27 = int(r27["conditions"]["counterfact_visual"] - baseline_cv)
+check27 = {
+    "prediction_source": "/work/r27_r30_decomposition_plan.json",
+    "candidate": cid27,
+    "retained_reference_repairs": retained27,
+    "retained_count": len(retained27),
+    "net_counterfact_visual_correctness": net_cv27,
+    "total_repairs": r27["repair_count"],
+    "total_damages": r27["damage_count"],
+    "criterion_met": len(retained27) >= 6 and net_cv27 > 0,
+    "captured_baseline_failure_repairs": sorted(set(failids) & repairs27),
+    "limitation": "Exploratory localization test on seen development data; individual channel energy omitted cross terms."
+}
+Path("/work/r27_energy_component_check.json").write_text(
+    json.dumps(check27, indent=2)
+)
+print("THREE_CHANNEL_PREDICTION_CHECK", json.dumps(check27))
+
+metrics28, absolute28 = stage_columns(
+    "model.language_model.layers.15.mlp.down_proj.weight",
+    selected22[energy_complement],
+    absolute22[:, energy_complement],
+    "r28_mlp15_energy_complement",
+    {
+        "reference": "r22_mlp15_orthogonal_component_remove",
+        "operation": "Exact round-22 BF16 column edit restricted to the complementary 61 channels.",
+        "construction": "Independent reconstruction from W0; the round-27 three channels are restored.",
+        "prediction_source": "/work/r27_r30_decomposition_plan.json",
+        "dose_note": "Native component magnitude; not norm-matched.",
+        "paired_control": "r27_mlp15_high_energy_three"
+    }
+)
+assert np.array_equal(absolute28, absolute22[:, energy_complement])
+reassembled22 = np.empty_like(absolute22)
+reassembled22[:, energy_component] = absolute27
+reassembled22[:, energy_complement] = absolute28
+assert np.array_equal(reassembled22, absolute22)
+partition_audit = {
+    "disjoint_channels": True,
+    "three_channel_count": int(len(energy_component)),
+    "complement_channel_count": int(len(energy_complement)),
+    "effective_BF16_union_equals_round22": True,
+    "additive_delta_error_norm": float(
+        np.linalg.norm((reassembled22 - original22) - delta22)
+    ),
+    "interpretation": "Exact weight partition, not an assumption that behavioral effects add."
+}
+Path("/work/r27_r28_exact_partition_audit.json").write_text(
+    json.dumps(partition_audit, indent=2)
+)
+print("EXACT_WEIGHT_PARTITION", json.dumps(partition_audit))
+```

@@ -1,0 +1,125 @@
+The raw changes closely match \(\Delta Wa\) (cosine >0.99992); normalization increases their magnitude about 576–669-fold. This verifies propagation, not a size-specific mechanism. I will preregister the final four component tests and stage round 27: the three channels contributing half the summed individual write energy, predicting retention of at least six reference repairs.
+
+```python
+assert len(evaluation_ledger) == 26
+assert len(reference_ids) == 9
+assert len(energy_component) == 3
+assert len(energy_complement) == 61
+assert set(energy_component).isdisjoint(set(energy_complement))
+assert set(energy_component) | set(energy_complement) == set(range(64))
+
+cached_norm_comparison = {
+    "n": len(norm_probe_ids),
+    "W0_cached_sequence_matches": sum(
+        norm_w0[rid]["diagnostic_generation"]["generated_ids"]
+        == preds0[rid]["generated_ids"] for rid in norm_probe_ids
+    ),
+    "R22_cached_sequence_matches": sum(
+        norm_r22[rid]["diagnostic_generation"]["generated_ids"]
+        == p22[rid]["generated_ids"] for rid in norm_probe_ids
+    ),
+    "limitation": "Seven selected diagnostic requests; not an independent efficacy estimate."
+}
+Path("/work/r22_normalization_generation_check.json").write_text(
+    json.dumps(cached_norm_comparison, indent=2)
+)
+print("NORMALIZATION_GENERATION_CHECK", json.dumps(cached_norm_comparison))
+
+planned_common_columns = bf16_round(original22 + delta_mean_input)
+planned_residual_columns = bf16_round(original22 + delta_residual_input)
+planned_common_delta = planned_common_columns - original22
+planned_residual_delta = planned_residual_columns - original22
+
+final_decomposition_plan = {
+    "reference_candidate": cid22,
+    "reference_label": "r22_mlp15_orthogonal_component_remove",
+    "reference_repair_ids": sorted(reference_ids),
+    "analysis_sources": ["turn-0011", "turn-0013", "turn-0124"],
+    "analysis_inputs": 96,
+    "round27": {
+        "label": "r27_mlp15_high_energy_three",
+        "operation": "Apply the exact effective round-22 edit only to the three highest individual-write-energy channels; restore all other weights to W0.",
+        "channels": selected22[energy_component].tolist(),
+        "individual_energy_fraction": float(
+            channel_energy[energy_component].sum() / channel_energy.sum()
+        ),
+        "prediction": "Retain at least six of nine reference repairs and positive net counterfactual-visual correctness relative to official W0.",
+        "minimum_reference_repairs": 6,
+        "require_positive_net_counterfact_visual": True
+    },
+    "round28": {
+        "label": "r28_mlp15_energy_complement",
+        "operation": "Apply the exact effective round-22 edit only to the other 61 channels; restore the three round-27 channels to W0.",
+        "channels": selected22[energy_complement].tolist(),
+        "prediction": "Retain fewer than six of nine reference repairs.",
+        "reference_repair_upper_bound_exclusive": 6
+    },
+    "round29": {
+        "label": "r29_mlp15_common_input_component",
+        "operation": "On the original 64 columns, apply D_common=(Dq)q^T, where D is the effective round-22 delta and q is the normalized mean of the 96 recorded selected-channel inputs.",
+        "prediction": "Retain at least six of nine reference repairs and positive net counterfactual-visual correctness relative to official W0.",
+        "minimum_reference_repairs": 6,
+        "require_positive_net_counterfact_visual": True,
+        "intended_norm": float(np.linalg.norm(delta_mean_input)),
+        "effective_norm": float(np.linalg.norm(planned_common_delta))
+    },
+    "round30": {
+        "label": "r30_mlp15_residual_input_component",
+        "operation": "On the original 64 columns, apply D_residual=D-D_common, independently reconstructed from W0.",
+        "prediction": "Retain fewer than six of nine reference repairs.",
+        "reference_repair_upper_bound_exclusive": 6,
+        "intended_norm": float(np.linalg.norm(delta_residual_input)),
+        "effective_norm": float(np.linalg.norm(planned_residual_delta))
+    },
+    "input_component_BF16_additive_error_norm": float(np.linalg.norm(
+        planned_common_delta + planned_residual_delta - delta22
+    )),
+    "evaluation": "Unchanged full development set, official grading and selection; retain all condition counts, repairs, damages, and protection failures.",
+    "construction": "Four independent W0 reconstructions, not cumulative. Static weight edits apply at every token.",
+    "limitations": [
+        "Exploratory predictions on repeatedly used development data.",
+        "Reference repair identities were outcome-selected.",
+        "Original channel selection was supervised.",
+        "Individual channel energy excludes interference terms.",
+        "Native component magnitudes are not norm-matched.",
+        "Mean-input decomposition uses last-prompt captures and need not describe other token positions.",
+        "Cached-versus-fresh discrepancies remain unresolved."
+    ],
+    "stopping_rule": "Exactly 30 distinct nonzero full-development evaluated candidates, then report the actual harness-selected best and freeze; no round 31."
+}
+Path("/work/r27_r30_decomposition_plan.json").write_text(
+    json.dumps(final_decomposition_plan, indent=2)
+)
+np.savez(
+    "/work/r27_r30_decomposition_plan.npz",
+    selected=selected22,
+    energy_component=energy_component,
+    energy_complement=energy_complement,
+    mean_input_direction=mean_input_direction,
+    desired_common_columns=planned_common_columns,
+    desired_residual_columns=planned_residual_columns
+)
+print("PREREGISTERED_FINAL_DECOMPOSITION_TESTS",
+      json.dumps(final_decomposition_plan))
+
+metrics27, absolute27 = stage_columns(
+    "model.language_model.layers.15.mlp.down_proj.weight",
+    selected22[energy_component],
+    absolute22[:, energy_component],
+    "r27_mlp15_high_energy_three",
+    {
+        "reference": "r22_mlp15_orthogonal_component_remove",
+        "operation": "Exact round-22 BF16 column edit restricted to three highest individual-write-energy channels.",
+        "construction": "Independent reconstruction from W0; all other channels restored.",
+        "prediction_source": "/work/r27_r30_decomposition_plan.json",
+        "dose_note": "Native component magnitude; not norm-matched.",
+        "paired_control": "r28_mlp15_energy_complement"
+    }
+)
+assert np.array_equal(absolute27, absolute22[:, energy_component])
+print("EXACT_COMPONENT_CHECK", json.dumps({
+    "channels": selected22[energy_component].tolist(),
+    "columns_identical_to_round22": True,
+    "complement_count": int(len(energy_complement))
+}))
+```

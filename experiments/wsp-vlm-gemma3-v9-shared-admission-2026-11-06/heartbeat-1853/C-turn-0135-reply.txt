@@ -1,0 +1,75 @@
+The harness now selects round 28 as best. I will inspect its complete results and the partition comparison, then stage the already-registered round 29. Its target remains round 22’s common-input component—not a redesign around the new winner—with a prediction of at least six reference repairs and positive net visual correctness.
+
+```python
+cid28, r28 = review_eval("turn-0134", "r28_mlp15_energy_complement")
+repairs28 = {x["id"] for x in r28["changes"] if x["effect"] == "repair"}
+damages28 = {x["id"] for x in r28["changes"] if x["effect"] == "damage"}
+retained28 = sorted(reference_ids & repairs28)
+check28 = {
+    "prediction_source": "/work/r27_r30_decomposition_plan.json",
+    "candidate": cid28,
+    "retained_reference_repairs": retained28,
+    "retained_count": len(retained28),
+    "net_counterfact_visual_correctness": int(
+        r28["conditions"]["counterfact_visual"] - baseline_cv
+    ),
+    "criterion_met": len(retained28) < 6,
+    "captured_baseline_failure_repairs": sorted(set(failids) & repairs28)
+}
+Path("/work/r28_energy_complement_check.json").write_text(
+    json.dumps(check28, indent=2)
+)
+print("COMPLEMENT_PREDICTION_CHECK", json.dumps(check28))
+
+partition_behavior = {
+    "reference_repairs_in_both_components": sorted(
+        reference_ids & repairs27 & repairs28
+    ),
+    "reference_repairs_in_three_channel_only": sorted(
+        (reference_ids & repairs27) - repairs28
+    ),
+    "reference_repairs_in_complement_only": sorted(
+        (reference_ids & repairs28) - repairs27
+    ),
+    "reference_repairs_in_neither_component": sorted(
+        reference_ids - repairs27 - repairs28
+    ),
+    "round22_repairs_retained_by_complement": sorted(repairs22 & repairs28),
+    "complement_only_repairs_relative_to_round22": sorted(repairs28 - repairs22),
+    "round22_damages_retained_by_complement": sorted(damages22 & damages28),
+    "round22_damages_avoided_by_complement": sorted(damages22 - damages28),
+    "complement_only_damages_relative_to_round22": sorted(damages28 - damages22),
+    "limitation": (
+        "Exact disjoint weight partition but descriptive development outcomes. "
+        "Different native doses and cached-versus-fresh discrepancies limit "
+        "claims about nonlinear interactions or uniquely causal channels."
+    )
+}
+Path("/work/r27_r28_partition_behavior.json").write_text(
+    json.dumps(partition_behavior, indent=2)
+)
+print("PARTITION_BEHAVIOR", json.dumps(partition_behavior))
+
+metrics29, absolute29 = stage_columns(
+    "model.language_model.layers.15.mlp.down_proj.weight",
+    selected22,
+    original22 + delta_mean_input,
+    "r29_mlp15_common_input_component",
+    {
+        "reference": "r22_mlp15_orthogonal_component_remove",
+        "operation": "Apply the rank-one common-input component (Dq)q^T of the effective round-22 patch.",
+        "construction": "Independent W0 reconstruction, not cumulative on round 28.",
+        "prediction_source": "/work/r27_r30_decomposition_plan.json",
+        "input_direction_source": "Normalized mean of 96 previously recorded selected-channel last-prompt inputs.",
+        "dose_note": "Native component magnitude; static edit applies at every token.",
+        "paired_control": "r30_mlp15_residual_input_component"
+    }
+)
+assert np.array_equal(absolute29, planned_common_columns)
+print("REGISTERED_PATCH_MATCH", json.dumps({
+    "round": 29,
+    "matches_columns_fixed_before_round27": True,
+    "reference_candidate": cid22,
+    "remaining_candidates_including_staged": 2
+}))
+```

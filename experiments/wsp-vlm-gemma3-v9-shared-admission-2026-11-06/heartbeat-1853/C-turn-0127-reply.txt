@@ -1,0 +1,104 @@
+```python
+# Compare all seven paired captures before interpreting the large residual changes.
+# Prediction: equal MLP inputs, with a small raw write change followed by a
+# larger post-normalization change. This selected audit is not an efficacy test.
+import json
+import numpy as np
+from pathlib import Path
+
+norm_w0 = measurement_rows("turn-0125")
+norm_r22 = measurement_rows("turn-0126")
+assert set(norm_w0) == set(norm_r22) == set(norm_probe_ids)
+
+def norm_capture(row, where):
+    matches = [
+        c for c in row["captures"]
+        if c["module"] == "model.language_model.layers.15.post_feedforward_layernorm"
+        and c["where"] == where
+    ]
+    assert len(matches) == 1
+    assert matches[0]["token_positions"] == [290]
+    return np.load(
+        Path(ARTIFACTS) / matches[0]["array_file"], allow_pickle=False
+    ).astype(np.float64).reshape(-1)
+
+def vector_cosine(x, y):
+    denominator = np.linalg.norm(x) * np.linalg.norm(y)
+    return float(np.dot(x, y) / denominator) if denominator else None
+
+normalization_audit = []
+for rid in norm_probe_ids:
+    b, e = norm_w0[rid], norm_r22[rid]
+    assert b["candidate"] == "w0-a8a8df63cbfe2a4bfa07bf8ace8660b3758297bf43daf2025fe2f98cb562fc5f"
+    assert e["candidate"] == "c-d973e57d57effa31b57ed6b15387931d0505a6e251fd1e089e1e1bd3a71301be"
+    a0 = captured(b, 15, "a").astype(np.float64)
+    a1 = captured(e, 15, "a").astype(np.float64)
+    x0, x1 = norm_capture(b, "input"), norm_capture(e, "input")
+    y0, y1 = norm_capture(b, "output"), norm_capture(e, "output")
+    h0 = captured(b, 15, "h").astype(np.float64)
+    h1 = captured(e, 15, "h").astype(np.float64)
+    dx, dy, dh = x1 - x0, y1 - y0, h1 - h0
+    predicted = delta22.astype(np.float64) @ a0[selected22]
+    equal_inputs = bool(np.array_equal(a0, a1))
+    normalization_audit.append({
+        "id": rid,
+        "equal_prompt_hashes": all(
+            b[k] == e[k] for k in [
+                "input_ids_sha256", "rendered_chat_sha256",
+                "token_type_ids_sha256"
+            ]
+        ),
+        "equal_mlp_inputs": equal_inputs,
+        "predicted_raw_delta_norm": float(np.linalg.norm(predicted)),
+        "measured_raw_delta_norm": float(np.linalg.norm(dx)),
+        "raw_delta_cosine": vector_cosine(predicted, dx) if equal_inputs else None,
+        "raw_delta_relative_error": (
+            float(np.linalg.norm(dx - predicted) / np.linalg.norm(predicted))
+            if equal_inputs else None
+        ),
+        "normalization_input_norms": [
+            float(np.linalg.norm(x0)), float(np.linalg.norm(x1))
+        ],
+        "normalization_output_norms": [
+            float(np.linalg.norm(y0)), float(np.linalg.norm(y1))
+        ],
+        "normalization_output_delta_norm": float(np.linalg.norm(dy)),
+        "normalization_delta_gain": float(np.linalg.norm(dy) / np.linalg.norm(dx)),
+        "residual_delta_norm": float(np.linalg.norm(dh)),
+        "normalization_vs_residual_delta_cosine": vector_cosine(dy, dh),
+        "residual_minus_normalization_delta_norm": float(np.linalg.norm(dh - dy)),
+        "fresh_W0": b["diagnostic_generation"]["text"],
+        "fresh_R22": e["diagnostic_generation"]["text"]
+    })
+
+normalization_weight = np.asarray(
+    load_original("model.language_model.layers.15.post_feedforward_layernorm.weight"),
+    dtype=np.float64
+)
+normalization_report = {
+    "measurement_actions": ["turn-0125", "turn-0126"],
+    "candidate": norm_r22[norm_probe_ids[0]]["candidate"],
+    "n": len(normalization_audit),
+    "learned_norm_weight_statistics": {
+        "shape": list(normalization_weight.shape),
+        "min": float(normalization_weight.min()),
+        "median": float(np.median(normalization_weight)),
+        "max": float(normalization_weight.max())
+    },
+    "rows": normalization_audit,
+    "limitations": (
+        "Seven previously selected development requests at the last prompt token. "
+        "Raw linear predictions omit execution rounding. Measured normalization "
+        "and residual changes do not establish which change mediates an answer."
+    )
+}
+Path("/work/r22_normalization_audit.json").write_text(
+    json.dumps(normalization_report, indent=2)
+)
+print("NORMALIZATION_AUDIT", json.dumps(normalization_report))
+print("CACHED_PREDICTION_SCHEMA", json.dumps({
+    "W0": sorted(preds0[norm_probe_ids[0]].keys()),
+    "R22": sorted(p22[norm_probe_ids[0]].keys())
+}))
+print("REMAINING_PLAN: Four independently reconstructed decomposition candidates, rounds 27–30; no new candidate staged in this audit.")
+```

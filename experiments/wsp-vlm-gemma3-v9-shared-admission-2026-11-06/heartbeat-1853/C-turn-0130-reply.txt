@@ -1,0 +1,27 @@
+Round 27 changes 7,675 scalars and exactly preserves round 22’s edits on the three selected channels. I will commit this localization test; the preregistered prediction is at least six of nine reference repairs with positive net counterfactual-visual correctness.
+
+```forward
+{
+  "op": "commit",
+  "parent": "c-006b4912e8447781a5c96725e3e95951f6dcf14783af6b54cd8f33b0af82e46c",
+  "rationale": "Round 27: test whether three channels accounting for half the summed individual write energy suffice for the round-22 repair pattern, using their exact BF16 edits and independently reconstructing all other weights from W0.",
+  "evidence": {
+    "failure_behavior": "Counterfactual-visual requests can produce the usual-size object rather than the visually larger object; the broader layer-15 edit repairs some requests but damages others.",
+    "component_hypothesis": "Channels 9541, 2486, and 5848 account for 51.43% of summed individual write energy on 96 recorded inputs and may carry most of the reference repair effect. This statistic excludes interference and is not itself causal evidence.",
+    "expected_change": "Retain at least six of the nine reference counterfactual-visual repairs registered in turn-0129, with positive net counterfactual-visual correctness relative to official W0.",
+    "dose": "Exact round-22 effective BF16 edits on three columns only: 7,675 changed scalars, L2 approximately 0.478766. Native component magnitude, not norm-matched.",
+    "control_plan": "Compare against W0, full round-22 removal, and the preregistered disjoint 61-channel complement in round 28. Preserve all damages and protection failures.",
+    "contrast_ids": [
+      "C-125:counterfact_visual:T1:O1:B0",
+      "C-455:counterfact_visual:T1:O0:B0"
+    ],
+    "measurement_actions": [
+      "turn-0011",
+      "turn-0013",
+      "turn-0125",
+      "turn-0126"
+    ],
+    "role": "diagnostic"
+  }
+}
+```
