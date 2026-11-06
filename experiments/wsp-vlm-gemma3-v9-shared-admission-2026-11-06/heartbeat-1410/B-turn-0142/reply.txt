@@ -1,0 +1,48 @@
+I’ll compare the edited captures directly with W0, separating verified state changes from any answer changes.
+
+```python
+a141 = json.loads((Path(ARTIFACTS) / "turn-0141.json").read_text())
+m141 = a141.get("value", a141)["results"]
+by141 = {r["request_id"]: r for r in m141}
+ordered141 = [by141[rid] for rid in balanced_ids]
+A141 = capture_matrix(ordered141, "model.language_model.layers.33.mlp.down_proj")
+H141 = capture_matrix(ordered141, "model.language_model.layers.33")
+movement141 = H141.astype(np.float64) - H130.astype(np.float64)
+effective27 = bf16_round(gain33_w0[coords26] + 4 * delta26) - gain33_w0[coords26]
+predicted27 = np.zeros_like(movement141)
+predicted27[:, coords26] = z26[:, coords26] * effective27
+outside26 = np.ones(2560, dtype=bool)
+outside26[coords26] = False
+behavior141 = []
+for rid in balanced_ids:
+    before = by130[rid]["diagnostic_generation"]
+    after = by141[rid]["diagnostic_generation"]
+    behavior141.append({
+        "id": rid, "gold": records[rid]["gold"]["answer"],
+        "W0_diagnostic": before["text"], "edited_diagnostic": after["text"],
+        "edited_official": pred27[rid]["text"],
+        "correct": bool(exact_count(after["text"], records[rid]["gold"]["answer"])),
+        "same_input_hash": before["input_ids_sha256"] == after["input_ids_sha256"],
+        "same_chat_hash": before["rendered_chat_sha256"] == after["rendered_chat_sha256"]
+    })
+check27 = {
+    "candidate": eval27["candidate"],
+    "measurement_action": "turn-0141", "W0_reference": "turn-0130",
+    "MLP_inputs_exactly_equal": bool(np.array_equal(A141, A130)),
+    "maximum_change_outside_edited_gain_coordinates": float(np.max(np.abs(movement141[:, outside26]))),
+    "changed_residual_coordinates_by_input": np.count_nonzero(movement141, axis=1).tolist(),
+    "mean_target_movement": float(np.linalg.norm(movement141[vf], axis=1).mean()),
+    "mean_control_movement": float(np.linalg.norm(movement141[vc], axis=1).mean()),
+    "local_vs_measured_target_cosines": [float(unit(predicted27[j]).dot(unit(movement141[j]))) for j in vf],
+    "target_residual_error_reductions": (1 - np.linalg.norm(targets26 - movement141[vf], axis=1) / np.linalg.norm(targets26, axis=1)).tolist(),
+    "behavior": behavior141,
+    "limitation": "Changing residual coordinates does not establish a counting mechanism or successful repair."
+}
+(work / "round_27_measured_residual_check.json").write_text(json.dumps(check27, indent=2))
+print("MEASURED ROUND 27:", json.dumps({k: v for k, v in check27.items() if k != "behavior"}))
+print("DIAGNOSTIC ANSWER CHANGES:", json.dumps([r for r in behavior141 if r["W0_diagnostic"] != r["edited_diagnostic"]]))
+print("OFFICIAL/DIAGNOSTIC DIFFERENCES:", json.dumps([r for r in behavior141 if r["edited_official"] != r["edited_diagnostic"]]))
+target_ids26 = {balanced_ids[j] for j in vf}
+print("SEVEN TARGETS:", json.dumps([r for r in behavior141 if r["id"] in target_ids26]))
+print("STAGED ROUND 28:", edited())
+```

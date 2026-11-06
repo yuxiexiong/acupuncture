@@ -1,0 +1,121 @@
+The diagnostic returned standard layer captures, not the requested gain captures. I’ll therefore label the gain-input reconstruction as approximate, predefine all five tests, and reserve behavioral claims for evaluation and reproduction.
+
+```python
+a130 = json.loads((Path(ARTIFACTS) / "turn-0130.json").read_text())
+m130 = a130.get("value", a130)["results"]
+by130 = {r["request_id"]: r for r in m130}
+ordered130 = [by130[rid] for rid in balanced_ids]
+A130 = capture_matrix(ordered130, "model.language_model.layers.33.mlp.down_proj")
+H130 = capture_matrix(ordered130, "model.language_model.layers.33")
+check130 = {
+    "returned_modules": sorted({c["module"] for r in m130 for c in r["captures"]}),
+    "MLP_inputs_equal_to_action41": bool(np.array_equal(A130, A41[33])),
+    "residuals_equal_to_action41": bool(np.array_equal(H130, H41[33])),
+    "generation_changes_from_live_W0": [
+        {"id": rid, "before": live68[rid]["text"],
+         "now": by130[rid]["diagnostic_generation"]["text"]}
+        for rid in balanced_ids
+        if live68[rid]["text"] != by130[rid]["diagnostic_generation"]["text"]
+    ]
+}
+print("W0 RECHECK:", json.dumps(check130))
+(work / "w0_recheck_130.json").write_text(json.dumps(check130, indent=2))
+
+z26 = late_raw / np.sqrt(np.mean(late_raw ** 2, axis=1, keepdims=True) + 1e-6)
+targets26 = verified_changes(H130).astype(np.float64)
+gain33_norm = float(np.linalg.norm(gain33_w0.astype(np.float64)))
+
+def fit_sparse_block_gain(train_pairs, controls):
+    train_pairs = np.asarray(train_pairs, dtype=np.int64)
+    x = z26[np.asarray(vf)[train_pairs]]
+    numerator = np.mean(x * targets26[train_pairs], axis=0)
+    denominator = np.mean(x ** 2, axis=0) + np.mean(z26[controls] ** 2, axis=0) + 1e-6
+    coords = np.argsort(-(numerator ** 2 / denominator))[:256]
+    delta = numerator[coords] / denominator[coords]
+    bound = 0.2 * np.abs(1.0 + gain33_w0[coords].astype(np.float64))
+    delta = np.clip(delta, -bound, bound)
+    delta *= min(1.0, 0.02 * gain33_norm / max(float(np.linalg.norm(delta)), 1e-12))
+    return coords, delta.astype(np.float32)
+
+coords26, delta26 = fit_sparse_block_gain(np.arange(len(vf)), vc)
+effective26 = bf16_round(gain33_w0[coords26] + delta26) - gain33_w0[coords26]
+movement26 = np.zeros_like(H130, dtype=np.float64)
+movement26[:, coords26] = z26[:, coords26] * effective26
+loo26 = []
+for i in range(len(vf)):
+    train = np.delete(np.arange(len(vf)), i)
+    controls = np.asarray([j for j in vc if j not in (vf[i], vs[i])], dtype=np.int64)
+    coords, delta = fit_sparse_block_gain(train, controls)
+    effective = bf16_round(gain33_w0[coords] + delta) - gain33_w0[coords]
+    movement = np.zeros(2560, dtype=np.float64)
+    movement[coords] = z26[vf[i], coords] * effective
+    loo26.append(float(1 - np.linalg.norm(targets26[i] - movement) / np.linalg.norm(targets26[i])))
+
+rng29 = np.random.default_rng(20261113)
+permutation29 = np.arange(len(coords26))
+gain_order26 = np.argsort(np.abs(1.0 + gain33_w0[coords26]))
+for block in np.array_split(gain_order26, 16):
+    cycle = rng29.permutation(block)
+    permutation29[cycle] = np.roll(cycle, 1)
+assert np.all(permutation29 != np.arange(len(coords26)))
+delta29 = (4 * delta26)[permutation29]
+
+rms26 = np.sqrt(np.mean(z26[np.concatenate([vf, vc])] ** 2, axis=0) + 1e-12)
+rng30 = np.random.default_rng(20261114)
+available30 = np.ones(2560, dtype=bool)
+available30[coords26] = False
+matched_coords30 = []
+for source in coords26:
+    cost = np.log((1 + gain33_w0) / (1 + gain33_w0[source])) ** 2
+    cost = cost.astype(np.float64) + np.log(rms26 / rms26[source]) ** 2
+    cost[~available30] = np.inf
+    target = int(rng30.choice(np.argsort(cost)[:8]))
+    matched_coords30.append(target)
+    available30[target] = False
+matched_coords30 = np.asarray(matched_coords30, dtype=np.int64)
+assert not set(coords26).intersection(matched_coords30)
+
+gain_plan26 = {
+    "parameter": gain33_name,
+    "arithmetic_base": W0_ID,
+    "hypothesis": "Sparse final-block branch gains may produce more direct residual corrections than raw MLP write edits constrained by subsequent RMS normalization.",
+    "supervision": "Seven verified failed/successful wording pairs; twenty live-correct controls.",
+    "fitting": "Coordinatewise least squares with equal mean failure and preservation losses, ridge 1e-6, top 256 predicted-loss-reduction coordinates.",
+    "dose_rule": "Base offsets clipped to 20% of original effective gain and at most 2% original parameter norm; stronger test multiplies the fixed offsets by four.",
+    "rounds": {
+        "26": "Targeted base dose",
+        "27": "Fourfold targeted dose",
+        "28": "Opposite sign of the fourfold targeted dose",
+        "29": "Fourfold offsets deranged within 16 original-gain strata, seed 20261113",
+        "30": "Identical fourfold offsets on disjoint gain/RMS-matched coordinates, seed 20261114"
+    },
+    "evaluation": "Full development evaluation for each distinct nonzero candidate; reproduce any apparent target repair on the unchanged diagnostic path.",
+    "limitations": [
+        "Gain inputs reconstructed from saved MLP inputs and original weights; requested direct gain captures were not returned.",
+        "This is a supervised local fit, not independent evidence for a counting mechanism.",
+        "Cached evaluation and diagnostic generation discrepancies remain unresolved."
+    ]
+}
+fit26 = {
+    "selected_coordinates": len(coords26),
+    "effective_base_support": int(np.count_nonzero(effective26)),
+    "effective_base_norm": float(np.linalg.norm(effective26.astype(np.float64))),
+    "original_parameter_norm": gain33_norm,
+    "in_fit_error_reductions": (1 - np.linalg.norm(targets26 - movement26[vf], axis=1) / np.linalg.norm(targets26, axis=1)).tolist(),
+    "held_out_pair_error_reductions": loo26,
+    "mean_target_movement": float(np.linalg.norm(movement26[vf], axis=1).mean()),
+    "mean_control_movement": float(np.linalg.norm(movement26[vc], axis=1).mean()),
+    "permutation_update_cosine": float(unit(delta26).dot(unit(delta29))),
+    "matched_gain_ratio_median": float(np.median((1 + gain33_w0[matched_coords30]) / (1 + gain33_w0[coords26]))),
+    "matched_input_RMS_ratio_median": float(np.median(rms26[matched_coords30] / rms26[coords26]))
+}
+np.savez(work / "late_block_gain_fit.npz", coordinates=coords26, delta=delta26,
+         target_residual_changes=targets26, approximate_normalized_inputs=z26,
+         permutation=permutation29, permuted_delta=delta29, matched_coordinates=matched_coords30)
+(work / "late_block_gain_control_plan.json").write_text(json.dumps(gain_plan26, indent=2))
+(work / "late_block_gain_fit_diagnostics.json").write_text(json.dumps(fit26, indent=2))
+print("LOCAL FIT:", json.dumps(fit26))
+print("PREDECLARED PLAN:", json.dumps(gain_plan26))
+print("STAGING HELPER ARGUMENTS:", stage_vector_delta.__code__.co_varnames[:stage_vector_delta.__code__.co_argcount])
+print("STAGED:", edited())
+```

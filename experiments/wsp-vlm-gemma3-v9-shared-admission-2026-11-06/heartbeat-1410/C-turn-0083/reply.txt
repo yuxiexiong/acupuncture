@@ -1,0 +1,56 @@
+I’ll inspect the complementary component and then revisit the mid-layer MLP hypothesis. Layer 15 had a more consistent controlled activation contrast than layer 26, but that association still needs a causal test.
+
+```python
+cid16, r16 = review_eval("turn-0082", "r16_attn10_head7_complement")
+if len(r16["changes"]) > 40:
+    print("REMAINING_CHANGES", json.dumps(r16["changes"][40:]))
+retained16 = sorted(target_repairs.intersection(
+    c["id"] for c in r16["changes"] if c["effect"] == "repair"
+))
+damage16 = [
+    c["id"] for c in r16["changes"]
+    if c["effect"] == "damage" and ":counterfact_visual:" in c["id"]
+]
+print("COMPLEMENT_PREDICTION_CHECK", {
+    "retained_reference_repairs": retained16,
+    "counterfact_visual_damage": damage16,
+    "criterion_met": len(retained16) >= 3 and not damage16
+})
+
+plan15 = projection_plans[15]
+R15 = (
+    grouped_diffs(15, "a", "counterfact_visual")
+    - 0.5 * (
+        grouped_diffs(15, "a", "original_visual")
+        + grouped_diffs(15, "a", "counterfact_usual")
+    )
+)
+sel15 = np.asarray(plan15["selected"], dtype=np.int64)
+p15 = plan15["p"][sel15]
+groups15 = {
+    "counterfact_visual_failures": failids,
+    "counterfact_visual_successes": succids,
+    "original_visual_controls": [rid for rid in controlids if ":original_visual:" in rid],
+    "counterfact_usual_controls": [rid for rid in controlids if ":counterfact_usual:" in rid]
+}
+write_stats15 = {}
+for label, ids in groups15.items():
+    values = np.stack([vec(rid, 15, "a")[sel15] for rid in ids]) @ p15
+    write_stats15[label] = {
+        "n": len(ids), "mean": float(values.mean()),
+        "min": float(values.min()), "max": float(values.max())
+    }
+audit15 = {
+    "layer": 15,
+    "group_leave_one_out_cosines": [
+        cos(R15[i], np.mean(np.delete(R15, i, axis=0), axis=0))
+        for i in range(len(R15))
+    ],
+    "selected_controlled_projection_by_group": (R15[:, sel15] @ p15).tolist(),
+    "selected_directional_write": write_stats15,
+    "unit_dose_intended_norm": float(np.linalg.norm(p15)),
+    "selection_limitation": "Direction and channel ranking use outcomes and contrasts from seen development examples; not held-out validation."
+}
+print("MLP15_PREINTERVENTION_AUDIT", json.dumps(audit15))
+Path("/work/mlp15_preintervention_audit.json").write_text(json.dumps(audit15, indent=2))
+```

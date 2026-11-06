@@ -1,0 +1,447 @@
+{
+  "B": {
+    "status": {
+      "broker_pid": 2245011,
+      "pid": 57718,
+      "stage": "running",
+      "time_unix": 1793936284.880117
+    },
+    "astra_elapsed": 1268.0970880460227,
+    "ops": {
+      "commit": 4.234861159697175,
+      "evaluate": 397.975612051785,
+      "python": 1.8053291477262974,
+      "diagnose": 26.02109512872994,
+      "checkout": 0.0023417342454195023
+    },
+    "tool_wait": 102.3855709489435,
+    "start_turn": 125,
+    "replies": [
+      {
+        "turn": 125,
+        "text": "The correspondence control repaired no targets. The fixed-column implementation exactly reproduces the original fit, so I’ll commit the matched-column control as round 25.\n\n```forward\n{\"op\":\"commit\",\"parent\":\"c-589644f45f380ff6e94113f8a53bd6f747b4ae9fd83ef493da0164ea43cff0fe\",\"rationale\":\"Round 25: preselected disjoint matched-column control for the conditional layer-33 MLP correction.\",\"evidence\":{\"role\":\"control\",\"failure_behavior\":\"The seven reproduced counting failures persist after the targeted, opposite-sign, and target-permuted late-write interventions.\",\"component_hypothesis\":\"Any selective benefit attributed to the selected MLP input features should exceed that obtained from disjoint columns matched on weight norm and activation RMS.\",\"measurement_actions\":[\"turn-0041\",\"turn-0068\"],\"contrast_ids\":[\"B-488899:subset:T0:B0\",\"B-545810:subset:T0:B0\",\"B-184083:subset:T0:B0\",\"B-188190:subset:T0:B0\",\"B-9232:subset:T0:B1\",\"B-326194:subset:T1:B1\",\"B-129884:total:T1:B0\"],\"dose\":\"Approximately 8% original tensor Frobenius norm; effective delta norm 3.3188605832658653 on 311106 BF16 scalars.\",\"expected_change\":\"Matched alternative features should not reproduce a selective effect that genuinely depends on the targeted feature selection.\",\"control_plan\":\"Columns fixed before round-21 evaluation using seed 20261112; median matched/targeted weight-norm ratio 1.00454 and activation-RMS ratio 1.00367. Same targets, controls, ridge coefficient, and norm budget; evaluate all development inputs.\"}}\n```"
+      },
+      {
+        "turn": 126,
+        "text": "Round 25 is committed. I’ll evaluate the matched-column control on all 464 development inputs before interpreting its effects.\n\n```forward\n{\"op\":\"evaluate\",\"candidate\":\"c-de828d06a785aecb5a7746ec583804f76ecd1219d7eda3b71c04ad66b35ed196\"}\n```"
+      },
+      {
+        "turn": 127,
+        "text": "I’ll inspect round 25’s full results and recover the documented diagnostic interface before designing the remaining five tests.\n\n```python\neval25, pred25, score25 = inspect_reproduced_round(\"turn-0126\", 25)\nprint(\"PUBLIC EVIDENCE FILES:\", sorted(p.name for p in Path(EVIDENCE).iterdir()))\nprint(\"BUNDLE FILES:\", bundle[\"files\"])\nprint(\"SAVED REQUEST VARIABLES:\", sorted(k for k in globals() if any(s in k.lower() for s in (\"spec\", \"request\", \"clarif\"))))\na43 = json.loads((Path(ARTIFACTS) / \"turn-0043.json\").read_text())\nprint(\"ARTIFACT 43 KEYS:\", list(a43))\nprint(\"CATALOG TYPE:\", type(cat).__name__)\nprint(\"CATALOG PREVIEW:\", str(cat)[:3000])\nprint(\"CLARIFICATION REVIEW:\", json.dumps(clarification_review, ensure_ascii=False)[:12000])\nprint(\"STAGED:\", edited())\n```"
+      },
+      {
+        "turn": 128,
+        "text": "Round 25 repaired no examples relative to the cached baseline. The output preview hid the interface details, so I’ll retrieve only those omitted sections.\n\n```python\na127 = json.loads((Path(ARTIFACTS) / \"turn-0127.json\").read_text())\nout127 = a127.get(\"value\", a127)[\"output\"]\nprint(out127.split(\"SAVED REQUEST VARIABLES:\", 1)[1])\n```"
+      },
+      {
+        "turn": 129,
+        "text": "The late-write edits moved internal states without repairing the verified targets. I’ll test sparse gains inside decoder block 33—not the model’s final normalization—with dose and matched controls, first checking the available capture configuration.\n\n```python\nprint(\"SAVED SPEC VARIABLES:\", spec_variables)\na42 = json.loads((Path(ARTIFACTS) / \"turn-0042.json\").read_text())\nv42 = a42.get(\"value\", a42)\nprint(\"ACTION 42 KEYS:\", list(v42))\nprint(\"ACTION 42 OUTPUT:\", v42.get(\"output\", \"\")[-10000:])\n\ngain33_name = \"language_model.model.layers.33.post_feedforward_layernorm.weight\"\ngain33_w0 = np.asarray(load_original(gain33_name), dtype=np.float32)\nprint(\"BLOCK-GAIN CATALOG:\", cat[gain33_name])\nprint(\"BLOCK-GAIN STATISTICS:\", json.dumps({\n    \"shape\": list(gain33_w0.shape),\n    \"norm\": float(np.linalg.norm(gain33_w0.astype(np.float64))),\n    \"minimum\": float(gain33_w0.min()),\n    \"maximum\": float(gain33_w0.max()),\n    \"distinct_from_final_model_norm\": gain33_name != \"language_model.model.norm.weight\"\n}))\nprint(\"STAGED:\", edited())\n```"
+      },
+      {
+        "turn": 130,
+        "text": "The block-33 gain vector is editable. I’ll request its actual input and output activations at the last prompt token, then verify the returned captures before fitting an edit.\n\n```forward\n{\"op\":\"diagnose\",\"candidate\":\"w0-a8a8df63cbfe2a4bfa07bf8ace8660b3758297bf43daf2025fe2f98cb562fc5f\",\"ids\":[\"B-488899:subset:T0:B0\",\"B-488899:subset:T1:B0\",\"B-418025:subset:T1:B0\",\"B-418025:subset:T0:B0\",\"B-545810:subset:T0:B0\",\"B-545810:subset:T1:B0\",\"B-184083:subset:T0:B0\",\"B-184083:subset:T1:B0\",\"B-188190:subset:T0:B0\",\"B-188190:subset:T1:B0\",\"B-9232:subset:T0:B1\",\"B-9232:subset:T1:B1\",\"B-326194:subset:T1:B1\",\"B-326194:subset:T0:B1\",\"B-129884:total:T1:B0\",\"B-129884:total:T0:B0\",\"B-397001:subset:T0:B0\",\"B-397001:subset:T1:B0\",\"B-485772:subset:T0:B0\",\"B-485772:subset:T1:B0\",\"B-1459:subset:T0:B0\",\"B-1459:subset:T1:B0\",\"B-4505:subset:T0:B0\",\"B-4505:subset:T1:B0\",\"B-454010:subset:T0:B0\",\"B-454010:subset:T1:B0\",\"B-568699:total:T0:B0\",\"B-568699:total:T1:B0\"],\"spec\":{\"layers\":[33],\"token_positions\":\"last_prompt\",\"captures\":[{\"module\":\"model.language_model.layers.33.post_feedforward_layernorm\",\"where\":\"input\",\"path\":[0],\"token_positions\":\"last_prompt\"},{\"module\":\"model.language_model.layers.33.post_feedforward_layernorm\",\"where\":\"output\",\"path\":[],\"token_positions\":\"last_prompt\"}]}}\n```"
+      },
+      {
+        "turn": 131,
+        "text": "The diagnostic returned standard layer captures, not the requested gain captures. I’ll therefore label the gain-input reconstruction as approximate, predefine all five tests, and reserve behavioral claims for evaluation and reproduction.\n\n```python\na130 = json.loads((Path(ARTIFACTS) / \"turn-0130.json\").read_text())\nm130 = a130.get(\"value\", a130)[\"results\"]\nby130 = {r[\"request_id\"]: r for r in m130}\nordered130 = [by130[rid] for rid in balanced_ids]\nA130 = capture_matrix(ordered130, \"model.language_model.layers.33.mlp.down_proj\")\nH130 = capture_matrix(ordered130, \"model.language_model.layers.33\")\ncheck130 = {\n    \"returned_modules\": sorted({c[\"module\"] for r in m130 for c in r[\"captures\"]}),\n    \"MLP_inputs_equal_to_action41\": bool(np.array_equal(A130, A41[33])),\n    \"residuals_equal_to_action41\": bool(np.array_equal(H130, H41[33])),\n    \"generation_changes_from_live_W0\": [\n        {\"id\": rid, \"before\": live68[rid][\"text\"],\n         \"now\": by130[rid][\"diagnostic_generation\"][\"text\"]}\n        for rid in balanced_ids\n        if live68[rid][\"text\"] != by130[rid][\"diagnostic_generation\"][\"text\"]\n    ]\n}\nprint(\"W0 RECHECK:\", json.dumps(check130))\n(work / \"w0_recheck_130.json\").write_text(json.dumps(check130, indent=2))\n\nz26 = late_raw / np.sqrt(np.mean(late_raw ** 2, axis=1, keepdims=True) + 1e-6)\ntargets26 = verified_changes(H130).astype(np.float64)\ngain33_norm = float(np.linalg.norm(gain33_w0.astype(np.float64)))\n\ndef fit_sparse_block_gain(train_pairs, controls):\n    train_pairs = np.asarray(train_pairs, dtype=np.int64)\n    x = z26[np.asarray(vf)[train_pairs]]\n    numerator = np.mean(x * targets26[train_pairs], axis=0)\n    denominator = np.mean(x ** 2, axis=0) + np.mean(z26[controls] ** 2, axis=0) + 1e-6\n    coords = np.argsort(-(numerator ** 2 / denominator))[:256]\n    delta = numerator[coords] / denominator[coords]\n    bound = 0.2 * np.abs(1.0 + gain33_w0[coords].astype(np.float64))\n    delta = np.clip(delta, -bound, bound)\n    delta *= min(1.0, 0.02 * gain33_norm / max(float(np.linalg.norm(delta)), 1e-12))\n    return coords, delta.astype(np.float32)\n\ncoords26, delta26 = fit_sparse_block_gain(np.arange(len(vf)), vc)\neffective26 = bf16_round(gain33_w0[coords26] + delta26) - gain33_w0[coords26]\nmovement26 = np.zeros_like(H130, dtype=np.float64)\nmovement26[:, coords26] = z26[:, coords26] * effective26\nloo26 = []\nfor i in range(len(vf)):\n    train = np.delete(np.arange(len(vf)), i)\n    controls = np.asarray([j for j in vc if j not in (vf[i], vs[i])], dtype=np.int64)\n    coords, delta = fit_sparse_block_gain(train, controls)\n    effective = bf16_round(gain33_w0[coords] + delta) - gain33_w0[coords]\n    movement = np.zeros(2560, dtype=np.float64)\n    movement[coords] = z26[vf[i], coords] * effective\n    loo26.append(float(1 - np.linalg.norm(targets26[i] - movement) / np.linalg.norm(targets26[i])))\n\nrng29 = np.random.default_rng(20261113)\npermutation29 = np.arange(len(coords26))\ngain_order26 = np.argsort(np.abs(1.0 + gain33_w0[coords26]))\nfor block in np.array_split(gain_order26, 16):\n    cycle = rng29.permutation(block)\n    permutation29[cycle] = np.roll(cycle, 1)\nassert np.all(permutation29 != np.arange(len(coords26)))\ndelta29 = (4 * delta26)[permutation29]\n\nrms26 = np.sqrt(np.mean(z26[np.concatenate([vf, vc])] ** 2, axis=0) + 1e-12)\nrng30 = np.random.default_rng(20261114)\navailable30 = np.ones(2560, dtype=bool)\navailable30[coords26] = False\nmatched_coords30 = []\nfor source in coords26:\n    cost = np.log((1 + gain33_w0) / (1 + gain33_w0[source])) ** 2\n    cost = cost.astype(np.float64) + np.log(rms26 / rms26[source]) ** 2\n    cost[~available30] = np.inf\n    target = int(rng30.choice(np.argsort(cost)[:8]))\n    matched_coords30.append(target)\n    available30[target] = False\nmatched_coords30 = np.asarray(matched_coords30, dtype=np.int64)\nassert not set(coords26).intersection(matched_coords30)\n\ngain_plan26 = {\n    \"parameter\": gain33_name,\n    \"arithmetic_base\": W0_ID,\n    \"hypothesis\": \"Sparse final-block branch gains may produce more direct residual corrections than raw MLP write edits constrained by subsequent RMS normalization.\",\n    \"supervision\": \"Seven verified failed/successful wording pairs; twenty live-correct controls.\",\n    \"fitting\": \"Coordinatewise least squares with equal mean failure and preservation losses, ridge 1e-6, top 256 predicted-loss-reduction coordinates.\",\n    \"dose_rule\": \"Base offsets clipped to 20% of original effective gain and at most 2% original parameter norm; stronger test multiplies the fixed offsets by four.\",\n    \"rounds\": {\n        \"26\": \"Targeted base dose\",\n        \"27\": \"Fourfold targeted dose\",\n        \"28\": \"Opposite sign of the fourfold targeted dose\",\n        \"29\": \"Fourfold offsets deranged within 16 original-gain strata, seed 20261113\",\n        \"30\": \"Identical fourfold offsets on disjoint gain/RMS-matched coordinates, seed 20261114\"\n    },\n    \"evaluation\": \"Full development evaluation for each distinct nonzero candidate; reproduce any apparent target repair on the unchanged diagnostic path.\",\n    \"limitations\": [\n        \"Gain inputs reconstructed from saved MLP inputs and original weights; requested direct gain captures were not returned.\",\n        \"This is a supervised local fit, not independent evidence for a counting mechanism.\",\n        \"Cached evaluation and diagnostic generation discrepancies remain unresolved.\"\n    ]\n}\nfit26 = {\n    \"selected_coordinates\": len(coords26),\n    \"effective_base_support\": int(np.count_nonzero(effective26)),\n    \"effective_base_norm\": float(np.linalg.norm(effective26.astype(np.float64))),\n    \"original_parameter_norm\": gain33_norm,\n    \"in_fit_error_reductions\": (1 - np.linalg.norm(targets26 - movement26[vf], axis=1) / np.linalg.norm(targets26, axis=1)).tolist(),\n    \"held_out_pair_error_reductions\": loo26,\n    \"mean_target_movement\": float(np.linalg.norm(movement26[vf], axis=1).mean()),\n    \"mean_control_movement\": float(np.linalg.norm(movement26[vc], axis=1).mean()),\n    \"permutation_update_cosine\": float(unit(delta26).dot(unit(delta29))),\n    \"matched_gain_ratio_median\": float(np.median((1 + gain33_w0[matched_coords30]) / (1 + gain33_w0[coords26]))),\n    \"matched_input_RMS_ratio_median\": float(np.median(rms26[matched_coords30] / rms26[coords26]))\n}\nnp.savez(work / \"late_block_gain_fit.npz\", coordinates=coords26, delta=delta26,\n         target_residual_changes=targets26, approximate_normalized_inputs=z26,\n         permutation=permutation29, permuted_delta=delta29, matched_coordinates=matched_coords30)\n(work / \"late_block_gain_control_plan.json\").write_text(json.dumps(gain_plan26, indent=2))\n(work / \"late_block_gain_fit_diagnostics.json\").write_text(json.dumps(fit26, indent=2))\nprint(\"LOCAL FIT:\", json.dumps(fit26))\nprint(\"PREDECLARED PLAN:\", json.dumps(gain_plan26))\nprint(\"STAGING HELPER ARGUMENTS:\", stage_vector_delta.__code__.co_varnames[:stage_vector_delta.__code__.co_argcount])\nprint(\"STAGED:\", edited())\n```"
+      },
+      {
+        "turn": 132,
+        "text": "The analysis failed on a wrapped baseline result; no edit was staged. I’ll read generation text from the saved diagnostic artifact and rerun the unchanged fit and control design.\n\n```python\na68 = json.loads((Path(ARTIFACTS) / \"turn-0068.json\").read_text())\nlive_text68 = {r[\"request_id\"]: r[\"diagnostic_generation\"][\"text\"]\n               for r in a68.get(\"value\", a68)[\"results\"]}\ncheck130 = {\n    \"returned_modules\": sorted({c[\"module\"] for r in m130 for c in r[\"captures\"]}),\n    \"MLP_inputs_equal_to_action41\": bool(np.array_equal(A130, A41[33])),\n    \"residuals_equal_to_action41\": bool(np.array_equal(H130, H41[33])),\n    \"generation_changes_from_live_W0\": [\n        {\"id\": rid, \"before\": live_text68[rid], \"now\": by130[rid][\"diagnostic_generation\"][\"text\"]}\n        for rid in balanced_ids if live_text68[rid] != by130[rid][\"diagnostic_generation\"][\"text\"]\n    ]\n}\nprint(\"W0 RECHECK:\", json.dumps(check130))\n(work / \"w0_recheck_130.json\").write_text(json.dumps(check130, indent=2))\n\nz26 = late_raw / np.sqrt(np.mean(late_raw ** 2, axis=1, keepdims=True) + 1e-6)\ntargets26 = verified_changes(H130).astype(np.float64)\ngain33_norm = float(np.linalg.norm(gain33_w0.astype(np.float64)))\n\ndef fit_sparse_block_gain(train_pairs, controls):\n    train_pairs = np.asarray(train_pairs, dtype=np.int64)\n    x = z26[np.asarray(vf)[train_pairs]]\n    numerator = np.mean(x * targets26[train_pairs], axis=0)\n    denominator = np.mean(x ** 2, axis=0) + np.mean(z26[controls] ** 2, axis=0) + 1e-6\n    coords = np.argsort(-(numerator ** 2 / denominator))[:256]\n    delta = numerator[coords] / denominator[coords]\n    bound = 0.2 * np.abs(1.0 + gain33_w0[coords].astype(np.float64))\n    delta = np.clip(delta, -bound, bound)\n    delta *= min(1.0, 0.02 * gain33_norm / max(float(np.linalg.norm(delta)), 1e-12))\n    return coords, delta.astype(np.float32)\n\ncoords26, delta26 = fit_sparse_block_gain(np.arange(len(vf)), vc)\neffective26 = bf16_round(gain33_w0[coords26] + delta26) - gain33_w0[coords26]\nmovement26 = np.zeros_like(H130, dtype=np.float64)\nmovement26[:, coords26] = z26[:, coords26] * effective26\nloo26 = []\nfor i in range(len(vf)):\n    controls = np.asarray([j for j in vc if j not in (vf[i], vs[i])], dtype=np.int64)\n    coords, delta = fit_sparse_block_gain(np.delete(np.arange(len(vf)), i), controls)\n    effective = bf16_round(gain33_w0[coords] + delta) - gain33_w0[coords]\n    movement = np.zeros(2560, dtype=np.float64)\n    movement[coords] = z26[vf[i], coords] * effective\n    loo26.append(float(1 - np.linalg.norm(targets26[i] - movement) / np.linalg.norm(targets26[i])))\n\nrng29 = np.random.default_rng(20261113)\npermutation29 = np.arange(len(coords26))\nfor block in np.array_split(np.argsort(np.abs(1.0 + gain33_w0[coords26])), 16):\n    cycle = rng29.permutation(block)\n    permutation29[cycle] = np.roll(cycle, 1)\nassert np.all(permutation29 != np.arange(len(coords26)))\ndelta29 = (4 * delta26)[permutation29]\n\nrms26 = np.sqrt(np.mean(z26[np.concatenate([vf, vc])] ** 2, axis=0) + 1e-12)\nrng30 = np.random.default_rng(20261114)\navailable30 = np.ones(2560, dtype=bool)\navailable30[coords26] = False\nmatched_coords30 = []\nfor source in coords26:\n    cost = np.log((1 + gain33_w0) / (1 + gain33_w0[source])).astype(np.float64) ** 2\n    cost += np.log(rms26 / rms26[source]) ** 2\n    cost[~available30] = np.inf\n    target = int(rng30.choice(np.argsort(cost)[:8]))\n    matched_coords30.append(target)\n    available30[target] = False\nmatched_coords30 = np.asarray(matched_coords30, dtype=np.int64)\nassert not set(coords26).intersection(matched_coords30)\n\ngain_plan26 = {\n    \"parameter\": gain33_name, \"arithmetic_base\": W0_ID,\n    \"hypothesis\": \"Sparse final-block branch gains may produce more direct residual corrections than raw MLP write edits constrained by subsequent RMS normalization.\",\n    \"supervision\": \"Seven verified failed/successful wording pairs and twenty live-correct controls.\",\n    \"fitting\": \"Coordinatewise least squares, equal mean failure and preservation losses, ridge 1e-6; top 256 predicted-loss-reduction coordinates.\",\n    \"dose_rule\": \"Base offsets clipped to 20% of original effective gain and at most 2% original parameter norm; stronger dose multiplies the fixed offsets by four.\",\n    \"rounds\": {\n        \"26\": \"Targeted base dose\", \"27\": \"Fourfold targeted dose\",\n        \"28\": \"Opposite sign of fourfold targeted dose\",\n        \"29\": \"Fourfold offsets deranged within 16 original-gain strata; seed 20261113\",\n        \"30\": \"Identical fourfold offsets on disjoint gain/RMS-matched coordinates; seed 20261114\"\n    },\n    \"evaluation\": \"Full development for every distinct nonzero candidate; diagnostic reproduction of apparent target repairs.\",\n    \"limitations\": [\n        \"Normalized gain inputs are approximate CPU reconstructions, not direct captures.\",\n        \"Supervised local fitting is not independent counting-mechanism evidence.\",\n        \"Cached evaluation versus diagnostic discrepancies remain unresolved.\"\n    ]\n}\nfit26 = {\n    \"selected_coordinates\": len(coords26),\n    \"effective_base_support\": int(np.count_nonzero(effective26)),\n    \"effective_base_norm\": float(np.linalg.norm(effective26.astype(np.float64))),\n    \"original_parameter_norm\": gain33_norm,\n    \"in_fit_error_reductions\": (1 - np.linalg.norm(targets26 - movement26[vf], axis=1) / np.linalg.norm(targets26, axis=1)).tolist(),\n    \"held_out_pair_error_reductions\": loo26,\n    \"mean_target_movement\": float(np.linalg.norm(movement26[vf], axis=1).mean()),\n    \"mean_control_movement\": float(np.linalg.norm(movement26[vc], axis=1).mean()),\n    \"permutation_update_cosine\": float(unit(delta26).dot(unit(delta29))),\n    \"matched_gain_ratio_median\": float(np.median((1 + gain33_w0[matched_coords30]) / (1 + gain33_w0[coords26]))),\n    \"matched_input_RMS_ratio_median\": float(np.median(rms26[matched_coords30] / rms26[coords26]))\n}\nnp.savez(work / \"late_block_gain_fit.npz\", coordinates=coords26, delta=delta26,\n         target_residual_changes=targets26, approximate_normalized_inputs=z26,\n         permutation=permutation29, permuted_delta=delta29, matched_coordinates=matched_coords30)\n(work / \"late_block_gain_control_plan.json\").write_text(json.dumps(gain_plan26, indent=2))\n(work / \"late_block_gain_fit_diagnostics.json\").write_text(json.dumps(fit26, indent=2))\nprint(\"LOCAL FIT:\", json.dumps(fit26))\nprint(\"PREDECLARED PLAN:\", json.dumps(gain_plan26))\nprint(\"STAGING HELPER ARGUMENTS:\", stage_vector_delta.__code__.co_varnames[:stage_vector_delta.__code__.co_argcount])\nprint(\"STAGED:\", edited())\n```"
+      },
+      {
+        "turn": 133,
+        "text": "The W0 repeat matched earlier states and answers exactly. The gain fit has weak selectivity—four of seven held-out residual errors worsen—so these tests may falsify the hypothesis. I’ll restore W0 before changing parameters.\n\n```forward\n{\"op\":\"checkout\",\"candidate\":\"w0-a8a8df63cbfe2a4bfa07bf8ace8660b3758297bf43daf2025fe2f98cb562fc5f\"}\n```"
+      },
+      {
+        "turn": 134,
+        "text": "I’ll stage only the 256-coordinate block-gain edit from W0, retaining the weak local-fit results as counterevidence.\n\n```python\nstage_vector_delta(gain33_name, coords26, delta26, 26, {\n    \"operation\": \"Sparse final-decoder-block MLP output-gain correction\",\n    \"dose\": 1.0,\n    \"commit_parent\": W0_ID,\n    \"hypothesis\": gain_plan26[\"hypothesis\"],\n    \"supervised_fitting\": gain_plan26[\"fitting\"],\n    \"counterevidence\": \"Four of seven held-out local residual errors worsen; predicted control movement exceeds target movement.\",\n    \"provenance\": \"/work/late_block_gain_fit.npz\",\n    \"control_plan\": \"/work/late_block_gain_control_plan.json\",\n    \"measurement_actions\": [\"turn-0041\", \"turn-0068\", \"turn-0130\"],\n    \"analysis_actions\": [\"turn-0132\"],\n    \"scope\": \"Sparse gains within decoder block 33; embeddings, output head, and final model normalization remain unchanged.\"\n})\nassert set(edited()) == {gain33_name}\nprint(\"EDITED:\", edited())\n```"
+      },
+      {
+        "turn": 135,
+        "text": "The staged edit changes exactly 256 block-gain scalars. I’ll commit it as round 26 with the fixed dose and control plan.\n\n```forward\n{\"op\":\"commit\",\"parent\":\"w0-a8a8df63cbfe2a4bfa07bf8ace8660b3758297bf43daf2025fe2f98cb562fc5f\",\"rationale\":\"Round 26: sparse, supervised final-block MLP output-gain correction, reconstructed from W0.\",\"evidence\":{\"role\":\"targeted\",\"failure_behavior\":\"Seven reproduced counting errors include both overcounts and undercounts; earlier late-write edits moved residuals without repairing these targets.\",\"component_hypothesis\":\"Sparse gains within decoder block 33 may alter the MLP residual contribution more directly than raw-write edits followed by RMS normalization.\",\"measurement_actions\":[\"turn-0041\",\"turn-0068\",\"turn-0130\"],\"contrast_ids\":[\"B-488899:subset:T0:B0\",\"B-545810:subset:T0:B0\",\"B-184083:subset:T0:B0\",\"B-188190:subset:T0:B0\",\"B-9232:subset:T0:B1\",\"B-326194:subset:T1:B1\",\"B-129884:total:T1:B0\"],\"dose\":\"256 changed BF16 scalars; effective delta norm 184.08499438099238, approximately 2% of the original block-gain vector norm.\",\"expected_change\":\"A useful correction would repair verified failures while preserving live-correct controls. Local held-out fits are weak, so no behavioral improvement is assumed.\",\"control_plan\":\"Predeclared in /work/late_block_gain_control_plan.json: base and fourfold doses, opposite sign, gain-stratified offset permutation, and disjoint gain/RMS-matched coordinates. All receive full-development evaluation. The gain-input reconstruction is approximate and the fit is supervised; final model normalization and output weights are unchanged.\"}}\n```"
+      },
+      {
+        "turn": 136,
+        "text": "I’ll evaluate round 26 on the complete development set.\n\n```forward\n{\"op\":\"evaluate\",\"candidate\":\"c-0f5f88848fb6bef8fa9e134f632fa6828bb3f5d3ab2228d47b1b10dccf612b8c\"}\n```"
+      },
+      {
+        "turn": 137,
+        "text": "I’ll inspect round 26’s complete results and stage the predeclared fourfold dose without refitting or changing coordinates.\n\n```python\neval26, pred26, score26 = inspect_reproduced_round(\"turn-0136\", 26)\nprint(\"CAUTION: live-W0 versus official-evaluation comparisons are cross-path, not diagnostic reproductions.\")\nstage_vector_delta(gain33_name, coords26, 4 * delta26, 27, {\n    \"operation\": \"Fourfold sparse final-block MLP output-gain correction\",\n    \"dose\": 4.0,\n    \"commit_parent\": eval26[\"candidate\"],\n    \"hypothesis\": \"A genuine target-directed effect should strengthen with the fixed fourfold dose, rather than only increasing collateral changes.\",\n    \"supervised_fitting\": \"Fixed round-26 fit and coordinates; no refitting.\",\n    \"provenance\": \"/work/late_block_gain_fit.npz\",\n    \"control_plan\": \"/work/late_block_gain_control_plan.json\",\n    \"measurement_actions\": [\"turn-0041\", \"turn-0068\", \"turn-0130\"],\n    \"counterevidence\": \"The original local fit has weak held-out selectivity and greater average control than target movement.\"\n})\nassert set(edited()) == {gain33_name}\nprint(\"EDITED:\", edited())\n```"
+      },
+      {
+        "turn": 138,
+        "text": "Round 26 repaired none of the seven verified targets. Its sole official repair was already observed under live W0, so it is not attributable to this edit. I’ll commit the fixed fourfold dose.\n\n```forward\n{\"op\":\"commit\",\"parent\":\"c-0f5f88848fb6bef8fa9e134f632fa6828bb3f5d3ab2228d47b1b10dccf612b8c\",\"rationale\":\"Round 27: predeclared fourfold dose of the fixed sparse block-33 MLP output-gain correction.\",\"evidence\":{\"role\":\"targeted\",\"failure_behavior\":\"All seven verified target failures persist at the base dose; its sole cached-baseline repair is confounded by unchanged-W0 diagnostic behavior.\",\"component_hypothesis\":\"Increasing the fixed block-gain correction should strengthen target-directed effects if the fitted residual adjustment is behaviorally relevant.\",\"measurement_actions\":[\"turn-0041\",\"turn-0068\",\"turn-0130\"],\"contrast_ids\":[\"B-488899:subset:T0:B0\",\"B-545810:subset:T0:B0\",\"B-184083:subset:T0:B0\",\"B-188190:subset:T0:B0\",\"B-9232:subset:T0:B1\",\"B-326194:subset:T1:B1\",\"B-129884:total:T1:B0\"],\"dose\":\"Fourfold fixed offsets from W0; 256 changed BF16 scalars, delta norm 736.1360082595131, approximately 8% of the original block-gain norm.\",\"expected_change\":\"Target repair should strengthen with dose; collateral changes without target repair would count against selective usefulness.\",\"control_plan\":\"No refitting or coordinate changes. Compare full-development results with round 26, W0, and the predeclared opposite-sign, stratified-permutation, and matched-coordinate controls. Reproduce apparent target repairs diagnostically.\"}}\n```"
+      },
+      {
+        "turn": 139,
+        "text": "I’ll evaluate the fourfold-dose candidate on all development inputs.\n\n```forward\n{\"op\":\"evaluate\",\"candidate\":\"c-e45b96d9e6e9e1a0a221f66d62a6bb161177967a81486263010e3fb593fcd389\"}\n```"
+      },
+      {
+        "turn": 140,
+        "text": "I’ll inspect round 27 and prepare the equal-strength opposite-sign control. The control reverses the fixed offsets rather than fitting a new direction.\n\n```python\neval27, pred27, score27 = inspect_reproduced_round(\"turn-0139\", 27)\nprint(\"CAUTION: candidate outputs above are from official evaluation, not matched diagnostic reproduction.\")\nstage_vector_delta(gain33_name, coords26, -4 * delta26, 28, {\n    \"operation\": \"Opposite-sign sparse final-block MLP output-gain control\",\n    \"dose\": -4.0,\n    \"commit_parent\": eval27[\"candidate\"],\n    \"hypothesis\": \"Benefits specific to the fitted direction should not be reproduced by its equal-strength opposite.\",\n    \"matching\": \"Identical 256 coordinates and opposite pre-rounding offsets; all other parameters restored to W0.\",\n    \"supervised_fitting\": \"Fixed round-26 fit; no refitting.\",\n    \"provenance\": \"/work/late_block_gain_fit.npz\",\n    \"control_plan\": \"/work/late_block_gain_control_plan.json\",\n    \"measurement_actions\": [\"turn-0041\", \"turn-0068\", \"turn-0130\"]\n})\nassert set(edited()) == {gain33_name}\nprint(\"EDITED:\", edited())\n```"
+      },
+      {
+        "turn": 141,
+        "text": "The fourfold dose also repaired none of the seven targets. I’ll check whether it actually changed the expected residual coordinates, using the same diagnostic inputs as the recent W0 repeat.\n\n```forward\n{\"op\":\"diagnose\",\"candidate\":\"c-e45b96d9e6e9e1a0a221f66d62a6bb161177967a81486263010e3fb593fcd389\",\"ids\":[\"B-488899:subset:T0:B0\",\"B-488899:subset:T1:B0\",\"B-418025:subset:T1:B0\",\"B-418025:subset:T0:B0\",\"B-545810:subset:T0:B0\",\"B-545810:subset:T1:B0\",\"B-184083:subset:T0:B0\",\"B-184083:subset:T1:B0\",\"B-188190:subset:T0:B0\",\"B-188190:subset:T1:B0\",\"B-9232:subset:T0:B1\",\"B-9232:subset:T1:B1\",\"B-326194:subset:T1:B1\",\"B-326194:subset:T0:B1\",\"B-129884:total:T1:B0\",\"B-129884:total:T0:B0\",\"B-397001:subset:T0:B0\",\"B-397001:subset:T1:B0\",\"B-485772:subset:T0:B0\",\"B-485772:subset:T1:B0\",\"B-1459:subset:T0:B0\",\"B-1459:subset:T1:B0\",\"B-4505:subset:T0:B0\",\"B-4505:subset:T1:B0\",\"B-454010:subset:T0:B0\",\"B-454010:subset:T1:B0\",\"B-568699:total:T0:B0\",\"B-568699:total:T1:B0\"],\"spec\":{\"layers\":[33],\"token_positions\":\"last_prompt\"}}\n```"
+      },
+      {
+        "turn": 142,
+        "text": "I’ll compare the edited captures directly with W0, separating verified state changes from any answer changes.\n\n```python\na141 = json.loads((Path(ARTIFACTS) / \"turn-0141.json\").read_text())\nm141 = a141.get(\"value\", a141)[\"results\"]\nby141 = {r[\"request_id\"]: r for r in m141}\nordered141 = [by141[rid] for rid in balanced_ids]\nA141 = capture_matrix(ordered141, \"model.language_model.layers.33.mlp.down_proj\")\nH141 = capture_matrix(ordered141, \"model.language_model.layers.33\")\nmovement141 = H141.astype(np.float64) - H130.astype(np.float64)\neffective27 = bf16_round(gain33_w0[coords26] + 4 * delta26) - gain33_w0[coords26]\npredicted27 = np.zeros_like(movement141)\npredicted27[:, coords26] = z26[:, coords26] * effective27\noutside26 = np.ones(2560, dtype=bool)\noutside26[coords26] = False\nbehavior141 = []\nfor rid in balanced_ids:\n    before = by130[rid][\"diagnostic_generation\"]\n    after = by141[rid][\"diagnostic_generation\"]\n    behavior141.append({\n        \"id\": rid, \"gold\": records[rid][\"gold\"][\"answer\"],\n        \"W0_diagnostic\": before[\"text\"], \"edited_diagnostic\": after[\"text\"],\n        \"edited_official\": pred27[rid][\"text\"],\n        \"correct\": bool(exact_count(after[\"text\"], records[rid][\"gold\"][\"answer\"])),\n        \"same_input_hash\": before[\"input_ids_sha256\"] == after[\"input_ids_sha256\"],\n        \"same_chat_hash\": before[\"rendered_chat_sha256\"] == after[\"rendered_chat_sha256\"]\n    })\ncheck27 = {\n    \"candidate\": eval27[\"candidate\"],\n    \"measurement_action\": \"turn-0141\", \"W0_reference\": \"turn-0130\",\n    \"MLP_inputs_exactly_equal\": bool(np.array_equal(A141, A130)),\n    \"maximum_change_outside_edited_gain_coordinates\": float(np.max(np.abs(movement141[:, outside26]))),\n    \"changed_residual_coordinates_by_input\": np.count_nonzero(movement141, axis=1).tolist(),\n    \"mean_target_movement\": float(np.linalg.norm(movement141[vf], axis=1).mean()),\n    \"mean_control_movement\": float(np.linalg.norm(movement141[vc], axis=1).mean()),\n    \"local_vs_measured_target_cosines\": [float(unit(predicted27[j]).dot(unit(movement141[j]))) for j in vf],\n    \"target_residual_error_reductions\": (1 - np.linalg.norm(targets26 - movement141[vf], axis=1) / np.linalg.norm(targets26, axis=1)).tolist(),\n    \"behavior\": behavior141,\n    \"limitation\": \"Changing residual coordinates does not establish a counting mechanism or successful repair.\"\n}\n(work / \"round_27_measured_residual_check.json\").write_text(json.dumps(check27, indent=2))\nprint(\"MEASURED ROUND 27:\", json.dumps({k: v for k, v in check27.items() if k != \"behavior\"}))\nprint(\"DIAGNOSTIC ANSWER CHANGES:\", json.dumps([r for r in behavior141 if r[\"W0_diagnostic\"] != r[\"edited_diagnostic\"]]))\nprint(\"OFFICIAL/DIAGNOSTIC DIFFERENCES:\", json.dumps([r for r in behavior141 if r[\"edited_official\"] != r[\"edited_diagnostic\"]]))\ntarget_ids26 = {balanced_ids[j] for j in vf}\nprint(\"SEVEN TARGETS:\", json.dumps([r for r in behavior141 if r[\"id\"] in target_ids26]))\nprint(\"STAGED ROUND 28:\", edited())\n```"
+      },
+      {
+        "turn": 143,
+        "text": "The edit changed only the intended residual coordinates, closely matching the local prediction, but all 28 diagnostic answers remained unchanged. I’ll now commit the opposite-sign control.\n\n```forward\n{\"op\":\"commit\",\"parent\":\"c-e45b96d9e6e9e1a0a221f66d62a6bb161177967a81486263010e3fb593fcd389\",\"rationale\":\"Round 28: predeclared opposite-sign control for the sparse final-block gain correction.\",\"evidence\":{\"role\":\"control\",\"failure_behavior\":\"The fourfold targeted edit changed residual states but repaired none of seven verified failures; all 28 matched diagnostic answers remained identical to W0.\",\"component_hypothesis\":\"Any selective benefit attributable to the fitted gain direction should not be reproduced by reversing that direction.\",\"measurement_actions\":[\"turn-0041\",\"turn-0068\",\"turn-0130\",\"turn-0141\"],\"contrast_ids\":[\"B-488899:subset:T0:B0\",\"B-545810:subset:T0:B0\",\"B-184083:subset:T0:B0\",\"B-188190:subset:T0:B0\",\"B-9232:subset:T0:B1\",\"B-326194:subset:T1:B1\",\"B-129884:total:T1:B0\"],\"dose\":\"Opposite fourfold offsets on the same 256 coordinates; effective BF16 delta norm 735.9089431826807.\",\"expected_change\":\"The reversed direction should not reproduce a direction-specific target benefit; comparable effects would weaken directional specificity.\",\"control_plan\":\"Fixed before round-26 evaluation. Same coordinates and pre-rounding update norm as round 27; reconstruct from W0 and evaluate all 464 development inputs.\"}}\n```"
+      },
+      {
+        "turn": 144,
+        "text": "Round 28 is committed. I’ll evaluate the opposite-sign control on all 464 development inputs.\n\n```forward\n{\"op\":\"evaluate\",\"candidate\":\"c-13e2f16c7a5f5562043f7bd002218c05d939c34e0fb2c35bd3162496d9aa905b\"}\n```"
+      },
+      {
+        "turn": 145,
+        "text": "I’ll inspect round 28’s results, then stage the predeclared permutation control without refitting. Comparisons against live W0 remain distinct from matched diagnostic tests.\n\n```python\neval28, pred28, score28 = inspect_reproduced_round(\"turn-0144\", 28)\nprint(\"CAUTION: live-W0 versus official-candidate comparisons are cross-path, not matched diagnostic reproductions.\")\n\nassert np.all(permutation29 != np.arange(len(coords26)))\nassert np.isclose(\n    np.linalg.norm(delta29.astype(np.float64)),\n    np.linalg.norm((4 * delta26).astype(np.float64))\n)\nstage_vector_delta(\n    gain33_name, coords26, delta29, 29,\n    {\n        \"operation\": \"Gain-stratified permutation control for sparse final-block MLP output gains\",\n        \"seed\": 20261113,\n        \"commit_parent\": \"c-13e2f16c7a5f5562043f7bd002218c05d939c34e0fb2c35bd3162496d9aa905b\",\n        \"hypothesis\": \"A coordinate-specific fitted correction should outperform equal-strength offsets reassigned among coordinates with similar original gains.\",\n        \"matching\": \"Same 256 coordinates and fourfold offset multiset; derangement within 16 original-gain strata, fixed before round-26 evaluation.\",\n        \"supervised_fitting\": \"Fixed round-26 offsets; no refitting or outcome-dependent permutation.\",\n        \"provenance\": \"/work/late_block_gain_fit.npz\",\n        \"control_plan\": \"/work/late_block_gain_control_plan.json\",\n        \"measurement_actions\": [\"turn-0041\", \"turn-0068\", \"turn-0130\", \"turn-0141\"],\n        \"counterevidence\": \"The targeted fourfold edit changed the intended residual coordinates but left all 28 matched diagnostic answers unchanged.\"\n    }\n)\nassert set(edited()) == {gain33_name}\nprint(\"EDITED:\", edited())\n```"
+      },
+      {
+        "turn": 146,
+        "text": "Round 28 matched W0’s official accuracy and repair score but corrected none of the seven verified targets. I’ll commit the fixed permutation control.\n\n```forward\n{\"op\":\"commit\",\"parent\":\"c-13e2f16c7a5f5562043f7bd002218c05d939c34e0fb2c35bd3162496d9aa905b\",\"rationale\":\"Round 29: predeclared gain-stratified permutation control for the sparse final-block gain correction.\",\"evidence\":{\"role\":\"control\",\"failure_behavior\":\"The targeted fourfold gain edit left all 28 matched diagnostic answers unchanged; its opposite corrected none of the seven verified target failures in full-development evaluation.\",\"component_hypothesis\":\"A correction specific to the fitted gain coordinates should outperform the same offsets reassigned among coordinates with similar original gains.\",\"measurement_actions\":[\"turn-0041\",\"turn-0068\",\"turn-0130\",\"turn-0141\"],\"contrast_ids\":[\"B-488899:subset:T0:B0\",\"B-545810:subset:T0:B0\",\"B-184083:subset:T0:B0\",\"B-188190:subset:T0:B0\",\"B-9232:subset:T0:B1\",\"B-326194:subset:T1:B1\",\"B-129884:total:T1:B0\"],\"dose\":\"Same 256 coordinates and fourfold offset multiset, deranged within 16 original-gain strata using seed 20261113; effective BF16 delta norm 736.1728690763213.\",\"expected_change\":\"Comparable benefits from permuted offsets would weaken coordinate-specific attribution; residual movement alone is not a successful counting repair.\",\"control_plan\":\"Permutation fixed before round-26 evaluation; no refitting. Reconstruct the tensor from W0, leave all other parameters unchanged, and evaluate all 464 development inputs.\"}}\n```"
+      },
+      {
+        "turn": 147,
+        "text": "I’ll evaluate round 29 on the full development set.\n\n```forward\n{\"op\":\"evaluate\",\"candidate\":\"c-66463e76e784ed48e09eb01dc7a6a1443449d036e82de8e4ab9da2bc1d1e2a44\"}\n```"
+      },
+      {
+        "turn": 148,
+        "text": "I’ll inspect round 29 and stage the final predeclared control: the same offsets on disjoint, gain/RMS-matched coordinates.\n\n```python\neval29, pred29, score29 = inspect_reproduced_round(\"turn-0147\", 29)\nprint(\"CAUTION: live-W0 versus official-candidate comparisons are cross-path, not matched diagnostic reproductions.\")\n\nassert len(matched_coords30) == len(coords26) == 256\nassert len(set(matched_coords30.tolist())) == 256\nassert not set(matched_coords30.tolist()).intersection(coords26.tolist())\nstage_vector_delta(\n    gain33_name, matched_coords30, 4 * delta26, 30,\n    {\n        \"operation\": \"Disjoint matched-coordinate control for sparse final-block MLP output gains\",\n        \"seed\": 20261114,\n        \"commit_parent\": \"c-66463e76e784ed48e09eb01dc7a6a1443449d036e82de8e4ab9da2bc1d1e2a44\",\n        \"hypothesis\": \"If the selected coordinates support a selective correction, transferring identical offsets to matched disjoint coordinates should not reproduce that benefit.\",\n        \"matching\": \"256 disjoint coordinates selected before round-26 evaluation by original effective gain and reconstructed input RMS; identical fourfold offsets.\",\n        \"supervised_fitting\": \"Fixed round-26 offsets; no refitting or outcome-dependent coordinate selection.\",\n        \"provenance\": \"/work/late_block_gain_fit.npz\",\n        \"control_plan\": \"/work/late_block_gain_control_plan.json\",\n        \"measurement_actions\": [\"turn-0041\", \"turn-0068\", \"turn-0130\", \"turn-0141\"],\n        \"counterevidence\": \"The targeted fourfold edit produced accurately predicted residual movement without changing any of 28 matched diagnostic answers.\"\n    }\n)\nassert set(edited()) == {gain33_name}\nprint(\"EDITED:\", edited())\n```"
+      },
+      {
+        "turn": 149,
+        "text": "Round 29 corrected none of the seven verified targets and reduced overall accuracy. I’ll commit the final matched-coordinate control.\n\n```forward\n{\"op\":\"commit\",\"parent\":\"c-66463e76e784ed48e09eb01dc7a6a1443449d036e82de8e4ab9da2bc1d1e2a44\",\"rationale\":\"Round 30: predeclared disjoint matched-coordinate control for the sparse final-block gain correction.\",\"evidence\":{\"role\":\"control\",\"failure_behavior\":\"The targeted, opposite-sign, and permuted-gain edits corrected none of the seven verified targets in their full-development evaluations.\",\"component_hypothesis\":\"Selective benefit from the fitted coordinates should not be reproduced by identical offsets on disjoint coordinates matched for original gain and input RMS.\",\"measurement_actions\":[\"turn-0041\",\"turn-0068\",\"turn-0130\",\"turn-0141\"],\"contrast_ids\":[\"B-488899:subset:T0:B0\",\"B-545810:subset:T0:B0\",\"B-184083:subset:T0:B0\",\"B-188190:subset:T0:B0\",\"B-9232:subset:T0:B1\",\"B-326194:subset:T1:B1\",\"B-129884:total:T1:B0\"],\"dose\":\"Identical fourfold fitted offsets on 256 disjoint coordinates selected with seed 20261114; effective BF16 delta norm 736.1962867715715.\",\"expected_change\":\"Comparable performance would not support specificity of the originally selected coordinates; no behavioral benefit is assumed.\",\"control_plan\":\"Matching and offsets fixed before round-26 evaluation; no refitting. All other parameters remain W0. Evaluate all 464 development inputs, then audit all 30 candidates and the service-selected best.\"}}\n```"
+      },
+      {
+        "turn": 150,
+        "text": "Round 30 is committed. I’ll run its full development evaluation to complete the required 30-candidate series.\n\n```forward\n{\"op\":\"evaluate\",\"candidate\":\"c-e7e1b0c14054fe386e7a02cd0b41db40e1b5b0d41d843e7fac13799898a7db10\"}\n```"
+      }
+    ],
+    "process": "57718 06:58:53 /opt/anaconda3/bin/python -u /Users/ruizhixu/Documents/ChatGPT/acupuncture/experiments/wsp-vlm-gemma3-v9-2026-11-05-r02/queue_run.py --task B\n",
+    "latest_receipt": {
+      "turn": 150,
+      "billing": "existing_chatgpt",
+      "cost_is_reservation_not_invoice": true,
+      "cumulative_tokens": 25094957,
+      "elapsed_seconds": 13.090272458037362,
+      "monetary_cost_unknown": true,
+      "reserved_usd": 0.0,
+      "thread": "01a1aeef-627e-7242-8c95-75a7018058bd",
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 23660032,
+        "input_tokens": 24981497,
+        "output_tokens": 113460,
+        "reasoning_output_tokens": 52406
+      },
+      "usage_delta": {
+        "cached_input_tokens": 177408,
+        "input_tokens": 180571,
+        "output_tokens": 81
+      },
+      "usage_mode": "thread_cumulative"
+    },
+    "recent_evaluations": [
+      {
+        "id": "turn-0114",
+        "op": "evaluate",
+        "complete": true,
+        "failed": false,
+        "nested_failed": null,
+        "elapsed": 72.718526808545,
+        "mtime": 1793943042.6805484,
+        "rounds": 22
+      },
+      {
+        "id": "turn-0120",
+        "op": "evaluate",
+        "complete": true,
+        "failed": false,
+        "nested_failed": null,
+        "elapsed": 54.518084520474076,
+        "mtime": 1793943333.794005,
+        "rounds": 23
+      },
+      {
+        "id": "turn-0123",
+        "op": "evaluate",
+        "complete": true,
+        "failed": false,
+        "nested_failed": null,
+        "elapsed": 101.02484510280192,
+        "mtime": 1793943520.648866,
+        "rounds": 24
+      },
+      {
+        "id": "turn-0126",
+        "op": "evaluate",
+        "complete": true,
+        "failed": false,
+        "nested_failed": null,
+        "elapsed": 78.61327549256384,
+        "mtime": 1793944023.65357,
+        "rounds": 25
+      },
+      {
+        "id": "turn-0136",
+        "op": "evaluate",
+        "complete": true,
+        "failed": false,
+        "nested_failed": null,
+        "elapsed": 102.10451370291412,
+        "mtime": 1793944544.6705556,
+        "rounds": 26
+      },
+      {
+        "id": "turn-0139",
+        "op": "evaluate",
+        "complete": true,
+        "failed": false,
+        "nested_failed": null,
+        "elapsed": 53.79709642380476,
+        "mtime": 1793944673.7975354,
+        "rounds": 27
+      },
+      {
+        "id": "turn-0144",
+        "op": "evaluate",
+        "complete": true,
+        "failed": false,
+        "nested_failed": null,
+        "elapsed": 100.67317513003945,
+        "mtime": 1793945207.8477209,
+        "rounds": 28
+      },
+      {
+        "id": "turn-0147",
+        "op": "evaluate",
+        "complete": true,
+        "failed": false,
+        "nested_failed": null,
+        "elapsed": 62.787551302462816,
+        "mtime": 1793945347.188857,
+        "rounds": 29
+      }
+    ],
+    "cycles": [
+      291.11345648765564,
+      186.85486102104187,
+      503.0047039985657,
+      521.0169856548309,
+      129.12697982788086,
+      534.0501854419708,
+      139.3411362171173
+    ]
+  },
+  "C": {
+    "status": {
+      "broker_pid": 2245012,
+      "pid": 57720,
+      "stage": "running",
+      "time_unix": 1793936602.160442
+    },
+    "astra_elapsed": 627.1590987070231,
+    "ops": {
+      "python": 19.395375890657306,
+      "commit": 17.301189662888646,
+      "evaluate": 1003.4209818542004,
+      "checkout": 0.002003561705350876
+    },
+    "tool_wait": 104.40295836701989,
+    "start_turn": 79,
+    "replies": [
+      {
+        "turn": 79,
+        "text": "Round 15 is now the harness-selected best, but that alone does not establish the head-concentration hypothesis. I’ll check the specified repair identities and stage the exact complementary component.\n\n```python\ncid15, r15 = review_eval(\"turn-0078\", \"r15_attn10_head7_component\")\nif len(r15[\"changes\"]) > 40:\n    print(\"REMAINING_CHANGES\", json.dumps(r15[\"changes\"][40:]))\n\ntarget_repairs = {\n    \"C-588:counterfact_visual:T1:O0:B0\",\n    \"C-353:counterfact_visual:T1:O0:B1\",\n    \"C-353:counterfact_visual:T1:O1:B0\",\n    \"C-119:counterfact_visual:T0:O1:B1\"\n}\nretained = sorted(target_repairs.intersection(\n    c[\"id\"] for c in r15[\"changes\"] if c[\"effect\"] == \"repair\"\n))\nvisual_damage = [\n    c[\"id\"] for c in r15[\"changes\"]\n    if c[\"effect\"] == \"damage\" and \":counterfact_visual:\" in c[\"id\"]\n]\nprint(\"HEAD7_PREDICTION_CHECK\", {\n    \"retained_reference_repairs\": retained,\n    \"new_counterfact_visual_damage\": visual_damage,\n    \"criterion_met\": len(retained) >= 3 and not visual_damage\n})\n\nfor action in (\"turn-0075\", \"turn-0078\"):\n    v = json.loads((Path(ARTIFACTS) / (action + \".json\")).read_text())[\"value\"]\n    print(\"SELECTION_METADATA\", action, {\n        k: value for k, value in v.items() if k not in (\"results\", \"cached\")\n    })\n    result = v[\"results\"][v[\"candidate\"]]\n    print(\"RESULT_FIELDS\", action, list(result))\n    for key in (\"eligibility\", \"eligible\", \"guardrails\", \"selection\", \"admissible\"):\n        if key in result:\n            print(key, json.dumps(result[key]))\n\nwith np.load(\"/work/attn10_exact_head_partition.npz\", allow_pickle=False) as z:\n    selected = z[\"selected\"].astype(np.int64)\n    delta = z[\"delta\"].copy()\n    complement = ~z[\"head7_mask\"]\nassert int(complement.sum()) == 40\nstage_delta(\n    attn_plans[10][\"name\"], selected[complement], delta[:, complement],\n    \"r16_attn10_head7_complement\",\n    {\n        \"reference\": \"r04_attn10_direction_remove\",\n        \"paired_component\": \"r15_attn10_head7_component\",\n        \"partition\": \"Exact round-4 BF16 edit on the 40 selected columns outside head 7; restore head 7 and all other columns to W0.\",\n        \"dose_note\": \"Original component magnitude; no rescaling or cumulative edit.\",\n        \"control_plan\": \"Compare repair identities across the two components and their already evaluated union, round 4.\"\n    }\n)\n```"
+      },
+      {
+        "turn": 80,
+        "text": "Head 7 retained none of the four specified visual repairs, so the concentration prediction failed despite its selection as best. The last output was truncated; I’ll verify the complementary edit’s staging receipt before committing it.\n\n```python\nprint(\"COMPLEMENT_STAGING_RECEIPT\",\n      Path(\"/work/r16_attn10_head7_complement_metrics.json\").read_text())\nprint(\"EDITED\", edited())\n\nfor action in (\"turn-0075\", \"turn-0078\"):\n    obj = json.loads((Path(ARTIFACTS) / (action + \".json\")).read_text())\n    v = obj[\"value\"]\n    result = v[\"results\"][v[\"candidate\"]]\n    print(\"EVALUATION_FIELDS\", action, list(v))\n    print(\"CANDIDATE_RESULT_FIELDS\", action, list(result))\n    for key, value in v.items():\n        if key not in (\"results\", \"cached\", \"vs_original\", \"vs_parent\"):\n            print(\"METADATA\", action, key, json.dumps(value))\n    for key in (\"eligibility\", \"eligible\", \"guardrails\", \"selection\", \"admissible\"):\n        if key in result:\n            print(\"CANDIDATE_METADATA\", action, key, json.dumps(result[key]))\n```"
+      },
+      {
+        "turn": 81,
+        "text": "The complementary patch is verified: 40 columns, 100,065 changed scalars, and no additional rounding. It will test whether round 4’s visual repairs reside outside head 7 or require the combined intervention.\n\n```forward\n{\"op\":\"commit\",\"parent\":\"c-92e3127e963ddb36677e224e6c284022cc6fcd13a3f8fb1f45268ebde7dbd79e\",\"rationale\":\"Round 16: evaluate the exact complement of the head-7 component. Rebuild from W0 so the head-7 edit is absent rather than retained cumulatively.\",\"evidence\":{\"failure_behavior\":\"Head 7 alone retained none of round 4's four counterfactual-visual repairs, despite matching its official repair score through changes in other conditions.\",\"component_hypothesis\":\"The visual repairs may arise from the other selected heads or from interactions between the two disjoint edit components.\",\"expected_change\":\"Retention of at least three reference visual repairs would support localization outside head 7; failure of both components to retain them would point toward combined effects or evaluation sensitivity rather than single-head concentration.\",\"dose\":\"Exact round-4 BF16 patch on 40 selected columns outside head 7; support 100065; L2 0.47416762; all other weights W0.\",\"control_plan\":\"Compare W0, this component, the head-7 component, and their previously evaluated union. Report repair identities and collateral damage separately from official candidate selection.\",\"contrast_ids\":[\"C-588:counterfact_visual:T1:O0:B0\",\"C-353:counterfact_visual:T1:O0:B1\",\"C-353:counterfact_visual:T1:O1:B0\",\"C-119:counterfact_visual:T0:O1:B1\"],\"measurement_actions\":[\"turn-0013\",\"turn-0018\",\"turn-0053\",\"turn-0056\"],\"role\":\"diagnostic\"}}\n```"
+      },
+      {
+        "turn": 82,
+        "text": "The complementary component is committed independently of head 7. I’ll evaluate the same full development set to complete this decomposition.\n\n```forward\n{\"op\":\"evaluate\",\"candidate\":\"c-4c9718d57134f41be0be56b747538dfb38a05c82465fac4d0c1e6e618dd5ed54\"}\n```"
+      },
+      {
+        "turn": 83,
+        "text": "I’ll inspect the complementary component and then revisit the mid-layer MLP hypothesis. Layer 15 had a more consistent controlled activation contrast than layer 26, but that association still needs a causal test.\n\n```python\ncid16, r16 = review_eval(\"turn-0082\", \"r16_attn10_head7_complement\")\nif len(r16[\"changes\"]) > 40:\n    print(\"REMAINING_CHANGES\", json.dumps(r16[\"changes\"][40:]))\nretained16 = sorted(target_repairs.intersection(\n    c[\"id\"] for c in r16[\"changes\"] if c[\"effect\"] == \"repair\"\n))\ndamage16 = [\n    c[\"id\"] for c in r16[\"changes\"]\n    if c[\"effect\"] == \"damage\" and \":counterfact_visual:\" in c[\"id\"]\n]\nprint(\"COMPLEMENT_PREDICTION_CHECK\", {\n    \"retained_reference_repairs\": retained16,\n    \"counterfact_visual_damage\": damage16,\n    \"criterion_met\": len(retained16) >= 3 and not damage16\n})\n\nplan15 = projection_plans[15]\nR15 = (\n    grouped_diffs(15, \"a\", \"counterfact_visual\")\n    - 0.5 * (\n        grouped_diffs(15, \"a\", \"original_visual\")\n        + grouped_diffs(15, \"a\", \"counterfact_usual\")\n    )\n)\nsel15 = np.asarray(plan15[\"selected\"], dtype=np.int64)\np15 = plan15[\"p\"][sel15]\ngroups15 = {\n    \"counterfact_visual_failures\": failids,\n    \"counterfact_visual_successes\": succids,\n    \"original_visual_controls\": [rid for rid in controlids if \":original_visual:\" in rid],\n    \"counterfact_usual_controls\": [rid for rid in controlids if \":counterfact_usual:\" in rid]\n}\nwrite_stats15 = {}\nfor label, ids in groups15.items():\n    values = np.stack([vec(rid, 15, \"a\")[sel15] for rid in ids]) @ p15\n    write_stats15[label] = {\n        \"n\": len(ids), \"mean\": float(values.mean()),\n        \"min\": float(values.min()), \"max\": float(values.max())\n    }\naudit15 = {\n    \"layer\": 15,\n    \"group_leave_one_out_cosines\": [\n        cos(R15[i], np.mean(np.delete(R15, i, axis=0), axis=0))\n        for i in range(len(R15))\n    ],\n    \"selected_controlled_projection_by_group\": (R15[:, sel15] @ p15).tolist(),\n    \"selected_directional_write\": write_stats15,\n    \"unit_dose_intended_norm\": float(np.linalg.norm(p15)),\n    \"selection_limitation\": \"Direction and channel ranking use outcomes and contrasts from seen development examples; not held-out validation.\"\n}\nprint(\"MLP15_PREINTERVENTION_AUDIT\", json.dumps(audit15))\nPath(\"/work/mlp15_preintervention_audit.json\").write_text(json.dumps(audit15, indent=2))\n```"
+      },
+      {
+        "turn": 84,
+        "text": "Neither partition retained the four round-4 visual repairs, so neither alone supports the proposed localization. Layer 15 has a consistent controlled contrast but weak failure/control separation. I’ll test it independently, first clearing the attention edit.\n\n```forward\n{\"op\":\"checkout\",\"candidate\":\"w0-a8a8df63cbfe2a4bfa07bf8ace8660b3758297bf43daf2025fe2f98cb562fc5f\"}\n```"
+      },
+      {
+        "turn": 85,
+        "text": "Round 17 will remove the nominated directional component from 64 layer-15 MLP columns. I’ll distinguish focal visual repairs from unrelated score gains and test the opposite direction afterward.\n\n```python\nassert not edited(), edited()\nmlp15_test = {\n    \"label\": \"r17_mlp15_direction_remove\",\n    \"hypothesis\": \"The selected layer-15 MLP writes oppose the controlled success-associated output direction and contribute to counterfactual-visual errors.\",\n    \"prediction\": \"Repair captured counterfactual-visual failures in at least two distinct source groups, with positive net counterfactual-visual correctness change across the full development set.\",\n    \"controls\": \"Evaluate an equal-dose opposite-direction edit independently from W0; do not treat a shared change as direction-specific evidence.\",\n    \"limitations\": \"Seen-development supervised selection; weak failure/control separation; cached-versus-fresh generation discrepancies remain unresolved.\"\n}\nPath(\"/work/mlp15_intervention_plan.json\").write_text(json.dumps(mlp15_test, indent=2))\nstage_projection(projection_plans[15], 1.0, \"r17_mlp15_direction_remove\")\nprint(\"PREREGISTERED_TEST\", json.dumps(mlp15_test))\n```"
+      },
+      {
+        "turn": 86,
+        "text": "The staged edit changes only the intended layer-15 tensor. I’ll commit it with the focal prediction and reproducibility limitation recorded.\n\n```forward\n{\"op\":\"commit\",\"parent\":\"w0-a8a8df63cbfe2a4bfa07bf8ace8660b3758297bf43daf2025fe2f98cb562fc5f\",\"rationale\":\"Round 17: independently test the controlled layer-15 MLP contrast after the attention-component decomposition failed to retain focal visual repairs.\",\"evidence\":{\"failure_behavior\":\"Counterfactual-visual prompts sometimes elicit the usual-size object, with order and wording sensitivity.\",\"component_hypothesis\":\"Selected layer-15 MLP output columns write against a controlled success-associated direction; all six source-group controlled projections are positive, but failure/control separation is weak.\",\"expected_change\":\"Repair captured counterfactual-visual failures in at least two source groups and produce a positive net counterfactual-visual correctness change on full development evaluation.\",\"dose\":\"Remove the directional projection from 64 columns; BF16 effective norm 0.1191461 and support 158184, with all other weights at W0.\",\"control_plan\":\"Evaluate equal-dose opposite-direction augmentation independently from W0. Retain unresolved cached-versus-fresh generation discrepancies in interpretation.\",\"contrast_ids\":[\"C-125:counterfact_visual:T0:O0:B0\",\"C-125:counterfact_visual:T0:O1:B0\",\"C-232:counterfact_visual:T1:O1:B0\"],\"measurement_actions\":[\"turn-0011\",\"turn-0013\"],\"role\":\"targeted\"}}\n```"
+      },
+      {
+        "turn": 87,
+        "text": "I’ll evaluate round 17 on all 2,560 development requests, including preservation conditions.\n\n```forward\n{\"op\":\"evaluate\",\"candidate\":\"c-335f41e20ed8211d16ff423d0cc4c71dfe5583969a3186fa3c189e929d5e6ee6\"}\n```"
+      },
+      {
+        "turn": 88,
+        "text": "I’ll inspect the complete results, check the stated visual-repair criterion, and stage the preregistered opposite-direction control without accumulating round 17’s edit.\n\n```python\ncid17, r17 = review_eval(\"turn-0087\", \"r17_mlp15_direction_remove\")\nprint(\"REMAINING_CHANGES\", json.dumps(r17[\"changes\"][40:]))\nfocal17 = [x for x in r17[\"changes\"] if x[\"effect\"] == \"repair\" and x[\"id\"] in failids]\ncv17 = [x for x in r17[\"changes\"] if \":counterfact_visual:\" in x[\"id\"]]\ncheck17 = {\n    \"captured_failure_repairs\": focal17,\n    \"source_groups_repaired\": sorted({x[\"id\"].split(\":\")[0] for x in focal17}),\n    \"net_counterfact_visual_repairs\": sum(1 if x[\"effect\"] == \"repair\" else -1 for x in cv17)\n}\ncheck17[\"criterion_met\"] = len(check17[\"source_groups_repaired\"]) >= 2 and check17[\"net_counterfact_visual_repairs\"] > 0\nprint(\"MLP15_PREDICTION_CHECK\", json.dumps(check17))\nPath(\"/work/r17_prediction_check.json\").write_text(json.dumps(check17, indent=2))\nstage_projection(projection_plans[15], -1.0, \"r18_mlp15_opposite_control\")\n```"
+      },
+      {
+        "turn": 89,
+        "text": "Round 17 failed its focal criterion: no captured failures were repaired, and visual repairs and damages balanced. Round 18 tests whether its other changes depend on the proposed direction.\n\n```forward\n{\"op\":\"commit\",\"parent\":\"c-335f41e20ed8211d16ff423d0cc4c71dfe5583969a3186fa3c189e929d5e6ee6\",\"rationale\":\"Round 18: opposite-direction control for layer-15 MLP projection removal, rebuilt from W0 rather than accumulated.\",\"evidence\":{\"failure_behavior\":\"The targeted counterfactual-visual failures persisted under round 17 despite several unrelated correctness changes.\",\"component_hypothesis\":\"If removing the nominated directional writes causes specific repairs, augmenting those same writes should not reproduce those repairs systematically.\",\"expected_change\":\"Compare repair identities and counterfactual-visual effects against round 17; shared improvements weaken direction specificity.\",\"dose\":\"Dose -1 on the same 64 columns; effective norm 0.1191547, approximately matched to round 17.\",\"control_plan\":\"Same tensor and channels, reversed intended update, all other parameters at W0; retain cached-versus-fresh discrepancies as a limitation.\",\"contrast_ids\":[\"C-125:counterfact_visual:T0:O0:B0\",\"C-125:counterfact_visual:T0:O1:B0\"],\"measurement_actions\":[\"turn-0011\",\"turn-0013\",\"turn-0087\"],\"role\":\"control\"}}\n```"
+      },
+      {
+        "turn": 90,
+        "text": "I’ll run the same full-development evaluation for the opposite-direction control.\n\n```forward\n{\"op\":\"evaluate\",\"candidate\":\"c-185dba545591bd1f3c0c57d758c3f737a4e27f60fe72143a8decf40d172cbec9\"}\n```"
+      },
+      {
+        "turn": 91,
+        "text": "I’ll compare the two directions’ repair identities. A fixed-seed, norm-matched random output direction will then test whether comparable perturbations produce similar changes without the nominated direction.\n\n```python\ncid18, r18 = review_eval(\"turn-0090\", \"r18_mlp15_opposite_control\")\nprint(\"REMAINING_CHANGES\", json.dumps(r18[\"changes\"][40:]))\nrep17 = {x[\"id\"] for x in r17[\"changes\"] if x[\"effect\"] == \"repair\"}\nrep18 = {x[\"id\"] for x in r18[\"changes\"] if x[\"effect\"] == \"repair\"}\nprint(\"MLP15_SIGN_COMPARISON\", json.dumps({\n    \"shared_repairs\": sorted(rep17 & rep18),\n    \"removal_only_repairs\": sorted(rep17 - rep18),\n    \"augmentation_only_repairs\": sorted(rep18 - rep17),\n    \"augmentation_captured_failure_repairs\": sorted(rep18 & set(failids))\n}))\nu15 = projection_plans[15][\"u\"]\ns15 = projection_plans[15][\"selected\"]\ncoeff15 = projection_plans[15][\"p\"][s15]\nrandom_u15 = u15 * np.random.default_rng(20261108).choice(\n    np.array([-1.0, 1.0], dtype=np.float32), size=u15.shape)\nnp.savez(\"/work/mlp15_random_direction_plan.npz\",\n         selected=s15, direction=random_u15, reference_direction=u15,\n         input_coefficients=coeff15)\nstage_delta(projection_plans[15][\"name\"], s15,\n            -np.outer(random_u15, coeff15),\n            \"r19_mlp15_random_direction\",\n            {\"seed\": 20261108, \"reference\": \"r17_mlp15_direction_remove\",\n             \"direction_cosine\": cos(random_u15, u15),\n             \"control\": \"Randomize output-coordinate signs while retaining the same columns and original input coefficients; match intended norm.\",\n             \"limitation\": \"One fixed random direction, not a randomization significance test.\"})\n```"
+      },
+      {
+        "turn": 92,
+        "text": "The opposite edit was worse overall, but neither direction repaired the captured visual failures. I’ll commit the random-direction control to further test specificity.\n\n```forward\n{\"op\":\"commit\",\"parent\":\"c-185dba545591bd1f3c0c57d758c3f737a4e27f60fe72143a8decf40d172cbec9\",\"rationale\":\"Round 19: fixed-seed random-output-direction control for the layer-15 MLP intervention, reconstructed from W0.\",\"evidence\":{\"failure_behavior\":\"Round 17 produced mixed visual changes and no captured-failure repairs; reversing its direction also failed on those captured failures.\",\"component_hypothesis\":\"A specific nominated output direction should outperform a comparably sized perturbation with randomized output-coordinate signs.\",\"expected_change\":\"Compare focal repairs, collateral damage, and repair identities with rounds 17 and 18 rather than interpreting overall accuracy alone.\",\"dose\":\"Same 64 columns and original input coefficients; seed 20261108; effective norm 0.1191486; cosine with nominated direction 0.01347.\",\"control_plan\":\"One fixed random direction with matched intended norm; all remaining weights W0. This is not a randomization significance test.\",\"contrast_ids\":[\"C-125:counterfact_visual:T0:O0:B0\",\"C-125:counterfact_visual:T0:O1:B0\"],\"measurement_actions\":[\"turn-0011\",\"turn-0013\",\"turn-0087\",\"turn-0090\"],\"role\":\"control\"}}\n```"
+      },
+      {
+        "turn": 93,
+        "text": "I’ll evaluate the random-direction control on the unchanged full-development protocol.\n\n```forward\n{\"op\":\"evaluate\",\"candidate\":\"c-6c45f6697830d4ee12d600db8b13ef674bc0760fd58d2177ed71097ac9303c9c\"}\n```"
+      },
+      {
+        "turn": 94,
+        "text": "I’ll review the random control, then test the broader contribution of these channels by zeroing their full output columns. Before that evaluation, I’ll fix a disjoint, feature-matched alternative set for the channel-identity control.\n\n```python\ncid19, r19 = review_eval(\"turn-0093\", \"r19_mlp15_random_direction\")\nprint(\"REMAINING_CHANGES\", json.dumps(r19[\"changes\"][40:]))\nrep19 = {x[\"id\"] for x in r19[\"changes\"] if x[\"effect\"] == \"repair\"}\nprint(\"RANDOM_DIRECTION_COMPARISON\", json.dumps({\n    \"shared_with_targeted_repairs\": sorted(rep19 & rep17),\n    \"captured_failure_repairs\": sorted(rep19 & set(failids))\n}))\n\nW15 = load_original(projection_plans[15][\"name\"])\nA15 = np.stack([vec(rid, 15, \"a\") for rid in all_probe_ids])\nnorm15 = np.linalg.norm(W15, axis=0)\nrms15 = np.sqrt(np.mean(A15 * A15, axis=0))\nfeatures15 = np.stack([\n    np.log(norm15 + 1e-12), np.log(rms15 + 1e-12),\n    A15.mean(axis=0) / (rms15 + 1e-12)\n], axis=1)\nfeatures15 = (features15 - features15.mean(axis=0)) / (features15.std(axis=0) + 1e-12)\nrng15 = np.random.default_rng(20261109)\nused15 = set(map(int, s15))\nmatched15 = []\nfor j in s15:\n    eligible = np.array([k for k in range(W15.shape[1]) if k not in used15])\n    distance = np.sum((features15[eligible] - features15[j]) ** 2, axis=1)\n    k = int(rng15.choice(eligible[np.argsort(distance)[:8]]))\n    matched15.append(k)\n    used15.add(k)\nmatched15 = np.array(matched15, dtype=np.int64)\nmatch15 = {\n    \"seed\": 20261109,\n    \"disjoint\": not bool(set(map(int, s15)) & set(map(int, matched15))),\n    \"median_column_norm_ratio\": float(np.median(norm15[matched15] / norm15[s15])),\n    \"median_activation_rms_ratio\": float(np.median(rms15[matched15] / rms15[s15])),\n    \"ablation_norm_ratio\": float(np.linalg.norm(W15[:, matched15]) / np.linalg.norm(W15[:, s15])),\n    \"matching\": \"Fixed before either ablation result; choose among eight nearest unused channels on standardized log weight norm, log activation RMS, and signed mean/RMS.\"\n}\nassert match15[\"disjoint\"] and len(set(map(int, matched15))) == 64\nnp.savez(\"/work/mlp15_matched_channel_plan.npz\",\n         selected=matched15, reference_selected=s15, features=features15)\nPath(\"/work/mlp15_matched_channel_plan.json\").write_text(json.dumps(match15, indent=2))\nprint(\"MLP15_ABLATION_MATCH\", json.dumps(match15))\nprint(\"SELECTED_ABLATION_PREDICTED_MEAN_LAST_TOKEN_CHANGE\",\n      float(np.linalg.norm(A15[:, s15] @ W15[:, s15].T, axis=1).mean()))\nstage_delta(projection_plans[15][\"name\"], s15, -W15[:, s15],\n            \"r20_mlp15_selected_channel_ablation\",\n            {\"reference\": \"r17_mlp15_direction_remove\",\n             \"operation\": \"Zero the 64 selected output columns; every other weight remains W0.\",\n             \"interpretation\": \"Broader channel-contribution stress test, not norm-matched to directional removal.\",\n             \"control_plan\": \"Compare with the already fixed disjoint matched-channel ablation.\"})\n```"
+      },
+      {
+        "turn": 95,
+        "text": "All three small layer-15 interventions left the captured failures unchanged. Round 20 tests whether those channels matter through components other than the nominated direction; its larger magnitude is explicitly not norm-matched.\n\n```forward\n{\"op\":\"commit\",\"parent\":\"c-6c45f6697830d4ee12d600db8b13ef674bc0760fd58d2177ed71097ac9303c9c\",\"rationale\":\"Round 20: full-column ablation of the 64 selected layer-15 MLP channels to test their broader contribution after directional interventions failed the focal prediction.\",\"evidence\":{\"failure_behavior\":\"The captured counterfactual-visual errors persisted under directional removal, augmentation, and a random-direction control.\",\"component_hypothesis\":\"The selected channels may contribute through multiple output components rather than the nominated rank-one projection.\",\"expected_change\":\"A channel-level repair account predicts captured-failure repairs and a net counterfactual-visual gain; widespread collateral changes would instead indicate nonspecific disruption.\",\"dose\":\"Zero 64 complete down-projection columns, support 163840, effective norm about 2.12686; not norm-matched to round 17.\",\"control_plan\":\"Evaluate a disjoint 64-channel set fixed before either ablation result, matched on weight norm and activation statistics; ablation norm ratio 0.99544.\",\"contrast_ids\":[\"C-125:counterfact_visual:T0:O0:B0\",\"C-125:counterfact_visual:T0:O1:B0\",\"C-232:counterfact_visual:T1:O1:B0\"],\"measurement_actions\":[\"turn-0011\",\"turn-0013\",\"turn-0087\",\"turn-0090\",\"turn-0093\"],\"role\":\"diagnostic\"}}\n```"
+      },
+      {
+        "turn": 96,
+        "text": "I’ll evaluate the full-column ablation across all conditions to measure both repairs and collateral damage.\n\n```forward\n{\"op\":\"evaluate\",\"candidate\":\"c-e9fcea94ac4ab2707f9680b593fd98d545416c0f6abe03d8307da18ef8f45b20\"}\n```"
+      }
+    ],
+    "process": "57720 06:58:53 /opt/anaconda3/bin/python -u /Users/ruizhixu/Documents/ChatGPT/acupuncture/experiments/wsp-vlm-gemma3-v9-2026-11-05-r02/queue_run.py --task C\n",
+    "latest_receipt": {
+      "turn": 96,
+      "billing": "existing_chatgpt",
+      "cost_is_reservation_not_invoice": true,
+      "cumulative_tokens": 14409412,
+      "elapsed_seconds": 14.841321665910073,
+      "monetary_cost_unknown": true,
+      "reserved_usd": 0.0,
+      "thread": "01a1aef4-3987-7b91-8771-d353858cfe77",
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 13553920,
+        "input_tokens": 14349981,
+        "output_tokens": 59431,
+        "reasoning_output_tokens": 23876
+      },
+      "usage_delta": {
+        "cached_input_tokens": 179712,
+        "input_tokens": 182076,
+        "output_tokens": 73
+      },
+      "usage_mode": "thread_cumulative"
+    },
+    "recent_evaluations": [
+      {
+        "id": "turn-0069",
+        "op": "evaluate",
+        "complete": true,
+        "failed": false,
+        "nested_failed": null,
+        "elapsed": 217.22530815377831,
+        "mtime": 1793942504.330308,
+        "rounds": 12
+      },
+      {
+        "id": "turn-0072",
+        "op": "evaluate",
+        "complete": true,
+        "failed": false,
+        "nested_failed": null,
+        "elapsed": 265.41178306750953,
+        "mtime": 1793942894.1792753,
+        "rounds": 13
+      },
+      {
+        "id": "turn-0075",
+        "op": "evaluate",
+        "complete": true,
+        "failed": false,
+        "nested_failed": null,
+        "elapsed": 243.52270387671888,
+        "mtime": 1793943246.4896684,
+        "rounds": 14
+      },
+      {
+        "id": "turn-0078",
+        "op": "evaluate",
+        "complete": true,
+        "failed": false,
+        "nested_failed": null,
+        "elapsed": 264.60158815421164,
+        "mtime": 1793943621.8584154,
+        "rounds": 15
+      },
+      {
+        "id": "turn-0082",
+        "op": "evaluate",
+        "complete": true,
+        "failed": false,
+        "nested_failed": null,
+        "elapsed": 240.45132577046752,
+        "mtime": 1793943998.4411838,
+        "rounds": 16
+      },
+      {
+        "id": "turn-0087",
+        "op": "evaluate",
+        "complete": true,
+        "failed": false,
+        "nested_failed": null,
+        "elapsed": 265.8626196999103,
+        "mtime": 1793944621.459733,
+        "rounds": 17
+      },
+      {
+        "id": "turn-0090",
+        "op": "evaluate",
+        "complete": true,
+        "failed": false,
+        "nested_failed": null,
+        "elapsed": 224.13374056480825,
+        "mtime": 1793944927.9264307,
+        "rounds": 18
+      },
+      {
+        "id": "turn-0093",
+        "op": "evaluate",
+        "complete": true,
+        "failed": false,
+        "nested_failed": null,
+        "elapsed": 272.9732958190143,
+        "mtime": 1793945304.225198,
+        "rounds": 19
+      }
+    ],
+    "cycles": [
+      389.8489673137665,
+      352.3103930950165,
+      375.3687469959259,
+      376.5827684402466,
+      623.0185492038727,
+      306.4666976928711,
+      376.29876732826233
+    ]
+  }
+}
