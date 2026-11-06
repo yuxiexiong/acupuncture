@@ -1,5 +1,7 @@
 # Acupuncture｜少数通道干预：缓存机制与稳定副作用控制
 
+**2026-11-06｜论文 v1.3：现有证据修订完成，无新实验。** [正文与结果](docs/mechanism-paper-skeleton-2026-11-05.zh-CN.md) · [核心贡献、真正缺口与修订核对](docs/mechanism-paper-evidence-gaps-2026-11-06.zh-CN.md)。统一原生来源与局部修复接收者边界，保留E作用、随机强反例和失败结果；NWR已完成开发性检验，NWC截至`9bf6cf638`为预检失败／修复、无正式确认结果。优先缺口为核心关系的开发外可靠性与特异性；更完整原生解释、跨模型和应用证据单列，不形成自动实验队列。下方v8及更早“当前／下一步／未运行”为历史记录；本轮没有模型/GPU调用。
+
 **2026-11-05｜核心贡献押注更新至 v8：H-WR 原生写入来源→直接读取→选择错误（待检验）。** [Proposal：近邻增量、最小补证与判据](docs/mechanism-second-half-v1-2026-11-03/PROPOSAL.zh-CN.md) · [Roadmap：NWR主比较收敛→冻结横向确认→整稿](docs/cache-mechanism-broadening-roadmap-2026-11-04.zh-CN.md) · [作者自查](docs/mechanism-second-half-v1-2026-11-03/CORE_CONTRIBUTION_SELF_CHECK.zh-CN.md)。已核对LVK合同：旧链以T为底，只改t1局部写入，不能混称整段V历史恢复。采用远端NWR的原生供体思路，取消另起t1整组S机制卡；主要终点必须包含实质选择错误而非仅停止。**本轮仅文档，无模型/GPU运行或授权；下方旧队列由v8替代。**
 
 **2026-11-05｜当前交付改为论文写作，第一步已完成。** [论文工作稿：摘要、论证、结果正文与图表骨架](docs/mechanism-paper-skeleton-2026-11-05.zh-CN.md) · [更新至KVC与旧数据审计的理论—证据骨干](docs/cache-mechanism-theory-evidence-spine-2026-11-03.zh-CN.md) · [124目录资产表](docs/RESEARCH_ASSET_CATALOG_2026-11-04.zh-CN.md) · [结果归档](docs/RESEARCH_ARCHIVE_2026-11-04.zh-CN.md)。已接入全部后继机制实验、失败与更正，分清同端点计算链、原生约束和WIN/KVC桥接；没有将它们拼成统一原生机制。**下方v7及更早“下一比较”均保留计划身份，当前不推进WPC或局部细拆。** 本次无新实验、模型/GPU调用。

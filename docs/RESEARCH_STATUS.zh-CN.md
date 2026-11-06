@@ -1,5 +1,7 @@
 # Acupuncture：研究状态与后续方向
 
+**2026-11-06｜现行论文口径：v1.3。** [论文](mechanism-paper-skeleton-2026-11-05.zh-CN.md) · [证据缺口及修订核对](mechanism-paper-evidence-gaps-2026-11-06.zh-CN.md)。核心为指定写入端点的状态差经直接读取改变完整回答；原生来源证据的接收者仍为局部修复端点，不是原生自然全链。NWR已完成；NWC截至`9bf6cf638`有预检失败与修复记录，无正式确认结果。G1/G2是开发外可靠性与特异性缺口，G3–G5对应更宽主张，不是新的运行计划。下方旧“当前／唯一顺序／未运行”只代表当时状态；本轮仅论文修订，无新实验。
+
 **2026-11-05｜当前决策：Proposal / Roadmap v8。** [候选H-WR与逐臂补证](mechanism-second-half-v1-2026-11-03/PROPOSAL.zh-CN.md) · [路线图](cache-mechanism-broadening-roadmap-2026-11-04.zh-CN.md) · [作者自查](mechanism-second-half-v1-2026-11-03/CORE_CONTRIBUTION_SELF_CHECK.zh-CN.md)。纳入论文v1.1背景更正：LVK/SRU为T底座上的局部写入端点。最值得补的是原生L00写入来源通过同一t2读取造成选择错误，接收者仍是已开口L11，不能称原生自然全链。NWR主比较A未过即停强路线；过后冻结操作做横向B，B结束即整稿，不返回局部细拆。**当前无新实验，旧优先级不再构成执行队列。**
 
 **2026-11-05｜当前为论文写作阶段，第一步证据体系已交付。** [论文工作稿](mechanism-paper-skeleton-2026-11-05.zh-CN.md)已写出摘要、引言、五节结果、讨论、覆盖账本及图表安排；[骨干](cache-mechanism-theory-evidence-spine-2026-11-03.zh-CN.md)纳入SRU之后至KVC和WIN协议审计的结果，[资产表](RESEARCH_ASSET_CATALOG_2026-11-04.zh-CN.md)覆盖124目录。当前已有条件性计算链与横向边界，尚无统一原生机制或开发外确认。WPC和KV读取设计保持未运行；**下方“下一项”不是当前执行队列。** 本轮只整理已有证据，无模型/GPU调用。

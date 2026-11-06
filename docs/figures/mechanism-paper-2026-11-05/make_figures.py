@@ -97,7 +97,7 @@ DIRS = [('N_L00_C4146_D-1', 'N4146'), ('N_L00_C1210_D-1', 'N1210'), ('R0_L00_D-1
 def fig2():
     en = J('enum-offline-r01.json')
     s = Svg(820)
-    s.text(18, 24, 'Write at t1, read at t2: outcomes of 48 inputs per arm (native intervened run)', 13, weight='bold')
+    s.text(18, 24, 'Write at t1, read at t2: outcomes of 48 inputs per arm (specified receivers)', 13, weight='bold')
     y = legend(s, 18, 46, LEG) + 4
     d = [('#', 'A  Replace v and/or k in the t1 write of the 14 recurrent layers (LVK)')]
     for key, nm in DIRS:
@@ -116,7 +116,7 @@ def fig2():
     p = DATA / 'nwr-readouts-r01.json'
     if p.exists():
         r = json.load(open(p))['rates']
-        d = [('#', 'C  At t2, read the state written by the native run itself (NWR; N4146)'),
+        d = [('#', 'C  NWR: native donor state read by a v-and-k repaired receiver (N4146)'),
              ('receiver v-and-k: none', cats(r['L11']['counts'])), ('+ D from native write', cats(r['D00']['counts'])),
              ('+ E from native write', cats(r['E00']['counts'])), ('+ D from v-only (SRU replay)', cats(r['D10']['counts']))]
         d += [(f'+ random patch {j}, same norm', cats(r[f'R{j}']['counts'])) for j in range(1, 6)]
@@ -253,7 +253,7 @@ def fig1():
     BX, BW, BH, Y0 = [18, 180, 342, 504, 666], 136, 62, 60
     boxes = [('Sparse intervention', 'layer 0, prompt window', 'one coordinate or a', 'random direction'),
              ('t1: write of the', 'recurrent layers', 'first such layer: native', 'and v-fix differ only in v'),
-             ('Written state S1', 'beta k v^T added to', 'the shared history S0', ''),
+             ('Written state S1', 'update of shared S0:', 'decay, correction,', 'and new-value write'),
              ('t2: direct read', 'alpha S1^T q', '(the other use, E, is', 'weak or opposite)'),
              ('Answer', 'target record, or', 'fall back to the', 'first-listed record')]
     for x, b in zip(BX, boxes):
@@ -275,15 +275,15 @@ def fig1():
     s.text(xb, Y0 + BH + 78, 'first-step stop, 47 of 48', 10.5, anchor='middle', fill=INK2)
     y = Y0 + BH + 122
     s.line(18, y - 14, 60, y - 14, stroke=INK2, width=1.6)
-    s.text(68, y - 10, 'operation evidence on the native intervened run', 11, fill=INK2)
+    s.text(68, y - 10, 'evidence at specified endpoints', 11, fill=INK2)
     s.line(400, y - 14, 442, y - 14, stroke=INK2, width=1.6, dash='5 4')
     s.text(450, y - 10, 'not identified', 11, fill=INK2)
     notes = [('Entry (dashed)', 'why the intervention changes v and k at t1 is not explained.'),
-             ('t1 write (LVK)', 'replacing v opens the first step; replacing v and k gives 39 of 48 correct. Native run: 0 of 48.'),
-             ('t2 read (SRU)', 'reading the other written state through the direct read moves answers both ways: 39 to 18, 16 to 34.'),
-             ('t2 read (NWR)', 'reading the state written by the native run takes 39 of 48 to 16 of 48; all 48 outputs are the first-listed record.'),
-             ('Control (NWR)', 'five random patches of the same norm lose 0.03 on average, but one of the five loses 18 answers.'),
-             ('Not reached', 'the native run stops at t1, so its own t2 read cannot be observed without forcing a first token.')]
+             ('t1 write (LVK)', 'local v/k operations on shared native history: 0 to 16 to 39 correct, of 48 (N4146).'),
+             ('t2 read (SRU)', 'local write endpoints as receivers; direct-read swaps: 39 to 18, 16 to 34 (N4146).'),
+             ('t2 read (NWR)', 'native donor, repaired receiver: 39 to 16 of 48 correct; all 48 select the first record.'),
+             ('Control (NWR)', 'same-norm random patches: mean scene-weighted loss 0.033; one adds 18 errors.'),
+             ('Not reached', 'native L00 stops at t1 on 47/48 inputs; its natural t2 read is not measured here.')]
     for a, b in notes:
         s.text(18, y + 12, a, 11, weight='bold')
         s.text(138, y + 12, b, 11, fill=INK2)

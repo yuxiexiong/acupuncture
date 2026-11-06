@@ -1,5 +1,7 @@
 # 项目文档目录
 
+**2026-11-06｜Acupuncture机制论文修订交付：** [v1.3正文](mechanism-paper-skeleton-2026-11-05.zh-CN.md) · [核心贡献、证据缺口与修订核对](mechanism-paper-evidence-gaps-2026-11-06.zh-CN.md)。同步正文与图示更正，区分局部操作充分性、原生自然路径和开发外确认；没有新增模型/GPU运行。
+
 **2026-11-06｜第一轮 C 新数据容量实审（CPU完成，无模型运行）：** [报告与统计边界](../experiments/wsp-c-data-capacity-audit-v1-2026-11-06/REPORT.zh-CN.md) · [自查](../experiments/wsp-c-data-capacity-audit-v1-2026-11-06/SELF_CHECK.zh-CN.md)。本地/远端曝光并集均为旧160组；排除复用素材后167个对象对，单审50对通过，可取24个素材不重叠配对。质量前上限52，现有材料不足T200；24尚未独立双审，仅可考虑有限外部检查，未启动任何实验。
 
 **2026-11-06｜第一轮 C 冻结补丁验证（仅方案，未运行）：** [新来源、新问法与提示/PvP/Nullu比较](wsp-c-frozen-validation-v1-2026-11-06/PLAN.zh-CN.md) · [C01–C14与反方自查](wsp-c-frozen-validation-v1-2026-11-06/SELF_CHECK.zh-CN.md) · [证据与哈希](wsp-c-frozen-validation-v1-2026-11-06/sources.json)。固定v8 R45；目标T200，旧H已见；先验收新数据容量与基线适配，再考虑运行。主指标沿用反事实常识/视觉两题联合；逻辑自查通过，数据/工程待验收，无新模型或GPU授权。
