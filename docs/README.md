@@ -1,5 +1,7 @@
 # 项目文档目录
 
+**2026-11-06｜开发外确认 NWC-01 结果（已运行）：** [NWC-01 报告](../experiments/cache-native-write-confirm-v1-2026-11-05/REPORT.zh-CN.md) · [偏离与修复 D1](../experiments/cache-native-write-confirm-v1-2026-11-05/DEVIATIONS.zh-CN.md) · [工作稿 §15 结果增补](mechanism-paper-skeleton-2026-11-05.zh-CN.md) · [图 7](figures/mechanism-paper-2026-11-05/fig7-confirmation.svg)。坏消息先说：方向特异性的三条预测在三个方向上全部不成立，同范数随机补丁里接近一半达到一半的单步分差，错答同样落在首列编号；预检第一次在一个写错的恒等式闸门上失败（无新面板输出），按合同修复一次。结果：中心预测在 N4146、N1210 两个主要方向与 R0 都成立——目标不在首列的 48 条新输入上，接收者正确数 41、47、46 在读入原生来源状态后降到 0、11、17，修正用途不致错；目标在首列的 24 条不受影响；移植另一输入的写入差效果相近。读法：t2 直接读取承载按查询选记录，被扰动后落到首列这个默认答案；"原生状态携带特定内容"不成立。工作稿 v1.3 正文（另一会话，截点 9bf6cf6）未改动，§15 列出需更新的句子。合同 r03、freeze-r03、约 1.15 GPUh。本线到此结束，进入整稿；后续候选未授权。
+
 **2026-11-06｜Acupuncture机制论文修订交付：** [v1.3正文](mechanism-paper-skeleton-2026-11-05.zh-CN.md) · [核心贡献、证据缺口与修订核对](mechanism-paper-evidence-gaps-2026-11-06.zh-CN.md)。同步正文与图示更正，区分局部操作充分性、原生自然路径和开发外确认；没有新增模型/GPU运行。
 
 **2026-11-06｜第一轮 C 新数据容量实审（CPU完成，无模型运行）：** [报告与统计边界](../experiments/wsp-c-data-capacity-audit-v1-2026-11-06/REPORT.zh-CN.md) · [自查](../experiments/wsp-c-data-capacity-audit-v1-2026-11-06/SELF_CHECK.zh-CN.md)。本地/远端曝光并集均为旧160组；排除复用素材后167个对象对，单审50对通过，可取24个素材不重叠配对。质量前上限52，现有材料不足T200；24尚未独立双审，仅可考虑有限外部检查，未启动任何实验。
