@@ -1,0 +1,11 @@
+The observer selected candidate 22 as the new best. I’ll inspect whether it won through a higher joint score or equal performance with fewer changed scalars, and check its remaining control regressions.
+
+```python
+h22 = compact_audit(105, "attention_7_8_1.075")
+print("JOINT_DELTA_VS_PREVIOUS_BEST", h22["metrics"]["B0"]["joint"] - best_joint)
+assert read_turn(105)["budget"]["best"] == h22["candidate"]
+best_candidate = h22["candidate"]
+best_joint = h22["metrics"]["B0"]["joint"]
+best_support = read_turn(104)["value"]["changed_scalars"]
+print("TRACKED_BEST", best_candidate, best_joint, best_support)
+```
