@@ -1,0 +1,2474 @@
+{
+  "scope": "Post hoc saved-development search-target audit",
+  "calls": {
+    "gpu": 0,
+    "model": 0
+  },
+  "stable_sources": [
+    "C-007",
+    "C-041",
+    "C-077",
+    "C-131",
+    "C-140",
+    "C-147",
+    "C-272",
+    "C-278",
+    "C-293",
+    "C-328",
+    "C-334",
+    "C-339",
+    "C-353",
+    "C-520",
+    "C-540",
+    "C-658"
+  ],
+  "exact_stable_failed_ids": [
+    "C-007:counterfact_visual:T0:O0:B0",
+    "C-007:counterfact_visual:T0:O1:B0",
+    "C-041:counterfact_visual:T0:O0:B0",
+    "C-041:counterfact_visual:T0:O1:B0",
+    "C-077:counterfact_usual:T0:O0:B0",
+    "C-077:counterfact_usual:T0:O1:B0",
+    "C-131:counterfact_visual:T0:O0:B0",
+    "C-131:counterfact_visual:T0:O1:B0",
+    "C-140:counterfact_visual:T0:O0:B0",
+    "C-140:counterfact_visual:T0:O1:B0",
+    "C-147:counterfact_usual:T0:O0:B0",
+    "C-147:counterfact_usual:T0:O1:B0",
+    "C-272:counterfact_usual:T0:O0:B0",
+    "C-272:counterfact_usual:T0:O1:B0",
+    "C-278:counterfact_visual:T0:O0:B0",
+    "C-278:counterfact_visual:T0:O1:B0",
+    "C-293:counterfact_visual:T0:O0:B0",
+    "C-293:counterfact_visual:T0:O1:B0",
+    "C-328:counterfact_visual:T0:O0:B0",
+    "C-328:counterfact_visual:T0:O1:B0",
+    "C-334:counterfact_visual:T0:O0:B0",
+    "C-334:counterfact_visual:T0:O1:B0",
+    "C-339:counterfact_visual:T0:O0:B0",
+    "C-339:counterfact_visual:T0:O1:B0",
+    "C-353:counterfact_usual:T0:O1:B0",
+    "C-353:counterfact_visual:T0:O0:B0",
+    "C-353:counterfact_visual:T0:O1:B0",
+    "C-520:counterfact_visual:T0:O0:B0",
+    "C-520:counterfact_visual:T0:O1:B0",
+    "C-540:counterfact_usual:T0:O0:B0",
+    "C-540:counterfact_usual:T0:O1:B0",
+    "C-658:counterfact_visual:T0:O0:B0",
+    "C-658:counterfact_visual:T0:O1:B0"
+  ],
+  "runs": {
+    "v8": {
+      "ops": [
+        {
+          "turn": "turn-0006",
+          "op": "image",
+          "ids": [
+            "C-007:counterfact_visual:T0:O0:B0"
+          ],
+          "groups": [
+            "C-007"
+          ],
+          "stable_groups": [
+            "C-007"
+          ],
+          "stable_failed_id_matches": [
+            "C-007:counterfact_visual:T0:O0:B0"
+          ],
+          "text_overrides": false,
+          "prose": "The raw answers show a useful contrast: C-007 answers “Tow truck” even for counterfactual visual size, whereas C-020 follows the counterfactual image even for typical size. I will inspect C-007’s authoritative input image first. A clearly larger Pomeranian would support a grounding or scope-selection error rather than an ambiguous preview."
+        },
+        {
+          "turn": "turn-0009",
+          "op": "measure",
+          "ids": [
+            "C-007:counterfact_visual:T0:O0:B0"
+          ],
+          "groups": [
+            "C-007"
+          ],
+          "stable_groups": [
+            "C-007"
+          ],
+          "stable_failed_id_matches": [
+            "C-007:counterfact_visual:T0:O0:B0"
+          ],
+          "text_overrides": false,
+          "prose": "I will first test a narrow hypothesis: the image-to-text interface may be miscalibrated, but increasing image influence could help visual judgments while hurting usual-size judgments. Before editing its 1,152-element normalization vector, I will verify the tensor axes and normalization behavior on one counterfactual image. This is a structural measurement, not label fitting."
+        },
+        {
+          "turn": "turn-0026",
+          "op": "measure",
+          "ids": [
+            "C-007:no_image_usual:T0:O0:B0"
+          ],
+          "groups": [
+            "C-007"
+          ],
+          "stable_groups": [
+            "C-007"
+          ],
+          "stable_failed_id_matches": [],
+          "text_overrides": false,
+          "prose": "The two visual wordings use “image” and “pictured,” while ordinary usual-size prompts use neither. The embedding is tied to the output head, so an edit could also affect generation and must be checked for format errors. I will verify these two token identities through a metered readout before testing their embedding amplitudes; no object names or answer labels enter this diagnostic continuation."
+        },
+        {
+          "turn": "turn-0037",
+          "op": "measure",
+          "ids": [
+            "C-007:counterfact_visual:T0:O0:B0"
+          ],
+          "groups": [
+            "C-007"
+          ],
+          "stable_groups": [
+            "C-007"
+          ],
+          "stable_failed_id_matches": [
+            "C-007:counterfact_visual:T0:O0:B0"
+          ],
+          "text_overrides": false,
+          "prose": "The restored Gemma catalog has 34 decoder blocks. Scaling all post-attention normalization gains would touch at most 87,040 scalars, without choosing a privileged layer. I will first verify the gain convention and last-token capture indexing at early, middle, and late blocks. I expect the same `1 + weight` convention already observed in the projector."
+        }
+      ],
+      "commits": [
+        {
+          "turn": "turn-0011",
+          "round": 1,
+          "candidate": "c-9f31292db41a58c5b274e99d5e0e5cb0a78b7626238e06a6cab9a23d238cbddf",
+          "evidence": null,
+          "rationale": "Mechanistic calibration test: multiply effective multimodal-projector RMSNorm gain (1+w) by 1.2. No answer-label fitting; 1152 available scalar locations. Hypothesis: stronger visual signal may repair counterfactual visual errors, with explicitly tested risk of worsening usual-size judgments. Full fixed development and all protection cells required.",
+          "contrast_ids": [],
+          "stable_group_ids": [],
+          "exact_stable_failed_ids": [],
+          "baseline_failed_contrast_ids": [],
+          "formal_repaired_contrast_ids": []
+        },
+        {
+          "turn": "turn-0017",
+          "round": 2,
+          "candidate": "c-0383f72636917c211e471b4e70d520fdaebf90f970b1102261948f44ac8a96b4",
+          "evidence": null,
+          "rationale": "Opposite-direction control for global image-interface calibration: multiply effective projector RMSNorm gain (1+w) by 0.8 from W0. No label fitting. Expect possible usual-size recovery and visual-size losses; evaluate all fixed development cells and joint correctness.",
+          "contrast_ids": [],
+          "stable_group_ids": [],
+          "exact_stable_failed_ids": [],
+          "baseline_failed_contrast_ids": [],
+          "formal_repaired_contrast_ids": []
+        },
+        {
+          "turn": "turn-0022",
+          "round": 3,
+          "candidate": "c-82502fbddf3fc8cb1c6a23bd8286c4fb45e9bbe4b630dda0101278a31afad52f",
+          "evidence": null,
+          "rationale": "Smaller adaptive calibration test after 1.2x slightly improved joint correctness but failed two accuracy-protection cells, and 0.8x reduced joint correctness. Set projector effective RMSNorm gain to 1.1x W0. Coefficient selected using development feedback; no answer-label vector fitting or target-model training.",
+          "contrast_ids": [],
+          "stable_group_ids": [],
+          "exact_stable_failed_ids": [],
+          "baseline_failed_contrast_ids": [],
+          "formal_repaired_contrast_ids": []
+        },
+        {
+          "turn": "turn-0029",
+          "round": 4,
+          "candidate": "c-0a6c6ab3bd296db540289e5a66ecb6129f1622b41374ca154a1c1dfe1b563295",
+          "evidence": null,
+          "rationale": "Revised scope-cue hypothesis after global projector gains did not yield a protected joint improvement. Multiply W0 tied embedding rows 2471 (' image') and 56594 (' pictured') by 1.25; preserve all other rows and projector weights. Token identities verified by metered continuation, selected from input scope wording, not answer labels. No target training or fitted label vectors. Expected B0 usual invariance; all B1 conditions and format are explicitly at risk and require full evaluation.",
+          "contrast_ids": [],
+          "stable_group_ids": [],
+          "exact_stable_failed_ids": [],
+          "baseline_failed_contrast_ids": [],
+          "formal_repaired_contrast_ids": []
+        },
+        {
+          "turn": "turn-0039",
+          "round": 5,
+          "candidate": "c-f6b502ee02d3153a9e51ebb367539e3807c1390429d79a3cab8b8df905ca040e",
+          "evidence": null,
+          "rationale": "Candidate 5/30: multiply (1+w) of all 34 actual Gemma decoder post_attention_layernorm vectors by 1.05. Runtime gain convention verified by metered captures at layers 0,16,33. Coarse attention-residual balance test after failed projector and cue-amplitude edits. No label-vector fitting, neuron ranking, or target-model training; full controls required.",
+          "contrast_ids": [],
+          "stable_group_ids": [],
+          "exact_stable_failed_ids": [],
+          "baseline_failed_contrast_ids": [],
+          "formal_repaired_contrast_ids": []
+        },
+        {
+          "turn": "turn-0043",
+          "round": 6,
+          "candidate": "c-39a8fd45f297445b6d08662a3550162a47b94aadc9d6b6b2b8c4296ca7fa6669",
+          "evidence": null,
+          "rationale": "Candidate 6/30: independent W0-derived 0.95x effective post-attention RMSNorm gains across all 34 Gemma decoder blocks, replacing candidate 5's 1.05x gains. Opposite-direction test prompted by candidate 5's modest joint gain but no-image and B1 visual protection losses. No label-vector fitting.",
+          "contrast_ids": [],
+          "stable_group_ids": [],
+          "exact_stable_failed_ids": [],
+          "baseline_failed_contrast_ids": [],
+          "formal_repaired_contrast_ids": []
+        },
+        {
+          "turn": "turn-0046",
+          "round": 7,
+          "candidate": "c-04ceffb699e5f368fcde970954633b2761b2c949961f954510a28392abc58ea7",
+          "evidence": null,
+          "rationale": "Candidate 7/30: restore all attention gains to W0; set all 34 post_feedforward_layernorm effective gains to 0.95x W0. Compare reduced MLP residual strength with increased attention strength from candidate 5, without assuming exclusive visual/knowledge roles. No label-vector fitting; full development selection and protection unchanged.",
+          "contrast_ids": [],
+          "stable_group_ids": [],
+          "exact_stable_failed_ids": [],
+          "baseline_failed_contrast_ids": [],
+          "formal_repaired_contrast_ids": []
+        },
+        {
+          "turn": "turn-0049",
+          "round": 8,
+          "candidate": "c-60db5cd8bf604fee9d139e75becb90fe400b865f92ac4753a8fcfc7f4c6b8391",
+          "evidence": null,
+          "rationale": "Candidate 8/30: replace all decoder post-feedforward effective gains with 1.05x W0 values; attention stays W0. Opposite-direction control after reduced MLP strength reproduced many increased-attention repairs and protection failures. No fitting of label-derived vectors.",
+          "contrast_ids": [],
+          "stable_group_ids": [],
+          "exact_stable_failed_ids": [],
+          "baseline_failed_contrast_ids": [],
+          "formal_repaired_contrast_ids": []
+        },
+        {
+          "turn": "turn-0052",
+          "round": 9,
+          "candidate": "c-9b0b98a01684d0fddab94582ed56fab5392c1bdc045e6f0c018b61a344187585",
+          "evidence": null,
+          "rationale": "Candidate 9/30: restore residual gains to W0; multiply effective self_attn.q_norm gains by 1.10 in all 34 Gemma decoder blocks. Tests attention selectivity separately from attention/MLP residual amplitude. 8506 effective scalars; no generation-setting changes or label-vector fitting.",
+          "contrast_ids": [],
+          "stable_group_ids": [],
+          "exact_stable_failed_ids": [],
+          "baseline_failed_contrast_ids": [],
+          "formal_repaired_contrast_ids": []
+        },
+        {
+          "turn": "turn-0056",
+          "round": 10,
+          "candidate": "c-be3236cec214f83edd2e123102accf462390175e95955390a1aac888382b4e01",
+          "evidence": null,
+          "rationale": "Candidate 10/30: replace all 34 decoder self_attn.q_norm effective gains with 0.90x W0 values. Opposite-direction control after 1.10x reduced ordinary joint correctness and violated six accuracy protections. All residual gains and other parameters remain W0. Development feedback informs this scalar choice; no label-vector fitting or target-model training.",
+          "contrast_ids": [],
+          "stable_group_ids": [],
+          "exact_stable_failed_ids": [],
+          "baseline_failed_contrast_ids": [],
+          "formal_repaired_contrast_ids": []
+        },
+        {
+          "turn": "turn-0060",
+          "round": 11,
+          "candidate": "c-8dacefc7992cd6be18b9bb6f9ff0f746c418d7feefd6b2b1218a30f7f8fe1c94",
+          "evidence": null,
+          "rationale": "Candidate 11/30: restore all query norms to W0 and scale effective post_attention_layernorm gains by 1.05 only in Gemma decoder layers 0-8. First of four contiguous depth-band localization tests prompted by candidate 5's small ordinary joint gain with collateral protection losses. All other parameters W0; no neuron ranking, label-vector fitting, or target-model training.",
+          "contrast_ids": [],
+          "stable_group_ids": [],
+          "exact_stable_failed_ids": [],
+          "baseline_failed_contrast_ids": [],
+          "formal_repaired_contrast_ids": []
+        },
+        {
+          "turn": "turn-0063",
+          "round": 12,
+          "candidate": "c-88c4edc466ff7d5fdc9f4542da77df6fe343e1e9b4051ee80a2d9f138c073b00",
+          "evidence": null,
+          "rationale": "Candidate 12/30: restore layers 0-8 post-attention gains to W0; scale effective post_attention_layernorm gains by 1.05 only in layers 9-17. Matched-depth comparison after early-band joint improvement failed three protected cells. All other parameters W0; development feedback only, no label-vector fitting or target-model training.",
+          "contrast_ids": [],
+          "stable_group_ids": [],
+          "exact_stable_failed_ids": [],
+          "baseline_failed_contrast_ids": [],
+          "formal_repaired_contrast_ids": []
+        },
+        {
+          "turn": "turn-0070",
+          "round": 13,
+          "candidate": "c-96873996bc0887892a0dfd4e3e6ab0f55150b6187118cc435cd0b1db668d3c08",
+          "evidence": null,
+          "rationale": "Candidate 13/30: W0-derived 1.05x effective post_attention_layernorm gains only in Gemma decoder layers 18-25, restoring layers 9-17 to W0. Continues matched-depth localization after the first two bands showed different joint outcomes but protection failures. No label-vector fitting or target-model training; all other parameters W0.",
+          "contrast_ids": [],
+          "stable_group_ids": [],
+          "exact_stable_failed_ids": [],
+          "baseline_failed_contrast_ids": [],
+          "formal_repaired_contrast_ids": []
+        },
+        {
+          "turn": "turn-0073",
+          "round": 14,
+          "candidate": "c-4a81a51eec0fbb661d780492e9d865f14e1733ae7fecacbeae6cba0755699b6f",
+          "evidence": null,
+          "rationale": "Candidate 14/30: restore layers 18-25 to W0 and scale effective post_attention_layernorm gains by 1.05 only in Gemma decoder layers 26-33. Completes the matched four-band comparison; preceding band passed accuracy protections but did not improve ordinary joint correctness. All other parameters W0; no label-vector fitting or target-model training.",
+          "contrast_ids": [],
+          "stable_group_ids": [],
+          "exact_stable_failed_ids": [],
+          "baseline_failed_contrast_ids": [],
+          "formal_repaired_contrast_ids": []
+        },
+        {
+          "turn": "turn-0077",
+          "round": 15,
+          "candidate": "c-734dc974195571f372d473483c8672ec4cd247b10c2693c0db15f319c361dc09",
+          "evidence": null,
+          "rationale": "Candidate 15/30: restore late-band attention gains to W0; set effective post_attention_layernorm gains in layers 0-8 to 1.025x W0. Adaptive half-step after 1.05x early-band scaling improved ordinary joint correctness but failed three protections, while other depth bands showed no improvement. No assumption of monotonic response; no label-vector fitting or target-model training.",
+          "contrast_ids": [],
+          "stable_group_ids": [],
+          "exact_stable_failed_ids": [],
+          "baseline_failed_contrast_ids": [],
+          "formal_repaired_contrast_ids": []
+        },
+        {
+          "turn": "turn-0081",
+          "round": 16,
+          "candidate": "c-05b08670eaea716701270d6cc24eff9acc43d7ad8fd637281b1e04fa7dea5943",
+          "evidence": null,
+          "rationale": "Candidate 16/30: W0-derived 1.0125x effective post_attention_layernorm gains in decoder layers 0-8, all other weights W0. Adaptive half-step after 1.025x retained a joint gain but failed one protected no-image cell. Tests the gain/protection tradeoff without assuming monotonicity. Development-label feedback guides scalar choice; no label-vector fitting or target-model training.",
+          "contrast_ids": [],
+          "stable_group_ids": [],
+          "exact_stable_failed_ids": [],
+          "baseline_failed_contrast_ids": [],
+          "formal_repaired_contrast_ids": []
+        },
+        {
+          "turn": "turn-0085",
+          "round": 17,
+          "candidate": "c-4feabedf4faf7fae94ef37302464d61c9fa40d357e69b12ea9ff1343877567ce",
+          "evidence": null,
+          "rationale": "Candidate 17/30: 1.05x W0 effective post_attention_layernorm gains only in layers 0-4; restore layers 5-8 to W0. Finer localization after early-band dose reduction removed protection failures but also removed the joint gain. Tests separation of beneficial and harmful effects by depth. All other parameters W0; development feedback guides selection, without label-vector fitting or target-model training.",
+          "contrast_ids": [],
+          "stable_group_ids": [],
+          "exact_stable_failed_ids": [],
+          "baseline_failed_contrast_ids": [],
+          "formal_repaired_contrast_ids": []
+        },
+        {
+          "turn": "turn-0089",
+          "round": 18,
+          "candidate": "c-9fa9b584c5694ccd1fc0082446a464d08310c7c952b9174910d98f0d738f449f",
+          "evidence": null,
+          "rationale": "Candidate 18/30: W0-derived 1.05x effective post_attention_layernorm gains only in layers 5-8; restore layers 0-4. Complementary localization test after the first sub-band retained joint improvement but failed two protected cells, including a 7/64 no-image loss. All other weights W0. Development feedback informs the comparison; no label-vector fitting or target-model training.",
+          "contrast_ids": [],
+          "stable_group_ids": [],
+          "exact_stable_failed_ids": [],
+          "baseline_failed_contrast_ids": [],
+          "formal_repaired_contrast_ids": []
+        },
+        {
+          "turn": "turn-0093",
+          "round": 19,
+          "candidate": "c-b6e9121a6a5e6361685e6fcd1db4886a472d11f5c539e22017b6f1db06fa8ad2",
+          "evidence": null,
+          "rationale": "Candidate 19/30: replace layers 5-8 post_attention_layernorm effective gains with 1.10x W0 values; all other parameters W0. Dose-response test following candidate 18's eligible 2/256 ordinary joint improvement at 1.05x, with acknowledged original-image regressions. No monotonicity assumption, label-vector fitting, or target-model training; adaptive choice uses development feedback.",
+          "contrast_ids": [],
+          "stable_group_ids": [],
+          "exact_stable_failed_ids": [],
+          "baseline_failed_contrast_ids": [],
+          "formal_repaired_contrast_ids": []
+        },
+        {
+          "turn": "turn-0097",
+          "round": 20,
+          "candidate": "c-eb1f7e51b1dcfe5a9bb876c566d113c9f8be69d3c0ca949760175f3bfc96ee50",
+          "evidence": null,
+          "rationale": "Candidate 20/30: W0-derived 1.075x effective post_attention_layernorm gains in layers 5-8 only. Intermediate dose between eligible 1.05x and 1.10x, which improved joint correctness further but failed two no-image protections. All other weights W0; adaptive development-label feedback only, no label-vector fitting or target-model training.",
+          "contrast_ids": [],
+          "stable_group_ids": [],
+          "exact_stable_failed_ids": [],
+          "baseline_failed_contrast_ids": [],
+          "formal_repaired_contrast_ids": []
+        },
+        {
+          "turn": "turn-0101",
+          "round": 21,
+          "candidate": "c-0b918e2e4aa9bf786429c142a53df97fb5a0b3a7d9af05d0d8704c8470e2a722",
+          "evidence": null,
+          "rationale": "Candidate 21/30: 1.075x W0 effective post_attention_layernorm gains only in layers 5-6, restoring layers 7-8. Tests whether the larger joint improvement and single no-image protection failure of candidate 20 separate across two-layer sub-bands. All other weights W0; development-guided localization without label-vector fitting or target-model training.",
+          "contrast_ids": [],
+          "stable_group_ids": [],
+          "exact_stable_failed_ids": [],
+          "baseline_failed_contrast_ids": [],
+          "formal_repaired_contrast_ids": []
+        },
+        {
+          "turn": "turn-0104",
+          "round": 22,
+          "candidate": "c-ae99ada04ea8b8c6a276ea8db93cf864fdaf236014edf02d2585da5954957f64",
+          "evidence": null,
+          "rationale": "Candidate 22/30: 1.075x W0 effective post_attention_layernorm gains only in layers 7-8, restoring layers 5-6. Complement to candidate 21, whose small joint gain retained the full no-image protection loss of the four-layer edit. Tests independent and interacting contributions; all other weights W0. No label-vector fitting or target-model training.",
+          "contrast_ids": [],
+          "stable_group_ids": [],
+          "exact_stable_failed_ids": [],
+          "baseline_failed_contrast_ids": [],
+          "formal_repaired_contrast_ids": []
+        },
+        {
+          "turn": "turn-0109",
+          "round": 23,
+          "candidate": "c-95e374b740519d4657fa631b07fd560b3998b85b853f4d6cd776a64ebc93a33f",
+          "evidence": null,
+          "rationale": "Candidate 23/30: 1.075x W0 effective post_attention_layernorm gain only in decoder layer 7, restoring layer 8 to W0. Ablation of eligible candidate 22, which improved ordinary joint correctness by 7/256 versus W0 but retained some control regressions. Tests the contribution of layer 7 without assuming additive layer effects. All other parameters W0; development-guided selection, no label-vector fitting or target-model training.",
+          "contrast_ids": [],
+          "stable_group_ids": [],
+          "exact_stable_failed_ids": [],
+          "baseline_failed_contrast_ids": [],
+          "formal_repaired_contrast_ids": []
+        },
+        {
+          "turn": "turn-0113",
+          "round": 24,
+          "candidate": "c-1dd3ce21bc7741ae36a28bd378790ca63cd60c924323d5335a09209aa7c91876",
+          "evidence": null,
+          "rationale": "Candidate 24/30: 1.075x W0 effective post_attention_layernorm gain only in decoder layer 8, restoring layer 7. Completes the matched single-layer comparison with candidate 23 and two-layer candidate 22; layer 7 alone reached 96/256 ordinary joint correctness versus 94/256 jointly. Tests independent and interacting effects rather than assuming additivity. All other weights W0; no label-vector fitting or target-model training.",
+          "contrast_ids": [],
+          "stable_group_ids": [],
+          "exact_stable_failed_ids": [],
+          "baseline_failed_contrast_ids": [],
+          "formal_repaired_contrast_ids": []
+        },
+        {
+          "turn": "turn-0117",
+          "round": 25,
+          "candidate": "c-f4cddf14dc06bdeb15ddd20bc4c90c26e5cafde271ac438a8918f370f388d418",
+          "evidence": null,
+          "rationale": "Candidate 25/30: 1.10x W0 effective post_attention_layernorm gain only in decoder layer 7; all other parameters W0. Dose-response test following eligible candidate 23 at 1.075x, which reached 96/256 ordinary joint correctness but lost three aggregate no-image answers. Layer 8 alone was weak and failed a protected cell. Tests additional benefit versus control damage without assuming monotonicity; no label-vector fitting or target-model training.",
+          "contrast_ids": [],
+          "stable_group_ids": [],
+          "exact_stable_failed_ids": [],
+          "baseline_failed_contrast_ids": [],
+          "formal_repaired_contrast_ids": []
+        },
+        {
+          "turn": "turn-0121",
+          "round": 26,
+          "candidate": "c-d2214194f24c01e8fa0408b21182b994b2a591b9b89caafd5c36d155ed4f8a36",
+          "evidence": null,
+          "rationale": "Candidate 26/30: 1.05x W0 effective post_attention_layernorm gain only in decoder layer 7. Lower-dose comparison after 1.075x reached 96/256 ordinary joint correctness and 1.10x reached 95/256 with additional original-visual regressions; both passed protections. Tests whether reducing the edit preserves benefit with fewer regressions. All other weights W0; adaptive development feedback, no label-vector fitting or target-model training.",
+          "contrast_ids": [],
+          "stable_group_ids": [],
+          "exact_stable_failed_ids": [],
+          "baseline_failed_contrast_ids": [],
+          "formal_repaired_contrast_ids": []
+        },
+        {
+          "turn": "turn-0125",
+          "round": 27,
+          "candidate": "c-a4157bf1c6d95d22cffaa72cb750abe5d558543a737f5cc7f8b8a056871ae141",
+          "evidence": null,
+          "rationale": "Candidate 27/30: 0.925x W0 effective post_attention_layernorm gain only in decoder layer 7. Opposite-direction control for candidate 23's 1.075x edit, with matched nominal 7.5% gain perturbation and identical 2549-scalar effective BF16 support. Tests whether the observed development benefit depends on direction rather than any perturbation at this layer. All other weights W0; no assumed outcome, label-vector fitting, or target-model training.",
+          "contrast_ids": [],
+          "stable_group_ids": [],
+          "exact_stable_failed_ids": [],
+          "baseline_failed_contrast_ids": [],
+          "formal_repaired_contrast_ids": []
+        },
+        {
+          "turn": "turn-0129",
+          "round": 28,
+          "candidate": "c-69f920ec543358de6948fa5501ae02c7f850fbc5a204970d9b1c13f6aced9af9",
+          "evidence": null,
+          "rationale": "Candidate 28/30: 0.925x W0 effective post_feedforward_layernorm gain only in decoder layer 7, restoring post_attention_layernorm to W0. Alternative branch-balance intervention motivated by beneficial attention amplification and harmful attention attenuation for ordinary joint correctness. Tests whether feed-forward attenuation produces a similar benefit; it is not algebraically equivalent to attention amplification, and no outcome is assumed. All other weights W0; no label-vector fitting or target-model training.",
+          "contrast_ids": [],
+          "stable_group_ids": [],
+          "exact_stable_failed_ids": [],
+          "baseline_failed_contrast_ids": [],
+          "formal_repaired_contrast_ids": []
+        },
+        {
+          "turn": "turn-0133",
+          "round": 29,
+          "candidate": "c-41b5b67a1023e4ac074f55c955d21481d94fc8ad05788926d6a1c0571089f99a",
+          "evidence": null,
+          "rationale": "Candidate 29/30: 1.0625x W0 effective post_attention_layernorm gain only in decoder layer 7; restore post_feedforward_layernorm to W0. Intermediate dose between 1.05x (92/256 ordinary joint, worst cell delta -1/64) and 1.075x (96/256, worst cell delta -2/64). Tests whether a smaller edit retains the best gain with fewer regressions, without assuming monotonicity. Feed-forward attenuation did not reproduce the joint benefit. Development-guided scalar selection; no label-vector fitting or target-model training.",
+          "contrast_ids": [],
+          "stable_group_ids": [],
+          "exact_stable_failed_ids": [],
+          "baseline_failed_contrast_ids": [],
+          "formal_repaired_contrast_ids": []
+        },
+        {
+          "turn": "turn-0137",
+          "round": 30,
+          "candidate": "c-940ec832779199837ab0ba4ca511ba2946bcaf5e0218c2f8ffd69522f272df05",
+          "evidence": null,
+          "rationale": "Candidate 30/30: 1.06875x W0 effective post_attention_layernorm gain only in decoder layer 7; all other weights W0. Final midpoint test between 1.0625x (95/256 ordinary joint correctness, seven worsened requests, worst cell loss 1/64) and 1.075x (96/256, thirteen worsened requests, worst cell loss 2/64). Tests retention of the primary joint benefit at a smaller perturbation; no monotonicity or outcome assumed. Adaptive development-guided scalar search, no label-vector fitting or target-model training. Complete the search after this full-development evaluation under the unchanged selection and protection rules.",
+          "contrast_ids": [],
+          "stable_group_ids": [],
+          "exact_stable_failed_ids": [],
+          "baseline_failed_contrast_ids": [],
+          "formal_repaired_contrast_ids": []
+        }
+      ],
+      "measure_groups": [
+        "C-007"
+      ],
+      "diagnose_stable_groups": [],
+      "committed_stable_failed_ids": []
+    },
+    "v9": {
+      "ops": [
+        {
+          "turn": "turn-0008",
+          "op": "image",
+          "ids": [
+            "C-125:counterfact_visual:T0:O1:B0"
+          ],
+          "groups": [
+            "C-125"
+          ],
+          "stable_groups": [],
+          "stable_failed_id_matches": [],
+          "text_overrides": false,
+          "prose": "I will focus first on **order-sensitive counterfactual visual errors**: camera/ring, dog/lacewing, fish/nail, and piano/zucchini sometimes switch to the usual-size object when only option order or wording changes. Stable visual successes and usual-size questions will be controls. Before localizing this behavior, I will inspect the authoritative images rather than assume the visual labels are perceptually obvious."
+        },
+        {
+          "turn": "turn-0010",
+          "op": "image",
+          "ids": [
+            "C-232:counterfact_visual:T0:O1:B0"
+          ],
+          "groups": [
+            "C-232"
+          ],
+          "stable_groups": [],
+          "stable_failed_id_matches": [],
+          "text_overrides": false,
+          "prose": "The audit confirms that these order contrasts keep the image and gold fixed. Camera/ring and dog/lacewing both switch from correct O0 to incorrect O1, whereas their ordinary usual-size answers remain correct. I will check a second visual example before measuring a depth-wide contrast."
+        },
+        {
+          "turn": "turn-0011",
+          "op": "measure",
+          "ids": [
+            "C-125:counterfact_visual:T0:O0:B0",
+            "C-125:counterfact_visual:T0:O1:B0",
+            "C-125:counterfact_visual:T1:O0:B0",
+            "C-125:counterfact_visual:T1:O1:B0",
+            "C-232:counterfact_visual:T0:O0:B0",
+            "C-232:counterfact_visual:T0:O1:B0",
+            "C-232:counterfact_visual:T1:O0:B0",
+            "C-232:counterfact_visual:T1:O1:B0",
+            "C-288:counterfact_visual:T0:O0:B0",
+            "C-288:counterfact_visual:T0:O1:B0",
+            "C-288:counterfact_visual:T1:O0:B0",
+            "C-288:counterfact_visual:T1:O1:B0",
+            "C-479:counterfact_visual:T0:O0:B0",
+            "C-479:counterfact_visual:T0:O1:B0",
+            "C-479:counterfact_visual:T1:O0:B0",
+            "C-479:counterfact_visual:T1:O1:B0",
+            "C-706:counterfact_visual:T0:O0:B0",
+            "C-706:counterfact_visual:T0:O1:B0",
+            "C-706:counterfact_visual:T1:O0:B0",
+            "C-706:counterfact_visual:T1:O1:B0",
+            "C-053:counterfact_visual:T0:O0:B0",
+            "C-053:counterfact_visual:T0:O1:B0",
+            "C-053:counterfact_visual:T1:O0:B0",
+            "C-053:counterfact_visual:T1:O1:B0",
+            "C-101:counterfact_visual:T0:O0:B0",
+            "C-101:counterfact_visual:T0:O1:B0",
+            "C-101:counterfact_visual:T1:O0:B0",
+            "C-101:counterfact_visual:T1:O1:B0",
+            "C-626:counterfact_visual:T0:O0:B0",
+            "C-626:counterfact_visual:T0:O1:B0",
+            "C-626:counterfact_visual:T1:O0:B0",
+            "C-626:counterfact_visual:T1:O1:B0"
+          ],
+          "groups": [
+            "C-053",
+            "C-101",
+            "C-125",
+            "C-232",
+            "C-288",
+            "C-479",
+            "C-626",
+            "C-706"
+          ],
+          "stable_groups": [],
+          "stable_failed_id_matches": [],
+          "text_overrides": false,
+          "prose": "The second image also supports the visual gold. My initial hypothesis is narrow: **some prompt-order/wording perturbations bias the pre-answer computation toward the usual-size alternative despite sufficient visual evidence**. A competing explanation is generic answer-position encoding, not a distinct failure circuit. I will capture all 34 decoder layers before the answer, including all 10,240 MLP input channels per layer, across six susceptible groups and two stable-success controls. This is localization, not causal evidence."
+        },
+        {
+          "turn": "turn-0013",
+          "op": "measure",
+          "ids": [
+            "C-125:original_visual:T0:O0:B0",
+            "C-125:original_visual:T0:O1:B0",
+            "C-125:original_visual:T1:O0:B0",
+            "C-125:original_visual:T1:O1:B0",
+            "C-232:original_visual:T0:O0:B0",
+            "C-232:original_visual:T0:O1:B0",
+            "C-232:original_visual:T1:O0:B0",
+            "C-232:original_visual:T1:O1:B0",
+            "C-288:original_visual:T0:O0:B0",
+            "C-288:original_visual:T0:O1:B0",
+            "C-288:original_visual:T1:O0:B0",
+            "C-288:original_visual:T1:O1:B0",
+            "C-479:original_visual:T0:O0:B0",
+            "C-479:original_visual:T0:O1:B0",
+            "C-479:original_visual:T1:O0:B0",
+            "C-479:original_visual:T1:O1:B0",
+            "C-706:original_visual:T0:O0:B0",
+            "C-706:original_visual:T0:O1:B0",
+            "C-706:original_visual:T1:O0:B0",
+            "C-706:original_visual:T1:O1:B0",
+            "C-053:original_visual:T0:O0:B0",
+            "C-053:original_visual:T0:O1:B0",
+            "C-053:original_visual:T1:O0:B0",
+            "C-053:original_visual:T1:O1:B0",
+            "C-101:original_visual:T0:O0:B0",
+            "C-101:original_visual:T0:O1:B0",
+            "C-101:original_visual:T1:O0:B0",
+            "C-101:original_visual:T1:O1:B0",
+            "C-626:original_visual:T0:O0:B0",
+            "C-626:original_visual:T0:O1:B0",
+            "C-626:original_visual:T1:O0:B0",
+            "C-626:original_visual:T1:O1:B0",
+            "C-125:counterfact_usual:T0:O0:B0",
+            "C-125:counterfact_usual:T0:O1:B0",
+            "C-125:counterfact_usual:T1:O0:B0",
+            "C-125:counterfact_usual:T1:O1:B0",
+            "C-232:counterfact_usual:T0:O0:B0",
+            "C-232:counterfact_usual:T0:O1:B0",
+            "C-232:counterfact_usual:T1:O0:B0",
+            "C-232:counterfact_usual:T1:O1:B0",
+            "C-288:counterfact_usual:T0:O0:B0",
+            "C-288:counterfact_usual:T0:O1:B0",
+            "C-288:counterfact_usual:T1:O0:B0",
+            "C-288:counterfact_usual:T1:O1:B0",
+            "C-479:counterfact_usual:T0:O0:B0",
+            "C-479:counterfact_usual:T0:O1:B0",
+            "C-479:counterfact_usual:T1:O0:B0",
+            "C-479:counterfact_usual:T1:O1:B0",
+            "C-706:counterfact_usual:T0:O0:B0",
+            "C-706:counterfact_usual:T0:O1:B0",
+            "C-706:counterfact_usual:T1:O0:B0",
+            "C-706:counterfact_usual:T1:O1:B0",
+            "C-053:counterfact_usual:T0:O0:B0",
+            "C-053:counterfact_usual:T0:O1:B0",
+            "C-053:counterfact_usual:T1:O0:B0",
+            "C-053:counterfact_usual:T1:O1:B0",
+            "C-101:counterfact_usual:T0:O0:B0",
+            "C-101:counterfact_usual:T0:O1:B0",
+            "C-101:counterfact_usual:T1:O0:B0",
+            "C-101:counterfact_usual:T1:O1:B0",
+            "C-626:counterfact_usual:T0:O0:B0",
+            "C-626:counterfact_usual:T0:O1:B0",
+            "C-626:counterfact_usual:T1:O0:B0",
+            "C-626:counterfact_usual:T1:O1:B0"
+          ],
+          "groups": [
+            "C-053",
+            "C-101",
+            "C-125",
+            "C-232",
+            "C-288",
+            "C-479",
+            "C-626",
+            "C-706"
+          ],
+          "stable_groups": [],
+          "stable_failed_id_matches": [],
+          "text_overrides": false,
+          "prose": "The raw contrasts are coherent at some depths, but layer 14’s large residual contrast points opposite the stable order contrast; that could be syntax or a dominant residual coordinate, not an error feature. I will measure matched original-visual and counterfactual-usual controls across the same wording/order variants. I will also capture attention-projection inputs at several depths so MLP involvement is not assumed."
+        },
+        {
+          "turn": "turn-0015",
+          "op": "diagnose",
+          "ids": [
+            "C-125:counterfact_visual:T0:O1:B0",
+            "C-232:counterfact_visual:T0:O1:B0",
+            "C-288:counterfact_visual:T0:O1:B0",
+            "C-479:counterfact_visual:T1:O1:B0",
+            "C-706:counterfact_visual:T1:O1:B0",
+            "C-053:counterfact_visual:T0:O1:B0",
+            "C-520:counterfact_visual:T0:O1:B0",
+            "C-131:counterfact_visual:T0:O1:B0",
+            "C-101:counterfact_visual:T0:O1:B0",
+            "C-626:counterfact_visual:T0:O1:B0",
+            "C-147:counterfact_visual:T0:O1:B0",
+            "C-377:counterfact_visual:T0:O1:B0"
+          ],
+          "groups": [
+            "C-053",
+            "C-101",
+            "C-125",
+            "C-131",
+            "C-147",
+            "C-232",
+            "C-288",
+            "C-377",
+            "C-479",
+            "C-520",
+            "C-626",
+            "C-706"
+          ],
+          "stable_groups": [
+            "C-131",
+            "C-147",
+            "C-520"
+          ],
+          "stable_failed_id_matches": [
+            "C-131:counterfact_visual:T0:O1:B0",
+            "C-520:counterfact_visual:T0:O1:B0"
+          ],
+          "text_overrides": true,
+          "prose": "Controlled MLP-input contrasts are more consistent across sources in early/middle layers than in late layers, while residual norms are dominated by a few coordinates. To test the competing “scope ambiguity” interpretation, I will use a gold-free rewording that preserves option order, image, and visual-size task. I predict that explicit depicted-size wording may rescue some—but not necessarily all—failures. Generation will remain separate from the teacher-forced captures."
+        },
+        {
+          "turn": "turn-0018",
+          "op": "measure",
+          "ids": [
+            "C-125:counterfact_visual:T0:O0:B0",
+            "C-125:counterfact_visual:T0:O1:B0",
+            "C-125:counterfact_visual:T1:O0:B0",
+            "C-125:counterfact_visual:T1:O1:B0",
+            "C-232:counterfact_visual:T0:O0:B0",
+            "C-232:counterfact_visual:T0:O1:B0",
+            "C-232:counterfact_visual:T1:O0:B0",
+            "C-232:counterfact_visual:T1:O1:B0",
+            "C-288:counterfact_visual:T0:O0:B0",
+            "C-288:counterfact_visual:T0:O1:B0",
+            "C-288:counterfact_visual:T1:O0:B0",
+            "C-288:counterfact_visual:T1:O1:B0",
+            "C-479:counterfact_visual:T0:O0:B0",
+            "C-479:counterfact_visual:T0:O1:B0",
+            "C-479:counterfact_visual:T1:O0:B0",
+            "C-479:counterfact_visual:T1:O1:B0",
+            "C-706:counterfact_visual:T0:O0:B0",
+            "C-706:counterfact_visual:T0:O1:B0",
+            "C-706:counterfact_visual:T1:O0:B0",
+            "C-706:counterfact_visual:T1:O1:B0",
+            "C-053:counterfact_visual:T0:O0:B0",
+            "C-053:counterfact_visual:T0:O1:B0",
+            "C-053:counterfact_visual:T1:O0:B0",
+            "C-053:counterfact_visual:T1:O1:B0",
+            "C-101:counterfact_visual:T0:O0:B0",
+            "C-101:counterfact_visual:T0:O1:B0",
+            "C-101:counterfact_visual:T1:O0:B0",
+            "C-101:counterfact_visual:T1:O1:B0",
+            "C-626:counterfact_visual:T0:O0:B0",
+            "C-626:counterfact_visual:T0:O1:B0",
+            "C-626:counterfact_visual:T1:O0:B0",
+            "C-626:counterfact_visual:T1:O1:B0"
+          ],
+          "groups": [
+            "C-053",
+            "C-101",
+            "C-125",
+            "C-232",
+            "C-288",
+            "C-479",
+            "C-626",
+            "C-706"
+          ],
+          "stable_groups": [],
+          "stable_failed_id_matches": [],
+          "text_overrides": false,
+          "prose": "The rewording rescued 3/8 failures and preserved all four successes; it did not solve dog/lacewing, fish/nail, bear/spinach, elephant/raccoon, or cannon/chickadee. Early controlled directions align poorly with this same-order rewording, while layers 26 and 30 align more strongly. Also, proposed MLP writes occur on controls, so collateral damage is a real risk. I will compare attention writes before selecting the first static intervention."
+        },
+        {
+          "turn": "turn-0023",
+          "op": "measure",
+          "ids": [
+            "C-125:counterfact_visual:T0:O1:B0",
+            "C-125:counterfact_visual:T1:O1:B0",
+            "C-232:counterfact_visual:T0:O1:B0",
+            "C-232:counterfact_visual:T1:O1:B0",
+            "C-288:counterfact_visual:T0:O1:B0",
+            "C-288:counterfact_visual:T1:O1:B0",
+            "C-479:counterfact_visual:T0:O1:B0",
+            "C-479:counterfact_visual:T1:O1:B0",
+            "C-706:counterfact_visual:T0:O1:B0",
+            "C-706:counterfact_visual:T1:O1:B0",
+            "C-053:counterfact_visual:T0:O1:B0",
+            "C-053:counterfact_visual:T1:O1:B0",
+            "C-101:counterfact_visual:T0:O1:B0",
+            "C-101:counterfact_visual:T1:O1:B0",
+            "C-626:counterfact_visual:T0:O1:B0",
+            "C-626:counterfact_visual:T1:O1:B0"
+          ],
+          "groups": [
+            "C-053",
+            "C-101",
+            "C-125",
+            "C-232",
+            "C-288",
+            "C-479",
+            "C-626",
+            "C-706"
+          ],
+          "stable_groups": [],
+          "stable_failed_id_matches": [],
+          "text_overrides": false,
+          "prose": "Candidate 1 did **not** repair any anchor failure or improve the selection endpoint. Its sole correctness change was an unrelated junco/acorn B1 repair; no answers worsened. I will test whether the predicted visual logit shift occurred below the generation threshold. If not, increasing the dose would not support the proposed mechanism."
+        },
+        {
+          "turn": "turn-0053",
+          "op": "diagnose",
+          "ids": [
+            "C-588:counterfact_visual:T1:O0:B0",
+            "C-353:counterfact_visual:T1:O1:B0",
+            "C-353:counterfact_visual:T1:O0:B1",
+            "C-119:counterfact_visual:T0:O1:B1",
+            "C-608:counterfact_usual:T0:O0:B1",
+            "C-608:counterfact_usual:T0:O1:B0",
+            "C-373:original_usual:T1:O1:B1",
+            "C-514:original_usual:T1:O1:B1",
+            "C-688:original_usual:T0:O0:B0",
+            "C-114:original_usual:T0:O1:B0",
+            "C-077:no_image_usual:T0:O1:B0",
+            "C-352:no_image_usual:T1:O1:B1",
+            "C-108:no_image_usual:T1:O1:B0",
+            "C-688:counterfact_usual:T1:O0:B0",
+            "C-125:counterfact_visual:T1:O1:B0",
+            "C-626:counterfact_visual:T0:O1:B0"
+          ],
+          "groups": [
+            "C-077",
+            "C-108",
+            "C-114",
+            "C-119",
+            "C-125",
+            "C-352",
+            "C-353",
+            "C-373",
+            "C-514",
+            "C-588",
+            "C-608",
+            "C-626",
+            "C-688"
+          ],
+          "stable_groups": [
+            "C-077",
+            "C-353"
+          ],
+          "stable_failed_id_matches": [],
+          "text_overrides": false,
+          "prose": "The random-channel control repaired the camera/ring anchor that candidate 4 did not, while gaining no endpoint score. Thus the original channel ranking is not uniquely supported by that anchor. I will now rerun W0 diagnostics on the fixed audit cohort; the prediction is exact reproduction of the stored W0 answers."
+        },
+        {
+          "turn": "turn-0056",
+          "op": "diagnose",
+          "ids": [
+            "C-588:counterfact_visual:T1:O0:B0",
+            "C-353:counterfact_visual:T1:O1:B0",
+            "C-353:counterfact_visual:T1:O0:B1",
+            "C-119:counterfact_visual:T0:O1:B1",
+            "C-608:counterfact_usual:T0:O0:B1",
+            "C-608:counterfact_usual:T0:O1:B0",
+            "C-373:original_usual:T1:O1:B1",
+            "C-514:original_usual:T1:O1:B1",
+            "C-688:original_usual:T0:O0:B0",
+            "C-114:original_usual:T0:O1:B0",
+            "C-077:no_image_usual:T0:O1:B0",
+            "C-352:no_image_usual:T1:O1:B1",
+            "C-108:no_image_usual:T1:O1:B0",
+            "C-688:counterfact_usual:T1:O0:B0",
+            "C-125:counterfact_visual:T1:O1:B0",
+            "C-626:counterfact_visual:T0:O1:B0"
+          ],
+          "groups": [
+            "C-077",
+            "C-108",
+            "C-114",
+            "C-119",
+            "C-125",
+            "C-352",
+            "C-353",
+            "C-373",
+            "C-514",
+            "C-588",
+            "C-608",
+            "C-626",
+            "C-688"
+          ],
+          "stable_groups": [
+            "C-077",
+            "C-353"
+          ],
+          "stable_failed_id_matches": [],
+          "text_overrides": false,
+          "prose": "Existing W0 anchor captures and logits reproduce exactly through layer 33, so the evidence does not show stale edited weights there. The baseline-versus-diagnostic answer mismatch remains unexplained. I will now run candidate 4 on the same audit cohort and pathway, comparing actual writes and hook-free diagnostic generations against the fresh W0 observations—not substituting them for official evaluation."
+        },
+        {
+          "turn": "turn-0066",
+          "op": "diagnose",
+          "ids": [
+            "C-588:counterfact_visual:T1:O0:B0",
+            "C-353:counterfact_visual:T1:O1:B0",
+            "C-353:counterfact_visual:T1:O0:B1",
+            "C-119:counterfact_visual:T0:O1:B1",
+            "C-608:counterfact_usual:T0:O0:B1",
+            "C-608:counterfact_usual:T0:O1:B0",
+            "C-373:original_usual:T1:O1:B1",
+            "C-514:original_usual:T1:O1:B1",
+            "C-688:original_usual:T0:O0:B0",
+            "C-114:original_usual:T0:O1:B0",
+            "C-077:no_image_usual:T0:O1:B0",
+            "C-352:no_image_usual:T1:O1:B1",
+            "C-108:no_image_usual:T1:O1:B0",
+            "C-688:counterfact_usual:T1:O0:B0",
+            "C-125:counterfact_visual:T1:O1:B0",
+            "C-626:counterfact_visual:T0:O1:B0"
+          ],
+          "groups": [
+            "C-077",
+            "C-108",
+            "C-114",
+            "C-119",
+            "C-125",
+            "C-352",
+            "C-353",
+            "C-373",
+            "C-514",
+            "C-588",
+            "C-608",
+            "C-626",
+            "C-688"
+          ],
+          "stable_groups": [
+            "C-077",
+            "C-353"
+          ],
+          "stable_failed_id_matches": [],
+          "text_overrides": false,
+          "prose": "I’ll repeat the same 16 unchanged W0 prompts through diagnostic generation, without prompt overrides or interventions. Matching generated IDs would support stability within that path, while leaving the cached-baseline discrepancy unresolved."
+        },
+        {
+          "turn": "turn-0104",
+          "op": "diagnose",
+          "ids": [
+            "C-271:counterfact_usual:T1:O0:B0",
+            "C-271:counterfact_usual:T1:O0:B1",
+            "C-328:counterfact_usual:T1:O1:B0",
+            "C-373:no_image_usual:T1:O1:B0",
+            "C-373:original_usual:T1:O1:B1",
+            "C-588:counterfact_usual:T1:O0:B0",
+            "C-588:counterfact_visual:T1:O1:B1",
+            "C-608:counterfact_usual:T0:O0:B1",
+            "C-608:counterfact_usual:T0:O1:B0",
+            "C-291:no_image_usual:T0:O1:B1",
+            "C-053:counterfact_visual:T0:O0:B1",
+            "C-411:original_visual:T1:O1:B1",
+            "C-288:counterfact_visual:T1:O1:B1",
+            "C-353:counterfact_visual:T1:O1:B0",
+            "C-615:counterfact_visual:T1:O0:B1",
+            "C-479:counterfact_visual:T1:O1:B1",
+            "C-125:counterfact_visual:T1:O1:B0",
+            "C-514:original_usual:T1:O1:B1",
+            "C-514:counterfact_usual:T1:O0:B0",
+            "C-368:counterfact_visual:T1:O1:B1",
+            "C-232:counterfact_visual:T0:O0:B0",
+            "C-060:original_visual:T0:O1:B0",
+            "C-077:no_image_usual:T0:O1:B0",
+            "C-617:no_image_usual:T1:O1:B0",
+            "C-688:no_image_usual:T0:O1:B0",
+            "C-688:original_usual:T0:O0:B0",
+            "C-455:counterfact_usual:T1:O0:B1",
+            "C-455:counterfact_visual:T1:O0:B0",
+            "C-584:no_image_usual:T0:O0:B0",
+            "C-584:counterfact_visual:T1:O1:B1",
+            "C-606:counterfact_usual:T0:O0:B1",
+            "C-278:counterfact_visual:T1:O0:B1",
+            "C-114:counterfact_usual:T1:O1:B0",
+            "C-114:original_visual:T1:O1:B1",
+            "C-076:no_image_usual:T1:O1:B1",
+            "C-505:counterfact_visual:T1:O0:B0",
+            "C-348:no_image_usual:T1:O1:B0",
+            "C-227:no_image_usual:T0:O0:B0",
+            "C-227:counterfact_visual:T0:O1:B0",
+            "C-119:counterfact_visual:T0:O1:B1",
+            "C-293:no_image_usual:T0:O0:B0",
+            "C-671:counterfact_visual:T1:O0:B1",
+            "C-125:counterfact_visual:T0:O1:B0",
+            "C-232:counterfact_visual:T0:O1:B0",
+            "C-232:counterfact_visual:T1:O1:B0",
+            "C-288:counterfact_visual:T0:O1:B0",
+            "C-288:counterfact_visual:T1:O0:B0",
+            "C-288:counterfact_visual:T1:O1:B0",
+            "C-479:counterfact_visual:T1:O1:B0",
+            "C-706:counterfact_visual:T1:O0:B0",
+            "C-706:counterfact_visual:T1:O1:B0",
+            "C-053:counterfact_visual:T0:O1:B0",
+            "C-053:counterfact_visual:T1:O0:B0",
+            "C-053:counterfact_visual:T1:O1:B0",
+            "C-626:counterfact_visual:T0:O1:B0",
+            "C-101:counterfact_visual:T0:O0:B0"
+          ],
+          "groups": [
+            "C-053",
+            "C-060",
+            "C-076",
+            "C-077",
+            "C-101",
+            "C-114",
+            "C-119",
+            "C-125",
+            "C-227",
+            "C-232",
+            "C-271",
+            "C-278",
+            "C-288",
+            "C-291",
+            "C-293",
+            "C-328",
+            "C-348",
+            "C-353",
+            "C-368",
+            "C-373",
+            "C-411",
+            "C-455",
+            "C-479",
+            "C-505",
+            "C-514",
+            "C-584",
+            "C-588",
+            "C-606",
+            "C-608",
+            "C-615",
+            "C-617",
+            "C-626",
+            "C-671",
+            "C-688",
+            "C-706"
+          ],
+          "stable_groups": [
+            "C-077",
+            "C-278",
+            "C-293",
+            "C-328",
+            "C-353"
+          ],
+          "stable_failed_id_matches": [],
+          "text_overrides": false,
+          "prose": "I’ll first obtain fresh W0 generations and layer-14–16 readouts for the fixed 56-request audit. The following candidate call will use identical requests and capture settings."
+        },
+        {
+          "turn": "turn-0105",
+          "op": "diagnose",
+          "ids": [
+            "C-271:counterfact_usual:T1:O0:B0",
+            "C-271:counterfact_usual:T1:O0:B1",
+            "C-328:counterfact_usual:T1:O1:B0",
+            "C-373:no_image_usual:T1:O1:B0",
+            "C-373:original_usual:T1:O1:B1",
+            "C-588:counterfact_usual:T1:O0:B0",
+            "C-588:counterfact_visual:T1:O1:B1",
+            "C-608:counterfact_usual:T0:O0:B1",
+            "C-608:counterfact_usual:T0:O1:B0",
+            "C-291:no_image_usual:T0:O1:B1",
+            "C-053:counterfact_visual:T0:O0:B1",
+            "C-411:original_visual:T1:O1:B1",
+            "C-288:counterfact_visual:T1:O1:B1",
+            "C-353:counterfact_visual:T1:O1:B0",
+            "C-615:counterfact_visual:T1:O0:B1",
+            "C-479:counterfact_visual:T1:O1:B1",
+            "C-125:counterfact_visual:T1:O1:B0",
+            "C-514:original_usual:T1:O1:B1",
+            "C-514:counterfact_usual:T1:O0:B0",
+            "C-368:counterfact_visual:T1:O1:B1",
+            "C-232:counterfact_visual:T0:O0:B0",
+            "C-060:original_visual:T0:O1:B0",
+            "C-077:no_image_usual:T0:O1:B0",
+            "C-617:no_image_usual:T1:O1:B0",
+            "C-688:no_image_usual:T0:O1:B0",
+            "C-688:original_usual:T0:O0:B0",
+            "C-455:counterfact_usual:T1:O0:B1",
+            "C-455:counterfact_visual:T1:O0:B0",
+            "C-584:no_image_usual:T0:O0:B0",
+            "C-584:counterfact_visual:T1:O1:B1",
+            "C-606:counterfact_usual:T0:O0:B1",
+            "C-278:counterfact_visual:T1:O0:B1",
+            "C-114:counterfact_usual:T1:O1:B0",
+            "C-114:original_visual:T1:O1:B1",
+            "C-076:no_image_usual:T1:O1:B1",
+            "C-505:counterfact_visual:T1:O0:B0",
+            "C-348:no_image_usual:T1:O1:B0",
+            "C-227:no_image_usual:T0:O0:B0",
+            "C-227:counterfact_visual:T0:O1:B0",
+            "C-119:counterfact_visual:T0:O1:B1",
+            "C-293:no_image_usual:T0:O0:B0",
+            "C-671:counterfact_visual:T1:O0:B1",
+            "C-125:counterfact_visual:T0:O1:B0",
+            "C-232:counterfact_visual:T0:O1:B0",
+            "C-232:counterfact_visual:T1:O1:B0",
+            "C-288:counterfact_visual:T0:O1:B0",
+            "C-288:counterfact_visual:T1:O0:B0",
+            "C-288:counterfact_visual:T1:O1:B0",
+            "C-479:counterfact_visual:T1:O1:B0",
+            "C-706:counterfact_visual:T1:O0:B0",
+            "C-706:counterfact_visual:T1:O1:B0",
+            "C-053:counterfact_visual:T0:O1:B0",
+            "C-053:counterfact_visual:T1:O0:B0",
+            "C-053:counterfact_visual:T1:O1:B0",
+            "C-626:counterfact_visual:T0:O1:B0",
+            "C-101:counterfact_visual:T0:O0:B0"
+          ],
+          "groups": [
+            "C-053",
+            "C-060",
+            "C-076",
+            "C-077",
+            "C-101",
+            "C-114",
+            "C-119",
+            "C-125",
+            "C-227",
+            "C-232",
+            "C-271",
+            "C-278",
+            "C-288",
+            "C-291",
+            "C-293",
+            "C-328",
+            "C-348",
+            "C-353",
+            "C-368",
+            "C-373",
+            "C-411",
+            "C-455",
+            "C-479",
+            "C-505",
+            "C-514",
+            "C-584",
+            "C-588",
+            "C-606",
+            "C-608",
+            "C-615",
+            "C-617",
+            "C-626",
+            "C-671",
+            "C-688",
+            "C-706"
+          ],
+          "stable_groups": [
+            "C-077",
+            "C-278",
+            "C-293",
+            "C-328",
+            "C-353"
+          ],
+          "stable_failed_id_matches": [],
+          "text_overrides": false,
+          "prose": "I’ll now run the same audit under round 20. Matching upstream activations with downstream changes would verify where the static edit takes effect; fresh answer pairs will separately test whether cached repairs reproduce."
+        },
+        {
+          "turn": "turn-0125",
+          "op": "diagnose",
+          "ids": [
+            "C-053:counterfact_visual:T1:O0:B0",
+            "C-053:counterfact_visual:T1:O1:B0",
+            "C-125:counterfact_visual:T1:O1:B0",
+            "C-288:counterfact_visual:T1:O0:B0",
+            "C-288:counterfact_visual:T1:O1:B0",
+            "C-455:counterfact_visual:T1:O0:B0",
+            "C-479:counterfact_visual:T1:O1:B0"
+          ],
+          "groups": [
+            "C-053",
+            "C-125",
+            "C-288",
+            "C-455",
+            "C-479"
+          ],
+          "stable_groups": [],
+          "stable_failed_id_matches": [],
+          "text_overrides": false,
+          "prose": "Matched channels retained only two reference repairs but achieved the same +4 net visual gain, so the selected set is not uniquely effective.\n\nWithin the selected set, three channels account for 51.4% of summed individual write energy. A shared mean-input component leaves only 3.5% residual write energy on the 96 captured prompts. Before testing those decompositions, I will audit normalization: predicted \\(\\Delta W a\\) should match the measured pre-normalization change up to numerical error, but need not match residual-stream scale."
+        },
+        {
+          "turn": "turn-0126",
+          "op": "diagnose",
+          "ids": [
+            "C-053:counterfact_visual:T1:O0:B0",
+            "C-053:counterfact_visual:T1:O1:B0",
+            "C-125:counterfact_visual:T1:O1:B0",
+            "C-288:counterfact_visual:T1:O0:B0",
+            "C-288:counterfact_visual:T1:O1:B0",
+            "C-455:counterfact_visual:T1:O0:B0",
+            "C-479:counterfact_visual:T1:O1:B0"
+          ],
+          "groups": [
+            "C-053",
+            "C-125",
+            "C-288",
+            "C-455",
+            "C-479"
+          ],
+          "stable_groups": [],
+          "stable_failed_id_matches": [],
+          "text_overrides": false,
+          "prose": "The W0 captures succeeded at the verified last-prompt position. I will repeat the identical diagnostic under round 22, comparing normalization inputs, outputs, and separate hook-free generations."
+        },
+        {
+          "turn": "turn-0139",
+          "op": "diagnose",
+          "ids": [
+            "C-053:counterfact_visual:T1:O0:B0",
+            "C-053:counterfact_visual:T1:O1:B0",
+            "C-125:counterfact_visual:T1:O1:B0",
+            "C-288:counterfact_visual:T1:O0:B0",
+            "C-288:counterfact_visual:T1:O1:B0",
+            "C-455:counterfact_visual:T1:O0:B0",
+            "C-479:counterfact_visual:T1:O1:B0"
+          ],
+          "groups": [
+            "C-053",
+            "C-125",
+            "C-288",
+            "C-455",
+            "C-479"
+          ],
+          "stable_groups": [],
+          "stable_failed_id_matches": [],
+          "text_overrides": false,
+          "prose": "The common-input prediction failed: two reference repairs remained, with net counterfactual-visual correctness −1. I will now audit the selected round-28 candidate directly, predicting the two registered focal repairs and preservation of “Lime” on C-455. The staged round-30 patch remains unchanged."
+        }
+      ],
+      "commits": [
+        {
+          "turn": "turn-0020",
+          "round": 1,
+          "candidate": "c-e16d61550fa51c6bcbc09f8e8e9a0d056ba1d66739973a9abba6179dbd22c3ad",
+          "evidence": {
+            "component_hypothesis": "Layer 26 MLP down-projection has a controlled contrast direction whose selected input-dependent column writes are more negative on visual failures than successes. Same-order disambiguation aligns moderately with the late activation contrast. Both answer-identity confounding and control activation remain unresolved.",
+            "contrast_ids": [
+              "C-125:counterfact_visual:T0:O0:B0",
+              "C-125:counterfact_visual:T0:O1:B0",
+              "C-232:counterfact_visual:T0:O0:B0",
+              "C-232:counterfact_visual:T0:O1:B0",
+              "C-101:counterfact_visual:T0:O1:B0",
+              "C-626:counterfact_visual:T0:O1:B0"
+            ],
+            "control_plan": "Compare all five conditions and all wording/order/arm protection cells, inspect repaired and worsened IDs, test stronger and opposite-sign edits, and reserve matched random-direction/random-channel tests before claiming specificity. Attention and earlier-depth hypotheses remain alternatives.",
+            "dose": "W0[:,S] minus 0.5*u*(u^T W0[:,S]); 64 researcher-ranked columns; effective BF16 support 152570, delta norm 0.0738500208. Saved /work/r01_mlp26_direction_half_edit.npz and metrics JSON.",
+            "expected_change": "Increase counterfactual visual answer preference and repair some susceptible prompts, especially camera/ring and piano/zucchini; preserve stable visual successes. Usual-size damage is possible and must be measured on full D.",
+            "failure_behavior": "On identical counterfactual images, meaning-preserving wording/order changes switch camera/ring, dog/lacewing, fish/nail, piano/zucchini, wheelbarrow/flashlight, and bear/spinach responses toward the usual-size alternative.",
+            "measurement_actions": [
+              "turn-0011",
+              "turn-0013",
+              "turn-0015",
+              "turn-0018"
+            ],
+            "role": "targeted"
+          },
+          "rationale": "Test whether selectively attenuating late MLP writes opposing a controlled success/failure direction improves order-sensitive counterfactual visual answers. This is an unvalidated mechanistic hypothesis, not a finding.",
+          "contrast_ids": [
+            "C-125:counterfact_visual:T0:O0:B0",
+            "C-125:counterfact_visual:T0:O1:B0",
+            "C-232:counterfact_visual:T0:O0:B0",
+            "C-232:counterfact_visual:T0:O1:B0",
+            "C-101:counterfact_visual:T0:O1:B0",
+            "C-626:counterfact_visual:T0:O1:B0"
+          ],
+          "stable_group_ids": [],
+          "exact_stable_failed_ids": [],
+          "baseline_failed_contrast_ids": [
+            "C-125:counterfact_visual:T0:O1:B0",
+            "C-232:counterfact_visual:T0:O1:B0"
+          ],
+          "formal_repaired_contrast_ids": []
+        },
+        {
+          "turn": "turn-0027",
+          "round": 2,
+          "candidate": "c-156bc891d48939948bcc33263787bbaa916b5ffd3559d5fa61569dbc545fe4e7",
+          "evidence": {
+            "component_hypothesis": "Selected layer-26 MLP column components may oppose correct visual choices, but half attenuation produced zero mean measured margin change and no anchor repairs.",
+            "contrast_ids": [
+              "C-125:counterfact_visual:T0:O0:B0",
+              "C-125:counterfact_visual:T0:O1:B0",
+              "C-479:counterfact_visual:T1:O1:B0",
+              "C-626:counterfact_visual:T0:O1:B0"
+            ],
+            "control_plan": "Full fixed D with all five conditions and per-cell protection checks; subsequent opposite-sign control; no claim of direction/channel specificity without matched controls.",
+            "dose": "W0[:,S]-2*u*(u^T W0[:,S]); same 64 columns and direction as round 1; effective support 160818, norm 0.295231789. /work/r02_mlp26_direction_reflect_edit.npz.",
+            "expected_change": "If round 1 was merely underpowered, reflection should increase visual margins and repair anchors; another null or mixed result weakens the hypothesis.",
+            "failure_behavior": "Meaning-preserving wording/order changes induce counterfactual visual errors toward usual-size alternatives.",
+            "measurement_actions": [
+              "turn-0011",
+              "turn-0013",
+              "turn-0015",
+              "turn-0023"
+            ],
+            "role": "diagnostic"
+          },
+          "rationale": "Substantial dose stress test of the weakened layer-26 directional-write hypothesis, with all other weights exactly W0.",
+          "contrast_ids": [
+            "C-125:counterfact_visual:T0:O0:B0",
+            "C-125:counterfact_visual:T0:O1:B0",
+            "C-479:counterfact_visual:T1:O1:B0",
+            "C-626:counterfact_visual:T0:O1:B0"
+          ],
+          "stable_group_ids": [],
+          "exact_stable_failed_ids": [],
+          "baseline_failed_contrast_ids": [
+            "C-125:counterfact_visual:T0:O1:B0",
+            "C-479:counterfact_visual:T1:O1:B0"
+          ],
+          "formal_repaired_contrast_ids": []
+        },
+        {
+          "turn": "turn-0030",
+          "round": 3,
+          "candidate": "c-b9c8225ca54c3f4b158e05de50e210adbec353a57609bbe712ef460ca4c28689",
+          "evidence": {
+            "component_hypothesis": "A sign-specific causal account predicts that strengthening the selected layer-26 components should have the opposite effect to attenuation; two attenuation doses have not supported repair.",
+            "contrast_ids": [
+              "C-125:counterfact_visual:T0:O0:B0",
+              "C-125:counterfact_visual:T0:O1:B0",
+              "C-232:counterfact_visual:T0:O1:B0",
+              "C-626:counterfact_visual:T0:O1:B0"
+            ],
+            "control_plan": "Full-D ordinary generation, all protection cells, five-condition joint correctness and repaired/worsened IDs. Compare against W0 and both attenuation doses; move to other evidence-supported components rather than continue this scale sweep.",
+            "dose": "W0[:,S]+2*u*(u^T W0[:,S]), same 64 columns; effective support 160820, norm 0.295226485. /work/r03_mlp26_opposite_control_edit.npz.",
+            "expected_change": "If the proposed sign matters, strengthening should reduce counterfactual visual correctness or margins relative to reflection. Similar or better performance is counterevidence.",
+            "failure_behavior": "Counterfactual visual choices sometimes follow the usual-size alternative after meaning-preserving rewording or option reversal.",
+            "measurement_actions": [
+              "turn-0011",
+              "turn-0013",
+              "turn-0023"
+            ],
+            "role": "control"
+          },
+          "rationale": "Opposite-sign control for rounds 1 and 2. The sole edited tensor is rebuilt from W0, so this is not a cumulative dose.",
+          "contrast_ids": [
+            "C-125:counterfact_visual:T0:O0:B0",
+            "C-125:counterfact_visual:T0:O1:B0",
+            "C-232:counterfact_visual:T0:O1:B0",
+            "C-626:counterfact_visual:T0:O1:B0"
+          ],
+          "stable_group_ids": [],
+          "exact_stable_failed_ids": [],
+          "baseline_failed_contrast_ids": [
+            "C-125:counterfact_visual:T0:O1:B0",
+            "C-232:counterfact_visual:T0:O1:B0"
+          ],
+          "formal_repaired_contrast_ids": []
+        },
+        {
+          "turn": "turn-0034",
+          "round": 4,
+          "candidate": "c-7a93f5e8bb6c6f1bb42fb9d9824a7db763a2fdb9462317ce372b88e7d63e7f45",
+          "evidence": {
+            "component_hypothesis": "Layer-10 attention output inputs have controlled cross-source contrast cosine 0.582. Selected components write more negatively along the measured success direction on failures than controls; this association may reflect early option processing rather than a causal failure circuit.",
+            "contrast_ids": [
+              "C-125:counterfact_visual:T0:O0:B0",
+              "C-125:counterfact_visual:T0:O1:B0",
+              "C-232:counterfact_visual:T0:O1:B0",
+              "C-101:original_visual:T0:O1:B0"
+            ],
+            "control_plan": "Complete fixed D, all five conditions and cell protections, repaired/worsened IDs. Compare against late-MLP null results; use matched random controls and alternative operations if this component shows effects.",
+            "dose": "64 ranked o_proj columns, W0[:,S]-u*(u^T W0[:,S]); effective BF16 support 159819, norm 0.547042787. /work/r04_attn10_direction_remove_edit.npz.",
+            "expected_change": "Removing these components should reduce visual order sensitivity and repair some anchor failures, with less usual-size or original-visual damage than indiscriminate visual bias.",
+            "failure_behavior": "Fixed-image counterfactual visual responses switch with wording/order, while comparable original-visual answers remain correct.",
+            "measurement_actions": [
+              "turn-0011",
+              "turn-0013",
+              "turn-0018"
+            ],
+            "role": "targeted"
+          },
+          "rationale": "Test earlier attention-output involvement after late-MLP direction attenuation and its sign control were behaviorally null.",
+          "contrast_ids": [
+            "C-125:counterfact_visual:T0:O0:B0",
+            "C-125:counterfact_visual:T0:O1:B0",
+            "C-232:counterfact_visual:T0:O1:B0",
+            "C-101:original_visual:T0:O1:B0"
+          ],
+          "stable_group_ids": [],
+          "exact_stable_failed_ids": [],
+          "baseline_failed_contrast_ids": [
+            "C-125:counterfact_visual:T0:O1:B0",
+            "C-232:counterfact_visual:T0:O1:B0"
+          ],
+          "formal_repaired_contrast_ids": []
+        },
+        {
+          "turn": "turn-0038",
+          "round": 5,
+          "candidate": "c-a9da53f983557a632f17eab923aef2bcd7678baa334954f818e49086dbe13968",
+          "evidence": {
+            "component_hypothesis": "Layer-10 distributed attention output components affect some decisions; their specific error-processing role is unresolved.",
+            "contrast_ids": [
+              "C-125:counterfact_visual:T0:O1:B0",
+              "C-101:counterfact_visual:T0:O1:B0",
+              "C-353:counterfact_visual:T1:O1:B0",
+              "C-077:no_image_usual:T0:O1:B0"
+            ],
+            "control_plan": "Full D; compare every changed ID to W0 and round 4, all five conditions and per-cell protections; stronger, sign-reversed, random-direction and random-channel controls remain reserved.",
+            "dose": "W0[:,S]-0.5*u*(u^T W0[:,S]); 64 identical columns; effective support 155915, norm 0.273659080. /work/r05_attn10_direction_half_edit.npz. Sole tensor rebuilt from W0.",
+            "expected_change": "Half attenuation should retain part of round 4's gains while reducing its five damaged responses, especially no-image damage; nonmonotonic changes would weaken a simple directional-dose account.",
+            "failure_behavior": "Order-sensitive counterfactual visual errors; round 4 improved other visual/usual cases but repaired no original anchor failures.",
+            "measurement_actions": [
+              "turn-0013",
+              "turn-0018"
+            ],
+            "role": "targeted"
+          },
+          "rationale": "Dose test of the modestly beneficial attention intervention, seeking reduced control damage rather than assuming its score gain validates the initial failure mechanism.",
+          "contrast_ids": [
+            "C-125:counterfact_visual:T0:O1:B0",
+            "C-101:counterfact_visual:T0:O1:B0",
+            "C-353:counterfact_visual:T1:O1:B0",
+            "C-077:no_image_usual:T0:O1:B0"
+          ],
+          "stable_group_ids": [
+            "C-353:counterfact_visual:T1:O1:B0",
+            "C-077:no_image_usual:T0:O1:B0"
+          ],
+          "exact_stable_failed_ids": [],
+          "baseline_failed_contrast_ids": [
+            "C-125:counterfact_visual:T0:O1:B0",
+            "C-353:counterfact_visual:T1:O1:B0"
+          ],
+          "formal_repaired_contrast_ids": []
+        },
+        {
+          "turn": "turn-0041",
+          "round": 6,
+          "candidate": "c-dae71490d5ad09866c9bfb0a98e7e4c88865b14b20443be5c433d6e64170692e",
+          "evidence": {
+            "component_hypothesis": "Selective layer-10 opponent writes may affect answer selection, but original anchor repairs remain absent and dose behavior may be nonmonotonic.",
+            "contrast_ids": [
+              "C-125:counterfact_visual:T0:O1:B0",
+              "C-626:counterfact_visual:T0:O1:B0",
+              "C-588:counterfact_visual:T1:O0:B0",
+              "C-077:no_image_usual:T0:O1:B0"
+            ],
+            "control_plan": "Full-D ordinary generation, all condition/cell protections, five-way correctness and complete changed-ID review; next sign and randomized specificity controls.",
+            "dose": "W0[:,S]-2*u*(u^T W0[:,S]); same 64 columns; effective support 161906, norm 1.09388423. /work/r06_attn10_direction_reflect_edit.npz.",
+            "expected_change": "Reflection should increase the effect relative to removal if the opponent-write account is monotonic; larger control damage or unrelated changes will limit that account.",
+            "failure_behavior": "Counterfactual visual order/wording failures, with heterogeneous usual-size and no-image errors retained as controls.",
+            "measurement_actions": [
+              "turn-0013",
+              "turn-0018"
+            ],
+            "role": "targeted"
+          },
+          "rationale": "Complete half/removal/reflection dose comparison for the observed layer-10 attention effect; the half-dose safety prediction failed.",
+          "contrast_ids": [
+            "C-125:counterfact_visual:T0:O1:B0",
+            "C-626:counterfact_visual:T0:O1:B0",
+            "C-588:counterfact_visual:T1:O0:B0",
+            "C-077:no_image_usual:T0:O1:B0"
+          ],
+          "stable_group_ids": [
+            "C-077:no_image_usual:T0:O1:B0"
+          ],
+          "exact_stable_failed_ids": [],
+          "baseline_failed_contrast_ids": [
+            "C-125:counterfact_visual:T0:O1:B0",
+            "C-588:counterfact_visual:T1:O0:B0"
+          ],
+          "formal_repaired_contrast_ids": [
+            "C-588:counterfact_visual:T1:O0:B0"
+          ]
+        },
+        {
+          "turn": "turn-0044",
+          "round": 7,
+          "candidate": "c-db3d3acdb56c2bfc00a8245c70cc833910de11b1bd2de74b18b77b1c71159847",
+          "evidence": {
+            "component_hypothesis": "If selected attention components oppose useful visual choices, strengthening them should reverse attenuation's effects. Reflection repaired one anchor but endpoint and control damage were nonmonotonic.",
+            "contrast_ids": [
+              "C-125:counterfact_visual:T1:O0:B0",
+              "C-125:counterfact_visual:T1:O1:B0",
+              "C-588:counterfact_visual:T1:O0:B0",
+              "C-077:no_image_usual:T0:O1:B0"
+            ],
+            "control_plan": "Full D, repaired/worsened IDs, all five conditions and cell protections; follow with direction/channel randomization matched for support and norm.",
+            "dose": "W0[:,S]+u*(u^T W0[:,S]); same 64 columns; effective support 159823, norm 0.547000647 versus candidate 4 norm 0.547042787. /work/r07_attn10_opposite_control_edit.npz.",
+            "expected_change": "Less counterfactual visual benefit or more visual damage than candidate 4; similar benefit would weaken sign-specific interpretation.",
+            "failure_behavior": "Visual counterfactual order sensitivity, including camera/ring; attenuation also affects usual-size and no-image controls.",
+            "measurement_actions": [
+              "turn-0013",
+              "turn-0018"
+            ],
+            "role": "control"
+          },
+          "rationale": "Sign-specific control for the layer-10 attention intervention; rebuild the sole edited tensor from W0.",
+          "contrast_ids": [
+            "C-125:counterfact_visual:T1:O0:B0",
+            "C-125:counterfact_visual:T1:O1:B0",
+            "C-588:counterfact_visual:T1:O0:B0",
+            "C-077:no_image_usual:T0:O1:B0"
+          ],
+          "stable_group_ids": [
+            "C-077:no_image_usual:T0:O1:B0"
+          ],
+          "exact_stable_failed_ids": [],
+          "baseline_failed_contrast_ids": [
+            "C-125:counterfact_visual:T1:O1:B0",
+            "C-588:counterfact_visual:T1:O0:B0"
+          ],
+          "formal_repaired_contrast_ids": []
+        },
+        {
+          "turn": "turn-0047",
+          "round": 8,
+          "candidate": "c-010ae532fed155dc399725f798db8609c211ada70a5e7be6f7fcf967d5b6a09b",
+          "evidence": {
+            "component_hypothesis": "The measured output direction should matter beyond perturbation norm and selected-channel activation if its proposed role is specific.",
+            "contrast_ids": [
+              "C-125:counterfact_visual:T0:O1:B0",
+              "C-626:counterfact_visual:T0:O1:B0",
+              "C-588:counterfact_visual:T1:O0:B0",
+              "C-077:no_image_usual:T0:O1:B0"
+            ],
+            "control_plan": "Full D, exact repaired/worsened comparisons, all five conditions and protection cells. Preserve this seed regardless of outcome; add a matched random-channel test.",
+            "dose": "Delta=-v*(u^T W0[:,S]); v is coordinate-sign-randomized u, seed 20261106. Same 64 channels; effective support 159822, norm 0.546987474; cosine(v,u)=-0.08968094. /work/r08_attn10_random_direction_edit.npz.",
+            "expected_change": "Randomizing output direction should not reproduce candidate 4's beneficial visual and endpoint pattern. Comparable benefit is counterevidence to directional specificity.",
+            "failure_behavior": "Counterfactual visual errors and control damage affected by the layer-10 edit; original anchors mostly remain wrong.",
+            "measurement_actions": [
+              "turn-0013",
+              "turn-0018"
+            ],
+            "role": "control"
+          },
+          "rationale": "Matched random-output-direction control, holding selected attention channels and input coefficients fixed.",
+          "contrast_ids": [
+            "C-125:counterfact_visual:T0:O1:B0",
+            "C-626:counterfact_visual:T0:O1:B0",
+            "C-588:counterfact_visual:T1:O0:B0",
+            "C-077:no_image_usual:T0:O1:B0"
+          ],
+          "stable_group_ids": [
+            "C-077:no_image_usual:T0:O1:B0"
+          ],
+          "exact_stable_failed_ids": [],
+          "baseline_failed_contrast_ids": [
+            "C-125:counterfact_visual:T0:O1:B0",
+            "C-588:counterfact_visual:T1:O0:B0"
+          ],
+          "formal_repaired_contrast_ids": []
+        },
+        {
+          "turn": "turn-0050",
+          "round": 9,
+          "candidate": "c-7a9f6bfd09c9e3c0e64f33691115541458430bc0f9394bbaa89382833f1c6c07",
+          "evidence": {
+            "component_hypothesis": "Specific researcher-ranked input channels should matter beyond output direction, head membership, weight magnitude and activation level.",
+            "contrast_ids": [
+              "C-125:counterfact_visual:T0:O1:B0",
+              "C-626:counterfact_visual:T0:O1:B0",
+              "C-588:counterfact_visual:T1:O0:B0",
+              "C-077:no_image_usual:T0:O1:B0"
+            ],
+            "control_plan": "Full fixed D and all changed IDs; compare candidate 4, sign reversal and random direction. Matching used no correctness labels. Replicate controls with a second fixed seed before a specificity claim.",
+            "dose": "Same rank-one coefficients and direction as candidate 4 on 64 disjoint matched channels. Seed 20261106. BF16 support 159874, norm 0.547048986; median norm ratio 0.99943, RMS ratio 1.00493. /work/r09_attn10_random_channels_edit.npz.",
+            "expected_change": "Matched replacement channels should reproduce fewer targeted benefits than candidate 4 if channel identity matters. Similar benefit limits the claim to a more distributed or generic directional effect.",
+            "failure_behavior": "Layer-10 attenuation changes a heterogeneous set of visual, usual-size and no-image decisions; most original anchor failures persist.",
+            "measurement_actions": [
+              "turn-0013",
+              "turn-0018"
+            ],
+            "role": "control"
+          },
+          "rationale": "Matched random-channel control holding output direction and edit coefficient magnitudes/signs fixed.",
+          "contrast_ids": [
+            "C-125:counterfact_visual:T0:O1:B0",
+            "C-626:counterfact_visual:T0:O1:B0",
+            "C-588:counterfact_visual:T1:O0:B0",
+            "C-077:no_image_usual:T0:O1:B0"
+          ],
+          "stable_group_ids": [
+            "C-077:no_image_usual:T0:O1:B0"
+          ],
+          "exact_stable_failed_ids": [],
+          "baseline_failed_contrast_ids": [
+            "C-125:counterfact_visual:T0:O1:B0",
+            "C-588:counterfact_visual:T1:O0:B0"
+          ],
+          "formal_repaired_contrast_ids": []
+        },
+        {
+          "turn": "turn-0059",
+          "round": 10,
+          "candidate": "c-c879714539f2999107ca394bf9cef1f0454ccdae94fa6a2b60d173f572f4fa77",
+          "evidence": {
+            "component_hypothesis": "If the selected layer-10 output direction specifically mediates the beneficial effect, randomizing its coordinate signs while preserving channels and input coefficients should not consistently reproduce that effect.",
+            "contrast_ids": [
+              "C-125:counterfact_visual:T1:O1:B0",
+              "C-626:counterfact_visual:T0:O1:B0",
+              "C-353:counterfact_visual:T1:O1:B0",
+              "C-353:counterfact_visual:T1:O0:B1"
+            ],
+            "control_plan": "Compare full-development outcomes against W0, round 4, and the first random-direction control. Retain fresh-W0 discrepancies and paired diagnostic reversals rather than attributing every cached response change to the edit.",
+            "dose": "Seed 20261107; 64 original channels; 159822 changed BF16 scalars; effective L2 0.54707515, matched to round 4; direction cosine -0.03823756.",
+            "expected_change": "The second randomized direction should not consistently reproduce the targeted intervention's counterfactual-visual gains. Comparable gains would weaken direction specificity.",
+            "failure_behavior": "Counterfactual visual answers can favor the usual-size object and vary with wording and option order.",
+            "measurement_actions": [
+              "turn-0013",
+              "turn-0018",
+              "turn-0053",
+              "turn-0056"
+            ],
+            "role": "control"
+          },
+          "rationale": "Round 10: second fixed-seed, norm-matched random-output-direction control. The sole edited tensor is rebuilt from W0, not accumulated from the parent. Preserve the unresolved discrepancies between cached evaluation and fresh diagnostic responses.",
+          "contrast_ids": [
+            "C-125:counterfact_visual:T1:O1:B0",
+            "C-626:counterfact_visual:T0:O1:B0",
+            "C-353:counterfact_visual:T1:O1:B0",
+            "C-353:counterfact_visual:T1:O0:B1"
+          ],
+          "stable_group_ids": [
+            "C-353:counterfact_visual:T1:O1:B0",
+            "C-353:counterfact_visual:T1:O0:B1"
+          ],
+          "exact_stable_failed_ids": [],
+          "baseline_failed_contrast_ids": [
+            "C-125:counterfact_visual:T1:O1:B0",
+            "C-353:counterfact_visual:T1:O1:B0",
+            "C-353:counterfact_visual:T1:O0:B1"
+          ],
+          "formal_repaired_contrast_ids": [
+            "C-125:counterfact_visual:T1:O1:B0"
+          ]
+        },
+        {
+          "turn": "turn-0062",
+          "round": 11,
+          "candidate": "c-4626ddc6fa83ca4f5be716e70f2feb1b9d5b12118076d33ac8d9205272692ef5",
+          "evidence": {
+            "component_hypothesis": "The original attention channels should outperform matched alternative channels if their identities, rather than a broadly applied perturbation, are important to the proposed mechanism.",
+            "contrast_ids": [
+              "C-125:counterfact_visual:T1:O1:B0",
+              "C-626:counterfact_visual:T0:O1:B0",
+              "C-588:counterfact_visual:T1:O0:B0",
+              "C-353:counterfact_visual:T1:O0:B1"
+            ],
+            "control_plan": "Hold the original output direction and input coefficients fixed; compare against W0, round 4, and round 9. Report all condition-level repairs and damages, retaining the unresolved diagnostic-versus-evaluation discrepancies.",
+            "dose": "64 alternative same-head channels; seed 20261107; effective support 159961; L2 0.54704648; median column-norm ratio 1.00036 and activation-RMS ratio 0.99771 relative to original channels.",
+            "expected_change": "Alternative channels should not consistently reproduce round 4's condition-specific benefit. Comparable improvements would weaken channel specificity.",
+            "failure_behavior": "Counterfactual visual responses show usual-size bias and prompt sensitivity; the ring anchor also improves under a randomized output direction.",
+            "measurement_actions": [
+              "turn-0013",
+              "turn-0018",
+              "turn-0053",
+              "turn-0056"
+            ],
+            "role": "control"
+          },
+          "rationale": "Round 11: second fixed-seed matched-channel control, rebuilt from W0. Test whether the originally selected channels outperform comparable alternatives rather than interpreting isolated anchor repairs as specific evidence.",
+          "contrast_ids": [
+            "C-125:counterfact_visual:T1:O1:B0",
+            "C-626:counterfact_visual:T0:O1:B0",
+            "C-588:counterfact_visual:T1:O0:B0",
+            "C-353:counterfact_visual:T1:O0:B1"
+          ],
+          "stable_group_ids": [
+            "C-353:counterfact_visual:T1:O0:B1"
+          ],
+          "exact_stable_failed_ids": [],
+          "baseline_failed_contrast_ids": [
+            "C-125:counterfact_visual:T1:O1:B0",
+            "C-588:counterfact_visual:T1:O0:B0",
+            "C-353:counterfact_visual:T1:O0:B1"
+          ],
+          "formal_repaired_contrast_ids": [
+            "C-125:counterfact_visual:T1:O1:B0"
+          ]
+        },
+        {
+          "turn": "turn-0068",
+          "round": 12,
+          "candidate": "c-c9a3fd95f332b4d250c8e1cdfa38f7b9180ea90fa19307c228840ba44269caa5",
+          "evidence": {
+            "component_hypothesis": "A specific role for the nominated output direction predicts that perturbing the complementary output components should not reproduce its beneficial pattern.",
+            "contrast_ids": [
+              "C-125:counterfact_visual:T1:O1:B0",
+              "C-626:counterfact_visual:T0:O1:B0",
+              "C-353:counterfact_visual:T1:O0:B1",
+              "C-588:counterfact_visual:T1:O0:B0"
+            ],
+            "control_plan": "Full-development comparison with W0 and round 4 at matched edit norm and identical channels. Preserve all collateral changes and explicitly distinguish stable diagnostic responses from the discrepant cached baseline.",
+            "dose": "Attenuate the orthogonal complement by 0.09043587 on 64 columns; effective L2 0.54696107; support 163566; BF16 leakage into the preserved direction has norm 0.00024807.",
+            "expected_change": "The orthogonal control should yield less consistent counterfactual-visual improvement than round 4; comparable improvement would favor a nonspecific perturbation explanation.",
+            "failure_behavior": "Prompt-sensitive counterfactual visual errors persist, while both random-direction and matched-channel interventions sometimes repair the nominated anchor.",
+            "measurement_actions": [
+              "turn-0013",
+              "turn-0018",
+              "turn-0053",
+              "turn-0056",
+              "turn-0066"
+            ],
+            "role": "control"
+          },
+          "rationale": "Round 12: matched-norm orthogonal-component control on the original 64 attention-output columns, reconstructed from W0. Test direction specificity beyond random-sign controls.",
+          "contrast_ids": [
+            "C-125:counterfact_visual:T1:O1:B0",
+            "C-626:counterfact_visual:T0:O1:B0",
+            "C-353:counterfact_visual:T1:O0:B1",
+            "C-588:counterfact_visual:T1:O0:B0"
+          ],
+          "stable_group_ids": [
+            "C-353:counterfact_visual:T1:O0:B1"
+          ],
+          "exact_stable_failed_ids": [],
+          "baseline_failed_contrast_ids": [
+            "C-125:counterfact_visual:T1:O1:B0",
+            "C-353:counterfact_visual:T1:O0:B1",
+            "C-588:counterfact_visual:T1:O0:B0"
+          ],
+          "formal_repaired_contrast_ids": []
+        },
+        {
+          "turn": "turn-0071",
+          "round": 13,
+          "candidate": "c-44c27d4145a5bd24ab5f5b9bd736862acfb9e84e43161d8b50716e04f553cc29",
+          "evidence": {
+            "component_hypothesis": "If these channels substantially carry the competing signal, complete removal should produce a larger effect than directional attenuation; collateral damage would indicate mixed functions rather than a dedicated failure circuit.",
+            "contrast_ids": [
+              "C-125:counterfact_visual:T1:O1:B0",
+              "C-232:counterfact_visual:T1:O1:B0",
+              "C-125:original_visual:T1:O1:B0",
+              "C-125:counterfact_usual:T1:O1:B0"
+            ],
+            "control_plan": "Compare with W0, directional removal, and orthogonal attenuation; next test a same-count alternative-channel ablation matched by head, weight norm, and activation statistics. Do not treat this larger dose as directly equivalent to round 4.",
+            "dose": "Zero 64 of 2048 o_proj input-channel columns; 163840 changed scalars; L2 6.07254171; 17.8998% of this tensor's norm. All unselected columns and other tensors remain W0.",
+            "expected_change": "A larger behavioral effect, potentially with control damage. Failure to improve the nominated errors would further weaken the channel-level hypothesis.",
+            "failure_behavior": "Counterfactual-visual errors remain largely unrepaired, and small edits also alter ordinary visual and usual-size responses.",
+            "measurement_actions": [
+              "turn-0013",
+              "turn-0018",
+              "turn-0053",
+              "turn-0056"
+            ],
+            "role": "diagnostic"
+          },
+          "rationale": "Round 13: complete ablation of the 64 originally selected layer-10 attention-output columns. Test their broader causal contribution after small directional and orthogonal interventions yielded limited, nonspecific changes.",
+          "contrast_ids": [
+            "C-125:counterfact_visual:T1:O1:B0",
+            "C-232:counterfact_visual:T1:O1:B0",
+            "C-125:original_visual:T1:O1:B0",
+            "C-125:counterfact_usual:T1:O1:B0"
+          ],
+          "stable_group_ids": [],
+          "exact_stable_failed_ids": [],
+          "baseline_failed_contrast_ids": [
+            "C-125:counterfact_visual:T1:O1:B0",
+            "C-232:counterfact_visual:T1:O1:B0"
+          ],
+          "formal_repaired_contrast_ids": []
+        },
+        {
+          "turn": "turn-0074",
+          "round": 14,
+          "candidate": "c-c6b2929664f79ff0f3b382429ff56f20e9bb26031815202171b4d7a17eb2ca0b",
+          "evidence": {
+            "component_hypothesis": "If the original selected channels uniquely carry the competing signal, their ablation should outperform removing similarly active, similarly sized channels in the same heads.",
+            "contrast_ids": [
+              "C-125:counterfact_visual:T0:O1:B0",
+              "C-125:counterfact_visual:T1:O1:B0",
+              "C-626:counterfact_visual:T0:O1:B0",
+              "C-125:original_visual:T0:O1:B0"
+            ],
+            "control_plan": "Compare all development conditions, joint metrics, and repaired/damaged IDs against W0 and round 13. Report both the small weight-norm mismatch and differing predicted activation effects.",
+            "dose": "Zero 64 disjoint matched columns; 163840 changed scalars; L2 6.08589029, 1.0021981 times the reference ablation norm.",
+            "expected_change": "The alternative-channel ablation should not reproduce the original ablation's beneficial pattern consistently; comparable performance would weaken channel specificity.",
+            "failure_behavior": "Complete selected-channel removal modestly improves counterfactual-visual accuracy but also damages correct responses across several conditions.",
+            "measurement_actions": [
+              "turn-0013",
+              "turn-0018",
+              "turn-0053",
+              "turn-0056"
+            ],
+            "role": "control"
+          },
+          "rationale": "Round 14: ablate the previously fixed matched alternative-channel set to test whether round 13's benefits require the originally selected channel identities. Reconstruct the tensor from W0.",
+          "contrast_ids": [
+            "C-125:counterfact_visual:T0:O1:B0",
+            "C-125:counterfact_visual:T1:O1:B0",
+            "C-626:counterfact_visual:T0:O1:B0",
+            "C-125:original_visual:T0:O1:B0"
+          ],
+          "stable_group_ids": [],
+          "exact_stable_failed_ids": [],
+          "baseline_failed_contrast_ids": [
+            "C-125:counterfact_visual:T0:O1:B0",
+            "C-125:counterfact_visual:T1:O1:B0"
+          ],
+          "formal_repaired_contrast_ids": [
+            "C-125:counterfact_visual:T1:O1:B0"
+          ]
+        },
+        {
+          "turn": "turn-0077",
+          "round": 15,
+          "candidate": "c-92e3127e963ddb36677e224e6c284022cc6fcd13a3f8fb1f45268ebde7dbd79e",
+          "evidence": {
+            "component_hypothesis": "The head with the largest individual selected projection-energy share might account for a disproportionate fraction of the observed repairs.",
+            "contrast_ids": [
+              "C-588:counterfact_visual:T1:O0:B0",
+              "C-353:counterfact_visual:T1:O0:B1",
+              "C-353:counterfact_visual:T1:O1:B0",
+              "C-119:counterfact_visual:T0:O1:B1"
+            ],
+            "control_plan": "Evaluate the complementary 40-column component next, at its original magnitude. Together the disjoint patches reconstruct round 4 exactly; compare repair identities as well as aggregate metrics.",
+            "dose": "Exact round-4 BF16 values on 24 columns belonging to head 7; support 59754; L2 0.27280232; 24.8687% of round 4's squared edit norm.",
+            "expected_change": "Test whether this component retains at least three of round 4's four counterfactual-visual repairs without new counterfactual-visual damage. Failure would weaken the concentration hypothesis.",
+            "failure_behavior": "The full directional edit repairs four counterfactual-visual responses but also causes collateral damage; its functional contribution may be distributed across heads.",
+            "measurement_actions": [
+              "turn-0013",
+              "turn-0018",
+              "turn-0053",
+              "turn-0056"
+            ],
+            "role": "diagnostic"
+          },
+          "rationale": "Round 15: isolate the exact head-7 portion of round 4's edit, without rescaling. This is a structural decomposition, not a claim that head 7 encodes object size.",
+          "contrast_ids": [
+            "C-588:counterfact_visual:T1:O0:B0",
+            "C-353:counterfact_visual:T1:O0:B1",
+            "C-353:counterfact_visual:T1:O1:B0",
+            "C-119:counterfact_visual:T0:O1:B1"
+          ],
+          "stable_group_ids": [
+            "C-353:counterfact_visual:T1:O0:B1",
+            "C-353:counterfact_visual:T1:O1:B0"
+          ],
+          "exact_stable_failed_ids": [],
+          "baseline_failed_contrast_ids": [
+            "C-588:counterfact_visual:T1:O0:B0",
+            "C-353:counterfact_visual:T1:O0:B1",
+            "C-353:counterfact_visual:T1:O1:B0",
+            "C-119:counterfact_visual:T0:O1:B1"
+          ],
+          "formal_repaired_contrast_ids": []
+        },
+        {
+          "turn": "turn-0081",
+          "round": 16,
+          "candidate": "c-4c9718d57134f41be0be56b747538dfb38a05c82465fac4d0c1e6e618dd5ed54",
+          "evidence": {
+            "component_hypothesis": "The visual repairs may arise from the other selected heads or from interactions between the two disjoint edit components.",
+            "contrast_ids": [
+              "C-588:counterfact_visual:T1:O0:B0",
+              "C-353:counterfact_visual:T1:O0:B1",
+              "C-353:counterfact_visual:T1:O1:B0",
+              "C-119:counterfact_visual:T0:O1:B1"
+            ],
+            "control_plan": "Compare W0, this component, the head-7 component, and their previously evaluated union. Report repair identities and collateral damage separately from official candidate selection.",
+            "dose": "Exact round-4 BF16 patch on 40 selected columns outside head 7; support 100065; L2 0.47416762; all other weights W0.",
+            "expected_change": "Retention of at least three reference visual repairs would support localization outside head 7; failure of both components to retain them would point toward combined effects or evaluation sensitivity rather than single-head concentration.",
+            "failure_behavior": "Head 7 alone retained none of round 4's four counterfactual-visual repairs, despite matching its official repair score through changes in other conditions.",
+            "measurement_actions": [
+              "turn-0013",
+              "turn-0018",
+              "turn-0053",
+              "turn-0056"
+            ],
+            "role": "diagnostic"
+          },
+          "rationale": "Round 16: evaluate the exact complement of the head-7 component. Rebuild from W0 so the head-7 edit is absent rather than retained cumulatively.",
+          "contrast_ids": [
+            "C-588:counterfact_visual:T1:O0:B0",
+            "C-353:counterfact_visual:T1:O0:B1",
+            "C-353:counterfact_visual:T1:O1:B0",
+            "C-119:counterfact_visual:T0:O1:B1"
+          ],
+          "stable_group_ids": [
+            "C-353:counterfact_visual:T1:O0:B1",
+            "C-353:counterfact_visual:T1:O1:B0"
+          ],
+          "exact_stable_failed_ids": [],
+          "baseline_failed_contrast_ids": [
+            "C-588:counterfact_visual:T1:O0:B0",
+            "C-353:counterfact_visual:T1:O0:B1",
+            "C-353:counterfact_visual:T1:O1:B0",
+            "C-119:counterfact_visual:T0:O1:B1"
+          ],
+          "formal_repaired_contrast_ids": []
+        },
+        {
+          "turn": "turn-0086",
+          "round": 17,
+          "candidate": "c-335f41e20ed8211d16ff423d0cc4c71dfe5583969a3186fa3c189e929d5e6ee6",
+          "evidence": {
+            "component_hypothesis": "Selected layer-15 MLP output columns write against a controlled success-associated direction; all six source-group controlled projections are positive, but failure/control separation is weak.",
+            "contrast_ids": [
+              "C-125:counterfact_visual:T0:O0:B0",
+              "C-125:counterfact_visual:T0:O1:B0",
+              "C-232:counterfact_visual:T1:O1:B0"
+            ],
+            "control_plan": "Evaluate equal-dose opposite-direction augmentation independently from W0. Retain unresolved cached-versus-fresh generation discrepancies in interpretation.",
+            "dose": "Remove the directional projection from 64 columns; BF16 effective norm 0.1191461 and support 158184, with all other weights at W0.",
+            "expected_change": "Repair captured counterfactual-visual failures in at least two source groups and produce a positive net counterfactual-visual correctness change on full development evaluation.",
+            "failure_behavior": "Counterfactual-visual prompts sometimes elicit the usual-size object, with order and wording sensitivity.",
+            "measurement_actions": [
+              "turn-0011",
+              "turn-0013"
+            ],
+            "role": "targeted"
+          },
+          "rationale": "Round 17: independently test the controlled layer-15 MLP contrast after the attention-component decomposition failed to retain focal visual repairs.",
+          "contrast_ids": [
+            "C-125:counterfact_visual:T0:O0:B0",
+            "C-125:counterfact_visual:T0:O1:B0",
+            "C-232:counterfact_visual:T1:O1:B0"
+          ],
+          "stable_group_ids": [],
+          "exact_stable_failed_ids": [],
+          "baseline_failed_contrast_ids": [
+            "C-125:counterfact_visual:T0:O1:B0",
+            "C-232:counterfact_visual:T1:O1:B0"
+          ],
+          "formal_repaired_contrast_ids": []
+        },
+        {
+          "turn": "turn-0089",
+          "round": 18,
+          "candidate": "c-185dba545591bd1f3c0c57d758c3f737a4e27f60fe72143a8decf40d172cbec9",
+          "evidence": {
+            "component_hypothesis": "If removing the nominated directional writes causes specific repairs, augmenting those same writes should not reproduce those repairs systematically.",
+            "contrast_ids": [
+              "C-125:counterfact_visual:T0:O0:B0",
+              "C-125:counterfact_visual:T0:O1:B0"
+            ],
+            "control_plan": "Same tensor and channels, reversed intended update, all other parameters at W0; retain cached-versus-fresh discrepancies as a limitation.",
+            "dose": "Dose -1 on the same 64 columns; effective norm 0.1191547, approximately matched to round 17.",
+            "expected_change": "Compare repair identities and counterfactual-visual effects against round 17; shared improvements weaken direction specificity.",
+            "failure_behavior": "The targeted counterfactual-visual failures persisted under round 17 despite several unrelated correctness changes.",
+            "measurement_actions": [
+              "turn-0011",
+              "turn-0013",
+              "turn-0087"
+            ],
+            "role": "control"
+          },
+          "rationale": "Round 18: opposite-direction control for layer-15 MLP projection removal, rebuilt from W0 rather than accumulated.",
+          "contrast_ids": [
+            "C-125:counterfact_visual:T0:O0:B0",
+            "C-125:counterfact_visual:T0:O1:B0"
+          ],
+          "stable_group_ids": [],
+          "exact_stable_failed_ids": [],
+          "baseline_failed_contrast_ids": [
+            "C-125:counterfact_visual:T0:O1:B0"
+          ],
+          "formal_repaired_contrast_ids": []
+        },
+        {
+          "turn": "turn-0092",
+          "round": 19,
+          "candidate": "c-6c45f6697830d4ee12d600db8b13ef674bc0760fd58d2177ed71097ac9303c9c",
+          "evidence": {
+            "component_hypothesis": "A specific nominated output direction should outperform a comparably sized perturbation with randomized output-coordinate signs.",
+            "contrast_ids": [
+              "C-125:counterfact_visual:T0:O0:B0",
+              "C-125:counterfact_visual:T0:O1:B0"
+            ],
+            "control_plan": "One fixed random direction with matched intended norm; all remaining weights W0. This is not a randomization significance test.",
+            "dose": "Same 64 columns and original input coefficients; seed 20261108; effective norm 0.1191486; cosine with nominated direction 0.01347.",
+            "expected_change": "Compare focal repairs, collateral damage, and repair identities with rounds 17 and 18 rather than interpreting overall accuracy alone.",
+            "failure_behavior": "Round 17 produced mixed visual changes and no captured-failure repairs; reversing its direction also failed on those captured failures.",
+            "measurement_actions": [
+              "turn-0011",
+              "turn-0013",
+              "turn-0087",
+              "turn-0090"
+            ],
+            "role": "control"
+          },
+          "rationale": "Round 19: fixed-seed random-output-direction control for the layer-15 MLP intervention, reconstructed from W0.",
+          "contrast_ids": [
+            "C-125:counterfact_visual:T0:O0:B0",
+            "C-125:counterfact_visual:T0:O1:B0"
+          ],
+          "stable_group_ids": [],
+          "exact_stable_failed_ids": [],
+          "baseline_failed_contrast_ids": [
+            "C-125:counterfact_visual:T0:O1:B0"
+          ],
+          "formal_repaired_contrast_ids": []
+        },
+        {
+          "turn": "turn-0095",
+          "round": 20,
+          "candidate": "c-e9fcea94ac4ab2707f9680b593fd98d545416c0f6abe03d8307da18ef8f45b20",
+          "evidence": {
+            "component_hypothesis": "The selected channels may contribute through multiple output components rather than the nominated rank-one projection.",
+            "contrast_ids": [
+              "C-125:counterfact_visual:T0:O0:B0",
+              "C-125:counterfact_visual:T0:O1:B0",
+              "C-232:counterfact_visual:T1:O1:B0"
+            ],
+            "control_plan": "Evaluate a disjoint 64-channel set fixed before either ablation result, matched on weight norm and activation statistics; ablation norm ratio 0.99544.",
+            "dose": "Zero 64 complete down-projection columns, support 163840, effective norm about 2.12686; not norm-matched to round 17.",
+            "expected_change": "A channel-level repair account predicts captured-failure repairs and a net counterfactual-visual gain; widespread collateral changes would instead indicate nonspecific disruption.",
+            "failure_behavior": "The captured counterfactual-visual errors persisted under directional removal, augmentation, and a random-direction control.",
+            "measurement_actions": [
+              "turn-0011",
+              "turn-0013",
+              "turn-0087",
+              "turn-0090",
+              "turn-0093"
+            ],
+            "role": "diagnostic"
+          },
+          "rationale": "Round 20: full-column ablation of the 64 selected layer-15 MLP channels to test their broader contribution after directional interventions failed the focal prediction.",
+          "contrast_ids": [
+            "C-125:counterfact_visual:T0:O0:B0",
+            "C-125:counterfact_visual:T0:O1:B0",
+            "C-232:counterfact_visual:T1:O1:B0"
+          ],
+          "stable_group_ids": [],
+          "exact_stable_failed_ids": [],
+          "baseline_failed_contrast_ids": [
+            "C-125:counterfact_visual:T0:O1:B0",
+            "C-232:counterfact_visual:T1:O1:B0"
+          ],
+          "formal_repaired_contrast_ids": []
+        },
+        {
+          "turn": "turn-0098",
+          "round": 21,
+          "candidate": "c-5c85854a703c36d010d3eba22aae73665efa7bf769b53d8857afdcf0e5d33adb",
+          "evidence": {
+            "component_hypothesis": "If the selected layer-15 channels are specifically implicated, their ablation should produce a more favorable focal repair pattern than ablation of comparable alternatives.",
+            "contrast_ids": [
+              "C-125:counterfact_visual:T1:O1:B0",
+              "C-232:counterfact_visual:T0:O0:B0"
+            ],
+            "control_plan": "Alternative set fixed before round 20 evaluation using seed 20261109 and weight/activation matching; original selected columns restored to W0.",
+            "dose": "Zero 64 disjoint alternative columns; support 163840 and effective norm about 2.11715, 0.99544 times the reference norm.",
+            "expected_change": "Compare captured-failure repairs, all counterfactual-visual changes, collateral damage, and repair identities against round 20.",
+            "failure_behavior": "Selected-channel ablation improved the development score but mixed visual repairs with damages and repaired only one captured failure.",
+            "measurement_actions": [
+              "turn-0011",
+              "turn-0013",
+              "turn-0096"
+            ],
+            "role": "control"
+          },
+          "rationale": "Round 21: preregistered matched-channel ablation control for round 20, independently reconstructed from W0.",
+          "contrast_ids": [
+            "C-125:counterfact_visual:T1:O1:B0",
+            "C-232:counterfact_visual:T0:O0:B0"
+          ],
+          "stable_group_ids": [],
+          "exact_stable_failed_ids": [],
+          "baseline_failed_contrast_ids": [
+            "C-125:counterfact_visual:T1:O1:B0"
+          ],
+          "formal_repaired_contrast_ids": [
+            "C-125:counterfact_visual:T1:O1:B0"
+          ]
+        },
+        {
+          "turn": "turn-0108",
+          "round": 22,
+          "candidate": "c-d973e57d57effa31b57ed6b15387931d0505a6e251fd1e089e1e1bd3a71301be",
+          "evidence": {
+            "component_hypothesis": "Round-20 effects may depend on selected-column writes outside the nominated success-associated direction. Directional removal alone failed its focal prediction; matched-channel ablation also improved counterfactual-visual counts, so neither direction nor channel specificity is established.",
+            "contrast_ids": [
+              "C-125:counterfact_visual:T1:O1:B0",
+              "C-125:counterfact_visual:T1:O0:B0",
+              "C-626:counterfact_visual:T0:O1:B0"
+            ],
+            "control_plan": "Compare repair and damage identities with round 17 parallel-component removal, round 20 full selected-column ablation, and round 21 fixed matched-channel ablation. Natural component magnitudes are not norm matched. Preserve cached-versus-fresh discrepancies and do not interpret this seen-development test as generalization.",
+            "dose": "Natural orthogonal-component removal on 64 layer-15 MLP down-projection columns: W_selected becomes BF16(u(u^T W_selected)). Effective support 163812; effective L2 approximately 2.123525. Retained-projection error norm 0.000006259; additive BF16 decomposition error norm 0.003547.",
+            "expected_change": "Retain at least six of the nine reference counterfactual-visual repair identities registered in turn-0107, with positive net counterfactual-visual correctness relative to the official W0 baseline.",
+            "failure_behavior": "Counterfactual pictured-size questions sometimes elicit the usual-size object. Round 20 repaired some such answers, including nine counterfactual-visual identities reproduced in the selected fresh paired audit, but also damaged correct answers.",
+            "measurement_actions": [
+              "turn-0011",
+              "turn-0013",
+              "turn-0104",
+              "turn-0105"
+            ],
+            "role": "targeted"
+          },
+          "rationale": "Round 22: separate the broader selected-channel ablation from removal of the nominated output direction by retaining the parallel component and removing its orthogonal complement, independently reconstructed from W0.",
+          "contrast_ids": [
+            "C-125:counterfact_visual:T1:O1:B0",
+            "C-125:counterfact_visual:T1:O0:B0",
+            "C-626:counterfact_visual:T0:O1:B0"
+          ],
+          "stable_group_ids": [],
+          "exact_stable_failed_ids": [],
+          "baseline_failed_contrast_ids": [
+            "C-125:counterfact_visual:T1:O1:B0"
+          ],
+          "formal_repaired_contrast_ids": [
+            "C-125:counterfact_visual:T1:O1:B0"
+          ]
+        },
+        {
+          "turn": "turn-0112",
+          "round": 23,
+          "candidate": "c-f5a0776ef2e8ddd779be2a480f597528c4102b1cc1952ed03fc6224abac0ac25",
+          "evidence": {
+            "component_hypothesis": "Partial suppression of the same selected-channel orthogonal writes may preserve some visual repairs while reducing collateral damage; this tests dose dependence rather than assuming full ablation is necessary.",
+            "contrast_ids": [
+              "C-125:counterfact_visual:T1:O1:B0",
+              "C-125:counterfact_visual:T1:O0:B0",
+              "C-626:counterfact_visual:T0:O1:B0"
+            ],
+            "control_plan": "Compare with full orthogonal removal, full-column ablation, and the preregistered equal-norm opposite-sign augmentation. Inspect repair identities and all damaged conditions; retain cached-versus-fresh limitations.",
+            "dose": "W_selected = W0_selected - 0.5*(I-uu^T)*W0_selected on 64 layer-15 MLP down-projection columns. BF16 effective support 163803, effective L2 approximately 1.061745, rounding-error norm 0.001782.",
+            "expected_change": "Retain at least five of the nine reference repairs registered in turn-0111, produce positive net counterfactual-visual correctness, and cause fewer than 14 total correctness damages relative to official W0.",
+            "failure_behavior": "Counterfactual-visual answers can favor usual object size. Full orthogonal-component removal retained all nine registered visual repair identities but damaged 14 previously correct development answers.",
+            "measurement_actions": [
+              "turn-0011",
+              "turn-0013",
+              "turn-0104",
+              "turn-0105"
+            ],
+            "role": "targeted"
+          },
+          "rationale": "Round 23: meaningful half-strength test of the orthogonal-component removal, independently reconstructed from W0 rather than accumulated on round 22.",
+          "contrast_ids": [
+            "C-125:counterfact_visual:T1:O1:B0",
+            "C-125:counterfact_visual:T1:O0:B0",
+            "C-626:counterfact_visual:T0:O1:B0"
+          ],
+          "stable_group_ids": [],
+          "exact_stable_failed_ids": [],
+          "baseline_failed_contrast_ids": [
+            "C-125:counterfact_visual:T1:O1:B0"
+          ],
+          "formal_repaired_contrast_ids": [
+            "C-125:counterfact_visual:T1:O1:B0"
+          ]
+        },
+        {
+          "turn": "turn-0115",
+          "round": 24,
+          "candidate": "c-4792719116ae823897fb02e18cc615ff678f240f7a146749fb9bd97d995d9c1e",
+          "evidence": {
+            "component_hypothesis": "If suppressing these orthogonal writes matters, equal-norm augmentation should not reproduce the majority of the registered visual repairs.",
+            "contrast_ids": [
+              "C-125:counterfact_visual:T1:O1:B0",
+              "C-125:counterfact_visual:T1:O0:B0",
+              "C-626:counterfact_visual:T0:O1:B0"
+            ],
+            "control_plan": "Compare against rounds 22 and 23 using all condition counts, reference repair identities, shared changes, and newly damaged IDs. Shared effects are not evidence for sign specificity. This is one deterministic control, not a randomization significance test.",
+            "dose": "Add (I-uu^T)W0_selected on the original 64 layer-15 MLP down-projection columns. Effective BF16 support 163812; L2 approximately 2.123604; effective norm ratio to round 22 is 1.0000373. Reconstructed from W0, not cumulative.",
+            "expected_change": "Retain fewer than six of the nine reference visual repair identities and produce no positive net counterfactual-visual correctness change, as registered in turn-0111.",
+            "failure_behavior": "Selected counterfactual-visual errors improved under full and partial orthogonal removal, but repair identities and collateral damage differed substantially across doses.",
+            "measurement_actions": [
+              "turn-0011",
+              "turn-0013",
+              "turn-0104",
+              "turn-0105"
+            ],
+            "role": "control"
+          },
+          "rationale": "Round 24: preregistered opposite-sign control for layer-15 selected-column orthogonal removal, reconstructed independently from W0.",
+          "contrast_ids": [
+            "C-125:counterfact_visual:T1:O1:B0",
+            "C-125:counterfact_visual:T1:O0:B0",
+            "C-626:counterfact_visual:T0:O1:B0"
+          ],
+          "stable_group_ids": [],
+          "exact_stable_failed_ids": [],
+          "baseline_failed_contrast_ids": [
+            "C-125:counterfact_visual:T1:O1:B0"
+          ],
+          "formal_repaired_contrast_ids": []
+        },
+        {
+          "turn": "turn-0119",
+          "round": 25,
+          "candidate": "c-246fd1db2feabde137f587879fe6c0a287b7a71e85cf2e45ac61f07ca8c40254",
+          "evidence": {
+            "component_hypothesis": "Most of this repair pattern may reflect broad suppression of the selected columns rather than their small retained output orientation.",
+            "contrast_ids": [
+              "C-125:counterfact_visual:T1:O1:B0",
+              "C-125:counterfact_visual:T1:O0:B0",
+              "C-626:counterfact_visual:T0:O1:B0"
+            ],
+            "control_plan": "Compare with round 22, full ablation round 20, and the already fixed same-projector matched-channel control. Keep input coefficients and column identities fixed here. One random direction is not a randomization significance test; inspect shared repairs and all damages.",
+            "dose": "Replace the original 64 selected layer-15 down-projection columns with v(u^T W0_selected). Fixed coordinate-sign seed 20261110; cosine(u,v)=0.0223573. Retained-write norm 0.1190853 matches round 22. BF16 support 163818, perturbation L2 approximately 2.129881, norm ratio to round 22 approximately 1.002993.",
+            "expected_change": "Retain at least six of the nine reference visual repairs and positive net counterfactual-visual correctness. Meeting this prediction weakens direction-specific interpretation of round 22.",
+            "failure_behavior": "Full selected-column ablation and orthogonal-component removal retained the same nine registered counterfactual-visual repair identities, suggesting the retained direction may not be necessary.",
+            "measurement_actions": [
+              "turn-0011",
+              "turn-0013",
+              "turn-0104",
+              "turn-0105"
+            ],
+            "role": "control"
+          },
+          "rationale": "Round 25: random retained-output-direction control for the selected-channel near-ablation, independently reconstructed from W0.",
+          "contrast_ids": [
+            "C-125:counterfact_visual:T1:O1:B0",
+            "C-125:counterfact_visual:T1:O0:B0",
+            "C-626:counterfact_visual:T0:O1:B0"
+          ],
+          "stable_group_ids": [],
+          "exact_stable_failed_ids": [],
+          "baseline_failed_contrast_ids": [
+            "C-125:counterfact_visual:T1:O1:B0"
+          ],
+          "formal_repaired_contrast_ids": [
+            "C-125:counterfact_visual:T1:O1:B0"
+          ]
+        },
+        {
+          "turn": "turn-0122",
+          "round": 26,
+          "candidate": "c-006b4912e8447781a5c96725e3e95951f6dcf14783af6b54cd8f33b0af82e46c",
+          "evidence": {
+            "component_hypothesis": "The original selected channel identities may contribute to the particular repair pattern even though the retained output orientation is not necessary.",
+            "contrast_ids": [
+              "C-125:counterfact_visual:T1:O1:B0",
+              "C-125:counterfact_visual:T1:O0:B0",
+              "C-626:counterfact_visual:T0:O1:B0"
+            ],
+            "control_plan": "Compare with round 22 and matched full ablation round 21. The fixed matching used weight norm, activation RMS and signed mean/RMS; median weight-norm ratio 0.998926 and activation-RMS ratio 0.967735. Report mismatches, all repair/damage identities, and shared focal repairs. One matched set does not establish population-level specificity.",
+            "dose": "Apply W_selected = u(u^T W0_selected) to 64 disjoint matched alternative channels. BF16 support 163832; effective L2 approximately 2.116384; norm ratio to round 22 approximately 0.9966375. Original selected channels and all other weights are W0.",
+            "expected_change": "Retain fewer than six of the nine reference visual repair identities, as registered before round-25 evaluation. Aggregate gain alone will not establish channel specificity.",
+            "failure_behavior": "The selected-channel near-ablation repairs a reproducible subset of pictured-size errors, but randomized retained orientation reproduces all nine reference repairs, undermining output-direction specificity.",
+            "measurement_actions": [
+              "turn-0011",
+              "turn-0013",
+              "turn-0104",
+              "turn-0105"
+            ],
+            "role": "control"
+          },
+          "rationale": "Round 26: same-projector matched-channel control for round 22, using the disjoint channel set fixed before round 20 and independently reconstructing from W0.",
+          "contrast_ids": [
+            "C-125:counterfact_visual:T1:O1:B0",
+            "C-125:counterfact_visual:T1:O0:B0",
+            "C-626:counterfact_visual:T0:O1:B0"
+          ],
+          "stable_group_ids": [],
+          "exact_stable_failed_ids": [],
+          "baseline_failed_contrast_ids": [
+            "C-125:counterfact_visual:T1:O1:B0"
+          ],
+          "formal_repaired_contrast_ids": [
+            "C-125:counterfact_visual:T1:O1:B0"
+          ]
+        },
+        {
+          "turn": "turn-0130",
+          "round": 27,
+          "candidate": "c-4f9f2a58a36836913ddfca5bda6802d368530e27b2906b87d312ae3459540a86",
+          "evidence": {
+            "component_hypothesis": "Channels 9541, 2486, and 5848 account for 51.43% of summed individual write energy on 96 recorded inputs and may carry most of the reference repair effect. This statistic excludes interference and is not itself causal evidence.",
+            "contrast_ids": [
+              "C-125:counterfact_visual:T1:O1:B0",
+              "C-455:counterfact_visual:T1:O0:B0"
+            ],
+            "control_plan": "Compare against W0, full round-22 removal, and the preregistered disjoint 61-channel complement in round 28. Preserve all damages and protection failures.",
+            "dose": "Exact round-22 effective BF16 edits on three columns only: 7,675 changed scalars, L2 approximately 0.478766. Native component magnitude, not norm-matched.",
+            "expected_change": "Retain at least six of the nine reference counterfactual-visual repairs registered in turn-0129, with positive net counterfactual-visual correctness relative to official W0.",
+            "failure_behavior": "Counterfactual-visual requests can produce the usual-size object rather than the visually larger object; the broader layer-15 edit repairs some requests but damages others.",
+            "measurement_actions": [
+              "turn-0011",
+              "turn-0013",
+              "turn-0125",
+              "turn-0126"
+            ],
+            "role": "diagnostic"
+          },
+          "rationale": "Round 27: test whether three channels accounting for half the summed individual write energy suffice for the round-22 repair pattern, using their exact BF16 edits and independently reconstructing all other weights from W0.",
+          "contrast_ids": [
+            "C-125:counterfact_visual:T1:O1:B0",
+            "C-455:counterfact_visual:T1:O0:B0"
+          ],
+          "stable_group_ids": [],
+          "exact_stable_failed_ids": [],
+          "baseline_failed_contrast_ids": [
+            "C-125:counterfact_visual:T1:O1:B0"
+          ],
+          "formal_repaired_contrast_ids": [
+            "C-125:counterfact_visual:T1:O1:B0"
+          ]
+        },
+        {
+          "turn": "turn-0133",
+          "round": 28,
+          "candidate": "c-58e249de16eeca1aa958e979e07beb5a6423db5cd815a3de9c37fa757730a4d1",
+          "evidence": {
+            "component_hypothesis": "The broader repair pattern may require contributions outside the three high-energy channels; the complementary component tests their sufficiency and the proposed localization.",
+            "contrast_ids": [
+              "C-125:counterfact_visual:T1:O1:B0",
+              "C-288:counterfact_visual:T1:O1:B1"
+            ],
+            "control_plan": "Compare with W0, round 27's disjoint three-channel component, and full round 22. Their effective weight union is exactly round 22; preserve nonadditive outcomes without attributing them to a specific interaction mechanism.",
+            "dose": "Exact round-22 BF16 edits on the complementary 61 columns: 156,137 changed scalars, L2 approximately 2.068850. Native component magnitude, not norm-matched.",
+            "expected_change": "The prediction registered before either partition result is fewer than six of nine reference counterfactual-visual repairs.",
+            "failure_behavior": "The full layer-15 edit repairs selected counterfactual-visual errors, but its three highest individual-write-energy channels alone retained only four of nine reference repairs and produced negative net counterfactual-visual correctness.",
+            "measurement_actions": [
+              "turn-0011",
+              "turn-0013",
+              "turn-0125",
+              "turn-0126"
+            ],
+            "role": "diagnostic"
+          },
+          "rationale": "Round 28: test the fixed complementary 61-channel component of round 22, restoring the three high-energy channels to W0. This completes an exact disjoint weight partition rather than assuming additive behavioral effects.",
+          "contrast_ids": [
+            "C-125:counterfact_visual:T1:O1:B0",
+            "C-288:counterfact_visual:T1:O1:B1"
+          ],
+          "stable_group_ids": [],
+          "exact_stable_failed_ids": [],
+          "baseline_failed_contrast_ids": [
+            "C-125:counterfact_visual:T1:O1:B0",
+            "C-288:counterfact_visual:T1:O1:B1"
+          ],
+          "formal_repaired_contrast_ids": [
+            "C-125:counterfact_visual:T1:O1:B0",
+            "C-288:counterfact_visual:T1:O1:B1"
+          ]
+        },
+        {
+          "turn": "turn-0136",
+          "round": 29,
+          "candidate": "c-6270cac07ebf70b52f0bd725f9436aabb916c1209fd29a623ae6db7e055aee44",
+          "evidence": {
+            "component_hypothesis": "The mean direction of 96 recorded selected-channel inputs captures 96.56% of their squared input magnitude. The patch component driven by that shared direction may suffice for most reference repairs, rather than requiring input-specific variation.",
+            "contrast_ids": [
+              "C-125:counterfact_visual:T1:O1:B0",
+              "C-455:counterfact_visual:T1:O0:B0"
+            ],
+            "control_plan": "Compare against W0, full round 22, and the fixed residual-input component in round 30. Preserve native component magnitudes and report the BF16 additive decomposition error. This is a static all-token edit, not a last-token intervention.",
+            "dose": "Apply D_common=(Dq)q^T on the original 64 columns, where D is round 22's effective delta. After BF16 rounding: 128,241 changed scalars, L2 approximately 0.243152, rounding error norm approximately 0.003195.",
+            "expected_change": "Retain at least six of the nine reference counterfactual-visual repairs and positive net counterfactual-visual correctness relative to official W0, as registered in turn-0129.",
+            "failure_behavior": "Selected layer-15 edits alter both counterfactual-visual failures and protected usual-size behavior; the repair pattern was not localized by individual channel write energy.",
+            "measurement_actions": [
+              "turn-0011",
+              "turn-0013",
+              "turn-0125",
+              "turn-0126"
+            ],
+            "role": "diagnostic"
+          },
+          "rationale": "Round 29: test the common-input component of the effective round-22 patch, fixed before the energy-partition evaluations and independently reconstructed from W0.",
+          "contrast_ids": [
+            "C-125:counterfact_visual:T1:O1:B0",
+            "C-455:counterfact_visual:T1:O0:B0"
+          ],
+          "stable_group_ids": [],
+          "exact_stable_failed_ids": [],
+          "baseline_failed_contrast_ids": [
+            "C-125:counterfact_visual:T1:O1:B0"
+          ],
+          "formal_repaired_contrast_ids": []
+        },
+        {
+          "turn": "turn-0141",
+          "round": 30,
+          "candidate": "c-8d473fc6df3d95501ea87545efcc13208881e5c2c2e6855bac6ebc832f880f02",
+          "evidence": {
+            "component_hypothesis": "Input-specific variation or effects at other token positions may be required beyond the common-input component. Removing that shared component from the patch tests the complementary explanation.",
+            "contrast_ids": [
+              "C-125:counterfact_visual:T1:O1:B0",
+              "C-288:counterfact_visual:T1:O0:B0"
+            ],
+            "control_plan": "Compare with W0, full round 22, and common-input round 29. Report native dose differences and BF16 additive decomposition error 0.003215. Retain the actual harness-selected best after exactly 30 full-development evaluations; do not reinterpret diagnostic generations as official scores.",
+            "dose": "Apply D_residual=D-(Dq)q^T on the original 64 columns: 163,811 effective changed scalars, L2 approximately 2.109565. Effective write on q has norm 0.000156 versus 0.243133 for the full patch.",
+            "expected_change": "Retain fewer than six of nine reference counterfactual-visual repairs, preserving the prediction registered in turn-0129 before either input-component evaluation.",
+            "failure_behavior": "The common-input component retained only two of nine reference repairs and had negative net counterfactual-visual correctness, despite its large share of recorded last-prompt write energy.",
+            "measurement_actions": [
+              "turn-0011",
+              "turn-0013",
+              "turn-0125",
+              "turn-0126",
+              "turn-0139"
+            ],
+            "role": "diagnostic"
+          },
+          "rationale": "Round 30: complete the preregistered input-space decomposition of round 22 with its residual-input component, independently reconstructed from W0. This is the final candidate; no round 31 will be constructed.",
+          "contrast_ids": [
+            "C-125:counterfact_visual:T1:O1:B0",
+            "C-288:counterfact_visual:T1:O0:B0"
+          ],
+          "stable_group_ids": [],
+          "exact_stable_failed_ids": [],
+          "baseline_failed_contrast_ids": [
+            "C-125:counterfact_visual:T1:O1:B0",
+            "C-288:counterfact_visual:T1:O0:B0"
+          ],
+          "formal_repaired_contrast_ids": [
+            "C-125:counterfact_visual:T1:O1:B0"
+          ]
+        }
+      ],
+      "measure_groups": [
+        "C-053",
+        "C-101",
+        "C-125",
+        "C-232",
+        "C-288",
+        "C-479",
+        "C-626",
+        "C-706"
+      ],
+      "diagnose_stable_groups": [
+        "C-077",
+        "C-131",
+        "C-147",
+        "C-278",
+        "C-293",
+        "C-328",
+        "C-353",
+        "C-520"
+      ],
+      "committed_stable_failed_ids": []
+    }
+  },
+  "direction_construction": {
+    "code_source": "v9 turn-0012 and turn-0014",
+    "meaning_preserving_success_failure_pairs": [
+      [
+        "C-053:counterfact_visual:T0:O0:B0",
+        "C-053:counterfact_visual:T0:O1:B0"
+      ],
+      [
+        "C-053:counterfact_visual:T0:O0:B0",
+        "C-053:counterfact_visual:T1:O0:B0"
+      ],
+      [
+        "C-125:counterfact_visual:T0:O0:B0",
+        "C-125:counterfact_visual:T0:O1:B0"
+      ],
+      [
+        "C-125:counterfact_visual:T1:O0:B0",
+        "C-125:counterfact_visual:T1:O1:B0"
+      ],
+      [
+        "C-232:counterfact_visual:T0:O0:B0",
+        "C-232:counterfact_visual:T0:O1:B0"
+      ],
+      [
+        "C-232:counterfact_visual:T1:O0:B0",
+        "C-232:counterfact_visual:T1:O1:B0"
+      ],
+      [
+        "C-288:counterfact_visual:T0:O0:B0",
+        "C-288:counterfact_visual:T0:O1:B0"
+      ],
+      [
+        "C-288:counterfact_visual:T0:O0:B0",
+        "C-288:counterfact_visual:T1:O0:B0"
+      ],
+      [
+        "C-479:counterfact_visual:T1:O0:B0",
+        "C-479:counterfact_visual:T1:O1:B0"
+      ],
+      [
+        "C-479:counterfact_visual:T0:O1:B0",
+        "C-479:counterfact_visual:T1:O1:B0"
+      ],
+      [
+        "C-706:counterfact_visual:T0:O0:B0",
+        "C-706:counterfact_visual:T1:O0:B0"
+      ],
+      [
+        "C-706:counterfact_visual:T0:O1:B0",
+        "C-706:counterfact_visual:T1:O1:B0"
+      ]
+    ],
+    "source_groups": [
+      "C-053",
+      "C-125",
+      "C-232",
+      "C-288",
+      "C-479",
+      "C-706"
+    ],
+    "stable_sources_in_direction": []
+  }
+}
