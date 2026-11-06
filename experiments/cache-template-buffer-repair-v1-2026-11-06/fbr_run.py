@@ -30,7 +30,7 @@ from nwc_run import *  # noqa: E402,F401,F403
 HERE = Path(__file__).resolve().parent
 N, S, LVKR = W.N, W.S, W.LVKR
 import fbr_core as K  # noqa: E402  (frozen read-outs; the arm list is defined there)
-PLAN_ID = 'FBR-01-TEMPLATE-BUFFER-REPAIR-A-r01'
+PLAN_ID = 'FBR-01-TEMPLATE-BUFFER-REPAIR-A-r02'
 DIRS = tuple(LVKR.DIRECTIONS)                                        # N4146, N1210, R0, C1343
 MAIN_DIRS = DIRS[:2]
 SEEDS_R = tuple(202611201 + j for j in range(20))
@@ -59,7 +59,7 @@ def _lim(per, n):
 
 
 LIMITS = {'calib': _lim(_CAL, 48), 'preflight': _lim(_ARM, 2), 'formal': _lim(_ARM, 48)}
-GPU_CAP_S = {'calib': 0.1 * 3600, 'preflight': 0.1 * 3600, 'formal': 0.8 * 3600}
+GPU_CAP_S = {'calib': 0.3 * 3600, 'preflight': 0.3 * 3600, 'formal': 2.4 * 3600}     # wall-clock guards on SHARED cards (DEVIATIONS D1): 3x the exclusive-card caps
 STORAGE_LIMIT = 8 * 2 ** 30
 
 
@@ -296,7 +296,7 @@ def run_item(engine, unit, contexts, calib, conds, qctok, output, stage, vecs=No
 # ---------------------------------------------------------------- freeze, authorization, workers
 
 def frozen_paths():
-    own = sorted(HERE.glob('*.py')) + sorted((HERE / 'readiness').glob('*.py')) + [HERE / 'CONTRACT.zh-CN.md']
+    own = sorted(HERE.glob('*.py')) + sorted((HERE / 'readiness').glob('*.py')) + [HERE / 'CONTRACT.zh-CN.md', HERE / 'DEVIATIONS.zh-CN.md']
     nwc = [NWC_DIR / 'nwc_run.py', NWC_DIR / 'freeze-r03.json', W.NWR_DIR / 'nwr_run.py', W.NWR_DIR / 'nwr_core.py', W.NWR_DIR / 'freeze-r01.json']
     lvk = [LVK_DIR / 'lvk_run.py', LVK_DIR / 'freeze-r01.json', LVK_FORMAL / 'verification.json', HELDOUT, LEDGER]
     lvk += [w / 'receipt.json' for w in sorted(LVK_FORMAL.glob('worker-*')) if w.is_dir()]

@@ -88,7 +88,7 @@ class Wiring(unittest.TestCase):
         self.assertEqual(R.LIMITS['formal']['trajectories'], 48 * (1 + 28 * 4))
         self.assertEqual(R.LIMITS['calib']['t1'], 0)
         self.assertEqual(len(set(R.SEEDS_R) & (set(R.W.SEEDS_R) | set(R.W.SEEDS_Q) | set(R.N.SEEDS))), 0)
-        self.assertLessEqual(sum(R.GPU_CAP_S.values()), 1.0 * 3600)
+        self.assertLessEqual(sum(R.GPU_CAP_S.values()), 3.0 * 3600)
         self.assertEqual(list(R.conditions()), list(R.DIRS))
 
     def test_consumer_on_fabricated_records(self):
