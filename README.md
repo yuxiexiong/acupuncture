@@ -1,6 +1,6 @@
 # Acupuncture｜少数通道干预：缓存机制与稳定副作用控制
 
-**2026-11-07｜DWC-01已实现、CPU验收并冻结，模型预检运行中。** [执行索引](experiments/cache-write-read-confirm-v1-2026-11-07/RUN_STATUS.zh-CN.md) · [执行合同](experiments/cache-write-read-confirm-v1-2026-11-07/CONTRACT.zh-CN.md)。用户现已授权测试通过后直接上卡，显存足够允许与现有任务并行。1458条真实提示的文本/分词验收、8项CPU测试与旧资产校验通过；200文件冻结。GPU 1正在运行6旧接收者参考重放与6专用新情境预检；正式96情境、81648轨迹尚未启动。正式16 GPU进程小时、含预检/一次工程重试全包19小时；预检超预算或工程验收失败即停止，不以科学阳性放行。**本轮补独立材料可靠性与获得量级，仍属来源—写入—读取—完整答案主线；尚无新的正式科学结论，最近论文实测结果仍为下条v1.5。**
+**2026-11-07｜DWC-01预检通过，正式实验已在两张H20并行启动。** [执行索引](experiments/cache-write-read-confirm-v1-2026-11-07/RUN_STATUS.zh-CN.md) · [预检验收](experiments/cache-write-read-confirm-v1-2026-11-07/runs/preflight-r01/verification.json) · [正式启动快照](experiments/cache-write-read-confirm-v1-2026-11-07/readiness/formal-launch-snapshot-r01.json)。1458条提示的分词验收、8项CPU测试、旧资产及200文件冻结核验通过；7260条计划预检轨迹完成，1716次零用途检查通过，耗时0.771 GPU进程小时。正式于北京时间14:15启动，96情境、81648轨迹，两worker各48情境；GPU0按用户授权与现有任务并行。保守外推10.381 GPU进程小时，正式上限16、全包19小时。**当前运行中，尚无正式确认结果；本轮仍补来源—写入—读取—完整答案主线的独立材料可靠性和获得量级，论文最近实测结论仍是下条v1.5。**
 
 **2026-11-07｜DWR正式实验完成，论文更新至v1.5。** [现行正文](docs/mechanism-paper-skeleton-2026-11-05.zh-CN.md) · [核心贡献与缺口](docs/mechanism-paper-evidence-gaps-2026-11-06.zh-CN.md) · [DWR报告](experiments/cache-donor-write-readout-v1-2026-11-07/REPORT.zh-CN.md)。直接读取的获得为0.396/0.271，均为正但预设量级未确认；撤回为0.538/0.438并恢复自身答案。所有读取臂均交付有效完整编号，D/DE未通过完整双向门槛，不能误写获得无效。正式5112条轨迹，含一次工程失败预检共0.580 GPU进程小时。论文已同步摘要、贡献、方法、结果、连接图与缺口；G0部分补齐，下一重点为独立材料及获得量级检验，再扩大可比模型/任务范围。没有自动加跑。**下方各日期条目为历史快照，当前状态以本条和正式回执为准。**
 
