@@ -22,7 +22,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import dwr_core as K
 S = K.S
-PLAN_ID = 'DWR-01-DONOR-WRITE-READOUT-r01'
+PLAN_ID = 'DWR-01-DONOR-WRITE-READOUT-r02'
 DIRS = tuple(K.DIRS)
 MAIN, SECOND = K.MAIN, K.SECOND
 DWB_FORMAL = DWB_DIR / 'runs/formal-r02'
@@ -79,6 +79,12 @@ def prior_records():
     return out
 
 
+def check_formation(actual, reference):
+    expected = {'base_b', 'C_b'} | {'T_b|' + d for d in DIRS}
+    assert set(actual) == expected, ('formation fields', set(actual), expected)
+    assert all(actual[k] == reference[k] for k in expected), 'formation digest differs from LVK'
+
+
 def run_scenario(engine, unit, contexts, calibs, conds, stage, refs):
     import torch
     model, tok = engine.model, engine.tokenizer
@@ -95,7 +101,7 @@ def run_scenario(engine, unit, contexts, calibs, conds, stage, refs):
     C, T, info, hC, hT, cconv = {}, {}, {}, {}, {}, {}
     for i in ids:
         C[i], T[i], info[i] = form_new(engine, refs['ledger'][i], contexts, calibs[unit['base_id']], conds, counts)
-        assert info[i]['hashes'] == refs['lvk'][i]['formation_hashes'], ('formation != LVK', i)
+        check_formation(info[i]['hashes'], refs['lvk'][i]['formation_hashes'])
         hC[i] = comp_sha(C[i], types, ALLK, 0)
         hT[i] = {d: comp_sha(T[i][d], types, ALLK, 0) for d in DIRS}
         cconv[i] = {l: L._get(C[i].layers[l], 'conv_states').clone() for l in G}
@@ -194,6 +200,7 @@ def frozen_paths():
     own += [HERE / n for n in ('CONTRACT.zh-CN.md', 'DESIGN.zh-CN.md', 'DEVIATIONS.zh-CN.md')]
     own += [REPO / 'docs' / n for n in ('cache-donor-write-readout-plan-v1-2026-11-07.zh-CN.md',
             'cache-donor-write-readout-self-check-v1-2026-11-07.zh-CN.md', 'cache-donor-write-readout-input-audit-v1-2026-11-07.json')]
+    own += sorted((HERE / 'deviations').glob('*.md'))
     prior = [DWB_DIR / 'freeze-r02.json', DWB_FORMAL / 'verification.json']
     for w in DWB_FORMAL.glob('worker-*'):
         if w.is_dir():

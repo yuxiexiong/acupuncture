@@ -35,6 +35,18 @@ class Design(unittest.TestCase):
         self.assertEqual(sum(len(R.arm_runs(R.donors_of(r, items, order), R.DIRS)) for u in pre for r in u['receivers']), R.limits('preflight')[0]['trajectories'])
         self.assertEqual(R.GPU_CAP_S['formal'] + 2 * R.GPU_CAP_S['preflight'], 9000)
 
+    def test_two_direction_hashes_against_four_direction_reference(self):
+        keys = ['base_b', 'C_b'] + ['T_b|' + d for d in R.DIRS]
+        actual = {k: 'digest-' + k for k in keys}
+        ref = {**actual, 'T_b|R0_L00_D-1': 'other', 'T_b|N_L00_C1343_D-1': 'other'}
+        R.check_formation(actual, ref)
+        for k in keys:
+            bad = {**actual, k: 'wrong'}
+            with self.assertRaises(AssertionError):
+                R.check_formation(bad, ref)
+        with self.assertRaises(AssertionError):
+            R.check_formation({k:v for k,v in actual.items() if k!='C_b'}, ref)
+
     def test_fixed_output_zero(self):
         items, order = R.panel()
         for r in items:
