@@ -1,5 +1,7 @@
 # Acupuncture｜少数通道干预：缓存机制与稳定副作用控制
 
+**2026-11-08｜论文v1.8结构重组完成，无新实验。** [主文](docs/mechanism-paper-skeleton-2026-11-05.zh-CN.md)按背景依赖→局部写入→同端点读取及新材料确认重排，补齐提示实例、时序、剂量和统计定义；[完整补充](docs/mechanism-paper-supplement-v1.8-2026-11-08.zh-CN.md)保留旧结果、阴性和历史图。[缺失对照](docs/mechanism-paper-evidence-gaps-2026-11-06.zh-CN.md)明确：仍需同操作局部写入的干净背景对应比较，才能加强“干预改变何种依赖”的解释；DWB无k去偏移的写入桥接是下一设计起点。9B保留、暂后；无新运行合同或GPU授权。[修订与字段审计](docs/paper-revision-v1.8-2026-11-08/REVISION.zh-CN.md)。**下方旧“下一优先级”按日期保留，不是当前执行队列。**
+
 **2026-11-08｜论文v1.7复用既有跨模型成果。** [正文](docs/mechanism-paper-skeleton-2026-11-05.zh-CN.md)已纳入四模型18,272份单针回答（其中7,632内部轨迹）及2B/9B各1,400配对题的能力结果，保留随机与截断边界。[实验—缺口对照](docs/cross-model-reuse-audit-2026-11-08.zh-CN.md)明确不重复扫描/benchmark；[最小补实验与自查](docs/cache-write-read-cross-model-minimal-plan-v1-2026-11-08.zh-CN.md)固定一个旧9B方向、24已有DWC情境，只补同关系反事实。设计通过，工程数值/冻结待完成，用户明确先不上卡；本轮零新模型调用。下方日期条目为历史。
 
 **2026-11-07｜DWC独立材料正式完成，论文v1.6。** [报告](experiments/cache-write-read-confirm-v1-2026-11-07/REPORT.zh-CN.md) · [正文](docs/mechanism-paper-skeleton-2026-11-05.zh-CN.md) · [缺口](docs/mechanism-paper-evidence-gaps-2026-11-06.zh-CN.md)。96新情境、81648轨迹，主方向N4146完成来源—写入—直接读取的双向量级确认（G=.311，W=.473，R=.394）；N1210关系同向，但G=.213的区间上界.234低于预设M=.25。D/E用途分叉与三路绑定诊断一并报告，不称纯位置编码。原控制器因新增预算脚本触发冻结目录检查而failed，原冻结文件未变；CPU恢复验收通过，失败原件和恢复依据保留。正式17.461、含预检18.231 GPU进程小时，符合延期授权。下一重点为可比模型/任务推广，本轮没有启动新实验。**下方日期条目均为历史记录，旧运行中、未运行及16/19小时不覆盖本条和预算补充授权。**
