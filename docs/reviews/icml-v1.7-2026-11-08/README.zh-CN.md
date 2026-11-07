@@ -3,6 +3,7 @@
 2026-11-08。**一位Weak Accept（4），两位Weak Reject（3）；均未达到Strong Accept（6）。** 当前稿在本轮模拟中处于接收边缘，核心条件性证据获得认可，主要分歧是这些结果的新认识及影响是否已足够清楚。不是实际会议结论或录用概率。
 
 - [综合判断、缺口与下一步排序](SYNTHESIS.zh-CN.md)
+- [后续行动决策：先重组论证，按缺口确定首选补测](NEXT_PRIORITY.zh-CN.md)（问题排序与自查，不是已冻结运行合同）
 - [审稿人1](reviewer-1/review.zh-CN.md) · [审稿人2](reviewer-2/review.zh-CN.md) · [审稿人3](reviewer-3/review.zh-CN.md)
 - [共同审稿说明](BRIEF.zh-CN.md) · [官网来源](official/README.md) · [输入清单及hash](inputs.json) · [流程身份](PROCESS.json) · [交付核验](acceptance.json)
 
