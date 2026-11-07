@@ -24,9 +24,12 @@
 
 - [补充授权](readiness/budget-extension-authorization-r01.json)：用户原话、预算、PID启动身份、工具hash与范围。
 - [验收回执](readiness/budget-extension-acceptance-r01.json)：生效时间、进程、冻结文件与已完成记录核验。
-- [一次性工具与CPU自测](readiness/budget_extension_r01.py)：运行文件自身仅执行无GPU自测；`apply()`供本轮已留档的调试指令调用，重复应用会拒绝。
+- [一次性工具与CPU自测](readiness/budget-extension-r01/budget_extension_r01.py)：运行文件自身仅执行无GPU自测；`apply()`供本轮已留档的调试指令调用，重复应用会拒绝。
 - 三份 `readiness/budget-extension-applied-*-r01.json`，以及对应 `.gdb` 和 `.log`：原始执行证据。不要对运行中的进程重复执行。
 
 原冻结代码及授权中的16/19小时保留为历史值；最终论文、资源统计和交付必须联读本补充协议。控制器的运行时最终累计检查已使用新上限。独立CPU `verify_worker` 不按旧时间上限拒收，仍执行原计划完整性、输出hash、模型权重和数值门槛检查；最终另将两个 `wall_seconds` 与补充授权172800秒比较，并将实际预检时间加入总账。全部等待/竞争及附加调试时间计入，不把空闲等待从成本中扣除。
 
 保持每半小时进展与ETA汇报。运行完成后依次归档完整原始输出、验收、执行冻结科学分析、明确G1/G0及诊断结论、更新论文与证据缺口表、提交推送GitHub并汇报。保留负结果和不可判定结果，不能预先承诺科学阳性。
+
+
+**终局补记（23:42北京时间）：** 新增工具最初放在readiness根目录，进入原冻结路径通配集合，导致控制器最终验收失败；原200文件hash未变。工具已原字节迁移到上述审计子目录，原GDB日志中的旧路径保留历史身份；未重执行工具。原验收函数CPU复核通过，见[恢复收据](readiness/final-verification-recovery-r01.json)及[正式报告](REPORT.zh-CN.md)。正式实际17.460514、含预检18.231091 GPU进程小时，未用满延期额度。
