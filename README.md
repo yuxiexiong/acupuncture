@@ -1,6 +1,8 @@
 # Acupuncture｜少数通道干预：缓存机制与稳定副作用控制
 
-**2026-11-07｜论文v1.4与下一阶段计划已交付，本轮无新模型实验。** [现行正文](docs/mechanism-paper-skeleton-2026-11-05.zh-CN.md) · [核心贡献与缺口](docs/mechanism-paper-evidence-gaps-2026-11-06.zh-CN.md) · [同端点读取计划DWR-01](docs/cache-donor-write-readout-plan-v1-2026-11-07.zh-CN.md) · [设计自查](docs/cache-donor-write-readout-self-check-v1-2026-11-07.zh-CN.md)。正文已整合NWC/FBR/SPF/DWB：既有写入—读取关系与新供体写入的定向选择、反向自身恢复共同构成机制论证，保留随机反例和状态可用性分叉。下一计划复用DWB纯局部端点检验t2用途；作者逻辑自查通过，实现/数值验收未完成，未冻结、未运行。之后优先独立材料确认与可比模型/任务检验。**下方各日期条目均为历史快照，当前论文口径与计划以本条为准。**
+**2026-11-07｜DWR正式实验完成，论文更新至v1.5。** [现行正文](docs/mechanism-paper-skeleton-2026-11-05.zh-CN.md) · [核心贡献与缺口](docs/mechanism-paper-evidence-gaps-2026-11-06.zh-CN.md) · [DWR报告](experiments/cache-donor-write-readout-v1-2026-11-07/REPORT.zh-CN.md)。直接读取的获得为0.396/0.271，均为正但预设量级未确认；撤回为0.538/0.438并恢复自身答案。所有读取臂均交付有效完整编号，D/DE未通过完整双向门槛，不能误写获得无效。正式5112条轨迹，含一次工程失败预检共0.580 GPU进程小时。论文已同步摘要、贡献、方法、结果、连接图与缺口；G0部分补齐，下一重点为独立材料及获得量级检验，再扩大可比模型/任务范围。没有自动加跑。**下方各日期条目为历史快照，当前状态以本条和正式回执为准。**
+
+**历史交付｜2026-11-07论文v1.4与下一阶段计划已交付，本轮无新模型实验。** [现行正文](docs/mechanism-paper-skeleton-2026-11-05.zh-CN.md) · [核心贡献与缺口](docs/mechanism-paper-evidence-gaps-2026-11-06.zh-CN.md) · [同端点读取计划DWR-01](docs/cache-donor-write-readout-plan-v1-2026-11-07.zh-CN.md) · [设计自查](docs/cache-donor-write-readout-self-check-v1-2026-11-07.zh-CN.md)。正文已整合NWC/FBR/SPF/DWB：既有写入—读取关系与新供体写入的定向选择、反向自身恢复共同构成机制论证，保留随机反例和状态可用性分叉。下一计划复用DWB纯局部端点检验t2用途；作者逻辑自查通过，实现/数值验收未完成，未冻结、未运行。之后优先独立材料确认与可比模型/任务检验。**本段保留v1.4交付时的状态；当前结果以顶部v1.5及DWR正式回执为准。**
 
 **2026-11-05｜核心贡献押注更新至 v8：H-WR 原生写入来源→直接读取→选择错误（待检验）。** [Proposal：近邻增量、最小补证与判据](docs/mechanism-second-half-v1-2026-11-03/PROPOSAL.zh-CN.md) · [Roadmap：NWR主比较收敛→冻结横向确认→整稿](docs/cache-mechanism-broadening-roadmap-2026-11-04.zh-CN.md) · [作者自查](docs/mechanism-second-half-v1-2026-11-03/CORE_CONTRIBUTION_SELF_CHECK.zh-CN.md)。已核对LVK合同：旧链以T为底，只改t1局部写入，不能混称整段V历史恢复。采用远端NWR的原生供体思路，取消另起t1整组S机制卡；主要终点必须包含实质选择错误而非仅停止。**本轮仅文档，无模型/GPU运行或授权；下方旧队列由v8替代。**
 
