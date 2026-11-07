@@ -1,0 +1,661 @@
+{
+  "manifest_format_version": "1.0",
+  "base_draft_hash": "9e73a7303fbd",
+  "blocks": [
+    {
+      "block_id": "B0001",
+      "old_hash": "aaa3635e1d9b",
+      "first_line_excerpt": "# Acupuncture 论文工作稿：稀疏激活干预后的写入、状态与回答"
+    },
+    {
+      "block_id": "B0002",
+      "old_hash": "c68f33f4c98d",
+      "first_line_excerpt": "2026-11-07 · evidence-first manuscript v1.6。纳入DWC-01独立材料正式确认：96新情境、81648轨迹，主方向完…"
+    },
+    {
+      "block_id": "B0003",
+      "old_hash": "aed0fc8b22b2",
+      "first_line_excerpt": "配套材料：[理论—证据骨干](cache-mechanism-theory-evidence-spine-2026-11-03.zh-CN.md) · [结果…"
+    },
+    {
+      "block_id": "B0004",
+      "old_hash": "13f807d4148a",
+      "first_line_excerpt": "## 1. 标题与摘要"
+    },
+    {
+      "block_id": "B0005",
+      "old_hash": "17aa5c8150cd",
+      "first_line_excerpt": "**工作标题：稀疏干预如何改变答案选择：混合语言模型中的历史信号、写入与读取。**"
+    },
+    {
+      "block_id": "B0006",
+      "old_hash": "b2aab57416a6",
+      "first_line_excerpt": "英文工作标题：*How Sparse Interventions Change Answer Selection: History, Writing, and…"
+    },
+    {
+      "block_id": "B0007",
+      "old_hash": "e2711f54b957",
+      "first_line_excerpt": "本文解释少数激活坐标的干预如何造成后续回答的大幅变化。我们将历史信号的可用性、当步写入及后续状态读取连接到完整回答，并区分一般作答退化与可定向改变的记录选择。…"
+    },
+    {
+      "block_id": "B0008",
+      "old_hash": "f4ea38c3e6be",
+      "first_line_excerpt": "**摘要**"
+    },
+    {
+      "block_id": "B0009",
+      "old_hash": "b1ea65675026",
+      "first_line_excerpt": "稀疏激活干预可以使混合语言模型停止作答或选错记录，但错误是否意味着历史信息丢失，以及影响怎样通过写入和读取传递，需要直接检验。我们在Qwen3.5-4B中以完…"
+    },
+    {
+      "block_id": "B0010",
+      "old_hash": "e80f084a0dc7",
+      "first_line_excerpt": "## 2. 引言"
+    },
+    {
+      "block_id": "B0011",
+      "old_hash": "4de47c75edda",
+      "first_line_excerpt": "少数激活坐标的暂时修改可以使模型的后续回答发生大幅变化。解释这种变化，需要追踪干预怎样改变历史信号、当前计算怎样处理旧状态并写入新状态、后续输出怎样使用这些变…"
+    },
+    {
+      "block_id": "B0012",
+      "old_hash": "849835a3a343",
+      "first_line_excerpt": "本文首先区分三个容易混淆的问题：模型能否开始作答、回答选择哪条记录，以及历史状态是否仍可被后续计算利用。在我们的实验中，恢复首步输出后仍会出现首列错号；相同的…"
+    },
+    {
+      "block_id": "B0013",
+      "old_hash": "13c2c060bf4e",
+      "first_line_excerpt": "混合模型同时使用短卷积历史、递推状态和全注意力 KV。已有研究已说明递推计算可以构造检索查询、状态移植可以转移检索目标，实体绑定也可能依赖多种机制（§9）。本…"
+    },
+    {
+      "block_id": "B0014",
+      "old_hash": "a9dfa33649fc",
+      "first_line_excerpt": "证据沿两条相互约束的路线累积。第一条从局部写入出发，沿用同一对端点检验直接读取与旧预测修正的作用，再在新输入上检验原生来源状态和随机对照。第二条从供体相关的答…"
+    },
+    {
+      "block_id": "B0015",
+      "old_hash": "e3d0df4ec2cb",
+      "first_line_excerpt": "**本文有三项相互支撑的贡献。**"
+    },
+    {
+      "block_id": "B0016",
+      "old_hash": "7e8c4ff19aca",
+      "first_line_excerpt": "1. **把稀疏干预的回答效应落实到写入与状态使用。** 局部 v/k 操作及同端点的后续读取替换可双向改变完整答案；原生来源状态的读取作用在新输入上得到确认…"
+    },
+    {
+      "block_id": "B0017",
+      "old_hash": "642759bc0947",
+      "first_line_excerpt": "这组结果支持一个围绕写入和状态使用的解释：干预后的答案变化不能只按缓存类别或是否答对来归因，必须检验历史来源如何进入具体写入、以及形成的状态怎样影响后续选择。…"
+    },
+    {
+      "block_id": "B0018",
+      "old_hash": "cb4808fbd2d0",
+      "first_line_excerpt": "## 3. 理论与方法"
+    },
+    {
+      "block_id": "B0019",
+      "old_hash": "cbae68fd82f3",
+      "first_line_excerpt": "我们使用以下三式描述注入、递推更新和输出读取，其详细推导和适用假设见[骨干§3](cache-mechanism-theory-evidence-spine-…"
+    },
+    {
+      "block_id": "B0020",
+      "old_hash": "76983d16898d",
+      "first_line_excerpt": "- 注入处：Δh = η W_down e_j。坐标少不等于扰动小；随机方向是另一类干预条件。"
+    },
+    {
+      "block_id": "B0021",
+      "old_hash": "47eeb0648054",
+      "first_line_excerpt": "这些属于架构定义和条件推导。公式不能演绎出我们的正确数、方向特异性或跨条件适用性。参考架构来源为[Gated Delta Networks](https://…"
+    },
+    {
+      "block_id": "B0022",
+      "old_hash": "e263c5bedd94",
+      "first_line_excerpt": "| 方法维度 | 本文采用的定义与范围 |"
+    },
+    {
+      "block_id": "B0023",
+      "old_hash": "2ec64509b61e",
+      "first_line_excerpt": "WIN“关系M”是额外 KV 恢复比较的名称，不是目标竞争 logit 指标 M。主链的 Y 是自然完整回答正确数；编号解析同时要求自然停止并处理未闭合 th…"
+    },
+    {
+      "block_id": "B0024",
+      "old_hash": "208194d4002d",
+      "first_line_excerpt": "**写入与读取操作。** t1 是最后提示 token 的前向，t2 是处理首个生成 token 的下一步。L00/L01/L10/L11 分别表示不改、只改…"
+    },
+    {
+      "block_id": "B0025",
+      "old_hash": "dd0f9ada4158",
+      "first_line_excerpt": "在 t2，直接读取为 D(S₁)=αS₁ᵀq，旧预测修正为 E(S₁)=−αβ(kᵀq)S₁ᵀk。SRU/NWR/DWR/DWC 只改变指定输出用途所读取的状…"
+    },
+    {
+      "block_id": "B0026",
+      "old_hash": "18705d934956",
+      "first_line_excerpt": "**供体写入与净转移。** DWB 在同场景不同输入间交换选择来源。OO/DD/DO/OD 的第一字母表示 t1 指定写入使用本输入（O）还是供体（D）V 历…"
+    },
+    {
+      "block_id": "B0027",
+      "old_hash": "bb18621fb0d0",
+      "first_line_excerpt": "净转移 D_tr 沿用 SPF/DWB 冻结统计：在同排列、不同查询的 AL 供体上，比较输出命中该供体目标行的频率与对照供体条件下输出该行的频率，按接收者及…"
+    },
+    {
+      "block_id": "B0028",
+      "old_hash": "08e91930578d",
+      "first_line_excerpt": "**同一供体写入端点的读取连接。** DWR以O=L11o(r)与F=L11d(r,d)为端点，两者只在t1局部写入所用V历史的来源上不同，均保留原生受针预填…"
+    },
+    {
+      "block_id": "B0029",
+      "old_hash": "10be830b9dbe",
+      "first_line_excerpt": "获得量G为O读取F后的D_tr减去O；撤回量W为F减去F读取O后的D_tr。另以168个AL/BD冲突配对的逐对自身恢复差R，区分撤回选择与一般退化。G/W按…"
+    },
+    {
+      "block_id": "B0030",
+      "old_hash": "b183dbf8b82a",
+      "first_line_excerpt": "**独立材料确认。** DWC沿用DWR的O/F端点、D/E输出用途和32-token自然生成，在六固定结构族各16个新基础情境中冻结9个布局/查询输入及每输…"
+    },
+    {
+      "block_id": "B0031",
+      "old_hash": "c6cd2ec38c36",
+      "first_line_excerpt": "本稿不将所有报告的“通过”视为同一种判定。工程passed、冻结科学预测兑现、方向性阈值、等效性、完整答案正确是五个不同层次。"
+    },
+    {
+      "block_id": "B0032",
+      "old_hash": "398db3ce5419",
+      "first_line_excerpt": "## 4. 结果"
+    },
+    {
+      "block_id": "B0033",
+      "old_hash": "38b192baa70b",
+      "first_line_excerpt": "### 4.1 状态恢复与回答恢复不是同一个诊断"
+    },
+    {
+      "block_id": "B0034",
+      "old_hash": "21527aca46bd",
+      "first_line_excerpt": "早期调查观察到输出随干预层位、方向和剂量改变。后续编号实验进一步分离了首步可达性与记录选择。[FC](../experiments/cache-first-t…"
+    },
+    {
+      "block_id": "B0035",
+      "old_hash": "24f1862eab72",
+      "first_line_excerpt": "**t1 的结构桥接。** NWR 在 N4146 的 48 条输入上核验：L00 与 L10 共享预填及各层 S₀；首个被操作的递推层（第 13 层）的 q…"
+    },
+    {
+      "block_id": "B0036",
+      "old_hash": "4b929322c4d1",
+      "first_line_excerpt": "因此，L00 与 L10 的差异由 t1 局部 v 操作及其当步下游后果引入，而非两者预填 S₀ 不同。该桥接是结构约束与实现验收，不能据此声称历史状态不参与…"
+    },
+    {
+      "block_id": "B0037",
+      "old_hash": "faca9e6065b1",
+      "first_line_excerpt": "在编号面板的L0条件中，恢复V历史后正确数为16/48，而恢复深层S为48/48；前者大多已能以编号开头，后者常重新以think或引导语开头再完成正确回答。恢…"
+    },
+    {
+      "block_id": "B0038",
+      "old_hash": "69826fd66474",
+      "first_line_excerpt": "反向移植增加了关键限制：同题受损S、V或KV分别放入干净接收者，两针均仍为48/48正确；全部受损深层在L0只剩2/48。补测两两组合后，L0的S+V、S+K…"
+    },
+    {
+      "block_id": "B0039",
+      "old_hash": "db036cef63d6",
+      "first_line_excerpt": "证据：[NCC](../experiments/cache-native-carrier-comparison-v1-2026-11-03/REPORT.zh…"
+    },
+    {
+      "block_id": "B0040",
+      "old_hash": "55e37c681311",
+      "first_line_excerpt": "### 4.2 局部v条件下的k写入作用可以通过后续直接读取影响答案"
+    },
+    {
+      "block_id": "B0041",
+      "old_hash": "3da2718b9a87",
+      "first_line_excerpt": "在恢复V历史的指定背景中，去掉共同q/k偏移改善编号回答；分开操作后，k分量承担较大的修复作用。KUC进一步将k在状态更新中的两种用途分开：新值写入项的操作能…"
+    },
+    {
+      "block_id": "B0042",
+      "old_hash": "b2998460acd7",
+      "first_line_excerpt": "LVK在当步局部计算中检验该条件（接收者是原生T；四格只在t1的写入项换v、k，t2起全部自由）：N4146、N1210、R0三个条件的局部v端点正确数为16…"
+    },
+    {
+      "block_id": "B0043",
+      "old_hash": "f7e3a1e54397",
+      "first_line_excerpt": "LVK 与 SRU 的同端点桥接使写入和读取比较能够衔接。L10/L11 共享原生预填和各层 S₀，S₁ 差异产生于 t1。首个被操作递推层的差异等于写入项差…"
+    },
+    {
+      "block_id": "B0044",
+      "old_hash": "cfd85a7908c5",
+      "first_line_excerpt": "按 NWR 冻结分类器对已有 LVK/SRU 输出作事后重读（表3），只修 v 后的明确错号分别为 30、17、11 条，全部指向首列；仍有停止或其他类别，不…"
+    },
+    {
+      "block_id": "B0045",
+      "old_hash": "5135cdd543e7",
+      "first_line_excerpt": "**原生状态来源的读取检验。** NWR-01 将 L00 在 t1 写出的 S₁ 作为只读供体，送入 L11 的 t2 直接读取，正确数由 39/48 降至…"
+    },
+    {
+      "block_id": "B0046",
+      "old_hash": "0d5a390737dc",
+      "first_line_excerpt": "五个逐层逐头同 L2 范数的随机补丁正确数为 38、46、21、45、36/48，平均场景等权正确率损失 l_R=0.033；它们不是都不致错。种子3造成 1…"
+    },
+    {
+      "block_id": "B0047",
+      "old_hash": "a53244a83ea3",
+      "first_line_excerpt": "在 NWR 的开发证据截点，这些结果支持：原生来源状态经指定修复接收者的直接读取，足以重新引起选择错误；后继 NWC 结果见 §4.6。NWR 单独不能区分“…"
+    },
+    {
+      "block_id": "B0048",
+      "old_hash": "a02a30a7587f",
+      "first_line_excerpt": "**表3 错答类型（各48条；正确／首列错号／停止无编号／其他）。**"
+    },
+    {
+      "block_id": "B0049",
+      "old_hash": "44a1365bb6b1",
+      "first_line_excerpt": "| 运行 | N4146 | N1210 | R0 |"
+    },
+    {
+      "block_id": "B0050",
+      "old_hash": "bee11c25c3fc",
+      "first_line_excerpt": "证据：[QCO](../experiments/cache-common-offset-v1-2026-11-02/REPORT.zh-CN.md)、[QKF…"
+    },
+    {
+      "block_id": "B0051",
+      "old_hash": "7884ef9e1ee3",
+      "first_line_excerpt": "### 4.3 写入链的背景与幅度边界"
+    },
+    {
+      "block_id": "B0052",
+      "old_hash": "7e933cc3505a",
+      "first_line_excerpt": "NVB将输出用途和留存状态用途分开，发现保留原生输出时，留存v操作只带回联合恢复目标竞争增强的约0.11–0.34；主预测未兑现。恢复输出后，同一留存操作明显…"
+    },
+    {
+      "block_id": "B0053",
+      "old_hash": "ad7ca15b664e",
+      "first_line_excerpt": "SIT随后直接跨背景移植留存增量。固定k操作，在恢复接收背景换回原生来源增量，正确数分别减少18、12、5条。NMT保留原生方向、按逐层逐头幅度配置匹配，能复…"
+    },
+    {
+      "block_id": "B0054",
+      "old_hash": "00e952463995",
+      "first_line_excerpt": "CGV给出进一步边界：L12局部v恢复即可使31/48成为48/48，指定k修正不再带来正向增益；读取端点没有足够缺口，不能称读取失效。三种新结构仍是编号任务…"
+    },
+    {
+      "block_id": "B0055",
+      "old_hash": "b84897b46a11",
+      "first_line_excerpt": "证据：[NVB](../experiments/cache-native-bridge-v1-2026-11-03/REPORT.zh-CN.md)、[NBR…"
+    },
+    {
+      "block_id": "B0056",
+      "old_hash": "18a1d8327d6b",
+      "first_line_excerpt": "### 4.4 形成窗口改变恢复响应，但没有形成统一的状态分工"
+    },
+    {
+      "block_id": "B0057",
+      "old_hash": "bda5aa472271",
+      "first_line_excerpt": "R1把事实任务与编号任务并排后，暴露了恢复范围、形成窗口、校准、生成上限等差异。WIN-01在各任务内部改变形成窗口：L0事实全前缀受针后只恢复全部递推为10…"
+    },
+    {
+      "block_id": "B0058",
+      "old_hash": "90b1e7993d46",
+      "first_line_excerpt": "WIN-02把关系带到新增针条件。额外KV恢复关系M在四个正向可检验格得到支持，救回分别为事实L2的11/11、L3的13/13、R0的27/28，以及编号R…"
+    },
+    {
+      "block_id": "B0059",
+      "old_hash": "80a92df8209f",
+      "first_line_excerpt": "旧数据离线审计进一步表明：事实W_post的S_deep为16/48，R_all为47/48；编号两臂均48/48。然而事实S_deep有32条达到128-t…"
+    },
+    {
+      "block_id": "B0060",
+      "old_hash": "e02ade0ddad4",
+      "first_line_excerpt": "证据：[R1](../experiments/cache-mechanism-alignment-r1-v1-2026-11-04/REPORT.zh-CN.…"
+    },
+    {
+      "block_id": "B0061",
+      "old_hash": "a5657ea60881",
+      "first_line_excerpt": "### 4.5 额外KV恢复具有事实方向性，尚未接通共同读取"
+    },
+    {
+      "block_id": "B0062",
+      "old_hash": "a0a45d3af913",
+      "first_line_excerpt": "KVC-01固定全前缀受针后、递推来自接收者干净版本的背景，只改变补入KV的事实身份。两版本模板相同，工程核对显示两臂实际只在记录句事实词起至记录句末的KV不…"
+    },
+    {
+      "block_id": "B0063",
+      "old_hash": "0b09c0160afb",
+      "first_line_excerpt": "这一操作说明额外KV恢复有答案方向上的选择性，不只是非定向地提高答对率。但它可以同时恢复一般作答条件；没有证明递推不含事实，或该KV段是唯一载体。三针响应近饱…"
+    },
+    {
+      "block_id": "B0064",
+      "old_hash": "f6e9f97558a3",
+      "first_line_excerpt": "证据：[KVC-01合同、结果及限制](../experiments/kvpre-content-kvc01-v1-2026-11-05/REPORT.zh-…"
+    },
+    {
+      "block_id": "B0065",
+      "old_hash": "d42cb0f41ddd",
+      "first_line_excerpt": "### 4.6 新输入确认保留读取关系，同时否定首列错答的方向特异性解释"
+    },
+    {
+      "block_id": "B0066",
+      "old_hash": "ccb575774da4",
+      "first_line_excerpt": "NWC-01 冻结操作后生成72条新输入：同六结构族的24个基础情境，48条目标不在首列、24条目标在首列。在非首列输入上，N4146/N1210/R0 的 …"
+    },
+    {
+      "block_id": "B0067",
+      "old_hash": "9f7390f31f74",
+      "first_line_excerpt": "这个确认同时改变了机制解释。按D10补丁范数匹配的40个随机方向，在单步指标上达到D10效应一半的分别有17、18、22个；其中20个继续生成的方向，有8、4…"
+    },
+    {
+      "block_id": "B0068",
+      "old_hash": "a8becf073432",
+      "first_line_excerpt": "NWC 的冻结确认重点是原生来源撤回关系。它没有在新输入上完成 L10 读取 L11 的获得侧，不覆盖后来的跨输入供体写入链；该链的独立确认由§4.10的DW…"
+    },
+    {
+      "block_id": "B0069",
+      "old_hash": "9f390e1a1004",
+      "first_line_excerpt": "### 4.7 通用缓冲恢复与定向选择分离，状态可用性取决于接收条件"
+    },
+    {
+      "block_id": "B0070",
+      "old_hash": "d0d80b5181fa",
+      "first_line_excerpt": "FBR-01 以本输入干净缓冲为48/48的恢复上限，用其他场景的平均干净缓冲替换后，N4146/N1210/R0/C1343 的正确数分别为17、35、41…"
+    },
+    {
+      "block_id": "B0071",
+      "old_hash": "296d62b8980d",
+      "first_line_excerpt": "SPF-01 随后直接改变供体身份。在 N4146 受针背景换入供体干净缓冲，净转移为0.896（95%场景重抽区间[0.827,0.955]）；换成本输入干…"
+    },
+    {
+      "block_id": "B0072",
+      "old_hash": "a5c871abf06f",
+      "first_line_excerpt": "供体 V 加本输入干净 q/k 的转移同样为0.896；只换供体 q/k 为0。供体 V 配原生受针 q/k 则没有稳定定向效应，开口后主要落首列。故供体身份…"
+    },
+    {
+      "block_id": "B0073",
+      "old_hash": "e135bc9bba90",
+      "first_line_excerpt": "干净供体递推状态的指定层组移植也能转移选择，但这是对已有状态干预关系的补充：仅16–18层移植足以产生强转移，不能写选择只储存在这三层。位置和实体的读法仍混合…"
+    },
+    {
+      "block_id": "B0074",
+      "old_hash": "15a14512e29d",
+      "first_line_excerpt": "### 4.8 指定写入能够定向传递供体选择，反向替换恢复自身答案"
+    },
+    {
+      "block_id": "B0075",
+      "old_hash": "af844cae0a7f",
+      "first_line_excerpt": "DWB-01 将上一节的缓冲效应接到 t1 写入。它保留相同48个已见输入、每方向348个同场景有序配对，在两个方向分别检验充分性、反向替换与不整体恢复缓冲的…"
+    },
+    {
+      "block_id": "B0076",
+      "old_hash": "11a5148ca397",
+      "first_line_excerpt": "**表4 供体写入的完整回答净转移 D_tr（95%六场景重抽区间）。**"
+    },
+    {
+      "block_id": "B0077",
+      "old_hash": "ede1ce22669a",
+      "first_line_excerpt": "| 操作 | N4146 | N1210 |"
+    },
+    {
+      "block_id": "B0078",
+      "old_hash": "f9374a0dc2a3",
+      "first_line_excerpt": "两个方向的 DO 均达到冻结量级门槛，说明不持续保留供体 V 也能传递选择。OD 则使168个选择冲突配对全部恢复本输入答案；所有臂在全部348配对上均交付有…"
+    },
+    {
+      "block_id": "B0079",
+      "old_hash": "559e1eff14ab",
+      "first_line_excerpt": "L11d 使用既有 LVK 局部写入操作，不整体恢复缓冲，也在两个方向产生转移。这项结果把“缓冲来源可以改变选择”推进到**指定写入操作足以传递选择，而且反向…"
+    },
+    {
+      "block_id": "B0080",
+      "old_hash": "7ad70be37a2c",
+      "first_line_excerpt": "状态移植给出另一项实质约束：受针供体状态进入干净接收者后，N1210仍强烈转移供体选择，N4146则低于本轮量级门槛且多数回答自身。因此不能将两种干预统一解释…"
+    },
+    {
+      "block_id": "B0081",
+      "old_hash": "45aa23c89219",
+      "first_line_excerpt": "证据：[DWB报告](../experiments/cache-donor-write-bridge-v2-2026-11-07/REPORT.zh-CN.m…"
+    },
+    {
+      "block_id": "B0082",
+      "old_hash": "b44284a94097",
+      "first_line_excerpt": "### 4.9 同一供体写入差异的直接读取可撤回选择，获得量级尚未确认"
+    },
+    {
+      "block_id": "B0083",
+      "old_hash": "0ad47e45cc12",
+      "first_line_excerpt": "DWR-01沿用DWB的L11o/L11d端点，在两方向、相同348个配对上，分别检验t2的D、E及联合DE用途。所有旧端点均逐token及t2摘要重现；工程…"
+    },
+    {
+      "block_id": "B0084",
+      "old_hash": "080481e0d1a3",
+      "first_line_excerpt": "**表5 同端点读取的完整回答效应（95%六场景重抽区间）。** G/W是净供体转移的配对差，R是168个AL/BD冲突配对的自身恢复比例差，三者不是同一个估…"
+    },
+    {
+      "block_id": "B0085",
+      "old_hash": "f948c5fbb2fa",
+      "first_line_excerpt": "| 方向 | 用途 | 获得G | 撤回W | 自身恢复R | 冻结量级结局 |"
+    },
+    {
+      "block_id": "B0086",
+      "old_hash": "35368cef2486",
+      "first_line_excerpt": "直接读取的撤回在两方向均达到预设量级，并伴随自身恢复：N4146的净转移从0.635降至0.097，冲突配对自身答案从39/168增至120/168；N121…"
+    },
+    {
+      "block_id": "B0087",
+      "old_hash": "3a57e427eb6b",
+      "first_line_excerpt": "获得侧并非没有效应。直接读取的G为0.396与0.271，两个区间均为正，但下界0.196与0.200低于M=.25；联合DE的获得区间也跨过M。因此，冻结判…"
+    },
+    {
+      "block_id": "B0088",
+      "old_hash": "8ee7bc757410",
+      "first_line_excerpt": "用途比较提供进一步约束。D相对E的获得配对差分别为0.406 [0.225, 0.573]与0.271 [0.200, 0.340]；撤回配对差为0.590 …"
+    },
+    {
+      "block_id": "B0089",
+      "old_hash": "f6966e3524c6",
+      "first_line_excerpt": "本卡把此前未测的接口推进为**同一供体写入差异具有直接读取的选择作用，撤回达到预设量级并恢复自身答案，获得为正而量级未确认**。它既不是完整双向门槛兑现，也不…"
+    },
+    {
+      "block_id": "B0090",
+      "old_hash": "44db4a409a52",
+      "first_line_excerpt": "### 4.10 独立材料确认主方向的双向量级，并揭示第二方向的强度边界"
+    },
+    {
+      "block_id": "B0091",
+      "old_hash": "686ddb692332",
+      "first_line_excerpt": "DWC-01把§4.9的既定关系带到96新基础情境。两方向、全部材料与臂在模型运行前冻结；正式81648轨迹全部保留。主矩阵占73440条，绑定诊断占8208…"
+    },
+    {
+      "block_id": "B0092",
+      "old_hash": "a82abe11a616",
+      "first_line_excerpt": "**表6 独立材料上的写入端点及读取效应（95%族内场景重抽区间）。** F为净供体转移，G/W为配对转移差，R为3456个选择冲突配对的自身正确比例差。主比…"
+    },
+    {
+      "block_id": "B0093",
+      "old_hash": "a368b5708ddb",
+      "first_line_excerpt": "| 方向 | 用途 | 写入端点F | 获得G | 撤回W | 自身恢复R | 冻结结局 |"
+    },
+    {
+      "block_id": "B0094",
+      "old_hash": "90f5a805b3c5",
+      "first_line_excerpt": "主方向N4146的F、G_D、W_D下界均超过M=.25，R_D下界为正，且所有交付/可达护栏通过，满足预登记独立材料量级确认。D撤回使冲突配对自身答案从82…"
+    },
+    {
+      "block_id": "B0095",
+      "old_hash": "18fb58203137",
+      "first_line_excerpt": "主确认针对固定六族等权平均，不表示每族达到同样量级：N4146的逐族G_D点估计为0.117–0.502，N1210为0.030–0.409；完整分组值见报告…"
+    },
+    {
+      "block_id": "B0096",
+      "old_hash": "404dadeb3541",
+      "first_line_excerpt": "两方向E的G/W/R区间均为负，D−E的获得配对差分别为0.324 [0.304,0.344]和0.217 [0.195,0.238]，撤回配对差为0.510…"
+    },
+    {
+      "block_id": "B0097",
+      "old_hash": "9d35a1a5fef0",
+      "first_line_excerpt": "交付边界没有被隐藏：干净运行864/864正确；原生受针正确仅1/864与33/864。N4146全部主读取臂交付有效完整编号；N1210的O有1/864停止…"
+    },
+    {
+      "block_id": "B0098",
+      "old_hash": "18b8070619ce",
+      "first_line_excerpt": "**预指定绑定诊断。** 24情境的432额外供体均在干净运行正确；每方向1296配对使位置/实体/编号预测分开。F的三路匹配在N4146为0.561/0.2…"
+    },
+    {
+      "block_id": "B0099",
+      "old_hash": "a7f73f23bb34",
+      "first_line_excerpt": "本卡使主线从开发性连接推进到**冻结写入与读取操作对新材料定向回答的预测得到确认，并呈现方向和用途边界**。它确认的是DWB/DWR供体端点，不能替代旧LVK…"
+    },
+    {
+      "block_id": "B0100",
+      "old_hash": "84570b4bd858",
+      "first_line_excerpt": "## 5. 从分散恢复结果到累积的机制解释"
+    },
+    {
+      "block_id": "B0101",
+      "old_hash": "a8ba6eb250f1",
+      "first_line_excerpt": "这些实验共同解释干预后的三个行为变化：能否开口、选哪条记录、已有选择能否在指定条件下被利用。写入操作与状态用途替换提供计算干预，随机对照和供体身份改变则区分一…"
+    },
+    {
+      "block_id": "B0102",
+      "old_hash": "6baa35b04041",
+      "first_line_excerpt": "| 计算联系 | 已有证据 | 对机制解释的推进 | 尚待连接 |"
+    },
+    {
+      "block_id": "B0103",
+      "old_hash": "7af7c32415cb",
+      "first_line_excerpt": "```mermaid"
+    },
+    {
+      "block_id": "B0104",
+      "old_hash": "3eb0cf6d33a5",
+      "first_line_excerpt": "图中上链的早期读取端点为LVK的同输入L10/L11；DWR另在DWB的L11o/L11d端点上直接测了来源读取，DWC在新材料上确认主方向双向量级，第二方向…"
+    },
+    {
+      "block_id": "B0105",
+      "old_hash": "66b8d468272c",
+      "first_line_excerpt": "## 6. 覆盖账本：到底是几根针、几层、几种任务"
+    },
+    {
+      "block_id": "B0106",
+      "old_hash": "e282c4ab21f4",
+      "first_line_excerpt": "| 证据层次 | 实际覆盖 | 不得借用的覆盖 |"
+    },
+    {
+      "block_id": "B0107",
+      "old_hash": "7ce8941a6064",
+      "first_line_excerpt": "这张表回答“宽到哪里”；骨干的连接表回答“深到哪里”。二者不能靠累加目录数互相替代。"
+    },
+    {
+      "block_id": "B0108",
+      "old_hash": "4e69d4eb3a3d",
+      "first_line_excerpt": "## 7. 图表与资产落位"
+    },
+    {
+      "block_id": "B0109",
+      "old_hash": "f8dc1b462a23",
+      "first_line_excerpt": "既有六张 SVG 图及其数据来源见[图源说明](figures/mechanism-paper-2026-11-05/SOURCES.md)。图1、图2保留v…"
+    },
+    {
+      "block_id": "B0110",
+      "old_hash": "a234b6f4897f",
+      "first_line_excerpt": "图文件：[图1 总图](figures/mechanism-paper-2026-11-05/fig1-chain-overview.svg) · [图2 写…"
+    },
+    {
+      "block_id": "B0111",
+      "old_hash": "7d302d2a4a65",
+      "first_line_excerpt": "![图1](figures/mechanism-paper-2026-11-05/fig1-chain-overview.svg)"
+    },
+    {
+      "block_id": "B0112",
+      "old_hash": "bb2b35af8fc2",
+      "first_line_excerpt": "![图2](figures/mechanism-paper-2026-11-05/fig2-write-read.svg)"
+    },
+    {
+      "block_id": "B0113",
+      "old_hash": "12214dd48079",
+      "first_line_excerpt": "| 已有图表／材料 | 当前展示的内容 | 来源与阅读边界 |"
+    },
+    {
+      "block_id": "B0114",
+      "old_hash": "5a6226ded46f",
+      "first_line_excerpt": "**资产分工。** 单针／双针／能力／剂量与阶段二提供现象和选择来源；形成期、V、q/k、目标竞争、写入与读取系列提供机制证据；NVB–NMT、CGV、NCC…"
+    },
+    {
+      "block_id": "B0115",
+      "old_hash": "f2485e11297c",
+      "first_line_excerpt": "## 8. 当前贡献与真正缺口"
+    },
+    {
+      "block_id": "B0116",
+      "old_hash": "4b84d7378e34",
+      "first_line_excerpt": "| 已建立的认识 | 对主线的意义 | 剩余缺口 |"
+    },
+    {
+      "block_id": "B0117",
+      "old_hash": "dda0a4049dab",
+      "first_line_excerpt": "**下一优先级转向可比模型/任务上的预测检验。** 已有96新情境为主方向提供了预登记的强量级确认，再堆相同结构的已见题不应成为默认主线。第二方向获得上界低于…"
+    },
+    {
+      "block_id": "B0118",
+      "old_hash": "9ed566ee8778",
+      "first_line_excerpt": "主问题的宽度保持不变：解释稀疏干预如何经历史、写入和状态使用造成回答变化。当前贡献已从开发材料上的可操控性，推进到有独立材料支持的机制预测；原有负结果继续约束…"
+    },
+    {
+      "block_id": "B0119",
+      "old_hash": "853274dad7a6",
+      "first_line_excerpt": "## 9. 相关工作与新颖性边界"
+    },
+    {
+      "block_id": "B0120",
+      "old_hash": "cadaec07080a",
+      "first_line_excerpt": "下列原始来源界定本文采用的计算与干预工具，以及经验增量所在。完整历史核查见[核心主张审计§4](mechanism-second-half-v1-2026-1…"
+    },
+    {
+      "block_id": "B0121",
+      "old_hash": "e345bed01434",
+      "first_line_excerpt": "| 原始来源 | 对本稿的约束 |"
+    },
+    {
+      "block_id": "B0122",
+      "old_hash": "9cba14e67167",
+      "first_line_excerpt": "对实际激活转向、状态持久性及缓存修复的应用关联，已有[候选痛点文献记录](literature/painpoint-recurrent-state-steer…"
+    },
+    {
+      "block_id": "B0123",
+      "old_hash": "8831ac0a3ea0",
+      "first_line_excerpt": "本文相对这些工作的增量，是解释**稀疏干预之后**的选择失效及其可操控性：历史来源对答案的影响可以接到指定写入，反向写入可恢复自身选择；状态用途替换提供后续行…"
+    },
+    {
+      "block_id": "B0124",
+      "old_hash": "fee200027489",
+      "first_line_excerpt": "v1.4修订时直接核对了2611.01909v1的§5.2/§7，以及两篇绑定论文的版本页面与摘要。本稿的GDN直接读取与2611.01909中的全注意力re…"
+    },
+    {
+      "block_id": "B0125",
+      "old_hash": "73c6862523a0",
+      "first_line_excerpt": "## 10. 讨论与结论"
+    },
+    {
+      "block_id": "B0126",
+      "old_hash": "a52dc717a77e",
+      "first_line_excerpt": "本文围绕一个问题累积证据：稀疏激活干预如何经历史、写入与状态使用造成大幅答案变化。局部写入及同端点读取替换建立了具体的计算联系；供体实验进一步表明，受针运行中…"
+    },
+    {
+      "block_id": "B0127",
+      "old_hash": "b5d125ed098b",
+      "first_line_excerpt": "负面结果帮助区分了原本混在一起的解释。随机读取扰动也会导致首列错号，因此这类错误不能证明原生状态携带特有的首列内容。平均缓冲可以恢复开口却未稳定恢复主方向的选…"
+    },
+    {
+      "block_id": "B0128",
+      "old_hash": "6ec436ed6831",
+      "first_line_excerpt": "目前支持的计算解释是：受针条件下，历史来源可以经指定写入形成影响选择的状态差异，后续直接读取的来源替换能够获得或撤回这种选择。DWC在独立新材料上确认主方向的…"
+    },
+    {
+      "block_id": "B0129",
+      "old_hash": "b1dc541104ea",
+      "first_line_excerpt": "我们的核心结论是：**稀疏干预后的答案变化可被接到可预测、可定向改变的历史来源—写入—读取关系；独立材料确认与方向边界共同界定这一机制解释。** 下一阶段应检…"
+    },
+    {
+      "block_id": "B0130",
+      "old_hash": "2f55b4edf871",
+      "first_line_excerpt": "## 11. 修订核对与交付边界"
+    },
+    {
+      "block_id": "B0131",
+      "old_hash": "2239430ccb5c",
+      "first_line_excerpt": "- v1.6同步摘要、引言贡献、方法、§4.10表6、机制连接图、覆盖、缺口、近邻增量与结论；旧实验数字和负结果保留。DWR§4.9的量级未确认是开发阶段结果…"
+    }
+  ]
+}

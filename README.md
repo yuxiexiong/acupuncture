@@ -1,5 +1,7 @@
 # Acupuncture｜少数通道干预：缓存机制与稳定副作用控制
 
+**2026-11-08｜论文v1.7复用既有跨模型成果。** [正文](docs/mechanism-paper-skeleton-2026-11-05.zh-CN.md)已纳入四模型18,272份单针回答（其中7,632内部轨迹）及2B/9B各1,400配对题的能力结果，保留随机与截断边界。[实验—缺口对照](docs/cross-model-reuse-audit-2026-11-08.zh-CN.md)明确不重复扫描/benchmark；[最小补实验与自查](docs/cache-write-read-cross-model-minimal-plan-v1-2026-11-08.zh-CN.md)固定一个旧9B方向、24已有DWC情境，只补同关系反事实。设计通过，工程数值/冻结待完成，用户明确先不上卡；本轮零新模型调用。下方日期条目为历史。
+
 **2026-11-07｜DWC独立材料正式完成，论文v1.6。** [报告](experiments/cache-write-read-confirm-v1-2026-11-07/REPORT.zh-CN.md) · [正文](docs/mechanism-paper-skeleton-2026-11-05.zh-CN.md) · [缺口](docs/mechanism-paper-evidence-gaps-2026-11-06.zh-CN.md)。96新情境、81648轨迹，主方向N4146完成来源—写入—直接读取的双向量级确认（G=.311，W=.473，R=.394）；N1210关系同向，但G=.213的区间上界.234低于预设M=.25。D/E用途分叉与三路绑定诊断一并报告，不称纯位置编码。原控制器因新增预算脚本触发冻结目录检查而failed，原冻结文件未变；CPU恢复验收通过，失败原件和恢复依据保留。正式17.461、含预检18.231 GPU进程小时，符合延期授权。下一重点为可比模型/任务推广，本轮没有启动新实验。**下方日期条目均为历史记录，旧运行中、未运行及16/19小时不覆盖本条和预算补充授权。**
 
 **2026-11-07｜DWC-01预检通过，正式实验已在两张H20并行启动。** [执行索引](experiments/cache-write-read-confirm-v1-2026-11-07/RUN_STATUS.zh-CN.md) · [预检验收](experiments/cache-write-read-confirm-v1-2026-11-07/runs/preflight-r01/verification.json) · [正式启动快照](experiments/cache-write-read-confirm-v1-2026-11-07/readiness/formal-launch-snapshot-r01.json)。1458条提示的分词验收、8项CPU测试、旧资产及200文件冻结核验通过；7260条计划预检轨迹完成，1716次零用途检查通过，耗时0.771 GPU进程小时。正式于北京时间14:15启动，96情境、81648轨迹，两worker各48情境；GPU0按用户授权与现有任务并行。保守外推10.381 GPU进程小时，正式上限16、全包19小时。**当前运行中，尚无正式确认结果；本轮仍补来源—写入—读取—完整答案主线的独立材料可靠性和获得量级，论文最近实测结论仍是下条v1.5。**
