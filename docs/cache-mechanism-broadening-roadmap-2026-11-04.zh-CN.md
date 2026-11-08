@@ -1,5 +1,7 @@
 # Acupuncture：核心贡献、最小补证与退出路线图
 
+> **状态更新（2026-11-08，用户确认）：本页保留为历史方案，非当前执行队列。** 当前目标见[核心目标与任务口径](cache-mechanism-current-goal.zh-CN.md)：先解释针怎样改变一项重要历史信号的写入或利用及其答案后果，允许有价值的部分解释。下文“当前／唯一顺序／下一优先”均按原日期阅读；本页不授权新设计或模型运行，已有结果和原方案不改。
+
 v8；2026-11-05。当前以[Proposal v8](mechanism-second-half-v1-2026-11-03/PROPOSAL.zh-CN.md)及[作者自查](mechanism-second-half-v1-2026-11-03/CORE_CONTRIBUTION_SELF_CHECK.zh-CN.md)为准。**仅更新文档，无新模型运行或授权。** [v7历史快照](https://github.com/yuxiexiong/acupuncture/blob/13f066555e7f27a1bd4e56c9a48a376c9c96aaf7/docs/cache-mechanism-broadening-roadmap-2026-11-04.zh-CN.md)保留；WPC默认先行、KV读取续卡及线性R1–R5不再是当前队列。
 
 ## 1. 一句话核心与全文目标

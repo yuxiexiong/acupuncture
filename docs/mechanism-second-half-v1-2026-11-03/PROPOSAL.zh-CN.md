@@ -1,5 +1,7 @@
 # Acupuncture：核心贡献与最小补证 Proposal
 
+> **状态更新（2026-11-08，用户确认）：本页保留为历史方案，非当前执行队列。** 当前目标见[核心目标与任务口径](../cache-mechanism-current-goal.zh-CN.md)：先解释针怎样改变一项重要历史信号的写入或利用及其答案后果，允许有价值的部分解释。下文“当前／唯一顺序／下一优先”均按原日期阅读；本页不授权新设计或模型运行，已有结果和原方案不改。
+
 v8；2026-11-05。**候选主张及有界补证设计，未实现、未冻结、未运行；当前不授权任何模型/GPU调用。** 本版结合提交前新增的论文v1.1/NWR-01，更正“整段恢复背景”的混称。来源截点 `f3a35280e74c91f31139f9b29b3685af042379e9`；[v7历史快照](https://github.com/yuxiexiong/acupuncture/blob/13f066555e7f27a1bd4e56c9a48a376c9c96aaf7/docs/mechanism-second-half-v1-2026-11-03/PROPOSAL.zh-CN.md)；[路线图](../cache-mechanism-broadening-roadmap-2026-11-04.zh-CN.md)；[作者自查](CORE_CONTRIBUTION_SELF_CHECK.zh-CN.md)。
 
 ## 1. 最值得押的核心贡献
