@@ -1,5 +1,7 @@
 # Acupuncture｜少数通道干预：缓存机制与稳定副作用控制
 
+**2026-11-11｜ICML 准备建议。** [两周投入判断、内部时间表及首项证据审查自查](docs/cache-icml-preparation-2026-11-11.zh-CN.md)。ICML 2027 投稿日期尚未公布；表中为建议节点。优先解释增量，再做同关系范围检验。本轮仅交付建议，未运行新实验。
+
 **2026-11-11｜NGC完成，现有论文主张与证据重新核对。** [人话说明：claim、论文框架、全部主要证据与限制](docs/cache-paper-claim-evidence-2026-11-11.zh-CN.md) · [28项数字复核](docs/cache-paper-claim-evidence-2026-11-11.audit.json)。现有证据支持有边界的来源—写入—读取因果关系及新材料确认；[NGC正式结果](experiments/cache-native-gain-v1-2026-11-08/REPORT.zh-CN.md)为四方向零修复，含预检0.329 GPU进程小时，已结束。下方GPU Ready和旧下一步均为历史状态。本次只整理和核对，不改已审正文、不运行新实验。
 
 **2026-11-08｜NGC-01已实现，保持GPU Ready。** [实施与验收](experiments/cache-native-gain-v1-2026-11-08/README.zh-CN.md)：11项CPU测试及256文件资产冻结通过；原生增益配置的跨场景补证代码已就绪。用户最新要求取消卡单，本轮未提交队列、未加载模型、未启动GPU预检/正式运行；GPU数值验收仍待重新授权后完成。主线与科学范围不变。
