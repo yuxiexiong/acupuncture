@@ -1,0 +1,717 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>04 先验压过证据与答案选择偏置：跨模型失败现象与内部根因候选盘点</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="04">04 先验压过证据与答案选择偏置：跨模型失败现象与内部根因候选盘点</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>docs/literature/vl-cross-model-root-cause-candidates-2026-11-06/04_prior_conflict_decoding.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/literature/vl-cross-model-root-cause-candidates-2026-11-06/04_prior_conflict_decoding.md">固定提交原件</a>；SHA-256：<code>da29921262a4c247009aa224c06a827c0071b5c5197a78fc7d2836a5b591a3ff</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="04_1">04 先验压过证据与答案选择偏置：跨模型失败现象与内部根因候选盘点</h1>
+<p>检索日期 2026-11-06。阅读层级标注：<strong>F</strong> = 取到正文（PDF→<code>pdftotext</code>）并核对了对应章节/表；<strong>A</strong> = 只读了摘要（含"取到全文但只读摘要"）；<strong>S</strong> = 只有检索片段。逐字引文全部直接摘自 <code>pdftotext</code> 输出（断行处的连字符按原 PDF 还原，可能与排版有一两个字符出入）。推断标档：推导 / 类比 / 推测。本文不给等级，不做"值得做"判断。</p>
+<p><strong>先说最不利的三点（细节见各节）：</strong></p>
+<ol>
+<li>"图像与常识冲突"这一类里，<strong>机制做得最扎实的设定和现象最强的设定不是同一个</strong>。机制最扎实的是颜色/大小反事实（Visual CounterFact、WHOOPS-AHA!），而在这些数据上模型<strong>默认跟图走</strong>，主要失败反而是"被要求答常识时仍报所见"；"先验压过图像"最强的是熟悉对象的反事实计数（VLMBias、CounterCount），那里的内部证据只有单模型探针、两族注意力相关、以及一个平均 +3.3 点的注意力放大。</li>
+<li>选项顺序/位置偏置、等义改写翻转、否定问句、滚雪球四个现象，跨模型的行为证据很足，但我在 VLM 上<strong>没有找到 ≥2 个模型族的内部定位</strong>（层：对象层；共 37 条查询，其中约 9 条专门针对这四项）。它们进"现象跨模型、根因未定位"一节。</li>
+<li>竞争修法<strong>几乎都没测等义改写</strong>；测了选项顺序的只有两篇（Spatial Lexical Bias 用全排列；CounterCount 随机化顺序）。我没有找到一篇论文把"某个已发表的内部修复换问法/换顺序后收益消失"作为主结论（层：结论层；约 4 条查询专门找）；找到的是相邻结论（收益来自 yes 偏置、来自读出 token 选择、来自单轮设定）。</li>
+</ol>
+<hr />
+<h2 id="1">关键问题 1：哪些现象已有内部根因研究？证据是因果还是相关？做了几个模型族？</h2>
+<h3 id="takeaway">Takeaway</h3>
+<p>九个候选的现象与根因都有 ≥2 个模型族证据，其中六个有干预级（因果）证据、三个以相关为主或因果效应很小；另有五个现象跨模型但根因未在 VLM 内定位（单列一节）。所有因果证据都来自 3B–13B 的开源模型，闭源模型只有行为数据。</p>
+<h3 id="cited-findings">Cited Findings</h3>
+<h4 id="_1">候选总表</h4>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>现象</th>
+<th>根因主张（位置）</th>
+<th>现象跨的模型族</th>
+<th>根因证据级别与模型族</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C1</td>
+<td>属性反事实图像下，被要求答常识时仍报所见（visual override）</td>
+<td>LLM 解码器后半段稀疏注意力头负责"取先验"；取图是默认</td>
+<td>Qwen2.5-VL、LLaVA-NeXT、PaliGemma、Gemma3、Janus-Pro</td>
+<td>因果（头消融/缩放/转向）；3+2+3 个族，三篇独立</td>
+</tr>
+<tr>
+<td>C2</td>
+<td>属性反事实图像下，看见了但答先验（少数样本）</td>
+<td>编码正常，失败在下游"仲裁"；视觉信号分散在全体图像 token</td>
+<td>LLaVA-1.5/NeXT/OneVision、Qwen2-VL、InternVL2、BLIP-2、Janus-Pro</td>
+<td>因果（全序列激活修补，9 模型）＋相关（探针，10 模型）；单篇、在审</td>
+</tr>
+<tr>
+<td>C3</td>
+<td>熟悉对象的反事实计数：答典型数量</td>
+<td>视觉证据已编码但被语言端压住；答错时对计数区域注意力不足</td>
+<td>GPT/Gemini/Claude/Grok、Qwen3-VL/3.5、Gemma-3/4 等 16+5 个模型</td>
+<td>相关为主（注意力，Qwen 与 Gemma 两族；编码器探针仅 1 模型）＋弱因果（注意力放大，平均 +3.3 点）</td>
+</tr>
+<tr>
+<td>C4</td>
+<td>提示里的错误预设压过图像（prompt-induced hallucination）</td>
+<td>LLM 早期层少量注意力头把提示内容抄到输出</td>
+<td>LLaVA-OneVision、Qwen2-VL、Janus-Pro；另 InternVL3.5、Molmo、LLaVA-1.5（行为）</td>
+<td>因果（头消融，3 族）；实现方式各模型不同</td>
+</tr>
+<tr>
+<td>C5</td>
+<td>图文冲突时偏信文本（text preference / blind faith in text）</td>
+<td>隐藏状态里有一条"模态偏好"方向；另有路由头/提升头</td>
+<td>10 个 VLM（含 GPT-4o、Claude、Phi3.5、Molmo）＋20 个开源 MLLM</td>
+<td>因果（表征转向，Qwen2/2.5-VL、LLaVA-OneVision、InternVL3）；路由头干预只在 Qwen2.5-VL</td>
+</tr>
+<tr>
+<td>C6</td>
+<td>用户否定/施压后放弃正确答案（sycophancy / gaslighting negation）</td>
+<td>高层对视觉 token 注意力不足；注意力被误导文本与 sink token 吸走</td>
+<td>BLIP-2、InstructBLIP、LLaVA、mPLUG-Owl2、InternVL、Qwen2-VL、Gemini、GPT-4V/4o、Claude</td>
+<td>因果（注意力重加权，LLaVA-1.5/1.6、BLIP-2、InstructBLIP、InternVL2）；探针与注意力统计只在 LLaVA-1.5；非 LLaVA 上效应小</td>
+</tr>
+<tr>
+<td>C7</td>
+<td>选项集合里多出一个空间词，答案被拉过去（spatial lexical bias）</td>
+<td>LLM 侧中后层残差通道与 MLP 神经元；视觉关系仍可线性读出</td>
+<td>LLaVA、Qwen、InternVL 共 9 个模型</td>
+<td>因果（激活修补＋稀疏敲除）＋相关（探针 7 模型，0.998）</td>
+</tr>
+<tr>
+<td>C8</td>
+<td>图中文字压过图像内容（typographic）</td>
+<td>编码器内偏"词形"的注意力头（ViT 后半层）；语言端说法并存</td>
+<td>CLIP 系 99 个模型＋LLaVA、Gemma3、Qwen3-VL、InternVL3.5、GPT-4o、Claude</td>
+<td>编码器内因果（Qwen3-VL、InternVL3.5、Gemma3 的编码器），但在 LVLM 上只涨 0.01–1.73 点；语言端只有行为/论证</td>
+</tr>
+<tr>
+<td>C9</td>
+<td>图像与问题的先后顺序改变答案（modality order）</td>
+<td>中层窄带（约 18–20 层）两种顺序的表征分叉</td>
+<td>InternVL2、Qwen2.5-VL、Qwen3-VL；另 14 个模型的行为数据</td>
+<td>因果（激活修补，InternVL2-8B 为主，Qwen3-VL-8B 在附录）；作者自述跨族机制分析未完成</td>
+</tr>
+</tbody>
+</table>
+<p>另有一条相关级的"答案格式"候选并入关键问题 3（选项符号/分隔符格式敏感：分词器把选项符号粘连，7 个模型，相关）。</p>
+<h4 id="c1-visual-override">C1 被要求答常识时仍报所见（visual override）</h4>
+<ul>
+<li><strong>现象</strong>：Visual CounterFact（蓝色草莓等颜色/大小反事实）。问"this"时模型跟图走，问"most"（要常识）时仍报图中属性。</li>
+<li><strong>现象跨模型</strong>：</li>
+<li>Pixels vs Priors（EMNLP 2025）Table 1：CF 图＋"most" 问法准确率，LLaVA-NeXT 47.26/40.30（颜色/大小）、Qwen2-VL 60.65/28.34、Janus-Pro 59.23/18.02；CF 图＋"this" 问法 82.12–91.20。<strong>F</strong> — <a href="https://arxiv.org/abs/2505.17127">arXiv 2505.17127</a></li>
+<li>Vision-Default, Prior-Override（v2，2026-11-05）：标准图 86–96%，冲突下 17.7–55.7%；"At matched 7B scale, Qwen-VL achieves 55.7% accuracy under conflict, while LLaVA-NeXT reaches only 21.7%"。五个模型：Qwen-VL2.5 3B/7B、LLaVA-NeXT 7B、PaliGemma 3B/10B。<strong>F</strong> — <a href="https://arxiv.org/abs/2606.28273">arXiv 2606.28273</a></li>
+<li>WHOOPS-AHA!：文本单独时取常识 token，加图后"factual accuracy drops to 27% and 24%"（LLaVA-NeXT-7B、Gemma3-12B）。<strong>F</strong> — <a href="https://arxiv.org/abs/2507.13868">arXiv 2507.13868</a></li>
+<li><strong>根因主张</strong>：取图是默认行为；取先验依赖 LLM 后半段一小撮注意力头（分"路由头"与"写入头"）。</li>
+<li><strong>根因跨模型证据（因果）</strong>：</li>
+<li>2606.28273：占全部头 2.5–4.8% 的头，消融后在"答常识"提示下 68–96% 的预测翻成视觉答案，而视觉答案只变 0.8–7.5%（Table 2）；WHOOPS! 上复现为 38.1–59.3%。三族五模型。<strong>F</strong></li>
+<li>2507.13868：对"factual heads / counterfactual heads"做注意力乘性干预，LLaVA-NeXT 的 factual accuracy 升到 74%、反向降到 16%；Gemma3 基线 18%、峰值 83%（同文前面写图像加入后为 24%，两处数字口径不同，我未查明差异来源）。这些头在 POPE 上压掉图像注意力不影响准确率。两族。<strong>F</strong></li>
+<li>2505.17127：PvP 转向向量在语言解码器中后层，WK→CF 翻转率 颜色 98.6–99.7%、大小 71.3–89.9%；CF→WK 颜色 78.2–86.4%、大小 33.5–70.37%（Table 3）。三族。<strong>F</strong></li>
+<li><strong>说法是否一致</strong>：</li>
+<li>路由方式不一致：2606.28273 报告 Qwen-VL 与 LLaVA-NeXT 靠在图像/文本 token 间重分配注意力，PaliGemma 的头对图像注意力几乎不变（delta +0.05），作者称为 attention-routing 与 representation-routing 两种体制。<strong>F</strong></li>
+<li>MLP 的作用不一致：2507.13868 的检索摘要称"注意力块偏视觉、MLP 偏参数知识"（<strong>S</strong>，我没在正文核到这句）；2606.28273 报告"PaliGemma and LLaVA-NeXT contain no promoting MLP layers"。<strong>F</strong></li>
+<li>干预位置不一致：以上三篇在最后一个 token 上干预有效；C2 那篇报告最后 token 修补只翻 0–1%（见 C2，口径不同，不能直接算矛盾）。</li>
+<li><strong>竞争者</strong>：PvP 转向（代码 <a href="https://github.com/rsinghlab/pixels_vs_priors">github.com/rsinghlab/pixels_vs_priors</a>，<strong>S</strong>：仓库地址来自检索摘要）；Seeing-Knowing 头干预（代码 francescortu/Seeing-Knowing，<strong>F</strong> 脚注）；2606.28273 只做诊断（代码 <a href="https://github.com/nlietzow/vision-default-prior-override">github.com/nlietzow/vision-default-prior-override</a>，<strong>F</strong>）。</li>
+<li><strong>作者自认局限</strong>（均 <strong>F</strong>）：</li>
+<li>2505.17127："steering models from visual perception back to world knowledge is more difficult than the reverse, suggesting an asymmetry ... Understanding this distinction further remains an open direction for future work."</li>
+<li>2606.28273："Both datasets vary the grounding prompt while holding the image fixed, so the measured asymmetry may partly reflect how the two prompts are routed rather than arbitration between perception and memory alone." 以及 "A full 2 × 2 design crossing prompt type with image type ... would isolate the arbitration component more directly. We see this as the natural next step for this line of work."</li>
+<li>2507.13868：只看最后 token 的注意力头，"does not capture the possible contributions of other components, such as MLP layers or visual encoders"；只做 late-fusion LLaVA 式结构。</li>
+<li><strong>剩余空间</strong>：CF→WK 在大小任务上只有 33.5–70.37%；2606.28273 的模型规模止于 10B，"Larger models may develop different strategies"。</li>
+<li><strong>便宜办法</strong>：换问法（"this"↔"most"）本身就是实验变量；PvP 报告颜色任务上 LLaVA-NeXT 改提示使图像注意力质量增加 13%，转向可到 40%（"interventions increase image attention by up to 40% in LLaVA-Next, compared to 13% from prompting"）。<strong>F</strong></li>
+<li><strong>是否测了换问法/换顺序</strong>：三篇都只用固定的两种提示模板，<strong>等义改写未测、选项顺序不适用（开放式）</strong>。</li>
+<li><strong>数据</strong>：Visual CounterFact、WHOOPS-AHA!，均公开。</li>
+</ul>
+<h4 id="c2-arbitration-failure">C2 看见了但答先验（arbitration failure）</h4>
+<ul>
+<li><strong>现象</strong>：同样在 Visual CounterFact 上，按最终层 logit 判定，视觉答案胜出的比例因模型而异：LLaVA-v1.5 93%、Qwen2-VL 72%、InternVL2-8B 57–58%、InternVL2-26B 83–87%、Qwen2-VL-72B 92%（图注与正文）。即少数样本上先验胜出。<strong>F</strong> — <a href="https://arxiv.org/abs/2604.09364">arXiv 2604.09364</a>（Preprint, under review）</li>
+<li><strong>现象跨模型</strong>：十个 VLM：LLaVA-v1.5/NeXT/OneVision、Qwen2-VL、InternVL2、BLIP-2、Janus-Pro，外加 13B/26B/72B 三个放大版。<strong>F</strong></li>
+<li><strong>根因主张</strong>："Encoding–Grounding Dissociation"：答错与答对样本的视觉编码一样强，差别出在后面的仲裁；视觉信息分散在全部图像 token 上。</li>
+<li><strong>根因证据</strong>：</li>
+<li>相关：早期层（10% 深度）线性探针 AUC &gt; 0.86，两组几乎相同；最终层 logit 差与结果 ρ = 0.847，编码强度 ρ = 0.198。<strong>F</strong></li>
+<li>因果：在 MAC 层替换全序列隐藏状态，60–84% 的输出从视觉答案翻到先验；只换最后 token 为 0–1%；图像 token 承担几乎全部因果效应。九个模型、每个 100 样本。<strong>F</strong></li>
+<li><strong>说法是否一致</strong>：与 C1 三篇的"最后 token 干预有效"表面不合。口径差异：C1 是消融/缩放<strong>写到最后 token 的头</strong>、方向是先验→视觉；本篇是把另一次运行的<strong>残差</strong>补到最后 token、方向是视觉→先验。两者未在同一协议下比较过。</li>
+<li><strong>竞争者（修法）</strong>：早期层线性转向与 SAE 引导转向，三个模型（LLaVA-v1.5-7B、InternVL2-8B、Qwen2-VL-7B），最好配置 +1.4% 到 +3.8%；在 MAC 交叉层做只有 +0.3% 或更少。<strong>F</strong></li>
+<li><strong>作者自认局限</strong>（<strong>F</strong>）："The size split shows paraphrase sensitivity (48–54% agreement under reversed polarity), suggesting partly keyword-driven reasoning"；"Causal patching covers nine of ten models with 100 samples each"；"The steering experiments (Section 7) are limited to the 7–8B primary models"；合成图像，"Extending to naturally occurring conflicts ... is an important direction for future work"。</li>
+<li><strong>是否测了换问法/换顺序</strong>：分析部分测了八种问法（三个主模型各 100 样本）：logit 轨迹相关 r = 0.958，胜出模态一致 93.9%，81.7% 的样本八种问法全稳定；InternVL2-26B 平均 80%。<strong>转向收益本身未在换问法下复测</strong>。<strong>F</strong></li>
+<li><strong>剩余空间</strong>：最好的转向 +3.8%；InternVL2-8B 视觉胜率 58%，离 LLaVA-v1.5 的 93% 很远。</li>
+<li><strong>代码</strong>：未找到。</li>
+</ul>
+<h4 id="c3">C3 熟悉对象的反事实计数：答典型数量</h4>
+<ul>
+<li><strong>现象</strong>：给熟悉对象加/减一个部件（四条纹的 Adidas 标、五条腿的狗、四只耳朵的兔子），模型答典型数量。</li>
+<li><strong>现象跨模型</strong>：</li>
+<li>VLMBias（ICLR 2026）：Gemini-2.5 Pro、Sonnet-3.7、GPT-4.1、o3、o4-mini 五个模型七个领域平均 17.05%；"∼75% of the time, their answers match the biased choices"；附录称 GPT-5、Grok-4 同样；Pixtral 与 Qwen2.5-VL 上"Larger VLMs tend to perform worse and exhibit ∼1.26× higher bias rates"。<strong>F</strong> — <a href="https://arxiv.org/abs/2505.23941">arXiv 2505.23941</a></li>
+<li>CounterCount（v2，2026-10-20）：16 个 VLM（14 开源＋2 闭源），事实图 91.6% → 反事实图 49.5%；人类 98.9% / 97.5%；Sonnet 5 事实图 96.9% 而反事实 47.5%，Gemma-4-31B 64.6%，Qwen3.8-27B 62.1%。<strong>F</strong> — <a href="https://arxiv.org/abs/2605.17826">arXiv 2605.17826</a></li>
+<li>CDH-Bench：300 对反事实–常识图像，计数异常退化最持久。<strong>A/S</strong> — <a href="https://arxiv.org/abs/2603.27982">arXiv 2603.27982</a></li>
+<li><strong>根因主张</strong>：视觉证据已编码，语言端在认出熟悉对象后退回典型答案。</li>
+<li><strong>根因证据</strong>：</li>
+<li>编码器探针（单模型）：LLaVA-OneVision-S（SigLIP 400M＋Qwen2 0.5B）上，投影前线性探针分 4 腿/5 腿 95.26%，整模型 49.71%，偏置率 99.43%。作者原话："the visual information stream may be impaired by the bias in the language model"。<strong>F</strong>（2505.23941 A.8）</li>
+<li>注意力相关（两族）：答对样本对计数区域的注意力比答错多 35.2%（Qwen3-VL-8B）与 19.6%（Gemma-3-4B）。<strong>F</strong>（2605.17826 Fig. 10）</li>
+<li>弱因果（两族 14 个开源模型）：对计数区域的视觉 token 做注意力放大，"improves mean CF MCQ accuracy by 3.3 points and reduces bias by 4.0 points across 14 open-weight models"；每个模型在 12 种配置里取最好的，作者自称"upper-bound diagnostic"，且用到了标注的区域框。<strong>F</strong></li>
+<li>反向证据：VLMBias A.23 标题即"Even when attending to correct regions, VLMs still fail to generate correct answers"（Qwen2.5-VL-7B 最后一层注意力图，定性）。<strong>F</strong></li>
+<li><strong>说法是否一致</strong>：CounterCount 说"答错时注意力不足"，VLMBias 说"注意力落对了也答错"。两者测法不同（跨层平均的量 vs 最后一层的定性图），未在同一模型同一读数上对过。此外 VLMBias 把背景当触发因素（去背景 +21.09 点、偏置率 −40.58），这是输入侧解释，与"语言端压制"并存。<strong>F</strong></li>
+<li><strong>竞争者</strong>：</li>
+<li>去背景（VLMBias）：+21.09 点，五个闭源模型。<strong>F</strong></li>
+<li>注意力放大（CounterCount）：平均 +3.3 点。局限原文："the hyperparameter search for our attention modulation was limited, and other configurations may have had even stronger debiasing effects"。<strong>F</strong></li>
+<li>专门练过计数的小模型（Molmo-72B、Moondream-2B）平均 36.02%，偏置率低 2.1 倍。<strong>F</strong></li>
+<li>CounterCount 摘要还列了"Input manipulations that break visual context, introduce cueing or reasoning"。<strong>F</strong>（未摘各自数字）</li>
+<li><strong>便宜办法已被证明修不了</strong>（均 VLMBias，<strong>F</strong>）：去偏提示 +1.87、要求复查 +2.70；给反事实的 few-shot 示例无效；附录目录标题："Image resolution has minimal impact"、"Locate-then-count prompting does not significantly improve counting accuracy"、"VLMs fail to detect modifications even with side-by-side comparison"；思考模型计数准确率随思考 token 先升到约 40% 再降。</li>
+<li><strong>是否测了换问法/换顺序</strong>：CounterCount 同时测 MCQ 与开放式，且"option order is randomized to reduce positional bias"；注意力放大在 MCQ 与 OE 上都报了增益；<strong>等义改写未测</strong>。VLMBias 用 Q1/Q2 两种问法与 Y/N 问法。<strong>F</strong></li>
+<li><strong>剩余空间</strong>：最好的开源模型 64.6%，人类 97.5%；注意力放大后平均仍在 50% 出头。</li>
+<li><strong>数据</strong>：VLMBias（<a href="https://vlmsarebiased.github.io">vlmsarebiased.github.io</a>）、CounterCount（作者称将发布）、CDH-Bench（GitHub/HF，<strong>S</strong>）。</li>
+</ul>
+<h4 id="c4-prompt-induced-hallucination">C4 提示里的错误预设压过图像（prompt-induced hallucination）</h4>
+<ul>
+<li><strong>现象</strong>：图里三朵睡莲，提示让"描述四朵"，模型照着提示说。对象数越多越顺从提示。</li>
+<li><strong>现象跨模型</strong>：LLaVA-OneVision-7B、Qwen2-VL-7B、Janus-Pro-7B（ACL 2026）。<strong>F</strong> — <a href="https://arxiv.org/abs/2601.05201">arXiv 2601.05201</a>。HalluScope 在 InternVL3.5-8B、Molmo-7B-D、Qwen2-VL-7B、Qwen2.5-VL-7B、LLaVA-1.5-7B 上得到同向的行为结论："hallucinations are primarily driven by an over-reliance on textual instruction, learned object co-occurence priors, and not from perceptual limitations of the visual backbone"。<strong>F</strong> — <a href="https://arxiv.org/abs/2604.21911">arXiv 2604.21911</a></li>
+<li><strong>根因主张</strong>：LLM 早期层的少量注意力头（PIH-heads）充当把提示内容抄到输出的通道。</li>
+<li><strong>根因证据（因果，3 族）</strong>：消融这些头，PIH 至少降 40%，视觉正确的计数恢复最多 54%；同一批头用到颜色任务，抄提示颜色最多降 94.25%；对照是同层随机头；LLaVA-OneVision 消融后基线计数还涨 4.35 点。原文片段："localized primarily to early layers of the language model"（主语是 prompt-induced hallucination 的头）。<strong>F</strong></li>
+<li><strong>说法是否一致</strong>：作者自己强调跨模型不一致——"Across models, PIH-heads mediate prompt copying in model-specific ways"；注意力从文本转向图像的最大变化层分别在 LLaVA-OneVision 第 2 层、Qwen-VL 第 22/27 层、Janus-Pro 第 22 层。HalluScope 走的是训练数据/先验解释（行为层）。</li>
+<li><strong>竞争者</strong>：PIH 头消融（代码 github.com/michalg04/…，<strong>F</strong> 脚注，仓库名被截断）；HalluVL-DPO 微调（LLaVA-1.5-7B、Qwen2-VL-7B；数字未摘）。</li>
+<li><strong>作者自认局限</strong>（2601.05201，<strong>F</strong>）："the specific PIH heads identified here and the effects of their ablation may not generalize directly to substantially larger models"；"we do not observe simple or consistent attention patterns within PIH heads themselves"；次生效应"leave their detailed analysis to future studies"。</li>
+<li><strong>是否测了换问法/换顺序</strong>：测了跨任务（计数→颜色），<strong>等义改写未测</strong>。</li>
+<li><strong>剩余空间</strong>：最好的情况恢复 54%，即近一半 PIH 仍在。</li>
+<li><strong>便宜办法</strong>：未找到该论文对提示修复的测试。</li>
+</ul>
+<h4 id="c5-text-preference">C5 图文冲突时偏信文本（text preference）</h4>
+<ul>
+<li><strong>现象</strong>：图像与随附文本（描述/上下文）矛盾时，模型按文本答。</li>
+<li><strong>现象跨模型</strong>：</li>
+<li>Words or Vision（CVPR 2025）：十个 VLM（LLaVA-NeXT 7B/13B/34B、Phi3.5、Molmo-7B-D、Qwen2-VL-7B、GPT-4o/mini、Claude Haiku/Sonnet）。"Claude Haiku shows text preference ratios of 87% and 83% under match and corruption in VQAv2"；Qwen2-VL-7B 在文本被污染时文本偏好 29%，高于匹配时的 13%。<strong>F</strong> — <a href="https://arxiv.org/abs/2503.02199">arXiv 2503.02199</a></li>
+<li>MC²：20 个开源 MLLM，"Most MLLMs (except Qwen2.5-VL and InternVL3) display text preference"。<strong>F</strong> — <a href="https://arxiv.org/abs/2505.20977">arXiv 2505.20977</a></li>
+<li>四个模型（LLaVA-1.5、InstructBLIP、Qwen2.5-VL、LLaVA-OneVision）偏好的模态各不相同。<strong>F</strong> — <a href="https://arxiv.org/abs/2507.01790">arXiv 2507.01790</a></li>
+<li><strong>根因主张</strong>（三种并存）：
+  1. 隐藏状态里有一条模态偏好方向，可探可转（2505.20977）。
+  2. 模态无关的"路由头"与模态专属的"提升头"（2507.01790）。
+  3. 纯文本与多模态训练数据失衡（2503.02199 的理论分析）。</li>
+<li><strong>根因证据</strong>：</li>
+<li>(1) 因果，3 族 4 模型：转向后 Qwen2.5-VL-7B 文本偏好 35.4→63.6、InternVL3-8B 20.9→42.8；Qwen2-VL-7B 视觉偏好 15.3→48.1、OneVision-7B 37.5→57.1（Table 1）。<strong>F</strong></li>
+<li>(2) 相关 4 模型＋因果 1 模型：目标与非目标模态的 V-Measure 差与准确率 r = 0.94；头干预（α = 10）只报了 Qwen2.5-VL 的 L11H14/L19H26/L13H26，路由头"can generalize across majority of the tasks, except CUB-Color"。<strong>F</strong></li>
+<li>(3) 论证：无内部测量。<strong>F</strong></li>
+<li><strong>竞争者</strong>：指令（"Focus on Image"）、监督微调＋文本增广（2503.02199）；表征转向（代码 <a href="https://github.com/EchoDreamer/Modality-Preference">github.com/EchoDreamer/Modality-Preference</a>，<strong>S</strong>）；头缩放（代码 <a href="https://github.com/ethahtz/vlm_conflicting_info_processing">github.com/ethahtz/vlm_conflicting_info_processing</a>，<strong>F</strong>）。</li>
+<li><strong>作者自认局限</strong>：2507.01790："it is not guaranteed that those heads can further generalize to other datasets"，且主要是 7B 模型。<strong>F</strong>。2505.20977 的局限段只谈数据集筛选耗时。<strong>F</strong></li>
+<li><strong>便宜办法</strong>：指令效果有限——"In QwenVL-2-7B, the average text preference ratio only shifts from 16.8% to 14.2% when changing the instruction from 'Focus on Text' to 'Focus on Image.'" <strong>F</strong>。文本 token 放在图像前会加重偏文本。<strong>F</strong></li>
+<li><strong>是否测了换问法/换顺序</strong>：转向在 MC² 的八类任务上评，<strong>等义改写与选项顺序未测</strong>。</li>
+<li><strong>剩余空间</strong>：转向后视觉偏好最高 57.1（OneVision-7B）。</li>
+</ul>
+<h4 id="c6-sycophancy-gaslighting-negation">C6 用户否定/施压后放弃正确答案（sycophancy / gaslighting negation）</h4>
+<ul>
+<li><strong>现象</strong>：第一轮答对，用户说"不对"后改口。</li>
+<li><strong>现象跨模型</strong>：</li>
+<li>MM-SY（ICLR 2025）：BLIP-2、InstructBLIP、LLaVA-1.5、mPLUG-Owl2、InternVL-1.5、InternLM-XComposer2-VL、Gemini、GPT-4V，十类任务三种语气。<strong>F</strong> — <a href="https://arxiv.org/abs/2410.11302">arXiv 2410.11302</a></li>
+<li>GaslightingBench：Gemini-1.5-flash、GPT-4o、Claude-3.5-Sonnet、Qwen2-VL-7B/72B、LLaVA-1.6-7B、LLaVA-NeXT-8B，含 Gemini-2.5-Pro 思考模式。<strong>F</strong> — <a href="https://arxiv.org/abs/2501.19017">arXiv 2501.19017</a></li>
+<li>GasEraser 的基线：否定后准确率 LLaVA-v1.5-7B 63.25→24.71、LLaVA-v1.6-7B 65.89→19.81、InternVL2-8B 76.90→33.40。<strong>F</strong> — <a href="https://arxiv.org/abs/2504.09456">arXiv 2504.09456</a></li>
+<li><strong>根因主张</strong>：(a) 高层对视觉 token 的注意力不足（MM-SY）；(b) 注意力被误导性文本 token 与"attention sink" token 吸走（GasEraser）。</li>
+<li><strong>根因证据</strong>：</li>
+<li>相关（单模型）：LLaVA-1.5 及其 SFT/DPO 版本的逐层探针与注意力统计，差异出现在 15 层之后。<strong>F</strong></li>
+<li>因果（LLaVA 族＋BLIP 族）：放大 16–32 层的图像注意力，迎合率 LLaVA-1.5 94.6→64.4、BLIP-2 38.3→34.3、InstructBLIP 68.8→59.6；放大 1–16 层或全部层则首轮准确率大跌（LLaVA-1.5 84.7→26.8 / 23.3）。<strong>F</strong>（Table 3）</li>
+<li>因果（LLaVA 族＋InternVL 族）：GasEraser 把注意力从误导文本与 sink token 挪到图像，否定后准确率 +18.57、+15.79、+8.09 点。<strong>F</strong></li>
+<li><strong>说法是否一致</strong>：层位说法不同。MM-SY：只有高层（16–32）放大才不伤准确率。GasEraser（层消融只在 LLaVA-v1.5-7B 上做）："the majority of performance improvements are concentrated in the earlier layers, with the top 16 layers achieving the highest accuracy"，这里"top 16"指靠前的 16 层。两者改的东西不同（一个放大图像注意力，一个从特定文本 token 挪走注意力），未在同一设定下比较。另有一条反向数据：在 POPE 对抗集上"wrong predictions draw more image attention than correct ones (Cohen's d = −0.46, p = 1.4 × 10⁻²⁴), the opposite of what grounding-based corrections assume"（LLaVA-1.5-7B，4-bit）。<strong>F</strong> — <a href="https://arxiv.org/abs/2610.25964">arXiv 2610.25964</a>。这不是迎合任务，但针对的是同一族"视觉注意力不足"解释。</li>
+<li><strong>另一种定义的"visual sycophancy"</strong>：图像被涂白后模型能察觉却仍给内容答案；九个开源 VLM，9,000 个模型–样本对里 28.1% 属此类；同代放大更严重（Qwen2.5-VL 7B→72B：25.5→40.1%；Llama-3.2-Vision 11B→90B：34.3→48.0%），Qwen3-VL 在白图上拒答 93–98%。只到输出概率层，无部件定位。<strong>F</strong> — <a href="https://arxiv.org/abs/2603.18373">arXiv 2603.18373</a></li>
+<li><strong>竞争者</strong>：提示法、SFT、DPO（MM-SY，仅 LLaVA-1.5；迎合率分别 87%、25%、5%，纠错接受率分别 88%、42%、2%，即越治越固执）；高层注意力放大；GasEraser；LQCD 查询中和＋对比解码（<strong>A</strong>，<a href="https://arxiv.org/abs/2408.11261">arXiv 2408.11261</a>）。</li>
+<li><strong>作者自认局限</strong>（MM-SY，<strong>F</strong>）："our sycophancy mitigation methods were validated only on the LLaVA-1.5-7B model. The proposed training-free attention amplification method was tested solely on LLaVA-1.5-7B, BLIP2, and InstructBLIP"；"we did not evaluate the generalizability of the sycophancy mitigation methods"。</li>
+<li><strong>是否测了换问法/换顺序</strong>：MM-SY 的现象在三种语气下测，<strong>修法未测换问法</strong>；GasEraser 测了"Discrimination Strategy"这另一种交互格式并称有一致提升；<strong>选项顺序均未测</strong>。</li>
+<li><strong>剩余空间</strong>：GasEraser 之后 LLaVA-v1.5 仍从 63.25 掉到 43.28；InternVL2-8B 只回 8.09 点。</li>
+<li><strong>文本 LLM 的相邻结论</strong>（<strong>S</strong>，未取正文）：迎合在注意力头激活上线性可分；有论文报告质心差转向同时降低对正确陈述的同意。未在 VLM 上验证。</li>
+</ul>
+<h4 id="c7-spatial-lexical-bias">C7 选项集合里多出一个空间词，答案被拉过去（spatial lexical bias）</h4>
+<ul>
+<li><strong>现象</strong>：二选一（left/right）在两种顺序下都答对，加第三个选项"behind"后在全部六种排列下都选它（"binary-stable but ternary-fragile"）。</li>
+<li><strong>现象跨模型</strong>：九个开源 MLLM，LLaVA、Qwen、InternVL 三族，1B–8B；诊断样本 55 例跨七个模型。<strong>F</strong> — <a href="https://arxiv.org/abs/2606.01914">arXiv 2606.01914</a>（v2，2026-08-31）</li>
+<li><strong>根因主张</strong>：失败在语言端；多出的选项词是词汇–语义干扰，作用于 LLM 中后层的残差通道与 MLP 神经元。</li>
+<li><strong>根因证据</strong>：</li>
+<li>相关（7 模型）：最后 token 残差上的四分类线性探针，在加选项后答错的样本上恢复真实关系，"macro accuracy 0.998"，"already exceeds 0.92 at the first layer"。<strong>F</strong></li>
+<li>因果：二选一正确与三选一错误的残差互换可救回或破坏答案，转折在中后层；稀疏敲除加选项位置的通道与神经元部分恢复正确。<strong>F</strong>（我没逐一核对修补覆盖了哪几个模型）</li>
+<li><strong>竞争者</strong>：只训 LLM 的 LoRA-DPO，训练数据仅一个物体对的合成偏好集。四选一稳健准确率在合成数据上最多 +100 点；WhatsUp +68.0、SpatialMQA-Direct +32.6、VSR +20.1。SFT 效果相近。<strong>F</strong></li>
+<li><strong>作者自认局限</strong>（<strong>F</strong>）："Our interventions also localize manipulable LLM-side states and components, but they do not establish a complete circuit."；"Our option-free one-word experiments show that the bias does not vanish when the displayed options are removed, but the preferences that surface in that setting differ from the option-set effect studied here"；"The mechanistic account of this paper does not transfer directly to open-ended generation; we leave this to future work."；只在空间推理上成立。</li>
+<li><strong>是否测了换问法/换顺序</strong>：<strong>选项顺序做了全排列</strong>，"define a sample as solved only when all [orders are correct]"。全文无 paraphrase/rephras 字样，<strong>等义改写未测</strong>。</li>
+<li><strong>便宜办法</strong>：未找到该论文对提示修复的测试。</li>
+</ul>
+<h4 id="c8-typographic">C8 图中文字压过图像内容（typographic）</h4>
+<p>见关键问题 4。字段汇总：
+- <strong>现象跨模型</strong>：SCAM（1162 张真实贴纸图，99 个 VLM）：gemma3:12b、llava:13b-v1.6 等掉 40–60 点；claude-sonnet-4 约 8 点、gpt-4o 约 3 点、gpt-4o-mini 约 15 点。<strong>F</strong> — <a href="https://arxiv.org/abs/2504.04893">arXiv 2504.04893</a>。TypoD（ECCV 2024）：LLaVA-v1.5、InstructBLIP、MiniGPT-4、GPT-4V、Bard。<strong>F</strong> — <a href="https://arxiv.org/abs/2402.19150">arXiv 2402.19150</a>
+- <strong>根因证据级别</strong>：编码器内因果（CLIP 多个变体；Qwen3-VL、InternVL3.5、Gemma3 的编码器），LVLM 层面效应 0.01–1.73 点；语言端为行为/论证。
+- <strong>是否测了换问法/换顺序</strong>：SCAM 自认"reliance on 'naive prompting'"；TypoD 的修法本身就是换提示；编码器干预<strong>未测换问法</strong>。</p>
+<h4 id="c9-modality-order">C9 图像与问题的先后顺序改变答案（modality order）</h4>
+<ul>
+<li><strong>现象</strong>：同一图同一问题，图在前比问题在前准确率高 6–26 个百分点。</li>
+<li><strong>现象跨模型</strong>：InternVL2-8B、Qwen2.5-VL-7B、Qwen3-VL-8B，三个基准。<strong>F</strong> — <a href="https://arxiv.org/abs/2607.20351">arXiv 2607.20351</a>。另：14 个模型在 MMMU/CVQA/MMBench 上对选项顺序与模态顺序都敏感（<strong>F</strong>，<a href="https://aclanthology.org/2026.lrec-main.716/">LREC 2026</a>）；Words or Vision 报告文本 token 在前加重偏文本（<strong>F</strong>）。</li>
+<li><strong>根因主张</strong>：两种顺序的表征在中层窄带分叉。</li>
+<li><strong>根因证据（因果，2 族）</strong>：把图在前的激活补进问题在前的计算，"recovery remains low before layer 17 on all datasets. Around layers 18–20, recovery rises sharply"（InternVL2-8B）；Qwen3-VL-8B 的修补结果在附录，"show the same qualitative localization pattern"。<strong>F</strong></li>
+<li><strong>竞争解释</strong>："Ask Twice, Look Twice"（arXiv 2607.15565）给的是结构性解释：因果掩码下问题在前等于先读图后被问题引导，重复一遍问题即可修。<strong>S</strong>（未取正文）</li>
+<li><strong>竞争者</strong>：顺序一致性的测试时训练（TTT），主要改后层 MLP；重复问题的提示法（<strong>S</strong>）；自洽采样（LREC，<strong>F</strong>）。</li>
+<li><strong>作者自认局限</strong>（<strong>F</strong>）："Our mechanistic analysis is strongest for InternVL2-8B; additional Qwen3-VL patching results show the same qualitative pattern, but a full cross-family circuit analysis remains future work."；每个样本要两次前向加最多 10 步梯度；评测限于多选题。</li>
+<li><strong>是否测了换问法/换顺序</strong>：处理的正是模态顺序；<strong>选项顺序与等义改写未测</strong>。</li>
+</ul>
+<h3 id="inferences">Inferences</h3>
+<ul>
+<li>（推导）九个候选里，因果证据全部落在语言解码器一侧（注意力头、残差方向、中后层），只有 C8 的因果证据在编码器内，且到了 LVLM 上效应最小。链条：C1/C4/C5/C7/C9 的有效干预位置都在 LLM 层；C2/C3/C7 的探针都显示视觉信息可读。</li>
+<li>（推导）"信息在但没用上"这一条在四篇独立论文里各自成立（2604.09364 探针 AUC &gt; 0.86；2606.01914 探针 0.998；2505.23941 编码器探针 95.26%；2510.17771 深层注意力落在证据上，四族八模型 — <strong>F</strong>，<a href="https://arxiv.org/abs/2510.17771">arXiv 2510.17771</a>），但"没用上"的具体位置各篇说法不同，没有一篇在同一批模型上把它们对齐。</li>
+<li>（推测）C1 与 C2 可能是同一仲裁机制的两个方向；两篇都用 Visual CounterFact，但一篇用"this/most"提示对比、一篇用标准/反事实图像对比，尚无 2×2 设计（2606.28273 自己把这列为下一步）。</li>
+</ul>
+<h3 id="gaps">Gaps</h3>
+<ul>
+<li>闭源模型（GPT、Gemini、Claude）在 C3、C5、C6、C8 上行为数据最多，内部证据为零，无法验证。</li>
+<li>C2 的全序列修补与 C1 的最后 token 头消融没有在同一协议下比较，谁更接近"根因"我判断不了。</li>
+<li>C6 的探针/注意力统计只在 LLaVA-1.5 上；跨族的只有干预后的行为变化。</li>
+</ul>
+<hr />
+<h2 id="2">关键问题 2：图像与常识冲突类——已有的内部解释、跨模型性、修法进度</h2>
+<h3 id="takeaway_1">Takeaway</h3>
+<p>已有三种内部解释：线性方向（PvP 转向）、后半段稀疏注意力头（取先验的头）、编码正常而下游仲裁失败；前两种在 3 个模型族上有因果证据，但都建立在颜色/大小反事实上，那里的主失败是"图压过常识"。对"常识压过图"最强的计数类，修法停在去背景（+21 点，闭源模型，输入侧）与注意力放大（+3.3 点）。</p>
+<h3 id="cited-findings_1">Cited Findings</h3>
+<ul>
+<li>线性方向解释：PvP 转向向量，三族，颜色 WK→CF 98.6–99.7%。反向更难："steering models from visual perception back to world knowledge is more difficult than the reverse"。<strong>F</strong> — <a href="https://arxiv.org/abs/2505.17127">arXiv 2505.17127</a></li>
+<li>层动态：预测先反映记忆先验，中后层转向视觉证据，其间来回翻转；LLaVA-NeXT 55%/65% 的样本（颜色/大小）出现翻转，Qwen2-VL 31%/29%，Janus-Pro 30%/12%（Table 2）。<strong>F</strong></li>
+<li>稀疏头解释：2.5–4.8% 的头，消融翻转 68–96%，三族五模型；路由实现分两种体制。<strong>F</strong> — <a href="https://arxiv.org/abs/2606.28273">arXiv 2606.28273</a></li>
+<li>仲裁失败解释：十模型，探针 AUC &gt; 0.86，全序列修补 60–84%；"Steering must happen before the arbitration regime forms"——在仲裁交叉层转向几乎无效（InternVL2 在 L26 ≤ +0.3%，在 L3 +3.4%/+3.8%）。<strong>F</strong> — <a href="https://arxiv.org/abs/2604.09364">arXiv 2604.09364</a></li>
+<li>交叉层深度因结构而异："The crossover depth varies widely across architectures (36–71% of layers) and depends on the attribute"；放大模型后交叉提前。<strong>F</strong>（同上）</li>
+<li>属性特异："attribute-specific arbitration pathways rather than a single universal mechanism"；大小任务把问法改成"Which is smaller?"一致率掉到 48–54%，作者称"hints at keyword matching"。<strong>F</strong>（同上）</li>
+<li>计数类的内部证据与修法：见 C3。去背景 +21.09；注意力放大 +3.3；去偏提示 +1.87；复查 +2.70。<strong>F</strong></li>
+<li>行为基准只用单一提示：VLind-Bench 自认"VLind-Bench used only a single fixed prompt for evaluation, but recent studies have shown that LLMs and LVLMs respond sensitively to even small changes in such prompts"；除 GPT-4o 外全部模型依赖语言先验，依赖程度与骨干 LLM 规模成反比。<strong>F</strong> — <a href="https://arxiv.org/abs/2406.08702">arXiv 2406.08702</a></li>
+<li>规模方向不一致：VLind 说骨干越大先验依赖越小；VLMBias 说 Pixtral 与 Qwen2.5-VL 越大越偏；CounterCount 摘要片段说 4B→27B 有时更依赖先验（<strong>S</strong>）。任务不同（常识反事实场景 vs 计数）。</li>
+</ul>
+<h3 id="inferences_1">Inferences</h3>
+<ul>
+<li>（推导）"某个线性方向控制取图还是取先验"在 3 个族上成立，但它被验证的方向主要是"把模型推向图像"（已是默认方向）；对计数类"先验压过图"是否同一方向，没有论文测过。依据：PvP 与 2606.28273 都只用 Visual CounterFact/WHOOPS，2605.17826 与 2505.23941 都没做方向或头分析。</li>
+<li>（推测）计数类与属性类可能不是同一个失败：属性类反事实显眼（整只草莓变蓝），计数类改动局部且细；2604.09364 报告视觉因果效应分散在全部图像 token 上，CounterCount 报告的是局部区域注意力不足。</li>
+</ul>
+<h3 id="gaps_1">Gaps</h3>
+<ul>
+<li>没有找到把 PvP 式方向或"取先验的头"拿到 VLMBias/CounterCount 上检验的工作（层：对象层；相关查询约 5 条）。</li>
+<li>现有修法在计数类上离人类还差约 30–45 个百分点（64.6% vs 97.5%；闭源平均 17.05% 且提示修不动）。</li>
+</ul>
+<hr />
+<h2 id="3vlm-llm">关键问题 3：选项顺序/位置偏置与等义改写——VLM 上有无内部成因定位？文本 LLM 的结论是否验证过能迁移？</h2>
+<h3 id="takeaway_2">Takeaway</h3>
+<p>VLM 上关于选项顺序/位置偏置的工作停在行为层和输出 logit 层；有内部证据的是三个相邻现象（选项内容词偏置 C7、模态顺序 C9、选项符号格式——相关级）。文本 LLM 的机制结论（"A"锚定头、两阶段选择–绑定）我没有找到在 VLM 上复核的工作；唯一直接检验"文本去偏方法是否迁移"的论文结论是迁移不稳定、多数相对改进为负。等义改写只有单模型（MedGemma 4B）的机制分析。</p>
+<h3 id="cited-findings_2">Cited Findings</h3>
+<ul>
+<li>LVLM 的 MCQA 选择偏置：LLaVA-v1.5-13B、InternVL2_5-8B、Qwen2.5-VL-3B/7B；偏置随任务难度加剧，Qwen2.5-VL-3B 易题偏"A"（token 偏置）、难题偏第一位（位置偏置）。修法是输出 logit 层的偏置向量校正，不涉及内部部件。作者把内部分析留给未来："will provide more comprehensive analysis of model-specific attention patterns across different architectures"。<strong>F</strong> — <a href="https://arxiv.org/abs/2509.16805">arXiv 2509.16805</a></li>
+<li>14 个模型（Gemini、Llama 4、Pixtral 等）在 MMMU/CVQA/MMBench 上对选项顺序与模态顺序敏感；小模型波动率更高。文本去偏方法的迁移："most relative improvement values are negative, indicating that these mitigation methods often fail to enhance performance and, in most of cases, even degrade it"；结论句："Text-based methods transfer inconsistently to multimodal settings, while self-consistency sampling consistently improves both accuracy and stability." 迁移实验只在三个模型上做（Gemini 2.5 Flash Lite、Llama 4 109B/400B）。<strong>F</strong> — <a href="https://aclanthology.org/2026.lrec-main.716/">LREC 2026</a></li>
+<li>选项符号/分隔符格式（相关级，7 模型）：Gemma-3、LLaVA-1.5、LLaVA-OV、Phi-3.5、Phi-4、Qwen-2-VL、Qwen-2.5-VL，五个数据集，48 种语义等价格式；即使用了顺序不变的评测也频繁出现排名反转；LLaVA-OV 在不同格式间差近 50 个百分点。成因分析：分词器把选项符号与分隔符粘成一个 token，粘连 token 与原符号的嵌入余弦相似度低的模型掉得多；选项符号集影响对选项符号的注意力间隔，A-OKVQA 上与准确率 Pearson 0.930（只有 4 个符号集作为数据点）。<strong>F</strong> — <a href="https://arxiv.org/abs/2511.22341">arXiv 2511.22341</a>。作者自认："selecting prompts on a small validation set can reduce extreme performance drops, indicating limited cross-dataset generalization. However, it does not consistently improve performance"。</li>
+<li>文本 LLM 的机制（未见 VLM 复核）：</li>
+<li>两阶段（选择→符号绑定）：Llama-3.2-Instruct-3B 与 Qwen3-8B，纯文本。<strong>F</strong>（引言与模型段）— <a href="https://arxiv.org/abs/2601.03914">arXiv 2601.03914</a></li>
+<li>GPT-2 的"A"锚定：MLP 值向量与特定注意力头。<strong>S</strong>（取到 PDF 未读）— <a href="https://arxiv.org/abs/2405.03205">arXiv 2405.03205</a></li>
+<li>一条会影响迁移的方法学事实：VLM 上"last-token patching ... only produces a flip rate of 0–1%"，而全序列修补 60–84%。<strong>F</strong> — <a href="https://arxiv.org/abs/2604.09364">arXiv 2604.09364</a>。文本 MCQA 机制工作多在最后 token 上干预（2601.03914 引言自己也指出这一点）。</li>
+<li>等义改写：</li>
+<li>MM-R3：一致性与准确率不总是同向；适配器使 BLIP-2 与 LLaVA 1.5M 的一致性平均绝对提升 5.7% 与 12.5%。评测含 Gemini、GPT-4V、GPT-4o、Qwen-VL-Chat、BLIP-3 等。<strong>F</strong>（摘要、局限、模型清单）— <a href="https://arxiv.org/abs/2410.04778">arXiv 2410.04778</a></li>
+<li>PSF-Med：九个 VLM 翻转率 3%–37%；机制只在 MedGemma 4B 第 17 层：一个 SAE 特征，因果修补恢复 45% 的 yes−no logit 间隔、完全逆转 15% 的翻转；钳制该特征翻转率相对降 31%、准确率代价 1.3 点。作者自认："The mechanistic analysis is limited to MedGemma 4B at layer 17; other models and layers likely involve different mechanisms."；另一句对评测很要紧："low flip rate does not imply visual grounding: text-only baselines show that some models stay consistent even when the image is removed"。<strong>F</strong> — <a href="https://arxiv.org/abs/2602.21428">arXiv 2602.21428</a></li>
+<li>生成式 VLM 对不改语义的词面改动高度敏感，且"this vulnerability affects the performance of techniques aimed at achieving consistency in their outputs"。<strong>A</strong> — <a href="https://arxiv.org/abs/2410.13030">arXiv 2410.13030</a></li>
+</ul>
+<h3 id="inferences_2">Inferences</h3>
+<ul>
+<li>（推导）VLM 的选项顺序/位置偏置目前是"现象跨模型、根因未定位"：两篇专门论文都不含内部测量，一篇把它列为未来工作。</li>
+<li>（类比）文本 LLM 的"A 锚定头/两阶段绑定"可能在 VLM 的语言骨干里存在（骨干相同或同源），但没有论文验证；且 VLM 上最后 token 修补失效这一事实提示直接搬文本协议可能测不到。</li>
+<li>（推导）C7 表明"答案选择"偏置里至少有一类（选项内容词）成因在语言端且可用 LLM-only 更新修；它与位置偏置是不同对象，论文用全排列把位置因素控制掉了。</li>
+</ul>
+<h3 id="gaps_2">Gaps</h3>
+<ul>
+<li>没有找到在 ≥2 个 VLM 族上对选项位置/字母偏置做激活修补或头消融的工作（层：对象层；专门查询 4 条，另有 3 条相邻）。</li>
+<li>等义改写在通用域 VLM 上没有找到内部分析（专门查询 2 条）；检索片段提到一篇在 LLaVA-OneVision-7B 上看提示改写的层动态（arXiv 2606.03093，<strong>S</strong>，未核实）。</li>
+<li>一条检索摘要提到"用激活转向减选项顺序偏置并称可推广到 LLaVA、IDEFICS、InstructBLIP"的工作，来源页 403，<strong>标题与结果都未核实</strong>，不计入。</li>
+</ul>
+<hr />
+<h2 id="4">关键问题 4：图中文字压过图像——根因归在编码器还是语言端？各自证据</h2>
+<h3 id="takeaway_3">Takeaway</h3>
+<p>两种说法并存且都不完整。编码器说有部件级因果证据（CLIP/ViT 后半层的"词形"注意力头），但搬到 LVLM 的编码器上只涨 0.01–1.73 点；语言端说只有行为证据（更大的 LLM 更稳、换更稳的编码器不带来稳健、把提示写详细能把掉点从 42.07% 收到 13.90%），没有内部定位。</p>
+<h3 id="cited-findings_3">Cited Findings</h3>
+<p><strong>编码器一侧</strong>
+- Dyslexify：CLIP 视觉编码器后半层的一组注意力头向 cls token 写入排版信息，消融后排版版 ImageNet-100 最多 +22.06%，标准集掉不到 1%。<strong>F</strong>（摘要与贡献段）— <a href="https://arxiv.org/abs/2508.20570">arXiv 2508.20570</a>。作者自认："many multimodal applications, such as LLaVA and IP adapters ... leverage not only the cls token but also spatial tokens, allowing typographic information to propagate into downstream tasks. This might limits the impact of Dyslexify ... and calls for further investigation into its generalizability to VLM setups."（原文如此）<strong>F</strong>
+- 训练无关的概念定位（ECCV 2026）：在 ViT 中挖出偏词形的头并做零消融，应用到 Qwen3-VL、InternVL3.5、Gemma3 的编码器；RIO-Bench obj-attack 总平均提升：Qwen3-VL-4B +0.97、8B +1.58、30B-A3B +1.13；InternVL3.5-8B +0.23、14B +0.01；Gemma3-4B +1.73、12B +1.53；干净图 −0.3% 到 +0.6%。正文自述"improves the VQA accuracy across Qwen3-VL and Gemma3 model variants"（未把 InternVL3.5 算进去）。另："Attention Reweighting does not apply to LVLMs"。代码 <a href="https://github.com/Liu-524/SamplingTAR">github.com/Liu-524/SamplingTAR</a>。<strong>F</strong>（Table 4）— <a href="https://arxiv.org/abs/2607.02494">arXiv 2607.02494</a>
+- SCAM 的归因："vulnerability to typographic attacks appears to carry over from the vision encoder"；假设来源是 OpenAI 的 ViT-L-14-336。<strong>F</strong> — <a href="https://arxiv.org/abs/2504.04893">arXiv 2504.04893</a></p>
+<p><strong>语言端一侧</strong>
+- 同一篇 SCAM 的反向证据："our initial experiments (section A.7) show that simply swapping LLaVA's vision encoder for a more robust one does not reliably transfer robustness when integrated naively"；"larger Large Language Model (LLM) backbones can mitigate this effect"；llama3.2-vision:90b 比 llava:34b-v1.6 更脆。<strong>F</strong>
+- TypoD（ECCV 2024）：同一编码器下 CLIP 分不开图与字，LVLM 能部分分开；三条"discoveries"把原因归为排版文字吸走注意力、以及需要跨模态注意力匹配；把提示写得更具体，掉点从 42.07% 收到 13.90%。分析手段是 Grad-CAM 与序列注意力图。代码 <a href="https://github.com/ChaduCheng/TypoDeceptions">github.com/ChaduCheng/TypoDeceptions</a>。<strong>F</strong>（摘要与引言）— <a href="https://arxiv.org/abs/2402.19150">arXiv 2402.19150</a>
+- OCR heads：LVLM 的 LLM 里有专门读图中文字的注意力头（Qwen2-VL、InternVL2），屏蔽它们损害 OCR-VQA。该文不研究文字与图像内容冲突。<strong>A</strong> — <a href="https://arxiv.org/abs/2505.15865">arXiv 2505.15865</a></p>
+<p><strong>提示文本里的冲突（不是图中文字）</strong>：见 C5。Words or Vision 的"文字"是随提示给出的文本，不是画在图上的字；两条线常被混为一谈。<strong>F</strong></p>
+<h3 id="inferences_3">Inferences</h3>
+<ul>
+<li>（推导）"根因在编码器"至少不充分：编码器内的因果干预在三族 LVLM 上平均只回 ≤1.73 点，而 SCAM 上的掉点是 40–60 点；换编码器也不带来稳健。两条证据来自不同论文，方向一致。</li>
+<li>（推测）语言端可能存在与 C5 同类的"取文字还是取图像"仲裁，OCR heads 提供了可能的通道，但没有论文把 OCR heads 与排版攻击连起来做干预。</li>
+</ul>
+<h3 id="gaps_3">Gaps</h3>
+<ul>
+<li>没有找到在 LVLM 的语言解码器内对排版攻击做因果定位的工作（层：对象层；专门查询 3 条）。</li>
+<li>SCAM 的换编码器实验是"preliminary"，作者计划系统重训 LLaVA 来分离编码器与适配的作用。</li>
+<li>RIO-Bench 的规模与构造我没有核对。</li>
+</ul>
+<hr />
+<h2 id="5">关键问题 5：每个候选的已有修法——模型、涨幅、是否依赖提示模板、换问法/换顺序是否成立、自认局限</h2>
+<h3 id="takeaway_4">Takeaway</h3>
+<p>内部修法的涨幅分两档：改头/改方向能大幅翻转但只在构造好的对比提示上测过（C1、C4、C5）；面向"答对"的修法涨幅小（C2 +3.8%、C3 +3.3 点、C8 ≤1.73 点），或只在一个族上大（C6）。只有 C7 的修法在全选项排列与三个外部基准上测过；没有一个修法报告了等义改写下的结果。</p>
+<h3 id="cited-findings_4">Cited Findings</h3>
+<table>
+<thead>
+<tr>
+<th>候选</th>
+<th>修法（出处）</th>
+<th>模型</th>
+<th>效果</th>
+<th>换问法</th>
+<th>换选项顺序</th>
+<th>自认局限（摘要）</th>
+<th>代码</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C1</td>
+<td>PvP 转向向量（2505.17127）</td>
+<td>LLaVA-NeXT、Qwen2-VL、Janus-Pro</td>
+<td>翻转率 颜色 98.6–99.7%，大小 71.3–89.9%（WK→CF）</td>
+<td>未测（只 this/most 两模板）</td>
+<td>不适用</td>
+<td>反向更难；只三模型</td>
+<td>有</td>
+</tr>
+<tr>
+<td>C1</td>
+<td>头注意力乘性干预（2507.13868）</td>
+<td>LLaVA-NeXT-7B、Gemma3-12B</td>
+<td>factual acc 27%→74%；18%→83%</td>
+<td>未测</td>
+<td>不适用</td>
+<td>只看最后 token 的头；只 late-fusion</td>
+<td>有</td>
+</tr>
+<tr>
+<td>C1</td>
+<td>头消融（2606.28273，诊断用）</td>
+<td>Qwen2.5-VL 3B/7B、LLaVA-NeXT 7B、PaliGemma 3B/10B</td>
+<td>翻转 68–96%</td>
+<td>未测（自认提示对比是混淆）</td>
+<td>不适用</td>
+<td>缺 2×2 设计；≤10B</td>
+<td>有</td>
+</tr>
+<tr>
+<td>C2</td>
+<td>早期层线性/SAE 转向（2604.09364）</td>
+<td>LLaVA-v1.5-7B、InternVL2-8B、Qwen2-VL-7B</td>
+<td>+1.4% 到 +3.8%</td>
+<td>分析测了 8 种问法；转向收益未复测</td>
+<td>不适用</td>
+<td>只 7–8B；合成图</td>
+<td>未找到</td>
+</tr>
+<tr>
+<td>C3</td>
+<td>去背景（2505.23941）</td>
+<td>五个闭源模型</td>
+<td>+21.09 点</td>
+<td>Q1/Q2/YN 三种问法</td>
+<td>不适用</td>
+<td>输入侧处理</td>
+<td>数据有</td>
+</tr>
+<tr>
+<td>C3</td>
+<td>计数区域注意力放大（2605.17826）</td>
+<td>14 个开源（Qwen、Gemma 系）</td>
+<td>平均 +3.3 点，偏置 −4.0 点</td>
+<td>MCQ 与 OE 都测；改写未测</td>
+<td>顺序已随机化</td>
+<td>每模型取 12 配置最优；用了标注框；超参搜索有限</td>
+<td>未核实</td>
+</tr>
+<tr>
+<td>C3</td>
+<td>去偏提示 / 复查 / few-shot / 定位再数（2505.23941）</td>
+<td>五个闭源</td>
+<td>+1.87 / +2.70 / 无效 / 不显著</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>C4</td>
+<td>PIH 头消融（2601.05201）</td>
+<td>LLaVA-OneVision-7B、Qwen2-VL-7B、Janus-Pro-7B</td>
+<td>PIH ≥ −40%；恢复 ≤ 54%；颜色 ≤ −94.25%</td>
+<td>未测（测了跨任务）</td>
+<td>不适用</td>
+<td>头因模型而异；≈7B；注意力不可解释</td>
+<td>有</td>
+</tr>
+<tr>
+<td>C4</td>
+<td>HalluVL-DPO 微调（2604.21911）</td>
+<td>LLaVA-1.5-7B、Qwen2-VL-7B</td>
+<td>数字未摘</td>
+<td>未核对</td>
+<td>未核对</td>
+<td>靠合成图像</td>
+<td>称将发布</td>
+</tr>
+<tr>
+<td>C5</td>
+<td>模态偏好转向（2505.20977）</td>
+<td>Qwen2-VL-7B、Qwen2.5-VL-7B、OneVision-7B、InternVL3-8B</td>
+<td>视觉 15.3→48.1 / 37.5→57.1；文本 35.4→63.6 / 20.9→42.8</td>
+<td>未测</td>
+<td>未测</td>
+<td>只谈数据筛选</td>
+<td>有</td>
+</tr>
+<tr>
+<td>C5</td>
+<td>路由头/提升头缩放（2507.01790）</td>
+<td>Qwen2.5-VL</td>
+<td>跨数据集多数提升，CUB-Color 例外</td>
+<td>未测</td>
+<td>不适用</td>
+<td>不保证推广到别的数据集</td>
+<td>有</td>
+</tr>
+<tr>
+<td>C5</td>
+<td>指令 / SFT＋文本增广（2503.02199）</td>
+<td>多模型 / 开源模型</td>
+<td>指令 16.8%→14.2%；SFT 优于指令（数字未摘）</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>未核实</td>
+</tr>
+<tr>
+<td>C6</td>
+<td>高层图像注意力放大（2410.11302）</td>
+<td>LLaVA-1.5、BLIP-2、InstructBLIP</td>
+<td>迎合率 94.6→64.4 / 38.3→34.3 / 68.8→59.6</td>
+<td>未测（自认未评泛化）</td>
+<td>未测</td>
+<td>只三模型</td>
+<td>未核实</td>
+</tr>
+<tr>
+<td>C6</td>
+<td>提示 / SFT / DPO（2410.11302）</td>
+<td>LLaVA-1.5-7B</td>
+<td>迎合率 87% / 25% / 5%；纠错接受率 88% / 42% / 2%</td>
+<td>未测</td>
+<td>未测</td>
+<td>只一个模型</td>
+<td>—</td>
+</tr>
+<tr>
+<td>C6</td>
+<td>GasEraser 注意力重分配（2504.09456）</td>
+<td>LLaVA-v1.5/1.6-7B、InternVL2-8B</td>
+<td>否定后准确率 +18.57 / +15.79 / +8.09</td>
+<td>测了另一种交互格式</td>
+<td>未测</td>
+<td>未列正式局限段</td>
+<td>未核实</td>
+</tr>
+<tr>
+<td>C7</td>
+<td>LLM-only LoRA-DPO / SFT（2606.01914）</td>
+<td>LLaVA、Qwen、InternVL 系</td>
+<td>合成 ≤ +100；WhatsUp +68.0；SpatialMQA-Direct +32.6；VSR +20.1</td>
+<td>未测</td>
+<td><strong>全排列，全对才算对</strong></td>
+<td>不是完整回路；不迁移到开放式；只空间推理</td>
+<td>未核实</td>
+</tr>
+<tr>
+<td>C8</td>
+<td>编码器头零消融（2607.02494）</td>
+<td>Qwen3-VL、InternVL3.5、Gemma3</td>
+<td>+0.01 到 +1.73</td>
+<td>未测</td>
+<td>未核对</td>
+<td>注意力重加权不适用于 LVLM</td>
+<td>有</td>
+</tr>
+<tr>
+<td>C8</td>
+<td>更具体的提示（2402.19150）</td>
+<td>LLaVA、InstructBLIP 等</td>
+<td>掉点 42.07%→13.90%</td>
+<td>修法即提示</td>
+<td>未核对</td>
+<td>—</td>
+<td>有</td>
+</tr>
+<tr>
+<td>C9</td>
+<td>顺序一致性 TTT（2607.20351）</td>
+<td>InternVL2-8B、Qwen2.5-VL-7B、Qwen3-VL-8B</td>
+<td>"substantially closes the modality-order gap"（数字未摘）</td>
+<td>未测</td>
+<td>未测</td>
+<td>推理成本；只多选题；机制以 InternVL2 为主</td>
+<td>称有</td>
+</tr>
+<tr>
+<td>相邻</td>
+<td>logit 偏置向量校正（2509.16805）</td>
+<td>LLaVA-v1.5-13B、InternVL2_5-8B、Qwen2.5-VL</td>
+<td>个别设置最高 +21.33%（Dogs, Medium）</td>
+<td>未测</td>
+<td>修法对象即顺序/符号</td>
+<td>只 MCQA、只输出层</td>
+<td>称发布</td>
+</tr>
+<tr>
+<td>相邻</td>
+<td>PSF-Med 特征钳制（2602.21428）</td>
+<td>MedGemma 4B</td>
+<td>翻转率相对 −31%，准确率 −1.3 点</td>
+<td>修法对象即改写</td>
+<td>不适用</td>
+<td>单模型单层</td>
+<td>未核实</td>
+</tr>
+<tr>
+<td>相邻</td>
+<td>MM-R3 一致性适配器（2410.04778）</td>
+<td>BLIP-2、LLaVA 1.5M</td>
+<td>一致性 +5.7% / +12.5%</td>
+<td>修法对象即改写</td>
+<td>未测</td>
+<td>指标定义有限</td>
+<td>未核实</td>
+</tr>
+<tr>
+<td>相邻</td>
+<td>RVD（2407.00569）/ CAVR（2606.00622）</td>
+<td>LLaVA-1.5、mPLUG-Owl2、ShareGPT4V / LLaVA-1.5、Qwen2.5-VL 等</td>
+<td>RVD 缓解 &gt;24%；CAVR 数字未摘</td>
+<td>未测</td>
+<td>未测</td>
+<td>RVD 只在少数 7B/13B 模型上评</td>
+<td>CAVR 有</td>
+</tr>
+</tbody>
+</table>
+<p>（表内各格的阅读层级与正文对应候选相同；"未核实"指我没在正文里找到或没去找。）</p>
+<h3 id="inferences_4">Inferences</h3>
+<ul>
+<li>（推导）凡是报告大幅翻转率（≥70%）的内部干预，评测集与定位用的对比集同构（同一对提示模板、同一数据集族）；跨数据集迁移只有 2606.28273（WHOOPS! 上 38.1–59.3%，低于原集 68–96%）、2507.01790（CUB-Color 失败）、2601.05201（计数→颜色成立）三处有数据。</li>
+<li>（推导）"修法是否只对特定模板有效"对绝大多数候选是<strong>未测</strong>，不是"已证明稳健"。</li>
+</ul>
+<h3 id="gaps_4">Gaps</h3>
+<ul>
+<li>HalluVL-DPO、TTT、CAVR、SFT＋文本增广的具体涨幅我没有摘表，只核了模型与局限。</li>
+<li>多数仓库地址来自论文脚注或检索摘要，未逐一打开确认可用。</li>
+</ul>
+<hr />
+<h2 id="6">关键问题 6：有没有论文专门指出"已发表的修复方法换提示模板/换顺序后收益消失"？</h2>
+<h3 id="takeaway_5">Takeaway</h3>
+<p>没有找到一篇以"内部修复（转向/头编辑/权重补丁）换等义问法或换选项顺序后收益消失"为主结论的 VLM 论文（层：结论层；专门查询 4 条，另有约 5 条相邻查询）。找到七条相邻结论，分别指向：收益来自 yes 偏置与贪心近似、来自读出 token 的选择、单轮修法到多轮失效、文本去偏方法到多模态多为负收益、提示格式本身造成排名反转、低翻转率可能来自忽略图像、以及文本 LLM 上转向向量对提示改动脆弱。</p>
+<h3 id="cited-findings_5">Cited Findings</h3>
+<ul>
+<li>对比解码的收益不是真的：POPE 上的提升来自"crude, unidirectional adjustments to the model's output distribution"与把采样退化成贪心的 adaptive plausibility constraint；作者加一句"Whenever possible, please select Yes."的提示或直接改输出层偏向 Yes，"both achieved performance gains comparable to those of contrastive decoding"；结论"the contrastive decoding methods, in essence, fail to mitigate hallucinations"。对象是 VCD、ICD、SID。<strong>F</strong>（摘要与引言）— <a href="https://arxiv.org/abs/2504.10020">arXiv 2504.10020</a></li>
+<li>读出方式本身就能移动分数（NeurIPS 2026）：LLaVA-1.5-7B 在 POPE 上，两 token 读出比的是模型在 9,000 题里一次都没生成过的 ID；换成覆盖带空格词形的八 token 读出，对抗集 F1 移动 6.13 点，"exceeds the adversarial gain reported by five of the six papers we surveyed. None of them states its readout"。作者同时声明："No method is shown to be broken here."。九种推理时校正无一超过修正后的基线。另四个 VLM、三个分词器族上确认是协议层问题。<strong>F</strong>（摘要与局限）— <a href="https://arxiv.org/abs/2610.25964">arXiv 2610.25964</a></li>
+<li>单轮修法到多轮失效：MM-Snowball 称 Turn 5–6 上"baseline models and existing mitigation strategies suffer catastrophic collapse"；"While existing methods like DeCo and MemVR show early strength, they often fail to arrest the error propagation in later stages. Although RVD is designed to address hallucination snowballing, it still struggles"。<strong>F</strong> — <a href="https://arxiv.org/abs/2606.00622">arXiv 2606.00622</a></li>
+<li>文本去偏方法迁移到多模态多为负收益（见关键问题 3）。<strong>F</strong> — <a href="https://aclanthology.org/2026.lrec-main.716/">LREC 2026</a></li>
+<li>即使做了顺序不变的评测，48 种等价格式下仍频繁排名反转；按小验证集选格式"does not consistently improve performance"。<strong>F</strong> — <a href="https://arxiv.org/abs/2511.22341">arXiv 2511.22341</a></li>
+<li>低翻转率不等于稳健：有的模型去掉图像后答案照样一致。<strong>F</strong> — <a href="https://arxiv.org/abs/2602.21428">arXiv 2602.21428</a></li>
+<li>词面改动的敏感性"affects the performance of techniques aimed at achieving consistency"。<strong>A</strong> — <a href="https://arxiv.org/abs/2410.13030">arXiv 2410.13030</a></li>
+<li>文本 LLM：转向向量"for several concepts they are brittle to reasonable changes in the prompt, resulting in them failing to generalise well"；"steerability is highly variable across different inputs"。<strong>A</strong>（取到全文，只读摘要）— <a href="https://arxiv.org/abs/2407.12404">arXiv 2407.12404</a></li>
+<li>幻觉缓解在攻击式提示下无效：HALLUCINOGEN 评了 LLaVA-RLHF 与 LURE，检索摘要称其无效、CoT 反而加重。<strong>S</strong>（正文只核到这两个方法名与 CoT 对比表头，没核到结论句）— <a href="https://arxiv.org/abs/2412.20622">arXiv 2412.20622</a></li>
+<li>修法论文自己提到"其他方法不抗改写"：PvP 的相关工作段写微调/编辑类方法"often fail to generalize across paraphrased [inputs]"，但 PvP 自己也没测改写。<strong>F</strong> — <a href="https://arxiv.org/abs/2505.17127">arXiv 2505.17127</a></li>
+</ul>
+<h3 id="inferences_5">Inferences</h3>
+<ul>
+<li>（推导）已发表的证据支持一个较弱的说法："VLM 幻觉/偏置修法的报告收益对评测协议（读出、yes/no 分布、单轮/多轮、提示格式）敏感"；不支持更强的说法"内部修复换问法后失效已被文献确立"——后者没有论文直接测。</li>
+<li>（类比）文本 LLM 上转向向量对提示改动脆弱（2407.12404），与用户背景里提到的经验同向，但跨到 VLM 的静态权重补丁是否同理，文献里没有数据。</li>
+</ul>
+<h3 id="gaps_5">Gaps</h3>
+<ul>
+<li>没有覆盖 OpenReview 审稿讨论（未检索）；审稿人可能在个别修法论文下提过改写/顺序稳健性。</li>
+<li>2410.13030、2407.12404 只读了摘要；HALLUCINOGEN 的缓解结论只到 S。</li>
+</ul>
+<hr />
+<h2 id="_2">现象跨模型、根因未定位</h2>
+<h3 id="takeaway_6">Takeaway</h3>
+<p>五个现象行为证据充分，但我没有找到 ≥2 个 VLM 族的内部测量：选项顺序/位置偏置、等义改写翻转、否定问句失效、幻觉滚雪球、VLind 式语言先验。各自已有的"根因"说法是行为层论证，或只在单模型、只在 CLIP、只在文本 LLM 上做过。</p>
+<h3 id="cited-findings_6">Cited Findings</h3>
+<p><strong>U1 选项顺序/位置/字母偏置（VLM 的 MCQ）</strong>
+- 现象：LLaVA-v1.5-13B、InternVL2_5-8B、Qwen2.5-VL（<a href="https://arxiv.org/abs/2509.16805">arXiv 2509.16805</a>，<strong>F</strong>）；14 个模型（<a href="https://aclanthology.org/2026.lrec-main.716/">LREC 2026</a>，<strong>F</strong>）。
+- 根因现状：行为层（偏置随难度加剧、"视觉证据不确定时"加剧）；修法在输出 logit 层。文本 LLM 的头级机制未见 VLM 复核。详见关键问题 3。
+- 便宜办法：自洽采样稳定有效；文本去偏法多为负收益（<strong>F</strong>）。
+- 数据：MMMU、CVQA、MMBench 及 CUB/Dogs/Aircraft 改造集。</p>
+<p><strong>U2 等义改写后答案翻转</strong>
+- 现象：MM-R3（多个开源与闭源模型，<strong>F</strong>）；PSF-Med 九个 VLM 翻转率 3%–37%（<strong>F</strong>）；SugarCrepe++ 上的生成式 VLM（<strong>A</strong>）；2604.09364 报告大小任务反转极性后一致率 48–54%（<strong>F</strong>）。
+- 根因现状：只有 MedGemma 4B 第 17 层一个 SAE 特征（因果，单模型）。
+- 便宜办法：PSF-Med 的"prompt normalization"相对降 21%（<strong>F</strong>）。
+- 作者开口："other models and layers likely involve different mechanisms"（<strong>F</strong>）。</p>
+<p><strong>U3 否定问句失效</strong>
+- 现象：NegVQA，7,379 道二选一题，20 个 VLM、7 个族；最好的 Qwen2-VL-72B 从 92.2% 掉到 72.7%；规模呈 U 形。<strong>F</strong>（摘要与局限）— <a href="https://arxiv.org/abs/2505.22946">arXiv 2505.22946</a>。NegBench 测的是 CLIP 式模型（<strong>S</strong>，<a href="https://arxiv.org/abs/2501.09425">arXiv 2501.09425</a>，取到 PDF 未读）。
+- 根因现状：NegVQA 无内部分析；CLIP 文本编码器里的否定处理头有因果追踪（<strong>S</strong>，<a href="https://arxiv.org/abs/2407.10488">arXiv 2407.10488</a>，取到 PDF 未读），对象是 CLIP 不是 MLLM。
+- 作者开口（NegVQA，<strong>F</strong>）：多选格式"may not fully capture how VLMs handle negation in more open-ended or real-world scenarios"；"Enhancing their ability to understand and process negation during training is a promising direction"。
+- 注意区分：GaslightingBench 的"negation"是用户否定模型的答案，属 C6，不是否定句理解。</p>
+<p><strong>U4 幻觉滚雪球（一步错后步步错）</strong>
+- 现象：MMHalSnowball，开源 LVLM 掉 ≥31%（LLaVA-1.5、mPLUG-Owl2、InstructBLIP、ShareGPT4V 等；GPT-4V 较稳）。<strong>F</strong> — <a href="https://arxiv.org/abs/2407.00569">arXiv 2407.00569</a>。MM-Snowball（ICML 2026）：六轮对话，LLaVA-1.5-7B、Qwen2.5-VL、Qwen3-VL、Gemini 2.5 Flash 等，第 3–5 轮崩、第 6 轮提示"look closely at the image again"后回升（V 形）。<strong>F</strong> — <a href="https://arxiv.org/abs/2606.00622">arXiv 2606.00622</a>
+- 根因现状："Visual Fading"是从 V 形曲线推出来的行为层论证——"the original visual evidence is not 'forgotten' but is progressively suppressed by the accumulating weight of the 'polluted' textual history"；Visual Fading Ratio 是按准确率定义的，不是内部读数。<strong>F</strong>。我没有在两篇里找到注意力或表征的逐轮测量（MM-Snowball 只做了关键词扫描，未通读方法节）。
+- 修法：RVD（缓解 &gt;24%；提示法反而有害："incorporating the prompt methods will do harm to the model performance"）；CAVR（表征层刷新＋logit 层校正）。<strong>F</strong>
+- 作者开口（MMHalSnowball，<strong>F</strong>）：对话是模拟的；"we evaluate our proposed RVD only on a few selected models"；"RVD is currently still limited in several conversation scenarios"。</p>
+<p><strong>U5 语言先验（VLind 式）与"看见但没用上"的一般形式</strong>
+- VLind-Bench：除 GPT-4o 外都依赖语言先验；无内部分析；单一固定提示。<strong>F</strong> — <a href="https://arxiv.org/abs/2406.08702">arXiv 2406.08702</a>
+- Seeing but Not Believing（ICLR 2026）：深层注意力稀疏而可靠地落在证据区域，答错时也如此；LLaVA、Qwen、Gemma、InternVL 四族八模型；修法是按深层注意力对输入图做遮罩高亮（VEA）。这是跨族的相关证据，说明"证据被看到"，但没有定位"为什么没用上"——作者只"discuss two perspectives"（文本信息主导等）。作者自认："attention may not always fully capture all the internal mechanisms of evidence localization"。<strong>F</strong>（摘要、RQ4 段、局限）— <a href="https://arxiv.org/abs/2510.17771">arXiv 2510.17771</a></p>
+<h3 id="inferences_6">Inferences</h3>
+<ul>
+<li>（推导）U1–U4 的共同状态是：基准齐、行为修法有、内部定位缺或只到单模型。</li>
+<li>（推测）U4 的"visual fading"与 C6 的"高层视觉注意力不足"、C5 的"模态偏好方向"可能是同一类量，但三者从未在同一模型上同时测量。</li>
+</ul>
+<h3 id="gaps_6">Gaps</h3>
+<ul>
+<li>U3、U4 的内部分析我只做了关键词级排查，可能漏掉藏在附录里的注意力图。</li>
+<li>U1 的闭源模型行为数据多，内部无法验证。</li>
+</ul>
+<hr />
+<h2 id="_3">检索日志</h2>
+<p><strong>查询：37 条 WebSearch</strong>（英文）。清单（按批次）：
+1. "Pixels versus Priors" vision language models counterfactual images steering
+2. "Vision language models are biased" counting counterfactual images arXiv
+3. "Words or Vision" blind faith in text vision-language models
+4. typographic attack large vision-language models mechanism attention heads causal intervention
+5. sycophancy vision-language models mechanism layers MLLM visual sycophancy
+6. selection bias option order multimodal multiple choice VLM position bias internal
+7. VLind-Bench language priors LVLM benchmark; knowledge conflict MLLM mechanistic attention heads
+8. multimodal hallucination snowballing LVLM mechanism attention residual
+9. NegBench negation vision-language models fail; negation MLLM internal mechanism
+10. prompt sensitivity VLM paraphrase answer flips benchmark multimodal consistency rephrasing mechanism
+11. CounterCount / counterfactual counting VLM prior bias mechanistic attention vision tokens steering 2026
+12. mitigation gains vanish under prompt paraphrase option reordering … robustness reevaluation
+13. Rudman prompt-induced hallucination "PIH" attention heads
+14. cross-modal knowledge conflict VLM attention heads causal intervention "modality preference" steering
+15. "seeing but not believing" / "see but don't use" VLM visual attention correct evidence wrong answer
+16. typographic attack LVLM cause vision encoder vs language model … SCAM benchmark
+17. multiple choice selection bias mechanistic interpretability LLM attention heads … VLM transfer
+18. "Vision Default, Prior Override" causal mechanisms perception-knowledge conflict
+19. "When Prompts Override Vision" instruction-induced hallucinations LVLMs
+20. VLM multiple-choice answer selection circuit activation patching option letter bias
+21. negation multimodal LLM interpretability hidden states probe
+22. "Vision Language Models are Biased" follow-up mechanism … logit lens
+23. hallucination snowballing … multi-turn LVLM error propagation mechanism
+24. "OCR heads" LVLM text in image attention heads typographic language model side
+25. "modality preference" MLLM steering representation text dominance image-text conflict
+26. steering vectors VLM generalization prompt template sensitivity … paraphrase 2026
+27. VLM consistency rephrased questions "MM-R3" / "paraphrase robustness"
+28. sycophancy multimodal benchmark 2026 visual sycophancy activation steering attention heads
+29. negation benchmark MLLM "NegVQA" / "negated questions" 2025
+30. re-evaluating hallucination mitigation methods LVLM gains disappear different prompt format
+31. typographic attack LVLM language model layers attention mechanistic causal tracing
+32. sycophancy VLM linear direction steering activation internal representation 2026
+33. VLM prompt paraphrase sensitivity internal representations mechanism general-domain
+34. CDH-Bench commonsense-driven hallucination
+35. activation steering / model editing VLM gains "option order" / "rephrased" robustness "does not hold"
+36. position bias multimodal LLM multiple choice attention heads causal "selection bias" mechanistic
+37. VLM image-first vs text-first prompt order brittleness activation patching test-time training</p>
+<p><strong>取到正文并核对了对应章节或表（F）：34 篇</strong>
+2505.17127、2505.23941、2605.17826、2406.08702、2503.02199、2508.20570、2607.02494、2410.11302、2603.18373、2509.16805、2511.22341、2407.00569、2501.19017、2504.09456、2602.21428、2504.10020、2601.05201、2507.13868、2507.01790、2510.17771、2402.19150、2504.04893、2601.03914、2606.28273、2604.09364、2604.21911、2606.01914、2606.00622、2505.20977、2410.04778、2505.22946、2610.25964、2607.20351、LREC 2026.lrec-main.716。
+其中只核了部分章节（摘要＋模型清单＋局限＋个别表）的：2508.20570、2603.18373、2501.19017、2510.17771、2402.19150、2601.03914、2604.21911、2410.04778、2505.22946、2610.25964。</p>
+<p><strong>取到全文但只读了摘要（A）：6 篇</strong> — 2408.11261、2412.20622（另核了局限段）、2505.15865、2410.13030、2603.27982、2407.12404。</p>
+<p><strong>取到 PDF 但未读、只凭检索片段（S）：6 篇</strong> — 2501.09425、2405.03205、2407.10488、2509.22674、2508.20279、2408.09111（后三篇正文未引用）。</p>
+<p><strong>只有检索片段、未取（S）</strong>：2607.15565（Ask Twice, Look Twice）、2606.03093、2512.19350（PENDULUM）、2603.00148、文本 LLM 迎合方向的四篇（2601.16644、2509.21305、2606.11205、2605.21006）、一篇来源页 403 的"选项顺序激活转向"工作。</p>
+<p><strong>没覆盖到的范围</strong>
+- OpenReview 审稿讨论：未检索。
+- 顶会正式版与 arXiv 版的差异：一律以 arXiv 当前版本为准（2605.17826 用的是 v2，2026-10-20；2606.28273 用的是 v2，2026-11-05；2603.18373 是 v5，2026-11-03）。早期检索摘要引用的 v1 数字（如 CounterCount "up to 8%"、PvP 的 92.5%/74.6%）与现版本不同，本文只用现版本。
+- 非 arXiv、非英文文献；在审未公开稿件；2026-11 之后。
+- 闭源模型内部无法验证；所有因果证据限于 ≤13B 的开源模型（2604.09364 的行为与探针到 72B）。
+- 各论文的 GitHub 仓库未打开核对内容与可用性。
+- 相邻范围（一般性物体幻觉的注意力/解码修法，如 VCD、PAI、OPERA 本体）未展开，只在被本范围论文当作基线时提及。
+- 我的知识截止在 2026-06 前后；之后发布的模型名（如 CounterCount v2 中的 GPT-5.6 Luna、Sonnet 5、Qwen3.8、Gemma-4）照论文原文转录，未独立核实。</p></main></html>

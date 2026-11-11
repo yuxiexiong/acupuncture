@@ -1,0 +1,393 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>缓存形成机制｜CFM-S4 v1 设计草案 r3：事实身份的来源分离与机制区分对照</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="cfm-s4-v1-r3">缓存形成机制｜CFM-S4 v1 设计草案 r3：事实身份的来源分离与机制区分对照</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>docs/cache-formation-mechanism-s4-fact-contrast-history-design-v1-2026-10-31.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-formation-mechanism-s4-fact-contrast-history-design-v1-2026-10-31.zh-CN.md">固定提交原件</a>；SHA-256：<code>12791a7ba916edf83ee37ab39e8fd2c975244961077bc0db4370eadea5c9a109</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="cfm-s4-v1-r3_1">缓存形成机制｜CFM-S4 v1 设计草案 r3：事实身份的来源分离与机制区分对照</h1>
+<blockquote>
+<p>状态：设计草案 r3，未冻结、未授权运行。编号拟为 <code>CFM-S4-v1-20261031</code>，尚未登记到计划索引。新增 GPU 为 0。
+r3 按用户对 r2（0675720）的审查修订：r2 停在"因果定位"，判读表却提前写了机制结论。r3 为每个候选机制补上会给出不同预测的对照，并把 E、Lp 改为路径特定效应。修订对照见第 9 节。</p>
+</blockquote>
+<h2 id="0">0. 本轮要做到的层次</h2>
+<table>
+<thead>
+<tr>
+<th>层次</th>
+<th>含义</th>
+<th>本轮</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>观察</td>
+<td>干预后哪些变量变了</td>
+<td>不以此为目标</td>
+</tr>
+<tr>
+<td>因果干预</td>
+<td>换掉某变量，回答会不会变</td>
+<td>作为手段</td>
+</tr>
+<tr>
+<td><strong>机制拆解</strong></td>
+<td>为什么这个变量的变化影响回答；能否区分几种不同的作用过程</td>
+<td><strong>主目标</strong>：对事实丢失，区分"保留衰减""定向擦除""后续写入干扰""读取失败""事实段写坏"五种过程，以及"修复原受损过程"与"补偿"两种恢复</td>
+</tr>
+</tbody>
+</table>
+<p>本轮只对事实相关回答做机制区分（实验 A）；停嘴只做历史依赖（实验 B）；C、D 是行为与推广核对，不替代机制识别。所有结论仍限定在本合同的替换与测量条件下；不主张原生唯一路径，不宣布核心问题已完整回答。</p>
+<h2 id="1">1. 基本记号</h2>
+<ul>
+<li>锚点 L0、L12；背景 C = 00，T = 10（只有早段针）。L12 另做 T = 11 的核心格。开发情景 6 个，f0、f1 位置对齐。</li>
+<li>F：事实段内从第一个 f0/f1 不同的 token 到 b。Q：b+1..n−2。τ：Q 末，即撤针边界。答案位置：末提示与候选。</li>
+<li>事实段身份 a：用 f_a 提示原生写入 F。后续供体身份 c：Q 上的写缓存变量取同一背景下 f_c 运行的原生值；c = a 时即原生运行。</li>
+<li>m：f0 正确候选与 f1 正确候选的对数似然差。S = m(f0,f0) − m(f1,f1) 即原生事实对比。</li>
+</ul>
+<h2 id="2-a">2. 实验 A：事实丢失的机制区分</h2>
+<h3 id="21-a1">2.1 A1　路径特定效应（定位，不判损伤）</h3>
+<p>在 C、T 各跑 2×2 身份格，得到：</p>
+<ul>
+<li>E = 后续供体固定时答案对事实段身份的依赖，即<strong>不经 Q 重写</strong>、由 F 上存下的信息被答案直接读到的部分；</li>
+<li>Lp = 经 Q 重写传给答案的部分；</li>
+<li>E + Lp = S 是定义上的恒等式，不是发现。</li>
+</ul>
+<p>用途只有一个：知道带针后 S 的下降落在哪条路径上，即 E_T 对 E_C、Lp_T 对 Lp_C。E 小只说明"事实主要经 Q 重写传递"，<strong>不说明存储受损</strong>。</p>
+<h3 id="22-a2">2.2 A2　存储信号：直接测"由事实段身份造成的缓存差异"</h3>
+<p>在后续供体身份固定（c 相同）的两个运行 (f0, c) 与 (f1, c) 之间，它们唯一的差别是 F 的身份。定义<strong>事实段信号</strong>：</p>
+<ul>
+<li>D_F,rec(t)：各线性层递推状态在 t 时刻的差，取 t = b（刚写完）与 t = τ（撤针时）。b 处状态用 S1 的记录器离线重建，S1 已验证误差 ≤ 10⁻⁶；τ 处直接取缓存。</li>
+<li>D_F,KV：F 位置上全注意力层 K、V 的差（KV 写入后不衰减、不擦除）。</li>
+</ul>
+<p>每层、每头报告 ‖D_F‖、留存比 ‖D_F,rec(τ)‖ / ‖D_F,rec(b)‖，以及 T 与 C 之间 D_F 的方向余弦。</p>
+<h3 id="23-a3">2.3 A3　存储中介：答案经哪类存储读到事实</h3>
+<p>在 (f0, c) 运行中，于 τ 把某类存储换成 (f1, c) 的值：两个运行只差事实身份，这是失配最小的拼接。看 E 下降多少：</p>
+<ul>
+<li>换递推状态（全部线性层）→ 经递推存储的份额 E_rec；</li>
+<li>换 F 位置的 KV → 经注意力存储的份额 E_KV。</li>
+</ul>
+<p>在 C 中：干净模型靠哪类存储送达事实。在 T 中：带针后哪类存储的送达下降了。</p>
+<p><strong>由架构推出的约束（推导档）</strong>：KV 写入后既不衰减也不擦除。若 T 的损失全落在 E_KV，候选机制只剩"读取失败"与"F 写坏"，保留与擦除被排除。</p>
+<h3 id="24-a4">2.4 A4　候选机制的区分对照</h3>
+<p>对每个候选组 g，做四项检验。g ∈ {R = α，K = k/β，R+K，V，Read = 答案位置的查询与门；F-写 = F 上的写缓存变量}。g 在 Q 上替换，F-写在 F 上，Read 在答案位置；供体身份都固定为 c（F-写取 a），因此不会重新注入事实。</p>
+<table>
+<thead>
+<tr>
+<th>检验</th>
+<th>操作</th>
+<th>修复原过程的预测</th>
+<th>补偿的预测</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>① 恢复</td>
+<td>T 中把 g 换成 C 背景值</td>
+<td>E（或 S）恢复</td>
+<td>也可能恢复</td>
+</tr>
+<tr>
+<td>② 移植</td>
+<td>C 中把 g 换成 T 背景值，其余保持 C</td>
+<td><strong>在同一路径上制造出与 T 相近的损失</strong></td>
+<td>不制造损失，或损失落在别的路径</td>
+</tr>
+<tr>
+<td>③ 信号</td>
+<td>① 与 ② 中测 D_F（§2.2）</td>
+<td>① 使 D_F 向 C 恢复，② 使 D_F 向 T 退化，且形状符合下表</td>
+<td>① 中 D_F 仍退化，答案却恢复</td>
+</tr>
+<tr>
+<td>④ 中和</td>
+<td>在 ① 的恢复运行中，于 τ 把 g 对应的存储（递推或 KV）换成另一身份的值</td>
+<td>恢复出来的 E 随之消失</td>
+<td>恢复不依赖该存储，E 基本不变</td>
+</tr>
+</tbody>
+</table>
+<p><strong>各机制在 D_F 上的预测</strong>（由更新规则推出，推导档）。形状判据用于 <strong>② 移植格</strong>：那里只有 g 与 C 不同。若只有 α 不同，D_F(t) = A_t D_F(t−1) 中 k/β 部分相同，每个头只差标量倍数；若 k/β 不同，投影算子不同，方向随之改变。T 原运行里所有变量一起变化，不能直接拿 T 和 C 比形状；① 恢复格只看 D_F 是否向 C 恢复。表中"T 与 C"在移植格中读作"移植格与 C"：</p>
+<table>
+<thead>
+<tr>
+<th>机制</th>
+<th>g</th>
+<th>D_F,rec(b)</th>
+<th>留存比 ‖D_F(τ)‖/‖D_F(b)‖</th>
+<th>T 与 C 的 D_F 逐头方向余弦</th>
+<th>D_F,KV</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>M1 保留衰减</td>
+<td>R</td>
+<td>≈ C</td>
+<td><strong>低于 C</strong></td>
+<td><strong>≈ 1</strong>（α 对每个头整体缩放）</td>
+<td>≈ C</td>
+</tr>
+<tr>
+<td>M2 定向擦除或覆写</td>
+<td>K、R+K</td>
+<td>≈ C</td>
+<td>低于 C</td>
+<td><strong>明显 &lt; 1</strong>（沿特定 key 方向删除）</td>
+<td>≈ C</td>
+</tr>
+<tr>
+<td>M3 后续写入干扰</td>
+<td>V</td>
+<td>≈ C</td>
+<td>≈ C</td>
+<td>≈ 1</td>
+<td>≈ C</td>
+</tr>
+<tr>
+<td>M4 读取失败</td>
+<td>Read</td>
+<td>≈ C</td>
+<td>≈ C</td>
+<td>≈ 1</td>
+<td>≈ C</td>
+</tr>
+<tr>
+<td>M5 事实段写坏</td>
+<td>F-写</td>
+<td><strong>低于 C 或方向偏离</strong></td>
+<td>——</td>
+<td>——</td>
+<td>可能偏离</td>
+</tr>
+</tbody>
+</table>
+<p>一个机制只有在 ①–④ 与 D_F 形状<strong>同时</strong>符合时才判"支持"。只有 ① 成立而 ②、③、④ 不符，判为"补偿或冗余通道，未识别为原因"。M3 与 M4 在 D_F 上的预测相同，靠 ② 移植区分：移植 V 能否在干净背景中制造损失，移植 Read 能否制造损失。</p>
+<h3 id="25">2.5 零对照与可分辨性</h3>
+<ul>
+<li>一般损伤参照：在 C 的 Q 上，对五组加与 T−C 同幅的随机方向扰动（2 次），报告 E、Lp、D_F 的变化，仅作解读，不作分界。</li>
+<li>区间：≥ 0.8 接近完整，0.2–0.8 部分，≤ 0.2 很少，逐情景报告。D_F 的余弦以 0.9 为"方向保持"。这些阈值事先写死，但都是描述性切点，所以同时报告连续值。</li>
+<li>闸门：c = a 的格逐位等于原生；同背景 F、Q 都为 f1 时逐位等于 f1 原生；离线重建的 S_b 在 τ 处与缓存的误差 ≤ 10⁻⁶。</li>
+</ul>
+<h2 id="3-b">3. 实验 B：历史 × 晚段变量（停嘴）</h2>
+<p>在 01（早段干净、晚段带针，供体 00）上重做 S3 的晚段格：完备；撤除与只留 V、R、K、{R,K}、{V,R,K}；V 与 {R,K} 各配 2 次随机零对照。与 S3 在 11 上的同名格比较 N、S 与首步 EOS。</p>
+<ul>
+<li>读法：差值的绝对值都 ≤ 0.2 且 EOS 结论相同 → "本次比较未显示历史依赖"。任一 ≥ 0.4 或 EOS 结论翻转 → "替换效果依赖早段干预造成的历史背景"。</li>
+<li>两个背景不同的不只是递推旧状态，还有多层缓存、后续投影、读取条件，供体与分母也不同。所以 B <strong>不能</strong>据此认定旧记忆预测 m = Sᵀk 在起作用；反过来，"未显示差别"也不证明不依赖历史。</li>
+<li>同时检验 S3 中"撤除 K 使停止分数更高"在 01 上是否仍然出现。</li>
+</ul>
+<h2 id="4-c">4. 实验 C：自由生成验证</h2>
+<ul>
+<li>生成对象：四个原生条件；S3 中只在前缀介入的关键格（晚段撤除 V、只留 V、只留 {R,K}、撤除 {V,R,K}）；B 的对应格；A4 中被判为"支持"的机制的 ① 恢复格与 ② 移植格，取 c = a（介入只在撤针前，生成时无需供体）。</li>
+<li><strong>撤针后族不做自由生成</strong>：一旦生成文字分叉，就没有对应位置的干净供体。</li>
+<li>评分：首步 EOS、交付是否为空、关键串<strong>命中</strong>（两候选去掉公共前后缀后的差异部分）。另由不知道条件的阅读者按事先写死的规则标注语义是否正确：正确、错误、未作答、自相矛盾。"命中"不等于答对，例如"不是 14"也命中 14。</li>
+<li>首步 EOS、停止分数、交付、命中、语义正确分别报告。</li>
+</ul>
+<h2 id="5-d">5. 实验 D：留出情景确认</h2>
+<p>VAR03、VAR04、VRD03、VRD04、VRL04 参与 A；VRL03 两事实 token 数不同，只参与 B、C。开发面板判读后，先冻结对留出情景的预测：哪一机制、①–④ 的方向、D_F 的形状。再跑 A1–A4 中判为支持或未识别的机制、B 的 V 与 {R,K} 格、C 的原生与关键格。</p>
+<h2 id="6">6. 事先登记的预测（推测档；开跑前冻结）</h2>
+<table>
+<thead>
+<tr>
+<th>编号</th>
+<th>预测</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Q1</td>
+<td>L0（T = 10）的 S 下降主要落在 E（不经 Q 重写的路径），Lp_T 与 Lp_C 相近</td>
+</tr>
+<tr>
+<td>Q2</td>
+<td>干净模型中 E 主要经递推存储（E_rec &gt; E_KV）；带针后下降的也是 E_rec</td>
+</tr>
+<tr>
+<td>Q3</td>
+<td>L0 的事实丢失符合 M2 定向擦除：留存比低于 C，逐头方向余弦 &lt; 0.9；K 或 R+K 的 ①–④ 同时成立；R 单独不满足 ② 移植</td>
+</tr>
+<tr>
+<td>Q4</td>
+<td>L12 的 E_T / E_C &gt; 0.5，A4 中没有机制被判为支持</td>
+</tr>
+<tr>
+<td>Q5</td>
+<td>B：V 的撤除恢复量与只留保留量在 11 与 01 间差值 ≤ 0.2</td>
+</tr>
+</tbody>
+</table>
+<p>依据只有 S1–S3 的描述（同起点即出现写入与擦除反向变化、L0 撤针后写入差异持续），全部属推测档。</p>
+<h2 id="7">7. 规模与顺序</h2>
+<table>
+<thead>
+<tr>
+<th>部分</th>
+<th>每（锚点、情景）</th>
+<th>合计</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A1 两背景的 2×2</td>
+<td>4</td>
+<td>48</td>
+</tr>
+<tr>
+<td>A3 存储中介（两背景 × 两类存储 × 4 格）</td>
+<td>16</td>
+<td>192</td>
+</tr>
+<tr>
+<td>A4 六个候选 × 四项检验（④ 分递推与 KV）</td>
+<td>约 90</td>
+<td>约 1,080</td>
+</tr>
+<tr>
+<td>零对照</td>
+<td>8</td>
+<td>96</td>
+</tr>
+<tr>
+<td>A 的 T = 11 次背景（只做 A1、A3 与 R、K、R+K 的 A4）</td>
+<td>——</td>
+<td>约 500</td>
+</tr>
+<tr>
+<td>B</td>
+<td>——</td>
+<td>约 460</td>
+</tr>
+<tr>
+<td>C</td>
+<td>——</td>
+<td>约 400 次生成，加盲读</td>
+</tr>
+<tr>
+<td>D</td>
+<td>——</td>
+<td>约 800</td>
+</tr>
+</tbody>
+</table>
+<p>合计约 3.2k 条短运行加约 0.4k 次自由生成，约 2 GPU-h。</p>
+<p>顺序：</p>
+<ol>
+<li>P0（零 GPU）：
+   - 小模型 CPU 测试：闸门、b 处离线重建、τ 处存储中和的拼接、供体身份核对。
+   - 用合成递推世界预演 §2.4：分别构造只改 α、只改 k/β、只改后续 v、只改读取的世界，验证 ①–④ 与 D_F 形状能把它们彼此区分；另构造"恢复 α 补偿了 k/β 损失"的世界，验证它被判为补偿，而不是 M1。
+   - 冻结判据与预测。</li>
+<li>开发面板。</li>
+<li>冻结留出预测。</li>
+<li>留出面板。</li>
+</ol>
+<h2 id="8">8. 自审</h2>
+<table>
+<thead>
+<tr>
+<th>风险</th>
+<th>处理</th>
+<th>剩余边界</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>固定 Q 改变了原生延续方式（E 不是原生全部作用）</td>
+<td>E、Lp 只作为路径特定效应定位用；损伤判断改由 D_F 与 ①–④ 承担</td>
+<td>路径特定效应依赖"固定 Q 写入"这一定义</td>
+</tr>
+<tr>
+<td>E + Lp = S 是恒等式</td>
+<td>写明；不再用 E/Lp 比值判断存储损失</td>
+<td>——</td>
+</tr>
+<tr>
+<td>恢复 ≠ 原因</td>
+<td>每个候选必须同时满足 ① 恢复、② 移植制造损失、③ D_F 恢复且形状符合、④ 中和后恢复消失；只满足 ① 判为补偿</td>
+<td>② 与 ① 都是混合状态；④ 的拼接只差事实身份，失配最小但不为零</td>
+</tr>
+<tr>
+<td>读取恢复不排除部分存储损伤</td>
+<td>M4 要求 D_F ≈ C；D_F 偏低时同时报告存储与读取两部分</td>
+<td>两者并存时只能给出组合</td>
+</tr>
+<tr>
+<td>机制形状来自理论</td>
+<td>M1/M2 的余弦预测由更新规则推出；P0 先在合成世界验证可区分</td>
+<td>真实模型中多头、多层叠加可能使形状不纯，报告逐头分布</td>
+</tr>
+<tr>
+<td>一般损伤</td>
+<td>随机损伤参照只作解读</td>
+<td>——</td>
+</tr>
+<tr>
+<td>B 不能推出 m = Sᵀk</td>
+<td>只陈述历史依赖</td>
+<td>——</td>
+</tr>
+</tbody>
+</table>
+<h2 id="9">9. 修订对照</h2>
+<h3 id="r2-r3-0675720">r2 → r3（对 0675720 的审查）</h3>
+<table>
+<thead>
+<tr>
+<th>审查意见</th>
+<th>r3 的处理</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>固定 Q 阻断了原生延续，E 小不等于记忆受损</td>
+<td>E、Lp 改为路径特定效应，只作定位（§2.1）</td>
+</tr>
+<tr>
+<td>E + Lp = S 是恒等式，E/Lp 下降不定位到保留或擦除</td>
+<td>删去 E/Lp 判据；改由存储信号 D_F 与存储中介 E_rec/E_KV 定位（§2.2–2.3）</td>
+</tr>
+<tr>
+<td>"换后恢复"仍被译成原因；修复与补偿没有给出不同预测的对照</td>
+<td>每个候选必须同时满足恢复、移植、信号、中和四项，并符合由更新规则推出的 D_F 形状；只满足恢复判为补偿（§2.4）</td>
+</tr>
+<tr>
+<td>不应以"再收集替换效果"为由启动</td>
+<td>P0 先在合成世界验证四项检验能区分五种机制与补偿，再决定是否用 GPU（§7）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="r1-r2">r1 → r2</h3>
+<table>
+<thead>
+<tr>
+<th>审查意见</th>
+<th>r2 的处理</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S3 勘误一句过宽</td>
+<td>S3 报告改为：只换写更新已有 8/12 不再首步停止，联合替换使全部 12 个不再首步停止</td>
+</tr>
+<tr>
+<td>对比能抵消一般损伤的前提不成立</td>
+<td>撤回；改为同背景两路径相对比较（§2.3）</td>
+</tr>
+<tr>
+<td>下游恢复可能重新注入事实</td>
+<td>事实段与后续供体身份独立，后续供体在比较两端相同（§2.2、§2.4）</td>
+</tr>
+<tr>
+<td>写坏 / 送不到二分过确定，乘积判串联无依据</td>
+<td>删去乘积判据与二分；改为逐类必要性，并列出"仍分不开"（§2.5）</td>
+</tr>
+<tr>
+<td>B 不能推出 m = Sᵀk</td>
+<td>结论改为"替换效果是否依赖历史背景"（§3）</td>
+</tr>
+<tr>
+<td>关键串命中不是答对；撤针后格生成供体不存在</td>
+<td>"命中"与盲读语义分开；撤针后族不生成（§4）</td>
+</tr>
+<tr>
+<td>删去"直接答案"承诺</td>
+<td>已删</td>
+</tr>
+</tbody>
+</table></main></html>

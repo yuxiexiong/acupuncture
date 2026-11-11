@@ -1,0 +1,231 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>KUC-01 报告 r01：t1 的 k 经哪项更新改变后续目标选择</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="kuc-01-r01t1-k">KUC-01 报告 r01：t1 的 k 经哪项更新改变后续目标选择</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-k-update-causal-v1-2026-11-03/REPORT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-k-update-causal-v1-2026-11-03/REPORT.zh-CN.md">固定提交原件</a>；SHA-256：<code>0cd3e3aaa03b002fcc343b2ee0dfa6a19202ff6be3ae7ffa1915b8ce294b59ee</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="kuc-01-r01t1-k_1">KUC-01 报告 r01：t1 的 k 经哪项更新改变后续目标选择</h1>
+<p>合同 <code>CONTRACT.zh-CN.md</code>（freeze-r01 <code>e0cf03f8…</code>；代码 e4ea051）。预检、正式均 verification passed，一次通过。判读 <code>analysis/kuc-readouts-r01.json</code>。t1 与 C 路线 t2 的 logits（2.7 GB）留服务器 <code>runs/formal-r01/worker-*/tensors</code>。</p>
+<h2 id="0">0. 先说限制</h2>
+<ol>
+<li><strong>不特异。</strong> 随机加入 Z 也是“写入项承担”（只换写入项的比例 0.83–0.92），和共同偏移 A 同一形态。这条计算关系是 k 扰动的一般性质，不是共同偏移独有的。</li>
+<li><strong>这是人工计算反事实。</strong> 单项格打破了原式里 k 共享的约束。结论只能说“只在写入项里换 k 就足以复现效应、只在擦除项里换几乎无效”，不能说模型里存在一条独立的“写入通道”。</li>
+<li><strong>背景是混合状态</strong>（卷积 V 已恢复干净），结果不能直接搬到未恢复 V 的原生扎针过程。</li>
+<li><strong>C1343 上 M 照样移动、答案不变</strong>，说明这条计算关系本身不决定是否跨过回答边界。</li>
+<li>Z 的擦除项在 N4146、R0 上有小的 M 效应（−0.33、−0.27），但没有带动答案；共同偏移的擦除项约等于 0。这是共同与随机之间唯一能看到的差别，只作描述，不下结论。</li>
+</ol>
+<h2 id="1">1. 工程</h2>
+<ul>
+<li>全部闸门通过：</li>
+<li>原五端点 t1 与 QKF/QKD 一致；完整自然轨迹逐 token 与参考相同；C 路线 t2 与 QKD 逐位相同（48 条输入）。</li>
+<li>无操作参照（V、F 背景用自定义更新、k 不变）与原生 t1 逐位相同。</li>
+<li>11 格与“原核直接喂影子 k1”逐位相同。</li>
+<li><strong>桥接</strong>：11 格的 t1 与原端点 Rk/Ak/Ark 相同，只有 G 层卷积 k 通道的旧槽位置不同（每条输入每族约 8.6 万个元素，全部落在遮罩内）。</li>
+<li>10/01 的 FP64 核对：最大相对误差 2.0e−7（阈 1e−5）。</li>
+<li>有符号零例外 <strong>0 次</strong>。钩子触发次数、源缓存、供体都核对通过。</li>
+<li>计数：decode 14926（上限 89664），影子卷积 32256。设备时间 996+772 = 1768 s（0.49 h），加预检约 0.52 h，在 2.4 h 总上限内。</li>
+</ul>
+<h2 id="2">2. 主结果</h2>
+<p>M＝C 路线目标非首列 32 条的场景等权均值相对 00 的变化；比例＝相对 11 格的效应 g1；g_old＝原持续编辑端点相对背景。Y 为全 48 条正确数。</p>
+<table>
+<thead>
+<tr>
+<th>方向</th>
+<th>族</th>
+<th style="text-align: right;">g_old</th>
+<th style="text-align: right;">g1</th>
+<th style="text-align: right;">g1/g_old</th>
+<th style="text-align: right;">10（擦除）比例</th>
+<th style="text-align: right;">01（写入）比例</th>
+<th>Y：00 / 10 / 01 / 11 / 原端点</th>
+<th>类别</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>N4146</td>
+<td>R（修复）</td>
+<td style="text-align: right;">+2.81</td>
+<td style="text-align: right;">+2.78</td>
+<td style="text-align: right;">0.99</td>
+<td style="text-align: right;">−0.02</td>
+<td style="text-align: right;">1.06</td>
+<td>16 / 16 / 42 / 40 / 44</td>
+<td>single_W</td>
+</tr>
+<tr>
+<td></td>
+<td>A（致错）</td>
+<td style="text-align: right;">−3.84</td>
+<td style="text-align: right;">−3.58</td>
+<td style="text-align: right;">0.93</td>
+<td style="text-align: right;">−0.01</td>
+<td style="text-align: right;">1.01</td>
+<td>48 / 48 / 17 / 17 / 16</td>
+<td>single_W</td>
+</tr>
+<tr>
+<td></td>
+<td>Z（随机）</td>
+<td style="text-align: right;">−2.80</td>
+<td style="text-align: right;">−2.66</td>
+<td style="text-align: right;">0.95</td>
+<td style="text-align: right;">0.12</td>
+<td style="text-align: right;">0.92</td>
+<td>48 / 47 / 26 / 24 / 23</td>
+<td>single_W</td>
+</tr>
+<tr>
+<td>N1210</td>
+<td>R</td>
+<td style="text-align: right;">+2.09</td>
+<td style="text-align: right;">+2.03</td>
+<td style="text-align: right;">0.97</td>
+<td style="text-align: right;">−0.05</td>
+<td style="text-align: right;">1.03</td>
+<td>28 / 28 / 48 / 48 / 48</td>
+<td>single_W</td>
+</tr>
+<tr>
+<td></td>
+<td>A</td>
+<td style="text-align: right;">−2.52</td>
+<td style="text-align: right;">−2.26</td>
+<td style="text-align: right;">0.89</td>
+<td style="text-align: right;">−0.02</td>
+<td style="text-align: right;">1.05</td>
+<td>48 / 48 / 29 / 31 / 29</td>
+<td>single_W</td>
+</tr>
+<tr>
+<td></td>
+<td>Z</td>
+<td style="text-align: right;">−1.81</td>
+<td style="text-align: right;">−1.64</td>
+<td style="text-align: right;">0.91</td>
+<td style="text-align: right;">0.10</td>
+<td style="text-align: right;">0.88</td>
+<td>48 / 48 / 39 / 36 / 35</td>
+<td>single_W</td>
+</tr>
+<tr>
+<td>R0</td>
+<td>R</td>
+<td style="text-align: right;">+2.09</td>
+<td style="text-align: right;">+2.03</td>
+<td style="text-align: right;">0.97</td>
+<td style="text-align: right;">−0.01</td>
+<td style="text-align: right;">1.01</td>
+<td>38 / 38 / 48 / 48 / 48</td>
+<td>single_W</td>
+</tr>
+<tr>
+<td></td>
+<td>A</td>
+<td style="text-align: right;">−2.63</td>
+<td style="text-align: right;">−2.38</td>
+<td style="text-align: right;">0.91</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">0.98</td>
+<td>48 / 48 / 43 / 43 / 42</td>
+<td>single_W</td>
+</tr>
+<tr>
+<td></td>
+<td>Z</td>
+<td style="text-align: right;">−1.82</td>
+<td style="text-align: right;">−1.65</td>
+<td style="text-align: right;">0.91</td>
+<td style="text-align: right;">0.16</td>
+<td style="text-align: right;">0.83</td>
+<td>48 / 48 / 44 / 42 / 41</td>
+<td>single_W</td>
+</tr>
+<tr>
+<td>C1343</td>
+<td>R / A / Z</td>
+<td style="text-align: right;">+2.37 / −2.19 / −0.87</td>
+<td style="text-align: right;">+2.42 / −1.87 / −0.80</td>
+<td style="text-align: right;">1.02 / 0.85 / 0.93</td>
+<td style="text-align: right;">≤0.17</td>
+<td style="text-align: right;">0.76–1.13</td>
+<td>全部 48（Z 47）不变</td>
+<td>diag_only</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>只在 t1 的写入项 β·k·vᵀ 里换 k</strong>，就复现了完整 k 替换的 M 效应（R/A 比例 0.98–1.06），而且完整答案大面积跟着变。例如 N4146 中，R01 把 V 的 16 例正确提到 42 例（R11 为 40，原 Rk 为 44）；A01 把 F 的 48 例降到 17 例（Ak 原端点为 16）。</li>
+<li><strong>只在擦除项 βk(kᵀD) 里换 k</strong>（两个位置一起换），M 和 Y 基本不动：R/A 的比例在 −0.05 到 0.03 之间，Y 净改变为 0。</li>
+<li>交互：缺口方向全部不实用（|I| ≤ 0.11）；C1343 的 R、A 有 0.32、0.28 的 M 交互，但答案不变。</li>
+<li>首列 16 条的类别与主子集相同（全部 single_W，C1343 为 diag_only）。</li>
+</ul>
+<h2 id="3">3. 预注册对账</h2>
+<ul>
+<li><strong>P1（三个缺口方向上 R11 与 A11 都有联合支持）：3/3 成立。</strong></li>
+<li><strong>P2（开放分类）</strong>：三个缺口方向 × 三族共 9 格，全部为 single_W；C1343 三族全部为 diag_only。</li>
+<li><strong>定性期待（不作判据）</strong>：缺口方向 9 格的 g1/g_old 都在 0.89–0.99，为正且小于 1，与期待一致；C1343 的 R 为 1.02。</li>
+</ul>
+<h2 id="4-t2">4. 派生读数：残留卷积编辑对 t2 输出的条件性总效应</h2>
+<p>前提已由桥接闸门实测：t1 之后，11 格与原端点只在卷积 k 旧槽不同。C 路线 M(原端点) − M(11)，目标非首列场景等权：</p>
+<table>
+<thead>
+<tr>
+<th>方向</th>
+<th style="text-align: right;">Rk − R11</th>
+<th style="text-align: right;">Ak − A11</th>
+<th style="text-align: right;">Ark − Z11</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>N4146</td>
+<td style="text-align: right;">+0.03</td>
+<td style="text-align: right;">−0.26</td>
+<td style="text-align: right;">−0.14</td>
+</tr>
+<tr>
+<td>N1210</td>
+<td style="text-align: right;">+0.06</td>
+<td style="text-align: right;">−0.27</td>
+<td style="text-align: right;">−0.17</td>
+</tr>
+<tr>
+<td>R0</td>
+<td style="text-align: right;">+0.06</td>
+<td style="text-align: right;">−0.25</td>
+<td style="text-align: right;">−0.17</td>
+</tr>
+<tr>
+<td>C1343</td>
+<td style="text-align: right;">−0.05</td>
+<td style="text-align: right;">−0.32</td>
+<td style="text-align: right;">−0.06</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>残留编辑对 t2 输出的条件性总效应很小（|Δ| ≤ 0.32 logit），方向与原编辑一致：修复侧略抬高，加入侧略压低。相对于 t1 已经产生的约 2–3.6 logit 效应，它只占一小部分。</li>
+<li>N 路线上，原端点与 11 格的 Y 差在 −2 到 +4 之间（最大为 N4146 的 R：44 对 40）。这个差还包含 t3 的残留作用和生成分叉。</li>
+<li>按评审意见，这个读数不拿来解释 KRD 的残差，也不叫“直接贡献”。</li>
+</ul>
+<h2 id="5">5. 能说什么、不能说什么</h2>
+<p>能说的（限这个混合背景）：</p>
+<ul>
+<li>已验证的 k 修复/致错效应，几乎完全可以由<strong>t1 一步、14 个 G 层、更新式写入项里的 k</strong> 产生：只在写入项里换 k，就复现了完整 k 替换，并带动完整回答。</li>
+<li>擦除项里的 k 变化（同时换两个位置）对这些读数几乎没有作用。</li>
+<li>结合 KHC（效应保存在 G 层递推 S 里）与 QKD（t2 的差异主要在旧状态读出 D=αSᵀq），可以写出一条各段都经过干预检验的条件性链：k 偏移 → t1 写入位置 β·k·vᵀ 改变 → 递推 S 改变 → t2 的旧状态读出改变 → 目标优势与完整回答改变。其中“t2 读出”这一段来自 QKD 的分账，不是本轮干预。</li>
+<li>一个可检验的解释（推测档）：擦除项的变化量是 −β(k₁k₁ᵀ − k₀k₀ᵀ)D，若旧状态在 k 方向上的分量 kᵀD 远小于 v，擦除项的变化自然很小，主要作用来自“把当前 v 写到哪个键方向上”。本轮没有存 t1 的 S，未验证。</li>
+</ul>
+<p>不能说的：</p>
+<ul>
+<li>不能说这是共同偏移特有的计算：随机加入同样是写入项承担。</li>
+<li>不能说模型天然存在独立的写入通道；不能说擦除项在其他背景或其他读数上无作用。</li>
+<li>不能推到未恢复 V 的原生过程或其他架构。</li>
+</ul>
+<h2 id="6">6. 出口</h2>
+<p>计划 §8：本轮得到了一条可失败、且没有失败的功能关系，即在这个背景下，改变 t1 写入项里的 k 就足以定向改变后续目标竞争与完整回答。后续可以考虑：</p>
+<ul>
+<li>检验上面的推测（kᵀD 与 v 的相对大小）；</li>
+<li>把这条关系拿到其他针眼或未恢复 V 的背景中验证；</li>
+<li>解释为什么 C1343 的 M 变化跨不过行为边界。</li>
+</ul>
+<p>都需要另立设计与授权。本轮不自动追加实验。</p></main></html>

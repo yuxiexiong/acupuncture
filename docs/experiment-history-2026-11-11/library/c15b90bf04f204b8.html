@@ -1,0 +1,84 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>FA-01：前向服务数值验收合同</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="fa-01">FA-01：前向服务数值验收合同</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/wsp-process-reproduction-v1-2026-11-03/FORWARD_ACCEPTANCE_CONTRACT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-process-reproduction-v1-2026-11-03/FORWARD_ACCEPTANCE_CONTRACT.zh-CN.md">固定提交原件</a>；SHA-256：<code>c15b90bf04f204b8392bf0c6ef99959440f9611c4ea68bca81953c25f3be4397</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="fa-01_1">FA-01：前向服务数值验收合同</h1>
+<p>2026-11-03 冻结。性质：<strong>工程验收</strong>，不是科学实验；夹具输出只在观察端，不进入任何搜索端。实现见 <code>forward_service.py</code>（重建的作者前向服务），执行见 <code>forward_acceptance.py</code>，CPU 单测 <code>test_forward_service.py</code>。</p>
+<h2 id="_1">服务实现要点（作者服务未公开，以下为本项目的重建选择）</h2>
+<ul>
+<li>生成：vLLM，逐（题，样本）一个请求，种子 = sha256(题号)前 32 位 + 样本序号；<code>both</code> 两臂同题同种子，分别在两张卡上的独立引擎中运行。原版与编辑版各一个检查点目录，编辑版由已校验快照按 BF16 就近舍入写入。</li>
+<li>评分：作者 <code>mathqa.extract/is_correct</code>（只去掉未公开的 mcqa 导入）。<code>no_answer_finished</code> 按 notice 004 的更正口径。配对差 = 编辑减原版，按题聚类的标准误。</li>
+<li>内部读数：Hugging Face 前向 + 显式钩子。残差索引 r：0=embed_tokens 输出，r=第 r−1 个解码层（0 起）输出；mlp/attention 层号 = 0 起模块号；mlp_act = <code>layers.i.mlp.down_proj</code> 输入。生成时的激活由同一读取器重读 prompt + 答案前 8192 token 得到（vLLM 不暴露内部量）。</li>
+<li>teacher-forced：右填充，token_logprobs 第 0 位为 NaN；返回体积先估算，超过 6 GB 拒绝（拒绝不计 pass）。attention 概率用 eager 实现。</li>
+</ul>
+<h2 id="_2">判据（任一不过 → 全线停止，不进入搜索；修复后最多重跑一次并记入偏离日志）</h2>
+<table>
+<thead>
+<tr>
+<th>编号</th>
+<th>检查</th>
+<th>通过条件</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>F1</td>
+<td>检查点身份</td>
+<td>空快照构建与原文本导出 sha256 相同；夹具编辑只改夹具张量，改动值个数等于快照清单</td>
+</tr>
+<tr>
+<td>F2</td>
+<td>跨引擎一致（原版）</td>
+<td>vLLM prompt_logprobs 与 HF token_logprobs：平均 |Δ| ≤ 0.05 nat 且 |Δ|&gt;0.5 的比例 ≤ 1%；<strong>同时</strong>负对照（vLLM 原版 vs HF 夹具编辑版）必须不通过</td>
+</tr>
+<tr>
+<td>F3</td>
+<td>跨引擎一致（编辑版）</td>
+<td>同 F2 阈值，vLLM 夹具版 vs HF 夹具版</td>
+</tr>
+<tr>
+<td>F4</td>
+<td>索引恒等</td>
+<td>从 hidden_states[L] 经 final norm + lm_head 重算的 logprob 与 token_logprobs 最大差 ≤ 1e-3；down_proj(mlp_act) 与 MLP 实际输出相对差 ≤ 1e-2；hidden_states[0] 与 embedding 逐位相同</td>
+</tr>
+<tr>
+<td>F5</td>
+<td>钩子中性</td>
+<td>带/不带读数钩子的 token_logprobs 逐位相同</td>
+</tr>
+<tr>
+<td>F6</td>
+<td>填充</td>
+<td>8 条文本一批右填充 vs 逐条：最大 |Δ| ≤ 0.1、平均 ≤ 0.005 nat（此差同时作为跨引擎差的批次零分布参考）</td>
+</tr>
+<tr>
+<td>F7</td>
+<td>A/A 配对</td>
+<td>空快照 <code>both</code>（32 道 GSM8K 练习题×2，1024 token）两臂逐字相同的比例 ≥ 0.9</td>
+</tr>
+<tr>
+<td>F8</td>
+<td>生成激活一致</td>
+<td>生成激活（中层残差，两行：prompt 末位、答案均值）与独立重算的相对差 ≤ 2e-2</td>
+</tr>
+</tbody>
+</table>
+<p>夹具：8 道 MATH 练习题（固定步长抽取）的评测 prompt + 参考解；夹具编辑 = 第 L/2−2 层 down_proj 加 50% 范数的高斯噪声（种子 7）。这些题目与编辑只用于工程，不给任何搜索者。</p>
+<h2 id="_3">只测量、不设门槛（用于冻结正式预算）</h2>
+<ul>
+<li>F9a：单条 ~32k token teacher-forced（2 层残差 + 1 层 mlp + logprob）的秒数与峰值显存。</li>
+<li>F9b：原版 256 题×1 样本、max_tokens 4096 的生成吞吐（token/s）与截断比例。不是数学成绩。</li>
+</ul>
+<h2 id="62">离线预演（6.2）</h2>
+<p><code>forward_acceptance.py demo</code>：F2/F4/F6/F7/F8 的判据函数在合成数据上各演示一次通过、一次不通过；2026-11-03 服务器 CPU 运行全部符合。F1/F3/F5 是逐位或同阈值判据，F2 的真实数据负对照兼作"可不通过"的演示。</p>
+<h2 id="_4">资源</h2>
+<p>每模型准备预算沿用 v2 的 0.5 GPUh（1800 GPU 秒）；此前已记 0.8B 201.93 s、4B 68.70 s。本合同预计每模型约 6–10 次引擎启动 + 短读数，F7 同时占两卡按两倍计。顺序：0.8B 全部判据 → 通过后 4B。</p>
+<h2 id="_5">偏离日志</h2>
+<ul>
+<li><strong>r1（2026-11-03，合同执行失败，信息量为零）</strong>：F1/F4/F5 通过；F6 不通过（bf16 整批 vs 逐条最大 0.33 nat、平均 0.0046）；随后 vLLM 读取子进程因生成脚本缺 <code>__main__</code> 保护（spawn 模式）初始化失败，F2/F3/F7/F8 未执行。</li>
+<li>诊断：同一 8 条夹具，float32 下整批 vs 逐条最大差 4.4e-5、平均 3.9e-6；bf16 下再测最大 0.18（r1 为 0.33，本身不确定）。填充逻辑无误，差异来自 bf16 批形状数值。</li>
+<li><strong>D1</strong>：F6 原判据描述的是期望而不是 bf16 测量能支持的量。r2 改为 float32 下整批 vs 逐条最大 |Δ| ≤ 1e-3（填充逻辑错误会远超此值）；bf16 批次差只记录为 F2 的零分布参考（max/mean/p99/&gt;0.5 比例）。影响：F6 不再约束 bf16 批次数值，bf16 跨引擎一致性仍由 F2/F3 约束。</li>
+<li><strong>D2</strong>：vLLM 读取脚本加 <code>__main__</code> 保护，纯代码错误，无判据变化。</li>
+<li>r2 是合同允许的唯一一次重跑。</li>
+<li><strong>D3（r2 前）</strong>：排错预跑发现 vLLM 在本架构上不逐 token 确定：同一引擎同顺序重复 16 条只有 5 条逐字相同（1024 token），单独 vs 成批 0/1；<code>VLLM_BATCH_INVARIANT=1</code> 报 "not supported for GDN_ATTN"。原 F7（逐字相同 ≥ 0.9）不是测量能支持的量。r2 的 F7 改为 A/A 配对差 |d| ≤ 2.5×按题聚类标准误（SE=0 时要求 d=0）；逐字相同比例与首个分叉位置只作描述。影响：配对只在分叉前共享随机数，降低功效但不引入偏倚；作者 notice 002 同样承认跨 pass 不可复现。离线预演同步更新。</li>
+</ul></main></html>

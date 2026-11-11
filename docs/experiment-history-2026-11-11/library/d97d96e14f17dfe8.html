@@ -1,0 +1,74 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>早层“停嘴”时题目事实是否仍在：结果</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="_1">早层“停嘴”时题目事实是否仍在：结果</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/early-stop-knowledge-readout-v1-2026-10-29/RESULTS.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-stop-knowledge-readout-v1-2026-10-29/RESULTS.zh-CN.md">固定提交原件</a>；SHA-256：<code>d97d96e14f17dfe81bc474f87cafcbe645c1d548d80474e2c12376f2d14e751c</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="_2">早层“停嘴”时题目事实是否仍在：结果</h1>
+<p>合同冻结于 <code>c20bc77</code>（读数前）。数据完整性：开发 4632、确认 3480 条导出逐行 <code>record_sha256</code> 与 worker receipt 一致，0 不符。合成预演三档均触发（<code>selftest-r01.log</code>）。</p>
+<h2 id="_3">结论（推导档）</h2>
+<p>早层（L0–L3）原生 ±1 写入下，强制续写两候选时的事实敏感度几乎消失：<strong>H-stop（知道但停嘴）被否定，H-loss（干预期间题目事实不可用）得到支持。</strong> 开发与确认一致。</p>
+<table>
+<thead>
+<tr>
+<th>条件</th>
+<th style="text-align: right;">开发 R（中位）</th>
+<th>开发分档</th>
+<th style="text-align: right;">确认 R（中位）</th>
+<th>确认分档</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>早层原生 +1（8）</td>
+<td style="text-align: right;">0.03</td>
+<td>减弱在场 5 / 未检出 3</td>
+<td style="text-align: right;">0.12</td>
+<td>未检出 8</td>
+</tr>
+<tr>
+<td>早层原生 −1（8）</td>
+<td style="text-align: right;">0.05</td>
+<td>减弱在场 4 / 未检出 4</td>
+<td style="text-align: right;">0.11</td>
+<td>未检出 8</td>
+</tr>
+<tr>
+<td>早层共同方向 ±1（8）</td>
+<td style="text-align: right;">L0 0.02–0.04；L3 0.31–0.70</td>
+<td>减弱在场 6 / 未检出 2</td>
+<td style="text-align: right;">L0 −0.03–0.14；L3 0.14–0.47</td>
+<td>减弱在场 3 / 未检出 5</td>
+</tr>
+<tr>
+<td>中层原生 ±1（16）</td>
+<td style="text-align: right;">0.40 / 0.46</td>
+<td>减弱在场 16</td>
+<td style="text-align: right;">0.36 / 0.39</td>
+<td>减弱在场 9 / 未检出 6 / 保留 1</td>
+</tr>
+<tr>
+<td>后层原生 ±1（16）</td>
+<td style="text-align: right;">0.82 / 0.81</td>
+<td>减弱在场 14 / 保留 2</td>
+<td style="text-align: right;">0.80 / 0.81</td>
+<td>减弱在场 16</td>
+</tr>
+</tbody>
+</table>
+<p>R = 各基础情景 S(条件)/S(原版) 的中位数；原版 S 中位开发 18.4、确认 12.5 nats。参照带（开发原生 ±0.25 的 48 个条件）[0.897, 1.045]。逐条件 R、置换 p 与“两事实均首步 EOS”子集见 <code>readout-*-r01.json</code>。</p>
+<ul>
+<li>早层内部：L0–L2 的 R 多在 0.00–0.17；L3（首个全注意力层）保留更多（开发 0.05–0.55，确认 0.09–0.41）。与“sink 形成层”竞争解释层位吻合，<strong>推测档，未检验</strong>。</li>
+<li>首步 EOS 子集与全体一致（子集分档见 json；多数条件子集基础情景 ≥2）。</li>
+</ul>
+<h2 id="_4">限制</h2>
+<ul>
+<li>读数是<strong>在同一干预下</strong>强制读入候选的 log likelihood：说明干预期间题目事实不再约束答案偏好，不证明信息被永久抹去（撤针三臂中 L2/N5063 无针重建即恢复）。</li>
+<li>只有两条有限措辞候选；不代表全部词表。</li>
+<li>置换检验每条件只有 12 个基础情景（最小可得 p = 1/4096）；“未检出”不等于证明为零。</li>
+</ul>
+<h2 id="_5">偏离（决策日志）</h2>
+<ul>
+<li>合同写“同一面板内原生 ±0.25 条件”作参照带，但确认面板没有 ±0.25 剂量。确认分档改用开发面板已算出的参照带（<code>readout-development-r01.json</code>），未用任何确认条件构造参照带。早层 R 远低于下界，分档不受此选择影响。</li>
+<li>合同停止条件要求导出 SHA 对照 verify 收据；导出文件本身无收据，改为逐行核对 <code>record_sha256</code> 与 receipt 记录哈希（全部一致）。</li>
+</ul>
+<h2 id="_6">对上一轮结论的更正</h2>
+<p><code>early-input-control-v1-2026-10-29/REPORT.zh-CN.md</code> §0 与 §5 写“原猜想‘题目信息约束被削弱’在早层未获支持”。这只对自由回答的形态成立。本读数显示早层停嘴同时伴随事实敏感度丧失：<strong>约束被削弱得到支持，其外显形态是停止而非错答。</strong></p></main></html>

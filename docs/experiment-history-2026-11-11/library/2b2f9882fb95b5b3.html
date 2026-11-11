@@ -1,0 +1,204 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CT-01（首步竞争者更替）结果报告</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="ct-01">CT-01（首步竞争者更替）结果报告</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-competitor-turnover-v1-2026-11-02/REPORT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-competitor-turnover-v1-2026-11-02/REPORT.zh-CN.md">固定提交原件</a>；SHA-256：<code>2b2f9882fb95b5b3831c073c45b46cc9b3358e5d8187b28b40d670005ab26afb</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="ct-01_1">CT-01（首步竞争者更替）结果报告</h1>
+<p>日期：2026-11-02。<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-competitor-turnover-v1-2026-11-02/CONTRACT.zh-CN.md">合同 r01</a>；<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-competitor-turnover-v1-2026-11-02/DECISIONS.zh-CN.md">决策 D1–D4</a>；<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-competitor-turnover-plan-v1-2026-11-02.zh-CN.md">计划 v1</a>。代码 <code>2cace81</code>，freeze-r01 <code>d913b32b…153d</code>。零模型调用（CPU 7 秒），读取 NR-01 正式记录与全词表 logits。已见数据上的分析前冻结探索检验。同一助手实现、运行与撰写。</p>
+<h2 id="1">1. 结论（不利的先说）</h2>
+<ol>
+<li><strong>预测 P_T 只有 1/4 成立。</strong> 原生 T 的最强非停止词只在 N1210 上全部是特殊 token <code>&lt;think&gt;</code>（12/12）。在 N4146、R0、C1343 上，它多半是汉字 token <strong>“请”</strong>（按冻结规则归为“词汇”类）：N4146 10/12、R0 12/12、C1343 6/12，其余是 <code>&lt;think&gt;</code>。“请”正是提示中问题那一行的第一个字（“请根据上面的记录……”）；这里只陈述这一事实，不解释成“模型在复述问题”。</li>
+<li><strong>停止赢家从不改变</strong>（所有格的停止赢家都是 248046，A ≡ 0）。所以 D 与固定候选 Q 之间的差异全部来自非停止竞争者：每个交互项都有 I_D − I_Q = −I_B，闭合误差为 0。</li>
+<li><strong>原生干预对竞争的主要作用是把干净首词 q0 压下去，而不是把停止词抬到所有候选之上。</strong> 从 C_native 到 T：停止词相对 q0 的差距变化 19.0–19.9 logit；停止词相对新的最强非停止词（“请”或 <code>&lt;think&gt;</code>）的差距只变化 0.1–6.3（R0 0.08，N4146 2.78，C1343 4.41，N1210 6.28）。q0 在非停止词中的名次从第 1 跌到平均第 55–104。也就是说，以同一个候选在 C、T 两边的差距计算（辅助量 [z_T(s0) − z_T(n_T)] − [z_C(s0) − z_C(n_T)]，n_T 两边相同），干净运行里这个通用候选高出停止词约 0.3（R0）、1.8（N4146）、3.2（C1343）、5.4（N1210 的 <code>&lt;think&gt;</code>），而 q0 高出停止词约 12.9，即它们远低于 q0、相对靠近停止词（<strong>更正</strong>：初稿写“相近的水平”，对 N1210 的 5.4 logit 说过头）；干预让 q0 跌到它们之下以后，首步由“停止词 vs 这些通用候选”的细小差距决定。这解释了为什么原生 D 只比门槛高约 1 logit，也解释了 R0 为什么多数不停止（“请”略高于停止词）。以上都是相对差距的描述（对词表平移不敏感），不是绝对 logit 的升降。</li>
+<li><strong>哪类状态的恢复能让 q0 回到非停止第一：</strong> 只恢复深层卷积（010）后，q0 在 48/48 个单元重新成为最强非停止词；只恢复深层历史（001）后 38/48；只恢复入口（100）后 0/48（q0 名次回到平均第 5–11，但最强非停止词仍是“请”或 <code>&lt;think&gt;</code>）。凡是包含 F 或同时包含 X 与 H 的组合，都是 48/48。</li>
+<li><strong>NR-01 里 D 的交互形状，主要来自竞争者从“请”或 <code>&lt;think&gt;</code> 换回 q0 的那一步。</strong> 例如 N4146：i_FH 在 D 上为 +2.78，在 Q 上为 −2.86，差额 5.64 全部来自 B（非停止竞争者项）；i_XFH 在 D 上为 −4.70，在 Q 上为 −1.90，差额 −2.81 同样来自 B。在固定候选 Q 上，三类恢复多为次加和（彼此冗余）。</li>
+</ol>
+<h2 id="2">2. 主要读数</h2>
+<p><strong>原生 T 的最强非停止词</strong>（12 个输入）：</p>
+<table>
+<thead>
+<tr>
+<th>方向</th>
+<th style="text-align: right;">“请”</th>
+<th style="text-align: right;"><code>&lt;think&gt;</code></th>
+<th style="text-align: right;">q0 在非停止中的平均名次</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>N4146</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">104</td>
+</tr>
+<tr>
+<td>N1210</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">55</td>
+</tr>
+<tr>
+<td>R0</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">104</td>
+</tr>
+<tr>
+<td>C1343</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">84</td>
+</tr>
+</tbody>
+</table>
+<p><strong>各恢复格中 q0 重新成为最强非停止词的单元数</strong>（每方向 12）：</p>
+<table>
+<thead>
+<tr>
+<th>方向</th>
+<th style="text-align: right;">100 (X)</th>
+<th style="text-align: right;">010 (F)</th>
+<th style="text-align: right;">001 (H)</th>
+<th style="text-align: right;">110</th>
+<th style="text-align: right;">101</th>
+<th style="text-align: right;">011</th>
+<th style="text-align: right;">111</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>N4146</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">12</td>
+</tr>
+<tr>
+<td>N1210</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">12</td>
+</tr>
+<tr>
+<td>R0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">12</td>
+</tr>
+<tr>
+<td>C1343</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">12</td>
+</tr>
+</tbody>
+</table>
+<p><strong>交互在 D / Q / B 上的分解</strong>（N4146 均值；A 恒为 0）：</p>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th style="text-align: right;">D</th>
+<th style="text-align: right;">Q</th>
+<th style="text-align: right;">B</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>r_X</td>
+<td style="text-align: right;">1.92</td>
+<td style="text-align: right;">4.76</td>
+<td style="text-align: right;">2.84</td>
+</tr>
+<tr>
+<td>r_F</td>
+<td style="text-align: right;">6.32</td>
+<td style="text-align: right;">11.99</td>
+<td style="text-align: right;">5.67</td>
+</tr>
+<tr>
+<td>r_H</td>
+<td style="text-align: right;">4.03</td>
+<td style="text-align: right;">9.67</td>
+<td style="text-align: right;">5.64</td>
+</tr>
+<tr>
+<td>i_XF</td>
+<td style="text-align: right;">0.35</td>
+<td style="text-align: right;">−2.49</td>
+<td style="text-align: right;">−2.84</td>
+</tr>
+<tr>
+<td>i_XH</td>
+<td style="text-align: right;">3.54</td>
+<td style="text-align: right;">0.73</td>
+<td style="text-align: right;">−2.81</td>
+</tr>
+<tr>
+<td>i_FH</td>
+<td style="text-align: right;">2.78</td>
+<td style="text-align: right;">−2.86</td>
+<td style="text-align: right;">−5.64</td>
+</tr>
+<tr>
+<td>i_XFH</td>
+<td style="text-align: right;">−4.70</td>
+<td style="text-align: right;">−1.90</td>
+<td style="text-align: right;">2.81</td>
+</tr>
+</tbody>
+</table>
+<p>其他方向形状相同（见 analysis JSON）。恢复格中的最强非停止词（7 格 × 12 输入）：q0 占 68–70，其余为“请”、<code>&lt;think&gt;</code> 等；只有 1 例是干扰编号的 token 重合。干净运行的 q0 在 12 个输入上都是目标编号的首字母（如 B26 的 “B”）。</p>
+<h2 id="3">3. 执行</h2>
+<p>闸门全部通过：NR-01 记录与张量哈希一致；全词表重算的 D 与记录一致（误差 0）；I_D = I_Q + I_A − I_B 闭合误差 0；12 条输入的目标编号都能匹配。</p>
+<h2 id="4">4. 含义与出口</h2>
+<ul>
+<li>回到核心问题“稀疏干预为什么造成回答改变”：在这组输入上，首步的改变主要不是“停止被大幅推高”，而是<strong>答案的首字母被大幅压低</strong>（相对停止词约 19–20 logit），之后停止词与“请”、<code>&lt;think&gt;</code> 这类通用候选之间的细小差距决定首步选择。所以“停嘴”在这里更像“答案消失后，在通用备选里落到了停止”。这与 B4、NFC、NR-01 里“答案侧变化更大”的观察一致，并把它落到了具体的候选上。</li>
+<li>对状态类别的含义：要让答案首字母重新成为第一候选，恢复深层卷积单独就够（48/48），恢复深层历史多数够（38/48），恢复入口不够（0/48）。这与 D 上“需要组合”的印象不同，差别就在通用候选那一侧。</li>
+<li>出口：已形成一条具体叙述：干预压低答案首 token，停止词与通用候选（“请”、<code>&lt;think&gt;</code>）竞争首步。下一步若要继续，主要读数应改为“q0 相对通用候选的差距”和“q0 的名次”，并且需要有限的生成验证：在阻止停止或强制不停止时，模型接下来输出什么（例如是否以“请”开头复述，或者进入 <code>&lt;think&gt;</code>，或者仍能给出编号）。这需要 GPU，要另立合同。</li>
+</ul>
+<h2 id="5">5. 可以说 / 不可以说</h2>
+<table>
+<thead>
+<tr>
+<th>可以说</th>
+<th>不可以说</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>停止赢家从不改变；D 与 Q 的差异全部来自非停止竞争者</td>
+<td>停止词被“主动增强”</td>
+</tr>
+<tr>
+<td>干预使 q0 相对停止词下降 19–20 logit，而停止词相对新竞争者只变化 0.1–6.3</td>
+<td>绝对意义上停止词没有上升（这里只有相对差距）</td>
+</tr>
+<tr>
+<td>原生 T 的最强非停止词是“请”或 <code>&lt;think&gt;</code>，“请”与问题行首字相同</td>
+<td>模型在复述问题或准备思考（首 token 不足以判断）</td>
+</tr>
+<tr>
+<td>只恢复深层卷积就让 q0 在 48/48 中回到非停止第一</td>
+<td>恢复后模型能正确回答（只看了首 token）</td>
+</tr>
+<tr>
+<td>P_T 1/4</td>
+<td>“格式通道”</td>
+</tr>
+</tbody>
+</table></main></html>

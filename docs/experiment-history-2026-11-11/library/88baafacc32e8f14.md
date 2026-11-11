@@ -1,0 +1,15 @@
+# SVQ-01 决策日志
+
+历史原件；不是本次提出的假设、论证或运行要求。
+
+原路径：`experiments/cache-sp-v-qk-delivery-v1-2026-11-02/DECISIONS.zh-CN.md`。来源：[固定提交原件](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-sp-v-qk-delivery-v1-2026-11-02/DECISIONS.zh-CN.md)；SHA-256：`88baafacc32e8f145dcd8b8d807e36cc0fb79e96e190e56b47a96d0925d67f4a`。精确字节见原文归档。
+
+---
+
+# SVQ-01 决策日志
+
+- **D1 计划由评审撰写**（5b6127c），修订 v2（032a17c）A1/A2 纳入。
+- **D2 runner 复用 SP-01**：直接 import sp_run 的面板、shared_tokens、plan、conditions；生成循环与 SP-01 逐行同构（同一 L.forward、同一喂入），只在首步后加诊断分叉；分叉在独立 deepcopy 上做，不影响自然轨迹（由 C_nat/T_nat/T_F 与 SP-01 逐 token 相同验证）。
+- **D3 T_V / T_QK 的组装**：按通道块拼接（q/k = 通道 0–4095，V = 4096–8191），不经头名单；逐层逐块核对来源。T_F 沿用 NR 的 restore('010')。
+- **D4 “恢复支持”用救回计数**：计划 §3 写“C 正确、T 未交付、恢复臂正确”，因此用救回计数（SP-01 的 P_A1 只看臂正确）；前提（基线、损伤）沿用 sp_core。T_F 在本轮按同一救回规则重报，可能与 SP-01 的 P_A1 读法不同，报告中两者分开写。
+- **D5 首列编号**：由记录文本中三个编号的出现位置确定；测试核对它与面板的 target_position 一致。

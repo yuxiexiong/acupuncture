@@ -1,0 +1,1153 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>062．原生输出路径CPU分析</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="062cpu">062．原生输出路径CPU分析</h1>
+<p><a href="../README.zh-CN.html">返回总时间线</a></p>
+<p><strong>时间定位</strong>：版本/记录日期 2026-11-01；未从所选收据确定完整运行起止，不据目录名补写时刻。</p>
+<p><strong>当时的目的与设计</strong></p>
+<p>从已有张量查原生与混合背景的归一化、投影和token竞争，核对小局部删除为何未翻首步。</p>
+<p><strong>实际过程、结果与后来更正</strong></p>
+<p>原生EOS8/12、深层混合0/12；原生停止优势约0.0625–0.75，浅层变化可移动1.125–4.3125。未据末端投影大宣布L31为共同根因。</p>
+<p><strong>来源身份</strong>：<code>cache-output-path-audit-v1-2026-11-01</code>；本章主体来源提交 <code>7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8</code>。下方原文中的状态是各文件写作时的状态，不能把早期“尚未运行”覆盖后期正式收据，也不能将后期结果倒填进早期设计。</p>
+<h2 id="_1">原设计、执行过程、结果与更正全文</h2>
+<p>以下按“设计与题目 → 工程/执行记录 → 结果/更正 → 其他历史说明”组织；同类内没有可靠时间时保留路径顺序，不冒充严格先后。正文未删段；仅为本章节重排标题层级、把相对链接指向固定提交。原始字节另外完整保存。</p>
+<h3 id="1vqk-v1-r2">原件 1：卷积历史中的V与q/k怎样改变输出竞争：实验计划 v1 r2</h3>
+<p>原路径：<code>docs/cache-conv-value-qk-readout-plan-v1-2026-11-01.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-conv-value-qk-readout-plan-v1-2026-11-01.zh-CN.md">固定提交原文</a> · <a href="../library/d83d44598d29b36b.html">单独阅读副本</a>；SHA-256：<code>d83d44598d29b36bcd794e2421a3979c381076074e8c001240b09395e0c16d07</code>。</p>
+<hr />
+<h4 id="vqk-v1-r2">卷积历史中的V与q/k怎样改变输出竞争：实验计划 v1 r2</h4>
+<p>日期：2026-11-01。设计编号：<strong>CFM-CONV-FACTOR-v1-20261101</strong>。状态：<strong>设计逻辑自查通过；执行代码和模型数值验收未完成；未运行、无GPU授权。</strong> 本次仅完成旧数据CPU核对、计划、离线矩阵检查与Git交付。r2按截图反馈修订已知基线、预测、随机判读、输出两侧与阶段衔接；不增加评分矩阵。自查不等于独立审查。</p>
+<p>用人话说：之前已经知道，有针时留下的深层历史能把输出明显推走。本轮要进一步问，最近几步留下的两类材料——V和q/k——究竟哪一类、在怎样的旧状态背景下，推动干净首词失去优势、停止词获得优势。要检查的是这些材料被下一步计算使用后的实际作用，而不是再统计哪类缓存重要。即使某个分量有效，也不直接把它命名为“答案内容”或“停止开关”。</p>
+<h5 id="material-passportr2">Material Passport（r2）</h5>
+<p>2026-11-01；最新文档来源基点355f71c，r1原文可在该提交追溯。逻辑设计状态：通过；新runner与模型验收：未完成；授权：仅设计、CPU核对和Git交付。采用Academic Research Suite和Ponytail full，直接核对既有代码；自查非独立审查。截图是待核对的意见，不是运行指令。完整<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-mechanism-stage-roadmap-2026-11-01.zh-CN.md">阶段路线图</a>规定本轮怎样进入计算机制检验；<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-conv-factor-design-audit-v1-2026-11-01/review-r02/REVIEW.zh-CN.md">本轮反馈复核</a>记录接受与不接受的理由。</p>
+<p>本轮是阶段中的“选择可检验计算解释”步骤，不能独自兑现整段回答机制。若结果只得到“V或Q重要”而不能提出有区分力的更新/读取预测，不自动继续细拆；也不因为它逻辑自查通过，就宣称已证明它是最优研究路线。</p>
+<h5 id="1">1. 设计卡与反馈处理</h5>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>冻结内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>总问题</td>
+<td>少数通道激活干预怎样改变写入、历史状态处理和后续读取，最终造成显著回答变化？</td>
+</tr>
+<tr>
+<td>本轮问题</td>
+<td>在已形成的深层历史中，卷积历史V与q/k的改变分别怎样影响下一词竞争；这种作用是否依赖递推状态S，能否在原生评分背景中保留？</td>
+</tr>
+<tr>
+<td>新增认识</td>
+<td>从“S/F联合有效”推进为“具体哪类短窗材料，在何种S背景中，对哪些竞争关系起作用”。直接改变历史材料并让后续计算正常响应，得到条件性因果效应；不把代数分解当发现。</td>
+</tr>
+<tr>
+<td>依据与反例</td>
+<td>E2已有双向浅/深交换；BRIDGE V搬入强、移除部分；COMBO SF强；XCHAN随机入口方向也能出现类似V关系；LOCAL-READOUT第13层交互在原生背景作用很小。故既不预设V独占，也不预设旧S×读取交互是主因。</td>
+</tr>
+<tr>
+<td>操作</td>
+<td>固定旧C/T缓存，在14个深层G中拆分卷积前历史q/k与V；设置S的C/T背景；深层全注意力KV固定T；混合入口与原生入口分别评分。细节见§3–4。</td>
+</tr>
+<tr>
+<td>估计对象</td>
+<td>指定评分背景下历史材料替换的总输出作用，包含后续更新、归一化与层间传播；不是形成期中介份额、自然路径份额或完整回答效应。</td>
+</tr>
+<tr>
+<td>判读与退出</td>
+<td>§6按连续效应、双向替换、背景变化、随机参照及无法识别分支判读；弱或相反结果可以结束分支，不自动扩层/加针。</td>
+</tr>
+<tr>
+<td>成本与身份</td>
+<td>六个已见情景×两事实；0新前缀形成，计划316次单token评分＋3次缓存模板前向；本次实际0模型调用/0GPU。§7全口径预算。</td>
+</tr>
+</tbody>
+</table>
+<h6 id="11">1.1 认可与修正</h6>
+<p>认可反馈要求复用E2、分开输出两侧、从卷积材料进入更新—读取机制。撤回233ab58报告“当前入口有针＋干净深层从未测过”的判断：<strong>E2 d已经测过</strong>。不单独为此建立第一阶段。仅保留BRIDGE逐token路线的1格/输入校准。</p>
+<p>本次CPU核对见<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-conv-factor-design-audit-v1-2026-11-01/REPORT.zh-CN.md">审计报告</a>。同时修正反馈的过强说法：</p>
+<ul>
+<li>E2 a保留74.9%–93.9%、d保留6.9%–18.3%的动态D差是条件性结果；交互绝对值可达2.875 logit，不能宣布自然85/15分工或不存在交互。</li>
+<li>E2/BRIDGE三个参考端点D的最大差为0.21875，并非全部≤0.19；端点接近不证明第四格或内部状态相同。</li>
+<li>首词候选原始logit下降8.75–16.59，同时停止词248046上升9.16–13.05。两侧都需要解释。think的原始logit近似稳定，不代表概率不变。</li>
+<li>V与q/k是计算材料分组，不等于“内容”与“纯读取”。q/k尤其k参与更新，V也参与更新；本轮不拆q与k各自作用。</li>
+</ul>
+<h5 id="2">2. 固定来源、已知部件与增量边界</h5>
+<p>本设计引用固定Git <code>233ab5822a48099066ce7f948b25b0f915c9624f</code> 下的正式资料：</p>
+<table>
+<thead>
+<tr>
+<th>资产</th>
+<th>复用内容</th>
+<th>不能替代什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-mechanism-e2-depth-transplant-v1-2026-10-31/REPORT.zh-CN.md">E2</a>、e2_transplant.py及formal-r01</td>
+<td>a/d对照与晚段针身份；同输入端点比较</td>
+<td>chunk形成不自动等于BRIDGE逐token形成</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-readout-bridge-v1-2026-10-31/CONTRACT.zh-CN.md">BRIDGE</a>、bridge.py与formal-r01</td>
+<td>C/T深层完整τ缓存、C浅层、C/T_native/Y_T参考、原生第13层入口、logits、实际内核记录方法</td>
+<td>形成期全层V替换不等于只换τ时刻F中的V</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-cache-combination-v1-2026-10-31/CONTRACT.zh-CN.md">COMBO</a>、combo.py及formal-r01</td>
+<td>C/T的S/F/K八格；本轮q=k/v同源四个角可重放</td>
+<td>SF效应不是自然机制百分比；不代表F的V段独占</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-cross-channel-validation-v1-2026-10-31/CONTRACT.zh-CN.md">XCHAN</a></td>
+<td>随机方向与原生通道有相近V替换关系的反例</td>
+<td>未证明同一种S/F机制；没有完整缓存可直接开展本轮跨方向拆分</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-local-readout-causal-v1-2026-11-01/CONTRACT.zh-CN.md">LOCAL-READOUT</a>、local_readout.py及formal-r01</td>
+<td>原生入口重放、单token实际路径与局部删除反例</td>
+<td>第13层阴性不排除其他层/其他计算</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-output-path-audit-v1-2026-11-01/REPORT.zh-CN.md">输出CPU分析</a>及本次审计</td>
+<td>固定词对、归一化诊断、旧张量来源与测量缺口</td>
+<td>投影账目不构成因果层归因</td>
+</tr>
+</tbody>
+</table>
+<p>归档输入、记录和张量SHA见本次<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-conv-factor-design-audit-v1-2026-11-01/saved-logits.json">saved-logits.json</a>和<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-conv-factor-design-audit-v1-2026-11-01/e2-audit.json">e2-audit.json</a>；原大张量留服务器，缺任何源文件必须停止，不用新形成偷偷补齐。</p>
+<p>已按项目要求读取本地 <code>docs/cache-mechanism-known-basics-audit-2026-10-31.zh-CN.md</code>（未进入本次固定Git，读取内容SHA256：<code>945f3348da8bdb82298db462c17b029dabf5d554f5831796cc5a1c78202c6c81</code>），并核对已发布的<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/literature/merged-prior-art-artemisinin-2026-11-01.zh-CN.md">合并文献审计</a>。写入—保留—读取框架与状态替换是已有部件，复用<a href="https://arxiv.org/html/2609.33093">2609.33093</a>和<a href="https://arxiv.org/html/2609.04434">2609.04434</a>中的相关思路；本轮方法不主张首次，也没有做新的全面优先权检索。可争取的增量是本对象上，材料分组在S和原生入口背景下对特定输出竞争的可反驳关系。公式必然性、缓存槽位消费及全量端点重放只作工程检查。</p>
+<p>最强对手解释始终保留：较大的一般扰动经过模型加工即可产生这些输出变化，并非某个通道独有的内容。两条深层随机材料参照只能约束本次替换的幅度解释，不能排除所有一般损伤、几何解释或证明入口方向特异。未来若提出内容性解释，必须解释已有随机入口方向的现象，并在另立方案时接受跨针/随机方向检验。</p>
+<h6 id="21">2.1 已知基线：不再把四个旧角点当新科学问题</h6>
+<p>已从COMBO(K=T)的12条正式记录及收据复算，原始值和SHA见<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-conv-factor-design-audit-v1-2026-11-01/review-r02/combo-json-audit.json">combo-json-audit.json</a>。以下全部是动态D、逐输入范围，不是新主终点中心化logit，也不是情景均值：</p>
+<table>
+<thead>
+<tr>
+<th>量</th>
+<th style="text-align: right;">已知范围/logit</th>
+<th style="text-align: right;">相对Y_T−C</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>G_T：S=T时F由C换T</td>
+<td style="text-align: right;">7.9375–10.9375</td>
+<td style="text-align: right;">0.49035–0.63689</td>
+</tr>
+<tr>
+<td>G_C：S=C时F由C换T</td>
+<td style="text-align: right;">6.15625–9.6875</td>
+<td style="text-align: right;">0.42984–0.53022</td>
+</tr>
+<tr>
+<td>G_T−G_C：S×整块F交互</td>
+<td style="text-align: right;">0.40625–3.375</td>
+<td style="text-align: right;">不作为自然份额</td>
+</tr>
+</tbody>
+</table>
+<p>固定词对248046−a下，G_T为7.9375–13.625、G_C为5.28125–11.625，交互0.40625–5.53125。换读数会改变范围，不能把D的已知强作用搬给每个中心化分量。旧记录没有全词表均值；完整中心化基线可由已有张量CPU复算，本次未取得该复算，不算缺新模型测量。</p>
+<p>故“在M中发现F整体D弱”“首次发现S影响整块F的D作用”删除为科学分支。重放四角失败属于来源/实现问题。新增科学信息在q≠v的四格、N的新三格，以及有限随机参照。新中心化分量或N的F差仍可能弱，必须保留这些读数下判别力不足的分支。</p>
+<h5 id="3">3. 操作定义与计算边界</h5>
+<h6 id="31">3.1 共同设置</h6>
+<ul>
+<li>Qwen3.5-4B，权重revision以BRIDGE完整manifest为准（前缀851bf6e8），BF16、eager；安装源码hash见本次审计。不得升级库、换模型或切换chunk/recurrent路径来求一致。</li>
+<li>C无针；T为原L0/N4146、剂量−1、原校准reference，晚段位置L=b+1…n−2。使用已有τ缓存，不重新形成；最后提示token n−1只评分一次、撤针，无生成。</li>
+<li>输入固定VAR03/04、VRD03/04、VRL03/04各f0/f1，共12条，具体ID与C首词ID见<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-conv-factor-design-audit-v1-2026-11-01/design.json">design.json</a>。六情景均已用于选择与探索，不是留出数据；每情景两事实不算两个独立情景。</li>
+<li>深层G固定13,14,16,17,18,20,21,22,24,25,26,28,29,30；全注意力层A为15,19,23,27,31。全深层分组继承E2/COMBO范围，不根据这轮结果选层。</li>
+<li>S为G的recurrent_states；F为G的conv_states；K为A的全注意力keys和values。<strong>大写K不同于G内小写k。</strong></li>
+</ul>
+<h6 id="32-f">3.2 拆F的唯一操作</h6>
+<p>每个G的F形状[1,8192,4]。q段0:2048、k段2048:4096、V段4096:8192。定义Q=(q,k)联合段；Q与V按C/T选择，整个4槽位一并复制，不补偿、不重标定、不选择最近的某一个槽。</p>
+<p>实现期核验：depthwise核宽4，单步实际消费最近3个历史槽位和当前token，最老槽位在本次输出前移出。存4与读3分开写。对最老槽位的CPU单步卷积不变性和最近槽位对应关系做测试；新实现实际读路径也须验收。F存短窗材料，不做独立的长时递推；不能把F阳性说成长历史记忆形成原理。连续处理3个新位置后，原先参与评分的3份历史材料退出下一步的有效卷积窗口；这只意味着它们不再直接参与该步卷积；已改变的S、KV、新形成F和后续输入仍可传递影响。本轮只测一次评分，既不能外推整段回答，也不能声称其因果影响一定三步消失。</p>
+<p>替换发生在最后提示token前、缓存已加载后。每格全新深拷贝，评分写回不得污染下一格。只替换上述历史数组；当前token投影、短卷积、q/k归一化、α/β、S更新、门控归一化、out_proj及所有后续层均自然响应，不钉当前q/k/v，不减预计算交互项，不在每层重新移植中间结果。</p>
+<h6 id="33">3.3 两种入口背景</h6>
+<p>M：浅层0–12缓存全C，原输入token正常评分，第13层入口为x_C。</p>
+<p>N：仍用C浅层运行到第13层，在decoder13入口用归档T_native的当前残差x_T替换，之后正常计算。全部T深层时必须逐位重放T_native logits；这是原生评分后半段的条件干预，不是完整原生生成实验。N每格入口固定同一x_T，不把“F造成的改变”混入入口残差变化。M/N后续层入口会各自响应，不能再称逐层输入都相同。</p>
+<h5 id="4">4. 完整评分矩阵与随机参照</h5>
+<p>0=C供体，1=T供体。记Z_M(s,q,v)，深层K始终为T。主矩阵8格为S×Q×V的全部组合：000、001、010、011、100、101、110、111。Z_M111=Y_T；其中q=v的4格是已有COMBO(K=T)角点，重放作工程参照；q≠v的4格是新增条件。</p>
+<p>N固定S=T、K=T，Q×V取00、01、10、11四格，记Z_N(q,v)。N11=T_native；其余3格新增。N只检验F材料作用在原生入口/S_T背景中是否保留；本轮没有N的S_C四格，不宣称识别了原生S依赖。</p>
+<p>额外2格：</p>
+<ol>
+<li>C：x_C＋全部C深层，固定原参考。</li>
+<li>D_step：x_T＋全部C深层，E2 d的逐token路线校准。其作用只判断历史证据路线迁移，不再把已有答案包装成新发现。</li>
+</ol>
+<p>额外8格随机参照：在M111或N11基底，分别对Q或V加随机位移，每类固定两条方向。幅度来自对应C−T历史材料差；S/K以及未扰动段保持T。它们对照“换回干净材料”的效应是否超过这两条同幅方向，不是零分布、统计等效检验或新的独立情景。</p>
+<p>生成冻结规则：CPU torch.Generator、float64正态；seed=20261101+1000*j+crc32(input_id+'|'+segment)，j∈{0,1}，segment∈{q,k,v}。G层按升序，每层每旧槽每头的128维随机向量单位化，再乘该头C−T的L2范数；q/k各16头，V32头。Q条件同时用q/k两段，V条件只用V。方向M/N共享，不是重复独立抽样；T＋位移后转BF16，不做事后增益调节。真正影响单步的最近3槽上，分层分段实际总位移范数须距目标≤5%；零目标严格不改。超过此预先工程容差则随机对照分支验收失败，记录失败，不换种子或抬剂量救结果。5%只控制幅度匹配，不是科学显著性。报告所有实际范数、与干净替换向量的余弦以及BF16舍入误差。</p>
+<p><strong>每输入22格：M 8＋N 4＋C/D 2＋随机8。</strong> 其中6格已有参考重放，16格新条件；反向比较由同一格对作差，不额外把同一配置重算一遍。机器矩阵见design.json。</p>
+<h5 id="5">5. 终点与记录</h5>
+<h6 id="51-d">5.1 输出读数（不再只看D）</h6>
+<p>每输入冻结C中最强非停止候选a_i（来自旧BRIDGE），及停止248046、248044、think248068；执行前核验token解码和停止集合与旧合同一致。不能按新结果改a_i。</p>
+<p>r2主读数改为并列的两侧：(z_a−mean_vocab(z), z_248046−mean_vocab(z))。分别显示首词候选与指定停止词相对词表均值的变化；这是一种固定参照约定，不能称绝对语义激活。原始logit和log概率继续并列保存。</p>
+<p>固定边际248046−a是两主读数之差，作为必报的派生行为连接读数；think−a、248044−a、248046−think、动态D及首步赢家继续报告。二者同时减去a的旧双边际不能独立显示两侧，因此不再充当唯一主终点。think近似稳定仅是旧C/T观察，不能假设在新混合格也固定。全词表top5可作探索性记录，不将看到的新赢家事后加成主终点；不进行完整回答评分。</p>
+<p>保存全词表logits，同时给固定词的原始logit、减词表均值后的logit与log概率，注明共同平移的不变性。各格保存最终norm分母和前norm残差；在CPU固定为本输入C分母复算固定词对，核对“最后整体缩放”解释。固定分母是代数诊断，不声称新增因果路径。动态赢家切换与固定词对分开报告，不把a下降称事实丢失，不从首步EOS推断完整交付。</p>
+<h6 id="52">5.2 估计式（对每个读数逐项计算）</h6>
+<p>M中每个S背景s分别计算：</p>
+<ul>
+<li>F整体差 G_s=Z_M(s,1,1)−Z_M(s,0,0)。</li>
+<li>V加入 A_V,s=Z_M(s,0,1)−Z_M(s,0,0)；V移除 R_V,s=Z_M(s,1,1)−Z_M(s,1,0)。</li>
+<li>Q加入 A_Q,s=Z_M(s,1,0)−Z_M(s,0,0)；Q移除 R_Q,s=Z_M(s,1,1)−Z_M(s,0,1)。</li>
+<li>交互 I_s=Z_M(s,1,1)−Z_M(s,1,0)−Z_M(s,0,1)+Z_M(s,0,0)。各项在S_T与S_C下的差即条件依赖读数；同时报告8格完整主效应/两阶/三阶有限差分闭合。</li>
+</ul>
+<p>N用相同四格公式，但没有S_C比较。所有差分是特定替换的总效果；I不自动命名内部协作或自然非线性来源。完整Z_M111−C还包含K_T背景等影响，不能拿G_s直接当完整针效应。</p>
+<p>D_step校准报告(d−C)/(T_native−C)和(T_native−Y_T−d+C)/(T_native−C)。基于已见E2登记的预期分别为0.05–0.25、交互比例绝对值≤0.2；此预期不是新留出发现，也不是工程通过条件。失败时停止借用E2路线近似说法，保留F拆分本身有效的结果，不自动增加形成实验。</p>
+<h6 id="53">5.3 内部测量：用于解释材料怎样被使用</h6>
+<p>在实际单token recurrent内核记录14个G的q/k（注明归一化前/后）、v、α/g、β、更新前S、更新后S、旧状态项与当前写入项、core；同时记录门控z、门控归一化输出、out_proj。保存13–31层decoder出入口以及最终h/r，全部detach复制，严禁记录hook改变计算。</p>
+<p>这些记录用于判断F改变的是当前更新材料、旧状态的有效读取、还是后续层的响应；可按真实实现公式在CPU重构，不直接回填反事实公式项。核对代数分账与实际core在历史验收容差内一致。局部变化与末端变化一起出现仍不证明该局部项是唯一中介，未来若需要删除具体项须另设计。本轮的因果结论止于预评分材料分组操作。保留所有层，避免看见结果后只展示最有利的一层。</p>
+<h5 id="6">6. 判读、可证伪预测与下一步</h5>
+<h6 id="61">6.1 已知值与真正待检验预测</h6>
+<p>旧M四角的D按§2.1登记为已知参照，不再预测“它是否存在”。对于新条件，冻结以下可反驳候选；不是同时假定它们都成立：</p>
+<ul>
+<li><strong>H_transfer（有额外假设的近似迁移候选）：</strong> 在动态D上G_N/G_T落在0.75–1.33，至少5/6情景成立，逐事实原值全部报告。G_N=N11−N00；比例用每情景两事实平均差相除。额外假设是，在S_T/K_T条件下，入口变化与F变化的交互也小。E2只约束整份历史的四角，不能推出这个更强的局部假设。区间是预先描述容差，不是由E2算出的置信区间；失败撤回此迁移候选，不能说E2已被推翻。不把此区间搬给两个中心化主读数。</li>
+<li><strong>H_V / H_Q（材料主导候选）：</strong> 分别要求所述主读数中该分量加入和移除均近似G，按下方0.7–1.3、剩余≤0.3的规则。另一个分量强、明显依赖S或N改变关系，会限制或推翻简单材料主导解释。不是先断言V一定主导。</li>
+<li><strong>H_add（Q/V近似可加候选）：</strong> 对可显示比例的同一主读数与背景，|I/G|≤0.2，至少5/6情景满足；不满足则拒绝该局部可加描述。该阈值是操作性预测，非显著性；S背景、N背景分别报告，不能合并挑选通过项。</li>
+<li><strong>不预注册“V加入一定强于移除”为已有证据推出的结论。</strong> 形成期CT/TC与τ时刻只换F_V不是同一操作。旧TC→T中整块F加入占该对总差0.56481–0.79167，这既不能限定新A_V/R_V数值，也不能决定其排序。登记实际不对称量(A_V−R_V)/G=−I/G；正、零、负都可能。若未来解释要把形成期不对称归给本轮F分量，它必须同时说明时段和其他状态改变，而不能只凭相同符号接链。</li>
+<li>D_step保留§5.2的既定校准预期；无新增模型格。</li>
+</ul>
+<p>两个代数反例见<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-conv-factor-design-audit-v1-2026-11-01/review-r02/inference-check.json">inference-check.json</a>：整份历史四角严格可加而G_N/G_T为1、0或−1均可能；固定F两端也允许A_V小于或大于R_V。因此不靠虚构区间满足“定量预测”的形式要求。</p>
+<p>报告12输入原始差和六情景两事实均值/范围，事实反向分别列出。§6.1候选的情景比例统一采用“先对两事实的差分别求均值，再作比值”，不平均两个比例；至少5/6要求满足所列完整条件，不只满足同号。随机比较另用§6.2的逐事实资格与方向规则。无显著性p值，无总体比例推断。为避免小分母放大，仅在对应G绝对值≥1 logit且大于工程数值误差时显示比例；其余保留绝对差，标为该读数下分解判别力不足。1 logit是展示阈值，不是科学零点。</p>
+<p>如使用“某分量近似复现F”的简写，必须在所指的固定读数和背景上同时满足：加入/移除与G同号、两者/G均在0.7–1.3、另一分量的加入与移除效应各自满足绝对比≤0.3；至少5/6情景满足上述完整条件，列出所有例外。阈值仅为描述标签，不是统计显著性或自然机制份额，未满足不能调阈值。两个主读数有分歧就分别描述，不合成一个“成功”。</p>
+<h6 id="62">6.2 随机参照的预定规则及停步条件</h6>
+<p>只对有匹配随机格的M(S_T)与N、分量p∈{Q,V}、两个主读数m分别比较，共8个预先指定组合；M(S_C)没有匹配随机格，不借用S_T对照。</p>
+<p>每输入定义G_i为该背景F整体差，R_i=m(全T材料)−m(仅p换C)，随机R_ij=m(全T材料)−m(对应随机格j)。正向清除量E_i=sign(G_i)·R_i。每情景两事实均须|G_i|≥1 logit，才有方向/比例判别力；否则该情景在该读数上标不可判。</p>
+<p>情景“超过两参照”必须同时满足：两个事实E_i均&gt;0，且mean(E_i)&gt;max_j mean(|R_ij|)+0.1 logit。0.1是预先设定的描述性差额，不是数值误差界或显著性门槛。保留随机取绝对值是为了避免随机异号被误读成弱；真实替换必须向整体F差的逆方向清除，不能凭异号大幅损伤算成功。</p>
+<p>一个组合至少5/6情景满足才标“相对这两条方向稳定超过”；其他情况称“未达到该规则”，<strong>不称统计相近/等效</strong>。六个情景不是从总体随机独立抽样，真实干净方向也不与随机方向可交换，M/N又共享方向；13/729只是在独立且可交换的假想模型下的算术，不能作为本实验p值。八个组合全部公开，不用任何一个通过宣称全局机制成立。</p>
+<p>停步：若8个组合均未达规则，停止以本轮F分段方向特异性为依据追加实验，不加随机种子或调剂量救结果。区分（a）足够可判情景但未超过参照，（b）可判情景不足；两者都不进入该方向特异分支，后者尤其不能称科学反证。一般扰动解释保留，<strong>不能宣告它已胜出或成为唯一机制</strong>。如果只有单侧/单背景通过，后续解释必须保留这一条件，不扩称原生完整机制。已有清晰计算预测若需其他研究路径，必须另行论证，不能借此自动续跑。</p>
+<h6 id="63">6.3 结果怎样决定阶段路线</h6>
+<table>
+<thead>
+<tr>
+<th>实际结果</th>
+<th>新增认识与后续选择</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>V两向接近F，Q较弱；S和N中稳定</td>
+<td>把“短窗V材料怎样影响当前更新及输出竞争”列为具体候选；根据记录提出可检验计算预测，再另立小规模跨针/新输入验证。不能从此证明形成时全层V替换走同一路。</td>
+</tr>
+<tr>
+<td>Q或Q×V明显，或两向替换不对称</td>
+<td>纯V解释不够；检查实际k/q对当前更新和读取的改变。若记录不能区分两者，下一缺测是针对性计算干预，不扩成全架构扫描。</td>
+</tr>
+<tr>
+<td>S_C/S_T改变新V/Q分量关系</td>
+<td>整块F在D上的S依赖已知；新增是V/Q分开后各自依赖怎样变化。不能将终点交互直接等同S×q项。</td>
+</tr>
+<tr>
+<td>M有效、N弱或异号</td>
+<td>不能把混合背景机制搬给原生运行；暂停该解释的原生推广，保留条件作用，不靠更多混合格救假设。</td>
+</tr>
+<tr>
+<td>N的F整体差弱，或某个新主读数的F差弱</td>
+<td>在该背景/该读数上分解判别力不足，不说V/Q无机制。M的旧D整体差已知强，不能列为未知科学分支；若重放不符先判工程失败。</td>
+</tr>
+<tr>
+<td>未达到超过两随机参照规则</td>
+<td>按§6.2区分弱/异号/样本不可判；满足停步条件则结束方向特异分支。不把未超过说成一般扰动已证实。</td>
+</tr>
+<tr>
+<td>达到超过两随机参照规则</td>
+<td>只支持所列背景/分量/主读数相对这两条方向的差异，不构成零分布、通道特异性或排除一般几何。</td>
+</tr>
+<tr>
+<td>派生边际改善但a的概率/非停止竞争呈不同模式</td>
+<td>区分提高停止、削弱原首词与竞争者替换；不能推到完整事实能力，后续行为检验必须同条件另设计。</td>
+</tr>
+<tr>
+<td>来源/重放/计数/记录无副作用验收失败</td>
+<td>工程失败，停止，不判科学阴性、不改路线容差直到结果好看。</td>
+</tr>
+</tbody>
+</table>
+<p>已有随机入口方向是持续的反例约束。若一轮分析最终只能复述“扰动能改变缓存/输出”，没有稳定的分量关系或能解释成败的预测，结束本分支，不以“再多几根针”替代机制增量。若形成明确关系，下一阶段先检查它对已见不同事实和原生背景的预测，再另设计新的输入/方向验证；这不是本次运行授权。</p>
+<h5 id="7">7. 执行前验收与全口径成本</h5>
+<h6 id="71">7.1 工程门槛（尚未完成，不冒称可直接运行）</h6>
+<ol>
+<li>来源：旧12条token、b、模型revision、配置、权重/缓存/记录SHA与收据逐项匹配；安装文件SHA与已核源码一致。来源已审计不代表新runner已验收。</li>
+<li>CPU单元：q/k/V切片覆盖且无重叠、组装可还原原F、不同格深拷贝独立、4槽消费与q/k头映射正确、完整有限差分闭合；单token真实分支而非chunk。无相关源或不一致就停止。</li>
+<li>每格检查浅层来源、S/Q/V/K来源和修改前manifest；实际14个G内核均且仅调用一次、N入口hook调用一次、没有针或形成期V hook。未指定字段不得改变。</li>
+<li>原C/Y_T/T_native逐位重放full logits；M中q=v四角与既有COMBO(K=T)逐位一致。同一安装/路线预期逐位，失败不自动退成“D近似”。完整F组装与分段组装参考等价；M111/N11关闭记录与开启记录逐位相同。</li>
+<li>内核公式重构沿用历史独立核验的相对误差上限0.003（归一化差范数/实际core范数，零范数单独报告绝对误差），不是科学效应阈值；超界核查dtype、路径与公式，失败不判机制。实际模型预检必须先通过再正式运行。</li>
+<li>随机范数容差按§4；输出数值有限、参考token/候选ID未变化、计数未超预算。保存失败收据与退出码，不换种子、输入、剂量或删除阴性。</li>
+</ol>
+<h6 id="72">7.2 数量与停机边界</h6>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>具体组成</th>
+<th style="text-align: right;">单token评分</th>
+<th style="text-align: right;">其他模型前向</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>预检</td>
+<td>VAR03-f0、VRL04-f0各22格＋各4格无记录/整段组装等价检查</td>
+<td style="text-align: right;">52</td>
+<td style="text-align: right;">1缓存模板</td>
+</tr>
+<tr>
+<td>正式</td>
+<td>12输入各22格</td>
+<td style="text-align: right;">264</td>
+<td style="text-align: right;">2工作进程各1模板</td>
+</tr>
+<tr>
+<td>合计</td>
+<td>0新前缀形成、0生成</td>
+<td style="text-align: right;">316</td>
+<td style="text-align: right;">3</td>
+</tr>
+</tbody>
+</table>
+<p>总319次单token模型调用，正式264分中72为已有条件重放、192为新条件评分；预检重复不计新样本。没有跨针新形成，没有CT/TC全部扩表。随机8格/输入用于与真实V/Q清除操作匹配的幅度参照；N四格是防止混合解释直接外推原生所需；S八格是从既有SF依赖拆材料所需。新增格不能从旧logits线性组合算出，必须等未来获授权后执行模型评分；不是因为数据整理方便而申请GPU。</p>
+<p>参考既有LOCAL正式单worker约45秒/66评分，此轮记录更全，不能承诺同速。未来预检上限单worker10分钟、正式最多2worker各15分钟，含模型加载/模板/记录，共最多40 GPU分钟（约0.67 GPU小时）；实际由预检测量并在冻结执行收据中登记，超上限停机、不自动追加。新证据存储硬上限8 GiB；大张量留原服务器，以清单/SHA登记，源代码、原始评分JSON、失败与报告入Git。GPU预算是计划上限，<strong>当前不授权启动</strong>。</p>
+<p>执行代码未写；实施时复用COMBO的缓存装配和LOCAL的原生入口边界，必须先进行Ponytail full与代码审阅；Serena不可用时注明直接源码核查。最终执行contract、runner、预检与正式授权状态分别登记，不拿本文“通过”充当运行许可。</p>
+<h5 id="8">8. 强制自查：修正后通过</h5>
+<p>依据<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/experiment-design-self-check.zh-CN.md">experiment-design-self-check v1</a>。本节为同一设计者自查，非独立评审。CPU资产核对结果属于已完成资料审计；所有模型新条件均未执行。</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>判定与理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C01</td>
+<td>通过：§1保留写入—历史处理—读取—回答主线；首步窗口是有限接口，不替代核心课题。</td>
+</tr>
+<tr>
+<td>C02</td>
+<td>通过：§4–6识别V/Q材料在S和原生入口背景中的条件关系，超出已有整块F定位。若无新增区分则停止。</td>
+</tr>
+<tr>
+<td>C03</td>
+<td>通过（r2复查）：E2与COMBO四角均列为已知；§2.1复算12记录与收据。中心化旧基线尚未CPU复算，不用D替代。</td>
+</tr>
+<tr>
+<td>C04</td>
+<td>通过：§2面对随机入口方向、CT/TC不对称和LOCAL原生弱效应，不预设V或交互主因。</td>
+</tr>
+<tr>
+<td>C05</td>
+<td>通过：§3准确固定τ、历史段、模型、针条件、层和单token；评分无针，无新形成。</td>
+</tr>
+<tr>
+<td>C06</td>
+<td>通过：只钉评分前历史与第13层入口；当前/后层计算自然响应，§3.3明确后层输入不再相同。</td>
+</tr>
+<tr>
+<td>C07</td>
+<td>通过：q/k联合且承认k双重用途；没有βV补偿；混合状态可非自然，主张限于材料操作总效果。</td>
+</tr>
+<tr>
+<td>C08</td>
+<td>通过：§5不把替换效应当原生路径或形成份额；N限定评分后半段且S_T固定。</td>
+</tr>
+<tr>
+<td>C09</td>
+<td>通过（r2复查）：§6.1定量候选区分条件迁移、材料主导、局部可加；反例驳回从E2推出F可加、从CT推出A_V&gt;R_V。</td>
+</tr>
+<tr>
+<td>C10</td>
+<td>通过（r2复查）：中心化首词/停止词并列为主，边际为必报派生连接；共同参照约定不等于语义含量。</td>
+</tr>
+<tr>
+<td>C11</td>
+<td>通过（r2复查）：§6.2有方向和数值规则；未超过与不可判分开，不用13/729推实际显著性；M旧D不符为工程问题。</td>
+</tr>
+<tr>
+<td>C12</td>
+<td>通过：先做0GPU核对；E2不另立项；§7逐类说明新增测量必要性，所有重放/模板计入319调用。</td>
+</tr>
+<tr>
+<td>C13</td>
+<td>通过：固定Git及SHA，六已见情景，两事实配对；来源/runner/模型验收分开，种子和展示阈值预定。</td>
+</tr>
+<tr>
+<td>C14</td>
+<td>通过（r2复查）：§6.2明确停止方向特异分支，阶段路线图规定从材料关系进入可证伪计算解释的交付条件，不自动细拆。</td>
+</tr>
+</tbody>
+</table>
+<h6 id="81">8.1 历史错误逐项核查</h6>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>处理/适用性</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>E01</td>
+<td>适用，§1总问题不变，撤针仅评分条件。</td>
+</tr>
+<tr>
+<td>E02</td>
+<td>适用，继承已验13–31范围，不宣布13或31特殊。</td>
+</tr>
+<tr>
+<td>E03</td>
+<td>适用，少通道不称微扰，随机真实范数逐层核验。</td>
+</tr>
+<tr>
+<td>E04</td>
+<td>适用，槽位、代数闭合作工程；因果增量来自实际替换评分。</td>
+</tr>
+<tr>
+<td>E05</td>
+<td>适用，§3/5声明混合材料与k双用途，不补偿βV、不声称失配消失。</td>
+</tr>
+<tr>
+<td>E06</td>
+<td>适用，V/Q有限材料分组不代表全部更新与读取。</td>
+</tr>
+<tr>
+<td>E07</td>
+<td>适用，双向/全组合不证明自然路径；N连接仍有条件。</td>
+</tr>
+<tr>
+<td>E08</td>
+<td>适用，§4每格S/Q/V/K及入口来源全部写明。</td>
+</tr>
+<tr>
+<td>E09</td>
+<td>适用，§5.3内部与终点交互同步不能自动归为同一因果项。</td>
+</tr>
+<tr>
+<td>E10</td>
+<td>适用，固定边际/D/EOS/完整回答严格区分。</td>
+</tr>
+<tr>
+<td>E11</td>
+<td>适用，a只是首词候选，下降不叫事实信息删除。</td>
+</tr>
+<tr>
+<td>E12</td>
+<td>适用，两方向仅幅度参照，配对不自动消除一般损伤。</td>
+</tr>
+<tr>
+<td>E13</td>
+<td>适用，C材料可能带入干净处理信息，称供体替换，不称旧记忆自然恢复。</td>
+</tr>
+<tr>
+<td>E14</td>
+<td>适用，恢复/去除与形成来源、自然必要/充分不互换。</td>
+</tr>
+<tr>
+<td>E15</td>
+<td>适用，形成期V和τ时F_V明确区分，不拼完整链。</td>
+</tr>
+<tr>
+<td>E16</td>
+<td>适用，§6保留无效/异号/不可判，工程失败独立。</td>
+</tr>
+<tr>
+<td>E17</td>
+<td>适用，历史替换后下游自然响应，不是撤销全部干预后果。</td>
+</tr>
+<tr>
+<td>E18</td>
+<td>适用，不命名剩余为放大或唯一其他路径。</td>
+</tr>
+<tr>
+<td>E19</td>
+<td>适用，端点重放和整段/分段一致仅作工程门槛。</td>
+</tr>
+<tr>
+<td>E20</td>
+<td>适用，V/Q/S依赖可同时成立，不假造互斥三选一。</td>
+</tr>
+<tr>
+<td>E21</td>
+<td>适用，文献方法复用，无首次主张；本轮非全面新查重。</td>
+</tr>
+<tr>
+<td>E22</td>
+<td>适用，已见六情景、两事实、共享随机方向，均不增加独立样本。</td>
+</tr>
+<tr>
+<td>E23</td>
+<td>适用，设计自查通过≠独立审查≠模型验收≠运行授权。</td>
+</tr>
+<tr>
+<td>E24</td>
+<td>适用，本轮有限材料作用有实质价值，不要求一次解释全部行为。</td>
+</tr>
+<tr>
+<td>E25</td>
+<td>适用，N不乘S全矩阵、不追加q/k分别拆分、不跨十针；成本上限与退出固定。</td>
+</tr>
+<tr>
+<td>E26</td>
+<td>适用，本轮本来研究评分期使用，总效果可含直接材料复用；不命名形成中介。</td>
+</tr>
+</tbody>
+</table>
+<h6 id="82-r1">8.2 实质反方检查与修订记录（r1问题与修正保留）</h6>
+<p>以下是r1的修订历史，主读数与随机判读以r2的§5–6为准。</p>
+<ol>
+<li><strong>即使V阳性，也可能只是最近材料被直接重放，不是新记忆机制。</strong> 接受，§3/5承诺改为短窗材料被当前计算使用的条件关系；具体材料、S依赖及两类词竞争的区别仍为实质增量。拒绝内容/地址二分命名。</li>
+<li><strong>原方案的缺格E2已经做过。</strong> 硬伤，已核记录并删独立第一阶段，旧报告加更正；只保留同路线校准，C03重新通过。</li>
+<li><strong>只有M结果仍无法连接原生。</strong> 初始简化不足，加入N四格；不把N入口固定后的效应叫完整原生效应。若N失败就停止外推。</li>
+<li><strong>只做V/Q两格会漏掉S条件与互补。</strong> 已保留S×Q×V八格，利用已有四个角重放；固定K_T，明确不是旧K_C下81–90%的直接再分账。</li>
+<li><strong>原始logit共同偏移可以改变“哪一侧贡献大”的说法。</strong> 改用固定边际向量为主，并行中心化/log概率；不得凭绝对logit宣称事实损伤。</li>
+<li><strong>两次随机不能支持统计零分布或通道特异性。</strong> 取消该承诺，固定两个方向的描述性比较；一般大扰动解释继续保留，不因超过两个方向就宣布语义机制。</li>
+<li><strong>这些分段反事实也可能失配。</strong> 端点重放不排除内部失配；结论限于所定义操作，不声称物理独立自然通道。双向、S背景和N背景若不稳定就是约束，不再扩大主张。</li>
+<li><strong>矩阵会不会又是缓存分类？</strong> 主要输出预先拆成首词/停止/think竞争，实际更新与读取驱动同时保存；必须产生§6的条件关系或撤回简化。若仅知“某缓存有用”，停止，不作为更深机制发现。</li>
+<li><strong>阴性是否又自动扩层？</strong> 不扩，本轮已用原定全深层G；低效应记录为判别力不足，下一阶段只在已得到明确预测时立项。</li>
+</ol>
+<p>最终复查：修订后仍回答同一核心课题下“历史材料怎样影响后续计算与输出”的有界问题。C01/C02/C08/C14重查通过；没有把承诺降为科学空题。<strong>设计通过；工程待验收；本次不跑GPU。</strong></p>
+<h6 id="83-r2">8.3 r2复查与范围判断</h6>
+<p>截图反馈逐条处理见review-r02。C01–C14逐项重读，C01/C02/C08仍成立：本轮有有限因果分量增量，但不是整个阶段；C03/C09/C10/C11/C14按上表实质修改后通过。E01–E26全部重查，尤其E04/E15/E18/E22：不把已知角点重复当发现，不跨形成/读取操作硬推预测，不用未超过随机证明一般机制，不把假想13/729当本面板p值。</p>
+<p>最强新反例：整份历史近似可加可与F强交互并存；有限槽位覆盖可与长期状态影响并存。已用代数反例和实现时序解释处理，没有追加模型格。r2仍为每输入22格、316评分＋3模板前向、最多0.67 GPU小时的未执行方案。路线图没有新增模型执行授权。</p>
+<hr />
+<h3 id="2_1">原件 2：输出路径旧数据分析：设计卡与自查</h3>
+<p>原路径：<code>experiments/cache-output-path-audit-v1-2026-11-01/SELF_CHECK.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-output-path-audit-v1-2026-11-01/SELF_CHECK.zh-CN.md">固定提交原文</a> · <a href="../library/dfff59f721efc1bf.html">单独阅读副本</a>；SHA-256：<code>dfff59f721efc1bf77bfca25704daeacddb2c832f68f553a8734ba072a53ed64</code>。</p>
+<hr />
+<h4 id="_2">输出路径旧数据分析：设计卡与自查</h4>
+<p><strong>后续复查更正｜2026-11-01：</strong> 本轮来源/算术验收仍成立，但C03资产覆盖未发现E2 d，故“从未测过”的下一阶段判断不通过，不能沿用此处旧自查结论支持重复立项。见<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-conv-factor-design-audit-v1-2026-11-01/REPORT.zh-CN.md">更正核对</a>。新方案已重新完成C01–C14自查；旧原始数值不变。</p>
+<p>日期2026-11-01；探索性CPU分析；不构成GPU实验合同。依据 experiment-design-self-check v1。用户已授权执行本分析；未授权新模型运行。按 Academic Research Suite 与 Ponytail full执行，同助手自查非独立审查。</p>
+<h5 id="_3">分析前设计卡</h5>
+<p>主线：稀疏激活干预如何经写入、历史处理、读取造成回答变化。本轮：将已存原生/混合/V替换的分数差分解到固定读数的入口与各层残差增量，约束下一轮因果检验的对象。</p>
+<p>来源固定Git 2699a9c（bridge、combo、local-readout及上轮复核）；Qwen3.5-4B 851bf6e8；原L0 N4146 −1，六已见情景×两事实。读取正式归档，逐文件核收据hash。以C、T_native、Y_T为主，Y_CT、Y_TC作形成替换辅助。不得把Y_T当原生T。</p>
+<p>操作仅CPU加载归档张量及输出嵌入选定行、最终norm权重；不实例化模型、不前向、不生成。保留全部输入，按事实计算、按情景汇总。两主差：T_native−C、T_native−Y_T；辅助Y_T−C、Y_CT−C、Y_T−Y_TC。选择固定词对为每输入T_native赢家对，并以C赢家对作敏感性检查。这是看过旧结果之后的探索性选择，不是预测确认。</p>
+<p>固定C最终分母，计算gain×输出行形成的读方向：入口差投影+13…31层增量差投影=最终残差差投影。再单列双方实际分母的尺度修正、BF16输出舍入、动态max与固定词对差，检验加和闭合。层输出包含attention与MLP，不独称缓存贡献；正负投影也不叫因果放大/抵消。停止行与非停止行分开保存。单位为固定读数logit，不把大范数等同有效信号。</p>
+<p>删除实验仅有第13层out_proj、decoder出口及final_h：比较这些端点，<strong>不补造14–31层干预轨迹</strong>。本层和终点固定同一参考分母；匹配的两个随机参照全部保留，不估总体零分布。实际删除作用不是形成中介或自然份额。</p>
+<p>判读/退出：分解闭合是工程通过非发现；若存在跨输入一致的候选，建议定向因果检验并明确所需新增测量；若主要差来自赢家/尺度则优先纠正研究对象；若仅见范数或互相矛盾的投影，则不升级机制。只读归档完成即结束，不为解释图漂亮而扩层/题/剂量。原生入口+干净深层的评分格当前缺失，不能离线造出。</p>
+<p>最强对手：有限测试中的同幅一般扰动已经足以解释已见模式，细拆缓存无额外预测。候选应增加对输入差异、背景差异或双向不对称的解释；现有六已见情景及有限随机参照不足以证明超越幅度/几何模型。不给这个对手预设胜出，也不预设任意方向普遍有效。</p>
+<h5 id="c01c14">C01–C14</h5>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th>判定与理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C01</td>
+<td>通过：同一主线，分开大分数移动与跨阈值，停止仅窗口。</td>
+</tr>
+<tr>
+<td>C02</td>
+<td>通过：把下一轮候选约束到实际输出方向，不再做目录或重复缓存比例。</td>
+</tr>
+<tr>
+<td>C03</td>
+<td>通过：复用bridge/local归档、combo与跨针证据；公式及DLA为已知工具。</td>
+</tr>
+<tr>
+<td>C04</td>
+<td>通过：保留第13层删除弱、入口随机也有效、CT与T机制不必同一等反例。</td>
+</tr>
+<tr>
+<td>C05</td>
+<td>通过：只分析已发生操作，不改变历史/驱动；模型版本、时刻、背景明确。</td>
+</tr>
+<tr>
+<td>C06</td>
+<td>通过：归档真实响应仅描述；固定分母是输出端算术处理，不重跑后续层。</td>
+</tr>
+<tr>
+<td>C07</td>
+<td>通过：层增量不解成独立组件份额；共享变量不拼造反事实。</td>
+</tr>
+<tr>
+<td>C08</td>
+<td>通过：闭合分解不是路径因果；缺失评分不由相减推断。</td>
+</tr>
+<tr>
+<td>C09</td>
+<td>通过（探索）：筛选约束而非验证互斥假说；可得到不可判，不给预定赢家。</td>
+</tr>
+<tr>
+<td>C10</td>
+<td>通过：固定词对、动态D、EOS、尺度/舍入分列；不外推完整交付。</td>
+</tr>
+<tr>
+<td>C11</td>
+<td>通过：hash/闭合失败停止对应分析，不写科学阴性；无显著性阈值。</td>
+</tr>
+<tr>
+<td>C12</td>
+<td>通过：0模型调用、0GPU；CPU2线程，逐份加载，输出小JSON，权重不入Git。</td>
+</tr>
+<tr>
+<td>C13</td>
+<td>通过：来源hash、脚本hash、完整12输入；已见/探索身份；数值检查另记。</td>
+</tr>
+<tr>
+<td>C14</td>
+<td>通过：据证据决定下一切入点，允许不支持原候选；不自动生成多层合同。</td>
+</tr>
+</tbody>
+</table>
+<h5 id="_4">历史错误与比较</h5>
+<p>E01/02/03：不换主线、不赋层号特殊性、不将稀疏作微扰。E04/09/18/19：恒等分解、相关投影、剩余项不命名机制。E05/06/07/08/13/14/15/17/26：无新状态拼接，沿用来源操作身份，移植/删除不等于原生形成路径。E10/11：停止分数非交付、投影非信息量。E12：两个随机参照不是零分布。E16：保留弱/反向，不救假设。E20：候选可并存。E21：复用文献方法，不宣称首次DLA。E22/23：已见情景、自查及CPU重算身份。E24/25：有界增量，不要求整机制，也不自动扩运行。</p>
+<p>相对上一轮推进建议：提高T_native/Y_T比较优先级，但保留C→T主要效应；落实逐层固定词对分解；一般扰动解释提前加入筛选；修正干预层间轨迹缺失。没有改成EOS阈值专门课题。</p>
+<p>反方复查：①分解再漂亮也可能只是后果——仅筛候选，必须后续因果检验；②原生/混合只差入口不代表入口独立充分——缺格明列；③读方向由终点选定可能偏置——保留C词对及动态赢家差；④归一化造成假层贡献——尺度单列且敏感性明确；⑤第13层端点差缩小不能定位吸收层——不声称定位；⑥候选无法超越一般扰动——不追加故事，只给测量缺口。</p>
+<p>分析设计自查通过；数值实现及来源验收待运行。批准范围只为现有CPU分析。</p>
+<h5 id="2026-11-01">执行后复查（2026-11-01）</h5>
+<p>已完成两轮旧数据CPU分析；r01为原分析，r02因观察到赢家差额而补拆两侧赢家与已有attention输出，属于事后探索。r01/r02结果均保留，交付脚本为r02版本，不冒称r01脚本逐字留存。12输入、6已见情景，未扩大样本或运行新模型。</p>
+<p>来源及算术验收通过：48份旧记录/张量哈希、4份固定Git收据、4个静态模型文件哈希核对；24个参考端点逐位一致；272个原存FP64 token值复算最大误差7.11e−15；分解最大加和误差3.55e−15；两轮13,526个公共字段完全一致。独立标准库复核见verification.json；独立指实现方式，不是独立评审或模型复现。</p>
+<p>最终反方复查后修改：第31层大投影依赖词对且不能解释全部原生/混合差距，不据此宣布热点；第13层删除只有端点范数，不能声称逐层吸收；入口直接投影小不排除后续非线性转换。优先缺口收敛为原生入口配干净深层历史，尚无该反事实测量。这个切入点不是新执行合同。</p>
+<p>C01–C14与相关历史错误复查通过；实现/来源/算术验收通过；因果机制仍未验证。零新增模型前向、评分、生成、GPU；本轮结束，不自动扩展。</p>
+<hr />
+<h3 id="3cpu">原件 3：从缓存效应到原生输出：已有残差的CPU分析与下一切入点</h3>
+<p>原路径：<code>experiments/cache-output-path-audit-v1-2026-11-01/REPORT.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-output-path-audit-v1-2026-11-01/REPORT.zh-CN.md">固定提交原文</a> · <a href="../library/23ad75cceabdc55b.html">单独阅读副本</a>；SHA-256：<code>23ad75cceabdc55bb76ecd9900eb88a7ab40a0ffb04d89852eb021aa27ec1cc9</code>。</p>
+<hr />
+<h4 id="cpu">从缓存效应到原生输出：已有残差的CPU分析与下一切入点</h4>
+<p><strong>2026-11-01后续更正（优先于以下历史建议）：</strong> 本报告§3.2/§6遗漏了E2 d，因而“关键缺格尚未测”“没有反方向对照”的项目级判断错误，现撤回。E2已完成同晚段针的有针浅层＋干净深层对照；BRIDGE逐token路线尚未评分该格，只需作路线校准。§6保留为233ab58当时建议，已被<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-conv-factor-design-audit-v1-2026-11-01/REPORT.zh-CN.md">新审计</a>和<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-conv-value-qk-readout-plan-v1-2026-11-01.zh-CN.md">分段计划</a>替代，不应按它重复立项。原始数值、脚本和readouts不改。另，§3.1的think原始logit近似稳定，不代表概率稳定；C首词下降与停止词上升需分别报告，不能将前者直接称事实丢失。</p>
+<h5 id="material-passport">Material Passport</h5>
+<p>2026-11-01；Verification Status：<strong>ANALYZED</strong>。源数据为已完成BRIDGE与LOCAL-READOUT，固定Git <code>2699a9c1cf8f00f717f83d6cd3fa6d7fabde06fc</code>。本次是旧张量数值复算，非独立模型复现、非新因果干预、非留出验证。Academic Research Suite验证流程，Ponytail full；Serena不可用，源码直接核对。设计卡、C01–C14/E01–E26、反方检查见<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-output-path-audit-v1-2026-11-01/SELF_CHECK.zh-CN.md">SELF_CHECK</a>。CPU分析授权来自本轮用户“推进吧……先把这个分析做了”。</p>
+<p><strong>结论：不再追第13层单项，也不立即转去宣称第31层是根因。下一轮优先补“当前入口信号×深层历史”的条件关系，随后才决定深挖哪个更新/读取计算。</strong> 这不是完整新实验方案，更不是GPU运行授权。</p>
+<h5 id="1_1">1. 做了什么，没做什么</h5>
+<p>读取BRIDGE和局部删除的24份正式记录、24份张量，共8,610,849,695字节；全部与固定Git收据hash相符。另核对静态模型配置、权重索引及两份权重分片的hash；只读取最终norm与输出嵌入所需权重，不实例化模型。24个BRIDGE/局部删除参考logits与最终残差逐位相同。</p>
+<p>第一次CPU分析41.38秒；看见赢家差额后，补拆停止/非停止两侧及已有全注意力输出，第二次41.86秒。两次合计83.24秒为脚本墙钟，不含传输/人工分析，也不等于GPU时间。0模型调用、0GPU、0新生成。两轮公共13,526个标量/文本字段逐项一致；扩充为事后探索，r01/r02均保留，不冒称预注册预测。最终数值以<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-output-path-audit-v1-2026-11-01/readouts-r02.json">readouts-r02.json</a>及<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-output-path-audit-v1-2026-11-01/summary.json">summary.json</a>为准；逐层表见<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-output-path-audit-v1-2026-11-01/layer-accounting.csv">layer-accounting.csv</a>。</p>
+<p>局部删除归档只保存第13层门控归一化输出、out_proj、decoder出口及最终残差，<strong>没有第14–31层干预轨迹</strong>；不能定位“在哪层吸收”。BRIDGE保存C/T_native/Y_T/Y_CT/Y_TC的13–31层出入口，因此这些未经本轮新干预的运行可作逐层描述。</p>
+<h5 id="2_2">2. 读数与核验</h5>
+<p>T_native为真实T缓存的评分；Y_T为干净0–12层缓存加T深层；Y_CT为形成时搬入V_T的深层加干净浅层；Y_TC为T形成时换回V_C的深层加干净浅层。最后提示token评分时均撤针。</p>
+<p>每输入固定T_native的停止/非停止赢家(e,n)，另用C赢家对完整重复。最终norm gain为1+weight，输出头与token嵌入绑权，记w=(W_e−W_n)⊙gain；固定该输入C最终FP64分母r_C。</p>
+<p>在归档轨迹上，h_final=x_13+Σ_l(out_l−in_l)，各层BF16记录先转FP64再相减；所有相邻边界逐位一致，所有向量加和完全闭合。因此固定投影变化严格等于入口与19层增量投影之和。<strong>这只是沿已发生轨迹的加和账目，不是每层自然因果贡献。</strong></p>
+<p>动态D变化另严格拆为：固定分母的残差投影＋双方实际分母的尺度修正＋输出舍入差＋动态赢家选择差。赢家选择差再拆为停止集合与非停止集合两侧。不将任意一项称机制百分比。各分解绝对闭合误差&lt;1e−9；复算原存272个FP64 token值，最大误差7.11e−15。</p>
+<p>全注意力层附加拆分为已存attention输出投影与“block总增量减attention输出”余项。余项包含后续MLP计算和残差舍入，<strong>不能直接叫纯MLP因果作用</strong>。最终权重投影不能确定哪个前层最初制造了被读取的信号。</p>
+<h5 id="3_1">3. 两类效应确实要分开，但都保留</h5>
+<p>以下均为两事实的情景均值，单位logit。</p>
+<table>
+<thead>
+<tr>
+<th>情景</th>
+<th style="text-align: right;">C→T_native的D变化</th>
+<th style="text-align: right;">Y_T→T_native的D变化</th>
+<th style="text-align: right;">T_native的D</th>
+<th style="text-align: right;">T_native停止数/2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VAR03</td>
+<td style="text-align: right;">19.719</td>
+<td style="text-align: right;">2.375</td>
+<td style="text-align: right;">0.094</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr>
+<td>VAR04</td>
+<td style="text-align: right;">17.531</td>
+<td style="text-align: right;">4.312</td>
+<td style="text-align: right;">0.250</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr>
+<td>VRD03</td>
+<td style="text-align: right;">18.500</td>
+<td style="text-align: right;">1.594</td>
+<td style="text-align: right;">0.531</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr>
+<td>VRD04</td>
+<td style="text-align: right;">18.734</td>
+<td style="text-align: right;">1.156</td>
+<td style="text-align: right;">0.719</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr>
+<td>VRL03</td>
+<td style="text-align: right;">19.531</td>
+<td style="text-align: right;">3.250</td>
+<td style="text-align: right;">−0.719</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>VRL04</td>
+<td style="text-align: right;">19.969</td>
+<td style="text-align: right;">1.438</td>
+<td style="text-align: right;">−0.844</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+<p>原生停止的8输入余量仅0.0625–0.75；其余4输入仍不停止。Y_T为0/12。大的连续移动与是否越阈值不能互相替代；也不能只研究最后差额而丢掉C→T的大效应。</p>
+<h6 id="31-d19">3.1 大的D变化不等于某一停止词独自增加约19</h6>
+<p>按固定原生赢家对，VAR/VRD四情景中停止词提高9.22–10.41，固定非停止词变化−0.56至+1.34；另有8.13–9.84的动态赢家差额，全部来自非停止侧。原生非停止赢家均为<code>&lt;think&gt;</code>，而C的非停止赢家是其他token。这个差额不代表“测量假象”：它说明不能把不同背景中最强竞争者当成同一个词。</p>
+<p>VRL03/04则不同：停止词提高10.80/12.55，原生固定非停止词降低8.88/5.81；还存在停止/非停止赢家选择修正。故不能用“只抬高停止词”解释所有情景，也不应把它直接解释成事实内容被删除。</p>
+<h6 id="32">3.2 原生与混合差距，不是入口直接投影就能覆盖</h6>
+<table>
+<thead>
+<tr>
+<th>情景</th>
+<th style="text-align: right;">入口差投影</th>
+<th style="text-align: right;">后续13–31层增量差投影</th>
+<th style="text-align: right;">固定分母总差</th>
+<th style="text-align: right;">尺度修正</th>
+<th style="text-align: right;">赢家差</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VAR03</td>
+<td style="text-align: right;">0.520</td>
+<td style="text-align: right;">2.264</td>
+<td style="text-align: right;">2.783</td>
+<td style="text-align: right;">−0.412</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>VAR04</td>
+<td style="text-align: right;">0.560</td>
+<td style="text-align: right;">4.700</td>
+<td style="text-align: right;">5.260</td>
+<td style="text-align: right;">−0.951</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>VRD03</td>
+<td style="text-align: right;">0.443</td>
+<td style="text-align: right;">1.408</td>
+<td style="text-align: right;">1.851</td>
+<td style="text-align: right;">−0.253</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>VRD04</td>
+<td style="text-align: right;">0.403</td>
+<td style="text-align: right;">0.696</td>
+<td style="text-align: right;">1.099</td>
+<td style="text-align: right;">0.078</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>VRL03</td>
+<td style="text-align: right;">0.258</td>
+<td style="text-align: right;">3.107</td>
+<td style="text-align: right;">3.366</td>
+<td style="text-align: right;">−0.070</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>VRL04</td>
+<td style="text-align: right;">0.859</td>
+<td style="text-align: right;">0.389</td>
+<td style="text-align: right;">1.248</td>
+<td style="text-align: right;">−0.021</td>
+<td style="text-align: right;">0.219</td>
+</tr>
+</tbody>
+</table>
+<p>舍入修正另见JSON，故表中三项不可不计舍入就当精确D。两运行深层缓存相同、入口不同；入口与后续增量在固定投影上均为正，但大小因情景而异。这限制“原生入口已经直接写好了全部额外停止分数”的简单说法。<strong>不排除入口信号经后续干净计算即可放大/转换，也不证明必须靠有针缓存：关键缺格尚未测。</strong></p>
+<h5 id="4_1">4. 末端大投影：有价值的线索，尚不是下一层热点结论</h5>
+<p>原生赢家对、C→T_native下，第31层block增量差投影为4.18–12.34，每个输入均为正；attention输出部分约2.36–4.78，block余项0.61–7.56。V搬入与V移除对照中也可见第31层正投影。因此末端计算参与把历史差异转成目标竞争，是有依据的候选。</p>
+<p>但三点阻止我们直接把它命名主因：</p>
+<ol>
+<li>用C赢家对后，第31层情景投影范围变成约0.99–9.17，特别VRL04明显变小；候选词选择会改写局部“重要性”。</li>
+<li>Y_T→T_native下，第31层在VAR/VRD四情景为−0.21至−0.56，在VRL两情景为+2.44/+0.25；它不是所有原生/混合差距的同向解释。</li>
+<li>第31层输出既响应当前残差，也响应历史KV，并含后续MLP；大投影没有区分这几种来源，也可能是上游已经造成变化的末端表达。</li>
+</ol>
+<p>这部分应当帮助下一轮限定读数和记录对象，不足以支持直接进行全层扫点或将第31层宣布为“停止开关”。</p>
+<h5 id="5-13">5. 第13层删除：不是简单的向量消失</h5>
+<p>删I后，N背景第13层decoder出口差范数情景均值0.36–0.42，最终残差差范数1.03–1.72；终点绝对范数大于第13层出口，不能说扰动简单消失；中间过程并未记录。可是最终固定词对FP64变化很小。M对应出口差范数0.71–0.82、最终2.91–5.08，终点固定投影变化绝对值约0.14–0.63。<strong>大范数不等于沿停止竞争方向有效，这是实际轨迹约束，不是新架构原理。</strong></p>
+<p>本层out_proj到decoder出口的固定投影已经会改变幅度/符号；最终与本层也不总同号。因此不能先假设“后面某层把它吸收了”，也不能把“第13层局部交互弱”升级为递推无关。本次记录只允许把14–31层的合计变化作余项，不能定位其中哪一步。</p>
+<p>两个随机删除方向按原样保留，仍不足以构成零分布。对N的弱终点效应不做统计等效/零效应证明。</p>
+<h5 id="6-233ab58">6. 已撤回的下一轮建议（233ab58历史记录）：当前信号和历史状态的条件关系</h5>
+<p><strong>优先问题：原生入口信号是否能在干净深层历史下独立保留大的效应，还是主要需要有针历史，二者共同决定输出竞争？</strong> 这是由已知缓存效应走向原生有效计算的缺口；不以跨EOS阈值为唯一终点。</p>
+<p>以第13层为已验证的重放边界，已有三个角：</p>
+<table>
+<thead>
+<tr>
+<th>评分边界</th>
+<th>干净深层历史</th>
+<th>有针深层历史</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>干净当前入口x_C</td>
+<td>C：已存</td>
+<td>Y_T：已存</td>
+</tr>
+<tr>
+<td>原生当前入口x_T</td>
+<td><strong>缺失</strong></td>
+<td>T_native/N参考：已存并重放验证</td>
+</tr>
+</tbody>
+</table>
+<p>第13层在这里是控制边界，不是声称其内部交互重要。缺格不能通过旧残差相加合成，也不能把另一背景的分母/驱动拿来代算。若以后补测，这四格仅建立指定单步评分边界的条件关系，不解释入口最初怎样形成。</p>
+<ul>
+<li>若x_T配干净历史仍保留很大效应：应优先研究两种信号如何分别被后续计算转成相近输出，不能继续把深层缓存视为原生唯一来源；尚不证明形成阶段冗余。</li>
+<li>若只保留很小效应：有针深层历史在原生入口背景下有重要条件作用，更有理由继续拆当前输入怎样调用/处理这份历史。</li>
+<li>若方向或竞争词因情景改变：应以明确的候选竞争关系推进，不能用统一D比例包装一个共同停止机制。</li>
+</ul>
+<p>为何优先它：现有数据已经证实“干净入口+有针历史”能带来大变化，却没有反方向对照；缺格直接决定下一轮应追历史读取还是可替代的当前信号路径。它同时使用C→T的大效应参照及T_native/Y_T的小差额，不是只填统计表。相比立即联合扣除多层交互，它不预设第13层假说需要靠扩层救回；相比末端单层热点，它先解决当前信号与历史的来源关系。</p>
+<p><strong>这只是下一方案的科学切入点，具体操作、配对数值验收、读数、成本和退出规则尚未写成执行合同。</strong> 当前没有新增评分。</p>
+<h6 id="_5">候选筛选与暂缓</h6>
+<table>
+<thead>
+<tr>
+<th>候选/工作</th>
+<th>当前决定</th>
+<th>原因</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>当前入口与深层历史怎样共同转成输出</td>
+<td>下一优先切入点</td>
+<td>有三角已有证据及一个明确缺格；能改变原生路径解释</td>
+</tr>
+<tr>
+<td>第31层attention/其余计算承担共同转换</td>
+<td>保留，待前项约束</td>
+<td>有多对照描述线索，但词对敏感、源信号与缓存未分开</td>
+</tr>
+<tr>
+<td>第13层旧状态×读系数为原生主要原因</td>
+<td>降低优先级</td>
+<td>有效单项删除作用很小；本轮不能靠范数挽救</td>
+</tr>
+<tr>
+<td>普遍同幅扰动经已知几何即可解释</td>
+<td>保留最强对手，尚未排除</td>
+<td>本轮同一针；没有跨方向匹配预测检验。有限随机方向相似不等于任意方向成立</td>
+</tr>
+<tr>
+<td>V搬入/移除不对称的形成过程</td>
+<td>保留后续问题</td>
+<td>现有读数包含词语竞争、背景与路径差异；不能从末端分解反演形成</td>
+</tr>
+<tr>
+<td>扩针/扩剂量/跨模型扫描</td>
+<td>暂缓</td>
+<td>先形成可迁移预测，避免只是复现类似表型</td>
+</tr>
+</tbody>
+</table>
+<p>一般扰动解释与具体缓存计算可以同时成立。只有后一解释增加了对条件差异的预测，细拆才形成额外贡献。新测量若仍不能提供该增量，应允许停止该分支，而不是不断扩层。现有结果没有证明超越一般扰动模型。</p>
+<h5 id="7-related-work">7. 与related work的关系</h5>
+<p>沿用<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/literature/merged-prior-art-artemisinin-2026-11-01.zh-CN.md">合并文献复核</a>：写入/保留/读取框架、缓存移植、固定输出方向投影均作工具，不作为本轮新方法。<a href="https://arxiv.org/html/2609.33093">How Linear Attention Remembers</a>给写入与读取框架；<a href="https://arxiv.org/html/2609.04434">混合模型状态分工</a>给状态交换与任务依赖边界；<a href="https://arxiv.org/html/2604.08524v2">表示转向机制</a>提醒QK/OV路径要由具体设置判别；<a href="https://arxiv.org/html/2606.19831">控制窗口研究</a>是几何/一般扰动解释的资源，不自动预测本项目所有背景差异。本次没有新做领域穷尽检索，不宣称切入点领域首次。</p>
+<h5 id="8_1">8. 最终自查与交付</h5>
+<p>逻辑设计通过，来源及算术验收通过；不是因果机制通过。11类检查：分组反转（保留六情景/两词对）、生态推断（保留12原值）、选择偏差（已见数据/末层候选属探索）、条件化偏差（混合背景不当自然路径）、基率（不推总体EOS率）、回归均值（未宣称再次测量改善）、幸存者（12全纳入）、多重寻找（19层全表/不算p值）、分析自由度（r01后补充公开保留）、相关因果（投影非贡献）、反向因果（末端账目不反演形成），11/11均检查。</p>
+<p>工程记录：本地py_compile因系统缓存目录权限未写入字节码；改用ast.parse通过。首次结构探查误把local记录键写成scores，产生KeyError；核对实际cells结构后修正，只读探查未改数据。两次正式CPU算术分析均完整成功，没有新增模型调用或删除原文件。</p>
+<p>分析到此结束。已找到一个明确的下一轮切入点，同时限定了不能靠本轮回答的机制问题；不继续无边界盘点，也不自动开跑。</p>
+<hr />
+<h3 id="4acupuncture">原件 4：Acupuncture｜两组文献合并复核与“青蒿素原则”解读</h3>
+<p>原路径：<code>docs/literature/merged-prior-art-artemisinin-2026-11-01.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/literature/merged-prior-art-artemisinin-2026-11-01.zh-CN.md">固定提交原文</a> · <a href="../library/fd1df00f2c28f749.html">单独阅读副本</a>；SHA-256：<code>fd1df00f2c28f749c3707ad168a59ae9b7b5bf5967accd5f226313ae32029215</code>。</p>
+<hr />
+<h4 id="acupuncture">Acupuncture｜两组文献合并复核与“青蒿素原则”解读</h4>
+<p>日期：2026-11-01。身份：文献与既有证据的综合复核，不是实验设计、运行授权或“无人做过”的证明。本轮没有运行模型。</p>
+<h5 id="1_2">1. 结论</h5>
+<p><strong>有遗漏，主要是遗漏了可借用的机制和判别方法；也有此前已收录、却没有进入综合解释的文献。截图的若干强结论还需要纠正。</strong></p>
+<p>相对于本次取回的 GitHub <code>docs/literature/</code> 下23份既有 Markdown/JSON资料，正确截图可辨认的20个 arXiv 编号中，10个已有收录，10个在这些资料中未出现。后10个不全是项目首次接触：部分曾出现在项目其他资产笔记中。不能把“未进入查重报告”说成“整个项目从未查到”。</p>
+<p>合并上述资料、截图和两份当前架构/资产笔记，并补齐Mamba作者项目页对应编号后，共登记124个去重 arXiv 条目，保留来源文档、版本字符串、出处摘录和非 arXiv 链接，见<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/literature/merged-prior-art-sources-2026-11-01.json">来源合并清单</a>。这124项包括核心论文、方法近邻、历史背景与仅被提及的线索，<strong>不是124篇全部通读、全部验证通过的论文</strong>。本轮重新对照了查重报告，关键判断回到原文相应方法、结果和限制；外围条目保留原来的阅读等级。截图称查过约45篇，但没有提供完整清单；未见的条目不能冒充已经合并。</p>
+<p><strong>按青蒿素原则，中心课题继续成立：解释稀疏激活干预怎样改变写入、历史状态处理和读取，进而造成回答变化。</strong> 已有公式、状态交换和电路分析是可使用的起点。贡献应看是否新增了重要、可信、可复用的认识，而不是我们的每一步是否从未被人做过。</p>
+<h5 id="2_3">2. 两边资料究竟补了什么</h5>
+<h6 id="21-20">2.1 截图中的20项逐条对照</h6>
+<p>“已有”仅指上述23份资料；“补入”不声称项目其他目录或聊天从未提及。</p>
+<table>
+<thead>
+<tr>
+<th>来源</th>
+<th>对照</th>
+<th>合并后的作用和限制</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://arxiv.org/html/2606.19831">2606.19831 — Leverage Is Not Reach</a></td>
+<td>已有，10-28剂量/机制报告</td>
+<td>单神经元写入的几何预算、控制窗与有限幅度触发；是直接近邻，不能概括成所有大行为效应已被解释。</td>
+</tr>
+<tr>
+<td><a href="https://arxiv.org/abs/2605.08513">2605.08513 — A Single Neuron Is Sufficient to Bypass Safety Alignment</a></td>
+<td>已有，10-26 X/可视化资料</td>
+<td>单神经元行为干预先例；作者的钳制/调制、模型和评价设置需与本项目区分。</td>
+</tr>
+<tr>
+<td><a href="https://arxiv.org/html/2512.00918v2">2512.00918v2 — Sparse Neuron Ablation Triggers Catastrophic Collapse</a></td>
+<td>补入</td>
+<td>稀疏消融和生成崩溃先例；EOS对应位置在论文内部有冲突，详见§3。</td>
+</tr>
+<tr>
+<td><a href="https://arxiv.org/html/2608.12149v3">2608.12149v3 — Massive Activations in Hybrid Linear Attention LLMs</a></td>
+<td>已有，10-28/29</td>
+<td>写入—sink—抵消结构可作解释资源；消融数字不能挂到Qwen3.5-4B上。</td>
+</tr>
+<tr>
+<td><a href="https://arxiv.org/html/2608.24842v1">2608.24842v1 — Reading Is Not Using</a></td>
+<td>补入</td>
+<td>金融任务里的信息可检索与决策使用分离，以及两类缓存的因果移植；应保留。</td>
+</tr>
+<tr>
+<td><a href="https://arxiv.org/html/2609.25053v1">2609.25053v1 — LatentPort</a></td>
+<td>补入</td>
+<td>Qwen3.5-4B→9B状态交接；分别处理KV、递推和卷积，并有组件全组合，不是稀疏针的自然路径分解。</td>
+</tr>
+<tr>
+<td><a href="https://arxiv.org/abs/2402.17762">2402.17762 — Massive Activations in Large Language Models</a></td>
+<td>已有</td>
+<td>巨激活与sink的基础机制；消融重要不等于任意通道扰动都通过它起作用。</td>
+</tr>
+<tr>
+<td><a href="https://arxiv.org/html/2411.07191v2">2411.07191v2 — The Super Weight</a></td>
+<td>已有</td>
+<td>少量权重、巨激活及输出分布联系；静态权重删除不等于动态中间激活加法。</td>
+</tr>
+<tr>
+<td><a href="https://arxiv.org/html/2606.17107v1">2606.17107v1 — Models Take Notes at Prefill</a></td>
+<td>补入</td>
+<td>下游位置保存并被使用的结论，与源字段自身内容可区分；提供写入—读取的因果范例。</td>
+</tr>
+<tr>
+<td><a href="https://arxiv.org/html/2610.09027">2610.09027 — Visual Memory Attacks Can Persist Through KV Cache</a></td>
+<td>已有，10-29</td>
+<td>源图像不可再读后，影响仍可经后续状态延续；优化攻击设置不是普通插针的直接证明。</td>
+</tr>
+<tr>
+<td><a href="https://arxiv.org/html/2608.15939">2608.15939 — Aborted but Not Forgotten</a></td>
+<td>补入</td>
+<td>同输入、不同残留KV的回滚一致性实验；旧源KV仍可被注意，与影响已转写到后续KV要分开。</td>
+</tr>
+<tr>
+<td><a href="https://arxiv.org/html/2602.20031">2602.20031 — Latent Introspection</a></td>
+<td>补入</td>
+<td>早先概念注入可以留下检测信号；输出否认与内部信号并存，不等于完整注入机制已定位。</td>
+</tr>
+<tr>
+<td><a href="https://arxiv.org/html/2609.33093">2609.33093 — How Linear Attention Remembers</a></td>
+<td>补入</td>
+<td>写入、后续状态变换、查询读取的分析框架；固定轨迹上的分解不自动说明受针后所有驱动怎样变化。</td>
+</tr>
+<tr>
+<td><a href="https://arxiv.org/html/2605.12770v4">2605.12770v4 — WriteSAE</a></td>
+<td>已有</td>
+<td>面向递推写入的稀疏分解与因果替换；局部logit近似有适用失败，也有4B生成干预成功。</td>
+</tr>
+<tr>
+<td><a href="https://arxiv.org/html/2605.09314v2">2605.09314v2 — How LLMs Are Persuaded</a></td>
+<td>补入</td>
+<td>浅层写入路由特征→中层注意力改道→选项复制，是有直接干预支撑的因果链。</td>
+</tr>
+<tr>
+<td><a href="https://arxiv.org/html/2609.24635">2609.24635 — Written as a Record, Read as an Address</a></td>
+<td>补入</td>
+<td>同一缓存可含可恢复内容，但原生模型不一定用它作答；训练读取器的成功不能当原生使用。</td>
+</tr>
+<tr>
+<td><a href="https://arxiv.org/html/2604.08524v2">2604.08524v2 — What Drives Representation Steering?</a></td>
+<td>补入</td>
+<td>拒答转向的OV路径、跨方法电路与多token patching；说明不能默认所有转向都靠QK改道。</td>
+</tr>
+<tr>
+<td><a href="https://arxiv.org/html/2609.04434">2609.04434 — What Attention Recalls and Recurrence Controls</a></td>
+<td>已有，缓存主报告</td>
+<td>混合模型任务依赖的KV/递推分工、同模型移植及工程陷阱；递推臂包含卷积，不能视为纯S。</td>
+</tr>
+<tr>
+<td><a href="https://arxiv.org/abs/2406.16254">2406.16254 — Confidence Regulation Neurons</a></td>
+<td>已有，Neuron Lens/机制报告</td>
+<td>最终归一化尺度调节置信度的路径；不直接解释greedy赢家换成EOS。</td>
+</tr>
+<tr>
+<td><a href="https://arxiv.org/html/2606.29522v2">2606.29522v2 — When Does Activation Steering Change What a Model Computes From?</a></td>
+<td>已有，10-28/29</td>
+<td>比较有效控制、自然尺度状态编辑和后续计算实际使用；应作为证据方法，而不是把整个课题判死的理由。</td>
+</tr>
+</tbody>
+</table>
+<h6 id="22">2.2 原有文献也必须保留</h6>
+<p>截图没有提到的工作并没有失去价值：</p>
+<ul>
+<li><strong>剂量、归一化和深度：</strong> Towards Understanding Steering Strength（2602.02712）、Angle–Norm Decomposition（2606.06735）、Attention Sinks and Compression Valleys（2510.06477）、Attend First, Consolidate Later（2409.03621）、Stages of Inference（2406.19384）、归一化探针脆弱性研究（2606.11375）。它们分别提供极限、几何、层间结构和测量边界；探针结果不等于模型输出结果，渐近结论也不等于有限剂量已进入该区间。</li>
+<li><strong>延续与因果定位：</strong> KV Cache Steering（2507.08799）、Prefix Steering（2610.04967）、Context or Knowledge（2610.32109）、Mamba事实定位/编辑（2404.03646）。短暂干预能延续已有明确先例；同token缓存交换也是可复用方法。延续既可能有益，也可能有副作用。</li>
+<li><strong>信息与读取：</strong> Massive Values in Self-Attention（2502.01563）、SKOP（2605.06342）、配对事实与知识冲突相关文献。信息在场、可以解码、被原生计算使用、最终答对需要分别处理。</li>
+<li><strong>混合架构的实际读取：</strong> <a href="https://arxiv.org/html/2609.32942v1">The Key Handoff（2609.32942）</a>用交叉移植区分“携带答案、携带检索键、携带位置指针”，并在部分混合模型中展示最后注意力层之后的递推记忆读取。它已在资产笔记中出现，应纳入正式解释链；不能把“事实走KV、人格走递推”当架构永久分工。Gated Delta Networks（2412.06464）提供更新规则，Activation Patching: Metrics and Methods（2309.16042v2）提供测量方法参照。</li>
+<li><strong>稳定控制线：</strong> DSI（2607.07128）、CNA（2605.12290）、COAST（2605.01167）、Forecasting Side Effects（2608.11227）、SteerScope（2610.07722）、CircuitBreak（2610.16470）、Perturbation Probing（2604.27401）。选点、交互、代价控制、预测和评价均有成熟起点。CircuitBreak的当前正式题名为 <em>CircuitBreak: Pruning a Sparse Safety Circuit of Neurons</em>；旧报告的扩写标题不是该版本原题名。</li>
+<li><strong>迁移与工具：</strong> model stitching、线性特征迁移、跨模型方向映射、Persona Vectors、refusal direction、SAE/神经元普遍性、Neuron Lens，以及HanLab方法研究笔记。它们帮助提出候选和比较规则，不直接确证我们的缓存机制。</li>
+</ul>
+<p>上述各条的编号、版本、原有来源和历史上下文均保存在合并清单；不删除低阅读等级、负结果或错误线索，但不会把它们提升成已核实结论。</p>
+<h5 id="3_2">3. 原文复核后需要纠正的八件事</h5>
+<h6 id="31-latentport">3.1 “金融论文引用错了，应换成LatentPort”不准确</h6>
+<p><a href="https://arxiv.org/html/2608.24842v1">Reading Is Not Using §5.4及附录D.2</a>确实以Qwen3.5-9B-Base为机制工作模型，在披露结束位置交换两次阅读形成的状态，再处理共同后缀。其递推通道包含卷积缓冲与gated-delta状态；另有注意力访问干预。它研究同模型信息如何影响判断，LatentPort研究跨模型状态交接，<strong>二者都相关，不能互相替代</strong>。</p>
+<p>这恰好说明青蒿素原则的实际意义：应按方法与证据取用成果，不能按论文应用领域筛掉可用机制。该文还明确说明通道相互影响，移除与重建比例不是总和为一的分解。</p>
+<h6 id="32-qwen3543">3.2 “Qwen3.5删四坐标，十任务准确率掉43%”混淆了实验对象</h6>
+<p><a href="https://arxiv.org/html/2608.12149v3">Massive Activations in Hybrid Linear Attention LLMs §4.3、表3</a>的消融对象是六个M-A-P GDN检查点：340M/1.3B与三种混合比例。跨模型平均准确率51.63→29.43，约为<strong>相对下降43%</strong>，不是下降43个百分点。Qwen3.5的观测图不能改写成Qwen3.5-4B完成了这项消融。10-29旧报告其实已纠正过这一点，应保留更正而非随新截图回退。</p>
+<h6 id="33-down_projeos">3.3 “四个down_proj神经元只输出EOS”有原文内部冲突</h6>
+<p><a href="https://arxiv.org/html/2512.00918v2">2512.00918v2 表1/§6.1</a>将五个gate_proj单元的NaN分数与只输出结束token联系起来；表2的四个down_proj单元仍有CLIP分数，但§6.3又把down_proj描述为EOS、gate_proj描述为重复。<strong>不能将其中一处转述当作已消除冲突的精确结论。</strong></p>
+<p>另一个更重要的操作差异：论文§6.3把down_proj位置记为4096维输出空间；本项目是在MLP中间通道、down_proj输入处加偏置。名称相似，不等于同一个“神经元”。稳妥结论是已有稀疏消融导致严重生成失效的先例，具体EOS对应条件须进一步核对作者材料。本轮未做复现。</p>
+<h6 id="34">3.4 “少坐标为什么影响大已解决”只覆盖一部分问题</h6>
+<p><a href="https://arxiv.org/html/2606.19831">Liu §8–10</a>给出残差几何预算和有限幅度触发解释，但触发剂量仍需测量，统一局部曲率公式没有稳定预测成功；还明确留下未测的注意力/读取机制问题。</p>
+<p>所以，少坐标不等于小扰动、某些大剂量几何上为何压过原表示，已有解释应直接承接。至于一次具体针怎样经过历史状态和后续读取改变回答，不能由这条几何关系自动推出。也不能把它包装成我们要重新发现的普遍规律。</p>
+<h6 id="35">3.5 “无人拆过卷积、无人串过端到端链”范围过大</h6>
+<p><a href="https://arxiv.org/html/2609.25053v1">LatentPort附录F</a>有KV、递推、卷积的完整组件组合，比较直接拷贝与翻译后的交接；这不是我们的干净/有针组合，但足以否定“从来没人独立处理卷积”这种宽泛说法。</p>
+<p><a href="https://arxiv.org/html/2605.09314v2">How LLMs Are Persuaded §4、附录R</a>和<a href="https://arxiv.org/html/2606.17107v1">Models Take Notes at Prefill附录C–D</a>已经给出各自任务里的写入、传播、读取到决策的干预证据。未找到完全相同的“同一MLP针×三缓存×当前终点”组合，既不是整个因果链领域空白，也不自动是强贡献。</p>
+<h6 id="36-qkov">3.6 QK与OV是不同设置下的路径，不应合并成单一普遍规律</h6>
+<p>说服任务中的干净注意力图替换能恢复选项选择，支持QK改道；拒答转向论文固定QK后影响较小，OV冻结影响更大。前者使用受说服上下文，后者是表示转向，目标、模型和条件不同。<a href="https://arxiv.org/html/2605.09314v2">说服研究</a>，<a href="https://arxiv.org/html/2604.08524v2">拒答转向研究§6.3</a>。</p>
+<p>这给我们的是区分“读哪里”和“读出什么”的办法，而不是选择一篇把另一篇当例外。我们深层线性注意力的卷积前V也不能直接等同于全注意力OV实验中的V。</p>
+<h6 id="37-writesae08b4b">3.7 WriteSAE不是“0.8B成功、4B整体失败”</h6>
+<p><a href="https://arxiv.org/html/2605.12770v4">WriteSAE §4、§6.2及附录A</a>的局部logit近似在0.8B指定单元拟合好，在4B L12/H8失效；但另一个4B L9生成实验改变了换行率。单个位置、目标和近似失效，不能否定整个方法在4B上的用途；也不能因生成有效就宣布近似公式已跨规模成立。其系数拟合及局部近似前提必须保留。</p>
+<h6 id="38">3.8 几个容易误导研究判断的词应收紧</h6>
+<ul>
+<li><strong>26–77倍：</strong> 2606.29522中的特定模型/任务校准结果，不是所有steering都如此；该文既有不对应自然编辑的例子，也有写入后被后续运算使用的正例。</li>
+<li><strong>stopwords：</strong> Super Weight里的停用词不是EOS结束token。不能从“常用功能词概率改变”直接推出“停嘴机制”。</li>
+<li><strong>缓存只存投影：</strong> 因果自注意力模型的后面位置已经处理了前文；它们的KV可能包含前文影响和算出的结论。架构事实与经验因果载体需要一起考虑。</li>
+<li><strong>seq_len==1陷阱：</strong> 2609.04434附录B描述具体实现路径，值得工程核对；不是所有版本、所有混合模型永远相同的架构定理。</li>
+<li><strong>负结果：</strong> 没有发现原生读取、替换不恢复、某个探针不可解码，分别限制相应操作，不能一律写成“信息不存在”。</li>
+</ul>
+<h5 id="4_2">4. 合起来，已有工作能给出多大解释</h5>
+<h6 id="41">4.1 针对核心课题的一段话总结</h6>
+<p>我们的核心课题是：<strong>少数通道的激活干预，如何改变模型的写入、历史状态处理和后续读取，最终造成显著的回答变化？</strong> 现有Related Work已经能解释这条链中的重要组成部分：少数坐标的改变可以经down_proj形成幅度并不小的残差写入，归一化和后续计算使其改变表示与决策；提示处理中的变化可以进入后续位置的KV、递推状态或卷积历史，并在后续更新、覆盖和查询读取中继续产生影响；读取既可能改变“读哪里”，也可能改变“读出什么”，进而改变输出分数与选择。在特定任务中，前人已经用因果干预贯通了写入、传播、读取到决策的局部链条，因此不能说这个领域只有现象、没有机制。<strong>但是，把不同论文的这些结论串起来，只能得到解释框架，不能当作我们同一次稀疏激活干预的全链证明。</strong> 在本次已核查的文献范围内，尚未看到一篇针对我们的研究对象，在同套条件下把入口扰动、历史状态的形成与处理、实际更新和读取、原生回答变化系统贯通并验证其关键边界的论文；这不是“绝对无人做过”的证明。按青蒿素原则，我们可以直接借用已有理论和工具，贡献在于把这些环节接成可信、能产生可检验预测的机制解释，而不要求每个环节都是首次发现。支撑与限定见本报告§3.4–3.7，以及<a href="https://arxiv.org/html/2606.19831">残差几何研究</a>、<a href="https://arxiv.org/html/2606.17107v1">prefill笔记</a>、<a href="https://arxiv.org/html/2609.33093">线性注意力记忆</a>、<a href="https://arxiv.org/html/2605.09314v2">说服机制</a>、<a href="https://arxiv.org/html/2604.08524v2">表示转向机制</a>和<a href="https://arxiv.org/html/2609.25053v1">缓存组件交接</a>。</p>
+<h6 id="42">4.2 分环节解释与证据边界</h6>
+<p><strong>综合解释（不是某一篇已证实的统一定律）：</strong> 一次中间通道加法，经down_proj会成为残差空间中的定向写入；“改的坐标少”并不限制它相对原残差的幅度。归一化、既有巨激活结构以及后续非线性计算，可能把这种写入转成显著表示或决策变化。处理提示时，这些变化既可能留在源位置，也可能改变后续位置计算出的结论和KV，或改变递推状态与短卷积历史。后续计算对这些历史量的使用受新输入驱动、遗忘/覆盖操作和查询方向共同决定；保存了信息不保证原生读取器使用它。读取端可能因QK选中了不同来源而改变答案，也可能通过V/OV内容、门控、MLP或输出归一化改变分数，随后生成的文字又能继续影响后续生成。各段都有具体论文与实验支撑，<strong>但把它们用于解释我们的同一根针，需要检验连接关系，不能把几篇不同任务的结果拼成已验证的全链机制。</strong></p>
+<table>
+<thead>
+<tr>
+<th>环节</th>
+<th>已有可用解释或方法</th>
+<th>对我们仍不能直接推出什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>入口写入</td>
+<td>down_proj列向量、有效幅度/夹角、控制窗与极限</td>
+<td>有限剂量在哪层触发哪种失败，以及为何出现特定答案</td>
+</tr>
+<tr>
+<td>历史形成</td>
+<td>下游结论笔记、KV与递推通道移植</td>
+<td>我们的异常究竟在什么计算过程中形成</td>
+</tr>
+<tr>
+<td>历史处理</td>
+<td>门控、旧状态变换、写入与查询读取；WriteSAE替换</td>
+<td>受针后驱动也改变时，究竟是哪项承担当前效应</td>
+</tr>
+<tr>
+<td>后续读取</td>
+<td>QK与OV分拆、原生读取与训练读取区分</td>
+<td>SF组合的作用是否通过某个具体更新/读取关系发生</td>
+</tr>
+<tr>
+<td>行为交付</td>
+<td>多token电路、输出尺度、任务/风格/流畅分离</td>
+<td>一个停止分数或事实边际恢复是否等于完整任务恢复</td>
+</tr>
+</tbody>
+</table>
+<p>该表定义的是解释边界，不是要求同时补齐的五项实验。</p>
+<h5 id="5_1">5. 用青蒿素原则重新判断课题</h5>
+<p>这里将用户说的原则落实为：<strong>重用有效知识和方法，围绕重要问题提纯出可靠解释；不以“和所有前人不同”为目标。</strong> 这是本项目的研究判断准则，不作科学史类比证明。</p>
+<h6 id="51">5.1 已有发现是起点，不是“领地已被占”</h6>
+<p>“稀疏干预能造成大变化”可以成为动机和需要解释的现象，即使它不是我们的首次发现。现成的几何预算、递推公式、KV移植、QK/OV诊断可以直接使用。真正要避免的是把公知结论重新命名后当成果，而不是避免使用它们。</p>
+<p>“对象已被做过，所以致命”也不成立。即使模型、操作相同，只要已有证据还不能回答重要问题，补出更可靠的机制、可检验预测或实质边界仍有价值；但仅换一层、换一个模型、补一个组合格，不会自动产生这种价值。</p>
+<h6 id="52_1">5.2 不把课题挤成“三类缓存各占百分之几”</h6>
+<p>三类状态在形成和继续计算时相互作用。移植还改变状态与当前输入的匹配关系。因而某操作能搬运80%的读数，不等于该状态自然贡献80%；合计大于或小于100%并非天然错误。</p>
+<p>更有价值的认识是：<strong>哪些已经形成的量，怎样改变接下来的具体计算，使答案发生变化；这一解释在哪些条件下成立或失败。</strong> 若复用已有更新公式就能解释关键变化，贡献可以在因果对应、适用边界和预测，不必再发明一种更新原理。反过来，只有会计式分账、没有理解增加，也不能靠“首次三类同时测”支撑课题。</p>
+<h6 id="53_1">5.3 不要求每一轮、每一篇把整个机制讲完</h6>
+<p>已知机制在我们的条件成立，可以把这一段固定下来继续接下一段；不成立，可以识别哪项前提失效。证明某个看似合理的解释不能解释关键现象，也能减少不确定性。价值取决于问题重要性、证据强度和后续可用性，不取决于是否一次获得所有层、所有模型、所有针的统一理论。</p>
+<p>也不必把“立即EOS的唯一机制”设为终点。停止、循环、任务内容变化可以帮助分辨作用方式，中心仍是局部干预如何改变计算与回答。</p>
+<h6 id="54">5.4 两条线保留各自的成果标准</h6>
+<p>缓存机制线可以产出解释，不必强行附带一个更强控制算法。稳定副作用控制线可以采用现成机制或方法，但需要相对适当参照的效果—代价改进，不能把解释图或流畅案例当算法胜出。两线可共享结果，不能互相替代证据。</p>
+<h5 id="6_1">6. 对照我们已有资产：当前增量与历史判断</h5>
+<p><strong>2026-11-03 更新：</strong> §4 对前人解释能力的判断保持为 11-01 文献复核快照；本次没有重做外部检索。我们的证据已超过下方历史表格：从 V/SF 搬运指定分数效应，推进到共同 q/k 偏移在指定混合背景中双向搬运完整编号回答效应，且 k 分量有显著恢复作用。QKD 进一步表明当步只换 k 不足以解释实际核输出差，但旧状态读出项 D 同时含 S、q、α，尚未完成具体计算的因果解释。完整证据、失败边界与贡献表述见<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-mechanism-overall-contribution-2026-11-03.zh-CN.md">总体更新</a>。</p>
+<p>新增认识不应写成“首次缓存机制”或完整原生全链：固定 45 头完整回答推广失败，随机加入也能致错，C1343 相似局部变化不致错；余量分析是事后关联，QSR 尚无正式结果。当前价值在具体行为因果关系及其边界，而非重新发现已有写入—读取框架。</p>
+<h6 id="61-2026-11-01">6.1 2026-11-01 历史快照</h6>
+<p>来源为<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-mechanism-progress-and-next-stage-plan-2026-11-01.zh-CN.md">2026-11-01进展文档</a>和其中固定提交 <code>f38b00e6b9b540c2978002ce8655c5935e4bfabb</code> 的合同、读数及核验。这是已有结果的再解释，没有新计算或新增样本。</p>
+<table>
+<thead>
+<tr>
+<th>我们已有证据</th>
+<th>文献带来的解释资源</th>
+<th>当前可保留的认识与未接通处</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>多层/多模型干预有停止、循环、内容变化；少通道仍能强烈扰动</td>
+<td>控制窗、归一化、massive activations、深度研究</td>
+<td>现象有广泛先例，值得解释；不能宣称天然“人格区”或把稀疏当小扰动。</td>
+</tr>
+<tr>
+<td>同文字撤针不恢复、干净重建恢复；不同位置维持方式不同</td>
+<td>Prefix/KV Steering、回滚一致性、下游笔记</td>
+<td>历史计算具有作用；还需把残留源、传播后的历史、文字反馈与当前针分开。</td>
+</tr>
+<tr>
+<td>深层V搬入能复现较多D变化，换回仅部分消除</td>
+<td>残差写入、OV内容、递推输入的作用</td>
+<td>提供有方向和背景条件的因果线索；不是V承担完整写入、不是唯一自然中介。</td>
+</tr>
+<tr>
+<td>固定最终归一化分母后，主要D效应保留</td>
+<td>Confidence Regulation / Neuron Lens</td>
+<td>限制“主要只是最终整体缩放”的解释；没有排除早期归一化或其他巨激活机制。</td>
+</tr>
+<tr>
+<td>原针深层缓存中S+F联合传递约81%–90%的D变化，单独较弱</td>
+<td>递推更新、短卷积输入、缓存交互</td>
+<td>指向需要解释的组合关系；比例不是完整回答机制份额，交互也可能受读数非线性或混合失配影响。</td>
+</tr>
+<tr>
+<td>多通道和四条入口随机方向呈相似V替换关系</td>
+<td>强度/几何、下游共同处理的研究</td>
+<td>降低单针孤例担忧；还没有证明共享同一SF机制，也没有证明任意方向统计等效。</td>
+</tr>
+</tbody>
+</table>
+<p>这里的D是现有协议定义的停止相关分数；最新统一干净浅层评分条件下的D变化不能直接叫“模型已经停止”。六个已见情景、每题两个事实也不能当十二个独立情景。</p>
+<p><strong>更新后的研究定位：我们已有可解释的因果关系和重复出现的现象，接下来要把这些关系变成关于实际计算的解释。</strong> 可沿用前人理论和方法，重点检验它们在已有证据上的对应；无需另找一个完全无人涉足的角落，也无需把全部模型机制作为每轮验收条件。本报告不选择新钩子、操作矩阵或GPU预算。</p>
+<h5 id="7_1">7. 阅读记录、纠错与交付边界</h5>
+<ol>
+<li>新截图替代先前误发的跨通道审查截图。只识别这两张截图中可读的20个编号，截图不是运行指令。</li>
+<li>本次取回 GitHub <code>docs/literature/</code> 15份Markdown和8份JSON，与本地近期资产解释对照；来源文件按Git blob SHA记录，旧文件不覆盖。</li>
+<li>原文定向复核重点是：Liu机制/限制；两篇massive/super研究；消融论文表1/2与§6.3；金融论文§5.4/附录D.2；LatentPort附录F；prefill笔记附录C–D；QK/OV实验；WriteSAE成功/失败；模型状态分工和实现陷阱；自然状态对照。摘要级复核和历史条目另标，未伪装逐页通读。</li>
+<li>合并清单保留124个编号以及出处。非arXiv项目页、X线索与方法文章保存在来源链接清单，不计作额外已证实论文。截图中无法辨认或没有列出的约45篇剩余条目不计入。版本字符串也可能是旧记录中的错误访问，例如2309.16042v4原本就被记作404；有效版本为v2，不能把字符串提取当版本验证。</li>
+<li>较新的材料没有自动推翻旧的、更精确的纠错。特别保留“消融43%不来自Qwen3.5”的10-29更正。本报告也修正本轮中途过早把EOS条件冲突归咎于截图的表述：原论文自身就不一致。</li>
+<li>本轮没有复现外部论文成绩，没有新GPU工作，没有更改实验原始结果。后续如进入具体设计，仍需按项目现行设计自查与执行授权办理；本次不制造新的审批步骤。</li>
+</ol>
+<p><strong>自我反驳后的结论：</strong> 不能因为已有近邻就判断我们课题失败；也不能因为“精确组合没查到”就判断贡献成立。已有工作足以显著缩短我们需要从零摸索的路，剩下要靠证据说明：采用这些知识后，我们对重要现象究竟多理解了什么、能更可靠地判断什么。</p>
+<hr />
+<h3 id="5cpu">原件 5：原生输出路径：旧数据CPU分析</h3>
+<p>原路径：<code>experiments/cache-output-path-audit-v1-2026-11-01/README.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-output-path-audit-v1-2026-11-01/README.md">固定提交原文</a> · <a href="../library/1a5645841d43e53b.html">单独阅读副本</a>；SHA-256：<code>1a5645841d43e53bc185c3b9617f4a5e9b7f318b2089f1e6564bb0824f1be915</code>。</p>
+<hr />
+<h4 id="cpu_1">原生输出路径：旧数据CPU分析</h4>
+<p><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-output-path-audit-v1-2026-11-01/REPORT.zh-CN.md">结果与下一切入点</a> · <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-output-path-audit-v1-2026-11-01/SELF_CHECK.zh-CN.md">设计自查</a> · <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-output-path-audit-v1-2026-11-01/summary.json">汇总</a> · <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-output-path-audit-v1-2026-11-01/layer-accounting.csv">逐层表</a> · <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-output-path-audit-v1-2026-11-01/input-manifest.json">来源</a></p>
+<p>全部为已有BRIDGE/LOCAL张量的探索性分析，0模型前向、0GPU。原生与混合背景分开；固定词对、动态赢家、最终尺度及舍入分开。投影不是因果贡献。原“当前入口×深层历史缺格”建议已因遗漏E2 d撤回，见<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-conv-factor-design-audit-v1-2026-11-01/REPORT.zh-CN.md">后续更正</a>；原始数值不变，新计划未运行。</p>
+<p>在原归档服务器，用既有torch/safetensors环境复算：</p>
+<pre><code class="language-sh">CUDA_VISIBLE_DEVICES='' OPENBLAS_NUM_THREADS=2 OMP_NUM_THREADS=2 python analyze_cpu.py input-manifest.json &gt; readouts-r02.json
+</code></pre>
+<p>该脚本只CPU读取旧文件和静态输出权重，源路径固定在脚本；不会加载模型。复算时请输出到新目录，保留已交付结果。</p>
+<p>本地仅需Python标准库：</p>
+<pre><code class="language-sh">python summarize.py
+python verify.py /path/to/checkout-of-2699a9c
+</code></pre>
+<p><code>readouts-r01.json</code>是第一轮分析快照；<code>readouts-r02.json</code>补充赢家两侧和已有全注意力输出分解。公共13,526字段一致，最终以r02为准。两个execution日志只有连接提示，无模型运行输出。</p>
+<hr />
+<h2 id="_6">时间、运行与停止收据索引</h2>
+<p>下面是所收集JSON的原有时间字段与状态，不把预计结束时间当实际完成时间。未列时间的文件仍有原件链接。完整JSON全部保存在原文归档，不能以此索引中的标量代替完整嵌套内容。</p>
+<table>
+<thead>
+<tr>
+<th>原件</th>
+<th>原记录状态/阶段</th>
+<th>原时间字段（原时区）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-output-path-audit-v1-2026-11-01/summary.json">summary.json</a></td>
+<td>{}</td>
+<td>{}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-output-path-audit-v1-2026-11-01/verification.json">verification.json</a></td>
+<td>{"status": "passed", "scope": "CPU arithmetic and provenance; no independent model rerun", "model_calls": 0}</td>
+<td>{}</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_7">全部原始资产入口</h2>
+<p>本目录在固定提交下共有15个跟踪文件，包含代码、原回答、失败、收据和压缩证据；文件数不是样本数。<a href="../assets/062-cache-output-path-audit-v1-2026-11-01.tsv">逐文件完整账本</a> · <a href="https://github.com/yuxiexiong/acupuncture/tree/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-output-path-audit-v1-2026-11-01">原目录</a>。未复制模型权重、环境或凭据。</p></main></html>

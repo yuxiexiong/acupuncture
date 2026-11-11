@@ -1,0 +1,282 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>WIN-01 合同 r01：形成窗口与恢复关系、事实任务跨版本移植</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="win-01-r01">WIN-01 合同 r01：形成窗口与恢复关系、事实任务跨版本移植</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/window-recovery-win01-v1-2026-11-04/CONTRACT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/window-recovery-win01-v1-2026-11-04/CONTRACT.zh-CN.md">固定提交原件</a>；SHA-256：<code>4882a2cedc2813196ae7388de69abe755397363d91959384d4368e32018f8d7a</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="win-01-r01_1">WIN-01 合同 r01：形成窗口与恢复关系、事实任务跨版本移植</h1>
+<p>2026-11-04。依据：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-mechanism-r2-first-experiment-plan-v1-2026-11-04.zh-CN.md">设计稿 v2</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/window-recovery-win01-v1-2026-11-04/prep/PREP.zh-CN.md">冻结前准备</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-mechanism-alignment-r1-v1-2026-11-04/PROTOCOL_DIFFS.zh-CN.md">协议差异清单</a>。用户授权（2026-11-04）："同意，推进吧，直接跑完实验后再汇报"。探索性，两面板都已接触过，作者执行，未经独立评审。档位：<strong>推导</strong>＝有论证链；<strong>类比</strong>＝相邻证据；<strong>推测</strong>＝待验证。</p>
+<h2 id="0">0. 要回答什么</h2>
+<ul>
+<li><strong>W 块（关系 A 的条件）</strong>：同一任务、同一针，只改形成窗口，恢复臂相对 T 的效果是否随之改变。只回答"窗口是否改变恢复关系"，不区分"干预了哪段内容"还是"干预了多少位置"。缓存层面的解释只来自同窗口内的 R_all＋KV_pre 比较。</li>
+<li><strong>B 块（关系 B 的延伸）</strong>：事实任务上，在 τ 换入另一事实版本的干净状态，这套移植操作是否把回答带成供体的事实。</li>
+<li>两块共用工程，分别判定。D（写入/读取）不在本卡。</li>
+</ul>
+<h2 id="1">1. 固定条件</h2>
+<ul>
+<li>模型、引擎、聊天模板（<code>enable_thinking=False</code>）、停止集合、贪心解码：与阶段二、NCC 相同（共用 <code>early-input-control</code> 的 ControlEngine 与 <code>early-state-localization-v1</code> 的 <code>localize.py</code>）。不使用 fla/causal-conv1d 等非 torch 内核。</li>
+<li>切点 τ：处理最后一个提示 token 之前。最后提示 token 与生成全程不加针、不挂钩子。</li>
+<li><strong>针</strong>：</li>
+<li>L0/N4146/−1：R1 分歧所在；</li>
+<li>L1/N2765/−1：<strong>按已见差异选的对照</strong>（阶段二事实上只恢复 KV 就修好），两层通道不同，只能说"这两个针条件响应不同"。</li>
+<li><strong>剂量</strong>：各沿用原家族校准。事实：本题 f0 版提示上的 <code>engine.calibrate</code>（阶段二规则）。编号：NQ-01 对应题的 <code>QCR.nq_calibration</code>（NCC 规则）。每条记录写入实际每位置写入范数与位置数。跨任务比较时，校准文本不同保留为限制。</li>
+</ul>
+<h2 id="2">2. 输入</h2>
+<ul>
+<li>事实：阶段二开发面板 24 条＋历史复核面板 24 条（12＋12 个情景各两版），b、n 取 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/window-recovery-win01-v1-2026-11-04/prep/tokens.json"><code>prep/tokens.json</code></a>（48/48 与阶段二 width 一致）。</li>
+<li>编号：LVK 新面板 48 条（6 个情景），b、n 取 LVK 账本。</li>
+<li>b = 记录句（含换行）的最后一个 token（C1-P 规则，两任务相同）。</li>
+</ul>
+<h2 id="3">3. 形成窗口</h2>
+<table>
+<thead>
+<tr>
+<th>窗口</th>
+<th>加针位置</th>
+<th>事实实现</th>
+<th>编号实现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>W_all</td>
+<td>0..n−2</td>
+<td>单次前缀前向，<code>masked_injection</code> 全 True 掩码</td>
+<td>0..b 单次前向用全 True 掩码加针，再在 b+1..n−2 逐 token 加针（NCC 的 <code>form</code>）</td>
+</tr>
+<tr>
+<td>W_pre</td>
+<td>0..b（模板＋记录句）</td>
+<td>单次前缀前向，掩码只在 0..b 为 True</td>
+<td>0..b 单次前向加针，b+1..n−2 逐 token 不加针</td>
+</tr>
+<tr>
+<td>W_post</td>
+<td>b+1..n−2</td>
+<td>单次前缀前向，掩码只在 b+1..n−2 为 True</td>
+<td>NCC 原方式：0..b 无针，b+1..n−2 逐 token 加针</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>每个任务内三种窗口用同一条代码路径，只差加针位置。两任务的形成实现不同（单次前向 vs 分段），只在数值噪声级别上不同，这一点记为限制。</li>
+<li>窗口位置数逐题写入记录。事实上 W_pre 与 W_post 的位置数逐题相差 −14 到 +13；报告分面板给出，并作为限制写明。</li>
+</ul>
+<h2 id="4-t-donor-c">4. 臂（以该窗口的 T 为背景，在 τ 一次性替换，donor = 同输入的 C）</h2>
+<table>
+<thead>
+<tr>
+<th>臂</th>
+<th>替换的张量</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T</td>
+<td>无</td>
+</tr>
+<tr>
+<td>R_all</td>
+<td>全部线性层的 recurrent_states</td>
+</tr>
+<tr>
+<td>S_deep</td>
+<td>G 层（13,14,16,17,18,20,21,22,24,25,26,28,29,30）的 recurrent_states（= NCC TS）</td>
+</tr>
+<tr>
+<td>KV_all</td>
+<td>全部注意力层（3,7,11,15,19,23,27,31）的 keys、values</td>
+</tr>
+<tr>
+<td>R+KV_all</td>
+<td>R_all ∪ KV_all（卷积保持 T）</td>
+</tr>
+<tr>
+<td>R_all＋KV_pre</td>
+<td>R_all，加全部注意力层 keys/values 的<strong>位置 0..b</strong>（b+1 之后保持 T）；只在 W_all 下做</td>
+</tr>
+</tbody>
+</table>
+<p>另有 C（每输入一条）。每输入轨迹：C 1 条＋2 针 × 3 窗口 × 5 臂＋2 条 R_all＋KV_pre ＝ 33 条。</p>
+<h2 id="5-b">5. B 块（只在事实任务）</h2>
+<ul>
+<li>情景的两版互为供体。接收者 = 一版的 C，在 τ 换入另一版 C 的状态，两版各作一次接收者：</li>
+<li>Bx_R：全部 recurrent_states（与长度无关，48 个接收者）；</li>
+<li>Bx_S：G 层 recurrent_states（48 个接收者）；</li>
+<li>Bx_KV：全部 keys/values，只用于位置对齐的 22 对（44 个接收者）；</li>
+<li>Bx_all：全部 recurrent、conv、keys/values，只用于位置对齐的 22 对（44 个接收者）。</li>
+<li>共 184 条轨迹。</li>
+</ul>
+<h2 id="6">6. 读数</h2>
+<ul>
+<li><strong>首步</strong>：首 token 是否在停止集合，首 token 分类，t1 logits 的 sha256 与 top-5。</li>
+<li><strong>事实自然回答</strong>：最多 128 个新 token（阶段二设置）。正确性用盲读标签（§7）。另报两选一候选的对数似然（阶段二 <code>L.score</code>）作辅助，不代替正确性。</li>
+<li><strong>编号自然回答</strong>：最多 32 个新 token，<code>y_full</code> 精确判读，异常四类（NCC 定义）。编号沿用 32 而非设计稿 v2 写的统一 128：<code>y_full</code> 在 32 上定义，NVB 链的生成函数已冻结，改动会破坏桥接（见 DECISIONS D1）。</li>
+<li><strong>逐格报告</strong>：正确数、相对同窗口 T 的救回数与改坏数、停止数、异常类型、窗口位置数。</li>
+</ul>
+<h2 id="7">7. 事实回答盲读（判读范围写死）</h2>
+<ul>
+<li><strong>范围</strong>：W 块事实全部格与 B 块全部格。看到生成结果后不增不减，不用任何自动评分器筛选。</li>
+<li><strong>复用</strong>：W_all 下的 T、R_all、KV_all、R+KV_all 与 C，如果生成 token 与阶段二记录逐位相同，沿用阶段二标签；任一 token 不同则整格重读。</li>
+<li><strong>流程</strong>（照阶段二）：</li>
+<li>按情景分包，同一情景内相同文本只读一次；</li>
+<li>回答匿名编号，读者看不到条件；</li>
+<li>标签五类（follows_fact / other_fact / other_wrong / not_delivered / unclear），并按阶段二统一规则（以最后一个明确结论为准，规则文本 sha256 记入）归一；</li>
+<li>随机抽 15% 做二读，不一致的由作者按规则裁决并记录。</li>
+<li><strong>B 块</strong>：对接收者，other_fact 即"供体事实"，follows_fact 即"接收者事实"，其余为"其他"。</li>
+<li>没盲读的读数（首步停止、候选分数）只按其本身含义报告。</li>
+</ul>
+<h2 id="8-62">8. 判据（数据前写死，经 6.2 合成演示）</h2>
+<p>单位为输入；汇总时六场景（编号）或 24 个情景（事实）等权；场景分层 bootstrap 2000 次，种子 20261103，所有比较共用同一组重抽索引。</p>
+<p><strong>8.1 可检验性</strong>：某 (任务, 针, 窗口) 的 T 至少有 12/48 条答错，才检验该窗口下的恢复；否则记"损伤不足，不适用"。</p>
+<p><strong>8.2 臂效应</strong>：E(w, A) = Y(w, A) − Y(w, T)，逐输入。</p>
+<p><strong>8.3 窗口对恢复关系的作用</strong>：Δ = E(w1, A) − E(w2, A)，逐输入配对，给出 95% 区间。
+- <strong>"窗口改变恢复关系"</strong>：区间不含 0，且 |Δ| ≥ 0.20；
+- <strong>"无可检出差别"</strong>：区间完全落在 [−0.10, 0.10] 内；
+- 其余为<strong>"不可判"</strong>。</p>
+<p>只在两个窗口都可检验时判定。</p>
+<p><strong>8.4 主比较（预注册，Holm 不适用：探索性，全部报告）</strong></p>
+<table>
+<thead>
+<tr>
+<th>编号</th>
+<th>任务</th>
+<th>针</th>
+<th>比较</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>M1</td>
+<td>事实</td>
+<td>L0</td>
+<td>R_all：W_post vs W_all</td>
+</tr>
+<tr>
+<td>M2</td>
+<td>编号</td>
+<td>L0</td>
+<td>S_deep：W_post vs W_all</td>
+</tr>
+<tr>
+<td>M3</td>
+<td>两任务</td>
+<td>L0、L1</td>
+<td>R_all：W_post vs W_pre</td>
+</tr>
+<tr>
+<td>M4</td>
+<td>两任务</td>
+<td>L1</td>
+<td>KV_all：W_post vs W_all</td>
+</tr>
+<tr>
+<td>M5</td>
+<td>两任务</td>
+<td>L0、L1</td>
+<td>同窗口归属：W_all 下 [R_all＋KV_pre] − [R_all]，按 8.3 的规则判"有作用 / 无可检出差别 / 不可判"</td>
+</tr>
+</tbody>
+</table>
+<p>其余格全部报告，不作判定。</p>
+<p><strong>8.5 B 块</strong>：
+- 供体事实率 D(arm) = 回答为供体事实的接收者比例；
+- 零点 D0 = 同一批接收者的 C 回答为另一事实的比例。
+- 判定：
+  - <strong>"这套操作实现了转移"</strong>：D 的区间下界 ≥ D0 ＋ 0.20；
+  - <strong>"未实现转移"</strong>：上界 ≤ D0 ＋ 0.10；
+  - 其余<strong>"不可判"</strong>。</p>
+<h2 id="9">9. 工作预测（数据前登记，只写方向，<strong>推测</strong>）</h2>
+<ul>
+<li>M1：事实 L0 下，R_all 的效果在 W_post 大于 W_all。</li>
+<li>M2：编号 L0 下，S_deep 的效果在 W_all 小于 W_post（W_post 的 NCC 原结果为 48/48）。</li>
+<li>M3：W_pre 下 R_all 的效果与 W_all 接近，小于 W_post。</li>
+<li>M5：事实 L0 下，R_all＋KV_pre 的效果大于 R_all。</li>
+<li>B：Bx_R、Bx_S 实现转移（类比编号 CSx 的 32/38 供体答案）。</li>
+</ul>
+<p>预测失败照实记为科学失败，不调参。</p>
+<h2 id="10">10. 结果导向（数据前写死）</h2>
+<table>
+<thead>
+<tr>
+<th>观察</th>
+<th>能说</th>
+<th>下一步</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>M1 或 M2 判"窗口改变恢复关系"</td>
+<td>窗口改变了恢复关系，依赖"记录句之前的历史是否受干预"（不指定缓存）</td>
+<td>对预留条件（§11）逐格写方向预测并冻结，另卡运行；M5 决定 KV 归属能否列为候选环节</td>
+</tr>
+<tr>
+<td>M5 判"有作用"</td>
+<td>在全前缀混合背景里，记录句之前位置的 KV 历史参与答案恢复</td>
+<td>列为候选计算环节，预测兑现后才深入</td>
+</tr>
+<tr>
+<td>M1、M2 都判"无可检出差别"</td>
+<td>窗口解释不了 R1 分歧</td>
+<td>保留为任务条件分支，转向 B 块与任务结构比较</td>
+</tr>
+<tr>
+<td>结果混合</td>
+<td>存在交互</td>
+<td>只按格报告，先讨论，不自动加格、加针</td>
+</tr>
+<tr>
+<td>L0 与 L1 响应不同</td>
+<td>这两个针条件响应不同（不叫深度规律）</td>
+<td>把"针条件如何改变依赖关系"写成对 L2/L3/L5 的预测，先兑现</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>B 块</th>
+<th>能说</th>
+<th>不能说</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bx_R 或 Bx_S 实现转移</td>
+<td>这套操作下递推状态移植把答案选择带到了事实任务</td>
+<td>答案只存在递推状态里</td>
+</tr>
+<tr>
+<td>只有 Bx_KV 或 Bx_all 实现转移</td>
+<td>这套操作下 KV 移植实现了转移</td>
+<td>答案主要存在 KV 里</td>
+</tr>
+<tr>
+<td>都未实现</td>
+<td>这套移植操作没有实现转移</td>
+<td>关系 B 不适用于事实任务</td>
+</tr>
+</tbody>
+</table>
+<p>无损伤（不适用）、没拿到结果、合同执行失败分开记录。结果弱或不可判时，不加针、不改剂量、不换题。</p>
+<h2 id="11">11. 预留条件（本卡不运行）</h2>
+<p>L2/C5251/−1、L3/C7666/−1、L5/C2467/−1（阶段二固定面板），R0_L00/−1（XCHAN <code>directions-r01.json</code>，sha256 <code>2b24da54…</code>，写入 −1×scale×u）。W 块出结果后先写预测、冻结，再另卡运行。</p>
+<h2 id="12">12. 工程闸门（任一失败即停）</h2>
+<ol>
+<li><strong>事实桥接</strong>：W_all 下 T、R_all、KV_all、R+KV_all 与 C 的生成 token、t1 logits sha256、候选对数似然，逐位等于阶段二 G 记录（TTT、TCT、CTT、CCT、CCC）。若不等：预检阶段允许一次有记录的修复；正式阶段停止。</li>
+<li><strong>编号桥接</strong>：C 的 t1 bf16 与自然 token 等于 CGV G1 的 C；L0 W_post 的 T 与 S_deep 等于 NCC 正式记录的 T 与 TS。形成 hash：C_b 等于 LVK；L0 W_post 的 T_b 等于 LVK。</li>
+<li><strong>结构</strong>：
+   - 所有窗口下第 0..L 层缓存等于 C；
+   - W_post 下全部注意力层 keys/values 的位置 0..b 等于 C；
+   - W_pre 下位置 0..b 的形成与 W_all 逐位相同（同一段前向）。</li>
+<li><strong>替换</strong>：目标张量（或位置切片）等于供体，其余张量与簿记逐位等于接收者，供体与接收者前后不变。S_deep 的目标集合等于 NCC <code>targets('S')</code>。</li>
+<li><strong>写入审计</strong>：每针每窗口实际每位置写入范数相对目标误差 ≤ 1%；掩码位置数等于设计。</li>
+<li><strong>B 块对齐</strong>：位置相关移植只用 prep 判为位置对齐的 22 对，接收者与供体的 n、b 相同。</li>
+<li><strong>预检额外</strong>：自换（接收者作供体）缓存不变、t1 不变。</li>
+</ol>
+<h2 id="13">13. 规模、预算、停止</h2>
+<ul>
+<li>事实：24 对 × 2 × 33 ＋ 184 ＝ 1,768 条生成（≤128 token）＋每条 2 个候选打分。编号：48 × 33 ＝ 1,584 条（≤32 token）。</li>
+<li>预检：事实 1 对（RD01，开发面板）＋编号 2 条（NCC 预检输入），单卡，上限 0.4 GPUh。</li>
+<li>正式：双卡，上限 6 GPUh；存储上限 12 GiB（只存编号 t1 logits 与记录，事实不存张量）。外推超限则不开正式。</li>
+<li>工程闸门失败 = 合同执行失败，信息量为零。预检允许一次有记录的修复；正式开始后不修、不重试。</li>
+<li>完成即停。</li>
+</ul></main></html>

@@ -1,0 +1,143 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>QKF-01（共同偏移的 q/k 分量与完整回答效应）结果报告</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="qkf-01-qk">QKF-01（共同偏移的 q/k 分量与完整回答效应）结果报告</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-qk-component-factor-v1-2026-11-02/REPORT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-qk-component-factor-v1-2026-11-02/REPORT.zh-CN.md">固定提交原件</a>；SHA-256：<code>ebcc8ad4d4a9e922d9ef862b9b44bea750dbd3892d66ad5ec09132382df24a49</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="qkf-01-qk_1">QKF-01（共同偏移的 q/k 分量与完整回答效应）结果报告</h1>
+<p>日期：2026-11-02。<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-qk-component-factor-v1-2026-11-02/CONTRACT.zh-CN.md">合同 r01</a>；<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-qk-component-factor-v1-2026-11-02/DECISIONS.zh-CN.md">决策 D1–D4</a>；计划 v1（7289925d，评审撰写）。代码 <code>1691c74</code>，freeze-r01 <code>8e07a0df…ddf6</code>。单半臂与 r_post 臂运行前无输出。同一助手实现、运行与撰写。<strong>相对计划有一处事前修订</strong>：r_post 逐头配平容差 5% → 6%（决策 D3，依据新增行为输出前的 CPU 精确模拟，最大偏差 5.03%）。</p>
+<h2 id="1">1. 结论（限制先说）</h2>
+<ol>
+<li><strong>加入侧的方向特异性弱。</strong> 把与共同偏移 k 半“首读旧槽卷积贡献相同”的随机向量（r_post）加到干净 k 上，同样会逐 token 复现大量原错误：B = 0.74（N4146）、0.39（N1210）、0.45（R0）。共同偏移 k 半相对它的优势只有 0.26 / 0.55 / 0.09——N4146 刚过 0.25 门槛，R0 未过。所以“k 被扰动就会出首列错误”在相当程度上不依赖方向。</li>
+<li><strong>去除侧的方向特异性强。</strong> 从受针 k 减去共同偏移的 k 半就能修复（见第 3 条）；减去等强的随机向量不但不修复，还更差（P = −0.03 / −0.36 / −1.23）。</li>
+<li><strong>预注册的“k 强于 q”在 N4146、N1210 成立，R0 未达到排序标准。</strong>
+   - 只去除 k 半：N4146 16 → 44/48（P = 0.87），N1210 28 → 48/48（1.00），R0 38 → 48/48（1.00）；只去除 q 半：16 → 16、28 → 28、38 → 40（P = 0 / 0 / 0.23）。
+   - 只加入 k 半：在原错误上 B = 1.00 / 0.93 / 0.55；只加入 q 半：0.15 / 0 / 0。
+   - R0 的 k 去除达标，但 k 加入的复现只出现在 2 个场景（需要 4 个），排序判据的场景条件也未满足，所以 R0 记“无排序”。
+   - 对两档随机的优势：k 单半在 N4146、N1210 去除和加入两侧都过（加入侧相对 r_post 在 N4146 只有 0.26）；R0 只有去除侧过。</li>
+<li><strong>不能说 q 没用；q 单半的恢复作用弱、未达预定标准。</strong> N4146 中 q、k 同时处理比只处理 k 多修复 3 条（47 对 44），加入 q 偏移也把 5 条原本答对的格改错。另外， 首读重建的几何显示：共同偏移的 q 半几乎不改变实际参与计算的归一化 q（每头中位余弦 0.98），k 半则把归一化 k 转开约 45°（余弦约 0.71，几乎就是受针 vs 干净的全部 k 差异 0.68–0.72）。所以 q 单半作用弱至少部分是因为它在归一化后的 q 上几乎没造成改变，不能推出读取路径与此无关。</li>
+<li><strong>交互（两种读数分别报告）</strong>：完整交付上未达到预设交互标准（k 单半已近饱和）；固定竞争者分差 M 上有正的非加和（I_M = 0.29–0.58，三方向都达到描述门槛），随机档没有。连续分差的非加和不能直接解释为内部协作。</li>
+<li>不能说：读取/写入机制已分离；k 是唯一通路；共同偏移的方向本身是致错的充分特征（加入侧随机也能致错）。</li>
+<li>工程全部通过：C/T 哈希 = QCD G；8 类参照臂与 QCO 逐位重放（证明观察器只读）；预检零编辑逐位复现 V/F；r_pre、r_post 配平检查对全部输入通过（逐头最大相对差 5.03%，在 6% 容差内，与 CPU 预模拟一致）。</li>
+</ol>
+<h2 id="2-48-y_full-p-b">2. 主表（48 输入；Y_full 交付数；括号内为去除侧 P 或加入侧 B）</h2>
+<table>
+<thead>
+<tr>
+<th>方向</th>
+<th style="text-align: right;">V</th>
+<th style="text-align: right;">F</th>
+<th>R_μ,q</th>
+<th>R_μ,k</th>
+<th>R_μ,qk</th>
+<th>A_μ,q</th>
+<th>A_μ,k</th>
+<th>A_μ,qk</th>
+<th>R_post,k</th>
+<th>A_post,k</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>N4146</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">48</td>
+<td>16 (0)</td>
+<td>44 (0.87)</td>
+<td>47 (0.97)</td>
+<td>43 (0.15)</td>
+<td>16 (1.00)</td>
+<td>16 (1.00)</td>
+<td>15 (−0.03)</td>
+<td>23 (0.74)</td>
+</tr>
+<tr>
+<td>N1210</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">48</td>
+<td>28 (0)</td>
+<td>48 (1.00)</td>
+<td>48 (1.00)</td>
+<td>48 (0)</td>
+<td>29 (0.93)</td>
+<td>29 (0.93)</td>
+<td>20 (−0.36)</td>
+<td>35 (0.39)</td>
+</tr>
+<tr>
+<td>R0</td>
+<td style="text-align: right;">38</td>
+<td style="text-align: right;">48</td>
+<td>40 (0.23)</td>
+<td>48 (1.00)</td>
+<td>48 (1.00)</td>
+<td>48 (0)</td>
+<td>42 (0.55)</td>
+<td>40 (0.77)</td>
+<td>26 (−1.23)</td>
+<td>41 (0.45)</td>
+</tr>
+</tbody>
+</table>
+<p>去除 k 半没有改坏任何原本答对的格；加入 q 半在 N4146 把 5 个原本答对的格改错。r_pre 档与 r_post 档结论一致（见 <code>analysis/qkf-readouts-r01.json</code>）。</p>
+<p>首读归一化 q/k 与参照的每头中位余弦（q, k）：V 对 F (0.96, 0.68–0.72)；A_μ,k 对 F (0.99, 0.69–0.73)；A_μ,q 对 F (0.98, 1.00)；A_post,qk 对 F (0.96, 0.77–0.78)；A_pre,qk 对 F (0.97–0.98, 0.80–0.81)。</p>
+<h2 id="3">3. 执行</h2>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th style="text-align: right;">形成</th>
+<th style="text-align: right;">自然轨迹</th>
+<th style="text-align: right;">实际解码前向</th>
+<th style="text-align: right;">墙钟（每 worker）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>预检</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">140</td>
+<td style="text-align: right;">648</td>
+<td style="text-align: right;">117 s</td>
+</tr>
+<tr>
+<td>正式</td>
+<td style="text-align: right;">192</td>
+<td style="text-align: right;">3072</td>
+<td style="text-align: right;">见回执</td>
+<td style="text-align: right;">1225 / 932 s</td>
+</tr>
+</tbody>
+</table>
+<p>合计约 0.63 GPU 设备小时（上限 2）。x_now 与 logits 张量在服务器，哈希在 receipt。</p>
+<h2 id="4">4. 对主线的含义</h2>
+<ul>
+<li>针在末端 q/k 上造成的共同偏移，其行为作用几乎全部经由 <strong>k 半</strong>：去掉它就修复，加上它就重现（两个方向强、R0 只有去除侧强）。</li>
+<li>但 k 对扰动本身很敏感：等强随机扰动加到 k 上也常常导致同样的首列错误。两侧证据不对称：去掉这个特定偏移的修复明显优于随机；致错则有多种扰动都能做到。首读归一化 k 的转动（跨头汇总中位余弦约 0.71）与行为变化同时出现，但角度没有被单独操纵，<strong>不能说“k 转开约 45° 就会选第一条”</strong>，45° 也不是致错阈值。（更正初稿此句。）</li>
+<li>下一个问题自然落在 k 进入门控 delta 更新的环节：k 被转开后，状态更新（S·k 的预测与修正）怎样把“首列”变成默认答案。这需要新的计划；本轮按合同结束，不拆层、不扫头。</li>
+</ul>
+<h2 id="5">5. 可以说 / 不可以说</h2>
+<table>
+<thead>
+<tr>
+<th>可以说</th>
+<th>不可以说</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>去除共同偏移的 k 半就几乎完全修复 V-only 错误（3/3 方向），去除 q 半基本无效</td>
+<td>q/读取路径无关（q 半几乎没改变归一化 q）</td>
+</tr>
+<tr>
+<td>“k 强于 q”的预注册预测在 N4146、N1210 成立</td>
+<td>在所有方向成立（R0 未达标准）</td>
+</tr>
+<tr>
+<td>加入侧：等强随机扰动 k 也能复现大量首列错误</td>
+<td>共同偏移的方向是致错的特异特征</td>
+</tr>
+<tr>
+<td>共同偏移的 k 半与首读归一化 k 的转动（中位余弦约 0.71）同时出现，与受针 vs 干净的差相当</td>
+<td>k 转开约 45° 就致错；读取/写入机制已分离；q 没用</td>
+</tr>
+</tbody>
+</table></main></html>

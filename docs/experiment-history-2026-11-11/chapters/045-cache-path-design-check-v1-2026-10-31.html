@@ -1,0 +1,441 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>045．早期路径设计的合成数值检查</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="045">045．早期路径设计的合成数值检查</h1>
+<p><a href="../README.zh-CN.html">返回总时间线</a></p>
+<p><strong>时间定位</strong>：版本/记录日期 2026-10-31；未从所选收据确定完整运行起止，不据目录名补写时刻。</p>
+<p><strong>当时的目的与设计</strong></p>
+<p>对当时受控S/O路径草案做CPU合成检查和反例，不调用真实模型。</p>
+<p><strong>实际过程、结果与后来更正</strong></p>
+<p>合成反例显示可保持指定乘积却形成原轨迹族外状态，不能据原合成检查宣布已排除拼接失配。它是设计检查，不是Qwen真实模型失配结果。</p>
+<p><strong>来源身份</strong>：<code>cache-path-design-check-v1-2026-10-31</code>；本章主体来源提交 <code>7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8</code>。下方原文中的状态是各文件写作时的状态，不能把早期“尚未运行”覆盖后期正式收据，也不能将后期结果倒填进早期设计。</p>
+<h2 id="_1">原设计、执行过程、结果与更正全文</h2>
+<p>以下按“设计与题目 → 工程/执行记录 → 结果/更正 → 其他历史说明”组织；同类内没有可靠时间时保留路径顺序，不冒充严格先后。正文未删段；仅为本章节重排标题层级、把相对链接指向固定提交。原始字节另外完整保存。</p>
+<h3 id="1">原件 1：写入与旧状态处理：带明确路径阻断的受控实验设计</h3>
+<p>原路径：<code>docs/cache-mechanism-controlled-path-design-r04-2026-10-31.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-mechanism-controlled-path-design-r04-2026-10-31.zh-CN.md">固定提交原文</a> · <a href="../library/95659d419d0e917f.html">单独阅读副本</a>；SHA-256：<code>95659d419d0e917f0117ef1cb4dc4a8a971cbc2368774643946e63437483cdfc</code>。</p>
+<hr />
+<h4 id="_2">写入与旧状态处理：带明确路径阻断的受控实验设计</h4>
+<h5 id="material-passport">Material Passport</h5>
+<p>2026-10-31；design-r04；academic-research-suite / experiment-agent / plan。用户要求：保留中心问题，补齐路径对照，先自行核查，不运行GPU。<strong>本轮只完成设计、源码/文献核对和CPU合成代数检查；模型前向、GPU、生成、训练均为0。</strong> 本文件是具体设计，尚非已通过真实模型工程验收的执行合同。</p>
+<h5 id="so">针对补偿与S/O失配的复审：当前解释上限</h5>
+<p><strong>结论：补偿仍可能产生原始轨迹不会形成的变量组合与状态；S/O四格仍不能单独区分原始机制与拼接匹配反应。</strong> r04保留对明确人工操作的受控效应定义，但不足以单独确证“原插针通过写入/旧状态处理及哪条自然历史路径造成异常”。不把下方完整网格视为已通过该科学充分性检查的待运行方案。</p>
+<p>这里的“原始轨迹”指没有额外补偿、驱动钉住或末端拼接的C/T轨迹，不声称插针T来自训练分布。机制主张需要解释的是这些原始轨迹中的现象，而不仅是新操作后模型怎样反应。</p>
+<h6 id="1_1">1. 补偿解决了方程一致性，没有解决联合分布与原现象归因</h6>
+<p>βv保持不变确实保证：给定k时加性写入项不变。这一点没有推翻。在卷积后递推入口替换value、且该值仅用于递推的条件下，也不能简单把“value变大”当作额外独立通路：理想实数计算仍由目标A、B决定。实际浮点乘减误差另须验收。</p>
+<p>但α、β、k、v原本由同一隐藏轨迹及卷积历史生成。拼入β_r与p_w/β_r，只保证局部更新式可执行，不保证它们能由原C/T的共同输入产生，也不保证形成的S与查询、卷积及其他缓存相匹配。全过程钉住来源驱动又取消了一部分原模型的适应关系；完整运行P是修改后程序的一条一致轨迹，不因此成为原始C/T动力学的自然样本。</p>
+<p>一个CPU合成反例：设旧状态为1、α=0.8、k=1，原轨迹族始终v=1、β∈[0.2,0.4]。新状态在[0.84,0.88]。保持原p=0.2、把β换成0.4，需要v*=0.5，得到S=0.68。更新式完全正确、没有溢出，但状态已超出这个原轨迹族的范围。</p>
+<p>该反例证明“代数一致⇒原轨迹支持”不成立，<strong>不证明Qwen实际混合状态已经分布外</strong>；当前缺少真实内部轨迹，不能作后一断言。反事实状态未出现过也不自动使实验无效，限制的是把该实验效果外推为原始成因。</p>
+<h6 id="2">2. 四格测得替换反应，不会自动鉴别失配</h6>
+<p>Y10−Y00确实是固定O时替换S的受控效果；Y01−Y00及交互同样有定义。但其中可以包含状态与读取条件失配产生的响应。失配也是模型的真实反应，区别在于它可能由我们的拼接造成，而不是原插针产生异常的那段机制。</p>
+<p>新增反例比较两个读出函数：</p>
+<p>[
+F_{joint}(s,o)=\min(s,o),\qquad
+F_{match}(s,o)=o\max(0,1-|s-o|).
+]</p>
+<p>前者为联合限制，后者为O内容读出乘以一致性门。在四个角点(0,0)、(1,0)、(0,1)、(1,1)上，两者完全相同：0、0、0、1；在所有对角线s=o∈[0,1]上也相同。四格及原配对端点不能区分这两种函数；它们在其他点并不相同。</p>
+<p>这说明“只有联合格有效”不能单独认证自然协作，而不只是提醒置信区间可能很宽。它不证明Qwen确有显式一致性门，也不否认四格差值的受控因果意义。联合计算与匹配要求在真实模型中也未必互斥。</p>
+<p>上一轮合成检查只验证了预选的S-only/O-only/joint等函数可被四格区分，没有纳入能给出相同四格的匹配反应模型。因此不能把它称为排除失配的设计验收。</p>
+<h6 id="3">3. 本版对中心问题能回答到哪一级</h6>
+<table>
+<thead>
+<tr>
+<th>层级</th>
+<th>能否由r04单独得到</th>
+<th>准确表述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>补偿后哪项局部计算保持不变</td>
+<td>实数代数可验证；真实数值实现未验收</td>
+<td>W固定A、R固定B的受控定义成立，不等于自然独立</td>
+</tr>
+<tr>
+<td>人为固定另一过程时，改变W/R会否改变输出</td>
+<td>若未来正确执行，可测；目前没有模型结果</td>
+<td>对这套补偿与驱动钉住操作的条件性响应</td>
+</tr>
+<tr>
+<td>固定O换S或固定S换O会否改变输出</td>
+<td>若未来正确执行，可测</td>
+<td>缓存替换的条件性响应，可能包含匹配效应</td>
+</tr>
+<tr>
+<td>原始插针主要改变写入还是旧状态处理，因而造成异常</td>
+<td>不充分</td>
+<td>必须与原C/T过程中的差异及可证伪预测对应，不能按人工恢复强弱认定</td>
+</tr>
+<tr>
+<td>原始异常真正由S承载、由O承载或自然协作造成</td>
+<td>不充分</td>
+<td>四格模式缺乏对匹配反应的唯一解释，需要额外依据</td>
+</tr>
+</tbody>
+</table>
+<p>不将“受控响应”重新命名为原核心问题的完整答案。它可以约束、支持候选解释，但不自动确证，也不能以某个补偿修复失败排除对应机制。</p>
+<h6 id="4">4. 如何使用这版，而不是又换核心问题</h6>
+<p>保留补偿和四格作为<strong>有明确解释边界的辅助机制探针</strong>。先从原始C/T轨迹提出需要它检验的具体机制预测；如果某种原始轨迹上的变化根本没有发生，对应过程叙述就不能成立。反过来，发生过变化本身也不是充分因果证据。</p>
+<p>要把探针效果上升为原机制解释，还须有不依赖同一补偿/拼接构造的证据：例如对未额外拼接轨迹的事前状态/读出/行为预测，或不同干预定义下具有可解释的一致结果。必须说明候选机制与失配解释分别预测什么，不能把“多加几个对照”当自动认证。距离小、范数正常、双向有效或随机对照无效，都不能单独证明自然合理性。</p>
+<p>这不是要求所有反事实都来自训练分布，也不是否定状态干预方法。当前缺的是把<strong>新操作的效应</strong>可靠连接到<strong>原始异常的形成原因</strong>的证据。中心问题保持不变；不启动下方全量网格，不在本次复审中另造一版更大方案。</p>
+<p>新增<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-path-design-check-v1-2026-10-31/limits_check.py">反例代码</a>及<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-path-design-check-v1-2026-10-31/limits-check-result.json">结果</a>只使用Python标准库和合成标量，未运行模型。原合成检查与原结果完整保留。方法风险与<a href="https://arxiv.org/html/2309.16042v2">Activation Patching原论文§6</a>讨论的分布外干预问题一致；该论文不是当前Qwen实际失配的证据。</p>
+<h5 id="1_2">1. 中心问题、可回答的量与事先声明的边界</h5>
+<p><strong>原干预怎样改变每步写入，以及旧信号的保留、衰减和修正；这些变化分别或共同怎样影响撤针后的回答？</strong></p>
+<p>本版分开两个相连的因果问题：</p>
+<ol>
+<li>在同一共享key序列下，改变实际加性写入、或改变完整旧状态处理系数，会形成什么具有行为作用的末端递推状态？</li>
+<li>这些过程造成的作用，经撤针时的目标递推状态承载，还是已在前缀期间传入其他缓存？两者是否必须共同改变才出现效果？</li>
+</ol>
+<p>这次每个问题都有同一输出终点上的受控比较。它们识别的是<strong>指定key条件、来源轨迹和撤针边界下的受控过程与通道效应</strong>，不是无约定的自然贡献百分比。key方向同时参与修正与写入，它的作用单列为共同部分，不能强行归为其中一边。这个边界在实验前确定，不作为结果不理想后的改题理由。</p>
+<p>若要求把所有key变化也唯一分成两份，同时保证每一步仍是原更新规则，一般做不到：修正方向与写入的key方向受同一变量约束。r02已给出反例。本版对该部分报告联合效应及交互；除此之外，不再用value或衰减门代替完整过程。</p>
+<h5 id="2-value">2. 用实际写入量分离过程，而不是只换value/衰减门</h5>
+<p>原规则采用key×value方向：</p>
+<p>[
+S_t=\alpha_t(I-\beta_t k_tk_t^\top)S_{t-1}+\beta_t k_tv_t^\top.
+]</p>
+<p>定义实际加性写入的value侧向量 (p_t=\beta_tv_t)，仅改变参数表示：</p>
+<p>[
+S_t=\underbrace{\alpha_t(I-\beta_t k_tk_t^\top)}<em>{A_t}S</em>{t-1}
++\underbrace{k_tp_t^\top}_{B_t}.
+]</p>
+<p>在固定k下：</p>
+<ul>
+<li><strong>写入因素W：</strong> 改p，固定α、β，因此整个A不变，B改变；包括原β对写入幅度的影响，不再只比较v。</li>
+<li><strong>旧状态处理因素R：</strong> 改(α,β)，固定p，因此整个B不变，A的衰减和沿当前key的修正强度均改变，不再只比较α。</li>
+<li><strong>共享方向因素K：</strong> 改k，且在A、B中同步使用；其影响归为共同部分。</li>
+</ul>
+<h6 id="_3">β共享怎样保持一致</h6>
+<p>组合使用β_r与p_w时，实际传入原递推的value为 (v^<em>=p_w/\beta_r)。这样同一份β_r仍用于修正和写入；只是同步补偿value，让 (\beta_r v^</em>=p_w)。例如β从0.2改到0.4、要保持p=0.6，value就从3改为1.5。</p>
+<p>这是一个明确的联合控制操作：<strong>为了只改变旧状态处理，补偿写入量，而不是宣称β天然只影响旧状态。</strong> 不能把所得效果解释为单独β节点的自然效果。</p>
+<p>若实际存储β为0且目标p非0，该组合不可实现；停止该配对，不加epsilon、不截断、不改题。β很小造成溢出、不可接受的补偿误差时同样停止；记录原值、有效value和误差。合成实数验证不替代BF16及真实内核验收。补偿value可能超出原轨迹取值，须披露；“原规则可执行”不等于自然分布内。</p>
+<h5 id="3_1">3. 固定对象与切断时刻</h5>
+<p>保持原Qwen3.5-4B固定revision <code>851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a</code>、权重、校准、剂量、BF16/eager、模板及解码设置。锚点仍为L0/C4146/−1和L12/C3621/−1；目标为组4的L16–18全部递推头，不扫新层、头或通道。</p>
+<p>输入沿用VAR01、VAR02、VRD01、VRD02、VRL01、VRL02六旧情景，各两事实版本，共12输入；不是独立新题验证。C/T均处理相同token序列。固定切断时刻τ为<code>prompt[:-1]</code>处理完成后，最后提示token尚未读取。</p>
+<p>τ处将完整有效推理状态分成两份：</p>
+<ul>
+<li><strong>S：</strong> L16–18的递推矩阵。</li>
+<li><strong>O：</strong> 其余全部持久状态，包括上述层的卷积状态、其他递推状态、所有KV。位置、mask、长度、初始化标记等管理字段完整审计并保持同一固定前缀身份。</li>
+</ul>
+<p>τ之后不再插原针或过程钩子。统一读取程序记为 (F(S,O;x_{last}))：从该完整状态读取同一个末提示token，得到同一输出读数。计算函数与设置固定，当前查询和下游计算正常响应输入状态。</p>
+<p><strong>这里阻断的是τ之前形成并保存的历史路径，不是冻结τ之后所有计算。</strong> 后者会把状态影响输出所必需的读取也切断。首步logit是最清楚的主要终点；候选评分和自由生成分别标明包含τ后的持续计算，不声称已分解其内部每一条路径。</p>
+<h5 id="4_1">4. 第一组对照：真正隔离写入与旧状态处理</h5>
+<h6 id="41">4.1 来源与八种状态</h6>
+<p>取得未经额外过程修改的C/T原轨迹，保存每token、每目标层/头的α、β、归一化k、v，计算p。0表示C来源，1表示T来源。</p>
+<p>对每种(w,r,k)∈{0,1}³，从零初态递推：</p>
+<p>[
+S_t^{wrk}=\alpha_t^r(I-\beta_t^r k_t^k(k_t^k)^\top)S_{t-1}^{wrk}
++k_t^k(p_t^w)^\top.
+]</p>
+<p>同一步只有一份key和β。八种配置覆盖W、R、K的全部条件组合；这是对三个明确因素的比较，不恢复旧组前/组后八组合方案。</p>
+<p>每条系数序列取自预先记录的来源。<strong>前缀内状态/读出变化重新改变目标层的后续写入或旧状态驱动的路径被阻断</strong>：这正是本组的控制条件，不能再称其为完整Live轨迹的自然效果。</p>
+<h6 id="42">4.2 同一终点读取</h6>
+<p>每个S_τ^{wrk}分别与原O_C、O_T配合，读取同一末提示token，记为Y(w,r,k;b)，b是读取背景C或T。</p>
+<table>
+<thead>
+<tr>
+<th>比较</th>
+<th>保留的路径</th>
+<th>阻断的路径</th>
+<th>识别的作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>固定r、k、O_b，只变w</td>
+<td>p变化→目标递推积累→τ末端S→统一读取</td>
+<td>p变化再改变目标α/β/key序列；前缀输出改变O</td>
+<td>在该key/旧处理/背景下，写入量改变经末端S到读数的作用</td>
+</tr>
+<tr>
+<td>固定w、k、O_b，只变r</td>
+<td>旧状态算子变化→目标递推积累→τ末端S→统一读取</td>
+<td>算子变化再改变目标写入量p/key序列；前缀输出改变O</td>
+<td>在该key/写入/背景下，旧状态处理改变经末端S到读数的作用</td>
+</tr>
+<tr>
+<td>固定w、r、O_b，只变k</td>
+<td>同一key同步改变修正与写入→S→读取</td>
+<td>重新改变p、α、β序列；前缀输出改变O</td>
+<td>共享方向的共同作用，不能独占归为写入或修正</td>
+</tr>
+</tbody>
+</table>
+<p>关键区别：这些比较在<strong>整个前缀序列</strong>上固定另一个过程的驱动，不只是当步影子对照。结论的终点也是模型输出，不是把状态范数当回答。</p>
+<p>分别报告ΔW(r,k;b)、ΔR(w,k;b)、ΔK(w,r;b)及条件交互；不跨背景平均后宣布唯一主因，不按范数或参数改动幅度给机制排名。S^{000}、S^{111}应分别重建原S_C、S_T，是工程验收；其混合配置是否改变输出是实测问题。</p>
+<h5 id="5-so">5. 第二组对照：补齐“效应留在S，还是经前缀传到O”的路径</h5>
+<p>第一组有意阻断前缀其他状态变化。为了检验它遗漏了多少作用，对两个核心过程W、R都补同一套路径对照；不看结果选择只补某一边。</p>
+<h6 id="51-p">5.1 构造完整过程轨迹P</h6>
+<p>对接收背景b（C或T），供体d为另一来源：</p>
+<ul>
+<li>P_W：每一步固定使用p_d、(α_b,β_b)、k_b。</li>
+<li>P_R：每一步固定使用p_b、(α_d,β_d)、k_b，并用补偿value维持实际写入量。</li>
+</ul>
+<p>在完整模型前缀前向中，将目标递推驱动钉在上述序列；q、z、残差及其他层按当前轨迹计算。目标状态可影响其他状态O；<strong>O或上游hidden再改变目标驱动的回路仍被上述钉住操作截断</strong>。固定token条件下不存在逆向写回上游层的假设；被截断的实际跨层边以源码为准。</p>
+<p>因此P_W/P_R的目标末状态必须分别等于第一组对应S。这个一致性证明两组测的是同一个受控过程；不一致则停在工程层，不能用两组不同操作拼接归因。</p>
+<h6 id="52">5.2 在τ处做四格，明确实际阻断</h6>
+<p>令原接收轨迹为(S_b,O_b)，完整过程轨迹为(S_P,O_P)。四格统一用同一个F：</p>
+<table>
+<thead>
+<tr>
+<th>格</th>
+<th>输入完整状态</th>
+<th>保留什么</th>
+<th>在τ处阻断什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Y00</td>
+<td>(S_b,O_b)</td>
+<td>原接收背景</td>
+<td>两类过程造成的历史变化都不保留</td>
+</tr>
+<tr>
+<td>Y10</td>
+<td>(S_P,O_b)</td>
+<td>过程→末端目标S→读取</td>
+<td>撤销过程在其他缓存O中留下的变化</td>
+</tr>
+<tr>
+<td>Y01</td>
+<td>(S_b,O_P)</td>
+<td>过程→前缀层间传播→其他缓存O→读取</td>
+<td>撤销末端目标S变化，但不撤销它此前已传出的历史后果</td>
+</tr>
+<tr>
+<td>Y11</td>
+<td>(S_P,O_P)</td>
+<td>两类历史通道共同保留</td>
+<td>不做末端通道阻断；即完整受控过程结果</td>
+</tr>
+</tbody>
+</table>
+<p>Y10已在第一组计算，Y00为原参考。每条P只需新增Y01、Y11读取。<strong>不能用“总效果减单步状态差”代替这些交叉格。</strong> 两个交叉格仍是人工状态拼接，只支持所定义背景下的通道对照，不自动认证自然中介唯一性。</p>
+<p>报告：</p>
+<p>[
+E_S^0=Y10-Y00,\quad E_O^0=Y01-Y00,\quad I=Y11-Y10-Y01+Y00,
+]
+[
+TE=Y11-Y00=E_S^0+E_O^0+I.
+]</p>
+<p>同时报告另一背景下的条件效应Y11−Y01、Y11−Y10，不把交互偷偷分给某一路。这里的“直接/间接”改用更准确的名字：<strong>末端S通道、其他历史O通道、二者交互。</strong> 不声称S通道绕过读取，也不把O通道等同某个特定KV层。</p>
+<p>这与旧四格的增量在于：供体P由一个严格隔离的写入或旧处理过程形成；因此可以把过程因素与承载路径连接起来。旧整块C/T交换只说明状态组合的作用，不能给出这个过程来源。</p>
+<h5 id="6">6. 到底能区分哪些结果</h5>
+<table>
+<thead>
+<tr>
+<th>结果模式</th>
+<th>可支持/削弱的解释</th>
+<th>保留的边界</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>固定R/K/O时W改变读数；R对照较弱</td>
+<td>写入量改变经末端S的受控作用存在；纯旧处理解释不足以描述该对照</td>
+<td>不是写入对原始异常的唯一自然贡献，作用可依赖key与读取背景</td>
+</tr>
+<tr>
+<td>固定W/K/O时R改变读数</td>
+<td>衰减和定向修正强度改变，在写入量相同条件下仍有作用</td>
+<td>key方向部分另列，不以效果大小宣布普遍主导</td>
+</tr>
+<tr>
+<td>只有W、R共同切换才明显</td>
+<td>形成过程存在条件依赖；单独切换不充分</td>
+<td>输出非线性、抵消和状态匹配仍须保留，不能仅凭交互命名神经协作</td>
+</tr>
+<tr>
+<td>K切换改变结果，或W/R作用依赖K</td>
+<td>共享方向不能从解释中省略</td>
+<td>不把K硬拆成纯写入/纯修正；这是预定共同项</td>
+</tr>
+<tr>
+<td>Y10与Y11同向，Y01较弱、交互小</td>
+<td>在该人工组合下，固定O替换S足以产生相应响应</td>
+<td>不等于原异常主要由S承载；“较弱”非严格零，仍可能有匹配反应</td>
+</tr>
+<tr>
+<td>Y10弱，Y01与Y11明显</td>
+<td>在该人工组合下，固定S替换O产生相应响应</td>
+<td>不等于原异常已证明经O传播；O是完整剩余状态，且响应可能包含失配</td>
+</tr>
+<tr>
+<td>Y10/Y01单独弱，Y11明显</td>
+<td>两通道联合条件重要</td>
+<td>不能区分所有匹配与非线性解释，不强行分配份额</td>
+</tr>
+<tr>
+<td>总效果小，Y10/Y01相反</td>
+<td>可能有通道抵消，不能说过程无作用</td>
+<td>需逐题、同终点检查，不能只看均值</td>
+</tr>
+<tr>
+<td>只有交叉格异常，完整P无对应效果</td>
+<td>拼接反应或补偿仍可解释</td>
+<td>不把交叉格异常说成原模型自然机制</td>
+</tr>
+<tr>
+<td>状态/局部读出改变但Y无变化</td>
+<td>找到形成关系，未建立该行为终点的效应</td>
+<td>不自动扩模型、改剂量或换问题</td>
+</tr>
+</tbody>
+</table>
+<p>所有判断先于看新结果定义；报告连续效应、逐题反例与数值误差，不把六情景“不显著”写成排除机制。此设计能区分上述受控解释，不承诺一次实验消除所有分布外或自然中介歧义。</p>
+<h5 id="7">7. 同一个输出终点与真实回答</h5>
+<p>主要终点为末提示token后的原始logit差及原D、首步EOS；固定比较token取同题原T最高EOS与原C最高非EOS，来源ID在新增干预前锁定。它不受后续生成文字反馈影响。</p>
+<p>原候选逐token评分与两事实S仍保留，用target_index定向。它测固定候选序列的响应，包含τ后的动态计算，不冒充首步纯读取。真实回答仅对W/R路径四格做原greedy、128新token；核心跟随、矛盾、题面改写、未交付与截断分别盲读，披露模型辅助来源。其他因子格只报告logit/候选终点，不称实际作答能力变化。</p>
+<p>L0与L12都执行同样的核心成对比较，不随哪一个结果漂亮而缩成只解释EOS。不同终点不合成单一成功分数。</p>
+<h5 id="8">8. 已完成的自行检查与尚未通过的工程条件</h5>
+<h6 id="cpu">已完成：CPU合成检查，不是模型实验</h6>
+<p><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-path-design-check-v1-2026-10-31/check.py">检查代码</a>与<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-path-design-check-v1-2026-10-31/check-result.json">实际结果</a>：32组、每组8种来源组合、每条5步，实数双精度补偿更新与原delta更新一致，最大绝对误差4.44×10⁻¹⁶。检查了W保持旧状态算子、R保持加性写入、零β不可实现条件拒绝。未使用torch、权重或GPU。</p>
+<p>另检验四种小反例：仅S起作用、仅O起作用、只有联合起作用、两者抵消。前三种可有相同总效果，但四格读数分别区分；抵消可表现为总效果0而两通道均有作用。这证明新增比较确实补了旧总效果设计的一个识别缺口，不证明真实模型是哪一种。</p>
+<h6 id="_4">逐项逻辑审查</h6>
+<table>
+<thead>
+<tr>
+<th>风险</th>
+<th>本版的对应处理</th>
+<th>未认证的部分</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>只换v/α覆盖不足</td>
+<td>W=p、R=(α,β)、K=k，完整覆盖递推驱动并单列共同方向</td>
+<td>不声称无约定地分解key的两种用途</td>
+</tr>
+<tr>
+<td>后续过程跟着变</td>
+<td>第一组固定全前缀目标驱动；第二组允许O变化并用四格切分</td>
+<td>识别的是受控过程，非不受控原针的唯一自然份额</td>
+</tr>
+<tr>
+<td>局部状态差冒充回答贡献</td>
+<td>全部效应在同一个F输出上比较</td>
+<td>局部公式仍只用于工程核验</td>
+</tr>
+<tr>
+<td>共享β被拆断</td>
+<td>同一β两用途一致，通过v补偿保持实际p</td>
+<td>小β、dtype与异常补偿值须真实验收</td>
+</tr>
+<tr>
+<td>共享key不一致</td>
+<td>同一k在两用途同步，且两种k来源都作为条件比较</td>
+<td>跨来源组合仍可能分布外</td>
+</tr>
+<tr>
+<td>两组测的不是同一操作</td>
+<td>P的目标末状态必须匹配离线递推对应S</td>
+<td>实际缓存管理/内核正确性尚未验证</td>
+</tr>
+<tr>
+<td>把全部差异硬分两份</td>
+<td>显式保留I与两种条件效应</td>
+<td>非线性背景没有唯一百分比</td>
+</tr>
+<tr>
+<td>只看恢复而忽略补偿</td>
+<td>双方向、完整P、交叉格、状态与原文共同核对</td>
+<td>即使一致也只支持限定范围机制，不绝对消除补偿解释</td>
+</tr>
+</tbody>
+</table>
+<h6 id="_5">未来实施的先决验收</h6>
+<ol>
+<li>原C/T回放及S000/S111重建；补偿前后βv数值一致；共享头扩展、归一化、管理字段、撤针时刻逐项核验。记录的是实际归一化k；在线重放须在对应位置替换，或用供体原始key经同一规范化一次得到它，不能把归一化后的k再次规范化却当作同一输入。</li>
+<li>使用实际计算精度检查补偿value的有限性、范围与更新误差；无epsilon替代、无静默截断、无事后放宽阈值。所有配置统一数值路径；误差容限在独立工程验收阶段、查看科学输出前冻结。</li>
+<li>P_W/P_R的目标S与第一组对应S一致，Y11重放完整P末端读取。否则不解释四格。</li>
+<li>非法或不稳定组合保留失败记录；若关键配对不可实现，则本轮该比较不可识别，不能只保留可运行的漂亮格子。无自动换题、换剂量或扩大扫描。</li>
+</ol>
+<p>已通过的是代数与比较逻辑自检；真实数值路径、状态分布及机制结论尚未验证。这个区分不影响设计的受控效应定义，但限制其执行与最终科学解释。</p>
+<h5 id="9">9. 一轮工作量，先计全再谈卡时</h5>
+<p>来源与旧资产均复用原六情景、两锚点。旧收据、候选、状态替换和回答解释继续作为约束，不重复大扫描；新设计需要原导出没有的驱动轨迹。</p>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>正式上限</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>原始来源prefill</td>
+<td>12×(C、T_L0、T_L12)=36</td>
+</tr>
+<tr>
+<td>第一组</td>
+<td>12×2锚点×2读取背景×8配置，扣除重复全C12条，共372条读取/评分记录</td>
+</tr>
+<tr>
+<td>第二组完整P前缀</td>
+<td>12×2锚点×2方向×W/R=96次prefill</td>
+</tr>
+<tr>
+<td>第二组新增交叉读取</td>
+<td>每P新增Y01/Y11，共192条；Y00/Y10复用第一组</td>
+</tr>
+<tr>
+<td>正式prefill合计</td>
+<td>132次；离线目标状态在CPU重放</td>
+</tr>
+<tr>
+<td>正式读取/候选合计</td>
+<td>564条记录，1128条原候选序列评分</td>
+</tr>
+<tr>
+<td>自由生成</td>
+<td>W/R四格的288个新增条件＋36个当前原始基线=324条，最多41,472新token</td>
+</tr>
+<tr>
+<td>工程预检</td>
+<td>最多额外8次prefill、24次末token读取；完全同身份时可纳入正式记录，不重复计独立样本</td>
+</tr>
+</tbody>
+</table>
+<p>36条当前基线重放用于检查新链路与历史数值行为的一致性；旧回答仍用于历史复核和现象解释，不作为新独立证据。其余因子格不全部生成长回答。候选评分和自由生成各用独立状态拷贝，候选token成本另计。</p>
+<p>卡时尚未实测，不沿用旧1小时估计。未来只有在完整成对设计的预算获准、预检外推可承受时才执行；不能为省预算只跑W或只跑有效方向。当前无GPU申请、排队或启动。</p>
+<h5 id="10">10. 与主线、相关工作及旧版本的关系</h5>
+<p>旧状态替换证明指定历史状态有作用，本轮把来源过程和承载通道接在一起。若得到“写入改变经S有效、旧处理改变主要先传到O”等有反例边界的关系，就是对原中心问题的一段回答；若只得到受控拼接异常或未检出，就按边界报告，不缩题寻找好结果。</p>
+<p><a href="https://arxiv.org/html/2605.12770v4">WriteSAE v4</a>已研究写入替换、传播与读出。这里不争夺“状态编辑会影响输出”的新颖性，拟新增的是原始稀疏干预相关的写入/处理过程效应与历史通道关系。公式与实验逻辑通过不等于已取得该贡献。</p>
+<p>来源：<a href="https://github.com/huggingface/transformers/blob/v5.20.2/src/transformers/models/qwen3_5/modeling_qwen3_5.py">固定实现</a>、<a href="https://arxiv.org/html/2412.06464">Gated DeltaNet</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-mechanism-known-basics-audit-2026-10-31.zh-CN.md">先验审计</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-mechanism-design-audit-r02-2026-10-31.zh-CN.md">r02结构审查</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-mechanism-write-retention-design-r03-2026-10-31.zh-CN.md">r03及识别审查</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-complement-analysis-v1-2026-10-31/source/analysis/b_validate-r01.json">旧来源分析</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-complement-analysis-v1-2026-10-31/source/runs/b_validate-r01/worker-0/receipt.json">已完成历史收据</a>。旧运行不重启，旧版本保留。</p>
+<hr />
+<h3 id="2cpu">原件 2：路径设计的CPU合成检查</h3>
+<p>原路径：<code>experiments/cache-path-design-check-v1-2026-10-31/README.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-path-design-check-v1-2026-10-31/README.zh-CN.md">固定提交原文</a> · <a href="../library/46623e49759ad894.html">单独阅读副本</a>；SHA-256：<code>46623e49759ad89410633e51d9a6ca6bfd763bdf45e09d3c41c5f14193877db2</code>。</p>
+<hr />
+<h4 id="cpu_1">路径设计的CPU合成检查</h4>
+<p>状态：2026-10-31完成。仅Python标准库、合成二维状态；没有模型、权重、torch或GPU。本检查不是Qwen机制实验，不与旧实验样本数相加。</p>
+<p>为<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-mechanism-controlled-path-design-r04-2026-10-31.zh-CN.md">受控路径设计r04</a>检查：</p>
+<ul>
+<li>固定key时，以p=βv控制写入、以(α,β)控制旧状态处理，补偿v后与原delta更新一致。</li>
+<li>改写入保留旧状态算子、改旧处理保留加性写入。</li>
+<li>β=0且目标写入非零时拒绝，β=0且p=0可以取v=0。</li>
+<li>同样的总效果下，S/O交叉读取能区分仅S、仅O、共同作用；另检查两通道抵消。</li>
+</ul>
+<p>代码：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-path-design-check-v1-2026-10-31/check.py">check.py</a>。结果：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-path-design-check-v1-2026-10-31/check-result.json">check-result.json</a>。复算命令：<code>python experiments/cache-path-design-check-v1-2026-10-31/check.py</code>。</p>
+<p>32组×8配置×5步，种子20261031；最大双精度误差见结果文件。真实模型的BF16、内核、补偿幅度、分布合理性与机制结论都未验证。失败条件与工程停止规则以设计文档为准。</p>
+<p>第二次针对性复审新增<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-path-design-check-v1-2026-10-31/limits_check.py">limits_check.py</a>与<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-path-design-check-v1-2026-10-31/limits-check-result.json">limits-check-result.json</a>，不覆盖原检查。反例验证：补偿虽保持βv，仍可超出原轨迹族的状态范围；联合限制与匹配门可给出完全相同的四格及原配对端点。原检查不能用作排除失配的证据。两次均为CPU合成检查，不是Qwen实测。</p>
+<hr />
+<h2 id="_6">时间、运行与停止收据索引</h2>
+<p>下面是所收集JSON的原有时间字段与状态，不把预计结束时间当实际完成时间。未列时间的文件仍有原件链接。完整JSON全部保存在原文归档，不能以此索引中的标量代替完整嵌套内容。</p>
+<table>
+<thead>
+<tr>
+<th>原件</th>
+<th>原记录状态/阶段</th>
+<th>原时间字段（原时区）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-path-design-check-v1-2026-10-31/check-result.json">check-result.json</a></td>
+<td>{"status": "passed_synthetic_only"}</td>
+<td>{}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-path-design-check-v1-2026-10-31/limits-check-result.json">limits-check-result.json</a></td>
+<td>{"status": "counterexamples_verified_synthetic_only"}</td>
+<td>{}</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_7">全部原始资产入口</h2>
+<p>本目录在固定提交下共有5个跟踪文件，包含代码、原回答、失败、收据和压缩证据；文件数不是样本数。<a href="../assets/045-cache-path-design-check-v1-2026-10-31.tsv">逐文件完整账本</a> · <a href="https://github.com/yuxiexiong/acupuncture/tree/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-path-design-check-v1-2026-10-31">原目录</a>。未复制模型权重、环境或凭据。</p></main></html>

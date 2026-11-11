@@ -1,0 +1,59 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>口径核对：2606.11375 与本项目“校准后深度梯度”是否矛盾</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="260611375">口径核对：2606.11375 与本项目“校准后深度梯度”是否矛盾</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/early-stop-knowledge-readout-v1-2026-10-29/PROTOCOL-CHECK-2606.11375.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-stop-knowledge-readout-v1-2026-10-29/PROTOCOL-CHECK-2606.11375.zh-CN.md">固定提交原件</a>；SHA-256：<code>ea77eb31ecc3ba9a89fd58f0c7eab85ac75a6c2e51fbfab027b0aca173459cb5</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="260611375_1">口径核对：2606.11375 与本项目“校准后深度梯度”是否矛盾</h1>
+<p>2026-10-29，取全文 PDF（v2）、pdftotext 后核对；模型辅助阅读。</p>
+<p><strong>结论：不构成矛盾。</strong> 两边只共享“深度梯度”这个名字。</p>
+<table>
+<thead>
+<tr>
+<th>轴</th>
+<th>2606.11375</th>
+<th>本项目 early-input-control</th>
+<th>同口径？</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>测量对象</td>
+<td>同层线性探针准确率降到 τ=0.6 的临界噪声 σ*</td>
+<td>自由回答是否跟随题面、首 token EOS</td>
+<td>否</td>
+</tr>
+<tr>
+<td>扰动结构</td>
+<td>各向同性高斯 ε∼N(0,σ²I)</td>
+<td>单原生通道/单随机方向加性写入</td>
+<td>否</td>
+</tr>
+<tr>
+<td>传播</td>
+<td>加在缓存的序列平均池化激活上，不经下游层（推断自 §3.3–3.4）</td>
+<td>前向全程，提示与生成位置</td>
+<td>否</td>
+</tr>
+<tr>
+<td>模型</td>
+<td>OLMo-2 1B（16 层，37 checkpoint）</td>
+<td>Qwen3.5-4B</td>
+<td>否</td>
+</tr>
+<tr>
+<td>归一化</td>
+<td>每层每 checkpoint 标准化到单位 RMS（§4.4）</td>
+<td>每层残差 L2 范数中位数 × 单位方向</td>
+<td>均按层尺度，几何不同</td>
+</tr>
+<tr>
+<td>方向</td>
+<td>RMS 后 late/early σ* 比仍约 2×（1.8–3.1×），早层仍更脆；作者不主张该残余</td>
+<td>早层远比后层脆</td>
+<td>方向一致，不相反</td>
+</tr>
+</tbody>
+</table>
+<p>原文（§4.4）：“The layer-depth gradient mostly disappears … under RMS normalization it stays near 2× throughout (1.8–3.1×) …”。论文无输出层面的归一化结果。</p>
+<p><strong>审计更正</strong>：<code>docs/literature/early-layer-mechanism-related-work-audit-2026-10-28.zh-CN.md</code> 第 13、67、88 行把该文列为 C1 的“不利类比证据”。准确表述应为：该文是探针层面、各向同性、不传播扰动的结果，归一化后仍有约 2× 同向残余；它不反对输出层面的校准后深度梯度。本文件记录更正，未改动原审计文件。</p>
+<p><strong>可借用</strong>：整层 RMS 缩放的各向同性高斯可作另一校准对照臂；作者点名但未跑的 whitened（协方差匹配）对照可检验单方向效应是否超出协方差形状的解释。</p>
+<p>来源：https://arxiv.org/abs/2606.11375 （v2 PDF，SHA-256 <code>1d5d66328c12d98ba9e58b7e11aad04af99cf1dde99f55f2b011796f52dd97fd</code>）；全文未入库。</p></main></html>

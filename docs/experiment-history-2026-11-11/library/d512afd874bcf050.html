@@ -1,0 +1,163 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>NGC-01正式结果与论文去留判断</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="ngc-01">NGC-01正式结果与论文去留判断</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-native-gain-v1-2026-11-08/REPORT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-native-gain-v1-2026-11-08/REPORT.zh-CN.md">固定提交原件</a>；SHA-256：<code>d512afd874bcf050f9ce4cb53fe8a6bcf03c83fbfe21cb7e07fc13bb69861fb0</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="ngc-01_1">NGC-01正式结果与论文去留判断</h1>
+<p>2026-11-11。实测结果；按原<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-native-gain-v1-2026-11-08/CONTRACT.zh-CN.md">实施合同</a>和<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-native-gain-plan-v1-2026-11-08.zh-CN.md">科学方案</a>执行，未改变样本、操作、阈值或主要终点。</p>
+<p><strong>结论：工程有效，主要科学终点阴性。跨场景估计确实能预测针相关的增益变化，但按该配置调整没有救回任何自然完整答案。当前增益假设没有补上论文所需的解释增量；建议停止本届CVPR冲刺和该分支的自动追加实验，保留已有条件性机制成果。</strong></p>
+<h2 id="1">1. 执行与预算</h2>
+<p>用户授权：“那就先跑NGC-01，按原合同先做预检，通过后正式跑，总预算不超过2 GPU小时。”新授权保存在<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-native-gain-v1-2026-11-08/readiness/authorization-20261111-r01.json">预检授权</a>和<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-native-gain-v1-2026-11-08/readiness/authorization-formal-20261111-r01.json">正式授权</a>，原<code>execution-control.json</code>撤销记录未修改。</p>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th style="text-align: right;">实测</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>预检</td>
+<td style="text-align: right;">57.274320秒；42条自然轨迹</td>
+</tr>
+<tr>
+<td>预检正式耗时外推</td>
+<td style="text-align: right;">1697.864872秒，通过原预算门槛</td>
+</tr>
+<tr>
+<td>正式</td>
+<td style="text-align: right;">1127.033740秒；1008条自然轨迹</td>
+</tr>
+<tr>
+<td>合计</td>
+<td style="text-align: right;">1184.308060秒，即0.328974 GPU进程小时，约19分44秒</td>
+</tr>
+<tr>
+<td>工程重试</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>正式形成次数</td>
+<td style="text-align: right;">480</td>
+</tr>
+<tr>
+<td>正式峰值分配显存</td>
+<td style="text-align: right;">9,656,677,888字节</td>
+</tr>
+</tbody>
+</table>
+<p>使用gqa-h20的GPU 0，单worker。计时含各阶段模型加载、参考形成、干预和落盘；阶段之间未保留模型进程。CPU复核未初始化CUDA、模型前向0。正式退出码0，两阶段回执均为completed，数值验收通过。结束后检查GPU 0/1均无计算进程、利用率0%、显存3 MiB；本任务没有后续队列。</p>
+<p>正式样本为<strong>48条既有输入、6个场景、4个既定方向</strong>。每条输入5个参考臂和16个操作臂，共1008条轨迹；不能称1008个独立样本，也不能称新的独立留出任务。</p>
+<h2 id="2">2. 主要终点：自然完整正确答案</h2>
+<p>下表均为原冻结<code>y_full</code>评分的正确数/48。T为受针原生运行，P为跨场景估计的层头配置，U为等目标增益向量总范数的统一缩放。C为干净运行，其反向操作把受针增益配置施加到干净背景。</p>
+<table>
+<thead>
+<tr>
+<th>方向</th>
+<th style="text-align: right;">T原生</th>
+<th style="text-align: right;">T-P配置调整</th>
+<th style="text-align: right;">T-U统一缩放</th>
+<th style="text-align: right;">C干净</th>
+<th style="text-align: right;">C-P反向配置</th>
+<th style="text-align: right;">C-U反向统一缩放</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>N4146</td>
+<td style="text-align: right;">0/48</td>
+<td style="text-align: right;">0/48</td>
+<td style="text-align: right;">0/48</td>
+<td style="text-align: right;">48/48</td>
+<td style="text-align: right;">48/48</td>
+<td style="text-align: right;">48/48</td>
+</tr>
+<tr>
+<td>N1210</td>
+<td style="text-align: right;">1/48</td>
+<td style="text-align: right;">1/48</td>
+<td style="text-align: right;">1/48</td>
+<td style="text-align: right;">48/48</td>
+<td style="text-align: right;">48/48</td>
+<td style="text-align: right;">48/48</td>
+</tr>
+<tr>
+<td>R0</td>
+<td style="text-align: right;">1/48</td>
+<td style="text-align: right;">0/48</td>
+<td style="text-align: right;">1/48</td>
+<td style="text-align: right;">48/48</td>
+<td style="text-align: right;">48/48</td>
+<td style="text-align: right;">48/48</td>
+</tr>
+<tr>
+<td>C1343</td>
+<td style="text-align: right;">0/48</td>
+<td style="text-align: right;">0/48</td>
+<td style="text-align: right;">0/48</td>
+<td style="text-align: right;">48/48</td>
+<td style="text-align: right;">48/48</td>
+<td style="text-align: right;">48/48</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>四方向的P调整均修复0题；R0额外损失1题，其余无变化。R0原始计数差为−1/48，场景等权准确率差为−0.027778，两种分母不混用。</li>
+<li>四方向均未达到原合同的多场景恢复标签；跨方向恢复为false。P相对U没有完整答案优势。</li>
+<li>干净反向操作没有损失完整正确答案，未得到预期双向行为证据。</li>
+<li>T→T-P的第一步停止数分别为47→47、40→40、31→31、48→48。没有把停止诊断替代主要终点。</li>
+</ul>
+<p>评分边界：R0唯一计入损失的输入为<code>LVK-H-NA-NQ02-BCA-B</code>。原生输出为“木桥编号为V47，藤蔓编号为V&lt;|im_end|&gt;”，P输出为“木桥编号为V47，藤蔓编号为V47，枫叶编号为V16。&lt;|im_end|&gt;”。冻结评分允许前者的额外未完成文字，后者因包含另一个完整编号而失败。因此1→0是原合同评分结果，不应描述成一个原本完美简洁答案被毁坏。本轮未事后更改评分；四方向修复0题的结论不依赖夸大这例损失。</p>
+<h2 id="3">3. 增益模式存在，但没有转化为主要行为效应</h2>
+<p>每个方向用其他五场景估计当前场景的对数增益差。相对于预测差异为0的基线，预测平方误差/观测对数增益差平方和如下；越小表示预测误差越低。</p>
+<table>
+<thead>
+<tr>
+<th>方向</th>
+<th style="text-align: right;">六场景比值范围</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>N4146</td>
+<td style="text-align: right;">0.007708–0.051653</td>
+</tr>
+<tr>
+<td>N1210</td>
+<td style="text-align: right;">0.006496–0.019705</td>
+</tr>
+<tr>
+<td>R0</td>
+<td style="text-align: right;">0.007295–0.010760</td>
+</tr>
+<tr>
+<td>C1343</td>
+<td style="text-align: right;">0.004658–0.015966</td>
+</tr>
+</tbody>
+</table>
+<p>24个方向×场景比较均优于零差预测。可说：本面板中针相关的增益位移具有可跨场景估计的规律，且本轮预定操作未产生所需自然答案恢复。不能把这些比值称为独立重复实验的显著性、解释方差或损伤中介比例；留一场景估计共享训练场景，输入也已在开发中使用。</p>
+<p>辅助M端点在强制共同首token分支上计算，覆盖目标非首项的32条输入。恢复方向的场景等权ΔM依次为+0.006076、−0.005208、−0.052083、+0.065972，四方向均未达到原稳定正向标签。反向C−C-P的ΔM依次为0.414931、0.402778、0.407986、0.380208，均达到该辅助标签；C-U−C-P依次为0.347222、0.345486、0.348958、0.350694。</p>
+<p>这说明操作能影响条件化诊断分数，不能把它包装为自然完整答案受损或恢复：相应干净自然答案依然全部正确。</p>
+<h2 id="4">4. 为什么记为有效阴性</h2>
+<p><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-native-gain-v1-2026-11-08/audit_completed_20261111.py">CPU复核脚本</a>重新解析1008份自然回答、逐场景比对正式汇总，并核对回执资产哈希和服务器保存张量。复核结果<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-native-gain-v1-2026-11-08/analysis/20261111-r01/audit.json">passed</a>，没有依赖结果表自行宣称成功。这是同一助手执行的复核，不是独立复现。</p>
+<ul>
+<li>全部344,064个被操作的层头增益值均实际发生变化；不是空钩子或未落地操作。</li>
+<li>最大FP64公式误差为1.743375×10⁻⁷，低于合同1×10⁻⁵容差。</li>
+<li>增益目标范围0.007205–1.955370；目标/局部实际增益比0.013041–68.670700。</li>
+<li>16,306/344,064（4.7392%）的写入用途目标对应的隐含β大于1。这是合同允许的受控写入操作，不等同天然β替换；不能把阴性或阳性扩展到所有可实现原生β干预。</li>
+<li>回执记录钩子已清除、目标权重哈希保持一致；冻结版本和CPU验收身份通过。</li>
+</ul>
+<p>操作只覆盖原合同的t1末提示token、既定14层全部value heads；本层擦除项不直接替换。后续计算自然响应，较高层增益钳制为冻结目标。因此本轮裁决的是这份固定配置调整的总行为效果，不是所有时刻、所有增益或所有缓存机制。</p>
+<h2 id="5">5. 论文是否继续</h2>
+<p><strong>针对今天是否继续为本届CVPR冲刺：不建议。</strong> 本轮符合<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cvpr-short-decision-2026-11-11.zh-CN.md">事先决策表</a>中“内部量有规律、自然完整答案未改善”的停止条件。论文关键缺口仍是从受控修复信号和局部内部量，推进到对原生完整回答的实质解释。不能用辅助M变化填补该缺口，也不能因时间紧就将增益相关性改写成致错机制。此外，本轮是文本编号任务，没有新增视觉关系证据。</p>
+<p><strong>针对整个课题：保留已有成果，暂停当前增益补证分支。</strong> DWB/DWR/DWC等在指定背景下的定向影响、NMT在修复背景中的配置作用，不被本轮阴性推翻；它们也不自动构成跨背景的原生全链解释。现有材料值得归档和重新定位，但目前没有证据支持继续以同一强机制叙事紧急扩实验。</p>
+<p>可以如实写入研究记录的一句话是：“针相关的写入增益位移能够跨场景预测，但在冻结的四方向面板中，调整该增益配置没有恢复自然完整答案，反向调整也未降低干净答案正确率。”这是一条有边界的排除结果，不是本轮原计划希望取得的正向机制贡献。</p>
+<p>本轮到此结束；未启动更多层、剂量、模型、V恢复或WSP实验。剩余预算不是必须花完的指标。</p>
+<h2 id="6">6. 证据与留存</h2>
+<ul>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-native-gain-v1-2026-11-08/runs/preflight-20261111-r01/receipt.json">预检回执</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-native-gain-v1-2026-11-08/runs/preflight-20261111-r01/verification.json">预检验收</a>；<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-native-gain-v1-2026-11-08/runs/formal-20261111-r01/receipt.json">正式回执</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-native-gain-v1-2026-11-08/runs/formal-20261111-r01/verification.json">正式验收</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-native-gain-v1-2026-11-08/runs/formal-20261111-r01/analysis.json">原始分析</a>。原始回答在各运行的reference/intervention目录中。</li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-native-gain-v1-2026-11-08/analysis/20261111-r01/answers.csv">逐答案CSV</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-native-gain-v1-2026-11-08/analysis/20261111-r01/audit.json">审计结果</a>、readiness内完整运行日志及授权。</li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-native-gain-v1-2026-11-08/archive/20261111-r01/delivered-files.json">传回文件清单</a>的122个文件已逐一核对。传输包SHA256为<code>b4b8c8b289a476baa806eb75e1c707ff97b21cbcad2e6bfb095bfda9f0c5a100</code>，703,610字节。</li>
+<li>每输入大型张量共4,363,120,306字节保留在gqa-h20原运行路径，未删除、不纳入Git；<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-native-gain-v1-2026-11-08/archive/20261111-r01/external-tensors.json">外部张量清单</a>记录绝对路径、大小和SHA256。小型profiles张量随证据交付。</li>
+</ul>
+<p>冻结清单SHA256：<code>3252bc82e1ebfc35747dbdbebf90ce1b591e64adee75172be5f7b3440698d7f1</code>。预检回执SHA256：<code>9d19fce94c6c7d7bfaf37434f02379294a272dc990b190996c80b6235098b9f2</code>；正式回执SHA256：<code>8c303defee85e420c7fdb7adc905803a820a2ebf670341beef703d3b40ce0409</code>。</p></main></html>

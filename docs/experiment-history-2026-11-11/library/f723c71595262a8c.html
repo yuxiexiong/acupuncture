@@ -1,0 +1,257 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CFM-S3 v3 结果报告：缓存写入变量的介入式拆解</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="cfm-s3-v3">CFM-S3 v3 结果报告：缓存写入变量的介入式拆解</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-formation-mechanism-s3-route-intervention-v3-2026-10-31/REPORT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-mechanism-s3-route-intervention-v3-2026-10-31/REPORT.zh-CN.md">固定提交原件</a>；SHA-256：<code>f723c71595262a8c3bcf65134837de779bf3a8a0cda0469889ed770b208361f3</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="cfm-s3-v3_1">CFM-S3 v3 结果报告：缓存写入变量的介入式拆解</h1>
+<p>日期：2026-10-31（UTC）。合同 r01；冻结 freeze-r02（3cfc4f3，sha <code>638be1b8…</code>）；运行 preflight-r02、formal-r01；判读 <code>analysis/s3-judgments-r01.json</code>。</p>
+<p>所有结论都只在合同写明的替换条件下成立，不是原生运行的完整作用路径，也不排除拼接补偿（合同 §1）。</p>
+<h2 id="0">0. 先说不利的部分</h2>
+<ol>
+<li><strong>只有 L 窗口的停嘴（D）分辨得清；事实使用（S_fact）大多是"证据不足"。</strong> 在 S_fact 和 E 窗口上，同幅随机零对照本身就造成很大的回答变化（同方向 95% 分位常在 1 以上），原效应 Δ 又常常不超过零对照的幅度。所以这些格既不能支持也不能反驳。S2 发现的"L0 早段针破坏事实使用"，这一轮没有拆开，核心问题的事实使用一半仍未回答。</li>
+<li><strong>预测 P4</strong>：按合同的分数判据失败，即停止分数偏移在干净后续条件下保留 52–62%；但这一格的首步 EOS 是 0/12，<strong>实际停嘴已经没有了</strong>（勘误见第 3 节）。<strong>P5 未得到支持</strong>：6 个情景中 5 个证据不足、1 个支持。<strong>P3 部分不符</strong>：L12 的 S_fact 在 L 窗口，有 2 个情景中 V 单组判"必经且足够"。</li>
+<li><strong>联合规则的措辞问题</strong>：合同把联合支持条件写成"单独撤除两方都只部分<strong>或很少</strong>"，而设计 r3 原文是"都只部分恢复"。L0 停嘴的"V 对 {R,K} 联合"按冻结合同判为支持 5/6，但实际数值是：撤除 V 恢复 0.62–0.76，撤除 {R,K} 恢复 ≈ 0，两者一起撤除恢复 0.79–0.88。也就是 V 为主，{R,K} 只在与 V 一起撤除时才贡献 0.1–0.2，并不是"两方各自部分承载"。判读照合同记录，解读以第 2 节的数值为准。</li>
+<li>preflight-r01 是合同执行失败（文件匹配 bug），修正后重新冻结为 r02（决策日志第 9 条）。</li>
+</ol>
+<h2 id="1">1. 工程验收（全部通过）</h2>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>preflight-r02</td>
+<td>2 单元 × 11 格，56 s</td>
+</tr>
+<tr>
+<td>formal-r01</td>
+<td>24 单元 × 130 格 = 3,120 格，另加每单元 4 条参照与 1 条惰性检查；8 worker；634 s</td>
+</tr>
+<tr>
+<td>参照复现</td>
+<td>96 条参照（每单元 00/10/01/11）对 S2 formal-r01 记录逐值相同</td>
+</tr>
+<tr>
+<td>钩子惰性</td>
+<td>24/24 逐位不变</td>
+</tr>
+<tr>
+<td>完备性</td>
+<td>48/48（每单元 E、L 两窗口）逐位重现 01 / 10：缓存清单、首步 logits、候选分数</td>
+</tr>
+<tr>
+<td>失配诊断</td>
+<td>插入位移 / ‖G_供体 − G_T‖ 在 0.69–1.02 之间，没有格远离原生值</td>
+</tr>
+</tbody>
+</table>
+<h2 id="2-l-d">2. 主结果：L 窗口的停嘴（D）</h2>
+<p>L 窗口的原效应 Δ：L0 为 −17.6 到 −15.7，L12 为 −9.4 到 −4.3。撤除格的随机零对照 95% 分位 ≤ 0.09，只留格 ≤ 0.40。</p>
+<table>
+<thead>
+<tr>
+<th>格</th>
+<th>L0：N 或 S（6 情景范围）</th>
+<th>L12：N 或 S</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>撤除 V</td>
+<td>0.62–0.76</td>
+<td>0.66–0.89</td>
+</tr>
+<tr>
+<td>只留 V</td>
+<td><strong>1.06–1.11</strong></td>
+<td>0.58–0.93</td>
+</tr>
+<tr>
+<td>撤除 R</td>
+<td>0.00–0.03</td>
+<td>−0.18–0.02</td>
+</tr>
+<tr>
+<td>只留 R</td>
+<td>0.01–0.02</td>
+<td>−0.02–0.02</td>
+</tr>
+<tr>
+<td>撤除 K</td>
+<td><strong>−0.20 – −0.13</strong></td>
+<td>−0.01–0.20</td>
+</tr>
+<tr>
+<td>只留 K</td>
+<td>0.20–0.28</td>
+<td>−0.04–0.09</td>
+</tr>
+<tr>
+<td>撤除 {R,K}</td>
+<td>−0.13–0.04</td>
+<td>−0.09–0.18</td>
+</tr>
+<tr>
+<td>只留 {R,K}</td>
+<td><strong>0.37–0.48</strong></td>
+<td>−0.04–0.05</td>
+</tr>
+<tr>
+<td>撤除 {V,R,K}</td>
+<td>0.79–0.88</td>
+<td>0.66–0.85</td>
+</tr>
+<tr>
+<td>只留 {V,R,K}</td>
+<td>0.92–1.01</td>
+<td>0.59–0.86</td>
+</tr>
+<tr>
+<td>撤除 {V,K}</td>
+<td>0.79–0.86</td>
+<td>0.69–0.88</td>
+</tr>
+<tr>
+<td>撤除 Qc</td>
+<td>0.06–0.28</td>
+<td>−0.05–0.29</td>
+</tr>
+<tr>
+<td>撤除 KV</td>
+<td>−0.06–0.02</td>
+<td>0.17–0.42</td>
+</tr>
+<tr>
+<td>只留 KV</td>
+<td>0.09–0.18</td>
+<td>0.15–0.42</td>
+</tr>
+<tr>
+<td>层范围：只在首组撤除</td>
+<td>0.03–0.43</td>
+<td>−0.13–0.36</td>
+</tr>
+<tr>
+<td>层范围：只在其后各层撤除</td>
+<td><strong>0.98–1.01</strong></td>
+<td>0.77–1.05</td>
+</tr>
+</tbody>
+</table>
+<p>判读（逐情景计数，合同规则）：</p>
+<ul>
+<li>L0：R、K、Qc、KV 单组都被反驳（6/6）；V 单组证据不足（6/6，因为撤除只到"部分"）；层范围"其后各层接近完整"支持 6/6，"首组接近完整"反驳 4/6、证据不足 2。</li>
+<li>L12：R、K、Qc 单组反驳 6/6，KV 反驳 3、证据不足 3；V 证据不足 6；"其后各层"支持 5/6。</li>
+</ul>
+<p><strong>在这些替换条件下，停嘴由什么承载</strong></p>
+<ol>
+<li><strong>写入内容 v 是主要载体。</strong> 晚段针在 v 上留下的变化，在其余写缓存变量都回到参照时，单独就能保住 L0 的全部停嘴效应（S_V 1.06–1.11）、L12 的大部分（0.58–0.93）。只撤除 v，就能恢复 0.6–0.9。</li>
+<li><strong>保留方式 α 不起作用</strong>：撤除或只留 R 都在零附近。</li>
+<li><strong>写入—擦除耦合 (k, β) 不是必经的，但在 L0 是部分冗余的第二载体。</strong> 在 L0 上，只撤除 K 时停嘴反而更强一点（N_K 为负）；只留 {R,K} 时仍能保住 37–48%，只留 K 保住 20–28%。也就是说，(k, β) 的变化本身也能产生一部分停嘴，但当 v 的变化存在时，去掉它并不减弱效应。L12 上 (k, β) 两侧都接近零。</li>
+<li><strong>L12 另有注意力 KV 的部分作用</strong>（撤除 0.17–0.42、只留 0.15–0.42），L0 上没有。</li>
+<li><strong>位置</strong>：停嘴的承载者在首受影响层组之后的各层，而不是首组本身。只在其后各层撤除，L0 恢复 0.98–1.01，L12 恢复 0.77–1.05；只在首组撤除，最多恢复 0.43。</li>
+</ol>
+<h2 id="3-11-00">3. 撤针后：干净后续条件下效应还剩多少（11 → 00 供体）</h2>
+<table>
+<thead>
+<tr>
+<th>锚点 · 读数</th>
+<th>两者都换的恢复量 N_both</th>
+<th>只换写更新</th>
+<th>只换读取</th>
+<th>交互</th>
+<th>首步 EOS（原 / 两者都换 / 只换写更新 / 只换读取）</th>
+<th>判读</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>L0 · D</td>
+<td>0.38–0.48（分数偏移保留 0.52–0.62）</td>
+<td>0.03–0.21</td>
+<td>−0.05–0.06</td>
+<td>0.17–0.42（5/6 &gt; 0.2）</td>
+<td>12 / <strong>0</strong> / 4 / 12（共 12）</td>
+<td>分数偏移"仍存在"支持 6/6；交互大，只陈述组合</td>
+</tr>
+<tr>
+<td>L12 · D</td>
+<td>0.35–0.62（分数偏移保留 0.38–0.65）</td>
+<td>0.09–0.40</td>
+<td>0.05–0.33</td>
+<td>−0.12–0.19</td>
+<td>0 / 0 / 0 / 0（原运行就不停嘴）</td>
+<td>分数偏移"仍存在"支持 6/6；交互基本可忽略</td>
+</tr>
+<tr>
+<td>S_fact、post10</td>
+<td>多数分母不可分辨</td>
+<td>——</td>
+<td>——</td>
+<td>——</td>
+<td>——</td>
+<td>大多证据不足</td>
+</tr>
+</tbody>
+</table>
+<p><strong>勘误（2026-10-31，用户复核指出）</strong>：本节初稿写"停嘴效应仍有一半左右保留"。实际保留的是<strong>相对干净运行的停止分数偏移</strong>；在"两者都换"格里，L0 的首步 EOS 由 12/12 降到 0/12。准确结论是：</p>
+<ul>
+<li>遗留缓存在干净的后续写更新与读取条件下，仍造成明显的停止分数偏移（约一半），但这份残余<strong>不足以让本批输入继续首步停止</strong>。这是"状态残余怎样跨过行为阈值"的信息，不是"仅靠遗留内容就能维持停嘴"。</li>
+<li>L0 上，只换写更新时已有 8/12 不再首步停止（EOS 4/12），只换读取时仍是 12/12；两者一起换，分数恢复约 40%，全部 12 个输入都不再首步停止。不能说每个输入都必须联合替换：多数输入只换写更新就够了，联合替换才覆盖到本批全部输入。L12 上两者在分数上大体可加；L12 的原运行本身就不停嘴，它的结果解释的是停止倾向，不是停止行为。</li>
+</ul>
+<h2 id="4-s_fact">4. 事实使用（S_fact）</h2>
+<ul>
+<li>能分辨的只有 L12 的 L 窗口：撤除 V 恢复 0.39–1.02，只留 V 保留 0.75–1.30（V 单组支持 2/6、证据不足 4）；R、Qc 反驳 5/6，K、KV 反驳 4/6。</li>
+<li>其余格（L0 的两个窗口、L12 的 E 窗口）原效应与零对照同量级，大多证据不足。S2 中 L0 早段针造成的事实丢失，这一轮的变量分组拆不开。</li>
+</ul>
+<h2 id="5-6">5. 预测对照（合同 §6，推测档）</h2>
+<table>
+<thead>
+<tr>
+<th>编号</th>
+<th>预测</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P1</td>
+<td>停嘴的原效应主要在 L 窗口</td>
+<td>成立：L0 的 L 窗口 Δ 为 −17.6 到 −15.7，E 窗口为 −2.7 到 0.3</td>
+</tr>
+<tr>
+<td>P2</td>
+<td>L0 的 S_fact 在 E 窗口有可分辨的 Δ</td>
+<td>描述上成立（5/6 情景 Δ 超过分母门槛），但各格判读多为证据不足</td>
+</tr>
+<tr>
+<td>P3</td>
+<td>没有单组"必经且足够"，联合至少在一个读数上成立</td>
+<td>部分不符：L12 S_fact L 窗口 V 支持 2/6；联合在 L0 停嘴上按合同判支持 5/6，但见第 0 节第 3 条</td>
+</tr>
+<tr>
+<td>P4</td>
+<td>L0 停嘴在干净后续条件下不能维持</td>
+<td>按合同的分数判据<strong>失败</strong>（停止分数偏移保留 52–62%）；按行为，首步 EOS 0/12，与 P4 一致</td>
+</tr>
+<tr>
+<td>P5</td>
+<td>L0 E 窗口 S_fact 的首组接近完整</td>
+<td>未得到支持：证据不足 5、支持 1</td>
+</tr>
+</tbody>
+</table>
+<h2 id="6">6. 这一轮回答了什么、没回答什么</h2>
+<p><strong>回答了</strong>（在指定替换条件下，只针对停嘴）：晚段干预使模型停嘴，主要靠它改变了更深层写进递推状态与卷积的<strong>内容 v</strong>，而不是改变旧信号的保留（α）。写入—擦除耦合 (k, β) 在 L0 上是能单独产生部分效应、但不必经的第二条通道。撤针后，在后续写更新与读取都干净的条件下，留存内容仍造成约一半的停止分数偏移，但不足以维持首步停止（EOS 0/12）。另外，"只留 V"能保住全部首步停止（12/12），"只撤除 V"消除全部首步停止（0/12）；V 在所有相关层一起被控制，因此不能据此判定 V 是最初原因，也没有解释 V 里改变了什么信息。</p>
+<p><strong>没回答</strong>：</p>
+<ul>
+<li>事实使用的承载变量。同幅随机零对照的损伤太大，分不清。下一步若要拆这一半，需要损伤更小、但仍与真实替换同幅的零对照（例如取自其他输入的原生值），或更强的原效应条件。这需要新设计。</li>
+<li>原生运行的完整作用路径与补偿排除；写入与处理各自的直接、间接作用；单层定位；跨模型推广。</li>
+</ul>
+<h2 id="7">7. 文件</h2>
+<ul>
+<li>运行：<code>runs/preflight-r01/</code>（失败，保留）、<code>runs/preflight-r02/</code>、<code>runs/formal-r01/</code>（收据、核验与计划；每单元记录打包为 <code>runs/formal-r01/records-r01.tar.zst</code>）。完整运行目录与原始记录留在服务器，并归档于 <code>/workspace/cfm-s3-ops/archive/runs-r01.tar.zst</code>（sha256 <code>0510d66e…20e504afa</code>）。</li>
+<li>判读：<code>analysis/s3-judgments-r01.json</code>（逐情景四步判断、交互、撤针后族、诊断、情景级读数表）。</li>
+</ul></main></html>

@@ -1,0 +1,365 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>063．既有更新读取恒等式审计</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="063">063．既有更新读取恒等式审计</h1>
+<p><a href="../README.zh-CN.html">返回总时间线</a></p>
+<p><strong>时间定位</strong>：版本/记录日期 2026-11-01；未从所选收据确定完整运行起止，不据目录名补写时刻。</p>
+<p><strong>当时的目的与设计</strong></p>
+<p>核对保存量是否能重建更新与读取，并区分动态赢家和固定token差。</p>
+<p><strong>实际过程、结果与后来更正</strong></p>
+<p>属于CPU来源和算术核对，完整检查结果与缺量列表在本章；不计一次新的模型采样。</p>
+<p><strong>来源身份</strong>：<code>cache-update-readout-audit-v1-2026-11-01</code>；本章主体来源提交 <code>7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8</code>。下方原文中的状态是各文件写作时的状态，不能把早期“尚未运行”覆盖后期正式收据，也不能将后期结果倒填进早期设计。</p>
+<h2 id="_1">原设计、执行过程、结果与更正全文</h2>
+<p>以下按“设计与题目 → 工程/执行记录 → 结果/更正 → 其他历史说明”组织；同类内没有可靠时间时保留路径顺序，不冒充严格先后。正文未删段；仅为本章节重排标题层级、把相对链接指向固定提交。原始字节另外完整保存。</p>
+<h3 id="1">原件 1：既有状态更新—读取证据审计：设计与自查</h3>
+<p>原路径：<code>experiments/cache-update-readout-audit-v1-2026-11-01/SELF_CHECK.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-update-readout-audit-v1-2026-11-01/SELF_CHECK.zh-CN.md">固定提交原文</a> · <a href="../library/5dfe6413cbcb0efb.html">单独阅读副本</a>；SHA-256：<code>5dfe6413cbcb0efba0df0d5d592873c869e20cbe79408ed2536234d6df3660be</code>。</p>
+<hr />
+<h4 id="_2">既有状态更新—读取证据审计：设计与自查</h4>
+<p>日期：2026-11-01；版本 r1；规范 experiment-design-self-check v1。同一助手自查，不是独立审查。</p>
+<h5 id="material-passport">Material Passport</h5>
+<p>用户授权：已有材料、CPU审计、结果文档及资产更新。无模型前向、GPU、生成、新缓存评分授权。固定既有运行来源 f38b00e6b9b540c2978002ce8655c5935e4bfabb；当前远端文档头 69562413151975592e1bcee0c34007c6a241ebc2。原运行与冻结文件只读；本目录保存副本和派生结果。面板已见，六情景各两事实，不作为十二独立样本。</p>
+<h5 id="_3">设计卡</h5>
+<ol>
+<li>主线保持稀疏干预如何改变写入、历史处理、读取和回答。本轮问：已有状态组合证据是否具备解释更新—读取的条件；哪些差异是端点/指标算术，哪些仍缺因果测量。</li>
+<li>增量：核清绝对停止边际及操作差；区分真实模型调用与记录声明；在既有四格上量化读取核心交互，筛除无根据的“联合强即协同”推论。不是发明GDN分解或再做定位。</li>
+<li>依据：bridge、combo冻结代码、合同、收据、JSON和已存张量；现有知识审计。反例：混合评分EOS为零、CT与T图样不同、两个随机方向不是零分布。</li>
+<li>不改变模型。仅读取同题同事实的既有C/T、C/CT、TC/T八格；K固定于各对基底，四格0/S/F/SF用于诊断；另保留K来自供体的条件。层13–31；逐token评分，输入为原最后提示token；浅层C。模型/版本/针条件沿用合同。</li>
+<li>估计对象：记录中的操作差、绝对D、固定token分差；内核输出old/new/core四格差，以及本层入/出口的四格差。局部张量差不是logit贡献。若计算固定本层输入的旧S×读取系数交互，仅为明确固定驱动的局部反事实，不能称全模型路径效应。</li>
+<li>判读：正/负交互均报告；单层项与最终交互同向不构成因果连接。原生与混合边际异号仅解释第一步阈值事实，未解释剩余差来源。缺失张量、哈希失败、无法重建分别标明，不补零或启动模型。</li>
+<li>资源：复用既有JSON与张量，CPU逐文件加载、map_location=cpu，禁止模型加载；无新抽样/评分。每个来源记录sha256；远端数据不进Git批量归档，只保留必要证据和清单。</li>
+<li>退出：产出可核查审计与测量缺口后结束。不能由探索发现自动批准GPU、扩大层/剂量/针面板，也不从零交互推出无机制。</li>
+</ol>
+<h5 id="c01c14">C01–C14</h5>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th>判定与理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C01</td>
+<td>通过：局部读出是主线桥段，停止边际为当前窗口，不替代总课题。</td>
+</tr>
+<tr>
+<td>C02</td>
+<td>通过：纠正可导致错误立项的读数/交互解释，判定旧张量能否支持下一步，非验证公式存在。</td>
+</tr>
+<tr>
+<td>C03</td>
+<td>通过：先复用已知公式、已跑八格及工程闸门，不重复采集。</td>
+</tr>
+<tr>
+<td>C04</td>
+<td>通过：保留CT/T差异、EOS为零、随机参照有限等不利证据。</td>
+</tr>
+<tr>
+<td>C05</td>
+<td>通过：无新干预；四格来源、时点和K背景明确。</td>
+</tr>
+<tr>
+<td>C06</td>
+<td>通过：端到端轨迹驱动可变化；局部固定驱动分解与运行轨迹分开。</td>
+</tr>
+<tr>
+<td>C07</td>
+<td>通过：不把q/k/v/门拆开视为自然独立变量，不用补偿伪造匹配。</td>
+</tr>
+<tr>
+<td>C08</td>
+<td>通过：代数项仅描述，不把移植或局部重构称自然机制百分比。</td>
+</tr>
+<tr>
+<td>C09</td>
+<td>通过：局部交互、下游变化和状态不匹配可共存，不作三选一。</td>
+</tr>
+<tr>
+<td>C10</td>
+<td>通过：D绝对值/差值、EOS、固定token差、张量范数分开；不直接比较不同单位的大小。</td>
+</tr>
+<tr>
+<td>C11</td>
+<td>通过：错误恢复/哈希失败是工程问题；不自然组合是解释限制，不一概作废。</td>
+</tr>
+<tr>
+<td>C12</td>
+<td>通过：只CPU；旧记录足够则不补测；不可访问不等于未保存。</td>
+</tr>
+<tr>
+<td>C13</td>
+<td>通过：固定来源、逐文件校验、所有输入保留；已见数据仅探索，不预注册伪装。</td>
+</tr>
+<tr>
+<td>C14</td>
+<td>通过：可据此取消“联合必协同”或“新停止机制”立项；未识别则明确剩余缺口。</td>
+</tr>
+</tbody>
+</table>
+<h5 id="_4">历史错误与对抗检查</h5>
+<p>E01/02/03：不改主线、不赋层号功能、不把稀疏称微扰。E04/09：代数恒等、张量交互与最终D交互不是同一因果量。E05–08/13/14/17/18/26：供体及当前背景完整标明，不把末态交叉当形成删除，不给剩余命名。E10/11：连续分数、赢家、事实利用与完整回答分开。E12：两个随机方向只作有限参照。E15：不拼接S3的0.9–1.7与E2的比例。E16/19：复用工程记录，不因科学阴性判实现错，全恢复是验收。E20–25：解释非互斥；无原创方法主张；保留事实内结果与已见身份；自查非独立；不要求一轮全机制；不自动加对照。</p>
+<p>与上一建议相比：将“失配作废”拆成工程失败与科学限制；将阈值核对置于新机制解释之前；局部分解只提供候选，不承诺直接区分所有机制。</p>
+<p>反方最强反例：即使core交互和D交互都大，也可能来自不同方向或后续非线性。处理：不据共现写路径结论；保留需要干预连接输出的缺口。若所有局部交互都小，也不能用范数宣布无作用或放大，只能否定特定“大局部差”描述。原生与混合全部不过阈值也不说明无事实损伤。若源张量未取得，停止在字段/来源审计，不虚报复算。</p>
+<p>设计结论：通过本次有界离线审计；不构成下一轮GPU实验设计。实现/数据验收与实际结果在REPORT、result及来源清单中另记。</p>
+<hr />
+<h3 id="2-sf">原件 2：现有 S/F 更新—读取证据审计</h3>
+<p>原路径：<code>experiments/cache-update-readout-audit-v1-2026-11-01/REPORT.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-update-readout-audit-v1-2026-11-01/REPORT.zh-CN.md">固定提交原文</a> · <a href="../library/8c0ec463d4ac04d3.html">单独阅读副本</a>；SHA-256：<code>8c0ec463d4ac04d3afc7b96c52b58b92ece2161020316a10f581b965cd078d10</code>。</p>
+<hr />
+<h4 id="sf">现有 S/F 更新—读取证据审计</h4>
+<h5 id="material-passport_1">Material Passport</h5>
+<p>日期：2026-11-01；r1。身份：既有运行的CPU复算与来源核对，非新模型实验、非独立复现。用户授权已有材料审计、结果与资产更新。采用 academic-research-suite 验证流程和项目自查规范；分析脚本按 Ponytail full 最小实现。Serena工具不可用，代码理解改用源码检索与定向阅读。</p>
+<p><strong>结论：已有材料足以把“有没有读到状态”和“为什么分数移了却没有停止”核清，并识别一处真实的局部计算差异；但还不能把该局部差异归因为最终停止效应。</strong> 原生有针与V钉入的局部机制并不完全相同，后续不能继续把CT当成T的机制替身。</p>
+<h5 id="1_1">1. 固定来源与核验</h5>
+<ul>
+<li>Git来源提交：<code>f38b00e6b9b540c2978002ce8655c5935e4bfabb</code>；文档远端头：<code>69562413151975592e1bcee0c34007c6a241ebc2</code>。bridge与combo合同、代码、冻结清单、两worker收据和核验记录保存在本目录 <code>source/</code>，保留原文。</li>
+<li>运行：<code>cache-formation-readout-bridge-v1-2026-10-31/runs/formal-r01</code> 与 <code>cache-formation-cache-combination-v1-2026-10-31/runs/formal-r01</code>。模型、输入、针和时窗沿用合同：Qwen3.5-4B 851bf6e8、L0/N4146/−1、晚段逐token；6情景×2事实。不是12个独立情景。</li>
+<li>本次在归档服务器CPU读取24份记录、24份张量，共 <strong>11,175,455,830字节</strong>，全部与原收据sha256一致。两实验的代码、freeze和四份worker收据哈希均与固定Git副本一致。大张量未下载或加入Git；逐文件路径、大小与sha见 <code>tensor-audit.json:sources</code>。</li>
+<li>12输入的C/Y_T/Y_CT/Y_TC端点logits逐位重放，共48个跨实验端点比较；bridge与combo汇总JSON重新对照原记录一致。</li>
+<li><code>CUDA_VISIBLE_DEVICES=''</code>，<code>torch.load(map_location='cpu', weights_only=True)</code>，仅加载张量与计算代数；无模型导入、权重加载、forward、生成或评分调用。CPU主体约 <strong>48.99秒</strong>（不含取文件/文档工作）。</li>
+<li>结果：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-update-readout-audit-v1-2026-11-01/tensor-audit.json">tensor-audit.json</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-update-readout-audit-v1-2026-11-01/summary.json">summary.json</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-update-readout-audit-v1-2026-11-01/manifest.json">manifest.json</a>。代码：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-update-readout-audit-v1-2026-11-01/audit_cpu.py">audit_cpu.py</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-update-readout-audit-v1-2026-11-01/summarize.py">summarize.py</a>。设计与完整C01–C14/E01–E26自查：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-update-readout-audit-v1-2026-11-01/SELF_CHECK.zh-CN.md">SELF_CHECK</a>。</li>
+</ul>
+<h5 id="2">2. 实现是否读到了旧状态</h5>
+<p><strong>没有发现“恢复了状态却未读到”的证据；现有验收和本次重构提供了直接支持，不需要为这个疑问重跑GPU。</strong></p>
+<ol>
+<li><code>bridge.score</code>从独立深拷贝缓存处理单个最后提示token；评分期不保留形成钩子。<code>Recorder._wrap</code>对实际内核调用断言q的序列长度为1、initial_state非空，并记录真实q/k/v/g/β/core。</li>
+<li>combo逐格核对浅层C和每类深层来源；端点和关闭记录器检查已在旧运行中完成。本次不把旧测试报告冒称重新运行了测试。</li>
+<li>本次按供体在τ的S和每格实际驱动，在CPU重构14个G层旧状态读出项与当前写入项。三对来源×两个K背景×四格×14层×12输入覆盖4032个局部比较（有重复引用的格，不是4032独立测量）。旧项/新项相对记录的最大逐元素绝对误差分别约2.35e−8/2.40e−8。</li>
+<li>core与重构old+new的最大相对误差 <strong>0.002661</strong>，小于旧bridge诊断容差0.005；这是BF16核心输出的数值一致性，不是路径贡献验收。</li>
+</ol>
+<p>现有短卷积槽位测试在小模型中验证了完整4槽缓存中的最老槽对下一步不生效、最近3槽与当前token参与计算。本次只读该测试与合同，不新运行小模型。F窗口短不等于信息来源只限最近3个token，更不意味着影响3步后从整模型消失。</p>
+<p>工程失败（未使用、错位、覆盖）与科学失配（混合状态不属于自然轨迹）分开。后者限制原生归因，不能自动宣布旧干预无效。全状态重放、匹配哈希也不证明每个混合格自然合理。</p>
+<h5 id="3-012">3. 停止边际：用同一批记录即可解释0/12</h5>
+<p>定义 D=max停止logit−max非停止logit。C为全干净；T_native为有针形成的完整缓存；Y_T为浅层C+深层T。评分时三者都不再施针。下表是每情景两事实的均值；逐输入、赢家编号和EOS见summary。</p>
+<table>
+<thead>
+<tr>
+<th>情景</th>
+<th style="text-align: right;">C绝对D</th>
+<th style="text-align: right;">T_native绝对D</th>
+<th style="text-align: right;">Y_T绝对D</th>
+<th style="text-align: right;">T_native−Y_T</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VAR03</td>
+<td style="text-align: right;">−19.625</td>
+<td style="text-align: right;">0.09375</td>
+<td style="text-align: right;">−2.28125</td>
+<td style="text-align: right;">2.375</td>
+</tr>
+<tr>
+<td>VAR04</td>
+<td style="text-align: right;">−17.28125</td>
+<td style="text-align: right;">0.25</td>
+<td style="text-align: right;">−4.0625</td>
+<td style="text-align: right;">4.3125</td>
+</tr>
+<tr>
+<td>VRD03</td>
+<td style="text-align: right;">−17.96875</td>
+<td style="text-align: right;">0.53125</td>
+<td style="text-align: right;">−1.0625</td>
+<td style="text-align: right;">1.59375</td>
+</tr>
+<tr>
+<td>VRD04</td>
+<td style="text-align: right;">−18.015625</td>
+<td style="text-align: right;">0.71875</td>
+<td style="text-align: right;">−0.4375</td>
+<td style="text-align: right;">1.15625</td>
+</tr>
+<tr>
+<td>VRL03</td>
+<td style="text-align: right;">−20.25</td>
+<td style="text-align: right;">−0.71875</td>
+<td style="text-align: right;">−3.96875</td>
+<td style="text-align: right;">3.25</td>
+</tr>
+<tr>
+<td>VRL04</td>
+<td style="text-align: right;">−20.8125</td>
+<td style="text-align: right;">−0.84375</td>
+<td style="text-align: right;">−2.28125</td>
+<td style="text-align: right;">1.4375</td>
+</tr>
+</tbody>
+</table>
+<p>原生首步EOS为8/12，混合为0/12。发生原生停止的8个输入，其绝对边际仅0.0625–0.75；Y_T全12个边际为−4.0625至−0.4375。逐输入T_native−Y_T为1.125–4.3125，大于原生停止的余量。因此“保留约75.3%–94.0%的C→T分数差却不停止”并不矛盾，<strong>无须为这个离散现象本身另造一种停止机制</strong>。</p>
+<p>但该算术并未解释上述1.125–4.3125差额由哪一步产生。它是该混合操作的端到端差，不能命名成浅层的独立自然贡献。要接回原生停止，仍需解释这部分差及其背景依赖。</p>
+<p>修正两处旧讨论：S3的0.9–1.7不是本批原生余量；CT对C的14.84–18.63是分数<strong>变化量</strong>，不是正的绝对停止优势。不得混用这些口径。本次不重演更早E2的chunk路径，而使用bridge/combo完全同口径的记录。</p>
+<h5 id="4">4. “联合强”与“交互正”不是一回事</h5>
+<p>以K固定在基底a为例，I_D=D(SF)−D(S)−D(F)+D(0)。这是输出读数的四格交互，不是自然机制份额。</p>
+<table>
+<thead>
+<tr>
+<th>来源对</th>
+<th style="text-align: right;">12输入I_D范围</th>
+<th style="text-align: right;">冻结基底赢家token对后的交互范围</th>
+<th style="text-align: right;">符号相反输入数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C→T</td>
+<td style="text-align: right;">0.78125–4.1875</td>
+<td style="text-align: right;">−0.53125–6.6875</td>
+<td style="text-align: right;">1/12</td>
+</tr>
+<tr>
+<td>C→CT</td>
+<td style="text-align: right;">−2.5625–2.0</td>
+<td style="text-align: right;">−2.65625–2.09375</td>
+<td style="text-align: right;">1/12</td>
+</tr>
+<tr>
+<td>TC→T</td>
+<td style="text-align: right;">0.25–2.375</td>
+<td style="text-align: right;">0.25–2.71875</td>
+<td style="text-align: right;">0/12</td>
+</tr>
+</tbody>
+</table>
+<p>冻结token对指各对基底格的停止赢家与非停止赢家，四格不再重选max；这是事后探索性诊断，不冒充运行前冻结的新预测。原合同冻结token集合各token的logit交互也保存在tensor-audit中。K取供体时全部结果同样保留：C→T的D交互仍为正，但固定token对与D异号增至4/12。</p>
+<p><strong>因此，CT虽可复现很大分数变化，不能据此视为T的同机制替身；D的正交互也不能直接归为内部协同。</strong> 本次没有把两个随机方向标定成零分布，没有以I&gt;0设置统计显著门槛。</p>
+<h5 id="5">5. 旧张量揭示了什么局部计算</h5>
+<p>使用仓库已有GDN公式，不提出新更新原理。按key×value记法：</p>
+<p><code>o = S_old^T w + n</code></p>
+<p><code>w = α [q − β k(k^Tq)]</code>，<code>n = β v(k^Tq)</code>。</p>
+<p>这里q/k是按实际内核规则归一化、q另含维度缩放；q/k/v为卷积后的真实内核输入，α=exp(g)。不能与卷积前V直接混为同一个量。输出门控、归一化和投影还在core之后。</p>
+<p>四格为0/S/F/SF，两个状态来源Sa/Sb；w0/wS/wF/wSF来自各自已记录轨迹。旧项交互可以精确写为：</p>
+<p><code>I_old = (Sb−Sa)^T(wF−w0) + Sb^T[(wSF−wF)−(wS−w0)]</code>。</p>
+<p>第一项是以已实现F背景读系数差作用于ΔS的交叉项；第二项保留S操作经上游传播而改变本层驱动的修正。后层第一项不等于“本层F的直接效应”，因为wF−w0也含上游F变化。当前写入另有<code>I_new=nSF−nS−nF+n0</code>。本次计算恒等残差最大1.22e−16；恒等式通过只证明分解算对。</p>
+<h6 id="51-13v">5.1 第13层出现了明确的原生/钉V差别</h6>
+<p>第13层是当前划分的第一个深层线性层，不赋予它天然特殊功能。四格在本层入口完全相同，上游修正项为零；因此这一位置能较干净地检查旧S与F改变的读取系数之间的交叉。</p>
+<table>
+<thead>
+<tr>
+<th>来源对，K取基底</th>
+<th style="text-align: right;">CPU重构旧项交互范数</th>
+<th style="text-align: right;">CPU重构当前写入交互</th>
+<th style="text-align: right;">实际BF16 core交互</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C→T</td>
+<td style="text-align: right;">0.006553–0.008064</td>
+<td style="text-align: right;">数值零（&lt;1e−18）</td>
+<td style="text-align: right;">0.006563–0.008028</td>
+</tr>
+<tr>
+<td>C→CT</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">数值零（&lt;1e−18）</td>
+<td style="text-align: right;">约7.41e−5–1.85e−4</td>
+</tr>
+<tr>
+<td>TC→T</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">数值零（&lt;1e−18）</td>
+<td style="text-align: right;">约5.97e−5–1.43e−4</td>
+</tr>
+</tbody>
+</table>
+<p>对C→T，core交互范数约为该层SF−0核心输出变化范数的0.367–0.487。这是两个张量范数之比，<strong>不是解释了37%–49%的行为，也不是可相加的作用份额</strong>。</p>
+<p>对C→CT和TC→T，重构交互为零，BF16残余完全落在当前重构与实际core的差额中，不将它认定为小但真实的机制。该区别与结构吻合：在首个V钉入层，q/k材料未被V钩子改变；只改V不自动改变这里的有效读系数。原生针则可改变q/k等其他材料。本次没有逐变量钳制来判断q与k各自的因果份额。</p>
+<p><strong>有限新增认识：在原针C→T这组混合反事实中，第一处深层核心输出已经出现旧S与有效读系数的交叉；V钉入能够带来很大的最终D变化，却不需要在此处复现这个交叉。</strong> 因而不能用该层交叉统一解释T与CT，也不能宣布它是最终停止的必要或主要中介。两条轨迹可能在更后层汇合，本次也没有排除。</p>
+<h6 id="52-sq">5.2 后续层不能只看ΔS×Δq</h6>
+<p>从第14层开始，各格的本层入口已不同。旧项的上游驱动修正与当前写入交互都出现。以C→T为例，第20层交叉项范数约0.0123–0.0183，上游修正项约0.0137–0.0220，当前写入交互约0.0127–0.0175；这些量同一空间但可能互相抵消，不能简单相加为贡献比例。</p>
+<p>完整14层、两个K背景、三对来源均已保存。不得用这几个数挑“最强层”，也不得把张量范数与最终logit数值直接比较后宣称放大。当前分解只说明实际读出包含哪些变化，不证明哪项决定最终token。</p>
+<h5 id="6">6. 已经解释、仍缺测量与下一步价值</h5>
+<table>
+<thead>
+<tr>
+<th>问题</th>
+<th>本次处理</th>
+<th>后续是否需要新测量</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>状态恢复后是否被正确使用</td>
+<td>源码、旧闸门、本次核心重构与端点比对支持</td>
+<td>不为同一疑问重复GPU验收；新hook仍需自身验收</td>
+</tr>
+<tr>
+<td>保留大部分分数却不停止</td>
+<td>同协议绝对边际已说明阈值关系</td>
+<td>不单独立项“停止开关”；差额的计算来源仍未解释</td>
+</tr>
+<tr>
+<td>联合强是否一定内部正协同</td>
+<td>CT出现负交互，固定token与D可异号</td>
+<td>无需新实验即可撤回笼统说法</td>
+</tr>
+<tr>
+<td>S/F核心读出有哪些交叉</td>
+<td>已有驱动和τ状态足够，本次已CPU分解</td>
+<td>不需要为这些量重新形成或重新评分</td>
+</tr>
+<tr>
+<td>哪项局部变化导致最终竞争变化</td>
+<td>尚未测“移植/阻断该项后最终输出如何变”</td>
+<td>若要作中介主张，需要有针对性的因果读数；现有四格及范数不能替代</td>
+</tr>
+<tr>
+<td>core经门控/归一化/输出投影如何变成残差贡献</td>
+<td>已存z、core及decoder出入口，但没有逐G模块完整post-norm/post-gate/post-out_proj输出记录</td>
+<td>先核已有权重能否CPU重构；不能直接认定必须新GPU</td>
+</tr>
+<tr>
+<td>同一解释能否说明原生T_native与Y_T差额</td>
+<td>bridge有两者评分驱动/残差，尚无指定计算项的原生背景干预</td>
+<td>已有轨迹可先作描述；因果贯通测量仍缺</td>
+</tr>
+<tr>
+<td>是否跨针共享</td>
+<td>本次只原针；跨通道只验证V关系</td>
+<td>有具体可区分预测后再阶段性验证，不全矩阵乘十</td>
+</tr>
+</tbody>
+</table>
+<p>下一阶段最值得区分的关系是：<strong>已识别的旧状态—读系数交叉，究竟对最终token竞争有实质作用，还是较大的最终效应主要可以经当前写入及其他后续变化传递？</strong> 两者可共存；不能要求二选一。C→CT提供了一个现成对照：它在第13层缺少该交叉，却仍有强终点效应。</p>
+<p>这不是新的可执行实验方案。若后续仅做“把core搬过去能改分数”，增量仍不足；具体设计应要求它解释原生/CT的差异或给出会失败的条件预测，并保留原生背景的验证。若该交叉阻断后终点基本不变，应撤回它解释主要效应的说法，不能自动扫更多层救假设。</p>
+<h5 id="7">7. 审计过程中的修正及可信度</h5>
+<ul>
+<li>初次本地汇总把文件名f0/f1当作汇总的0/1，校验失败；原分析使用<code>item.target_index</code>，在三个04情景中与f编号相反。本次取回原记录item映射及hash后修正，全部对齐。<strong>不是旧实验数据错误</strong>；逐情景均值没有因此改变。</li>
+<li>本地范围函数一次错误消耗生成器，未产出结果；已改为先转列表，通过完整汇总断言。无模型运行重试。</li>
+<li>服务器访问起初受本地网络沙箱限制，获只读/CPU范围的工具审核后继续；没有修改服务器上的原实验文件。脚本经stdin运行，派生结果落本地。</li>
+<li>11类统计/方法谬误检查：①保留逐输入和情景结果，未见需要用总体掩盖的反转；②不以情景均值推断每个事实；③已见有限面板，不能外推总体；④混合背景不是控制所有混杂；⑤不作诊断率/发生率推广；⑥不从极端案例宣称改善；⑦12输入全部保留；⑧14层全部保存不挑热点；⑨探索分析明确不伪装预注册；⑩局部/终点共现不作中介；⑪时间方向由原干预规定但不等于自然唯一路径。无p值、零分布或总体等效主张。</li>
+<li>规范复查：本轮逻辑审计和数据复算通过；旧源码/收据核验与新CPU代数验收通过；尚无新因果实验或完整机制结论。冻结历史材料不改写。</li>
+</ul>
+<p>复算本地汇总：<code>python3 experiments/cache-update-readout-audit-v1-2026-11-01/summarize.py</code>。完整CPU程序需在原归档主机读取既有张量，执行时隐藏CUDA；不加载模型。<code>manifest.json</code>提供本地来源及代码/结果hash。</p>
+<hr />
+<h3 id="3cpu">原件 3：既有更新—读取证据CPU审计</h3>
+<p>原路径：<code>experiments/cache-update-readout-audit-v1-2026-11-01/README.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-update-readout-audit-v1-2026-11-01/README.md">固定提交原文</a> · <a href="../library/4bfe54b644381670.html">单独阅读副本</a>；SHA-256：<code>4bfe54b644381670000b020c9c8522e08e0c2c422e57495a865bb740a61e816b</code>。</p>
+<hr />
+<h4 id="cpu">既有更新—读取证据CPU审计</h4>
+<p><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-update-readout-audit-v1-2026-11-01/REPORT.zh-CN.md">报告</a> · <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-update-readout-audit-v1-2026-11-01/SELF_CHECK.zh-CN.md">自查</a> · <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-update-readout-audit-v1-2026-11-01/summary.json">紧凑结果</a> · <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-update-readout-audit-v1-2026-11-01/tensor-audit.json">张量审计</a> · <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-update-readout-audit-v1-2026-11-01/manifest.json">来源与文件哈希</a></p>
+<p>仅复算固定旧运行，无模型或GPU调用。原生停止8/12与混合0/12的同协议边际已核清；原生针与V钉入在首个深层GDN核心交互上不同，未证明该差异决定最终回答。先读报告§6的缺口，再决定具体新实验。</p>
+<p>本地重算汇总：<code>python3 experiments/cache-update-readout-audit-v1-2026-11-01/summarize.py</code>。</p>
+<p><code>audit_cpu.py</code>只读取归档服务器既有张量，须以<code>CUDA_VISIBLE_DEVICES=''</code>在CPU执行；stdout保存为<code>tensor-audit.json</code>。原大张量不入Git，不运行源目录中的历史实验代码。完整来源身份与重构容差见报告。</p>
+<hr />
+<h2 id="_5">时间、运行与停止收据索引</h2>
+<p>下面是所收集JSON的原有时间字段与状态，不把预计结束时间当实际完成时间。未列时间的文件仍有原件链接。完整JSON全部保存在原文归档，不能以此索引中的标量代替完整嵌套内容。</p>
+<table>
+<thead>
+<tr>
+<th>原件</th>
+<th>原记录状态/阶段</th>
+<th>原时间字段（原时区）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-update-readout-audit-v1-2026-11-01/summary.json">summary.json</a></td>
+<td>{"status": "passed", "model_calls": 0}</td>
+<td>{}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-update-readout-audit-v1-2026-11-01/tensor-audit.json">tensor-audit.json</a></td>
+<td>{"scope": "existing tensors, CPU only; descriptive decomposition, not causal mediation", "model_calls": 0}</td>
+<td>{}</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_6">全部原始资产入口</h2>
+<p>本目录在固定提交下共有28个跟踪文件，包含代码、原回答、失败、收据和压缩证据；文件数不是样本数。<a href="../assets/063-cache-update-readout-audit-v1-2026-11-01.tsv">逐文件完整账本</a> · <a href="https://github.com/yuxiexiong/acupuncture/tree/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-update-readout-audit-v1-2026-11-01">原目录</a>。未复制模型权重、环境或凭据。</p></main></html>

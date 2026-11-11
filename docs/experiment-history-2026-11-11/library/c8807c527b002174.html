@@ -1,0 +1,72 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CFM-S2结果复核：新增认识、未识别部分与低区分度判据</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="cfm-s2">CFM-S2结果复核：新增认识、未识别部分与低区分度判据</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>docs/cache-formation-mechanism-s2-result-review-v1-2026-10-31.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-formation-mechanism-s2-result-review-v1-2026-10-31.zh-CN.md">固定提交原件</a>；SHA-256：<code>c8807c527b0021747bf2ea99c42317a123f147aa4af190b425edfcf5edbdefd8</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="cfm-s2_1">CFM-S2结果复核：新增认识、未识别部分与低区分度判据</h1>
+<h2 id="material-passport">Material Passport</h2>
+<p>2026-10-31；academic-research-suite / experiment-agent / validate。Verification Status: ANALYZED。复核S2 v3的合同、实现、收据、同起点认证示例、原记录示例、分析源码和汇总JSON；从JSON重新计算状态来源投影、读取项和逐情景比较。未下载约20GB张量/完整缓存，未独立复现模型。新增模型前向、GPU、生成均为0。</p>
+<p>证据固定于提交 <code>69e140d81dcb101b98dbea43bbc392b9e08b7663</code> 的 <a href="https://github.com/yuxiexiong/acupuncture/tree/69e140d81dcb101b98dbea43bbc392b9e08b7663/experiments/cache-formation-mechanism-s2-formation-test-v3-2026-10-31">S2目录</a>。<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-formation-mechanism-s2-result-audit-v1-2026-10-31.json">机器可读复核</a>保存来源blob标识、汇总与逐情景重算值。原报告不追改，本复核另列解释修正。</p>
+<h2 id="1">1. 总判断</h2>
+<p>执行方核验84/84正式记录、48/48同起点认证通过；与原计划一致，48条新时序条件、36条完整状态重建，168候选评分，没有自由回答。preflight-r01因收尾计数代码错误失败，修复并重新冻结为r02后通过，历史失败保留。工程交付成立不等于机制完全识别。</p>
+<p>科学上获得了共同旧来源处理和撤针后持续形成差异的实际证据，以及反驳原预测的两锚点差别；没有识别写入/处理的独立行为贡献。原排除表在所有适用格给出同一判决，主判据区分度不足，这是设计的不足，不是执行失败；不能以“全部反驳”宣布中心问题已解决。</p>
+<h2 id="2">2. 对中心问题有用的新增认识</h2>
+<h3 id="21">2.1 共同旧状态上，第一步已经同时改变写入与处理</h3>
+<p>01/00、11/10在0..b的全部捕获驱动及边界残差逐位相同，离线S_b相同。第一步处理作用与写入项范数比为0.30–0.91，余弦均为负，范围约−0.73至−0.24。新证据在于：<strong>第一步的两项变化与部分抵消不要求先存在不同的旧状态。</strong></p>
+<p>这排除了该第一步“只有B变化、对共同旧状态处理作用不变”的解释；不能据此将S1全轨迹抵消都归于同一个起因，更不能给独立因果份额。β/k共享意味着同一次更新本来就能同时改变两项；观察到所有格都非零的标签增量有限，实际幅度和方向更有用。</p>
+<h3 id="22">2.2 早段撤针后，写入与处理在后续位置仍改变，且两针不同</h3>
+<p>10/00中，question、instruction、tail、末提示、候选各位置均有可分辨的ΔB及处理作用源项。JSON聚合计数为每锚点366、396、288、36、348个位置×层记录，全部检出；这些不是独立样本。</p>
+<p>新增因果事实是：<strong>仅早段操作已经足以改变后段实际更新，不需要后段针仍在场。</strong> S1全前缀条件不能单独给出这个结论。它仍不识别上游哪类缓存维持差异，也不是目标层局部自反馈或自由生成中永久持续的证明。</p>
+<p>预登记的r10（只早针的t_L目标状态差异范数/全程针的差异范数）在L0为0.565–0.644，6/6不满足&lt;0.5预测；L12为0.316–0.543，5/6满足，VAR01为反例。L0的r10高于L12为6/6。仅晚针近似重现全程针目标状态的预定判据，L0为0/6，L12为6/6。<strong>“晚期形成多，所以早期操作影响应小”的读法被L0反驳。</strong> 预测失败是有用的负面科学结果，不是实验白做；这些比值不是贡献百分比，也不能直接移用于回答。</p>
+<h3 id="23">2.3 旧来源被不同处理，但沿末态差异方向的投影很小</h3>
+<p>同起点四类比较中，t_L的ΔH沿ΔS合并投影约−2.54%至−0.13%，合并余弦约−0.067至−0.005；但ΔH范数本身不小。逐基础情景投影约−3.10%至+1.05%，并非仅全部合并才显现。</p>
+<p>这说明“旧来源受到了不同处理”和“它沿最终差异方向贡献很大”是两回事。原报告的状态方向观察有依据；不能由投影小推出旧来源不重要、没被处理或对其他读取方向没有作用。此结论限于规定边界、目标组和t_L。</p>
+<h3 id="24">2.4 原生时序下，首步停止与候选事实敏感度分离</h3>
+<p>L0：只早针首步EOS 0/12，只晚针10/12，全程针12/12；只早针的S_fact在6个情景均低于只晚针，且最高仅约干净值的23%。原生操作因此提供了此前拼缓存之外的时序证据：<strong>不首步停止，不等于候选分数对题面事实的敏感度恢复。</strong></p>
+<p>但本轮没有自由回答，不能写“早段针使模型答错”或“事实使用被破坏”。只晚针也会降低S_fact，例如L0-VAR01早针−0.021、晚针0.029、干净15.075，两者都接近零；不能把停止与事实响应当互斥通道。</p>
+<h2 id="3">3. 原报告需要收紧的说法</h2>
+<table>
+<thead>
+<tr>
+<th>原报告读法</th>
+<th>本次复核后的准确边界</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>t_L差异几乎全部来自b后写入来源N → 写入机制主导</td>
+<td>N是b后写入<strong>并经过随后A处理</strong>的来源。u_N在全部同起点格可分辨，N占优不能分出B改变与对新来源处理改变；它不是纯写入贡献</td>
+</tr>
+<tr>
+<td>状态与读取差异几乎全部来自N</td>
+<td>状态投影上N接近1，但raw读取仍有查询项：L0合并为22%–40%，L12为11%–15%。这些均为有符号投影账；查询项不能省略，也非因果百分比</td>
+</tr>
+<tr>
+<td>S1的抵消不是不同历史造成的</td>
+<td>同起点第一步证明确有无需先前状态分离的抵消；没有排除不同历史对S1后续累计抵消的影响</td>
+</tr>
+<tr>
+<td>L0停嘴需要后段针</td>
+<td>在本次固定两时段、剂量、输入及首步greedy端点，后段开针对出现首步EOS是观察到的必要条件；不推广为所有停止行为或某条缓存机制的必要性。只晚针也不是12/12都停止</td>
+</tr>
+<tr>
+<td>事实使用破坏主要来自早段针</td>
+<td>可说本面板L0早针降低候选事实敏感度更强；没有自由作答或知识删除证据，晚针也会降低该分数</td>
+</tr>
+<tr>
+<td>L12停止和事实丢失都由L段主导</td>
+<td>L12全臂首步EOS均为0，不能识别其停止机制。候选读数多数情景晚针影响更强，但VAR01早针S_fact=1.899，晚针=6.845，早针更强；全程=0.997。不能当普遍已支持前提</td>
+</tr>
+<tr>
+<td>L12晚针近似重现全程状态，所以行为也由晚针决定</td>
+<td>状态近似判据不是读取/行为近似判据。VAR01的状态通过近似标准，S_fact仍为6.845对0.997，已有跨指标差异</td>
+</tr>
+</tbody>
+</table>
+<h2 id="4">4. 哪些判据区分度低，哪些目标仍未达到</h2>
+<p>E1/E2/E3/E5主要检查严格相同或完全没有变化；共享驱动与上游干预使两类变化共现很常见。每锚点/配对的36格全部反驳，不能在两针之间或有效机制解释之间分类。36格是12输入×3层，不是36独立情景。架构允许这种变化，并不逻辑保证所有选中格都非零；不能反过来说全部实测值都由公式预先决定。</p>
+<p>E4有相对独立的增量：10在后段关闭了针，仍检出后续源项，确实排除了后段针必须在场的解释。其二元标签仍不能解释L0/L12为什么强弱不同。E6未出现“末态未分辨而途中可分辨”的格；因此这轮没有观测到该反例，不可把逻辑上的可能性说成本轮发现。</p>
+<p>仍未识别：写入与处理谁是原发原因；各自对回答的独立作用；N中B变化和后续A变化各自的行为影响；哪些KV/卷积/递推路径维持变化；目标组是不是行为必要或充分中介；新输入/模型泛化。S3的梯度或行为观察不会自动消除这些边界。</p>
+<p>当前最有价值的资产是：受控同前史的逐步过程记录、明确失败的预测及两针差异、原生时序的首步/候选分离，以及84个完整Mτ。新的解释必须同时容纳这些约束；不应继续以“检出两项变化”当下一轮成功标准。本复核不启动S3，也未设计新GPU面板。</p>
+<h2 id="5">5. 解释审计与复核限制</h2>
+<p>按技能流程检查11类问题：汇总/分组反转（追加逐情景投影，仍未独立重算全部头张量）；生态推断（不从合并量推出每头/所有模型）；选择偏差（旧针旧题）；碰撞筛选（保留全部格与EOS）；基率（非零标签无特异性保证）；均值回归（旧强效锚点非随机确认）；幸存者偏差（正式84齐全、失败预检另存）；多重搜索（描述结果不称确认）；分析路径（旧阈值保留，重算为事后复核）；因果过度（来源不等于独立机制）；因果方向（晚写入不等于晚起因）。11/11已检查，无新增显著性、功效或普遍机制声明。</p>
+<p>数值界为执行方冻结并在暴露状态验证的工程界；本轮源码/JSON复核不等于为所有未暴露中间点独立证明严格舍入上界。大幅超出界的过程信号有较大余量，但不应把“工程验收passed”写成所有因果解释也通过。</p></main></html>

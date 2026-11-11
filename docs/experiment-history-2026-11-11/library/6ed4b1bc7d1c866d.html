@@ -1,0 +1,186 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Gemma v8/v9四组30轮：最终比较与交付入口</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="gemma-v8v930">Gemma v8/v9四组30轮：最终比较与交付入口</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/wsp-gemma-v8-v9-final-comparison-2026-11-06/REPORT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-gemma-v8-v9-final-comparison-2026-11-06/REPORT.zh-CN.md">固定提交原件</a>；SHA-256：<code>6ed4b1bc7d1c866dc5e3f0d937a35bb14b0e334feb85ac8fb2ba0f1730451ee6</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="gemma-v8v930_1">Gemma v8/v9四组30轮：最终比较与交付入口</h1>
+<h2 id="material-passport">Material Passport</h2>
+<p>2026-11-06。Origin Skill：academic-research-suite / validate；CPU分析采用Ponytail full的最小实现。Verification Status：已有原始评分与身份的离线核验，不是模型重载复现或独立泛化确认。四组均已完成30个不同非零候选的完整开发评价，共120候选。C于19:14冻结R28并正常退出。v9 B已完成30，但额度失败导致机制报告/冻结缺失；按用户收尾豁免保全并退出，绝不补造成功。</p>
+<p><strong>结果：v8主分数更高，但不能归因于“粗修改天然优于细修改”。v8的赢家操作被v9合同排除；两版搜索路线、控制预算与选择过程也不同。C的v9最终全体正确率反而更高、改错更少。</strong> 所有结果仍为开发选择，独立新来源验证尚未执行。</p>
+<p>用户截图的逐项风险判断、跨模型有效操作共性和下一步优先级见<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-gemma-v8-v9-final-comparison-2026-11-06/RISK_REVIEW.zh-CN.md">RISK_REVIEW</a>；已交付的<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-search-policy-upgrade-v1-2026-11-06/PLAN.zh-CN.md">搜索策略设计</a>仍为未实现、未运行的讨论方案。</p>
+<h2 id="1-30">1. 同30轮最终结果</h2>
+<table>
+<thead>
+<tr>
+<th>组</th>
+<th style="text-align: right;">W0主分数</th>
+<th style="text-align: right;">最佳主分数</th>
+<th style="text-align: right;">提升pp</th>
+<th>W0全体→最佳全体</th>
+<th style="text-align: right;">修对/改错</th>
+<th style="text-align: right;">选中轮</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>v8 B</td>
+<td style="text-align: right;">16.379310%</td>
+<td style="text-align: right;">21.551724%</td>
+<td style="text-align: right;">+5.172414</td>
+<td>43.534483%→46.336207%</td>
+<td style="text-align: right;">20/7</td>
+<td style="text-align: right;">24</td>
+</tr>
+<tr>
+<td>v9 B</td>
+<td style="text-align: right;">16.379310%</td>
+<td style="text-align: right;">16.379310%</td>
+<td style="text-align: right;">0</td>
+<td>43.534483%→43.534483%</td>
+<td style="text-align: right;">0/0，选择W0</td>
+<td style="text-align: right;">—</td>
+</tr>
+<tr>
+<td>v8 C</td>
+<td style="text-align: right;">33.984375%</td>
+<td style="text-align: right;">37.500000%</td>
+<td style="text-align: right;">+3.515625</td>
+<td>79.140625%→79.414063%</td>
+<td style="text-align: right;">20/13</td>
+<td style="text-align: right;">23</td>
+</tr>
+<tr>
+<td>v9 C</td>
+<td style="text-align: right;">33.984375%</td>
+<td style="text-align: right;">36.328125%</td>
+<td style="text-align: right;">+2.343750</td>
+<td>79.140625%→79.726563%</td>
+<td style="text-align: right;">22/7</td>
+<td style="text-align: right;">28</td>
+</tr>
+</tbody>
+</table>
+<p>B每次464条、58来源；C每次2560条、64来源。主指标是原固定普通提示联合正确指标；全体正确率包括其他模板/提示臂/控制条件，不能替换主指标重选赢家。C v9比v8主分数低1.171875pp，但全体正确率高0.3125pp，即净多8条正确。这里不是统计显著或总体效应判断。</p>
+<p>两版同任务的模型ID/revision/全部模型文件SHA、processor SHA、evidence SHA和实际batch32相同，W0 summary/scored/predictions逐项完全相同。见<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-gemma-v8-v9-final-comparison-2026-11-06/matched-config-verification.json">匹配配置核验</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-gemma-v8-v9-final-comparison-2026-11-06/audit.json">完整CPU审计</a>及<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-gemma-v8-v9-final-comparison-2026-11-06/analyze.py">重算脚本</a>。按真实repair-round收据重建曲线，而不是依赖v8早停时留下的旧4轮自动result/trajectory导出。</p>
+<h2 id="2">2. 搜到了什么，没搜到什么</h2>
+<table>
+<thead>
+<tr>
+<th>组</th>
+<th>最终修改与有效支持量</th>
+<th>30候选操作覆盖</th>
+<th style="text-align: right;">保护拒绝</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>v8 B</td>
+<td>数字0共享embedding/output行gain1.45＋视觉桥norm gain0.90；3707 BF16标量</td>
+<td>projector5、decoder norm10、embedding3、embedding+norm1、embedding+projector10、三者组合1</td>
+<td style="text-align: right;">18</td>
+</tr>
+<tr>
+<td>v9 B</td>
+<td>保留W0；无合格补丁</td>
+<td>L15 MLP7、L10 MLP4、L33 MLP5、L10稀疏norm4、L33稀疏norm5、L7 attention输出5</td>
+<td style="text-align: right;">13</td>
+</tr>
+<tr>
+<td>v8 C</td>
+<td>L7 post_attention_layernorm有效gain1.075；2549 BF16标量</td>
+<td>projector3、embedding幅度1、decoder norm26</td>
+<td style="text-align: right;">18</td>
+</tr>
+<tr>
+<td>v9 C</td>
+<td>L15 MLP down_proj的61列结构化分量；156137 BF16标量、L2=2.068849</td>
+<td>L26 MLP3、L10 attention输出13、L15 MLP14，含剂量/反向/随机/匹配/分解控制</td>
+<td style="text-align: right;">4</td>
+</tr>
+</tbody>
+</table>
+<p>v8 B在R10首次改善，R13再涨，R16已达最终主分数，R17/R24按平分规则选择更合适支持量；v8 C到R18才首涨，R22/R23继续涨。v9 B30轮始终没有合格提升。v9 C R4首涨34.765625%，R15同分更少标量；R20涨35.546875%，R22同分少28个标量；R28涨36.328125%。R30残余输入分量未超过R28，保护失败。完整逐轮分数、选择拒绝理由、位置/支持/L2/parent和条件修错均在audit.json。</p>
+<p>因此30轮不是“搜索已饱和”的证据：C第28轮还在进步；但也没有证据保证加到50轮就追平。多个剂量和控制属于同一个候选家族，30完整评价不等于30个独立机制或广泛覆盖。历史parents是来源关系，最终候选为绝对权重，相对W0执行，不应理解为每轮盲目叠加所有历史改动。</p>
+<h2 id="3-v9">3. 为什么更细的v9主分数较低：证据排序</h2>
+<p><strong>第一，两个合法搜索空间不同，是直接可核的混杂。</strong> v9禁止embedding/绑定输出、最终decoder norm及整张张量统一缩放。v8 B赢家包含共享词行与桥norm缩放；v8 C赢家是完整norm增益。它们不是v9能原样选择的候选。内部norm的局部坐标修改仍允许，v9 B实际测试9轮，所以“v9禁用所有norm”是错误概括。要比较细粒度或诊断策略本身，应在以后固定操作空间和预算；当前两条历史轨迹不能完成这种因果比较。</p>
+<p><strong>第二，更细不是更小，也不是更接近真正行为原因。</strong> v8 C只需一个增益变量、2549变化标量；v9 C赢家涉及156137标量，约61倍。MLP列的局部写入改变是真实的，但传播到正确完整回答仍须逐项验证。按记录，v9 B一些候选在同路径中确实改变了内部残差，却没有改对答案；其30轮最大未筛选主分数也仅17.241379%，低于v8 B21.551724%。因此不能说v9本来发现大收益、只是全被保护阈值压掉。</p>
+<p><strong>第三，对照削弱了“诊断找到了唯一有效方向”的解释。</strong> B最初测得通道与随机匹配通道可重复同一小组修错；C随机保留方向R25保留R22的9/9已见参考修复，主分数不同，不是所有指标等效。匹配通道R26仅保留2/9，但仍有同样全提示臂visual净改善且保护失败。C高能量3列R27未集中预期收益，61列互补R28反而最佳；共同输入分量R29仅保留2/9，残余分量R30保留7/9而违反原预测。能量、相关性、局部余弦不能直接作为候选“功能正确”的评分。</p>
+<p><strong>第四，诊断与正式评价路径未完全对齐，会误导定位效率。</strong> 固定batch32正式评价与逐条diagnose有稳定差异。R28七探针输入/MLP输入一致，写入预测余弦约0.9997–0.9999，但正式缓存与fresh回答只6/7一致，C125修复未复现。它支持局部实施，不能证明正式收益的全部行为链。保留原正式指标及差异，不以诊断重排候选，也不推断缓存损坏或唯一数值原因。</p>
+<p><strong>第五，主指标与总体净改善有不同取舍。</strong> C v8的B0反事实usual净+8、visual净+2；v9分别+2、+5。全部提示臂计，v8反事实usual净+12、visual净+1、无图常识净−5；v9则+3、+10、无图常识−1。这与v8偏常识端改善、v9偏视觉端改善相符，但不是唯一机制归因。联合题目必须同一配对都答对：单条件多修几条不保证联合指标更大。</p>
+<p>未排除的解释：单次研究者轨迹差异、搜索家族覆盖不均、预算分配、不同扰动的有效功能剂量、开发选优偏差与执行路径混杂。没有多次固定政策重复，不能把这次排序推广为所有模型/任务的算法优劣。</p>
+<h2 id="4">4. 成本与失败完整账</h2>
+<table>
+<thead>
+<tr>
+<th>组</th>
+<th style="text-align: right;">正式服务目标样本/前向</th>
+<th style="text-align: right;">目标tokens</th>
+<th style="text-align: right;">Python CPU秒</th>
+<th style="text-align: right;">Astra线程累计tokens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>v8 B</td>
+<td style="text-align: right;">14459</td>
+<td style="text-align: right;">4454864</td>
+<td style="text-align: right;">256.757</td>
+<td style="text-align: right;">19956144</td>
+</tr>
+<tr>
+<td>v8 C</td>
+<td style="text-align: right;">79363</td>
+<td style="text-align: right;">20945903</td>
+<td style="text-align: right;">57.020</td>
+<td style="text-align: right;">20692580</td>
+</tr>
+<tr>
+<td>v9 B</td>
+<td style="text-align: right;">14882</td>
+<td style="text-align: right;">4575329</td>
+<td style="text-align: right;">84.656</td>
+<td style="text-align: right;">25903845</td>
+</tr>
+<tr>
+<td>v9 C</td>
+<td style="text-align: right;">79890</td>
+<td style="text-align: right;">21090336</td>
+<td style="text-align: right;">111.099</td>
+<td style="text-align: right;">24273799</td>
+</tr>
+</tbody>
+</table>
+<p>研究者tokens包含缓存输入，是线程累计口径，不等于付费新增输入或美元发票。v8认证失败B110/C64、v9额度失败B155/C99的单次usage缺失，不填0、不从邻近累计值强行拆分。v8工程各2212生成/2218前向，含2080校准；v9各133生成/142前向，无额外校准，均另计且不算30轮。Python CPU秒不是整个模型推理CPU/GPU或墙钟总成本。</p>
+<p>科学评价结束后，C turn144 CPU汇总发生字典减整数错误，145检查partial、146纠正，未重放目标前向或修改权重。147机制报告记录成功、148冻结成功；最终CPU和研究者成本含收尾。原失败、响应和partial留在最终档案。B的报告/冻结缺项按用户授权豁免，不再次启动。账户中断、等待GPU、共享负载、研究者API整回合和工具往返分开，不拿墙钟差直接比较两种算法计算效率。</p>
+<h2 id="5">5. 交付索引与停止边界</h2>
+<table>
+<thead>
+<tr>
+<th>组</th>
+<th>原始证据、轨迹与收据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>v8 B</td>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-gemma3-shared-gpu-2026-11-06/heartbeat-1010">既有交付</a>：原始远端包、研究者包、冻结/停止及SHA</td>
+</tr>
+<tr>
+<td>v8 C</td>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-gemma3-v9-shared-admission-2026-11-06/heartbeat-1140">既有交付</a>：原始包分片、轨迹、冻结/停止及SHA</td>
+</tr>
+<tr>
+<td>v9 B</td>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-gemma3-v9-shared-admission-2026-11-06/resume-final-audit">额度停止归档</a>：30轮完整结果、原始动作/候选/轨迹、失败和停止，报告/冻结缺项</td>
+</tr>
+<tr>
+<td>v9 C</td>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-gemma3-v9-shared-admission-2026-11-06/final-C-delivery">最终交付</a>：30轮原始回答、动作、候选清单、轨迹、机制报告、冻结与停止、文件SHA</td>
+</tr>
+</tbody>
+</table>
+<p>本次重新核验前3组6个已交付压缩档案及分片整包SHA，见<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-gemma-v8-v9-final-comparison-2026-11-06/existing-archives-verification.json">复核结果</a>。C科学完成快照提供31份评价与30份轮次收据；最终归档另验证它们与结束后的缓存哈希一致。分析脚本要求每组30不同、非零候选、31份含W0完整评价；W0逐记录等同。权重及大型二进制不进Git，远端原路径和文件hash清单保留；没有清理证据或其他项目。</p>
+<p>C服务2386898与本地控制器45613已退出；19:14后的GPU0无计算进程，仅3MiB驻留，GPU1其他项目三进程未动。最终工作盘117.128GiB，v9 B1.218/C2.795GiB，均在12GiB/组、20GiB全盘余量以内；科学评价及收尾ETA均结束，归档只用CPU/网络。本交付没有恢复旧模型队列，也没有新增第31轮。</p>
+<p>v8 B/C与v9 C冻结均为开发选择，未进行独立新来源/重载确认。v9 C机制报告仍注明scientific_review_required；本助手离线审计不是独立科学评审。新一轮策略和外部确认均未启动。</p>
+<h2 id="6">6. 自查与解释边界</h2>
+<p>C01/C02：比较既有修补效力与搜索机会，不转成无目标剪枝；C03/C04：原始记录优先，保留阴性、随机方向和路径混杂；C05–C07：实际参数、W0和绑定输入/输出明确，不假定相同功能剂量；C08/C09：空间/策略/诊断同时改变，不作单因粒度归因；C10：主、全体、保护、修错、成本分开；C11：评价阴性与CPU/认证/额度失败分开；C12：本次新增模型调用0；C13：已见开发、源码/评分/档案hash、冻结缺项明确；C14：局部改善或无改善可收束，不自动扩轮。均通过此离线综合的逻辑检查，不是新实验执行验收。</p>
+<p>最强反例已保留：v9 C全体更高，不能笼统说更差；v8赢家在v9被禁不能归因诊断无用；v9末期仍涨不能称搜尽；局部预测吻合但答案不复现不能拼接完整机制；低功效外部检验阴性不等于等效。统计11项检查见风险报告，无独立确认性显著性或因果政策比较主张。</p></main></html>

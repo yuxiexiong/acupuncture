@@ -1,0 +1,169 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>L0 跨通道计划的旧数据核对</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="l0">L0 跨通道计划的旧数据核对</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cross-channel-planning-audit-v1-2026-10-31/REPORT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cross-channel-planning-audit-v1-2026-10-31/REPORT.zh-CN.md">固定提交原件</a>；SHA-256：<code>bbc0ae3232af4ad77d7a3ba1f1603e64d36d5906eb36cfc3c67b91730a58dc7d</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="l0_1">L0 跨通道计划的旧数据核对</h1>
+<p>2026-10-31；先完成 SELF_CHECK.zh-CN.md，再用 audit.py 标准库读取旧 JSON。无模型加载、前向、GPU、新生成。result.json 保存逐条来源、SHA256、token 与回答，原始数据未改。</p>
+<h2 id="1">1. 已核验到什么</h2>
+<p>三个历史正式调查的 4B/L0 记录：十通道 +1 的80条，N4146 四个新增正档32条、五个负档40条，共152条修改记录，加共享原版8条。全部记录字节 SHA256 与所属正式 worker 收据一致；19个通道—剂量格，每格八题且题目/token输入身份对应。六份正式收据均为completed/checks_passed。没有据旧合同里的“尚未运行”否认后续收据；也没有把已保存 token 的机械分析叫独立模型复现。</p>
+<p>范围不等于全项目：本轮逐记录核验只覆盖上面三来源的 L0/4B；其他层/模型未重审。早层输入控制和缓存定位的后续证据另按归档报告/汇总核对，不声称逐条重验全部11,890或6,576条。</p>
+<h2 id="2-1">2. 十个旧随机通道，在 +1 时的结果</h2>
+<table>
+<thead>
+<tr>
+<th>L0通道</th>
+<th style="text-align: right;">首token为EOS</th>
+<th style="text-align: right;">空正文</th>
+<th style="text-align: right;">128截断</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1210</td>
+<td style="text-align: right;">8/8</td>
+<td style="text-align: right;">8/8</td>
+<td style="text-align: right;">0/8</td>
+</tr>
+<tr>
+<td>1343</td>
+<td style="text-align: right;">8/8</td>
+<td style="text-align: right;">8/8</td>
+<td style="text-align: right;">0/8</td>
+</tr>
+<tr>
+<td>2191</td>
+<td style="text-align: right;">8/8</td>
+<td style="text-align: right;">8/8</td>
+<td style="text-align: right;">0/8</td>
+</tr>
+<tr>
+<td>3152</td>
+<td style="text-align: right;">8/8</td>
+<td style="text-align: right;">8/8</td>
+<td style="text-align: right;">0/8</td>
+</tr>
+<tr>
+<td>3959</td>
+<td style="text-align: right;">8/8</td>
+<td style="text-align: right;">8/8</td>
+<td style="text-align: right;">0/8</td>
+</tr>
+<tr>
+<td>4146</td>
+<td style="text-align: right;">8/8</td>
+<td style="text-align: right;">8/8</td>
+<td style="text-align: right;">0/8</td>
+</tr>
+<tr>
+<td>6137</td>
+<td style="text-align: right;">8/8</td>
+<td style="text-align: right;">8/8</td>
+<td style="text-align: right;">0/8</td>
+</tr>
+<tr>
+<td>6547</td>
+<td style="text-align: right;">8/8</td>
+<td style="text-align: right;">8/8</td>
+<td style="text-align: right;">0/8</td>
+</tr>
+<tr>
+<td>6616</td>
+<td style="text-align: right;">7/8</td>
+<td style="text-align: right;">7/8</td>
+<td style="text-align: right;">0/8</td>
+</tr>
+<tr>
+<td>8215</td>
+<td style="text-align: right;">8/8</td>
+<td style="text-align: right;">8/8</td>
+<td style="text-align: right;">0/8</td>
+</tr>
+</tbody>
+</table>
+<p>N6616 的唯一非首步停止是 Q03：输出“绣”后 EOS，共2 token。不能因为没有首步EOS便归为正常回答。总计79/80首步停止，是旧八题、全提示与生成持续注入、+1条件的观察；不是十通道在新晚段−1条件都同机制的证据。</p>
+<h2 id="3-n4146">3. N4146 的剂量曲线</h2>
+<table>
+<thead>
+<tr>
+<th>剂量</th>
+<th style="text-align: right;">首步EOS</th>
+<th style="text-align: right;">128截断</th>
+<th style="text-align: right;">与原版token完全一致</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>−1</td>
+<td style="text-align: right;">8/8</td>
+<td style="text-align: right;">0/8</td>
+<td style="text-align: right;">0/8</td>
+</tr>
+<tr>
+<td>−0.5</td>
+<td style="text-align: right;">4/8</td>
+<td style="text-align: right;">0/8</td>
+<td style="text-align: right;">0/8</td>
+</tr>
+<tr>
+<td>−0.25</td>
+<td style="text-align: right;">0/8</td>
+<td style="text-align: right;">0/8</td>
+<td style="text-align: right;">0/8</td>
+</tr>
+<tr>
+<td>−0.125</td>
+<td style="text-align: right;">0/8</td>
+<td style="text-align: right;">0/8</td>
+<td style="text-align: right;">0/8</td>
+</tr>
+<tr>
+<td>−0.0625</td>
+<td style="text-align: right;">0/8</td>
+<td style="text-align: right;">0/8</td>
+<td style="text-align: right;">3/8</td>
+</tr>
+<tr>
+<td>+0.0625</td>
+<td style="text-align: right;">0/8</td>
+<td style="text-align: right;">1/8</td>
+<td style="text-align: right;">3/8</td>
+</tr>
+<tr>
+<td>+0.125</td>
+<td style="text-align: right;">0/8</td>
+<td style="text-align: right;">1/8</td>
+<td style="text-align: right;">0/8</td>
+</tr>
+<tr>
+<td>+0.25</td>
+<td style="text-align: right;">0/8</td>
+<td style="text-align: right;">0/8</td>
+<td style="text-align: right;">0/8</td>
+</tr>
+<tr>
+<td>+0.5</td>
+<td style="text-align: right;">0/8</td>
+<td style="text-align: right;">3/8</td>
+<td style="text-align: right;">0/8</td>
+</tr>
+<tr>
+<td>+1</td>
+<td style="text-align: right;">8/8</td>
+<td style="text-align: right;">0/8</td>
+<td style="text-align: right;">0/8</td>
+</tr>
+</tbody>
+</table>
+<p>+1复用原调查，不重复算新回答。0.5时正负表现不同；不能为了匹配症状自动翻符号/调剂量。无EOS并不等于无作用或能力保持，token不一致也不等于有实质语义变化，截断不能直接叫循环。</p>
+<p>在这三个来源中只有N4146有完整正负五档；它由旧十候选的固定随机规则抽中，不是本次按输出挑出来。<strong>但项目后续对N1210也有多剂量/缓存证据，不能说全项目只研究过N4146。</strong></p>
+<h2 id="4">4. 后续多通道证据，按归档来源核对</h2>
+<p>固定读取 Git <code>dbb2f984400c865210b7430dfd91bd5a35e1235c</code> 的 early-input-control 报告和 early-state-localization 报告/confirmation-r01.json。精简汇总保存在 earlier-cache-summary.json。</p>
+<ul>
+<li>输入控制固定面板包含L0/N1210与N4146，开发六档±0.25/±0.5/±1，确认±0.5/±1；报告记录完成。不是其他九个L0通道的完整网格。</li>
+<li>后续全前缀缓存定位确认面板（24输入）：N1210−1的A0首步EOS为14/24，N4146−1为24/24；只洗递推或只洗卷积后两者均0/24。N1210+1的A0为6/24，N4146+1为24/24。这是另外一种时窗和全层缓存操作的归档结果，不能冒充同输入晚段、深层V形成检验。</li>
+<li>所以已有“停止并非唯一通道现象”和“至少另一个通道有缓存干预证据”，缺的是<strong>同一当前机制协议下的跨通道比较</strong>。</li>
+<li>尚未逐条重新哈希该后续实验的原始模型记录；这里明确为归档汇总核对，不抬升成此次独立复现。</li>
+</ul>
+<h2 id="5">5. 对新计划的约束</h2>
+<p>保留原十通道全名单，不按79/80结果再选强者，不额外补抽“好看”的通道。主比较固定当前−1，+1仅作符号桥接，−0.5作固定弱剂量敏感性；不把某通道调到停止再说机制一致。全部通道都报告，包括只有其他输出变化或读数不足者。先检验相同V形成—深层输出关系能否跨通道成立，暂不把缓存八组合复制十遍。</p>
+<p>本报告完成的是旧数据审计，不是下一轮跨通道实验结果。具体计划与完整自查见 docs/cache-cross-channel-validation-plan-v1-2026-10-31.zh-CN.md。</p></main></html>

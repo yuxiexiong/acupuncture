@@ -1,0 +1,214 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>WIN-02 合同 r01：预留条件上的窗口与条件性恢复预测检验</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="win-02-r01">WIN-02 合同 r01：预留条件上的窗口与条件性恢复预测检验</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/window-prediction-win02-v1-2026-11-04/CONTRACT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/window-prediction-win02-v1-2026-11-04/CONTRACT.zh-CN.md">固定提交原件</a>；SHA-256：<code>cc55d58cb17a8af8a101de5e150c077c7cded6453039dcbe803d4b2a63069b61</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="win-02-r01_1">WIN-02 合同 r01：预留条件上的窗口与条件性恢复预测检验</h1>
+<p>2026-11-04。依据：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-mechanism-win02-prediction-plan-v1-2026-11-04.zh-CN.md">设计稿 v2</a>（main <code>5ae3f8d</code>）及 11-04 评审意见。用户授权（2026-11-04）："直接推进到实验结束"。探索性，面板都已接触过，作者执行，未经独立评审。档位：<strong>推导</strong>、<strong>类比</strong>、<strong>推测</strong>、<strong>探索</strong>，定义同设计稿。</p>
+<h2 id="0">0. 要交付什么</h2>
+<p>一张证据表：WIN-01 得到的关系，在预留的、未参与构建它们的针条件下，<strong>哪些保持、哪些分叉、哪些无法检验</strong>。</p>
+<p><strong>限定</strong>：§7 的推广节点是本卡的推进规则，不是机制普遍成立的证明。
+- 8 个 (针, 任务) 格不是 8 个独立样本。
+- 即使通过节点，结论也只写"关系在这些新增条件下得到支持"。
+- 没检测到反例，不写成"不存在反例"。
+- 出现反例，研究其适用条件，不判整条线死。</p>
+<h2 id="1">1. 固定条件</h2>
+<p>模型、引擎、模板、停止集合、贪心解码、切点 τ、两任务的形成实现与生成长度（事实 128、编号 32）全部同 WIN-01（合同 r01 §1、DECISIONS D1–D2）。</p>
+<h2 id="2-win-01-11">2. 条件（WIN-01 合同 §11 预留，不增删）</h2>
+<table>
+<thead>
+<tr>
+<th>针</th>
+<th>类型</th>
+<th>校准</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>L2/C5251/−1</td>
+<td>原生通道</td>
+<td>事实：本题 f0 版 <code>engine.calibrate</code>；编号：NQ-01（同 WIN-01）</td>
+</tr>
+<tr>
+<td>L3/C7666/−1</td>
+<td>原生通道</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>L5/C2467/−1</td>
+<td>原生通道</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>R0_L00/−1</td>
+<td>XCHAN 固定随机方向 R0（<code>directions-r01.json</code>，种子 20261101），在第 0 层 MLP 输出加 −1×scale×u</td>
+<td>同上</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>剂量不变</strong>：无损伤记为结果，不加剂量。</li>
+<li><strong>已见数据</strong>：事实任务全前缀（W_all）下三根原生针的 T、R_all、KV_all、R+KV_all（阶段二），只作逐位桥接的基线，不算预测。</li>
+</ul>
+<h2 id="3">3. 输入、窗口、臂</h2>
+<ul>
+<li><strong>输入</strong>：事实 48 条（阶段二开发＋历史复核），编号 48 条（LVK 新面板）。b 同 WIN-01。</li>
+<li><strong>窗口</strong>：</li>
+<li>W_all：0..n−2；</li>
+<li>W_pre：0..b，即<strong>模板＋记录句</strong>；</li>
+<li>W_post：b+1..n−2。</li>
+<li><strong>臂</strong>（T 背景，供体＝同输入的 C）：</li>
+<li>T；</li>
+<li>R_all：全部线性层递推；</li>
+<li>KV_all：全部注意力层 KV；</li>
+<li>R+KV_all；</li>
+<li>W_all 下另加 R_all＋KV_pre：R_all 加全部注意力层 KV 的位置 0..b。</li>
+<li>外加 C。每输入 53 条轨迹。</li>
+<li><strong>不做</strong> S_deep 与 B 块：这是阶段取舍，答案选择与写入—读取问题保留在后续 R3 路线上。</li>
+</ul>
+<h2 id="4">4. 读数</h2>
+<ul>
+<li><strong>首步</strong>：是否停止、首 token 分类。</li>
+<li><strong>自然回答正确性</strong>：</li>
+<li>事实：盲读，流程同 WIN-01 §7、D7、D8；一读说明写入截断规则（WIN-01 DEVIATIONS V4）；</li>
+<li>编号：<code>y_full</code>。</li>
+<li><strong>逐格报告</strong>：答对数、T 答错数、救回数（T 错 → 臂对）、改坏数（T 对 → 臂错）、停止数、错误类型。</li>
+</ul>
+<h2 id="5-62">5. 判据（数据前写死，经 6.2 合成演示）</h2>
+<p><strong>通用</strong>
+- 单位为输入，场景等权。场景分层 bootstrap 2000 次，种子 20261103；每个比较在自己的分母上重抽。
+- 方向性标签：
+  - <strong>成立</strong>：与预期同向、区间不含 0、|Δ| ≥ 0.20；
+  - <strong>反方向</strong>：与预期反向、区间不含 0、|Δ| ≥ 0.20；
+  - <strong>无可检出差别</strong>：区间在 [−0.10, 0.10] 内；
+  - 其余为<strong>不可判</strong>。
+- <strong>无损伤（不适用）</strong>：相应窗口 T 答错 &lt; 12/48。</p>
+<p><strong>跨窗口比较</strong>：全体 48 个输入的配对差，E ＝ Y(A) − Y(T)。救回比例只作同窗口内的描述。</p>
+<p><strong>关系 M</strong>（W_all 下，R_all＋KV_pre 对 R_all），两面各自的分母：
+- <strong>正向</strong>：分母 U⁺ ＝ <strong>T 答错且 R_all 也答错</strong>的输入（不是"R_all 后所有仍错的输入"，后者会包含被 R_all 改坏的输入）。读数是 R_all＋KV_pre 在 U⁺ 上的答对比例。
+  - |U⁺| ≥ 10 时按方向性标签判，预期为正；
+  - |U⁺| &lt; 10 记<strong>天花板</strong>，不做正向判定。
+- <strong>反向（改坏）</strong>：分母 U⁻ ＝ <strong>R_all 答对</strong>的全部输入（无论 T 对错）。读数是 R_all＋KV_pre 在 U⁻ 上答错的比例。
+  - |U⁻| ≥ 10 时，若区间下界 ≥ 0.10，记<strong>改坏反例</strong>；
+  - 所有格都检验，包括天花板格。
+- 另报全体输入的配对差，并保留每个输入的 (T, R_all, R_all＋KV_pre) 转移记录。</p>
+<p><strong>停止</strong>：
+- "不停"＝停止数 ≤ 2/48；
+- "停"＝停止数 ≥ 12/48；
+- 介于两者之间为不可判。</p>
+<h2 id="6">6. 预测（数据前登记）</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>预测（方向）</th>
+<th>检验格与分母</th>
+<th>档位</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P1</td>
+<td>W_pre 下 T 不停（≤ 2/48）</td>
+<td>8 格。若该格 W_all、W_post 的 T 都 &lt; 12 停止，记"无信息"，不计入成立</td>
+<td>类比</td>
+</tr>
+<tr>
+<td>P2</td>
+<td>在 T 停（≥ 12/48）的窗口，R_all 后不停（≤ 2/48）</td>
+<td>由 T 决定</td>
+<td>类比</td>
+</tr>
+<tr>
+<td>P3</td>
+<td>关系 M 正向成立（预期为正），且无改坏反例</td>
+<td>8 格；事实已知 L2 的 U⁺ 为 11、L3 为 13（可做正向）、L5 为 4（天花板，只检验改坏）；编号与 R0 数据后按 §5 确定</td>
+<td>类比</td>
+</tr>
+<tr>
+<td>P4</td>
+<td>W_pre 下，在同一批 T 答错输入上，KV_all 救回比例 − R_all 救回比例 &gt; 0</td>
+<td>W_pre 可检验的格</td>
+<td>推测</td>
+</tr>
+<tr>
+<td>P5</td>
+<td>R0：E(W_post, R_all) − E(W_all, R_all) &gt; 0（全体输入配对）；且 W_all、W_post 的 T 停、W_pre 的 T 不停</td>
+<td>R0 × 2 任务</td>
+<td>类比</td>
+</tr>
+<tr>
+<td>E1、E2</td>
+<td>各针各窗口的损伤大小；W-c（哪种恢复有效）的逐格图样</td>
+<td>—</td>
+<td>探索，不下注</td>
+</tr>
+</tbody>
+</table>
+<p><strong>结论限定</strong>：
+- P5 成立只说"该现象不是 N4146 这个原生通道独有"。
+- P3 成立只说"在递推已恢复的背景下，补入模板＋记录句位置 KV 有额外作用"。</p>
+<h2 id="7">7. 证据表与推进节点（本卡推进规则）</h2>
+<p>每条预测逐格归入六类，全部展示：
+- 成立；
+- 反方向或改坏反例；
+- 无可检出差别；
+- 不可判；
+- 天花板（只检验了改坏）；
+- 无损伤 / 无信息。</p>
+<p><strong>关系 M 的节点</strong>（分母 8）：</p>
+<table>
+<thead>
+<tr>
+<th>情况</th>
+<th>本卡的推进读法</th>
+<th>下一步</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>任一格反方向或改坏反例</td>
+<td>分叉</td>
+<td>比较成立格与反例格，研究适用条件</td>
+</tr>
+<tr>
+<td>正向可检验 &lt; 4</td>
+<td>大部分不可判，不进入推广分支</td>
+<td>照实记录覆盖；先讨论如何得到可检验条件</td>
+</tr>
+<tr>
+<td>正向可检验 ≥ 4，成立 ≥ 3/4，且无反例</td>
+<td>关系在这些新增条件下得到支持</td>
+<td>进入 R3（代表条件上的写入—读取），同时保留横向复核</td>
+</tr>
+<tr>
+<td>成立 ≤ 2 格</td>
+<td>证据不足</td>
+<td>不据此深挖单个条件</td>
+</tr>
+<tr>
+<td>其余</td>
+<td>混合</td>
+<td>只按格报告，先讨论</td>
+</tr>
+</tbody>
+</table>
+<h2 id="8">8. 工程闸门（任一失败即停，报告用户）</h2>
+<ol>
+<li><strong>事实桥接</strong>：三根原生针在 W_all 下的 T、R_all、KV_all、R+KV_all，以及 C 的 t1 logits sha、生成 token、候选对数似然，逐位等于阶段二记录。</li>
+<li><strong>编号桥接</strong>：C 的 t1 bf16 与自然 token 等于 NCC 的 C。</li>
+<li><strong>结构</strong>：
+   - 所有窗口第 0..L 层缓存等于 C；
+   - W_post 下全部注意力层位置 0..b 的 KV 等于 C；
+   - W_pre 与 W_all 的位置 0..b 的 KV 相同。</li>
+<li><strong>替换</strong>：目标等于供体（含位置切片），其余逐位等于接收者，供体与接收者不变。</li>
+<li><strong>写入审计</strong>：每针实际每位置写入范数相对误差 ≤ 1%，掩码位置数等于设计。R0 在两任务上都审计。</li>
+<li><strong>预检额外</strong>：自换不变。</li>
+</ol>
+<h2 id="9">9. 规模、预算、停止</h2>
+<ul>
+<li><strong>规模</strong>：事实 24 对 × 2 × 53 ＝ 2,544 条生成；编号 48 × 53 ＝ 2,544 条。</li>
+<li><strong>预检</strong>：事实 RD01 一对＋编号 2 条（NCC 预检输入），单卡，上限 0.5 GPUh。</li>
+<li><strong>正式</strong>：双卡，上限 7 GPUh，存储 12 GiB。外推超限则不开正式。</li>
+<li><strong>执行失败</strong>：工程闸门失败＝合同执行失败，信息量为零，停止并报告用户。预检允许一次有记录的修复；正式开始后不修、不重试。</li>
+<li><strong>结果处理</strong>：结果弱或不可判时，不加针、不改剂量、不换题。</li>
+</ul></main></html>

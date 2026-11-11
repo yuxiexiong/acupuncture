@@ -1,0 +1,156 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>WSP-PR01 v1：实验设计自查</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="wsp-pr01-v1">WSP-PR01 v1：实验设计自查</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>docs/wsp-process-reproduction-self-check-v1-2026-11-03.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/docs/wsp-process-reproduction-self-check-v1-2026-11-03.zh-CN.md">固定提交原件</a>；SHA-256：<code>f63793bccbaae40069968651314cfb13ed1deb2bb465c6e542ed7fd819166750</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="wsp-pr01-v1_1">WSP-PR01 v1：实验设计自查</h1>
+<p>日期：2026-11-03。规范：experiment-design-self-check v1，已核对远端blob与本地一致（d8acb193250ab60f17389878eb2778243f5d0bd5）。</p>
+<p>审查范围：<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/docs/wsp-process-reproduction-v1-2026-11-03.zh-CN.md">过程复现计划</a>。身份：同一助手的设计和反方自查，不是独立审查。结论针对逻辑设计；未验收运行器、模型数值或吞吐，未运行实验。</p>
+<h2 id="1">1. 设计卡</h2>
+<ol>
+<li>主线/问题：本聊天专门研究WSP；本轮从未编辑Qwen3.5-0.8B起步，复现一次50-pass自主诊断—权重修改—验证过程。缓存主线保持原任务，本轮不将其历史实验拼进WSP结果。</li>
+<li>增量：现有档案只有作者阅读记录；本轮将取得自己的搜索轨迹、失败分支、候选权重与独立于搜索选择的最终效果。方法复现不要求方法原创，不要求解释全部循环机制。</li>
+<li>依据/反例：固定上游README、原初prompt、profiles、evaluate/build_ckpt/mathqa、notices、state及来源收据。作者不同预算获得不同补丁；Gemma未获得类似大提升；原服务未发布且跨批采样不严格复现。有效补丁和过程可复用均不能预先保证。</li>
+<li>操作：官方Qwen/Qwen3.5-0.8B revision 2fc06364715b967f1860aea9cf38778875588b17的文本部分；搜索端根据自己收到的证据选择允许的权重修改。冻结模板、thinking、采样、评分、50-pass/300 Python及原限制；不预定层/通道/强度。不采用缓存供体、激活针或作者最终补丁。</li>
+<li>估计对象：同请求练习both的操作总效果；冻结后原版与最终版本在相同终验协议下的准确率等差异；观察决策序列与每候选的证据。不是自然路径中介份额。</li>
+<li>判读：正向为本次条件下效果支持；负向/无效保留为本次效果复现失败；部分改善按数据集拆开；工程/信息泄漏问题不可判。不同补丁可复现过程，不证明同一内部机制。</li>
+<li>范围/成本：一次p50式运行，50成功pass包含自安排练习确认；完整公开终验十项两模型25792回答，CPU/GPU验收和失败另计。GPUh/编辑器费用待工程测量冻结，不虚构准确ETA。</li>
+<li>退出：50成功pass后冻结；工程错误/信息泄漏/资源上限暂停并保留证据；不自动增加pass、补抄作者坐标或展开其他模型。</li>
+</ol>
+<h2 id="2-c01c14">2. C01–C14逐项判断</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>判定</th>
+<th>理由及计划位置</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C01 主线</td>
+<td>通过</td>
+<td>§1明确WSP全过程复现，§5同时覆盖诊断、编辑和终验；不偷换成应用补丁或修复海盗角色</td>
+</tr>
+<tr>
+<td>C02 增量</td>
+<td>通过</td>
+<td>新增可核对自主搜索轨迹与本环境效果；不是重复作者最终权重，也不伪造原创</td>
+</tr>
+<tr>
+<td>C03 资产</td>
+<td>通过</td>
+<td>§3列真实公开代码与缺失harness、数据、评分组件；§3.2区分在线公开、本地文档、服务器实查和未验收项</td>
+</tr>
+<tr>
+<td>C04 假设</td>
+<td>通过</td>
+<td>§1/7允许原版失败分布不同、搜索无效和不同补丁；不将作者0.8B阳性推广为必然成功</td>
+</tr>
+<tr>
+<td>C05 操作</td>
+<td>通过</td>
+<td>§4定义权重编辑对象、冻结范围、精度、工具及hook索引；具体候选由自适应策略产生，事前列作者坐标反而污染方法复现</td>
+</tr>
+<tr>
+<td>C06 路径</td>
+<td>通过</td>
+<td>修改后全部下游状态与自回归正常响应；没有固定缓存或强制自然路径不变，报告权重编辑总效果</td>
+</tr>
+<tr>
+<td>C07 耦合</td>
+<td>通过</td>
+<td>保留绑权、形状、同一候选的整体修改身份与BF16语义；不人工拆k/β；权重改动可能有补偿，只据实际干预推论</td>
+</tr>
+<tr>
+<td>C08 归因</td>
+<td>通过</td>
+<td>§1/5/7区分过程完成、性能改善与机制证据；不同阶段读数不能拼成唯一循环机制；候选有因果措辞时检查其本次对照</td>
+</tr>
+<tr>
+<td>C09 区分</td>
+<td>通过</td>
+<td>不强设互斥机制；工程对齐、原版分布、候选预测、最终效果分别可失败；不同结果不会都被解释为“作者机制复现”</td>
+</tr>
+<tr>
+<td>C10 指标</td>
+<td>通过</td>
+<td>主终点MATH500/GSM8K avg@n与截断、无答案、错误、长度分开；完整原文留存；循环减少不能代替正确率</td>
+</tr>
+<tr>
+<td>C11 失败</td>
+<td>通过</td>
+<td>§5 P1与§7把模板/权重/服务失效、泄漏及科学阴性分开；不要求复现原93%截断才判工程成功</td>
+</tr>
+<tr>
+<td>C12 成本</td>
+<td>通过（逻辑）</td>
+<td>新前向是获得新自主轨迹所必需；复用practice/代码、一次50pass而非所有八组；§6列真实规模、验收上限与正式成本冻结门槛，不把未实测GPUh当完成</td>
+</tr>
+<tr>
+<td>C13 可信度</td>
+<td>通过（设计）</td>
+<td>§2隔离作者答案与本聊天；原题ID及hash、全部采样、候选父版本、冻结/确认、按题聚类；不保证预训练无污染或一次搜索代表稳定性</td>
+</tr>
+<tr>
+<td>C14 累积</td>
+<td>通过</td>
+<td>阳性/阴性均能留下具体搜索行为、工具适配和适用边界；§7无自动扩展；本轮不要求完整机制闭环才算有价值</td>
+</tr>
+</tbody>
+</table>
+<p>C12/C13的“通过”是设计安排合理，实际预算、环境隔离和数据身份仍需工程验证，不能解读为已具备执行条件。</p>
+<h2 id="3">3. 与已有文档/作者设计的比较</h2>
+<ul>
+<li>之前WSP档案是原始资料综述，包含作者成功层号、列数、强度和历史结果；本计划将它留在观察端，不给搜索端。</li>
+<li>海盗修复讨论稿研究不同目标，本轮按用户要求改为原版0.8B的WSP实验8方法复现，不承接其拟干预。</li>
+<li>保留作者原始任务、practice、接口权限、预算、thinking和评分；40轮handoff、第29轮解释要求及原notices按已公开记录对齐。</li>
+<li>不把p50c后来出现的96题诊断、4组配对、1152题确认或最终稀疏补丁写死给新搜索者。</li>
+<li>因原harness缺失而重建工具；evaluate模块路径/缺失grader需适配，保留diff。增加全部sample原文/每次候选快照，是满足观察目标的日志变化，不改变评分。</li>
+<li>不把10/25/50当同次搜索截断曲线；本轮只覆盖50，其他独立运行不自动启动。</li>
+<li>文档一般叙述“日志含推理摘要”不足以描述实验8；原README说该实验未输出reasoning summaries，本计划只承诺外显解释和执行记录。</li>
+</ul>
+<h2 id="4">4. 历史错误适用性</h2>
+<ul>
+<li>E01：用户要过程复现，不能变成套最终补丁、海盗角色应用或缓存实验。</li>
+<li>E02/E03：作者层号非先验；参数比例小不等于扰动小，保留实际改动范数与BF16改变。</li>
+<li>E04：局部权重—输出代数等式只用于验收，不称机制发现。</li>
+<li>E07/E08/E14/E15/E17/E18/E26：不把改善/候选顺序/内部读数升级为原生路径中介、必要充分或形成闭环；本轮报告总效果及实际对照支持。</li>
+<li>E09/E10/E11：激活与答案同时变化不证明前者独占致因；减少循环/截断与正确率分开；方向不能直接命名为完整数学知识。</li>
+<li>E12：随机方向不是自动有效零分布；只按搜索者实际对照评价其主张，不补称最终支持集完全匹配。</li>
+<li>E16：阴性允许，不调模板制造原作者现象，不用作者补丁补救。</li>
+<li>E19：no-edit/hash/模板/数值一致是工程验收。</li>
+<li>E20：单层/多层、稀疏/稠密、方向/剂量可同时涉及，不能强装互斥候选。</li>
+<li>E21：方法复现无“首次发现”主张；固定公开版本，后续差异有来源记录。</li>
+<li>E22：同题多次采样按题聚类；本聊天已见作者解答；确认后改候选需重标数据身份；一次运行不称方法成功率。</li>
+<li>E23：作者自查、公开记录、工程验收、正式运行及独立复现分别标记。</li>
+<li>E24/E25：过程/局部因果证据有价值，不要求完整机制；不顺手增加所有模型、所有预算或全token全层观测。</li>
+<li>E05/E06/E13：本轮无缓存供体、共享k/β反事实拆分或value补偿，不适用；权重绑权和全轨迹响应已由C06/C07覆盖。</li>
+</ul>
+<h2 id="5">5. 实质反方检查与修正</h2>
+<p><strong>反例A：从raw权重重新算作者方向和64列，也可能获得同样分数，却完全没有复现自主发现。</strong>
+处理：禁止作者后续代码/最终候选进入搜索端；不写死搜索路线。当前知情助手不扮演盲搜索者。复查C01/C02/C13通过。</p>
+<p><strong>反例B：即使不载入补丁，本聊天和本计划已经泄露层号/公式，新聊天若继承历史仍污染。</strong>
+处理：隔离会话、文件挂载和记忆；输入白名单与访问日志；不复制本计划。无法保证预训练无见过资料，准确保留边界。不宣称绝对独立原创发现。</p>
+<p><strong>反例C：照抄evaluate.py可直接跑错non-thinking默认，或因缺weightenv模块报错，还只存部分回答。</strong>
+处理：显式qwen35think/think35；导入适配、官方grader及固定样例验收；添加全量文本/token日志，不改提取和采样规则。C05/C10/C11复查通过。</p>
+<p><strong>反例D：获得很高分可能只因缩短生成、关thinking或改判分，甚至把作者原版成绩当新对照。</strong>
+处理：固定原模板/32k/采样/boxed；原版和最终版都实跑；所有偏差列出，不能混用评价；截断只作辅终点。</p>
+<p><strong>反例E：只记录解释会形成好看的事后故事；导出的激活可能跨候选或跨token错位。</strong>
+处理：forward前绑定权重hash、题目token和请求ID；保留代码/完整反馈/父候选，解释在行动前输出；hook索引与mask工程验收。不用外显解释冒充内在完整思考。</p>
+<p><strong>反例F：50-pass成功调用的口径掩盖大量失败成本，20.3小时被误当我们GPU预算。</strong>
+处理：失败、服务等待、编辑器用量和设备秒另记；完整评价计入25792回答；正式资源上限须由工程吞吐冻结。不能把待测上限伪装为完成。</p>
+<p><strong>反例G：要求预留固定1152确认题或重用作者题单，会改变搜索器自由选择及50pass预算。</strong>
+处理：只沿用原prompt要求的未用于选择的确认原则；开发/确认由本次轨迹产生并登记。无候选/无剩余确认则保留不足；外部benchmark不返给搜索者。</p>
+<p><strong>反例H：为观察“全部内部过程”存所有层所有token全张量，工作盘爆满，额外重放还改变预算。</strong>
+处理：完整保存原工具已请求张量及所有文本/操作，不额外全量观测；定义可见范围；容量规划含最多300GB teacher-forced输出，校验后归档，不能删失败。C12/C14复查通过。</p>
+<p><strong>反例I：作者GPU引擎、seed映射、grader适配不可完全重建，为什么仍可交计划？</strong>
+处理：不承诺逐token/位级轨迹重现；承诺公开合同与方法过程复现，必须在P1公开偏差并验收。若关键同题比较/模板/权重身份无法成立，停止为工程未完成，不得当科学结果。</p>
+<h2 id="6">6. 最后状态</h2>
+<ul>
+<li>逻辑设计：通过；以上反例已落实到计划，不将已知问题留给用户代查。</li>
+<li>只读核对：GitHub公开源码与协议、practice清单、既有服务器资源和包元数据。</li>
+<li>工程：尚未建立完整harness，未下载/核验0.8B权重；无vLLM/math-verify验收；未做模型前向。</li>
+<li>授权：本轮只交计划；后续模型/GPU与编辑器费用未启动，逻辑通过不授权运行。</li>
+<li>正式合同未填完项：实际运行器/模型接口版本、数值容差、seed实现、通知轮次、数据revision与多选适配、长上下文吞吐、实际GPUh/墙钟/费用和失败重试上限。</li>
+<li>本轮仍回答同一个目标：复现并观察从原始权重到自主搜索结果的全过程，能留下自己的成功或失败证据。</li>
+</ul></main></html>

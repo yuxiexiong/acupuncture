@@ -1,0 +1,13 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>QKD-01 决策日志</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="qkd-01">QKD-01 决策日志</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-k-computation-diagnostic-v1-2026-11-03/DECISIONS.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-k-computation-diagnostic-v1-2026-11-03/DECISIONS.zh-CN.md">固定提交原件</a>；SHA-256：<code>61cd1987537ed78a15cab63cf381a189068a75b1ba71f78a52184ffc4926d8ff</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="qkd-01_1">QKD-01 决策日志</h1>
+<ul>
+<li><strong>D1 计划由评审撰写</strong>（21981fe7），实现照做。</li>
+<li><strong>D2 内核事实与闸门</strong>：见合同 §0.1；任何非 torch 内核可用即停。</li>
+<li><strong>D3 观测与 C1343 完整生成分开</strong>（+864 次解码前向），避免观测与 generate 内部的诊断分叉交错。</li>
+<li><strong>D4 头粒度 = 32 个值头</strong>；q/k 的 16→32 重复由源码 repeat_interleave 决定。</li>
+<li><strong>D5 主步</strong>：计划写“t=2 通常在此竞争编号”，未指定标签用哪一步；冻结为 C 路线 t2，其余同报。</li>
+<li><strong>D6 预检 r01 工程失败与修复（唯一一次允许的预检重试）</strong>：r01 的两个输入在 worker 内全部完成、所有科学闸门通过（e_max 0.0035），但启动器的验收函数残留一行从 QKF 照搬、引用本实验记录中不存在字段 <code>trajectories</code> 的检查（KeyError）。修复为检查 C1343 生成轨迹的诊断分叉；按版本号 r02 重新冻结、重建 C1343 r_post 清单并重跑预检。r01 记录原样保留（runs/preflight-r01），不作正式证据。科学定义、阈值与矩阵未改。</li>
+</ul></main></html>

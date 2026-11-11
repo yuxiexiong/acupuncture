@@ -1,0 +1,20 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>v8：双H20、真实批量、各30轮修补评估</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="v8h2030">v8：双H20、真实批量、各30轮修补评估</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/wsp-vlm-open-repair-v8-2026-11-05/PLAN.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-open-repair-v8-2026-11-05/PLAN.zh-CN.md">固定提交原件</a>；SHA-256：<code>66b9c32cf1adc31fda11169db0e54118070c27735395be7e92436cb4b6b042f5</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="v8h2030_1">v8：双H20、真实批量、各30轮修补评估</h1>
+<p>用户2026-11-05明确授权：C用物理GPU1，成功后B在GPU0复用单卡高批量；取消两卡硬GPU总时限；用户确认“30轮修补＋完整评估”，诊断不计轮。本计划覆盖此前串行/两小时安排，保留旧配置、运行、失败和费用记录。</p>
+<h2 id="_1">设计卡与固定比较</h2>
+<p>主问题不变：研究者AI能否依据VLM真实失败和内部反馈，自选位置与非梯度修改，用稀疏静态权重修补提高任务表现并控制损伤。B是空间条件计数（D58来源组、464输入），C是反事实图干扰通常常识（D64组、2560输入）。模型、revision、BF16、SDPA、greedy、128生成上限、处理器、题目、标签、评分、逐格保护和支持数上限沿用v7。</p>
+<p>B/GPU0与C/GPU1独立并行，常规推理先采用batch64。C在256条工程输入上测试batch4–256，与既有逐题token、输入/模板hash和图像尺寸均一致；batch64达到约45.9条/秒，接近batch128约46.5条/秒，batch256反而约45.2条/秒。选择接近最快档且更小的64，不以填满显存为目标，至少预留12GiB。</p>
+<p>B在原版/旧补丁各464条中，batch64相对逐题分别有3/2条答案差异；不能称完全等价，不能把差异计为WSP收益。使用batch64自身重复性和输入身份核对；通过才进入新阶段。两条线均在新run完整重测W0，再以相同固定顺序/批量评估所有候选。新的主要比较仅在同一批量制度内。此前B首补丁及S0均保留历史角色，不当新独立确认。</p>
+<h2 id="ai30">AI循环与30轮计数</h2>
+<p>AI读完整D成功/失败→提出假设→自选诊断、层/神经元、非梯度修改→提交不可变补丁→完整D自然生成→获得修对/改错、指标和保护反馈→下一轮。没有预写选层或神经元排名。观察者只执行输入、计费、静态稀疏校验及冻结的选择规则。</p>
+<p>每条线目标30轮。一次不同的、非零权重补丁完成全部D评估计1轮；诊断、局部评价、失败/中断、缓存重复、仅改变说明但权重相同均不计。权重身份按实际张量内容hash去重。完整评估没有涨分或未过保护也计轮，避免只数成功。第30轮后观察者按既有目标/保护选择最佳并冻结；W0仍可为最佳。旧慢速B轮次不计入v8。达到30轮只意味着开发搜索完成，不意味着成功或泛化。</p>
+<p>没有总墙钟/GPU超时，配置wall_seconds=null，服务器无timeout包裹、本机父进程无运行截止。保留单次研究者请求900秒、单次CPU工具300秒作为挂起检测，不是总GPU时间额度。每任务2000动作/研究者轮次、累计CPU36000秒、研究者5000万token观察上限；目标样本上限为5×30×完整D大小，token保守预留按每样本4224计算。这些防失控额度不把诊断算为修补轮；若先触及它们或真实阻塞，必须报告少于30轮的实际状态，不能宣称完成或自动加码。美元费用未知，沿用ChatGPT登录，无API fallback。</p>
+<p>研究者CLI返回thread累计usage，v8保留raw并按相邻累计值差计账；旧运行重复累计触发早停的记录保留，不改原receipt。目标前向样本、基线、工程重放、失败分别记录。</p>
+<h2 id="_2">自查与相对上一版变化</h2>
+<p>C01：主问题仍是AI开放稀疏修补，吞吐优化服务于更多有效迭代。C02：实质增量是30个完整候选的反馈链，不用诊断调用数量替代。C03：复用D、模型、已有答案和控制器；新版本保留旧run。C04：负收益和控制损伤允许，不能为凑30伪造收益。C05：实际操作仍为静态权重；批量只改变执行制度，另建同制度基线。C06：输入和评分固定，下游正常生成；批内一次装载末尾回滚。C07：绑定权重按唯一标量计；不宣称少坐标就是小功能变化。C08：仅开发修补效应，不作机制唯一性或泛化论断。C09：AI逐轮自述预测，观察者不提供配方。C10：完整答案和逐格联合指标，非logit替代。C11：工程失败/批量数值差异/科学负结果分开。C12：用户新授权取消总时限，按30轮；先实测吞吐并留显存余量。C13：新W0基线、源hash、实际批量、旧H已见边界及失败raw全部保留。C14：最终报告有效轮数、最佳补丁、损伤及剩余确认缺口，不因30轮用尽自动扩规模。</p>
+<p>历史重点：E02不固定两层；E03同时记录标量数和范数；E10不把内部得分当正确答案；E11不以探针阴性淘汰；E12保护每种问法/顺序而非仅总体；E16保留无效补丁；E22来源组计统计单位；E23同助手自查不冒充独立审查；E24不等完整机制才试改；E25不顺带开展新模型或LoRA。其余缓存拆换专用错误本轮无对应操作。</p>
+<p>反方检查：大批量可能改变少数答案，B已经出现，所以必须新基线且限制结论；高显存占用未必高吞吐，实测256不比64快；30次反复看D可能过拟合，必须保留未来独立新来源组终验；重复权重可刷轮数，按内容hash去重测试；无总时限可能在网络/工具处卡住，保留单次超时、持久请求身份、进程存活检查及每30分钟监控，不能不明状态重放。</p>
+<p>逻辑自查通过；30项离线回归（含唯一完整轮计数与无总时限）通过；真实批量测试及B同批量复验另由回执说明。方案/代码交付不等于30轮结果，尚无独立审查或终验。</p></main></html>

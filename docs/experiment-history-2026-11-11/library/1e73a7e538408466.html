@@ -1,0 +1,150 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>WSP/WCP 用户叫停与数学结果复核</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="wspwcp">WSP/WCP 用户叫停与数学结果复核</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/wsp-process-reproduction-v1-2026-11-03/fleet-v1/runs/user-stop-r1/README.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-process-reproduction-v1-2026-11-03/fleet-v1/runs/user-stop-r1/README.zh-CN.md">固定提交原件</a>；SHA-256：<code>1e73a7e53840846674c7bc29658493f25935c4e9c30b7396f80a9dc9efdbb450</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="wspwcp_1">WSP/WCP 用户叫停与数学结果复核</h1>
+<h2 id="material-passport">Material Passport</h2>
+<ul>
+<li>时间：2026-11-04，北京时间 12:43 停止、12:47 核对。</li>
+<li>模式：validate；Verification Status: <strong>ANALYZED</strong>。</li>
+<li>材料：保存的逐题评分、请求快照、运行账本、搜索笔记。CPU 复算统计；未重新运行模型，也未独立重新评分答案文本。</li>
+<li>范围：解释本轮数学结果；不设计或启动新实验。用户叫停覆盖此前运行和恢复授权，须重新明确授权才能续跑。</li>
+</ul>
+<h2 id="_1">已停止的任务</h2>
+<p>Mac 调度器、等待器、Astra 桥接及其请求子进程，服务器数学 broker/forward/vLLM 与编程 scheduler 均已停止。两卡计算进程数为零，显存各 3 MiB；自动化 <code>wsp</code> 已 PAUSED，三个当前恢复状态已标记 <code>paused_by_user</code>，旧状态另存。原数据、日志、失败、权重快照及账本保留，未修改科学结果。</p>
+<table>
+<thead>
+<tr>
+<th>实验</th>
+<th>停止时状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>4B 数学</td>
+<td>已完成 50/50；本轮未找到通过验证的改动，最后恢复原权重</td>
+</tr>
+<tr>
+<td>0.8B 数学</td>
+<td>完成 4/50；第 5 次 forward 在运行中被用户叫停，无完整结果，不算完成</td>
+</tr>
+<tr>
+<td>4B 编程</td>
+<td>D 生成 128 题 × 2 完成，217/256 通过评分；D_LABEL 已完成 12 批，diagnosis-168 中断；尚无干预效果结论</td>
+</tr>
+<tr>
+<td>0.8B 编程</td>
+<td>首批 32 题 × 2 保留；预算续跑等待器已停，未启动新批次</td>
+</tr>
+</tbody>
+</table>
+<p>0.8B 数学旧账本只包含已结算 2325.348774 GPU 秒。中断第 5 次动作从启动到发出停止信号又占用约 1031.974169 设备槽秒（墙钟 × 2 卡，不含信号后的清理尾部），另存 <code>interrupted-action.json</code>，不能按零计或直接把旧账本当总支出。未来即使获准恢复，也须先对账，不重置预算、不盲目重放。</p>
+<h2 id="4b">4B 的阴性具体是什么意思</h2>
+<p>最终候选是七个输出矩阵上的 rank-one 方向增强；最后选回原模型。搜索内独立练习验证为 2048 题，每题原版/编辑版各一次。这里不是论文的完整隐藏终验，更不是“4B 没有数学能力”。</p>
+<table>
+<thead>
+<tr>
+<th>保存输出复算</th>
+<th style="text-align: right;">原版</th>
+<th style="text-align: right;">候选</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>正确题数</td>
+<td style="text-align: right;">1956</td>
+<td style="text-align: right;">1953</td>
+</tr>
+<tr>
+<td>正确率</td>
+<td style="text-align: right;">95.5078%</td>
+<td style="text-align: right;">95.3613%</td>
+</tr>
+<tr>
+<td>触及长度上限</td>
+<td style="text-align: right;">53</td>
+<td style="text-align: right;">54</td>
+</tr>
+<tr>
+<td>平均输出 tokens</td>
+<td style="text-align: right;">7130.64</td>
+<td style="text-align: right;">7155.63</td>
+</tr>
+</tbody>
+</table>
+<p>配对净变化 −0.1465 个百分点，SE 0.3937，近似 95% CI [−0.9182, +0.6253]，McNemar exact p=0.8043；救回 31 题、损坏 34 题。没有观察到可靠净收益，也没有观察到显著净伤害；不能把区间跨零解释为“证明两者相同”。这是特定候选、解码和题目分布下的结果，不能否定所有 WSP 搜索。</p>
+<p>本次 CPU 核查确认：2048 个唯一题 ID 与此前该运行已生成题目无重合；pass 41–48 的候选快照 manifest 哈希完全相同。它支持“候选固定、生成样本未重复”，不等于完整数据盲法或全评测工具无误。原评分器定义被沿用，没有重新人工判卷。</p>
+<h2 id="_2">为什么没有提升：证据与推断分开</h2>
+<p><strong>1. 4B 的可修复空间与本次 0.8B 明显不同，但不能直接归因为模型规模。</strong> 4B 最终原版仅错 92/2048，46 个错答触顶、46 个未触顶。即使假设只把这些原版触顶错题全部修对、其他答案不动，该集合的收益上限也只有 46/2048=2.246 个百分点。触顶不都等于重复循环，更不都能被同一种编辑修复。0.8B 的诊断样本则 114/128 为触顶错答。两者题集、架构、模板/profile 不完全相同，这只是各自诊断背景，不能当规模效应实验证据。</p>
+<p><strong>2. 与重复一起出现的部件，并没有被证明是导致重复的坏部件。</strong> 4B L27H13 在重复片段上有很强的复制注意力，但将输出减半，在诊断集正确率从 83.59% 降至 78.12%，截断从 13.28% 升至 18.75%；增强它也没有改善。L31 MLP 方向去除后，某些重复读数反而升高。记录支持这些候选不能选择性地修复循环；“其中有正常延续或补偿功能”是合理解释，仍不是完整机制结论。</p>
+<p><strong>3. 调参样本上的好看数字没有泛化。</strong> L24 DeltaNet head9 decay×16 在 128 题×2 上 +1.5625pp（按题聚类 SE 1.1005），四批固定独立验证 1024 题却 −0.6836pp，12 救回、19 损坏。最终七矩阵候选调参也只有 +0.3906pp（SE 1.1760），本来就没有达到可靠提升。更强剂量虽少截断，完成但答错从 3 增至 7。可能存在样本噪声、候选选择偏差或题型局限，现有记录不能确定各自贡献。</p>
+<p><strong>4. 内部读数改变，不等于任务缺陷被修好。</strong> 最终方向编辑在合成探针上确实改变残差积累，却没有在独立生成中减少总体截断或提高正确率。原版能答对的大量题目也受影响，31 次修复被 34 次损坏抵消。最直接的失败点是缺少“对错误选择性有效、同时保住原来正确答案”的干预。</p>
+<p>工程解释也有边界：固定快照、可见内部数值改变和完整验证反驳了“最终补丁根本没应用/验证中偷偷换了补丁”这两个简单解释；不能据此排除所有实现问题。早期部分 teacher-forced 探针有模板/空格/重复次数不一致，记录已标注；最终 16 对中仅 15 对全文 token 一致，一对排除。此类探针应作为弱机制线索，不能覆盖生成验证结果。4B tokenizer 审计与 raw backend 一致，不支持把阴性直接归咎于那条警告。</p>
+<h2 id="08b">0.8B 是阳性吗</h2>
+<p><strong>本次复现尚不是阳性，也尚未完成搜索。</strong> 原版诊断 128 题，正确 14（10.9375%），116 触顶，其中 114 触顶答错；这是诊断出严重失败，不是已修复失败。</p>
+<p>已完成的唯一配对生成干预是 L7H5 输出消融：48 题原版 7 对、编辑版 2 对，14.58%→4.17%；救回 2、损坏 7，截断 42→46。变化 −10.42pp，95% CI [−22.43,+1.60]，小样本不支持显著伤害结论，更不支持改善。第 4 pass 是 teacher-forced 检查；第 5 pass 测反向增强，已被叫停且未写出完整结果，不能当阳性或阴性。</p>
+<p>作者报告的效果与我们本次复现的结果必须分开。0.8B 使用作者冻结 Qwen2 tokenizer profile，审计与该 profile 一致，但不等同 raw 默认 Qwen3_5；当前低分不能未经对照全部归因于权重内部故障。此处只指出已有实现边界，不改配置、不补跑。</p>
+<h2 id="1111">统计与解释自查（11/11）</h2>
+<table>
+<thead>
+<tr>
+<th>风险</th>
+<th>核查结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Simpson 反转</td>
+<td>分来源核对：GSM8K −0.7813pp；MATH +0.0651pp，两者均不支持可靠收益；不得只挑后者</td>
+</tr>
+<tr>
+<td>生态谬误</td>
+<td>不从平均效果推出每道题或每个神经元的机制</td>
+</tr>
+<tr>
+<td>Berkson/选择偏差</td>
+<td>富集诊断题与独立练习验证分开，诊断样本效果不推广到全分布</td>
+</tr>
+<tr>
+<td>Collider</td>
+<td>未作按编辑后成败筛选的条件因果估计；仅描述交叉结果</td>
+</tr>
+<tr>
+<td>基率忽略</td>
+<td>同时报原版 95.51% 与 92 个错误，明确修复空间</td>
+</tr>
+<tr>
+<td>均值回归</td>
+<td>候选通过调参选择，须看独立配对验证；不把小幅调参收益当成功</td>
+</tr>
+<tr>
+<td>幸存者偏差</td>
+<td>2048 验证题全部计入，截断也计分；0.8B 未完成 pass 单独保留，不计完成</td>
+</tr>
+<tr>
+<td>多重寻找</td>
+<td>搜索尝试多候选，不对筛选内显著性作确认结论</td>
+</tr>
+<tr>
+<td>分析分叉</td>
+<td>保存完整路径；最终八批快照一致；不宣称整条探索路线预注册</td>
+</tr>
+<tr>
+<td>相关冒充因果</td>
+<td>激活与循环相关不等于故障源；仅报告实际编辑效应和待定解释</td>
+</tr>
+<tr>
+<td>反向因果</td>
+<td>候选活动可能是循环的结果或补偿，未被排除</td>
+</tr>
+</tbody>
+</table>
+<p>结论范围：<strong>4B 本轮搜索阴性；0.8B 搜索中途停止、尚无阳性；两项编程均未验证干预效果。</strong> 接下来只分析已有失败轨迹和方法差异；此报告不是追加实验方案或运行授权。</p>
+<h2 id="_3">证据入口</h2>
+<ul>
+<li><code>saved-data-audit.json</code>：从已保存逐题评分独立复算；代码 <code>audit_saved_results.py</code>。</li>
+<li><code>frozen-snapshot-audit.json</code>：最终八次验证候选哈希。</li>
+<li><code>math-4b/final_report.md</code>、<code>math-0p8b/notes.md</code>：搜索者原记录，不能替代上面的复算。</li>
+<li><code>evidence-review.tar.gz</code>：停止记录、账本、原始笔记、评分字段抽取及文件哈希。全文答案与全部快照仍在原服务器目录，没有删除。</li>
+<li><code>verification.json</code>：停机与归档核对。原未筛选进程清单只留本地/服务器，交付档案仅含本车队相关行。</li>
+</ul></main></html>

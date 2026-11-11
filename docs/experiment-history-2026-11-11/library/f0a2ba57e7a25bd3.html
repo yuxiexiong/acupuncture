@@ -1,0 +1,128 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>NFC 后续：入口与深层历史的交叉检验（思路 v1）</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="nfc-v1">NFC 后续：入口与深层历史的交叉检验（思路 v1）</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>docs/cache-nfc-entry-history-next-concept-v1-2026-11-02.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-nfc-entry-history-next-concept-v1-2026-11-02.zh-CN.md">固定提交原件</a>；SHA-256：<code>f0a2ba57e7a25bd3ff081a17d72943e0ce05bfbc58b5a6305612370141361966</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="nfc-v1_1">NFC 后续：入口与深层历史的交叉检验（思路 v1）</h1>
+<p>2026-11-02。依据 academic-research-suite 的实验规划流程及项目 self-check v1。状态：设计思路逻辑自查通过；未写运行代码、未作工程验收、未运行或获得新 GPU 授权。不是可直接上卡合同。</p>
+<h2 id="_1">设计卡与目的</h2>
+<p>总问题不变：稀疏激活干预怎样改变历史及后续处理，造成回答变化。本轮问 NFC-01 的 e1 中，首步竞争变化是否能随第13层入口输入单独转移，是否能随深层历史单独转移，或依赖两者联合。增量是区分当前入口变化与既存深层历史在固定评分条件下的作用，决定后续应研究哪种信号及其读取，而非再次给模块排热点。</p>
+<p>依据：固定提交 5b6fe98 的 NFC-01 REPORT、CONTRACT、readiness/cpu-receipt-r01.json，以及本地 NFC 计划 v2、known-basics-audit。报告 e1 约7.9–8.4 logit，但为三类变量复合；B4 是跨头表达不等于停止效应依赖的反例。此前 CFM 不同背景的作用大小不能直接搬来预测本轮。架构允许入口与历史共同影响读取，不决定本轮实际大小。没有声称文献新颖性。</p>
+<h2 id="_2">操作及矩阵</h2>
+<p>继承 B3/NFC 的固定模型revision、12输入、四方向 N4146/N1210/R0/R1、剂量及形成窗口；运行合同须从冻结manifest逐项转录而非采用默认值。全部评分无形成期针，token、位置、mask固定。</p>
+<p>定义 x 为评分token第13层入口残差，H 为评分开始前第13–31层的递推状态S和全注意力旧KV的联合对象。深层全部q/k/v卷积历史固定C，浅层固定C；在第13层仅注入一次配对供体x。H仅替换评分前旧状态，随后更新、新KV、门、查询、MLP及归一化自然响应，不逐层钳制输出。每格独立缓存副本，不互相继承评分后的状态。</p>
+<table>
+<thead>
+<tr>
+<th>格</th>
+<th>x来源</th>
+<th>H来源</th>
+<th>角色</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>00</td>
+<td>C</td>
+<td>C</td>
+<td>必须重放C_native</td>
+</tr>
+<tr>
+<td>10</td>
+<td>T</td>
+<td>C</td>
+<td>仅入口改变，新格</td>
+</tr>
+<tr>
+<td>01</td>
+<td>C</td>
+<td>T</td>
+<td>仅深层S/KV联合改变，新格</td>
+</tr>
+<tr>
+<td>11</td>
+<td>T</td>
+<td>T</td>
+<td>必须重放N:CC</td>
+</tr>
+</tbody>
+</table>
+<p>这是在C卷积历史背景下的2×2，而非原生T全状态分解。S与KV本轮不拆；x也不是纯浅层因果路径。供体均为同输入、同方向的C/T配对，不能跨题。x_T本身是浅层历史经当前计算后的结果，不宣称其来源独立于缓存。</p>
+<h2 id="_3">读数及可推翻判断</h2>
+<p>主读数为 D=max_stop z−max_nonstop z。四边均报告：入口作用 D10−D00、D11−D01；历史作用 D01−D00、D11−D10；交互 D11−D10−D01+D00。不能将交互机械地分给某个对象。另报固定候选差F、赢家更替A/B、实际首词及BF16平局。均值/中位数参照只描述相对位置，不称事实丢失。</p>
+<p>可检验的充分性近似：入口单独是否重现e1，历史单独是否重现e1；分别用 D10−D11 与 D01−D11 的配对误差衡量。思路阶段不设置未经依据的二元主导门槛，合同必须事前选定实际有意义的误差范围，不能以事后均值挑赢家。允许两者均可重现（冗余）、两者均不够而联合有效、反向、抵消及情景依赖。</p>
+<p>若入口单独接近联合而H在两个背景作用都小，收紧后续对象为入口携带的变化如何被处理；若H单独接近联合且入口作用小，才考虑下一独立实验区分S与KV；若两者有强背景依赖，留下读取条件与历史匹配的证据，不能继续按单变量大小定位。若各方向无稳定模式，不自动扩大层/剂量/模型，报告本面板条件差异。即使某对象重现e1，也不能称它解释原生全部行为或为唯一必要路径。</p>
+<h2 id="_4">范围、工程及预算边界</h2>
+<p>48个方向×输入配对不是48个独立样本；按六情景的配对事实报告，不将已见面板称留出或独立确认。四格最多192次评分，其中96次新反事实，96次端点重放（C端点可按实际身份去重）；另需T_native参照时最多48次评分，只作原生对应。缓存若已保存且身份完整可复用；否则按原协议重建，C可共享最多12份、T最多48份，形成成本与预检/校准/失败均需另列。不可直接沿用NFC的零GPU或B4的0.07GPU小时。合同前审计真实缓存可用性、hook位置、每次评分耗时和保存量，再给总预算；本思路未声称测得耗时或可直接运行。</p>
+<p>工程闸门：00=C_native、11=N:CC；相同worker/数值路径可逐位验收，否则事前冻结数值容差并报告差异来源；无残留形成hook；旧S/KV与卷积来源分别哈希；当前新增KV不误作旧KV；每格副本独立；供体入口重放。端点失败停止，不能解读为科学阴性。保存全词表logits、来源manifest、失败和回执，内部记录只保存后续预先明确需要的量。</p>
+<h2 id="_5">与上一设计及历史错误的关系</h2>
+<p>NFC v2是已有链的描述；本轮新增两种交叉运行，直接检验入口/历史是否可分别转移e1。没有将总目标改为首步EOS，首步只是目前已有证据可连接的窗口。相比直接拆S/KV/x八格，本轮先解决入口与历史的背景依赖，不承诺给S或KV单独归因。</p>
+<p>重点防止 E04/E19（代数闭合不是科学结果）、E05/E07/E08/E14/E15/E26（供体、旧状态、当前更新、下游响应和条件归因分开）、E09/E20（交互不等于新机制，两种解释非互斥）、E10/E11（首词不等于交付或事实记忆）、E17/E18（恢复不撤销整个历史，剩余项不自动命名）、E22/E23（已见配对面板、自查身份）、E25（不为完整性跑八格）。E01/E02/E03已由主线、旧层边界、无尺度特异性主张约束；E06不做完整写入分解；E12不声称排除一般损伤；E13供体恢复不称记忆复原；E16保留反向和工程失败；E21无新颖性主张；E24承认有限因果约束有价值。</p>
+<h2 id="c01c14">C01–C14 自查</h2>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th>判定及理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C01</td>
+<td>通过：定位历史信号与当前读取条件如何影响回答竞争，主线保持。</td>
+</tr>
+<tr>
+<td>C02</td>
+<td>通过：新增交叉格区分入口可转移、历史可转移与联合依赖。</td>
+</tr>
+<tr>
+<td>C03</td>
+<td>通过：固定NFC提交及合同，基础计算事实与实际作用分开。</td>
+</tr>
+<tr>
+<td>C04</td>
+<td>通过：e1大不是H大；B4阴性作为反例，不预设主导者。</td>
+</tr>
+<tr>
+<td>C05</td>
+<td>通过：一次入口替换、评分前旧状态联合替换，层与时间明确。</td>
+</tr>
+<tr>
+<td>C06</td>
+<td>通过：卷积历史固定C，其余评分下游自然响应。</td>
+</tr>
+<tr>
+<td>C07</td>
+<td>通过：承认供体失配及混合背景；不将联合H拆成独立部件。</td>
+</tr>
+<tr>
+<td>C08</td>
+<td>通过：仅此固定背景下转移/条件依赖，不称原生中介份额。</td>
+</tr>
+<tr>
+<td>C09</td>
+<td>通过：两边作用均报告，允许冗余、抵消、联合和不同方向。</td>
+</tr>
+<tr>
+<td>C10</td>
+<td>通过：D/F/赢家/首词分开，均值参照不解释事实丢失。</td>
+</tr>
+<tr>
+<td>C11</td>
+<td>通过：端点失败属工程；有效反向/小效应保留，合同门槛尚待冻结。</td>
+</tr>
+<tr>
+<td>C12</td>
+<td>通过：先查缓存；只补两个新反事实，形成与验收成本不隐去。</td>
+</tr>
+<tr>
+<td>C13</td>
+<td>通过：已见六情景配对身份明确，manifest与缓存副本验收另立。</td>
+</tr>
+<tr>
+<td>C14</td>
+<td>通过：根据入口/历史/联合结果改变后续对象，异质则停止扩张。</td>
+</tr>
+</tbody>
+</table>
+<p>反方自查：若10重现11仍可能是一般输入扰动而非特异信号。因此本轮只支持本配对供体可转移e1，不宣布特异通路；若01重现11，亦不能说S而非KV。若联合才有效，不能以“失配”事后删掉交叉格；直接报告背景依赖。若D变化靠赢家更替，必须由F/A/B拆开，不能宣称停止机制。四格不够解释全原生T：固定卷积C的边界明确，未来原生确认另立而不混进本轮。</p>
+<p>最终：思路层面逻辑自查通过（同一助手，非独立评审）。执行合同、预注册数值判据、缓存可用性和总成本、工程实现均待完成；本次零模型调用、零GPU，没有科学新结果。</p></main></html>

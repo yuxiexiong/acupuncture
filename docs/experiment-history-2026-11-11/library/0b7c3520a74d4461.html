@@ -1,0 +1,82 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Gemma的16个稳定失败：搜索目标与修补操作审计</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="gemma16">Gemma的16个稳定失败：搜索目标与修补操作审计</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/wsp-gemma-targeting-audit-2026-11-06/REPORT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-gemma-targeting-audit-2026-11-06/REPORT.zh-CN.md">固定提交原件</a>；SHA-256：<code>0b7c3520a74d44618faa773e95a22a258f016723dfdca810ac8b2074b1c11ba6</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="gemma16_1">Gemma的16个稳定失败：搜索目标与修补操作审计</h1>
+<p>结论：<strong>没有证据说“WSP已经系统针对这16个稳定失败，仍全部修不好”。直接证据更支持搜索重点错位；但也确实存在已经尝试的操作未修好其目标，不能保证只换目标便能成功。</strong> 因而不建议沿现有大小面板和原搜索策略继续扩轮。把这两天作为WSP探索、工具与评估能力的摸底是合理的；这不是对WSP在其他VL问题上的有效性作出否定。</p>
+<p>本次只用本地已存材料，0模型调用、0GPU、0远端实验动作。核对v8/v9各30个C候选；两份研究者归档SHA通过，281组实际派发请求与归档研究者回答、工具反馈一致。未把失败的无动作回合当候选。16来源是事后按标准模板T0、普通提示B0、两名称顺序均失败且六条基础控制全对筛出的集合；“稳定”只指这些已存输入变体，不是重复生成方差或独立数据证据。</p>
+<h2 id="1">1. 搜索到底覆盖了什么</h2>
+<table>
+<thead>
+<tr>
+<th>层次</th>
+<th>v8 C</th>
+<th>v9 C</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>全量正式评价</td>
+<td>30个候选都覆盖16来源</td>
+<td>30个候选都覆盖16来源</td>
+</tr>
+<tr>
+<td>内部measure实际来源</td>
+<td>C-007，3次；2次用其失败看图题，1次无图token核对</td>
+<td>8来源、4次measure，与16来源交集0</td>
+</tr>
+<tr>
+<td>修改方向的成功—失败对照</td>
+<td>没有逐来源拟合方向，主要调增益</td>
+<td>实际6来源、12个成功—失败对，交集0</td>
+</tr>
+<tr>
+<td>diagnose涉及16来源</td>
+<td>无diagnose动作</td>
+<td>涉及8/16，但不是8个稳定失败都被定向拟合</td>
+</tr>
+<tr>
+<td>提交证据中明确列出的T0/B0稳定失败ID</td>
+<td>v8没有此结构化字段，不作0次定向的统计</td>
+<td>30份commit的contrast_ids中为0</td>
+</tr>
+<tr>
+<td>同候选修好一个来源的两顺序四回答</td>
+<td>0/16</td>
+<td>0/16</td>
+</tr>
+</tbody>
+</table>
+<p>v9的8个量测来源为C-053、101、125、232、288、479、626、706。其中用于构造方向的6个是053、125、232、288、479、706；101和626是稳定成功对照。turn12代码只将正确性在措辞/顺序之间发生变化的配对加入<code>meaning_pairs</code>，turn14再减去原图看图及反事实通常题的同类变化。这能诊断所选的变体敏感失败，却不天然代表始终失败的来源。</p>
+<p>这不是因为研究者没有得到完整结果：v8 turn4和v9 turn6–7已读全量基线矩阵。关键是<strong>看过、评分过，与纳入构造方向的目标不同</strong>。原评分代码对每来源的T0/T1×O0/O1四配对取平均，再对来源取平均，并不要求一个来源四配对都修好。单个变体涨分即可获益。该协议与后来提出的稳定来源修复目标不相同；不能事后说原研究者违反了当时合同。</p>
+<h2 id="2">2. 不能把“没针对”说成绝对的零接触</h2>
+<p>v8确实以严格集合中的C-007作过初始失败案例。turn7检查图像后判断不是细微尺寸差别；turn9明说检查视觉接口的归一化，属于结构测量而非标签拟合；turn10据此尝试视觉桥20%增益。后来turn37又用该题核对norm增益约定。因此，至少对这个失败有过基于案例的广义修补尝试，但并未形成覆盖16来源的方向拟合或双顺序修复预测。C-007在两版的合格候选中连一个原失败顺序的配对修复也没有。</p>
+<p>v9的8个诊断来源也须拆开看：</p>
+<ul>
+<li>turn15含C-131、147、520；其中131和520的ID对应原T0失败，但实际用了改写提示<code>text_overrides</code>，不是原正式提示的直接重测。</li>
+<li>turn53/56/66含C-077、353；077是原本答对的无图通常题控制，353是T1或B1变体。</li>
+<li>turn104/105含C-077、278、293、328、353；这些诊断请求没有命中该16来源的原T0/B0失败回答，主要追查已见收益、损伤或其他变体。</li>
+<li>30份提交中与16来源同组的contrast只有C-077和C-353，分别对应无图控制及T1/B1变体，不能升级为“针对它们的稳定T0失败”。</li>
+</ul>
+<p>8个诊断来源并集为077、131、147、278、293、328、353、520。逐来源完整表见<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-gemma-targeting-audit-2026-11-06/source-targets.csv">source-targets.csv</a>。全量评价产生过部分收益：C-041、C-272、C-278至少有合格候选修好一个原失败顺序，但没有一个候选同时修好这16来源中任一个的两个顺序。不是“所有权重改动对它们毫无行为作用”，也不是收益全被保护门槛拒绝。</p>
+<h2 id="3">3. 操作不足也有直接证据</h2>
+<p>在v9实际登记的目标上，R1–R4各自<code>contrast_ids</code>里有2条正式W0错误回答，四个候选均未修好各自这2条。R1–R3是L26 MLP方向剂量/反向，R4换到L10 attention；不是只有同一极小剂量试了一次。turn23也明确记录“没有修好锚点，唯一变化来自无关B1题”。后来R17换L15 MLP仍没有修好其提交登记的2条错误对照。</p>
+<p>这支持“已试方向和操作没有实现若干预定行为”，不支持“所有稀疏权重修复都不可能”。后续全列消融、保留方向/删正交分量确有开发收益；随机保留方向也能保留9/9已见参考修复，削弱所提名方向的必要性。这些参考修复并不等于16稳定来源的完整修复。局部写入实现正确，也不能补上这一缺口。</p>
+<h2 id="4">4. 该改目标还是改方法，以及是否转向</h2>
+<p>现有证据能决定先后关系，不能测出两种修改各自会带来多少收益：</p>
+<ol>
+<li><strong>首先修正目标与诊断选样的关系。</strong> 如果研究主张是修稳定失败，就不能只优化平均开发分数，也不能只从换措辞会翻转的样本构造全部方向。先明确哪类失败、什么算稳健修复，再判断是否存在可用且不混淆任务含义的对照。</li>
+<li><strong>不能承诺保留原操作只换目标就行。</strong> 已有锚点阴性和随机方向结果都要求重新检验操作的行为效应与特异性。现有数据没有做“固定操作只换目标”或“固定目标只换操作”的配对比较，不能把因果责任全归给其中一方。</li>
+<li><strong>现在不优先做更细剪枝。</strong> 尚未找到可靠覆盖稳定失败的有效操作时，进一步缩小支持量主要是在压缩一个尚未证明能解决目标的补丁。先有可重复、超过合适对照的行为收益，再讨论稀疏化保留多少收益。</li>
+</ol>
+<p>对用户最新转向建议：支持结束在当前面板上继续堆候选的路线，保留原始结果、阴性与工具作为探索资产。下一题可以要求失败跨模型族、跨输入变体出现，并有明确且可测试的计算瓶颈；<strong>不必先假定存在一个固定神经元、同一层号或单一节点</strong>。瓶颈也可能是若干组件的条件性关系。可定位和可修复是逐步验证的命题，不是给候选问题预贴的标签。</p>
+<p>WSP可作为候选发现与静态修补工具，但不应反过来规定问题必须适合WSP。新的核心贡献应落在可复核的失败规律、解释或优于适当基线的解决能力上；现在没有新题目筛选/查重结果，不据此承诺论文等级或自动开始新实验。</p>
+<h2 id="_1">证据与复算</h2>
+<ul>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-gemma-targeting-audit-2026-11-06/DESIGN.zh-CN.md">分析卡与自查</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-gemma-targeting-audit-2026-11-06/analysis.json">结果及逐提交证据</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-gemma-targeting-audit-2026-11-06/source-targets.csv">逐来源表</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-gemma-targeting-audit-2026-11-06/verification.json">来源核验</a>。</li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-gemma-targeting-audit-2026-11-06/trace-extract.json.gz">归档轨迹摘录</a>：保留全部已派发回合的研究者原文/代码、原请求、Python和提交反馈；大体量模型返回留在原归档，以逐文件SHA关联。不是删改原件。</li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-gemma-targeting-audit-2026-11-06/collect.py">收集脚本</a>从原归档验证并重建摘录；<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-gemma-targeting-audit-2026-11-06/analyze.py">分析脚本</a>仅用摘录与前两份已交付数据复算。</li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-c-stable-failure-audit-2026-11-06/REPORT.zh-CN.md">原稳定失败审计</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-c-failure-structure-audit-2026-11-06/REPORT.zh-CN.md">原完整答案审计</a>。</li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-gemma-targeting-audit-2026-11-06/protocol-sources.json">原协议与评分源码快照</a>：v8/v9 <code>RESEARCHER.md</code>、<code>evidence.py</code>均与对应source-manifest哈希一致；<code>repair_score</code>与轨迹中的具体选择分开解释。</li>
+</ul>
+<p>自查边界：本报告是同一助手的事后审核，非独立同行复现；没有把已见面板包装成外部泛化。提取时修正了v8/v9归档根目录差异，随后281组请求/回答/反馈一致性全部通过。没有改动任何实验原始文件。</p></main></html>

@@ -1,0 +1,18 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>0.8B 编程预算续接记录</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="08b">0.8B 编程预算续接记录</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/wsp-process-reproduction-v1-2026-11-03/fleet-v1/runs/coding-budget-r1/README.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-process-reproduction-v1-2026-11-03/fleet-v1/runs/coding-budget-r1/README.zh-CN.md">固定提交原件</a>；SHA-256：<code>a8f0225b815bd1b5fff97a7cccda610c4c9a89177c5db92edbc95d3ecb2757d3</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="08b_1">0.8B 编程预算续接记录</h1>
+<p>用户于 2026-11-04 明确批准“同意增加这 1 GPU 小时，原进度续跑”。本次仅将诊断 A 上限从 1800 调到 5400 GPU 秒、总上限从 14400 调到 18000 GPU 秒；数据、采样、干预、评分、源码哈希和其他资源上限不变。</p>
+<h2 id="_1">已完成的恢复</h2>
+<ul>
+<li>原现场 <code>/workspace/acupuncture/external/wcp01/runs/fleet-v1-0p8b</code> 保留。首批 <code>D-original-000</code> 的 32 题 × 2 回答及账本记录复制到版本化续跑目录，逐文件 SHA 校验一致，不重算。</li>
+<li>第二批 <code>D-original-032</code> 的进程已退出，未写出完整生成文件或结果。保留原失败，续跑时仅重做这一未完成批次及后续工作。</li>
+<li>超时动作实测 787.916882 GPU 秒已补记。其未落盘样本数/token 数无法实测，保守按原预留上界 64 样本、1048576 输出 token 计入。旧异常路径没有记录失败 CPU 秒，不能声称为零；原 7200 秒历史 CPU 预算分配保留，实际失败 CPU 耗时仍未知。</li>
+<li>新目录 <code>/workspace/acupuncture/external/wcp01/runs/fleet-v2-0p8b-budget-r1</code> 的累计 GPU 支出为 1800.105613 秒；诊断剩余 3599.894387 秒，总剩余 16199.894387 秒。预算余额不是完成 ETA。</li>
+</ul>
+<h2 id="_2">自动续接与验收</h2>
+<p>北京时间 12:39 启动等待器，PID 62079。状态位于本地 <code>external/wsp-fleet-v2/coding-0p8b-budget-recovery/state.json</code>，日志在同目录 <code>launcher.log</code>。等待当前 0.8B 数学恢复完成、4B 编程有终态收据且进程退出后，调用现有 <code>fleet.coding_child</code> 续跑；不抢占现有任务。工程故障保留现场再修复。</p>
+<p>12:40 核对：等待器存活，数学 running，4B 编程 active；服务器新目录仅有已复制的 <code>D-original-000</code>，没有新增 GPU 动作。7 项 CPU 检查通过，覆盖队列门禁、配置仅授权差异、失败 GPU 计费；详见 <code>verification.json</code>。诊断剩余三批按首批约 13.5 分钟估计生成约 40 分钟，尚不含编辑器、定位和排队时间，不作为全实验 ETA。</p>
+<p><code>prepare_resume.py</code> 已执行一次，不可重复执行；<code>resume_when_idle.py</code> 有单实例锁和已有状态拒绝重启检查。<code>runtime.json</code> 的 spent 是原始启动种子，实际续跑用已有 SQLite 账本的累计 spent，详见 <code>continuation-receipt.json</code>。不得删除账本再初始化。</p>
+<p>本次是已授权预算与工程恢复，尚无新科学结果；不能将原 skipped_engineering 或本等待器启动视为实验完成。</p></main></html>

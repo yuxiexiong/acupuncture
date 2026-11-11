@@ -1,0 +1,1088 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>第 5 步 引用链挖掘 + OpenReview 审稿（分工 C）</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="5-openreview-c">第 5 步 引用链挖掘 + OpenReview 审稿（分工 C）</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>docs/literature/vl-cross-model-root-cause-candidates-2026-11-06/14_A4_drafts/sub_c_citations.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/literature/vl-cross-model-root-cause-candidates-2026-11-06/14_A4_drafts/sub_c_citations.md">固定提交原件</a>；SHA-256：<code>53454fb72e13e8620ed41e4dd41e09cfe475422a0ff912f147530c69c48531c4</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="5-openreview-c_1">第 5 步 引用链挖掘 + OpenReview 审稿（分工 C）</h1>
+<p>完成时间：2026-11-06 约 17:20 UTC。候选对象："VLM 的物体幻觉通路"——偏文本的中深层注意力头 / 双通路 / 线性方向与子空间（VTI、Nullu、SSL）/ 视觉 token 局部化（ProjectAway）。</p>
+<p>本笔记只做记录，不给等级、分数或"值得做"。文中逐字引文共 39 条，全部用脚本在下载的正文里做过第二次匹配（<code>/tmp/a4_audit/sub_c_scripts/verify.py</code>，39/39 命中；匹配时归一了空白、行尾连字符与弯引号）。</p>
+<h2 id="0">0. 坏消息先说</h2>
+<ol>
+<li><strong>任务 B 没有交付：OpenReview 审稿正文一条都没取到。</strong> <code>api2.openreview.net/notes/search</code> 能用（拿到了 forum id）；<code>api2.openreview.net/notes?forum=&lt;id&gt;</code> 对五个 forum 全部返回 <code>403 ChallengeRequiredError "Challenge verification required"</code>。这是站方的人机验证，我没有去过它，也没有换别的端点套同样的内容，也没有拿二手摘要顶替。第 4 节只有 forum id。</li>
+<li><strong>被引扫描是标题层的。</strong> S2 被引 346 条（8 篇种子合计，有重叠）逐条看过标题，归类凭标题；真正取正文读过对应章节的只有 7 篇，另 10 篇只读摘要，3 篇综述只读了 grep 定位到的段落。</li>
+<li><strong>S2 的被引数明显偏少且有噪声</strong>：Dual-Pathway 5 条里 4 条与本题无关，Role-Break 0 条，AllPath 11 条；Nullu 的 70 条里混着 2 篇早于 Nullu 的论文。最新三篇种子的被引侧基本是空的——"最新种子之后有没有人做直接比较"这一问，这一步答不了。</li>
+<li><strong>综述对这些机制主张的"评价"没找到</strong>：三篇综述（2404.18930、2501.01346、2507.19024）里 grep 到的只是罗列与转述，没有比较或质疑；三篇都没有检出 Yang 的 hallucination heads。</li>
+<li>Google Scholar 没试；WebSearch 只跑了 2 条。</li>
+</ol>
+<h2 id="1">1. 各种子论文：被引与参考文献扫描条数</h2>
+<table>
+<thead>
+<tr>
+<th>种子</th>
+<th>S2 被引（条数 = 逐条看过标题的条数）</th>
+<th>OpenAlex 被引</th>
+<th>参考文献（从缓存正文读）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Yang et al. ICLR 2025（S2 id <code>4dc1fbde…2589</code>，无 arXiv 号）</td>
+<td>62</td>
+<td>未取到（OpenAlex 标题检索不到该条目）</td>
+<td>约 45 条，全部看过</td>
+</tr>
+<tr>
+<td>Dual-Pathway 2605.13156</td>
+<td>5</td>
+<td>4</td>
+<td>40 条，全部看过</td>
+</tr>
+<tr>
+<td>AllPath 2511.17254</td>
+<td>11</td>
+<td>0（两条记录）</td>
+<td>87 条，全部看过</td>
+</tr>
+<tr>
+<td>Nullu 2412.13817</td>
+<td>70</td>
+<td>15</td>
+<td>57 条，关键词过滤后看（23 条命中）</td>
+</tr>
+<tr>
+<td>ProjectAway 2410.02762</td>
+<td>129</td>
+<td>10</td>
+<td>42 个条目块，关键词过滤后看</td>
+</tr>
+<tr>
+<td>Role-Break 2607.29412</td>
+<td>0</td>
+<td>0</td>
+<td>约 35 条，全部看过</td>
+</tr>
+<tr>
+<td>VTI 2410.15778（加项）</td>
+<td>63</td>
+<td>11</td>
+<td>未系统读</td>
+</tr>
+<tr>
+<td>SSL 2505.16146（加项）</td>
+<td>6</td>
+<td>3</td>
+<td>只查互引</td>
+</tr>
+<tr>
+<td>合计</td>
+<td><strong>346</strong>（有重叠）</td>
+<td><strong>43</strong></td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p>原始 JSON：<code>/tmp/a4_audit/sub_c_data/s2_&lt;id&gt;_citations.json</code>、<code>oa_cites_&lt;id&gt;.json</code>。</p>
+<h3 id="11-grep0">1.1 种子之间的互引（正文 grep；行引用列；0 = 未检出）</h3>
+<table>
+<thead>
+<tr>
+<th>行＼列</th>
+<th>Yang</th>
+<th>DualPath</th>
+<th>AllPath</th>
+<th>Nullu</th>
+<th>ProjectAway</th>
+<th>VTI</th>
+<th>Devils 2411.16724</th>
+<th>VHD 2412.13949</th>
+<th>SPIN 2505.16411</th>
+<th>Rudman 2601.05201</th>
+<th>Neo 2410.07149</th>
+<th>FCCT 2511.05923</th>
+<th>CausalMM</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Yang</td>
+<td>–</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Dual-Pathway</td>
+<td>0</td>
+<td>–</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>引</td>
+<td>引</td>
+<td>引</td>
+<td>0</td>
+</tr>
+<tr>
+<td>AllPath</td>
+<td>引</td>
+<td>0</td>
+<td>–</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>引</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>引</td>
+</tr>
+<tr>
+<td>Nullu</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>–</td>
+<td>0</td>
+<td>引</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>ProjectAway</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>–</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Role-Break</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>引</td>
+<td>引</td>
+<td>引</td>
+<td>引</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>SSL</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>引</td>
+<td>引</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+<p>读法（推导档，依据就是上表）：四条根因说法的代表作彼此基本不互引。Dual-Pathway 不引 Yang、AllPath、Nullu、VTI、ProjectAway；Role-Break 同样一篇都不引；AllPath 不引任何线性方向类。<strong>在这 6 篇种子的参考文献这一层，没有检出把"头 / 双通路 / 线性子空间 / 视觉 token 局部化"放在一起的工作</strong>（一层、6 份参考文献表；被引侧见第 2 节）。grep 用标题片段与作者名，断词可能漏计。</p>
+<h3 id="12">1.2 种子自己的对照与局限（顺手核到的）</h3>
+<ul>
+<li>Dual-Pathway（F，摘要/§3/§4/附录 A）：有随机部件对照——"we include a random control that applies the uniformscaling factor to the same number of randomly selected components"（原文断词如此）；模型为 Qwen3-VL-8B、LLaVA-v1.6-7B、Llama-3.2-Vision-11B、InternVL3-8B/14B；评测 POPE-adversarial 与 AMBER；摘要："validate that the same circuit selectively transfers to relational but not attribute hallucination"。正文未检出 "Limitations" 小节。</li>
+<li>AllPath（F，附录 E）：局限逐字 "However, we do not investigate what causal pathways are most effective for different types of questions, nor do we explore training strategies that could systematically improve the use of such pathways." 全文 "random" 的前 12 处都是 POPE random 子集或随机抽图，<strong>未检出随机头对照</strong>。</li>
+<li>Yang（F，附录 A.1）：有零消融 vs 均值消融、概率 vs 对数概率的敏感性分析和样本数敏感性；MiniGPT-4 上复做了头定位；参考文献里未见与其他根因说法的比较。</li>
+</ul>
+<h2 id="2">2. 筛出的五类清单</h2>
+<p>层级：<strong>F</strong> = 取到正文并读了所列章节；<strong>A</strong> = 只读摘要（含取到正文但只读摘要）；<strong>S</strong> = 只有标题。S 级的归类只凭标题，可能归错。</p>
+<h3 id="i">(i) 直接比较或统一多种根因说法</h3>
+<p>没有检出在同一模型同一协议下把四种说法并排比较的工作（层次：对象层；依据：346 条 S2 被引标题 + 43 条 OpenAlex + 6 份参考文献表 + 2 条 WebSearch）。最接近的是下面这些"各自提出一个统一口径"或"拆分错误来源"的：</p>
+<table>
+<thead>
+<tr>
+<th>工作</th>
+<th>arXiv</th>
+<th>年</th>
+<th>来源</th>
+<th>为什么相关</th>
+<th>层级</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Causal Evidence for Attention Head Imbalance in Modality Conflict Hallucination（MACI）</td>
+<td>2605.19250</td>
+<td>2026-05</td>
+<td>Yang、AllPath 被引</td>
+<td>五个 MLLM 上 path patching，分出 hallucination-driving 与 hallucination-resisting 两组头；把 Yang、VHD、AllPath 并列为"head-level methods"并说明区别。任务是 modality conflict（MMMC），不是 POPE/CHAIR</td>
+<td>F（摘要、§1、§2、结论与局限）</td>
+</tr>
+<tr>
+<td>The Evidence Anchoring Boundary</td>
+<td>2610.12981</td>
+<td>2026-10</td>
+<td>Yang 被引</td>
+<td>同一个 visual-residual 编辑按深度逐层施加，量"在哪还有杠杆"；presence/attribute/relation 三类题；六个检查点三族</td>
+<td>F（摘要、§1、§3.2）</td>
+</tr>
+<tr>
+<td>Encoded but Unused: Bounding the Sources of VLM Errors</td>
+<td>2610.29241</td>
+<td>2026-10</td>
+<td>ProjectAway 被引</td>
+<td>把错误拆成表示失败与利用失败并给上下界；LLaVA-1.6-7B、Qwen2.5-VL-7B；属性题</td>
+<td>A</td>
+</tr>
+<tr>
+<td>When Prompts Override Vision（基准名 HalluScope）</td>
+<td>2604.21911</td>
+<td>2026-04</td>
+<td>Yang、VTI 被引</td>
+<td>用基准分摊"视觉骨干不足 vs 语言主导"的相对重要性</td>
+<td>A</td>
+</tr>
+<tr>
+<td>DO-Bench</td>
+<td>2604.22822</td>
+<td>2026-04</td>
+<td>SSL 被引</td>
+<td>把物体存在题的错误归到 prior override 或 perception limited</td>
+<td>A</td>
+</tr>
+<tr>
+<td>What Makes LVLMs Hallucinate Less?</td>
+<td>2605.30911</td>
+<td>2026-05</td>
+<td>Nullu 被引</td>
+<td>架构三维度 × 三类幻觉；把注意力/解码/改权重归为 component level</td>
+<td>A</td>
+</tr>
+<tr>
+<td>Mitigating Hallucinations in LVLMs via Causal Route Gating</td>
+<td>2605.24024</td>
+<td>2026-05</td>
+<td>Yang、AllPath 被引</td>
+<td>标题与检索片段：按步门控 text-route 头</td>
+<td>S（papers 有缓存）</td>
+</tr>
+<tr>
+<td>The Truth Stays in the Family: … Inherited Truthful Heads in Model Lineages</td>
+<td>2606.15821</td>
+<td>2026-06</td>
+<td>Yang 被引</td>
+<td>头在模型谱系间继承</td>
+<td>S（有缓存）</td>
+</tr>
+<tr>
+<td>D-LEAF: Layer-to-head Attention Diagnostics</td>
+<td>无号</td>
+<td>2025</td>
+<td>Yang 被引</td>
+<td>层到头的定位</td>
+<td>S</td>
+</tr>
+<tr>
+<td>Tracing and Mitigating Hallucinations in Multimodal LLMs via Dynamic Attention Localization</td>
+<td>2509.07864</td>
+<td>2025-09</td>
+<td>Yang、Nullu 被引</td>
+<td>动态定位</td>
+<td>S</td>
+</tr>
+<tr>
+<td>Causally-Grounded Dual-Path Attention Intervention（AAAI 2026）</td>
+<td>2511.09018</td>
+<td>2025-11</td>
+<td>WebSearch</td>
+<td>另一个"dual-path"</td>
+<td>S</td>
+</tr>
+<tr>
+<td>DARE: Dual-path Auto-Regressive-aware Editing</td>
+<td>2609.36440</td>
+<td>2026-09</td>
+<td>Nullu、ProjectAway 共同被引</td>
+<td>"dual-path" 编辑</td>
+<td>S</td>
+</tr>
+<tr>
+<td>Overthinking Causes Hallucination: Tracing Confounder Propagation（CVPR 2026）</td>
+<td>2603.07619</td>
+<td>2026-03</td>
+<td>ProjectAway 被引</td>
+<td>另一种根因说法</td>
+<td>S（已下载未读）</td>
+</tr>
+<tr>
+<td>Revealing Perception and Generation Dynamics in LVLMs</td>
+<td>2512.18813</td>
+<td>2025-12</td>
+<td>ProjectAway 被引</td>
+<td>感知/生成两阶段</td>
+<td>S</td>
+</tr>
+<tr>
+<td>A Comprehensive Information-Decomposition Analysis of LVLMs（ICLR）</td>
+<td>2603.29676</td>
+<td>2026-03</td>
+<td>ProjectAway 被引</td>
+<td>信息分解</td>
+<td>S</td>
+</tr>
+<tr>
+<td>Arbitration Failure, Not Perceptual Blindness</td>
+<td>2604.09364</td>
+<td>2026-04</td>
+<td>ProjectAway 被引</td>
+<td>仲裁失败说</td>
+<td>S（vl03 有缓存）</td>
+</tr>
+<tr>
+<td>Vision-Default, Prior-Override（EMNLP 2026）</td>
+<td>2606.28273</td>
+<td>2026-06</td>
+<td>ProjectAway 被引</td>
+<td>感知–知识冲突的因果机制</td>
+<td>S</td>
+</tr>
+<tr>
+<td>Same Task, Different Circuits（NeurIPS 2025）</td>
+<td>2506.09047</td>
+<td>2025-06</td>
+<td>ProjectAway 被引</td>
+<td>同任务不同模态回路</td>
+<td>S</td>
+</tr>
+<tr>
+<td>CausalLens: Sensitivity-Guided Multi-Head Causal Intervention（CVPR 2026）</td>
+<td>未查到</td>
+<td>2026</td>
+<td>Role-Break 参考文献</td>
+<td>多头因果干预</td>
+<td>S</td>
+</tr>
+<tr>
+<td>GeoPID: Decomposing and Steering Visual Information in VLMs</td>
+<td>2610.08401</td>
+<td>2026-10</td>
+<td>VTI 被引</td>
+<td>分解 + 转向</td>
+<td>S</td>
+</tr>
+<tr>
+<td>Causal Probing for Internal Visual Representations in MLLMs</td>
+<td>2605.05593</td>
+<td>2026-05</td>
+<td>VTI 被引</td>
+<td>因果探针</td>
+<td>S</td>
+</tr>
+</tbody>
+</table>
+<h3 id="ii">(ii) 否定或限定这些说法</h3>
+<table>
+<thead>
+<tr>
+<th>工作</th>
+<th>arXiv</th>
+<th>年</th>
+<th>来源</th>
+<th>限定了什么</th>
+<th>层级</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>HaloProbe</strong></td>
+<td>2604.06165</td>
+<td>2026-04</td>
+<td>Yang、AllPath、ProjectAway 三家被引</td>
+<td>"幻觉词图像注意力更低"在按 token 位置、首次/非首次提及分层后反转或消失（Simpson's paradox）；点名 Devils in Middle Layers</td>
+<td>F</td>
+</tr>
+<tr>
+<td><strong>Targeting the Attention Heads Behind Object Hallucination in LLaVA</strong>（COLM 2026 Actionable Interpretability Workshop）</td>
+<td>2608.24966</td>
+<td>2026-08</td>
+<td>Yang 被引</td>
+<td>在 LLaVA-1.5-7B 上重走 Yang 式"诊断→定点"并补随机头对照与定长预算分析；自述 CHAIR 增益里混着"说得更少"</td>
+<td>F</td>
+</tr>
+<tr>
+<td><strong>Prior Directions</strong></td>
+<td>2607.26913</td>
+<td>2026-07</td>
+<td>Yang、Nullu、ProjectAway 被引</td>
+<td>配对打乱对照的子空间修复 59/66，匹配构造 60/66；识别最好的子空间不等于行为上唯一有效。任务是 GUI grounding，不是物体幻觉</td>
+<td>F</td>
+</tr>
+<tr>
+<td><strong>Where Hallucinations Live: A Cross-Architecture Circuit in VQ-Tokenized VLMs</strong></td>
+<td>2609.29048</td>
+<td>2026-09</td>
+<td>VTI 被引</td>
+<td>25 个模型 8 个 LLM 族；称既有机制研究"typically as single-model case studies"、既有修法"evaluated almost exclusively on binary benchmarks"；其回路只在 VQ 族成立</td>
+<td>F（摘要、§1、局限开头）</td>
+</tr>
+<tr>
+<td><strong>Mechanisms of Prompt-Induced Hallucination in VLMs</strong>（Rudman et al.）</td>
+<td>2601.05201</td>
+<td>2026-01</td>
+<td>Dual-Pathway、Role-Break 参考文献</td>
+<td>三个 VLM 上头级消融；"model-specific ways"——头的作用方式跨模型不同。任务是计数的 prompt-induced hallucination</td>
+<td>F（摘要、§1、对照段）</td>
+</tr>
+<tr>
+<td>Beyond Logit Lens（NAACL 2025）</td>
+<td>2411.19187</td>
+<td>2024-11</td>
+<td>ProjectAway 被引</td>
+<td>logit lens 对动作、OCR、空间关系、属性比较类幻觉不够</td>
+<td>A</td>
+</tr>
+<tr>
+<td>MESA: Mitigating Entangled Steering</td>
+<td>2604.07914</td>
+<td>2026-04</td>
+<td>Nullu 被引</td>
+<td>latent steering 让输出变短、token 分布偏移</td>
+<td>A</td>
+</tr>
+<tr>
+<td>Beyond Global Editing</td>
+<td>2608.09344</td>
+<td>2026-08</td>
+<td>Nullu、VTI 被引</td>
+<td>单一全局子空间对所有样本一视同仁</td>
+<td>A</td>
+</tr>
+<tr>
+<td>MPD（ACL 2026）</td>
+<td>2604.20366</td>
+<td>2026-04</td>
+<td>Nullu、VTI 被引</td>
+<td>representation-based 方法损伤通用生成能力</td>
+<td>A</td>
+</tr>
+<tr>
+<td>Beyond Attention Imbalance（FLASH）</td>
+<td>2609.37263</td>
+<td>2026-09</td>
+<td>AllPath 被引</td>
+<td>认为"注意力失衡"之外另有两种模式（Perceptual-Semantic Dissociation、Localized Fixation）</td>
+<td>A</td>
+</tr>
+<tr>
+<td>System-Mediated Attention Imbalances Make VLMs Say Yes（ACL 2026）</td>
+<td>2601.12430</td>
+<td>2026-01</td>
+<td>Yang 被引</td>
+<td>POPE yes 偏置的另一个解释（system prompt 介导）</td>
+<td>S（papers 有缓存）</td>
+</tr>
+<tr>
+<td>Beyond Language Priors: Diagnosing and Fixing Visual-Origin Hallucinations</td>
+<td>2609.00231</td>
+<td>2026-08</td>
+<td>VTI 被引</td>
+<td>视觉来源的幻觉，对"语言先验主导"的限定</td>
+<td>S</td>
+</tr>
+<tr>
+<td>Analyzing and Mitigating Object Hallucination: A Training Bias Perspective（AAAI）</td>
+<td>2508.04567</td>
+<td>2025-08</td>
+<td>VTI 被引</td>
+<td>训练偏置说</td>
+<td>S</td>
+</tr>
+<tr>
+<td>Cohesion: Consensus-Based Hallucination Subspace Estimation（ICIP 2026）</td>
+<td>DOI 10.1109/icip61757.2026.11630364</td>
+<td>2026</td>
+<td>Nullu、VTI 被引</td>
+<td>标题指向子空间估计需要共识</td>
+<td>S</td>
+</tr>
+<tr>
+<td>Looks the Same, Answers Differently: Flip-Direction Steering</td>
+<td>2609.28851</td>
+<td>2026-09</td>
+<td>VTI 被引</td>
+<td>标题</td>
+<td>S</td>
+</tr>
+<tr>
+<td>LatentLens</td>
+<td>2602.00462</td>
+<td>2026-01</td>
+<td>ProjectAway 被引</td>
+<td>限定 logit lens 对视觉 token 的可读性</td>
+<td>S（有缓存）</td>
+</tr>
+<tr>
+<td>The Explainability Illusion: Must ViTs Exhibit Patch-Decoding Interpretability?</td>
+<td>2610.25289</td>
+<td>2026-10</td>
+<td>ProjectAway 被引</td>
+<td>标题</td>
+<td>S</td>
+</tr>
+<tr>
+<td>Not Every Mention Is a Claim</td>
+<td>2610.23610</td>
+<td>2026-10</td>
+<td>ProjectAway 被引</td>
+<td>检测口径</td>
+<td>S（已下载未读）</td>
+</tr>
+<tr>
+<td>Same Attention, Different Truths（CVPR 2026）</td>
+<td>2608.07302</td>
+<td>2026-08</td>
+<td>ProjectAway 被引</td>
+<td>标题</td>
+<td>S（有缓存）</td>
+</tr>
+<tr>
+<td>Where Do Long Captions Fail? Position-Aware Diagnosis</td>
+<td>2610.31111</td>
+<td>2026-10</td>
+<td>Yang 被引</td>
+<td>位置因素（与 HaloProbe 的混杂变量同向）</td>
+<td>S</td>
+</tr>
+<tr>
+<td>When Do Frozen VLMs Respond to Image-Free Object-Token Edits?</td>
+<td>2609.03429</td>
+<td>2026-09</td>
+<td>ProjectAway 被引</td>
+<td><strong>读摘要与引言后判为不相关</strong>（遥感、自训 projector 的 object-token 测试台）</td>
+<td>A</td>
+</tr>
+</tbody>
+</table>
+<p>没有检出"复现失败"类的论文（层次：对象层；依据同上 346+43 条标题）。</p>
+<h3 id="iii">(iii) 在新模型族上复做定位</h3>
+<table>
+<thead>
+<tr>
+<th>工作</th>
+<th>arXiv</th>
+<th>模型（逐字或正文所见）</th>
+<th>层级</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Dual-Pathway（种子）</td>
+<td>2605.13156</td>
+<td>Qwen3-VL-8B、LLaVA-v1.6-7B(Mistral)、Llama-3.2-Vision-11B、InternVL3-8B/14B</td>
+<td>F</td>
+</tr>
+<tr>
+<td>AllPath（种子）</td>
+<td>2511.17254</td>
+<td>LLaVA-v1.5-7B、Qwen-VL-Chat；附录 C.3 "Additional Results of Qwen2.5-VL on POPE"</td>
+<td>F（附录目录）</td>
+</tr>
+<tr>
+<td>Evidence Anchoring Boundary</td>
+<td>2610.12981</td>
+<td>"Our base checkpoints are LLaVA-1.5-7B/13B, Qwen2.5-VL-7B, and InternVL3.5-8B"；另 LLaVA-NeXT-34B、Qwen2.5-VL-32B</td>
+<td>F</td>
+</tr>
+<tr>
+<td>Where Hallucinations Live</td>
+<td>2609.29048</td>
+<td>25 个模型 8 个 LLM 族；VQ 族（VILA-U、Liquid、Chameleon、Lumina-mGPT 等），对照含 LLaVA-1.6、Qwen2.5-VL</td>
+<td>F（摘要/引言）</td>
+</tr>
+<tr>
+<td>Rudman et al.</td>
+<td>2601.05201</td>
+<td>LLaVA-OneVision、Qwen-VL、Janus-Pro（对照段所见）</td>
+<td>F</td>
+</tr>
+<tr>
+<td>MACI</td>
+<td>2605.19250</td>
+<td>"five open-source MLLMs"，具体名单未核（参考文献含 Qwen3-VL technical report）</td>
+<td>F（名单未核）</td>
+</tr>
+<tr>
+<td>Encoded but Unused</td>
+<td>2610.29241</td>
+<td>LLaVA-1.6-7B、Qwen2.5-VL-7B</td>
+<td>A</td>
+</tr>
+<tr>
+<td>Before the Token Commits: Trajectory-Level Benchmarking of Visual Hallucinations in Diffusion VLMs</td>
+<td>2609.34772</td>
+<td>扩散式 VLM</td>
+<td>S</td>
+</tr>
+<tr>
+<td>Role-Break（种子）</td>
+<td>2607.29412</td>
+<td>参考文献含 Qwen3-VL；定位在哪些模型上做未核</td>
+<td>S</td>
+</tr>
+</tbody>
+</table>
+<p>Gemma3、Pixtral：346 条标题里没有出现这两个名字（标题通常不写模型名，不能当作"没有"）。</p>
+<h3 id="iv">(iv) 用于属性 / 关系 / 多图 / 视频幻觉</h3>
+<table>
+<thead>
+<tr>
+<th>工作</th>
+<th>arXiv</th>
+<th>来源</th>
+<th>类型</th>
+<th>层级</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Dual-Pathway</td>
+<td>2605.13156</td>
+<td>种子</td>
+<td>关系迁移、属性不迁移（摘要逐字见 1.2）</td>
+<td>F</td>
+</tr>
+<tr>
+<td>MACI</td>
+<td>2605.19250</td>
+<td>Yang、AllPath 被引</td>
+<td>贡献段："ablating object-identified driving heads also reduces hallucination on attribute/relation conflicts"</td>
+<td>F</td>
+</tr>
+<tr>
+<td>Evidence Anchoring Boundary</td>
+<td>2610.12981</td>
+<td>Yang 被引</td>
+<td>presence/attribute/relation；"universal subtraction is neutral or harmful"</td>
+<td>F</td>
+</tr>
+<tr>
+<td>Encoded but Unused</td>
+<td>2610.29241</td>
+<td>ProjectAway 被引</td>
+<td>属性</td>
+<td>A</td>
+</tr>
+<tr>
+<td>Beyond Logit Lens</td>
+<td>2411.19187</td>
+<td>ProjectAway 被引</td>
+<td>动作、OCR、空间关系、属性比较</td>
+<td>A</td>
+</tr>
+<tr>
+<td>Mitigating Hallucination in VideoLLMs via Temporal-Aware Activation Engineering（NeurIPS）</td>
+<td>2505.12826</td>
+<td>Yang 被引</td>
+<td>视频</td>
+<td>S</td>
+</tr>
+<tr>
+<td>Relaxing Anchor-Frame Dominance … Video LLMs</td>
+<td>2604.12582</td>
+<td>ProjectAway 被引</td>
+<td>视频</td>
+<td>S</td>
+</tr>
+<tr>
+<td>CircuitProbe（Video LMs）</td>
+<td>2507.19420</td>
+<td>ProjectAway 被引</td>
+<td>视频</td>
+<td>S</td>
+</tr>
+<tr>
+<td>VideoHallu（NeurIPS）</td>
+<td>2505.01481</td>
+<td>ProjectAway 被引</td>
+<td>视频</td>
+<td>S</td>
+</tr>
+<tr>
+<td>When Thinking Drifts: Evidential Grounding for Robust Video Reasoning（NeurIPS）</td>
+<td>2510.06077</td>
+<td>VTI 被引</td>
+<td>视频</td>
+<td>S</td>
+</tr>
+<tr>
+<td>Subspace Entropic Contrastive Decoding for Faithful Video Temporal Grounding</td>
+<td>DOI 10.1145/3767308.3836515</td>
+<td>Nullu 被引</td>
+<td>视频</td>
+<td>S</td>
+</tr>
+<tr>
+<td>Discovering Compositional Hallucinations in LVLMs（NeurIPS 2025）</td>
+<td>无号</td>
+<td>AllPath 被引</td>
+<td>组合</td>
+<td>S</td>
+</tr>
+<tr>
+<td>ChainMPQ（ICLR）</td>
+<td>2510.06292</td>
+<td>ProjectAway 被引</td>
+<td>关系</td>
+<td>S</td>
+</tr>
+<tr>
+<td>From What to Which: Decoding Modifier Grounding</td>
+<td>2610.12305</td>
+<td>ProjectAway 被引</td>
+<td>属性/修饰语</td>
+<td>S</td>
+</tr>
+<tr>
+<td>Who Is Left of Whom?</td>
+<td>2609.35486</td>
+<td>ProjectAway 被引</td>
+<td>空间关系</td>
+<td>S</td>
+</tr>
+<tr>
+<td>The Dual Mechanisms of Spatial Variable Binding</td>
+<td>2603.22278</td>
+<td>ProjectAway 被引</td>
+<td>空间关系</td>
+<td>S</td>
+</tr>
+<tr>
+<td>Linear Mechanisms for Spatiotemporal Reasoning（ICLR）</td>
+<td>2601.12626</td>
+<td>ProjectAway 被引</td>
+<td>时空</td>
+<td>S</td>
+</tr>
+<tr>
+<td>Verb Mirage（AAAI）</td>
+<td>2412.04939</td>
+<td>Nullu 被引</td>
+<td>动作</td>
+<td>S</td>
+</tr>
+<tr>
+<td>MIRAGE: Hallucination in Multimodal Reasoning Chains（NeurIPS）</td>
+<td>2505.24238</td>
+<td>Yang 被引</td>
+<td>推理链</td>
+<td>S</td>
+</tr>
+<tr>
+<td>Routing-Aware Head Amplification for Multimodal Long-CoT（EMNLP 2026）</td>
+<td>无号</td>
+<td>Yang 被引</td>
+<td>长推理链</td>
+<td>S</td>
+</tr>
+<tr>
+<td>Understanding and Mitigating Hallucinations in Multimodal CoT Models（CVPR）</td>
+<td>2603.27201</td>
+<td>Nullu 被引</td>
+<td>CoT</td>
+<td>S</td>
+</tr>
+<tr>
+<td>CounterCount</td>
+<td>无号</td>
+<td>Yang 被引</td>
+<td>计数</td>
+<td>S</td>
+</tr>
+<tr>
+<td>MAD: Modality-Adaptive Decoding（CVPR）</td>
+<td>2601.21181</td>
+<td>Nullu 被引</td>
+<td>跨模态</td>
+<td>S</td>
+</tr>
+<tr>
+<td>OmniDPO</td>
+<td>2509.00723</td>
+<td>VTI 被引</td>
+<td>全模态</td>
+<td>S</td>
+</tr>
+<tr>
+<td>Reducing Hallucinated Transcripts in Whisper via Hallucination Space Projection</td>
+<td>2609.04561</td>
+<td>Nullu 被引</td>
+<td>语音（Nullu 外推）</td>
+<td>S</td>
+</tr>
+</tbody>
+</table>
+<p>多图：346 条标题里没有检出专做多图幻觉的。</p>
+<h3 id="v-benchmark">(v) 综述与 benchmark 对这些机制主张的评价</h3>
+<table>
+<thead>
+<tr>
+<th>工作</th>
+<th>arXiv</th>
+<th>所见</th>
+<th>层级</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hallucination of MLLMs: A Survey（Bai et al.）</td>
+<td>2404.18930</td>
+<td>把 VTI 归入"Hallucination from Inference → Trap Visual Tokens"；正文一句转述（"More recently, the work of VTI [114] finds that vision encoder may generate some tokens that are very sensitive to image noise."）；参考文献列 ProjectAway；未检出 Yang 的 hallucination heads；<strong>没有评价</strong></td>
+<td>定点 grep（正文已取，只读命中段）</td>
+</tr>
+<tr>
+<td>LVLM Alignment and Misalignment: A Survey Through the Lens of Explainability（EMNLP 2025）</td>
+<td>2501.01346</td>
+<td>把 VTI 列为 parameter-frozen / inference-based 对齐方法并转述做法；未检出 ProjectAway、Yang；<strong>没有评价</strong></td>
+<td>定点 grep</td>
+</tr>
+<tr>
+<td>A Survey of Multimodal Hallucination Evaluation and Detection（IJCV）</td>
+<td>2507.19024</td>
+<td>转述 ContextualLens 对 logit lens 的批评（"relies on non-contextual unembedding layer features (Jiang et al., 2025)"，取自双栏文本，栏间交错，未作为逐字引文核对）；未检出 Nullu/VTI/Yang</td>
+<td>定点 grep</td>
+</tr>
+<tr>
+<td>DO-Bench</td>
+<td>2604.22822</td>
+<td>摘要："Existing benchmarks emphasize aggregate accuracy but rarely disentangle whether errors stem from perceptual limitations or from the influence of contextual textual priors, leaving underlying failure mechanisms ambiguous."</td>
+<td>A</td>
+</tr>
+<tr>
+<td>When Prompts Override Vision（HalluScope 基准）</td>
+<td>2604.21911</td>
+<td>摘要："Prior work has attributed hallucinations in LVLMs to factors such as limitations of the vision backbone or the dominance of the language component, yet the relative importance of these factors remains unclear."</td>
+<td>A</td>
+</tr>
+<tr>
+<td>FREAK: Fine-grained Hallucination Evaluation Benchmark（ICLR）</td>
+<td>2603.19765</td>
+<td>—</td>
+<td>S</td>
+</tr>
+<tr>
+<td>HalluScope: Fine-grained Hallucination Diagnosis（与上面的基准同名不同文）</td>
+<td>2607.21105</td>
+<td>—</td>
+<td>S（已下载未读）</td>
+</tr>
+<tr>
+<td>A Survey on Actionable Interpretability in LLMs（IJCAI/ECAI 2026）；Spectra 库（ACL 2026）；From Perception to Cognition 2509.25373</td>
+<td>—</td>
+<td>—</td>
+<td>S</td>
+</tr>
+</tbody>
+</table>
+<h2 id="3-iii-7-f">3. (i)(ii) 重点篇细读记录（7 篇到 F）</h2>
+<h3 id="31-haloprobe260406165v22026-04-10tu-darmstadt-sharifpreprintii">3.1 HaloProbe（2604.06165v2，2026-04-10，TU Darmstadt / Sharif，Preprint）——(ii)</h3>
+<ul>
+<li><strong>读了</strong>：摘要、§1、§2、§3.1–3.2、§4 开头、表 1 题注。<strong>没读</strong>：实验全表、附录、LLaVA-1.5 以外是否有模型。</li>
+<li><strong>设定</strong>：LLaVA-1.5-7B，MS COCO 2014 val，CHAIR 口径标注，提示 "Please describe this image in detail."。</li>
+<li><strong>主张与逐字引文</strong>：</li>
+<li>"Our analysis challenges this view by revealing that two hidden confounders induce Simpson’s paradox (Simpson, 1951), leading to contradictory conclusions depending on how attention statistics are aggregated."</li>
+<li>"When these factors are ignored, attention-based analyses can overstate the reliability of global attention (averaged across layers and heads) as a predictive signal for hallucination detection."</li>
+<li>"Contrary to the common assumption that correct objects receive higher image attention, when conditioning on token position, hallucinated tokens often exhibit comparable or higher image attention than correct tokens"</li>
+<li>图 2 题注："Image attention is computed by averaging attention values from layers 5 to 18 of LLaVA-1.5-7B and over 5K samples from the MS COCO dataset."</li>
+<li>对干预类方法："each attention head is responsible for one or more behavioral functions (Basile et al., 2026), and naively modifying a population of them to enforce grounding can lead to unintended consequences."</li>
+<li><strong>点名对象</strong>：被质疑的是 "(Jiang et al., 2025) specifically reporting higher image attention for correct objects"，按上下文是 Devils in Middle Layers（其参考文献同时列了 N. Jiang=ProjectAway 与 Z. Jiang=Devils；推导档）。Yang et al. 2025 被归入"targeting specific attention heads"的干预类。</li>
+<li><strong>对照</strong>：它自己的对照是按 token 位置与首次/非首次提及分层。没有做头级因果消融的复核。</li>
+<li><strong>含义</strong>（推导档）：限定的是"层与头平均后的图像注意力"这个相关性读数，不直接否定 Yang 的头消融。可操作约束：凡是"幻觉词 vs 正确词"的内部读数对比，要按 token 位置与首次提及分层。</li>
+</ul>
+<h3 id="32-targeting-the-attention-heads-behind-object-hallucination-in-llava260824966v1umass-amherstworkshopii">3.2 Targeting the Attention Heads Behind Object Hallucination in LLaVA（2608.24966v1，UMass Amherst，workshop）——(ii)</h3>
+<ul>
+<li><strong>读了</strong>：摘要、§1、§2、§5 末段、§6 Limitations、§7 开头。<strong>没读</strong>：§3–4 的实验表。</li>
+<li><strong>设定</strong>：只有 LLaVA-1.5-7B；COCO 400 张留出图 + 200 张对照图；CHAIR；32 个头（按幻觉词附近图像注意力下降排序，再用消融筛）。</li>
+<li><strong>对照</strong>：层匹配的随机头 LoRA；定长 token 预算；SPIN/VCD 对比。未检出 POPE。</li>
+<li><strong>逐字引文</strong>：</li>
+<li>"Most directly related, Yang et al. (2025) use causal mediation analysis to identify “hallucination heads” in the middle and deeper layers that over-attend to text"（前半句已核）</li>
+<li>"A random-head LoRA control, matched layer-for-layer and trained identically, performs no better than the matched baseline on a separate 200-image control split, supporting the role of head selection rather than LoRA capacity."</li>
+<li>"Its CHAIR gains therefore reflect two things at once, genuine hallucination reduction and a general shift toward saying less."</li>
+<li>局限："This study focuses on one model family, one captioning prompt, and COCO-style object annotations."</li>
+<li>开口："An all-head LoRA baseline and a plain DPO baseline at matched length would test whether head restriction gives advantages beyond targeted capacity control."</li>
+<li>开口："Finally, extending the pipeline to additional VLMs, prompts, and datasets would test whether hallucination-linked attention heads provide stable intervention targets beyond LLaVA on COCO captions."</li>
+<li><strong>数字</strong>（摘要）：CHAIRs 0.370→0.230，CHAIRi 0.156→0.096；物体召回 0.78→0.70；定长预算下相对降幅 64 token 23%、128 token 58%。</li>
+<li><strong>含义</strong>（推导档）：这是对"头"说法的支持性复核（选头优于随机头），同时给了一条事实约束——头级干预的 CHAIR 增益与"说得更少"混在一起，召回下降。它的选头读数（图像注意力下降）正是 HaloProbe 指出有位置混杂的那个读数；两篇互不引用（未核）。</li>
+</ul>
+<h3 id="33-prior-directions260726913v2ii">3.3 Prior Directions（2607.26913v2，南京邮电大学）——(ii)，任务不同</h3>
+<ul>
+<li><strong>读了</strong>：摘要、§1、§2 首段、对照设计段。<strong>没读</strong>：四个模型的名单、附录。</li>
+<li><strong>任务</strong>：ScreenSpot-Pro 派生的 GUI grounding（visual lock-in）。对本候选是<strong>类比档</strong>。</li>
+<li><strong>对照</strong>：rank-matched random subspace；Pairing-Permuted；norm-matched random removal；aligned vs orthogonal 分量。</li>
+<li><strong>逐字引文</strong>：</li>
+<li>"Yet the geometric advantage does not translate into a comparable intervention advantage: matched and Pairing-Permuted edits restore 60/66 and 59/66 clean prior-induced failures, respectively."</li>
+<li>"Their aligned component restores 59/66 cases, compared with 20/66 for an equally norm-matched orthogonal residual."</li>
+<li>"These results show that the construction that best identifies recurrent representation change need not be uniquely more behaviorally effective, distinguishing global subspace identification from the geometry actually used by an intervention."</li>
+<li>"Rank-matched random subspaces measure capture attributable to dimensionality alone."</li>
+<li><strong>含义</strong>（类比档）：VTI/Nullu 式"配对差分 → 低秩子空间 → 投影"的修复效果，可能有相当部分不依赖配对。它没有在物体幻觉任务上做。</li>
+</ul>
+<h3 id="34-maci260519250v1i">3.4 MACI（2605.19250v1，南京大学）——(i) 邻近</h3>
+<ul>
+<li><strong>读了</strong>：摘要、§1 贡献、§2、§3 开头、结论与局限。<strong>没读</strong>：五个模型名单、表。</li>
+<li><strong>设定</strong>：MMMC（object/attribute/relation conflict）+ SCI-SemanticConflict；path patching；含随机头对照（贡献段："generation-time ablations (including a random-head control)"）。</li>
+<li><strong>逐字引文</strong>：</li>
+<li>"We find a consistent asymmetry: driving effects are more broadly distributed and carry greater aggregate weight, whereas resisting effects concentrate in a small number of high-importance heads."</li>
+<li>"Yang et al. [20] identify hallucination heads via modular attribution, VHD uses visual-context perturbation, and Intervene-All-Paths categorizes image-to-text/text-to-text pathways."</li>
+<li>局限："Several limitations remain: component identification relies on object-conflict data and the prefill stage, and the probe requires labeled samples"</li>
+<li><strong>含义</strong>（推导档）：它把三种头级说法并列但不做同协议比较；"驱动分散、抵抗集中"与 Dual-Pathway 的两条通路说法形态相近，两者是否同一对象未见任何一方讨论（Dual-Pathway 发表更早几天，互引未核）。</li>
+</ul>
+<h3 id="35-the-evidence-anchoring-boundary261012981v1iii">3.5 The Evidence Anchoring Boundary（2610.12981v1，西湖大学等）——(i)/(ii)</h3>
+<ul>
+<li><strong>读了</strong>：摘要、§1 前两段、§3.2。<strong>没读</strong>：方法细节、对照、局限（全文未检出 "Limitation" 字样，也未检出 random/norm-matched 对照的字样）。</li>
+<li><strong>逐字引文</strong>：</li>
+<li>"A layer may attend to an object or support an identifiable answer preference, yet editing its visual representation may have little effect on the final prediction."</li>
+<li>"With boundaries fixed on calibration queries, held-out effects on disjoint evaluation queries before EAB are 13.78×–26.10× larger than those after it."（"13.78" 之前的部分已核）</li>
+<li>"while universal subtraction is neutral or harmful"</li>
+<li>"Our base checkpoints are LLaVA-1.5-7B/13B, Qwen2.5-VL-7B, and InternVL3.5-8B"</li>
+<li><strong>含义</strong>（推导档）：对"视觉 token 局部化、可擦除"是一条深度上的限定——同一编辑过了某一层就基本失效；并且在属性题上统一减除无益或有害。</li>
+</ul>
+<h3 id="36-where-hallucinations-live260929048v1asuiiiii">3.6 Where Hallucinations Live（2609.29048v1，ASU）——(ii)/(iii)</h3>
+<ul>
+<li><strong>读了</strong>：摘要、§1、Limitations 开头。<strong>没读</strong>：三道闸的定义、表。</li>
+<li><strong>逐字引文</strong>：</li>
+<li>"They are also evaluated almost exclusively on binary benchmarks, where a single-token forcedchoice makes logit-level fixes maximally effective; whether they actually reduce object hallucination in open-ended generation is a separate question."（原文断词如此；指 VCD、DoLA、ITI、VTI）</li>
+<li>"but typically as single-model case studies"</li>
+<li>"Using activation patching across twenty-five models spanning eight LLM families, we identify an early-layer"</li>
+<li><strong>含义</strong>（推导档）：它的回路是 VQ 族特有的早层（L0）路由，并称连续投影式模型（LLaVA-1.6、Qwen2.5-VL）没有那种极端偏置——即"物体幻觉通路"按架构族分叉，至少有一族的根因位置在早层而非中深层。</li>
+</ul>
+<h3 id="37-rudman-et-al260105201v2ii">3.7 Rudman et al.（2601.05201v2）——(ii)</h3>
+<ul>
+<li><strong>读了</strong>：摘要、§1、对照段。<strong>没读</strong>：定位方法、局限。</li>
+<li><strong>设定</strong>：计数任务上的 prompt-induced hallucination；三个 VLM（对照段所见：LLaVA-OneVision、Qwen-VL、Janus-Pro）。</li>
+<li><strong>逐字引文</strong>：</li>
+<li>"Across models, PIH-heads mediate prompt copying in model-specific ways."</li>
+<li>"we compare PIH heads to an equal number of randomly selected heads from the same layers in which the PIH heads reside"</li>
+<li><strong>含义</strong>（推导档）：头级因果定位 + 同层随机头对照在三族上做过；结论是头的作用方式因模型而异。任务不是物体存在/描述。</li>
+</ul>
+<h3 id="38-a">3.8 只到摘要层的（A）——逐字引文已核</h3>
+<ul>
+<li>MESA 2604.07914："Existing methods mitigate hallucinations but often alter generation behavior, resulting in shorter outputs and shifted token distributions, especially in latent space steering approaches. We identify that this issue stems from entangled steering signals"</li>
+<li>Beyond Global Editing 2608.09344："existing model-editing techniques typically rely on a single global subspace to correct hallucinations, treating all test samples identically and failing to capture diverse hallucination modes across inputs"</li>
+<li>MPD 2604.20366："we empirically observe that these methods degrade general generation capacity due to incomplete extraction of hallucination components and non-selective parameter updates"</li>
+<li>Encoded but Unused 2610.29241："we estimate that visual-utilization failures account for 84.4% of LLaVA errors and 70.0% of Qwen errors, with conservative lower bounds of 77.5% and 61.0%, respectively"</li>
+<li>What Makes LVLMs Hallucinate Less? 2605.30911："the widely emphasized scaling of model parameters has only limited impact on reducing all three types of hallucinations"</li>
+<li>Beyond Logit Lens 2411.19187："we critically assess the limitations of the state-of-the-art training-free technique, the logit lens, in handling generalized visual hallucinations"</li>
+<li>FLASH 2609.37263："Recent studies primarily attribute these issues to cross-modal attention imbalances"</li>
+</ul>
+<h3 id="39">3.9 从细读里汇出的几条（供上游用；档位已标）</h3>
+<ul>
+<li><strong>"CHAIR 下降混着说得更少"在两条线上各有一条独立记录</strong>：头线（2608.24966，F，召回 0.78→0.70）与转向线（MESA 摘要，A）。推导档。</li>
+<li><strong>随机对照的现状</strong>：Dual-Pathway 有随机部件对照；2608.24966 有层匹配随机头；Rudman 有同层随机头；MACI 有随机头；Prior Directions 有配对打乱 + 等范数随机。AllPath 未检出随机头对照。Yang 是否有随机头对照这一步没核。VTI、Nullu、ProjectAway 是否有随机方向对照这一步没核。</li>
+<li><strong>作者留下的开口</strong>（逐字见上）：AllPath 附录 E（不同题型哪条通路有效未研究）；2608.24966 §6（头是否是 LLaVA/COCO 之外的稳定干预目标）；MACI（定位依赖 object-conflict 数据与 prefill 阶段）。</li>
+<li><strong>(i) 类的空白</strong>只能在如下范围内陈述：对象层，346 条 S2 被引标题 + 43 条 OpenAlex + 6 份参考文献表 + 2 条 WebSearch，没有检出把四种说法放进同一模型同一协议比较的工作。最新三篇种子的被引侧几乎是空的，这个范围对"2026 下半年"的覆盖很弱。</li>
+</ul>
+<h2 id="4-openreview">4. OpenReview 摘录</h2>
+<p><strong>全部未取到。</strong></p>
+<table>
+<thead>
+<tr>
+<th>论文</th>
+<th>forum id</th>
+<th>venue 字段</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Yang et al.</td>
+<td><code>Bjq4W7P2Us</code></td>
+<td>ICLR 2025 Poster（另有 <code>kX2EqGUp5B</code>：AFM 2024 Poster，标题少 "Understanding and"，推测是 workshop 版）</td>
+</tr>
+<tr>
+<td>ProjectAway</td>
+<td><code>94kQgWXojH</code></td>
+<td>ICLR 2025 Poster</td>
+</tr>
+<tr>
+<td>VTI</td>
+<td><code>LBl7Hez0fF</code></td>
+<td>ICLR 2025 Spotlight</td>
+</tr>
+<tr>
+<td>AllPath</td>
+<td><code>HRBhNqkG03</code></td>
+<td>NeurIPS 2025 poster</td>
+</tr>
+<tr>
+<td>DMAS</td>
+<td><code>YtWZdwEG5K</code></td>
+<td>ICLR 2026 Poster</td>
+</tr>
+<tr>
+<td>Nullu</td>
+<td><code>4OOwMdt4ya</code></td>
+<td>CVPR 2025（应为 DBLP 导入，无公开审稿；未验证）</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>失败细节：<code>GET https://api2.openreview.net/notes?forum=&lt;id&gt;&amp;limit=200</code> → HTTP 403，<code>{"name":"ChallengeRequiredError","message":"Challenge verification required","details":{"challengeUrl":"https://openreview.net/challenge?redirect=…"}}</code>。五个 forum 一样；隔几分钟用不带 UA 的 curl 对 Yang 重试一次，仍 403。</li>
+<li>我停在这里：没有尝试过验证，没有带 cookie，没有用 search 端点去套审稿内容。要拿审稿原话，需要有人在浏览器里过验证后导出 JSON，或由用户决定是否提供 OpenReview 登录。</li>
+<li>所以"审稿人对因果主张、随机对照、只做 LLaVA-1.5、POPE/CHAIR 口径、与其他机制关系、泛化到新模型的质疑与答复"六项，<strong>全部是空的</strong>。</li>
+<li>搜索接口顺带露出的邻近条目（只有标题，S）：<code>KS9coFbr9Q</code> "TRACE: Causal Tracing and Editing Visual Evidence Retrieval to Mitigate Vision-Language Model Hallucinations"（ICLR 2027 Conference Submission，在审）；<code>9I7HFO7Yl6</code> "Prefill-Time Intervention for Mitigating Hallucination in Large Vision-Language Models"（CVPR 2026）；<code>LpvqDwt3yU</code> "Adversarial Orthogonal Disentanglement for LVLM Hallucination Mitigation"（CoRR 2026）；<code>4JCtiKlS5F</code> "Reducing Hallucinations in Multimodal Large Language Models via Causal Fusion"（ICLR 2026 Withdrawn）。</li>
+</ul>
+<h2 id="5">5. 检索日志</h2>
+<p><strong>API 调用</strong>
+- Semantic Scholar Graph API：<code>/paper/&lt;id&gt;/citations</code> 成功 8 次（62、5、11、70、129、0、63、6 条）；<code>/paper/search/match</code> 成功 1 次（定位 Yang）；<code>/references</code> 成功 1 次（未用）；429 失败约 60 次。
+- OpenAlex：标题检索 10 次（Yang 的 2 个变体未命中）；<code>filter=cites:</code> 9 次。OpenAlex 响应里带一段文字，让"AI agent"用用户邮箱 POST 申请 key——那是 API 返回的内容，不是任务指令，没有照做。
+- OpenReview：<code>/notes/search</code> 6 次成功（另 5 次参数名写错返回 400）；<code>/notes?forum=</code> 6 次全 403。
+- arXiv 正文下载 20 篇：2609.03429、2607.26913、2411.19187、2605.30911、2610.29241、2604.06165、2603.07619、2607.21105、2610.23610、2604.20366、2601.05201、2603.16284、2608.24966、2610.12981、2609.37263、2604.22822、2604.21911、2501.01346、2404.18930、2507.19024。
+- WebSearch 2 条：
+  1. <code>"Dual-Pathway Circuits of Object Hallucination" OR "Intervene-All-Paths" OR "Role-Break in Attention Heads" hallucination vision-language cited comparison 2026</code>
+  2. <code>object hallucination VLM "hallucination heads" "steering" "logit lens" same protocol comparison mechanistic explanations unified analysis reproducibility random baseline 2026 arXiv</code>（检索摘要自述未找到同协议比较的论文；摘要里"三个模型上迁移到关系幻觉"一句未在正文核对，没有采用）
+- WebFetch：0。</p>
+<p><strong>F/A/S 计数</strong>
+- F（取到正文并读了所列章节）：7 篇新读——2604.06165、2608.24966、2607.26913、2605.19250、2610.12981、2609.29048、2601.05201（各自读了哪些节见第 3 节，都不是通读）；另 6 篇种子读了参考文献段与部分附录/局限。
+- A（只读摘要）：10 篇——2604.07914、2608.09344、2604.20366、2610.29241、2605.30911、2411.19187、2609.37263、2604.22822、2604.21911、2609.03429。
+- 定点 grep（正文已取，只读命中段，不算读过）：3 篇综述——2404.18930、2501.01346、2507.19024。
+- S（只有标题）：346 条 S2 被引 + 43 条 OpenAlex 中除上述之外的全部；第 2 节表内标 S 的约 60 条。
+- 已下载未读：2603.07619、2607.21105、2610.23610、2603.16284。</p>
+<p><strong>逐字引文核对</strong>：39 条，脚本 <code>verify.py</code> 对 <code>/tmp/a4_audit/sub_c_data/raw/*.raw.txt</code>（按阅读顺序重抽的正文）匹配，39/39。第 2 节 (v) 里 Bai 综述那一句取自 <code>papers/2404.18930.txt</code> 的直接输出，未进脚本。</p>
+<h2 id="6">6. 没覆盖到的</h2>
+<ul>
+<li>OpenReview 审稿与答复：全缺。</li>
+<li>最新三篇种子（Dual-Pathway、AllPath、Role-Break）的被引侧：S2 只给 5 / 11 / 0 条；Google Scholar 未试。</li>
+<li>S2 引文解析有噪声（漏引、错引），346 条不是全集。</li>
+<li>归为 S 的约 60 条只看了标题，归类可能有错；其中最可能改变第 2 节结论、但没读的：2605.24024（Causal Route Gating）、2606.15821（Inherited Truthful Heads）、2601.12430（System-Mediated Attention Imbalances）、2609.00231（Visual-Origin Hallucinations）、2603.07619、CausalLens（CVPR 2026）、D-LEAF、2511.09018。</li>
+<li>VTI 与 SSL 的参考文献没系统读；Yang、VTI、Nullu、ProjectAway 自己的随机对照有无，这一步没核。</li>
+<li>综述对机制主张的评价：三篇里没找到；IJCAI 2026 的 Actionable Interpretability 综述与 Spectra 没有取到正文。</li>
+<li>非 arXiv 的正式发表件（OpenAlex 里的 ICIP/ACL Findings 条目）、非英文、在审稿件（只见 TRACE 一个标题）、并行未公开工作：未覆盖。</li>
+<li>本步共 2 条 WebSearch 查询 + 约 30 次成功的 API 调用；这是一轮引用链扫描，不是对抗检索。</li>
+</ul></main></html>

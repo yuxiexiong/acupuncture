@@ -1,0 +1,500 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>085．NFC：原生首步竞争的分段账目</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="085nfc">085．NFC：原生首步竞争的分段账目</h1>
+<p><a href="../README.zh-CN.html">返回总时间线</a></p>
+<p><strong>时间定位</strong>：版本/记录日期 2026-11-02；未从所选收据确定完整运行起止，不据目录名补写时刻。</p>
+<p><strong>当时的目的与设计</strong></p>
+<p>复用原生输出，比较入口加S/KV、固定V及剩余头的条件分数效应。</p>
+<p><strong>实际过程、结果与后来更正</strong></p>
+<p>原生D变化12.6–14.2；入口加历史约54%–63%，固定V约33%–43%，其余头自身与交互抵消。这里D是停止竞争量，不能与后期直接读取D混用。</p>
+<p><strong>来源身份</strong>：<code>cache-native-first-token-competition-v1-2026-11-02</code>；本章主体来源提交 <code>7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8</code>。下方原文中的状态是各文件写作时的状态，不能把早期“尚未运行”覆盖后期正式收据，也不能将后期结果倒填进早期设计。</p>
+<h2 id="_1">原设计、执行过程、结果与更正全文</h2>
+<p>以下按“设计与题目 → 工程/执行记录 → 结果/更正 → 其他历史说明”组织；同类内没有可靠时间时保留路径顺序，不冒充严格先后。正文未删段；仅为本章节重排标题层级、把相对链接指向固定提交。原始字节另外完整保存。</p>
+<h3 id="1-gpu-v1">原件 1：原生首步竞争与混合实验对应关系：零 GPU 分析计划 v1</h3>
+<p>原路径：<code>docs/cache-native-first-token-competition-plan-v1-2026-11-02.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-native-first-token-competition-plan-v1-2026-11-02.zh-CN.md">固定提交原文</a> · <a href="../library/908d2e2f6d696e29.html">单独阅读副本</a>；SHA-256：<code>908d2e2f6d696e293a5d5553267addb70f3c1eff5737aec5e8d804e5774ac5d4</code>。</p>
+<hr />
+<h4 id="gpu-v1">原生首步竞争与混合实验对应关系：零 GPU 分析计划 v1</h4>
+<h5 id="material-passport">Material Passport</h5>
+<ul>
+<li>编号：NFC-01；日期：2026-11-02；类型：既有数据的描述性、探索性再分析。</li>
+<li>状态：设计逻辑自查通过；未实现、未执行；数据文件可用性与数值验收待完成。</li>
+<li>本次授权：撰写、自查、提交 Git；不包含分析运行、模型评分、GPU、自由生成。</li>
+<li>来源：B4 结果提交 c9ab385、合同 r01 与正式回执；B3 f2ad7d8。使用 academic-research-suite 的 plan 流程，按项目规范内联自查，不称独立评审。</li>
+</ul>
+<h5 id="1">1. 主线、问题与增量</h5>
+<p>核心问题保持不变：稀疏激活干预如何改变历史状态与后续读取，最终造成显著回答变化。首步只是已有证据可覆盖的行为窗口，不替代完整回答。</p>
+<p>本轮问：原生 C_native→T_native 的停止—非停止竞争如何改变？N 混合背景中固定45头的效应，以及 B4 钳回和参照扰动的效应，在这个读数上与原生变化有什么对应和不对应？</p>
+<p>新增认识不是验证 argmax 公式，也不是又找热点，而是判断此前针对混合状态的机制解释，是否至少对应原生首步行为的方向、幅度和候选身份。数值相近仅是后续机制检验的候选线索，不是因果中介份额。若明显不对应，应停止把混合效应外推到原生行为。</p>
+<p>已知：B4 在 N 背景钳回非 FIX G 值头后，停止侧效应保留约0.88–0.96；原报告还观察到首步停止减少和答案候选分数恢复。后两项尚未构成本轮的原生竞争分析结果。报告 P1 不成立、P2 达到容差标准保持原判；不把两预测称严格互斥机制。近期 B3/P0/P1 的对齐账目不作为本轮选择候选或标签的依据。</p>
+<p>公式已知：同一对 token 的 logit 差不受共同平移影响。去均值 logits 也不受统一平移影响，但它们表示相对全词表均值的位置，不等于实际竞争差。原始两侧变化则依赖共同偏移；本轮不凭两项原始变化命名“停止抬升主导”或“答案压低主导”。不提出领域首次或完整机制主张。</p>
+<h5 id="2">2. 数据与身份：先验收，不能静默补运行</h5>
+<p>主数据固定为 B4 正式运行 c9ab385：
+<code>experiments/cache-b4-nonfix-readout-v1-2026-11-02/runs/formal-r01/worker-{0,1}/</code>。</p>
+<ul>
+<li>6情景 P01–P06，各 f0/f1，四方向 N4146、N1210、R0、R1；48个方向×输入配对。不是48个独立样本；每输入共享的 C_native 不能当四次独立重复。</li>
+<li>主对象：C_native、T_native。次对象：N:CC、N:CFIX、K、M_nat、M_rand；K0只作校验。早晚臂不进入科学分析，避免增加分支。</li>
+<li>B3 的 N:CT 只用来补一个全 V 的历史参照，不是主对象；须验证与 B4 的 C_native/T_native/CC/CFIX 全向量一致，并核对所有身份后才能纳入。若无法验证，明确缺失并省略此辅助列，不替代主数据。</li>
+<li>B4 正式 receipt 已列12份 records 和12份 tensors 的 SHA-256；例如 worker-0 的 P01-f0 张量哈希为 <code>d57f6c6a6ca86d0b2d7d552f306f19ee73a3e289139bfa151d724c3352b9ba15</code>。记录存在 <code>cells.C_native</code> 与各方向 <code>T_native|…</code> 等键，并有全 logits 哈希。张量在外部，不以 Git 中的哈希清单冒充已读到张量。</li>
+<li>执行前核对全部张量哈希、词表维度、tokenizer/model revision、prompt/token哈希、评分位置、事实身份、剂量、校准、注入时序与解码配置。尤其确认 C/T 比较的是同一个文本前缀的同一步；若不相同，主配对不成立，停止并报告。</li>
+<li>T_native 的“有针”究竟覆盖形成期还是也覆盖评分步，须照原 freeze/实现写入身份表，不凭名称推断；不称撤针分析，也不将总变化归因于形成期。</li>
+<li>正式数据为唯一统计来源；预检 P01 不再次计数；B3/B4 重放数据不重复计数。</li>
+</ul>
+<p>本次设计只检查报告、合同、回执与一个记录的结构，没有访问远端张量或算本轮全词表结果。以上面板已被多轮使用，所有新分析均标为探索性；先冻结算法不能使旧数据成为独立留出。</p>
+<h5 id="3">3. 统一读数：动态竞争为主，固定候选为解释辅助</h5>
+<p>对每个运行 r，记已有原始全词表 logits 为 z_r。停止集合 S 从既有评分代码及 tokenizer 配置核对并冻结；历史候选为248044/248046，核实前不得只凭截图采用。可生成词表集合 V 及任何历史评分屏蔽规则一并保存；不能临时删去非 EOS 的特殊 token，把它们变成“答案”。</p>
+<h6 id="31">3.1 主读数</h6>
+<ul>
+<li>s_r=argmax_{s∈S} z_r(s)；q_r=argmax_{q∈V∖S} z_r(q)。</li>
+<li>D_r=z_r(s_r)−z_r(q_r)。δ_native=D_T−D_C。</li>
+<li>保存完整赢家 token ID、可解码字符串、赢家类别、停止/非停止赢家切换、top-5、实际记录的首步选择。</li>
+<li>D&gt;0 为原始 logits 下停止赢家，D&lt;0 为非停止赢家；D=0单列平局，以旧实现的 tie-break 复现记录，不能伪造严格优势。若历史使用采样/处理器，分别报告原始分数赢家与实际选择，不以 D 的符号声称确定解释实际采样。</li>
+<li>主输出是 D_C、D_T、δ_native、四类停止转移（非停→停、停→非停、均停、均非停），以及候选身份。所有输入保留，包括干净运行已停止者，不只挑翻转案例。</li>
+</ul>
+<h6 id="32">3.2 固定候选与赢家替换：精确区分身份效应</h6>
+<p>每输入固定 s0=s_C、q0=q_C，仅由 C_native 选择，并用于所有方向/辅助臂；q0叫“干净非停止赢家”，不叫正确答案。</p>
+<p>定义 F_r=z_r(s0)−z_r(q0)，A_r=max_S z_r−z_r(s0)，B_r=max_{V∖S} z_r−z_r(q0)。有：
+<code>D_r = F_r + A_r − B_r</code>。
+在 C_native 上 A_C=B_C=0，故：
+<code>δ_native = (F_T−F_C) + A_T−B_T</code>。
+对任意两臂 u→v 使用差分版：<code>D_v−D_u = F_v−F_u + A_v−A_u − (B_v−B_u)</code>。</p>
+<p>报告固定候选竞争变化与停止/非停止赢家替换项，不把动态最大值的变化全算给某个固定答案词。若 q0 是标点、空格或特殊 token，也原样保留；token身份变化不等于语义变化，首词稳定也不保证答案正确。</p>
+<h6 id="33">3.3 两侧分解仅作参照敏感性描述</h6>
+<p>对每个预定配对 u→v，Δz=z_v−z_u，固定 s0/q0。分别取两个共同参照：
+<code>b_mean=mean_{t∈V} Δz(t)</code>，<code>b_median=median_{t∈V} Δz(t)</code>。
+对任一 b，定义 S_b=Δz(s0)−b，Q_b=−[Δz(q0)−b]，满足 <code>F_v−F_u=S_b+Q_b</code>。</p>
+<p>这两种参照下的分解结果均对每次运行的统一logit平移不敏感；参照值本身会随共同偏移平移。均值参照等于去均值分数的差；中位数取的是 Δz 的中位数，不是两次中位数之差。保留未中心化原始Δz作为审计，不用于主导机制判定。</p>
+<p>报告两个参照下的 S_b、Q_b、符号及排序是否一致；不计算“机制百分比”，不以跨参照一致直接证明独立停止/答案通路。若分配随参照改变，只保留竞争差结论。本轮不强行产生“哪侧主导”的科学标签，也不凭首词把结果并入事实丢失。</p>
+<h5 id="4">4. 预定比较与边界</h5>
+<table>
+<thead>
+<tr>
+<th>比较</th>
+<th>对象与用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C_native→T_native</td>
+<td>主对象，原生首步总竞争变化</td>
+</tr>
+<tr>
+<td>N:CC→N:CFIX</td>
+<td>固定45头在混合背景的竞争变化 δ_FIX</td>
+</tr>
+<tr>
+<td>N:CC→N:CT（可核验才纳入）</td>
+<td>全 V 混合参照 δ_allV；不算原生重放</td>
+</tr>
+<tr>
+<td>N:CFIX→K</td>
+<td>B4钳回对竞争的影响</td>
+</tr>
+<tr>
+<td>N:CFIX→M_nat / M_rand</td>
+<td>同一混合基线下参照响应；不是新的零分布</td>
+</tr>
+</tbody>
+</table>
+<p>每臂都用§3的动态D及同一组s0/q0。记录基线差 D_CC−D_C 和终点差 D_CFIX−D_T；两个差分恰好相等并不表示基线或终点相同。</p>
+<p>不将 δ_FIX/δ_native 称机制覆盖率。本轮不用比值作主要判读，避免小分母、异号及max非线性造成误读。</p>
+<p>为给出有边界的数值对应表，预先固定以下描述性分档（实用门槛，不是显著性或因果份额）：
+- |δ_native|&lt;0.5 logit：原生竞争变化小；单独报告翻转/距零边界，仍可能有实际选择变化。
+- 其余单元：若 |δ_FIX|&lt;0.5，标“混合变化小”；否则符号相反标“异向”。
+- 两者均非小时且同向：若 |δ_FIX−δ_native|≤max(0.25,0.25|δ_native|)，标“同向且幅度接近”，否则“同向但幅度不同”。
+- 即使幅度接近，也必须另报两端停止状态与赢家是否一致；这只是描述性对应，不能证明原生因果路径。
+- 缺失/身份不一致为不可比较，不从剩余样本重算通过率。</p>
+<p>逐事实展示，f0/f1同档才赋情景标签，否则条件差异；每方向报6情景原始计数，≥5/6才描述为方向一致，≥3/4方向一致才描述跨方向一致。该汇总规则用于避免单个均值遮蔽异质性，不宣称统计检验或泛化。</p>
+<p>K与M按每个输入的 ΔD、ΔF、ΔA、ΔB 并排展示，不再新增“自然对照也恢复就证明一般损伤”的判据。对翻转逐条说明其竞争差和赢家变化，不将分账称中介因果。</p>
+<h5 id="5">5. 可能结果如何改变研究判断</h5>
+<ol>
+<li>原生变化与 FIX 混合变化明显异向、幅度差异或赢家条件不对应：现有45头结果仍成立于原混合背景，但不得继续将其作为原生机制的解释；停止该外推，不用新层/新头补齐。</li>
+<li>原生与混合数值对应较好：保留45头为原生检验候选，尚未证明它在原生背景必要/充分。只有另一个具体干预能区分直接读出与下游响应时，才另立因果实验；本轮不自动上卡。</li>
+<li>主要差异涉及赢家身份更换或两侧分配参照敏感：保留竞争差与身份描述，停止“答案被压低/信息丢失”的归因，不依据标签自动选通路。</li>
+<li>原生在该面板几乎没有首步变化，但混合背景明显：报告首步对应缺口；不说整项干预无效，也不凭旧完整回答结论强行拼链。后续若需要生成证据，必须另列缺失量和成本。</li>
+<li>资产不完整或身份不能对齐：停止相应比较，报告哪些问题确实不能回答；禁止调用模型补分或用top-5替代全词表求赢家。</li>
+</ol>
+<p>无论结果如何，本轮完成一份原生—混合对应表后结束。不附带FIX影子、雅可比、跨架构、撤针自由生成或事实正确性新实验。与早期行为工作的关系只写“可比较的证据问题”，未核对前不写“同一条机制”。</p>
+<h5 id="6">6. 工程验收与资源</h5>
+<p>执行前提交最小分析实现、来源manifest、算法和规则哈希；不修改旧records或旧判决。实现验收须包括：
+- 全词表完整/有限、同一词表索引与mask；重算已有D/argmax/EOS与记录一致（量化源转FP64，误差阈值1e−6；不一致先检查旧读数定义，不按结果放宽）。
+- 两个分解恒等式误差≤1e−9×max(1,各项绝对值之和)；原始BF16精度不会因转FP64恢复，不伪称更准确的模型输出。
+- 合成样例：共同平移不改D或中心化分解；原始两侧变化随平移而改；固定候选与动态赢家不同；停止赢家切换；两个参照归因不同但差值相同；精确平局、负向变化、小变化跨过零、缺失、重复P01、共享C不能重复计数。
+- 预定标签分界0.5、0.25及相对25%边界测试；工程失败不能解释为科学阴性。</p>
+<p>预算：0 GPU小时、0模型调用、0形成/评分/生成；最多1 CPU核小时、8 GiB内存、新增产物≤100 MiB，按输入流式读取。优先在已有张量所在机器分析，不复制整套内部轨迹。原始资产读取/I/O时间另记；超预算停止并报告，不自动扩额或截样。若连张量都缺失，不做重建。</p>
+<p>执行产物建议放 <code>experiments/cache-native-first-token-competition-v1-2026-11-02/</code>：合同、来源manifest、实现/测试、逐输入读数CSV/JSON、情景汇总、报告、CPU回执。图仅作辅助，原始数值、候选身份、不可判与失败必须可读。原始大张量留原位置，manifest记录路径、哈希、shape、dtype及提交；Git不上传权重或缓存。</p>
+<h5 id="7-c01c14">7. 自查：与上一建议比较、C01–C14、历史错误</h5>
+<p>相比上一口头建议：主对象从B4混合行为移到原生C/T；保留混合为辅助；动态竞争差为主、固定候选与赢家切换分开；修正“去均值受统一平移影响”的错误；原始两侧分解改为双参照描述；禁止把首词压低等同事实丢失。没有新增模型干预或额外科研分支。</p>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th>结论、理由及位置</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C01</td>
+<td>通过：§1保留干预到回答主线，首步是范围限制。</td>
+</tr>
+<tr>
+<td>C02</td>
+<td>通过：§4–5判定混合现象与原生竞争是否对应，能停止不成立的外推。</td>
+</tr>
+<tr>
+<td>C03</td>
+<td>通过：§1–2固定报告/合同/回执、公式及可复用文件，实物张量未验证写明。</td>
+</tr>
+<tr>
+<td>C04</td>
+<td>通过：§5允许原生弱效应、异向、参照敏感和缺失，无预设阳性。</td>
+</tr>
+<tr>
+<td>C05</td>
+<td>通过：§2只读旧记录，不新增操作；原始注入时序必须随身份表核实。</td>
+</tr>
+<tr>
+<td>C06</td>
+<td>通过：§2/4明确原生与混合对象，不把下游正常响应当固定。</td>
+</tr>
+<tr>
+<td>C07</td>
+<td>通过：不新造反事实；旧混合耦合限制保留，§4不以数值相似消除。</td>
+</tr>
+<tr>
+<td>C08</td>
+<td>通过：§3–5只作竞争及数值对应，不声称中介份额、事实丢失或通路。</td>
+</tr>
+<tr>
+<td>C09</td>
+<td>通过：§4–5同向、异向、微小、条件差异都有不同含义，不强制二选一机制。</td>
+</tr>
+<tr>
+<td>C10</td>
+<td>通过：D、固定词差、赢家、实际选择、完整回答分开；§3处理平移和身份。</td>
+</tr>
+<tr>
+<td>C11</td>
+<td>通过：§4/6门槛只作描述；资产/身份/数值失败与原生弱效应分开。</td>
+</tr>
+<tr>
+<td>C12</td>
+<td>通过：§6仅旧数据CPU，所有新模型预算为零；不借本轮启动其他实验。</td>
+</tr>
+<tr>
+<td>C13</td>
+<td>通过：§2已见数据探索身份、去重与配对，§6原始表和不可判保留。</td>
+</tr>
+<tr>
+<td>C14</td>
+<td>通过：§5不对应即停止外推；对应也不自动进入上卡或更细定位。</td>
+</tr>
+</tbody>
+</table>
+<p>历史错误覆盖：E01/E24（不换总问题、不求完整机制）；E02/E21（不宣称层号规律或首次发现）；E03/E12（不由稀疏性或自然对照推一般损伤）；E04/E09/E19（恒等式是验收，不是因果机制）；E05/E06/E07/E08/E13/E14/E15/E26（旧混合来源逐项核验，不外推原生、形成来源或完整中介）；E10/E11（不停止不等于正确，token分数不等于信息）；E16/E18/E20（弱效应、异号和剩余解释不强行命名）；E22/E23（已见数据、共享基线不冒充独立样本或复现）；E17（不做残差撤销，亦不继承影子因果解释）；E25（不合并影子/雅可比/生成等支线）。</p>
+<h5 id="8">8. 实质反方复查与最终判断</h5>
+<ul>
+<li>即使所有差值接近，也可能只是混合背景凑出相似标量：增加两端基线、赢家和行为状态并排；明确数值对应不证明路径，不能报覆盖率。</li>
+<li>逐词两侧变化可以被统一偏移改写：主D不受影响，辅助采用均值/中位数Δlogit参照并报告敏感性，禁止单侧机制标签。</li>
+<li>固定词丢了优势可能被另一个正确同义词替代：固定/动态候选分开，保留身份，不给事实丢失或正确性标签。</li>
+<li>只挑翻转输入会夸大机制：所有原生配对入表，干净已停止、未翻转及小幅翻转保留。</li>
+<li>max的非线性会把换赢家误认为内部交互：用§3.2的身份项明确区分，不把D变化称内部非线性定位。</li>
+<li>对应失败后仍无限拆：§5明确停止当前混合外推，不能以新增层、模型、剂量救活。</li>
+<li>已见数据加冻结仍可能过拟合：标为探索，完整披露已知B4摘要；本轮不做显著性或独立确认主张。</li>
+</ul>
+<p>最后复查：修正后仍回答“现有混合机制研究是否对应原生首步竞争变化”，直接服务原始干预到回答的主线。设计逻辑通过；这是同一助手自查，不是独立评审。实现、数值验收、全部资产可用性及执行结果均未完成。本轮仅发布计划。</p>
+<hr />
+<h3 id="2-v2">原件 2：原生首步竞争：逐段链条与已有记录复用——计划 v2</h3>
+<p>原路径：<code>docs/cache-native-first-token-competition-plan-v2-2026-11-02.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-native-first-token-competition-plan-v2-2026-11-02.zh-CN.md">固定提交原文</a> · <a href="../library/bfbc5b1fa96e6177.html">单独阅读副本</a>；SHA-256：<code>bfbc5b1fa96e6177ae168c1225f6bcb22a77466865e4ab55991e6deeae698baa</code>。</p>
+<hr />
+<h4 id="v2">原生首步竞争：逐段链条与已有记录复用——计划 v2</h4>
+<p>2026-11-02；NFC-01 v2。与 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-native-first-token-competition-plan-v1-2026-11-02.zh-CN.md">v1</a> 合并阅读；本版替代 v1 §2 的主资产排序、§4 的主要对应尺度及§5的出口。v1的竞争读数、固定候选、双参照限制、配对单位、零模型预算和未执行身份保留。本次仍只修改/自查/发布计划，不运行分析。</p>
+<h5 id="1_1">1. 修订原因与主问题</h5>
+<p>v1直接比较 δ_FIX=D(CFIX)−D(CC) 与 δ_native=D(T_native)−D(C_native)，虽然声明不能当机制覆盖率，但仍把“同向/幅度接近”放在过高的位置。CC已经是混合状态，不是原生无针基线。原生变化的一大部分可能在 C_native→CC 已经出现；δ_FIX偏小或异向不能单独否定FIX的条件作用，也不能据此停止整条历史机制研究。</p>
+<p>本轮主问题改为更准确的表述：沿已有、固定顺序的混合状态链条，原生停止—非停止竞争变化在哪些转换中出现、抵消，候选身份在哪一段改变？固定45头在这条链上的条件增量是什么？仍然服务稀疏干预→历史状态→后续读取→回答变化的主线，不把首步或分账当完整机制。</p>
+<h5 id="2_1">2. 主表采用完整逐段链，保留路径依赖</h5>
+<p>主数据优先用同一次 B3 正式运行的五格：</p>
+<p><code>C_native → N:CC → N:CFIX → N:CT → N:TT</code>。</p>
+<p>逐输入/方向验收 N:TT 与 T_native 的 logits 哈希一致后，定义：</p>
+<ul>
+<li>e1=D(CC)−D(C_native)：从原生C到带T深层状态/入口、部分历史仍取C的组合背景的总转换。</li>
+<li>e2=D(CFIX)−D(CC)：该背景下固定45头的V历史条件增量。</li>
+<li>e3=D(CT)−D(CFIX)：在已有FIX的情况下再加入其余头V历史的条件增量。</li>
+<li>e4=D(TT)−D(CT)：CT到TT的剩余历史转换；具体哪些卷积驱动/历史变量改变，须用旧合同和运行配置列明，不能凭字母称“纯Q机制”。</li>
+</ul>
+<p>有精确伸缩恒等式：<code>δ_native=e1+e2+e3+e4</code>。</p>
+<p>每格同时保留 D、固定候选差F、身份项A/B、停止/非停止赢家ID、首步选择；对每一条边用v1的 <code>ΔD=ΔF+ΔA−ΔB</code>，定位的是沿本链出现的竞争变化，不是定位内部机制。</p>
+<p><strong>两项必须写清的边界：</strong></p>
+<ol>
+<li>链顺序固定来自已有实验，不为结果换序，不新跑排列。分段值依赖背景和顺序，不是唯一因果份额，不将“四段加起来等于原生”当科学发现。</li>
+<li>e3不等于B3的负交互。若用同一读数D及CREST格，则 <code>R_D=D(CREST)−D(CC)</code>，<code>I_D=D(CT)−D(CFIX)−D(CREST)+D(CC)</code>，因此 <code>e3=R_D+I_D</code>。旧B3主要停止cz读数上的交互数值不能直接移植为D的交互。本轮不为此再启动交互研究，只纠正标签。</li>
+</ol>
+<p>主表列出e1–e4的有符号值、总变化、端点D及赢家，另列 <code>|e_i|/Σ|e_j|</code> 作为绝对变化集中度（分母≤1e−6则不可判）。不把绝对集中度称原生效应份额；取消“FIX占原生变化百分之几”作为主要结果，净变化可能被抵消而接近零。若描述最大段，逐事实报告，并明确最大段不等于最初产生作用的模块。</p>
+<p>v1的δ_FIX与δ_native同向/幅度分档降为辅助表，不能单独决定分支存废。原生变化始终为主终点；分段表用于解释两者为什么可能不接近。</p>
+<h5 id="3-b4">3. B4作为辅助分支，先核对跨运行接头</h5>
+<p>B4的CFIX→K/M_nat/M_rand继续保留，与同输入/方向的B3链条并列。接入前逐条比对B3/B4的C_native、T_native、CC、CFIX全logits哈希、prompt/token身份、校准、评分位置和配置。</p>
+<p>B4报告已声称这些重放逐位一致；本轮仍将实际哈希比对写成程序验收。B3 TT=T_native亦需逐条验收，不只凭一个样例。若某接头失败：B3原生链可独立报告，B4辅助分支标不可接入；不得用B4值填补B3链缺口，也不重新调用模型。</p>
+<p>原生链缺CT/TT时不能宣称链完整；只报告可验证原生端点与缺失列表，不依赖缺格分类“哪段主导”。</p>
+<h5 id="4_1">4. 已核对与尚待核对的资产边界</h5>
+<p>本次只读核对固定提交 c9ab385 中：</p>
+<ul>
+<li>B3正式P01-f0记录确有C_native、T_native、N:TT、N:CC、N:CFIX、N:CT、N:CREST等格；其gates写明TT=T_native逐位一致。不是本轮独立验证全部输入的结果。</li>
+<li>B4正式记录包含全词表计算后的D、停止赢家/非停止赢家ID、s44/s46和干净候选a的原始logit、词表均值；回执有records与tensor哈希。</li>
+<li><code>experiments/cache-formation-readout-bridge-v1-2026-10-31/bridge.py</code> 的score函数有形成期hook不应残留的断言（该提交第293行），在独立缓存副本上评分。源码约束支持“评分不再直接插针”；还需由B3/B4固定依赖哈希及运行receipt确认实际使用此路径。断言计数本身不能替代全部调用路径/注入身份核验。</li>
+</ul>
+<p>确认实际运行满足该路径后，身份表应明确：此处T_native是形成期干预留下历史状态后的原生评分，评分步不再施加形成期针。它不等于从未干预，也不自动等于自由生成撤针实验。若执行证据不支持，不用“已核实”覆盖此缺口。</p>
+<h5 id="5-git">5. 主分析用Git记录，中位数列才需全词表张量</h5>
+<p>优先读取B3/B4正式JSON及receipts并核哈希，不重复读取/下载完整内部张量。逐格验证字段能否精确构造v1读数：</p>
+<ul>
+<li>s0从C_native的stop_winner取得，q0从C_native的nonstop_winner取得，并检查q0与记录a_token相同；s0须在存有原始logit的s44/s46中。</li>
+<li>用两个已记录停止logit求stop_max；固定候选差F由s0与a的原始值计算；A=stop_max−z(s0)；B=stop_max−D−z(q0)。身份ID直接用既有字段。跨格词表均值提供均值参照分解。</li>
+<li>这是对已有全词表评分摘要的精确重组；B由D反推，所以该恒等式闭合仅是实现验收，不能冒充独立验证原始max。用记录的stop_advantage/readout.D/argmax一致性作交叉检查，并注明共同来源。</li>
+<li>若停止集合有未存原始logit的其他ID、q0≠a_token、缺字段或身份不一致，不擅自用top-5补齐：按manifest读取对应已存全logits；若不可得，该单元相应读数不可判。对核心缺失单元不静默删除。</li>
+<li>中位数Δlogit参照依赖全词表张量：单列为辅助敏感性列。张量不可用时均值参照仍可描述，但报告“未检验跨参照稳定性”，不写参照稳定或单侧主导。需要重新访问张量时仍按v1资源上限，不进行模型运行。</li>
+</ul>
+<p>输入数、方向和去重规则不变。所有字段/文件来源、缺失和采用哪条读取路径逐项记manifest。保留v1的合成测试，增加接头哈希不一致、摘要可重建/不能重建、e3≠交互、链大项互相抵消及小净变化用比例会误导的测试。</p>
+<h5 id="6_1">6. 修订后的判断出口</h5>
+<ul>
+<li>e1在多输入上占据较多绝对变化：说明原生竞争变化在进入本链CC组合背景时已出现较大部分。不能单凭这一复合转换归因于“深层状态”一个变量；应先列清其同时改变的入口/状态，不自动去拆深层。撤回“δ_FIX不接近δ_native所以45头没有对应关系”的判法。</li>
+<li>e2较大且与总变化同向、后续段有抵消：说明FIX条件增量可能被其他转换抵消；保留该条件结果，不称原生必要性，不凭占比启动实验。</li>
+<li>后段或赢家替换较大：报告这条链上的条件转换及身份变化；不称信息丢失或把最后出现的变化命名为起源。</li>
+<li>多段均大、方向混合或不同情景不同：报告分布式/条件差异，不强制挑一个模块作为下一靶点。</li>
+<li>接头或资产失败：按§3–5限定可报告对象，不能将工程缺失判成科学阴性。</li>
+</ul>
+<p>本轮的交付是“一张能把原生端点、条件增量与B4分支接起来的证据表”。只有读数形成了可被后续操作推翻的具体预测，才另立下一实验；否则结束该记录分析，不继续增加分段、反向顺序或候选搜索。</p>
+<h5 id="7-v1">7. 自查与对抗复查（替代v1相关判定）</h5>
+<p>依据 <code>experiment-design-self-check.zh-CN.md</code> v1。成本不增加：零GPU/模型；1 CPU核小时、8 GiB内存、100 MiB新增产物上限。只提交计划，代码/数据运行未执行。</p>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th>判定与理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C01</td>
+<td>通过：解释原生竞争与历史条件转换，主线未变。</td>
+</tr>
+<tr>
+<td>C02</td>
+<td>通过：修复不同起点比较的识别缺口，能辨别原生变化在FIX之前已出现的情况。</td>
+</tr>
+<tr>
+<td>C03</td>
+<td>通过：§4区分源码断言、样例记录、作者验收和未独立复算。</td>
+</tr>
+<tr>
+<td>C04</td>
+<td>通过：§6允许抵消、分布式与不一致，不预设FIX承重。</td>
+</tr>
+<tr>
+<td>C05</td>
+<td>通过：固定旧链，无新操作；评分期身份作为运行证据核查项。</td>
+</tr>
+<tr>
+<td>C06</td>
+<td>通过：§2不把入口/深层状态复合转换称单独路径；历史响应保留。</td>
+</tr>
+<tr>
+<td>C07</td>
+<td>通过：混合背景/顺序依赖明确，精确伸缩不消除耦合。</td>
+</tr>
+<tr>
+<td>C08</td>
+<td>通过：禁止中介份额、e3等于交互及首步等于事实丢失。</td>
+</tr>
+<tr>
+<td>C09</td>
+<td>通过：逐段符号/身份可区分先已有变化、FIX增量、后续抵消，而不强制唯一机制。</td>
+</tr>
+<tr>
+<td>C10</td>
+<td>通过：沿用D/F/身份分解，均值与中位数作用、不可用列分开。</td>
+</tr>
+<tr>
+<td>C11</td>
+<td>通过：接头、字段缺失与科学条件差异分开；不以恒等式通过证明科学假设。</td>
+</tr>
+<tr>
+<td>C12</td>
+<td>通过：主分析复用JSON，仅必要辅助列读张量，不增加评分。</td>
+</tr>
+<tr>
+<td>C13</td>
+<td>通过：同次B3主链、B4哈希接头、正式去重、已见数据探索身份明确。</td>
+</tr>
+<tr>
+<td>C14</td>
+<td>通过：§6取消直接幅度不接近即否定外推，也不以最大段自动启动定位。</td>
+</tr>
+</tbody>
+</table>
+<p>历史错误E01–E26沿用v1逐项覆盖，本版重点重查：E04/E19（伸缩恒等式不是发现）、E05/E07/E08/E13/E14/E15/E26（组合背景与供体/原生路径不混用）、E09/E20（条件增量不等于交互或独立机制）、E17（分账不撤销历史）、E18（大复合段不等于其中一个变量解释全部）、E22/E23（同源摘要闭合不是独立复现）、E25（不新增排列矩阵）。其余与v1相同，不新增操作风险。</p>
+<p>反方复查：
+1. 四段必然闭合是否空实验？恒等式只验收；增量在实际各段大小、符号、赢家、跨情景分布及与B4操作对应，必须报告而非只展示闭合。
+2. 任意顺序都能分账，能否归因？不能。本顺序固定且受已有格约束，只给条件转换，不提供唯一分配。
+3. e1大是否意味着深层状态机制？不能。e1为复合转换，出口明确禁止单变量命名。
+4. e3负是否意味着其余头抑制？不能。e3含主效应与交互，而且D不同于旧停止cz读数。
+5. 摘要恒等式闭合是否证明原始张量正确？不能。哈希/来源和历史验收分别列出，必要时才读已存张量。
+6. 中位数列缺失是否允许宣称单侧解释？不允许。均值参照只作该参照下描述。</p>
+<p>最终：修订后设计逻辑自查通过（非独立评审）；没有运行分析、没有新科学结果。旧v1保留，但本版明确覆盖上述主表和出口。</p>
+<hr />
+<h3 id="3nfc-01-b4-r01">原件 3：NFC-01（原生首步竞争：逐段链条与 B4 分支）合同 r01</h3>
+<p>原路径：<code>experiments/cache-native-first-token-competition-v1-2026-11-02/CONTRACT.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-native-first-token-competition-v1-2026-11-02/CONTRACT.zh-CN.md">固定提交原文</a> · <a href="../library/b856eb0987e54e08.html">单独阅读副本</a>；SHA-256：<code>b856eb0987e54e0874ff22c37325a12a7c3a363fa39e44887e36397af71b815b</code>。</p>
+<hr />
+<h4 id="nfc-01-b4-r01">NFC-01（原生首步竞争：逐段链条与 B4 分支）合同 r01</h4>
+<p>日期：2026-11-02。设计：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-native-first-token-competition-plan-v1-2026-11-02.zh-CN.md">计划 v1</a> + <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-native-first-token-competition-plan-v2-2026-11-02.zh-CN.md">v2</a>（v2 覆盖 v1 的主资产排序、主对应尺度与出口）。授权：用户 2026-11-02「如果你觉得OK的话，直接写合同，写代码，测试，然后上卡直接跑」。<strong>零模型调用、零 GPU</strong>；已见数据上的探索性再分析。</p>
+<h5 id="1_2">1. 数据与接头</h5>
+<p>B3 正式运行（f2ad7d8）与 B4 正式运行（c9ab385）的 records，逐个按 receipt 核对哈希。12 输入 × 4 方向（48 个方向×输入配对，不是独立样本）。闸门（任一不过即停止，记合同执行失败）：B3 的 N:TT 与 T_native logits 哈希逐条相同；B4 的 C_native、T_native、CC、CFIX 与 B3 的 C_native、T_native、N:CC、N:CFIX 逐条相同；B3/B4 的 a_token 相同，且等于 C_native 的非停止赢家；C_native 的停止赢家属于 S = {248044, 248046}。</p>
+<p>评分身份：评分函数断言评分时不得残留任何形成期 hook（bridge.py 第293行），B3/B4 都经由此函数评分，所以 T_native 是“形成窗口注入后留下的历史状态 + 干净评分步”。</p>
+<h5 id="2-plan-v1-3">2. 读数（plan v1 §3）</h5>
+<p>每格从记录精确重组：D = max_S z − max_{V∖S} z（readout.D，全词表），s0、q0 取自 C_native；F = z(s0) − z(q0)，A = max_S z − z(s0)，B = max_{V∖S} z − z(q0)，D = F + A − B。交叉检查：|D − 记录的 stop_advantage| ≤ 1e-6；D 的符号与首步是否停止一致（D=0 单列平局）。全词表张量用于：核对存储的 logits 与记录一致（s44/s46/a 逐值相等，D 误差 ≤1e-6），以及中位数参照列。</p>
+<p>每条边 u→v：ΔD、ΔF、ΔA、ΔB；ΔF 的两侧拆分 S_b = Δz(s0) − b、Q_b = −(Δz(q0) − b)，b 取词表均值差或 Δz 的中位数；均值列来自记录，中位数列来自张量。只描述两种参照下符号是否一致，不给“哪侧主导”的科学标签。</p>
+<h5 id="3-plan-v2-2">3. 主表：逐段链（plan v2 §2）</h5>
+<p>C_native → N:CC → N:CFIX → N:CT → N:TT（= T_native）：e1..e4 与 δ_native = e1+e2+e3+e4（恒等式只作实现验收）。逐输入报告各段的有符号值、端点 D、赢家与首步状态、|e_i|/Σ|e_j|（分母 ≤1e-6 不可判）、最大绝对段、首步翻转所在段、非停止赢家改变所在段。e3 用 CREST 格写成 R_D + I_D，<strong>不称负交互</strong>。固定顺序，结果是条件分账，不是中介份额。</p>
+<p>辅助：δ_FIX = e2 与 δ_native 的 v1 分档（|δ|&lt;0.5 为小；同向时 |差| ≤ max(0.25, 0.25|δ_native|) 为接近）；B4 分支 CFIX→K、M_nat、M_rand 的 ΔD/ΔF/ΔA/ΔB。</p>
+<p>汇总：f0/f1 同标签才计情景；≥5/6 情景为方向标签；≥3/4 方向为跨方向标签，否则为条件依赖。</p>
+<h5 id="4_2">4. 预注册预测（推测档，运行前写入）</h5>
+<p>P1：最大绝对段的跨方向标签为 e1（C_native→CC）。依据：CFM-E2 中第13–31层缓存可承载 75–94% 的停止优势，而 e1 同时改变深层状态与入口。e1 大也不能单独归因于深层状态（它是复合转换）。</p>
+<h5 id="5-plan-v2-6">5. 出口（plan v2 §6）</h5>
+<p>e1 占多数 → 撤回“δ_FIX 不接近 δ_native 就否定对应关系”的判法，先列清 e1 同时改变的变量，不自动去拆深层；e2 大且同向、后段抵消 → 保留 FIX 条件结果，不称原生必要性；后段或赢家替换大 → 只报告条件转换与身份变化；多段混合或条件差异 → 报告分布式；接头或资产失败 → 限定可报告对象。只有读数形成可被后续操作推翻的具体预测，才另立下一个实验。</p>
+<h5 id="6_2">6. 资源与交付</h5>
+<p>CPU ≤1 核小时，内存 ≤8 GiB，新增产物 ≤100 MiB。<code>analysis/nfc-readouts-r01.json</code>、<code>REPORT.zh-CN.md</code>、freeze 与测试回执。</p>
+<hr />
+<h3 id="4nfc-01-b4">原件 4：NFC-01（原生首步竞争：逐段链条与 B4 分支）结果报告</h3>
+<p>原路径：<code>experiments/cache-native-first-token-competition-v1-2026-11-02/REPORT.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-native-first-token-competition-v1-2026-11-02/REPORT.zh-CN.md">固定提交原文</a> · <a href="../library/1902bd8accb81353.html">单独阅读副本</a>；SHA-256：<code>1902bd8accb8135393726bf48a9967775d6916831b983d185fad837cd517a596</code>。</p>
+<hr />
+<h4 id="nfc-01-b4">NFC-01（原生首步竞争：逐段链条与 B4 分支）结果报告</h4>
+<p>日期：2026-11-02。<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-native-first-token-competition-v1-2026-11-02/CONTRACT.zh-CN.md">合同 r01</a>；<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-native-first-token-competition-v1-2026-11-02/DECISIONS.zh-CN.md">决策 D1–D4</a>；计划 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-native-first-token-competition-plan-v1-2026-11-02.zh-CN.md">v1</a> + <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-native-first-token-competition-plan-v2-2026-11-02.zh-CN.md">v2</a>。代码 <code>9261f90</code>，freeze-r01 <code>c824bc57…5260</code>。零模型调用、零 GPU（CPU 12 秒）。已见数据上的探索性再分析；同一助手实现、运行与撰写。</p>
+<h5 id="1_3">1. 结论（不利与限制先说）</h5>
+<ol>
+<li><strong>固定45头那一段只承担原生竞争变化的三到四成；更大的一段在进入 N 背景时就已经发生。</strong> 原生 ΔD（停止最大 − 非停止最大，原始 logit）为 12.6–14.2。逐段均值：e1（C_native→N:CC）7.9–8.4，e2（固定45头的 V 历史）4.5–6.3，e3（其余头的 V 历史）−0.4 到 +0.5，e4（CC→TT 的剩余卷积历史）−0.2 到 +0.2。绝对集中度：e1 0.54–0.63，e2 0.33–0.43。预注册的 P1（最大段为 e1）成立：4/4 方向、每方向 6/6 情景。</li>
+<li><strong>e1 是复合转换，不能归因于单个变量。</strong> N:CC 相对 C_native 同时改变了深层（第13–31层）的递推状态 S、深层全注意力 KV，以及第13层入口残差 x_T（它携带了浅层在当前 token 上受到的影响）；卷积缓冲（q/k/v）仍是 C。本轮没有把 e1 拆开。</li>
+<li><strong>辅助对应表（v1 分档）24/24 判为“同向但幅度不同”</strong>：e2 约为原生变化的 35–45%。按 v2，这一条不再用来否定 45 头与原生的对应；它是因为 N:CC 已经吸收了 e1。</li>
+<li><strong>首步翻转在这条链上都发生在 e2，但这是顺序造成的。</strong> N:CC 的 D 仍为负（N4146：−5.8 到 −3.4；R0：−5.1 到 −3.4），也就是说，仅靠 e1 不足以翻转首步；再加上 FIX 的 V 历史后，D 越过 0（N4146 的 N:CFIX：0.4 到 1.4）。在 N4146、N1210、R1 中，12/12 的翻转都落在 e2；R0 原生几乎不停止（11/12 两端都不停止），它的 N:CFIX 也正好贴着零点（−0.4 到 0.3）。换一种顺序，翻转可能落在别的段，所以这只是这条链上的条件描述。</li>
+<li><strong>e3 ≈ 0 是两项大量相消</strong>：在 D 读数上，R_D（其余头单独）+2.7 到 +5.1，I_D（交互）−3.2 到 −4.6。不能把 e3 称为负交互。</li>
+</ol>
+<h5 id="2_2">2. 原生变化在两侧的构成（描述）</h5>
+<ul>
+<li>停止赢家始终是 248046（A = 0）。原生 ΔF（248046 对干净首词 q0 的差）为 18.4–19.9，其中 4.4–6.4 被另一个非停止词顶替 q0 成为新的最强竞争者吸收（ΔB），所以 ΔD 比 ΔF 小。</li>
+<li>以词表均值为参照：248046 相对上升 6.5–7.2，q0 相对下降 11.7–12.7；以中位数为参照符号相同（各段、原生均 12/12 一致；只有 R1 的 e4 是 9/12）。在两种参照下，<strong>干净首词被压低的幅度都大于停止词被抬高的幅度</strong>，但两侧都显著。这是相对位置的描述，不是“通路份额”，也不等于事实丢失。</li>
+<li>各段的构成：e1 几乎全部是 F（赢家不变）；e2 是 F 5.7–7.2，其中 0.6–2.0 由非停止赢家更替吸收；e3 是 F 3.1–5.0，但几乎全部被赢家更替吸收（B 2.8–5.1），所以对 D 的净作用约为 0。</li>
+</ul>
+<h5 id="3-b4-cfix">3. B4 分支（CFIX → 各臂，描述）</h5>
+<table>
+<thead>
+<tr>
+<th>方向</th>
+<th style="text-align: right;">ΔD K</th>
+<th style="text-align: right;">ΔD M_nat</th>
+<th style="text-align: right;">ΔD M_rand</th>
+<th style="text-align: right;">K 的 S_mean / Q_mean</th>
+<th style="text-align: right;">M_nat 的 S_mean / Q_mean</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>N4146</td>
+<td style="text-align: right;">−1.03</td>
+<td style="text-align: right;">−0.76</td>
+<td style="text-align: right;">+0.04</td>
+<td style="text-align: right;">−0.40 / −1.65</td>
+<td style="text-align: right;">−0.46 / −1.21</td>
+</tr>
+<tr>
+<td>N1210</td>
+<td style="text-align: right;">−0.51</td>
+<td style="text-align: right;">−0.11</td>
+<td style="text-align: right;">+0.10</td>
+<td style="text-align: right;">−0.20 / −1.61</td>
+<td style="text-align: right;">−0.05 / −1.38</td>
+</tr>
+<tr>
+<td>R0</td>
+<td style="text-align: right;">−0.59</td>
+<td style="text-align: right;">−0.52</td>
+<td style="text-align: right;">−0.07</td>
+<td style="text-align: right;">−0.10 / −1.36</td>
+<td style="text-align: right;">−0.15 / −1.11</td>
+</tr>
+<tr>
+<td>R1</td>
+<td style="text-align: right;">−1.29</td>
+<td style="text-align: right;">−1.12</td>
+<td style="text-align: right;">−0.04</td>
+<td style="text-align: right;">−0.36 / −1.33</td>
+<td style="text-align: right;">−0.32 / −1.05</td>
+</tr>
+</tbody>
+</table>
+<p>K 对竞争的影响主要在 q0 一侧（q0 相对恢复 1.3–1.7），停止一侧变化很小，与 B4 的停止侧结论一致。M_nat 产生了方向和大小都相近的变化，M_rand 几乎为零。和 B4 一样，K 与“跨输入移植的自然方向”在这个读数上分不开。</p>
+<h5 id="4_3">4. 执行</h5>
+<p>闸门全部通过：B3、B4 记录按 receipt 核对哈希；48/48 个 N:TT 与 T_native 逐位相同；B3/B4 接头（C_native、T_native、CC、CFIX）逐条相同；q0 = a_token；存储的全词表 logits 与记录逐值一致（D 误差 0）；D 与记录的 stop_advantage 一致（误差 0）；伸缩恒等式误差 0。有 12 个单元 D 恰好为 0（BF16 logits 在约 20 的量级上间隔 0.125，平局并不罕见），出现在 N:CFIX ×3、M_nat ×4、K ×2、T_native/N:TT ×1、N:CREST ×1。这些单元按记录的首步选择报告，不计入符号一致性检查。</p>
+<h5 id="5-5">5. 对课题的含义与出口（合同 §5）</h5>
+<ul>
+<li>按出口规则：撤回“δ_FIX 不接近 δ_native 就否定对应”的判法。<strong>原生首步变化在这条链上分成两块相当的部分</strong>：一块在进入 N 背景时发生（深层 S、深层 KV、入口 x_T 的复合，约 55–63%），一块是固定45头的 V 卷积历史（约 33–43%）。其余头的 V 历史和剩余卷积历史净作用约为零。</li>
+<li>这说明此前几轮在 N 背景里研究的 45 头机制，对应的是原生变化中真实存在、但不是最大的那一块。“稀疏干预为什么造成回答变化”这条机制链，现在缺的主要是 e1。</li>
+<li>下一步（未设计、未授权）：如果要继续，最有信息量的一步是把 e1 拆成三个变量（深层 S、深层 KV、入口 x_T），在原生背景附近做逐项替换，看哪一个承载了这约 8 logit。这需要重新形成缓存，要上 GPU，而且要先确认它能给出可被推翻的预测。之前的 CFM-COMBO 发现单步评分时深层效应主要在卷积缓冲、KV 小，可以作为先验；但那一轮的分解方式与这条链不同，不能直接搬用。</li>
+<li>答案侧：两种参照都显示，干净首词被压低的幅度大于停止词被抬高的幅度；K 与 M_nat 也主要作用在这一侧。答案侧值得单独立题，但必须先解决 M_nat 的混淆。</li>
+</ul>
+<h5 id="6_3">6. 可以说 / 不可以说</h5>
+<table>
+<thead>
+<tr>
+<th>可以说</th>
+<th>不可以说</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>沿 C_native→CC→CFIX→CT→TT，原生 ΔD 约 55–63% 在 e1，33–43% 在 e2，其余段净作用约为零</td>
+<td>45 头只解释三到四成的原生机制（这是固定顺序的条件分账，不是中介份额）</td>
+</tr>
+<tr>
+<td>e1 不足以单独翻转首步；在本链上翻转发生在 e2</td>
+<td>45 头是翻转的原因（顺序依赖）</td>
+</tr>
+<tr>
+<td>e1 是深层 S、深层 KV、入口 x_T 的复合转换</td>
+<td>e1 来自深层状态</td>
+</tr>
+<tr>
+<td>两种参照下，干净首词的相对下降都大于停止词的相对上升</td>
+<td>原生行为主要是事实丢失</td>
+</tr>
+<tr>
+<td>e3 ≈ 0 由 R_D 与 I_D 大量相消构成</td>
+<td>其余头的 V 历史无作用</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="5nfc-01">原件 5：NFC-01 决策日志</h3>
+<p>原路径：<code>experiments/cache-native-first-token-competition-v1-2026-11-02/DECISIONS.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-native-first-token-competition-v1-2026-11-02/DECISIONS.zh-CN.md">固定提交原文</a> · <a href="../library/af1496f5fa9847ab.html">单独阅读副本</a>；SHA-256：<code>af1496f5fa9847abbbb74b2bcd73391150602ddf69e54e0a7e59f399bfb9682a</code>。</p>
+<hr />
+<h4 id="nfc-01">NFC-01 决策日志</h4>
+<ul>
+<li><strong>D1 主读数直接从记录重组</strong>：readout 中已有全词表 D、s44/s46/a 的原始 logit、词表均值、两个赢家 ID 与首步是否停止，足以精确构造 D/F/A/B 与均值参照拆分；全词表张量只用于中位数参照与“存储 logits ↔ 记录”一致性核对。</li>
+<li><strong>D2 中位数</strong>：用 torch.quantile(0.5)（偶数个元素时取两个中间值的平均）。</li>
+<li><strong>D3 运行位置</strong>：B3/B4 张量只在服务器上，所以在服务器 CPU 上运行；不调用模型、不占 GPU。</li>
+<li><strong>D4 预注册 P1</strong>（运行前写入）：最大绝对段为 e1。</li>
+</ul>
+<hr />
+<h2 id="_2">时间、运行与停止收据索引</h2>
+<p>下面是所收集JSON的原有时间字段与状态，不把预计结束时间当实际完成时间。未列时间的文件仍有原件链接。完整JSON全部保存在原文归档，不能以此索引中的标量代替完整嵌套内容。</p>
+<table>
+<thead>
+<tr>
+<th>原件</th>
+<th>原记录状态/阶段</th>
+<th>原时间字段（原时区）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-native-first-token-competition-v1-2026-11-02/readiness/cpu-receipt-r01.json">readiness/cpu-receipt-r01.json</a></td>
+<td>{"status": "passed"}</td>
+<td>{}</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_3">全部原始资产入口</h2>
+<p>本目录在固定提交下共有11个跟踪文件，包含代码、原回答、失败、收据和压缩证据；文件数不是样本数。<a href="../assets/085-cache-native-first-token-competition-v1-2026-11-02.tsv">逐文件完整账本</a> · <a href="https://github.com/yuxiexiong/acupuncture/tree/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-native-first-token-competition-v1-2026-11-02">原目录</a>。未复制模型权重、环境或凭据。</p></main></html>

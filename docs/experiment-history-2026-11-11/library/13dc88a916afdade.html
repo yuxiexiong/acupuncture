@@ -1,0 +1,162 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>内部轨迹队列最终巡检：全部完成</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="_1">内部轨迹队列最终巡检：全部完成</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T1035.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T1035.zh-CN.md">固定提交原件</a>；SHA-256：<code>13dc88a916afdadeba04c1667b4b5f250151ed28985f6b407e055a37e54c04d5</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="_2">内部轨迹队列最终巡检：全部完成</h1>
+<p>核验时间：2026-10-28 10:36:04，北京时间。最后一段于 <strong>2026-10-28T09:53:15.525270+08:00</strong> 完成。</p>
+<p><strong>7,632/7,632条正式唯一记录，较上次新增227条；缺失0、额外0、重复0。</strong> A/B/C全部通过终验，所有正式和预检worker退出0，父进程已退出，两GPU已释放。每小时监控已通过应用工具删除（<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T1035.automation-closeout.json">删除确认</a>）。</p>
+<table>
+<thead>
+<tr>
+<th>模型</th>
+<th>注入覆盖</th>
+<th style="text-align: right;">正式唯一记录</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Qwen3.5-2B</td>
+<td>L0–L5</td>
+<td style="text-align: right;">920</td>
+</tr>
+<tr>
+<td>Qwen3.5-4B</td>
+<td>L0–L31</td>
+<td style="text-align: right;">4,872</td>
+</tr>
+<tr>
+<td>Qwen3.5-9B</td>
+<td>L0–L5</td>
+<td style="text-align: right;">920</td>
+</tr>
+<tr>
+<td>Llama-3.1-8B-Instruct</td>
+<td>L0–L5</td>
+<td style="text-align: right;">920</td>
+</tr>
+<tr>
+<td>合计</td>
+<td>各记录观察模型全部层</td>
+<td style="text-align: right;"><strong>7,632</strong></td>
+</tr>
+</tbody>
+</table>
+<h2 id="_3">阶段与验收</h2>
+<ul>
+<li>A完成2,152条，结束时间2026-10-28T04:22:55.337132+08:00。</li>
+<li>B完成4,560条，结束时间2026-10-28T09:08:35.177131+08:00；其中前六层补齐608条，4B L6–L31共3,952条。</li>
+<li>C完成920条（464/456两片），结束时间2026-10-28T09:53:15.525270+08:00。自身14案例/38流GPU预检通过后才启动正式采集；预检和B的16条校准引用不计入正式分母。</li>
+<li>与三份本地冻结来源清单逐ID对齐；全部记录JSON哈希和验收标志、身份/授权、元数据/小资产哈希、存档权重前后哈希一致、hook清理、收据哈希与退出码核对通过。</li>
+<li>本次不重复下载全部轨迹，不重hash模型或解压所有trace。冻结worker及队列的终验已经执行完整轨迹检查；本次核对其验收证据与现存记录。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>worker</th>
+<th style="text-align: right;">完成/计划</th>
+<th>状态</th>
+<th style="text-align: right;">exit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A survey/2b-shard-0</td>
+<td style="text-align: right;">312/312</td>
+<td>completed</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>A survey/2b-shard-1</td>
+<td style="text-align: right;">304/304</td>
+<td>completed</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>A survey/4b-shard-0</td>
+<td style="text-align: right;">312/312</td>
+<td>completed</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>A survey/4b-shard-1</td>
+<td style="text-align: right;">304/304</td>
+<td>completed</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>A survey/9b-shard-0</td>
+<td style="text-align: right;">464/464</td>
+<td>completed</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>A survey/9b-shard-1</td>
+<td style="text-align: right;">456/456</td>
+<td>completed</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>B 4b-full/survey/4b-shard-0</td>
+<td style="text-align: right;">1976/1976</td>
+<td>completed</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>B 4b-full/survey/4b-shard-1</td>
+<td style="text-align: right;">1976/1976</td>
+<td>completed</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>B six-layer/survey/2b-shard-0</td>
+<td style="text-align: right;">152/152</td>
+<td>completed</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>B six-layer/survey/2b-shard-1</td>
+<td style="text-align: right;">152/152</td>
+<td>completed</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>B six-layer/survey/4b-shard-0</td>
+<td style="text-align: right;">152/152</td>
+<td>completed</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>B six-layer/survey/4b-shard-1</td>
+<td style="text-align: right;">152/152</td>
+<td>completed</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>C survey/llama31-8b-instruct-shard-0</td>
+<td style="text-align: right;">464/464</td>
+<td>completed</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>C survey/llama31-8b-instruct-shard-1</td>
+<td style="text-align: right;">456/456</td>
+<td>completed</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+<p>A、B前六层、B全层、C和整体剩余ETA均为0。实际09:53结束，略早于上轮09:55–10:02外推区间。</p>
+<h2 id="_4">磁盘与归档</h2>
+<ul>
+<li>工作盘：/dev/vdb       2704472449024 2561102835712 132615417856  96% /workspace；可用123.51GiB，较上轮-0.116GiB。</li>
+<li>/data/models和/tmp共用系统分区，只计一次：/dev/vda2      528175951872 454702616576 51911704576  90% /；可用48.35GiB，变化-0.0007GiB。</li>
+<li>本地归档盘：/dev/disk3s5  1948455240 1000000000 920000000    53% 3407826 9211177280    0%   /System/Volumes/Data；可用877.38GiB，变化+0.000GiB。</li>
+<li>仅统计三运行目录：{"A": 816656611, "B": 1383560016, "C": 525923777}字节；本轮增长{"A": 0, "B": 0, "C": 123074410}字节。合计2.54GiB。</li>
+<li>剩余采集产物需求0；后续本地归档按两份占用预留5.08GiB。当前磁盘安全，无缺口，没有删除缓存或结果。</li>
+</ul>
+<h2 id="_5">当前服务器负载</h2>
+<p>44逻辑核，CPU忙碌0.023%；load1/5/15分钟=[0.06, 0.04, 0.11]；可用RAM466.3GiB；Swap总量/使用均0。</p>
+<p>两张H20利用率均0%，显存各3MiB/97,871MiB，温度32℃/30℃；无GPU计算进程。A/B/C父进程和worker均已退出，不再占用显存。</p>
+<h2 id="_6">保存范围</h2>
+<p>本报告确认服务器内部轨迹采集与运行验收完成。大型结果保留于三个远端execution-r01目录；本轮只保存小型监控证据，没有执行全量本地归档或三维接图。</p>
+<p><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T1035.remote.json">只读快照</a> · <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T1035.summary.json">最终计数与验收摘要</a></p></main></html>

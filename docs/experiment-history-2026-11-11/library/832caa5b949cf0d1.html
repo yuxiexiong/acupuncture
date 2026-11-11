@@ -1,0 +1,361 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CFM-S2 结果报告：同起点与逐步写入、旧状态处理检验</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="cfm-s2">CFM-S2 结果报告：同起点与逐步写入、旧状态处理检验</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-intervention-chain-analysis-v1-2026-10-31/source/experiments/cache-formation-mechanism-s2-formation-test-v3-2026-10-31/REPORT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-intervention-chain-analysis-v1-2026-10-31/source/experiments/cache-formation-mechanism-s2-formation-test-v3-2026-10-31/REPORT.zh-CN.md">固定提交原件</a>；SHA-256：<code>832caa5b949cf0d11cbccdd92e1245e662b68f80ccf57a8e70486d01440fc334</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="cfm-s2_1">CFM-S2 结果报告：同起点与逐步写入、旧状态处理检验</h1>
+<p>日期：2026-10-31（UTC）。计划 <code>CFM-S2-v3-20261031</code>；合同 r01；冻结 freeze-r02（提交 18cc5b6，sha <code>ad542329…</code>）；运行 preflight-r02、formal-r01；分析 <code>analysis/formation-r01.json</code>。</p>
+<h2 id="0">0. 先说不利的部分</h2>
+<ol>
+<li><strong>计划 §6 的排除表区分度很低：每个锚点、每个配对的 36 个格子，所有待检验解释全部被反驳</strong>（E1–E5 均为 36/36，没有"未分辨"格，也没有 E6 格）。这在设计上几乎是注定的：这些解释都是"某项严格相同"，而 01、11 臂在窗口内直接开着针，驱动量当然会变。表本身成立，但它只排除了严格相等的解释，<strong>本阶段真正的信息在第 3–5 节的幅度与方向上</strong>，那些都是描述，不是判决。</li>
+<li><strong>S1 报告登记的次要预测 r10 &lt; 0.5，在 L0 的 6 个情景里全部失败</strong>（0.57–0.64），L12 有 5/6 成立（VAR01 为 0.54，不成立）。这是科学失败，照实记录。"L0 的 r10 高于 L12" 6/6 成立。</li>
+<li><strong>第一次 preflight（r01）是合同执行失败</strong>：收尾的规模检查有代码错误，KeyError 崩溃。已修正，补测试后重新冻结为 r02；判据和设计没改（决策日志第 8 条）。</li>
+<li>本阶段不识别写入与处理各自的独立因果贡献、原发原因、跨层路径，也不识别对回答的必要性（计划 §6 末段）。</li>
+</ol>
+<h2 id="1">1. 工程验收（全部通过）</h2>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>preflight-r02（VAR01-f0 × 00 / L0-11 / L12-11）</td>
+<td>复现 II-B、与 S1 张量逐位相同、惰性、捕获一致、Mτ 往返、重建全部通过；33 s</td>
+</tr>
+<tr>
+<td>formal-r01（84 条，双卡各 1 worker）</td>
+<td>84/84 通过；00 与 11 共 36 条对 II-B 逐值复现，并与 S1 张量逐位相同（11 走掩码路径，等价性在真实数据上成立）；124 s</td>
+</tr>
+<tr>
+<td>同起点认证</td>
+<td>48/48 配对（01/00、11/10）在位置 0..b 的全部驱动量与边界残差逐位相同 → 离线 S_b 完全相同，ĀΔS_b = 0</td>
+</tr>
+<tr>
+<td>针位审计</td>
+<td>每次掩码写入的位置数等于掩码；10 臂只在 0..b，01 臂只在 b+1..n−2</td>
+</tr>
+<tr>
+<td>Mτ</td>
+<td>84 条完整缓存全部保存，重载后清单、管理状态、首步 logits 逐字节相同</td>
+</tr>
+<tr>
+<td>误差界有效性</td>
+<td>每个暴露状态的实测重建误差都在先验界之内，最多只占界的 1.25%（中位 0.25%）</td>
+</tr>
+<tr>
+<td>恒等式</td>
+<td>S=H+N、ΔH/ΔN 递推、u_H+u_N=ΔA·S̄、D+W+R、Δo 两项：相对残差 ≤ 3.1×10⁻¹⁴</td>
+</tr>
+</tbody>
+</table>
+<p>可分辨的余量很大：第一步 u_B 至少是自身误差界的 7.8×10⁴ 倍，u_H 至少 6.4×10² 倍，远超 10× 门槛。</p>
+<h2 id="2-6">2. 排除表（计划 §6）</h2>
+<table>
+<thead>
+<tr>
+<th>解释</th>
+<th>L0：01v00 / 11v10 / 10v00</th>
+<th>L12：01v00 / 11v10 / 10v00</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>E1 第一步只有加性写入不同</td>
+<td>反驳 36 / 36 / —</td>
+<td>反驳 36 / 36 / —</td>
+</tr>
+<tr>
+<td>E2 共同旧来源始终相同处理</td>
+<td>反驳 36 / 36 / —</td>
+<td>反驳 36 / 36 / —</td>
+</tr>
+<tr>
+<td>E3 B 始终相同</td>
+<td>反驳 36 / 36 / 36</td>
+<td>反驳 36 / 36 / 36</td>
+</tr>
+<tr>
+<td>E4 后段写入差异必须有后段针</td>
+<td>— / — / 反驳 36</td>
+<td>— / — / 反驳 36</td>
+</tr>
+<tr>
+<td>E5 只有相同 A/B 下的旧差异传递</td>
+<td>反驳 36 / 36 / 36</td>
+<td>反驳 36 / 36 / 36</td>
+</tr>
+<tr>
+<td>同起点格类别</td>
+<td>写入与旧来源处理都可分辨 36 / 36</td>
+<td>同左 36 / 36</td>
+</tr>
+<tr>
+<td>u_N（对 b 后写入来源的处理）可分辨</td>
+<td>36 / 36</td>
+<td>36 / 36</td>
+</tr>
+<tr>
+<td>零空间情形（ΔA 可分辨、ΔA·S_b 未分辨）</td>
+<td>0</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+<p>格 = 锚点 × 配对 × 输入（12）× 层（3）。E4 的反驳在 10v00 里覆盖 question、instruction、tail、末提示和候选全部位置。</p>
+<h2 id="3-b1">3. 共同起点后的第一步（b+1）</h2>
+<table>
+<thead>
+<tr>
+<th>配对</th>
+<th>u_H / u_B（范围，中位）</th>
+<th>cos(u_B, u_H)（中位）</th>
+<th>u_B / ‖S_b‖（中位）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>L0 01v00</td>
+<td>0.30–0.69（0.46）</td>
+<td>−0.44</td>
+<td>0.16</td>
+</tr>
+<tr>
+<td>L0 11v10</td>
+<td>0.44–0.91（0.60）</td>
+<td>−0.52</td>
+<td>0.30</td>
+</tr>
+<tr>
+<td>L12 01v00</td>
+<td>0.40–0.78（0.50）</td>
+<td>−0.54</td>
+<td>0.21</td>
+</tr>
+<tr>
+<td>L12 11v10</td>
+<td>0.34–0.70（0.44）</td>
+<td>−0.58</td>
+<td>0.24</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>从<strong>同一份旧状态</strong>出发，第一步就同时出现写入差异和处理差异。处理项约为写入项的一半，方向与写入<strong>部分相反</strong>（余弦 −0.24 到 −0.73）。</li>
+<li>S1 观察到的写入与处理反向抵消，因此<strong>不是两条轨迹历史不同造成的</strong>：同起点时它在第一步就出现（推导：delta rule 修正项 −αβk kᵀS 与写入项 βk vᵀ 共享 β、k，同一次更新内部即可部分抵消；这里是在共同 S_b 上实测到的）。</li>
+<li>同起点格里没有出现零空间情形：只要算子变了，它对这份旧状态的作用就可分辨。</li>
+</ul>
+<h2 id="4-t_l">4. t_L 处的状态与读出由什么构成</h2>
+<p>对 ΔS 的投影份额与读出份额（两事实 × 三层 × 六情景合并）：</p>
+<table>
+<thead>
+<tr>
+<th>配对</th>
+<th>ΔH 份额</th>
+<th>ΔN 份额</th>
+<th>读出：ΔHᵀq̄ / ΔNᵀq̄ / 查询项</th>
+<th>平均 ‖ΔH‖ / ‖ΔN‖ / ‖ΔS‖</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>L0 01v00</td>
+<td>−0.01</td>
+<td>1.01</td>
+<td>−0.09 / 0.69 / 0.40</td>
+<td>1.09 / 3.15 / 2.91</td>
+</tr>
+<tr>
+<td>L0 11v10</td>
+<td>−0.03</td>
+<td>1.03</td>
+<td>−0.15 / 0.93 / 0.22</td>
+<td>1.06 / 3.16 / 2.89</td>
+</tr>
+<tr>
+<td>L0 10v00（不同起点）</td>
+<td>0.12</td>
+<td>0.88</td>
+<td>0.05 / 0.56 / 0.39</td>
+<td>0.92 / 1.91 / 1.92</td>
+</tr>
+<tr>
+<td>L12 01v00</td>
+<td>−0.00</td>
+<td>1.00</td>
+<td>−0.04 / 0.91 / 0.13</td>
+<td>0.64 / 2.52 / 2.42</td>
+</tr>
+<tr>
+<td>L12 11v10</td>
+<td>−0.01</td>
+<td>1.01</td>
+<td>−0.01 / 0.90 / 0.11</td>
+<td>0.62 / 2.53 / 2.42</td>
+</tr>
+<tr>
+<td>L12 10v00（不同起点）</td>
+<td>0.43</td>
+<td>0.57</td>
+<td>0.21 / 0.64 / 0.15</td>
+<td>0.73 / 0.83 / 1.10</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>共同旧来源确实被不同地处理了</strong>：‖ΔH‖ 在 t_L 达到 0.6–1.1，不小（E2 被反驳）。但它与总差异 ΔS <strong>几乎正交</strong>（份额 −0.03 至 0），在读出上还略为负（−0.15 至 −0.01）。t_L 的状态差异和读出差异几乎全部来自 b 之后写入的来源 N。</li>
+<li>10v00（不同起点，ΔH 含早段针直接留下的差异）：L12 有 43% 的 ΔS 来自 b 时已有的来源，L0 只有 12%。L12 的早段针差异更多以"被带下来的旧差异"形式存在；L0 的早段针在撤针后靠新的写入差异维持。</li>
+<li>查询项在 L0 占读出差的 22–40%，在 L12 只占 11–15%。</li>
+</ul>
+<h2 id="5-10v00-5">5. 早段撤针后的写入差异（10v00，计划 §5）</h2>
+<p>每个位置的平均 ‖u_B‖，与后段直接加针的 01v00 对照：</p>
+<table>
+<thead>
+<tr>
+<th>区段</th>
+<th>L0 10v00</th>
+<th>L0 01v00</th>
+<th>L12 10v00</th>
+<th>L12 01v00</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>question</td>
+<td>1.04</td>
+<td>1.13</td>
+<td>0.40</td>
+<td>0.83</td>
+</tr>
+<tr>
+<td>instruction</td>
+<td>0.50</td>
+<td>1.31</td>
+<td>0.14</td>
+<td>0.84</td>
+</tr>
+<tr>
+<td>tail</td>
+<td>0.74</td>
+<td>1.25</td>
+<td>0.24</td>
+<td>0.93</td>
+</tr>
+<tr>
+<td>末提示（无针）</td>
+<td>0.76</td>
+<td>1.62</td>
+<td>0.18</td>
+<td>1.40</td>
+</tr>
+<tr>
+<td>候选（无针）</td>
+<td>1.11</td>
+<td>1.37</td>
+<td>0.34</td>
+<td>0.64</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>两个锚点在早段撤针后，后段每个位置都仍有可分辨的写入差异（E4 被反驳）。</li>
+<li><strong>幅度差别大</strong>：L0 的早段针在撤针后的写入差异是后段直接加针时的 38–92%，L12 只有 13–53%。这与 S1 观察到的"L0 撤针后不衰减、L12 衰减"一致，现在在受控时序下得到了更直接的对照（描述，6 情景）。它不识别差异经由哪类上游缓存维持，也不证明目标层局部自反馈（计划 §5）。</li>
+</ul>
+<h2 id="6-s1-v2">6. 次要时序预测（S1 登记、计划 v2 阈值不改）</h2>
+<table>
+<thead>
+<tr>
+<th>情景</th>
+<th>L0：r10 / a01 / e01</th>
+<th>L12：r10 / a01 / e01</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VAR01</td>
+<td>0.64 / 0.65 / 0.71</td>
+<td>0.54 / 0.81 / 0.36</td>
+</tr>
+<tr>
+<td>VAR02</td>
+<td>0.63 / 0.68 / 0.72</td>
+<td>0.39 / 0.82 / 0.34</td>
+</tr>
+<tr>
+<td>VRD01</td>
+<td>0.61 / 0.69 / 0.70</td>
+<td>0.36 / 0.84 / 0.33</td>
+</tr>
+<tr>
+<td>VRD02</td>
+<td>0.57 / 0.68 / 0.70</td>
+<td>0.44 / 0.84 / 0.33</td>
+</tr>
+<tr>
+<td>VRL01</td>
+<td>0.59 / 0.66 / 0.70</td>
+<td>0.36 / 0.84 / 0.33</td>
+</tr>
+<tr>
+<td>VRL02</td>
+<td>0.59 / 0.73 / 0.65</td>
+<td>0.32 / 0.89 / 0.28</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>r10 &lt; 0.5</strong>：L0 0/6（<strong>预测失败</strong>），L12 5/6（VAR01 失败）。</li>
+<li><strong>01 近似重现 11</strong>（a01 ≥ 0.5 且 e01 ≤ 0.5）：L0 0/6（方向大体一致，a01 约 0.7，但差距大，e01 约 0.7），L12 6/6。</li>
+<li><strong>L0 的 r10 高于 L12</strong>：6/6 成立。</li>
+<li>读法：L12 的 t_L 状态差异主要由后段针决定（01 近似重现 11）；L0 的状态差异 E、L 两段都有分量，单开一段都不够重现。S1 报告的预测 1（"10 臂 &lt; 一半"）对 L0 不成立，预测 2（L0 的 10 臂占比更高）成立。</li>
+</ul>
+<h2 id="7-s3">7. 行为端点（描述；行为检验属于 S3）</h2>
+<table>
+<thead>
+<tr>
+<th>臂</th>
+<th>L0：首步 EOS / D 范围 / S_fact 范围</th>
+<th>L12：首步 EOS / D 范围 / S_fact 范围</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>00</td>
+<td>0/12 / −21.7 ~ −14.9 / 5.3–24.9</td>
+<td>同左</td>
+</tr>
+<tr>
+<td>10（只开 E）</td>
+<td><strong>0/12</strong> / −16.5 ~ −14.8 / <strong>−0.1–5.3</strong></td>
+<td>0/12 / −20.8 ~ −13.3 / 1.9–19.0</td>
+</tr>
+<tr>
+<td>01（只开 L）</td>
+<td><strong>10/12</strong> / −1.0 ~ 1.3 / 0.0–10.9</td>
+<td>0/12 / −11.8 ~ −9.0 / 0.8–18.5</td>
+</tr>
+<tr>
+<td>11</td>
+<td>12/12 / 0.9–1.7 / −0.3–0.6</td>
+<td>0/12 / −12.9 ~ −9.0 / 0.6–16.2</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>L0 出现分离：<strong>停嘴需要后段针</strong>（01 的 EOS 10/12，10 为 0/12，D 接近干净）；<strong>事实使用的破坏主要来自早段针</strong>（10 的 S_fact 降到 −0.1–5.3，而 01 还保留到 0–10.9）。这与 2026-10-29 早层失效定位第一阶段"前半段污染导致作答但答错，后半段污染导致不交付"的结论一致（类比档：那次是拼缓存，这次是原生时序开关）。</li>
+<li>L16–18 状态差异的大小与这一分离对不上：L0-10 的 r10 约 0.6，却完全不停嘴。停止不由这一窗口的状态差异范数决定，与 S1 一致。</li>
+</ul>
+<h2 id="8-s3">8. 交给 S3 的内容与限制</h2>
+<ul>
+<li><strong>过程证据</strong>：同起点第一步写入、处理同时变化且方向相反；共同旧来源被不同处理，但在 t_L 与总差异近似正交；t_L 差异与读出几乎全部来自 b 之后的写入来源；早段撤针后写入差异持续，L0 强、L12 弱。</li>
+<li><strong>可被反驳的行为预测</strong>（推测档，留给 S3 检验）：L0 的停止由 L 段（含撤针附近）条件决定，事实丢失由 E 段条件决定；L12 两者都由 L 段主导。</li>
+<li><strong>资产</strong>：84 条完整 Mτ、目标层驱动量、首步全词表 logits、逐 token 候选分数（服务器归档，见第 9 节）。</li>
+<li><strong>限制</strong>：6 个旧情景；只看 L16–18；层、头、token 不当独立样本；排除判决只针对严格相等的计算解释；所有比较都是描述，不报显著性。</li>
+</ul>
+<h2 id="9">9. 文件</h2>
+<ul>
+<li>记录与收据：<code>runs/preflight-r01/</code>（失败，保留）、<code>runs/preflight-r02/</code>、<code>runs/formal-r01/</code>（JSON；同起点认证在 <code>worker-*/certification/</code>）。</li>
+<li>张量（16 GB）与 Mτ（4.5 GB）不进 git：服务器 <code>runs/*/worker-*/tensors|mtau/</code>，归档 <code>/workspace/cfm-s2-ops/archive/runs-r01.tar.zst</code>。</li>
+<li>分析：<code>analysis/formation-r01.json</code>（界有效性、恒等式、逐格判决、汇总、次要预测、端点）、<code>analysis/steps-r01.jsonl.zst</code>（逐步全部标量）。</li>
+</ul></main></html>

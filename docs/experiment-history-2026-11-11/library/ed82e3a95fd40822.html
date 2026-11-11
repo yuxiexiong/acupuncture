@@ -1,0 +1,12 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SP-01 决策日志</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="sp-01">SP-01 决策日志</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-shared-prefix-continuation-v1-2026-11-02/DECISIONS.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-shared-prefix-continuation-v1-2026-11-02/DECISIONS.zh-CN.md">固定提交原件</a>；SHA-256：<code>ed82e3a95fd40822083a92950afb1415d0b950faa12a306dc5c73bba25610a7e</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="sp-01_1">SP-01 决策日志</h1>
+<ul>
+<li><strong>D1 计划由评审撰写</strong>（239bc8e），加补充一（q_shared 按不带空格写法确定、冻结前分词核对）。</li>
+<li><strong>D2 面板构造</strong>（冻结前、无任何模型输出）：字母 U–Z；编号首位数字两两不同；f0/f1 交换目标与一个干扰；位置首/中/末各二。分词核对结果见 readiness/cpu-check-r01.json。</li>
+<li><strong>D3 runner 由 FC-01 改写</strong>：首版复制后，样板尾部重复定义的 items()/plan() 覆盖了新面板函数、会退回 P 面板；readiness 在冻结前发现（KeyError 'target'），已删除重复定义，并在测试中加入“items/plan 必须返回 SP 面板 ID”的断言。没有任何模型调用受影响。</li>
+<li><strong>D4 无 B3/NR 重放</strong>：新面板没有历史记录可对拍；改用内部一致性闸门（C 臂等价、T 三臂共享第一步、T_F 组装哈希、重建一致、校准跨阶段一致）。</li>
+<li><strong>D5 M 读数</strong>：生成循环在第二步记录目标第二 token 与干扰第二 token 的原始 logit；不新增模型臂。</li>
+</ul></main></html>

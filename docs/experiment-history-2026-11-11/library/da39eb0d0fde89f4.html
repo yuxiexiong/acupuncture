@@ -1,0 +1,31 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Acupuncture 全层单针短回答调查 v1</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="acupuncture-v1">Acupuncture 全层单针短回答调查 v1</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/layer-survey-toy-v1-2026-10-27/PROTOCOL.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-survey-toy-v1-2026-10-27/PROTOCOL.zh-CN.md">固定提交原件</a>；SHA-256：<code>da39eb0d0fde89f422de2a23b37634fe1ced8f915748993cc0f2a65c77643ae8</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="acupuncture-v1_1">Acupuncture 全层单针短回答调查 v1</h1>
+<p>状态：合同与实现准备；允许有界 GPU 验收。正式全量实验须用户再次确认 ETA 后授权。根因实验及其他暂停实验不恢复。</p>
+<h2 id="_1">要回答什么</h2>
+<p>同样强度的一针，在不同层、不同随机通道上，会出现哪些可观察的回答变化？2B、4B、9B 各自的变化分布是否不同？这是探索性的扰动响应调查，不证明模型有类似人脑的天然功能分区；相似回答也不证明扎中了同一计算路径。</p>
+<h2 id="_2">条件与剂量</h2>
+<ul>
+<li>2B 24 层、4B 32 层、9B 32 层，编号从零开始。每层固定抽十个不同通道，每个通道独立跑八题。<strong>每次只干预一个通道</strong>；不会十针同时扎，也不是十四针。</li>
+<li>正式共 880 个单针条件、7,040 份修改回答，以及三个模型各八份原版回答，共 7,064 份。两个 worker 平分通道任务；每个模型只有 shard 0 保存原版八题。每卡一次只加载一个模型，实际 forward batch=1。</li>
+<li><code>dose=1</code> 表示相对于该模型该层残差尺度的一单位写入，不是所有激活都直接加数字 1。每题先在原版完整提示上一次前向，记录每层 block 输出的逐 token L2 范数中位数 m（排除首 token）。对通道 n 加 c=m/||W_down[:,n]||。c 在该题提示和后续全部生成步保持固定，按原 BF16 实现舍入。</li>
+<li>接口在 gated MLP 中间激活进入 down_proj 之前。模型权重不变；无训练，无永久参数版，无历史 AB 双针叠加。保存采样列、列范数、原版尺度、请求与实际 BF16 位移及钩子调用次数。</li>
+<li>每层种子独立，均匀不放回抽样十点，结果写入 samples.json 并冻结。不得根据回答重抽、替换点或改符号。</li>
+</ul>
+<h2 id="_3">题目和回答</h2>
+<p>questions.json 固定八个简短场景，覆盖读题、算术、表达、格式、日常建议、利益冲突、不确定性、事实纠错；这些覆盖标签不等于给通道命名功能。</p>
+<p>原生聊天模板，关闭 thinking；相同中文简答指令；贪心、BF16、eager、四 CPU 线程、batch=1。每次使用独立上下文和全新 cache。最多 128 个新 token，遇正确终止标记自然结束，不要求写满。长度达到 128 只记上限截断，不自动延长，也不能单独据此判定模型失去结束能力。</p>
+<p>全部原文、含特殊符号的解码、token、提示、尺度和文件哈希原样保存。并排显示同模型同题原版与单针回答；默认隐藏条件身份，可展开。提供空白人工记录表，不自动给人格、恶性或能力总分。所有条件都展示，不挑案例。</p>
+<h2 id="_4">验收与权限</h2>
+<p>CPU 验收检查抽样覆盖、分片总数、授权边界、文件与 token 完整性，以及单通道 hook 的真实数值改动、异常退出撤钩子。可用 Torch 时用小 CPU 张量验证，不加载模型。</p>
+<p>GPU 验收独立于正式证据：每模型 22 份（原版八题；第0、中间、最后层的八次单针，题目按序轮转分配；三个层各一次零剂量及撤钩子后原版重放）。全部仍限制 128 token，共最多 8,448 个新 token。零剂量、恢复条件须逐 token 与相同模型原版一致；检查有效 hook、前后 down_proj 哈希、模板、终止、记录归档和导出。按实际用时估计正式双卡 ETA。该小样本的平均回答长度不能保证覆盖所有层，另报全部达到128上限的计算情景。</p>
+<p>验收可在当前授权内运行。formal survey 的入口必须另提供 purpose=survey、明确 formal_launch_confirmed 的授权记录，绑定同一 freeze，且三模型验收均通过；preflight 授权不能启动正式任务。GPU 被其他任务占用时不抢占或终止。失败和 partial 目录保留，不能原地覆盖；实现更改后重新冻结和验收。</p>
+<h2 id="_5">解释与停止边界</h2>
+<p>每层只有十个随机点，八题是同一点的重复观察，不是八十个独立点。原版自身答错、短答省略或上限截断分别保留。跨模型分别与自己的原版比较；相对深度只是展示坐标，不是跨模型脑区对应。方向相似度只能辅助描述，不代替因果验证。</p>
+<p>本轮不自动增加负剂量、剂量网格、补抽样、语义筛选、根因修复、跨层映射或大 Benchmark。正式结束后先交付全部原文，后续解释和确认另讨论。</p>
+<h2 id="_6">复现入口</h2>
+<p><code>python survey.py freeze</code> 创建不可覆盖的冻结清单。<code>python -m unittest discover -s . -p 'test_*.py'</code> 做 CPU 验收。</p>
+<p><code>survey.py run --mode preflight --model 2b --gpu 0 --authorization readiness/preflight-authorization.json --output preflight-r01/2b --execute</code> 为有界 GPU 验收示例（需在实验目录）。另外两个模型同理。</p>
+<p>正式入口使用 <code>--mode survey --shards 2 --shard 0/1</code>，授权文件单独生成，当前不创建。<code>survey.py verify RUN</code> 核对完整单分片；导出前汇总六个分片并核对 7,064 条与24条基线。</p></main></html>

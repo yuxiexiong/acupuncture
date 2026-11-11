@@ -1,0 +1,140 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>QCO-01（跨记录共同 q/k 偏移能否双向搬运回答效应）结果报告</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="qco-01-qk">QCO-01（跨记录共同 q/k 偏移能否双向搬运回答效应）结果报告</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-common-offset-v1-2026-11-02/REPORT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-common-offset-v1-2026-11-02/REPORT.zh-CN.md">固定提交原件</a>；SHA-256：<code>863b86f615180089d818a2fffc70f49787cbde8910e99cc4c5b038a1dd5905ab</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="qco-01-qk_1">QCO-01（跨记录共同 q/k 偏移能否双向搬运回答效应）结果报告</h1>
+<p>日期：2026-11-02。<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-common-offset-v1-2026-11-02/CONTRACT.zh-CN.md">合同 r01</a>；<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-common-offset-v1-2026-11-02/DECISIONS.zh-CN.md">决策 D1–D4</a>；计划 v1（905a6d19，评审撰写）。代码 <code>3fcb81d</code>，freeze-r01 <code>a607db70…1060</code>。R/A/R_rand/A_rand 运行前无输出。同一助手实现、运行与撰写。</p>
+<h2 id="1">1. 结论（限制先说）</h2>
+<ol>
+<li><strong>限制一：等范数随机方向本身也有不小作用，尤其在 N4146。</strong> 把同范数（约 530–560）的随机向量加到干净 q/k 上（A_rand），也会逐 token 复现 V 的错误：N4146 35/48（B_rand = 0.64）、N1210 31/48（0.32）、R0 38/48（0.18）；从受针 q/k 减随机向量（R_rand）则通常更差（P_rand = −0.06 / −0.34 / −1.05，并把 2 / 7 / 11 个原本答对的格改坏）。所以“q/k 被大幅扰动 → 首列错误”有相当一部分不依赖方向；共同偏移的方向特异性体现在它比随机好得多，而不是随机无效。</li>
+<li><strong>限制二：这是混合状态下的操作效果</strong>（V 取 C(i)，S/KV/浅层取 T(i,d)），在已见开发面板、六个场景、NA 原布局宽窗口上；六折不是六次独立实验。</li>
+<li><strong>预注册的“双向搬运”在全部 3 个适用方向成立（C1343 无缺口、不适用）。</strong>
+   - 去除（R = 受针 q/k − 共同偏移）：N4146 16 → 47/48，N1210 28 → 48/48，R0 38 → 48/48；P = 0.97 / 1.00 / 1.00；6/6、6/6、4/4 个有缺口的场景净改善为正；没有改坏任何格。
+   - 加入（A = 干净 q/k + 共同偏移）：逐 token 复现 V 的自然输出 48/48、47/48、46/48；在原错误格上 B = 1.00 / 0.93 / 0.77；6/6、6/6、4/4 场景出现复现。
+   - 与随机参照的差：P − P_rand = 1.03 / 1.34 / 2.05；B − B_rand = 0.36 / 0.61 / 0.59，都超过 0.25 的门槛。实际编辑范数与随机参照逐输入相同（相对差 ≤5% 全部通过）。</li>
+<li><strong>几何（描述）</strong>：每个输入的受针 q/k 改变与“用其他 5 个场景估计的共同偏移”几乎同向——cos 均值 0.97–0.99（最小 0.90），减去共同偏移后只剩 3–7% 的平方范数。受针造成的末端 q/k 改变几乎是一个跨记录共享的加性偏移。</li>
+<li>按计划 §7 第 1 行：<strong>支持“用其他场景估计的共同差分可部分（在这里几乎全部）解释该背景中 V-only 的行为变化”</strong>；下一个问题才是这个偏移通过什么更新/读取计算起作用。不能说原生机制已闭合、所有针共享一个方向，或查询信息被删除。</li>
+<li>工程全部通过：base/C/T 哈希 = QCD G；624 条参照与 QST 逐位相同；预检零偏移无操作逐位复现 V/F；采集张量哈希经偏移脚本复核。</li>
+</ol>
+<h2 id="2-48-y_full">2. 主表（48 输入；Y_full 交付数）</h2>
+<table>
+<thead>
+<tr>
+<th>方向</th>
+<th style="text-align: right;">V</th>
+<th style="text-align: right;">F</th>
+<th style="text-align: right;">R</th>
+<th style="text-align: right;">A</th>
+<th style="text-align: right;">R_rand</th>
+<th style="text-align: right;">A_rand</th>
+<th style="text-align: right;">A 逐 token = V</th>
+<th style="text-align: right;">A_rand 逐 token = V</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>N4146</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">47</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">26</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">35</td>
+</tr>
+<tr>
+<td>N1210</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">29</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">35</td>
+<td style="text-align: right;">47</td>
+<td style="text-align: right;">31</td>
+</tr>
+<tr>
+<td>R0</td>
+<td style="text-align: right;">38</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">40</td>
+<td style="text-align: right;">27</td>
+<td style="text-align: right;">44</td>
+<td style="text-align: right;">46</td>
+<td style="text-align: right;">38</td>
+</tr>
+<tr>
+<td>C1343</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">47</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">47</td>
+</tr>
+</tbody>
+</table>
+<p>错误形态：V 的错误几乎全是“首列编号”（N4146 32/32）；A 复现同样的首列错误；R_rand 额外出现停止（6 / 11 / 6）和多编号。</p>
+<h2 id="3">3. 执行</h2>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th style="text-align: right;">形成</th>
+<th style="text-align: right;">自然轨迹</th>
+<th style="text-align: right;">实际解码前向</th>
+<th style="text-align: right;">墙钟（每 worker）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>预检</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">42</td>
+<td style="text-align: right;">171</td>
+<td style="text-align: right;">62 s</td>
+</tr>
+<tr>
+<td>采集</td>
+<td style="text-align: right;">240</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">270 / 214 s</td>
+</tr>
+<tr>
+<td>正式</td>
+<td style="text-align: right;">240</td>
+<td style="text-align: right;">1392</td>
+<td style="text-align: right;">5610</td>
+<td style="text-align: right;">687 / 537 s</td>
+</tr>
+</tbody>
+</table>
+<p>合计约 0.49 GPU 设备小时（上限 3）。原始 q/k 与 μ/r 在服务器（<code>runs/collect-r01/*/tensors</code>、<code>runs/offsets-r01/offsets.pt</code>），哈希在 receipt 与 <code>analysis/offsets-manifest-r01.json</code>。</p>
+<h2 id="4">4. 可以说 / 不可以说</h2>
+<table>
+<thead>
+<tr>
+<th>可以说</th>
+<th>不可以说</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>受针造成的末端 q/k 改变几乎是跨记录共享的加性偏移（cos 0.97–0.99）</td>
+<td>所有针共享一个方向（四个方向各自估计）</td>
+</tr>
+<tr>
+<td>去掉这个由其他场景估计的偏移，V-only 的错误几乎全部消失；加上它，干净 q/k 逐 token 重现原错误（3 个适用方向）</td>
+<td>原生运行中针只通过这一偏移起作用；机制已闭合</td>
+</tr>
+<tr>
+<td>同范数随机方向也有可观作用（A_rand 复现 18–64%），共同偏移明显优于随机</td>
+<td>方向完全特异；大幅扰动无关</td>
+</tr>
+</tbody>
+</table></main></html>

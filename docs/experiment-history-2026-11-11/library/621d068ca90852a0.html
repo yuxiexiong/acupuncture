@@ -1,0 +1,16 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>FBR-01 偏离记录</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="fbr-01">FBR-01 偏离记录</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-template-buffer-repair-v1-2026-11-06/DEVIATIONS.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-template-buffer-repair-v1-2026-11-06/DEVIATIONS.zh-CN.md">固定提交原件</a>；SHA-256：<code>621d068ca90852a058120afd4d50d2d50ce202f53863cb2bb2c1360ef7cc6c77</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="fbr-01_1">FBR-01 偏离记录</h1>
+<h2 id="d12026-11-06-a">D1（2026-11-06，阶段 A 上卡之前）：与另一条线并行运行，时间上限按并行放宽</h2>
+<p><strong>偏离了什么。</strong> 合同 §7 的设备时间上限（标定 0.1、预检 0.1、正式 0.8 GPUh）是按独占卡估的。用户 2026-11-06 指示"如果显存空间够，就直接并行吧"。启动前两张卡各有 2 到 3 个其他任务在跑，利用率 98% 到 100%，已用 45.5 GB 与 29.9 GB，剩余显存足够本卡每进程约 10 GB。并行下墙钟时间会变长，原上限很可能在半途触发，造成与科学内容无关的失败。</p>
+<p><strong>改了什么。</strong> 运行器里的墙钟上限乘 3：标定 0.3、预检 0.3、正式 2.4 小时（两个进程的墙钟之和）。计划号改为 <code>…A-r02</code>，重新冻结为 <code>freeze-A-r02.json</code>。合同文本不改；本文件加入冻结清单。</p>
+<p><strong>没改什么。</strong> 操作、臂、种子、面板、判读、门槛、允许写的句子、工程闸门全部不变。此次重新冻结发生在任何 GPU 运行与任何模型输出之前。数值不受并行影响：批大小 1、逐位桥接闸门照常执行。</p>
+<p><strong>影响哪些结论。</strong> 无。合同 §7 的"总硬上限 2.0 GPUh"在共享卡上不再是独占设备时间的度量；报告里如实给出各阶段的墙钟时间，并注明是在共享卡上测得。</p>
+<h2 id="d22026-11-06-r01">D2（2026-11-06）：正式运行 r01 启动失败——第二张卡被占满；两个进程改为都上第一张卡</h2>
+<p><strong>发生了什么。</strong> <code>runs/A-formal-r01</code> 启动时，第二张卡已被另一条线的一个任务占用 86.7 GB，只剩 10.8 GB。第二个进程在加载模型之前的显存检查上退出（要求至少 20 GB 空闲），控制器随即终止第一个进程。两个进程都没有写出任何记录或张量，<strong>没有任何正式输出产生</strong>。失败目录原样保留。按失败类型：合同执行失败，信息量为零。此前的标定与预检 r01 都通过验收。</p>
+<p><strong>根因。</strong> 运行器把进程号与卡号写死（进程 0 用卡 0，进程 1 用卡 1）。并行条件下某一张卡可能被占满，这个假设不成立。</p>
+<p><strong>修复。</strong> 运行器读取授权文件里可选的 <code>gpu_map</code>，把进程钉到指定的卡；不给则仍按原规则。正式运行的授权写明两个进程都用卡 0（启动时剩余约 82 GB）。计划号不变，重新冻结为 <code>freeze-A-r03.json</code>。因为预检的验收须与正式运行同一冻结，预检在 r03 下重跑一次（<code>runs/A-preflight-r02</code>），标定存档与参照文件沿用，其哈希仍写在授权里。</p>
+<p><strong>没改什么。</strong> 操作、臂、种子、面板、判读、门槛、允许写的句子、工程闸门全部不变。卡的选择不影响数值：两张卡同型号，且原生臂与上限臂对旧记录的逐位桥接照常执行。</p>
+<p><strong>修复额度。</strong> 合同给阶段 A 的一次修复重试已用掉。之后若再因实现问题失败，停止并上报。</p></main></html>

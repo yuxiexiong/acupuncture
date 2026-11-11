@@ -1,0 +1,99 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>lyra 原帖评论区第二轮核查</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="lyra">lyra 原帖评论区第二轮核查</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>docs/literature/lyra-x-thread-round2-2026-10-26.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/literature/lyra-x-thread-round2-2026-10-26.zh-CN.md">固定提交原件</a>；SHA-256：<code>8bf7a4fbdf91a566dc041839048faef46ec1b2bbbeed5fadc5f2a318842876c9</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="lyra_1">lyra 原帖评论区第二轮核查</h1>
+<p>调查日期：2026-10-26，北京时间约12:05收束。项目：Acupuncture。</p>
+<p>本轮重新只读查看<a href="https://x.com/_lyraaaa_/status/2113833330429083662">原帖</a>，以 Recent 顺序滚动至最早回复，并打开关键嵌套分支；与<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/literature/lyra-x-thread-2026-10-26.zh-CN.md">首轮报告</a>对照。浏览过程中去重记录337个帖子链接，包含原帖、祖先帖子及嵌套回复，不是337条直接评论，也不是完整API导出。X的排序、折叠、动态新增和不可见内容使全量覆盖无法保证。文中的“新增”指首轮报告未收录，不一概指发表于首轮调查之后。</p>
+<p>以下分别标明作者说明、第三方自述、公开制品和论文证据。没有运行他人的模型或演示，没有联系评论者，也没有启动 Acupuncture 实验。本报告只整理别人做了什么、公开证据支持到哪里，不提出本项目的实验建议。</p>
+<h2 id="1">1. 作者新澄清：他把这项工作视为人格干预</h2>
+<p>Alexander Karpukhin 问是否基于《A Single Neuron Is Sufficient to Bypass Safety Alignment in Large Language Models》。lyra 回答，其目标不是安全拒答移除，更接近 Sauers 的人格神经元实验。回复发表于北京时间10月26日09:34。<a href="https://x.com/AlKarp23/status/2114528044350140687">提问</a>／<a href="https://x.com/_lyraaaa_/status/2114531072029642755">作者回答</a>。</p>
+<p><strong>价值与边界：</strong>这明确了作者自己的研究定位；并没有定义 evil 的评分规则，也没有证明两个位置是特定人格的专用神经元。“人格变化”和“拒答变化”是否实际分离，仍需结果证据，不能只由作者的命名决定。</p>
+<h2 id="2-50">2. 新找到一套可检查的代码和50题对照</h2>
+<p>Shmulik Amar 在回复中提供了 <a href="https://x.com/pyshmulik/status/2114442468536078394">qwen-evil Space</a>。核查固定提交为 <code>8452016f72e9324b588009d4a3366be40589a984</code>，默认模型 <code>Qwen/Qwen3.5-4B</code>，BF16，模型权重 revision 未固定。</p>
+<p>其实现沿用 L14/N8949 +1、L13/N7956 −1，但采用固定参考范数 L13=9.226、L14=10.618。源码称由8个聊天提示校准；校准函数使用题库前8题并跳过每题首 token。它没有针对每个当前输入重新求尺度。原帖的“at every input”不能单独确定是否要求重算校准值，因此这里记录实现选择，不判定其违背原帖。<a href="https://huggingface.co/spaces/shmuelamar/qwen-evil/blob/8452016f72e9324b588009d4a3366be40589a984/src/qwen_dose/steer.py">干预和校准代码</a>。</p>
+<p>代码在推理期间临时增加 <code>down_proj.bias</code>，结束后移除，没有导出永久修改的权重。对于固定增量，实数代数上 <code>W(a + δe_n) = Wa + δW[:,n]</code>，所以这种偏置与对应激活加法等价；不意味着有限精度下逐位相同，也不代表动态增量与固定增量等价。</p>
+<p>公开的 <a href="https://huggingface.co/spaces/shmuelamar/qwen-evil/blob/8452016f72e9324b588009d4a3366be40589a984/results/run50.csv">results/run50.csv</a>有50条、编号1–50，<code>prompt</code>、<code>baseline</code>、<code>steered</code> 均非空，题目与顺序和公开题库一致。文件60,031字节，SHA-256：</p>
+<p><code>071b30ab2042be9a6420ff38e70a87af984fd1f20cf81bdefbf16a8a7a1d438f</code></p>
+<p>CLI在同一模型上顺序生成两臂，每次重设种子，默认0；UI对这批制品声明温度0.7、最多150个新 token、关闭 thinking、使用默认双点。<a href="https://huggingface.co/spaces/shmuelamar/qwen-evil/blob/8452016f72e9324b588009d4a3366be40589a984/src/qwen_dose/cli.py">CLI</a>／<a href="https://huggingface.co/spaces/shmuelamar/qwen-evil/blob/8452016f72e9324b588009d4a3366be40589a984/app.py">UI说明</a>。</p>
+<p><strong>价值与边界：</strong>本轮最具体的第三方复现制品，能直接核查实现及逐题对照。题目包含日常问题和明确要求报复的提示，不是全部无害提示。CSV保存去掉特殊 token 和首尾空白后的文本，没有逐题种子、token ID、停止原因或运行收据；不能确认每条均自然结束，也不能排除未公开尝试。没有正式能力评测或 evil 评分，不据此计算成功率。本仓库记录链接、版本和哈希，不复制第三方整套回答。</p>
+<h2 id="3-l14">3. 两位评论者称单独 L14 已经有效</h2>
+<ul>
+<li><a href="https://x.com/zucan_lv/status/2114436784201359552">Zucan Lyu</a>：称只干预 L14/N8949 也有效，L13/N7956 没有显著影响，并联想到 Persona Vectors。</li>
+<li><a href="https://x.com/IQTRADER5/status/2114502726079930813">Nabeoth</a>：称其 J-lens 查看 L14 时出现冷酷相关词，单独干预有效；认为 L13 更关联非同寻常等词，疑惑为何需要第二点。</li>
+</ul>
+<p><strong>价值与边界：</strong>这与首轮 Sal 对 L14 贡献较大的报告形成了同向线索。但两条新增回复没有公开题集、效应大小、完整输出和可复算设置。这里的“没有显著影响”是评论者用语，未见统计检验，不能升级为第二点无作用的结论。lens 的词汇解释也不等于因果功能已经确定。</p>
+<h2 id="4-4b9b27b">4. 出现4B、9B有效而27B无效的跨规模自述</h2>
+<p><a href="https://x.com/ryoshu/status/2114552948394979449">8circuits（@ryoshu）</a>于北京时间10月26日11:01称4B和9B确认有效，27B抵抗，并猜测27B与9B的关系。</p>
+<p><strong>价值与边界：</strong>这是与模型规模直接相关的新线索。但没有说明是否使用相同坐标、是否重新定位、模型 revision、剂量、题目或评价规则，也未附制品。因此只能记录该观察声称，不能写成“相同神经元编号已成功迁移到9B”，更不能把模型谱系猜测当事实。</p>
+<h2 id="5">5. 反向干预并没有一致的公开结果</h2>
+<p><a href="https://x.com/vashinthewild/status/2114511531920802011">Abhinav 的新回复</a>描述将两点方向反转后，模型在自我介绍中变得自夸、以正义自居。公开内容是一个样例，没有完整对照设置。</p>
+<p>首轮 <a href="https://x.com/alexisaev/status/2114411936637128720">Alex 的40题剂量报告</a>则称反向条件39/40进入循环或乱码；其反向强度及完整制品仍未公开，本轮打开分支没有找到补充记录。</p>
+<p><strong>价值与边界：</strong>两份自述说明“反过来就是善良”没有现成支持。二者实现、剂量及停止条件未对齐，不能当作严格矛盾或独立重复，也不能用单次自我介绍推断稳定人格。</p>
+<h2 id="6">6. 新跟帖继续报告强度增大时能力与流畅性崩溃</h2>
+<p><a href="https://x.com/faiazAz/status/2114559489873780815">faiaz 询问稳定性和性能</a>后，<a href="https://x.com/vashinthewild/status/2114566200340693209">Abhinav 回复</a>：小幅推动仍流畅，大幅推动会破坏技能；他举例强推一个印度城市相关神经元后，2+2得到城市名。</p>
+<p><strong>价值与边界：</strong>这补充了“主题侵入普通任务”的失败描述，不局限于恶意语气。但未给该神经元坐标、剂量或完整题集，只能是第三方案例。它不能区分知识丢失、输出偏置和指令失遵循。</p>
+<p>另一个确切澄清是，<a href="https://x.com/Nixrix/status/2114488193173368941">Nick 回答192 token的来源</a>：这是他让 Codex 生成的工具采用的默认上限。首轮截图中的192不是模型自身固有的长度限制。关于“算错是否故意”的跟帖仍是解释性猜测，没有新的鉴别实验。</p>
+<h2 id="7">7. 又有人贴出四组前后回答截图</h2>
+<p><a href="https://x.com/hgao0864/status/2114564498497708067">非常名（@hgao0864）</a>于北京时间10月26日11:47发布实验附图。图中可读到四组文本对照，涉及同学犯错、同事功劳、烤面包失败和捡到钱包；两侧分别表现为支持或妥善处理，以及嘲弄、占功或攻击性回答。</p>
+<p><strong>价值与边界：</strong>这是新的直接可见样例材料，支持展示文本确有明显差异。附图没有完整提示、模型版本、剂量、解码设置或总体分母；不能由四张展示推断普遍成功率，也不能判断是否有选择性展示。本次只读图，不把其中攻击性措辞当作研究结论。</p>
+<h2 id="8">8. 作者承认一个具体人格目标未做成</h2>
+<p>在<a href="https://x.com/ChandlerGold1/status/2114414954078150819">Chandler询问 Fallout 的 Yes Man 风格</a>后，<a href="https://x.com/_lyraaaa_/status/2114431049291948533">lyra 回答</a>：试过与愉快、赞同相关的神经元，但没有真正复现那个角色特有的效果。</p>
+<p><strong>价值与边界：</strong>这是作者亲自报告的失败，说明能改变若干语气或概念，并不等于能精确生成任意复杂人格。没有完整失败过程，不能把失败归结为某一个确定机制。首轮已记录的“部分概念需要多个神经元或注意力模式”仍然适用。</p>
+<h2 id="9-sauers">9. 作者指向的 Sauers 研究：已有公开人格模型，但具体指代未锁定</h2>
+<p>lyra只提了 Sauers 的人格实验，没有链接某一篇。本轮核到的一份原始制品是 <a href="https://huggingface.co/Sauers/Qwen3-8B-tawny-owl-128-neurons">Sauers/Qwen3-8B-tawny-owl-128-neurons 模型卡</a>。它先用成对身份提示做替换筛选，选出128个MLP神经元，再训练相关 gate/up 行和 down 列；实际改变约157万个标量，不能说只改128个参数，也不是无训练干预。作者报告未见问题上的猫头鹰身份约96%，所测1,000题MMLU前后同为75.2%。其早期随机128神经元对照也能学会该身份，限制了“只有选中位置承载人格”的解释；公开训练材料不等于搜索全过程已公开。</p>
+<p>另有 Nell Watson 的<a href="https://quasiqualia.com/notes/god-neurons.html">神人格神经元实验记录</a>，在Qwen3-8B上比较三个单神经元条件，报告剂量退化及判定分歧。这是独立研究者的记录，不能冒充 Sauers 原帖。</p>
+<p><strong>价值与边界：</strong>这些材料表明身份表述能受局部干预或稀疏训练影响；方法、训练量和证据形式各不相同。尚不能确定 lyra 当时具体指哪一次 Sauers 实验，更不能把猫头鹰模型当作原帖双点配方的独立复现。</p>
+<h2 id="10">10. 评论新链接的单神经元论文，范围不止拒答</h2>
+<p><a href="https://arxiv.org/abs/2605.08513">A Single Neuron Is Sufficient to Bypass Safety Alignment in Large Language Models</a>于2026年5月发布。其拒答实验先筛选候选，再重排并验证干预强度；比较固定与自适应抑制，在7个Qwen3/Llama模型上报告攻击成功率和MMLU、GSM8K损伤。<a href="https://arxiv.org/pdf/2605.08513#page=3">方法</a>／<a href="https://arxiv.org/pdf/2605.08513#page=6">表1</a>。</p>
+<p>同文还在Qwen3的三个规模上对概念神经元做加性增强，观察无害问题中出现自杀相关内容。该部分图9是多个剂量下命中过的提示累计统计，不是某个固定剂量的成功率；相关主题出现也不等于鼓励行为。<a href="https://arxiv.org/pdf/2605.08513#page=8">概念增强部分</a>。</p>
+<p><strong>价值与边界：</strong>这是比“有害提问不拒答”更接近无害提问内容偏移的公开预印本证据。因此不能因作者说自己不做 abliteration，就认为相关论文仅研究拒答。该论文没有验证Qwen3.5原帖的这两个坐标，作者意图与论文现象相似性须分开。</p>
+<h2 id="11">11. 评论还链接了情绪回路研究</h2>
+<p><a href="https://x.com/Ivnrae_/status/2114423693246091621">@Ivnrae_ 的回复</a>链接<a href="https://arxiv.org/abs/2510.11328">Do LLMs “Feel”? Emotion Circuits Discovery and Control</a>。这篇2025年论文用情绪方向定位MLP神经元及注意力头，做激活置零、增强及随机对照，并组合跨层回路；研究六类英文文本情绪。其报告Llama3.2-3B在强度λ=1.0下的目标情绪匹配率99.65%，提示方法98.96%，方向方法91.22%；Qwen2.5-7B-Instruct在scale=2.0下为66.18%，二者强度设置不同。<a href="https://arxiv.org/html/2510.11328v1#S7.SS3">主结果</a>／<a href="https://arxiv.org/pdf/2510.11328#page=19">附录H.5</a>。</p>
+<p><strong>价值与边界：</strong>它提供了“定位—干预—对照”的另一类行为研究。两种模型成绩不是把同一坐标或方向直接搬过去的迁移实验；目标情绪匹配不证明模型产生感受，也不自动证明一般能力保持。</p>
+<h2 id="12">12. 其他讨论：哪些仍停留在提问或解释</h2>
+<table>
+<thead>
+<tr>
+<th>讨论</th>
+<th>当前可核查内容与边界</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://x.com/_lyraaaa_/status/2114422620259221700">共享神经元发现库</a></td>
+<td>作者说当时没有、可能会做；<a href="https://x.com/yoheinakajima/status/2114424808809353633">Yohei希望覆盖不同模型</a>。本轮未见这一分支新增可用数据库链接。</td>
+</tr>
+<tr>
+<td><a href="https://x.com/ActuallyIsaak/status/2114477056931065913">Gabliteration与反向审查</a></td>
+<td>评论者作方法比较并提出政治立场/叠加解释；该分支没有附支持这些具体主张的实验记录，不能当作机制证据。</td>
+</tr>
+<tr>
+<td><a href="https://x.com/MauchDevin/status/2114384705952911823">残差方向解释</a></td>
+<td>线性投影前加一个坐标，等价于输出加对应权重列的方向，是正确代数；延伸出的稳定吸引子、归一化保证流畅等叙述未在这条评论中得到检验。其部分长解释来自Grok。</td>
+</tr>
+<tr>
+<td><a href="https://x.com/DanielSMatthews/status/2114213850820313186">反向寻找触发上下文</a></td>
+<td>提议寻找能自然激活相应位置的提示；未附实现或测试，不能写成已经完成的提示攻击方法。</td>
+</tr>
+<tr>
+<td><a href="https://x.com/i_mmiq/status/2114565739579634043">工具调用是否保留</a></td>
+<td>只有提问，未见能力测试结果。</td>
+</tr>
+<tr>
+<td><a href="https://x.com/petrkubelkaa/status/2114282945259372610">跨到Mistral</a></td>
+<td>是对模型家族差异的疑问，未见复现结果，不能推导Mistral成功或失败。</td>
+</tr>
+<tr>
+<td><a href="https://x.com/rubenfb_23/status/2114492656239964316">剂量仍靠手调吗</a></td>
+<td>提问触及归一化与强度选择的区别，未见作者进一步答复。</td>
+</tr>
+<tr>
+<td><a href="https://x.com/Sukooo_/status/2114551073704927336">额外坐标</a>与<a href="https://x.com/nipsnack/status/2114549898272276798">另一风格配方</a></td>
+<td>分别给坐标或风格标签，没有题集和完整评测；作为配方线索留链，不提升为验证结果。</td>
+</tr>
+</tbody>
+</table>
+<p>本轮也重开了原作者的<a href="https://x.com/_lyraaaa_/status/2114188408084185377">定位方法回复</a>、<a href="https://x.com/robertomasymas/status/2114336629901144360">evil定义追问</a>及Alex剂量分支。没有找到新的正式定义、完整搜索成本记录或足以补齐剂量报告的原始制品。</p>
+<h2 id="_1">核查结论</h2>
+<p>本轮实质增加了三种材料：作者对研究目的的澄清；可固定版本、查看50题文本的第三方代码制品；人格、单神经元和情绪回路的原始研究来源。单点贡献、4B/9B/27B差异、反向干预和强度退化，目前主要仍是设置不完整的评论者报告。新评论没有把 evil 统一成一个经过验证的指标，也没有证明能力保持或找到一个跨模型通用的“前额叶”。</p></main></html>

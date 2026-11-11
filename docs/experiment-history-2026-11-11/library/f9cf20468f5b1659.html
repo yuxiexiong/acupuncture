@@ -1,0 +1,438 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Acupuncture：理论、实验结果与资产归档</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="acupuncture">Acupuncture：理论、实验结果与资产归档</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>docs/RESEARCH_ARCHIVE_2026-11-04.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/RESEARCH_ARCHIVE_2026-11-04.zh-CN.md">固定提交原件</a>；SHA-256：<code>f9cf20468f5b1659ed3a48c2bb9dc101d7241c3801a494ea530e9933aba60dcc</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="acupuncture_1">Acupuncture：理论、实验结果与资产归档</h1>
+<p><strong>2026-11-05更新：已纳入R1、WIN-01/02、KVC-01及WIN协议离线审计，并与<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/mechanism-paper-skeleton-2026-11-05.zh-CN.md">论文工作稿</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-mechanism-theory-evidence-spine-2026-11-03.zh-CN.md">更新后的理论骨干</a>对齐。</strong> 当前来源截点为<code>02c6beff778446d0a75caf760b2e92443c06bcd8</code>。§2的文件归档数量与§6原核验记录仍属11-04历史，未重算成当前全仓库认证。本轮只整合文稿，无模型/GPU调用。</p>
+<p>历史归档日期：2026-11-04（北京时间）。远端证据基线：<code>9b83017a</code>；提交前合入<code>2d2b728d</code>的WSP恢复与分词器核对记录。本次工作是已有材料归档、来源核对与口径整理；没有模型调用、GPU运行、新实验设计或新增运行授权。本文替代旧首页中的“当前／下一步”表述；原协议、原始回答、失败日志、旧稿及更正仍保留。</p>
+<h2 id="1">1. 当前能支持的结论</h2>
+<p>研究问题仍是：<strong>少数通道的激活干预如何改变写入、历史状态处理和后续读取，最终改变回答？</strong> 稳定副作用控制是另一条研究线，不能用缓存修复结果代替控制方法的有效性评估。</p>
+<p>截至本快照，有一段在指定背景中成立的计算因果证据：共同 k 偏移的操作，在局部 v 恢复条件下，通过 t1 新值写入及 t2 直接读取，能够双向改变目标竞争和完整回答。后续实验进一步说明，这段关系依赖写入增量、其逐层逐头幅度配置以及接收背景；它没有完整解释原生干预的停止和错答。</p>
+<p>另一组原生缓存移植结果显示明显的不对称：同题干净 S 可以恢复受损背景中的回答，但同题受损 S 单独放进干净背景不致错；部分输入需要含 S 的两组组合，另一些需要三组。它们约束解释，尚未说明这些组合怎样经过具体计算造成停止、错选或混合编号。</p>
+<p>这些结果主要来自 Qwen3.5-4B、有限针眼与固定任务面板。跨层、任务结构、随机方向和 C1343 的反例均保留。没有建立统一的原生机制、一般语义功能区、跨模型机制，或相对强基线更好的稳定控制方法。</p>
+<p>11-05的新证据使文章多了两类联系：WIN在形成窗口与新增针条件上检验恢复关系，KVC用供体事实身份把额外KV恢复接到答案选择。WIN-02关系M只有4个正向可检验格，P4未获支持、P5联合预测部分失败；KVC没有检验原写入—读取链。它们服务于整体解释，但不把“背景重要”提升为通用核心规律，详见§4.4。</p>
+<h2 id="2">2. 资产在哪里、哪些确实补交了</h2>
+<table>
+<thead>
+<tr>
+<th>入口</th>
+<th>内容与身份</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/RESEARCH_ASSET_CATALOG_2026-11-04.zh-CN.md">全目录资产表</a></td>
+<td>所有实验、设计、审计、工程和可视化目录逐项列出；有报告不等于科学阳性，有收据不等于全部验收通过</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/migration/2026-11-04-evidence-archive-r01/README.zh-CN.md">本次归档收据</a></td>
+<td>导入范围、快照时间、文件数、例外、验证和重做命令</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/migration/2026-11-04-evidence-archive-r01/assets.jsonl">逐文件清单</a></td>
+<td>仓库研究资产的路径、大小、SHA-256；包含失败和历史版本，不把副本当独立数据</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/migration/2026-11-04-evidence-archive-r01/local-import.json">本地与远端对账</a></td>
+<td>4,491 个缺失文件补入原位置，5,161 个运行快照文件归入 WSP 实验目录，45 个不同版本另存，772 个相同文件不重复覆盖；23 项仅登记哈希</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/migration/2026-11-04-evidence-archive-r01/restored-records.json">CFM-S3 原记录补位</a></td>
+<td>从已有 CPU 分析保存的来源副本，按运行收据的 SHA-256 将 26 份原记录补回原实验路径；没有重生成数据</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/migration/2026-11-04-evidence-archive-r01/verification.json">核验结果</a></td>
+<td>新导入文件哈希；缓存运行记录哈希；NCC/NSR/NQK/NPC 全部48输入的 Y 重新加总；远端张量只登记引用</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-mechanism-experiment-asset-inventory-2026-11-03.zh-CN.md">旧盘点：截至 KUC</a></td>
+<td>形成、V、目标选择、k、历史与更新实验的详细历史表；65目录是当时快照数</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-mechanism-theory-evidence-spine-2026-11-03.zh-CN.md">理论骨干：现已更新至 KVC 与协议审计</a></td>
+<td>完整公式、局部假设、早期原值与E9–E14后继结果；连接审计与当前论文工作稿同步</td>
+</tr>
+</tbody>
+</table>
+<p>主要实际补交的是：双针联合测量的合同、逐条原文、候选读数和阅读记录；旧四格互补分析；原生链条与有效剂量 CPU 分析；历史设计审计；导师报告扩展；WSP 的失败／验收／运行日志。现有远端的大部分后续缓存实验本已提交，缺的是统一整理，不把它们称为本轮新实验。</p>
+<p>同名本地旧稿保存在 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/migration/2026-11-04-evidence-archive-r01/local-variants">local-variants</a>，不覆盖远端修订。原文里的“建议／下一步／未运行”一律按原日期阅读。11-04只保存历史方案，不重新确认其设计有效性或执行资格；11-05将新的已完成结果接入论文，WPC等未运行方案仍不计结果。</p>
+<h2 id="3">3. 理论与实现：什么由公式决定，什么仍需实验</h2>
+<p>本节依据<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-mechanism-known-basics-audit-2026-10-31.zh-CN.md">基础知识审计</a>和<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-mechanism-theory-evidence-spine-2026-11-03.zh-CN.md">既有理论骨干</a>。它们保存固定版本源码与原论文入口。本轮未新增文献查重，也不对“首次／领先”作判断。</p>
+<h3 id="31">3.1 入口、时序与三种状态</h3>
+<p>在 down projection 前，对激活 a 加 ηe_j，注入处的线性关系为</p>
+<p>[
+\Delta h=\eta W_{\mathrm{down}}e_j.
+]</p>
+<p>η须按实际校准解释；单坐标并不保证小幅扰动或功能特异。固定输入 token 时，MLP 注入不会逆向改变本层已计算完的注意力缓存，可以改变后层和后续步骤。撤针只停止新的入口修改，不撤销已有历史或已生成文字。</p>
+<p>短卷积缓冲、递推 S、全注意力 KV 是不同状态。旧卷积槽位在相同未来驱动下会被移出，但它先前造成的影响可能已经进入 S、KV 或生成文字。不能从短窗长度推出整个模型效应的持续长度。</p>
+<p><strong>直接影响结果解释的结构例子：</strong> L12 针在第12层MLP注入，边界最后一个提示token不加针，0–12层缓存未被该针改动。NCC 的 L12 全深层恢复 TJ=C、NSR 的全深层污染 CJ=T 是构造与数值桥接，不是发现了唯一机制。这个结论不适用于 L0 的浅层历史。</p>
+<h3 id="32">3.2 状态更新与读取</h3>
+<p>采用 key×value 方向，单头实数更新写为</p>
+<p>[
+S_t=\alpha_t(I-\beta_tk_tk_t^\top)S_{t-1}+\beta_tk_tv_t^\top
+=A_tS_{t-1}+B_t.
+]</p>
+<p>两条轨迹 a、b 的精确差分为</p>
+<p>[
+\Delta S_t=A_t^a\Delta S_{t-1}+(A_t^a-A_t^b)S_{t-1}^b+(B_t^a-B_t^b).
+]</p>
+<p>旧差异传播、旧来源受到不同处理和新写入差异会同时出现，也可能抵消；这是计算账目，不是行为贡献份额。在当前规范化与门范围下，若驱动完全相同，则有局部收缩界 (|\Delta S_t|<em>F\le\alpha_t|\Delta S</em>{t-1}|_F)。不同驱动、读取和下游映射不受这个整模型收缩结论约束，因为不存在这样的整模型结论。</p>
+<p>更新后读取可分为</p>
+<p>[
+o_t=\underbrace{\alpha_tS_{t-1}^\top q_t}<em>{D_t}
+-\underbrace{\alpha_t\beta_t(k_t^\top q_t)S</em>{t-1}^\top k_t}<em>{\text{旧预测修正贡献}}
++\underbrace{\beta_t(k_t^\top q_t)v_t}</em>{W_t}.
+]</p>
+<p>固定当前驱动时，(\Delta o_t=\Delta S_{t-1}^\top\alpha_t[q_t-\beta_tk_t(k_t^\top q_t)])。范数不同不保证被当前方向读到；D占优也不是恒等式。局部读出还要经过门控归一化、投影、残差、后层与词表竞争，才能影响序列。</p>
+<h3 id="33-kv">3.3 k、v、幅度与有限反事实</h3>
+<p>同一局部驱动下，只替换新值写入项中的 k、固定 v/β/旧修正项时，(\Delta S_1=\beta_1\Delta k_1v_1^\top)。比较两种 v 的差中差为 (\beta_1\Delta k_1\Delta v_1^\top)。局部交互是公式允许的；其实际行为强度才由 KUC/LVK 等实验约束。14层一起操作时，上游会改变下游驱动，不能将整个端点都当作同一个孤立秩一项。</p>
+<p>SIT/NMT 把留存增量移入接收者基底，测到的是有限幅度反事实效果；逐层逐头范数匹配并未固定状态的全部方向或下游响应。NMT 的 Φ 是特定 k 条件效应来源差的比值，不是准确率比例或自然机制份额。</p>
+<p>恢复充分也不推出反向污染充分。(F(S_C,H_T)) 能答对，与 (F(S_T,H_C)) 仍能答对可以同时成立；H表示其余背景。NCC/NSR正是这种不对称。NPC“最小／必要”只针对已测的三组、固定输入与供体集合，不推广为每个 S 元素或所有自然路径的必要性。</p>
+<h2 id="4">4. 实验证据的累计关系</h2>
+<h3 id="41-kuc">4.1 早期资产与截至 KUC 的主干</h3>
+<table>
+<thead>
+<tr>
+<th>阶段／资产</th>
+<th>观察或操作结果</th>
+<th>限制与来源</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>单针、双针、能力与剂量调查</td>
+<td>位置、符号、剂量和题目改变回答，出现非单调、内容侵入、任务保持与失败并存</td>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/README.md">实验目录</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/EXPERIMENT_RESULTS_MASTER.zh-CN.md">旧结果主表</a>。单针18,272份回答中7,632份有内部轨迹，不能相加；原首轮止于Q24</td>
+</tr>
+<tr>
+<td>双针联合测量</td>
+<td>3,720份自由回答、2,976组候选读数；正确核心可伴随异常内容，也有语气正常而计算或关系错误</td>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/joint-behavior-capability-v1-2026-10-28/analysis-r01/JOINT_RESULTS.zh-CN.md">结果及原文</a>。31条件反复使用24诊断情景；模型辅助阅读，不是独立人类评审</td>
+</tr>
+<tr>
+<td>早层／阶段二定位</td>
+<td>历史清理与污染改变停止、事实响应和交付；同一操作对分数和完整回答的作用不同</td>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-state-localization-stage2-v2-2026-10-30/REPORT.zh-CN.md">阶段二报告</a>。29,112生成／58,224候选评分是调用口径，不是独立样本数</td>
+</tr>
+<tr>
+<td>旧四格互补分析</td>
+<td>只恢复组4使EOS 24→0，但旧核心匹配仅7/24，其中6条仍改写／编造前提；只保留受损组4而其余干净，核心24/24</td>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-complement-analysis-v1-2026-10-31/RESULTS.zh-CN.md">补归档分析</a>。同源CPU复算；事后严格标签1/24不替换旧主指标</td>
+</tr>
+<tr>
+<td>S1/S2/S3，原生链CPU分析</td>
+<td>同起点后写入与旧来源处理同时变化并部分抵消；撤针后仍产生写入差。V相关操作在停止侧有效，事实侧多项证据不足</td>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-mechanism-experiment-asset-inventory-2026-11-03.zh-CN.md">旧资产表§3</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-intervention-chain-analysis-v1-2026-10-31/REPORT.zh-CN.md">补归档链分析</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-native-chain-audit-v1-2026-10-31/REPORT.zh-CN.md">原生链审计</a>。原始读出投影不是答案因果份额</td>
+</tr>
+<tr>
+<td>E2、FORM-AB、BRIDGE、COMBO</td>
+<td>深层缓存可承载75–94%的指定停止分差而不复现首步停止；形成期历史操作改变后续深层效应，V与S/卷积组合存在条件作用</td>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-mechanism-experiment-asset-inventory-2026-11-03.zh-CN.md">旧资产表§3–4</a>。分数承载、形成位置与原生行为不能互换</td>
+</tr>
+<tr>
+<td>局部读取、B1/B2/B3/B3P/B4与固定头推广</td>
+<td>若干局部计算候选未通过；固定45头能影响停止侧分数，但不能稳定交付完整答案</td>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-mechanism-experiment-asset-inventory-2026-11-03.zh-CN.md">旧资产表§4及后续</a>。负结果保留，不以内部交互大推行为作用大</td>
+</tr>
+<tr>
+<td>FC/SP/SVQ/NR/EH/SK/NQ/QC/QCD/QST</td>
+<td>开口、共享前缀、目标选择与完整交付分离；布局、覆盖及背景影响结果；查询身份交换未按预期转移答案</td>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-mechanism-experiment-asset-inventory-2026-11-03.zh-CN.md">旧资产表</a>。不同面板与窗口不池化；查询交换阴性不证明所有读取无关</td>
+</tr>
+<tr>
+<td>QCO/QKF</td>
+<td>V恢复背景下，去共同q/k偏移使三方向正确数16/28/38→47/48/48；只去k为44/48/48，只去q为16/28/40</td>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-common-offset-v1-2026-11-02/REPORT.zh-CN.md">QCO</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-qk-component-factor-v1-2026-11-02/REPORT.zh-CN.md">QKF</a>。每项分母48；随机加入也能致错，不能称方向独有</td>
+</tr>
+<tr>
+<td>QKD/QSR</td>
+<td>t2局部k反事实仍留下91–98%核输出差；S/q/α拆分为mixed，未生成候选</td>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-k-computation-diagnostic-v1-2026-11-03/REPORT.zh-CN.md">QKD</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-state-readout-decomposition-v1-2026-11-03/REPORT.zh-CN.md">QSR</a>。代数分账未给出单项行为归因</td>
+</tr>
+<tr>
+<td>KRD/KHC/KUC</td>
+<td>历史包可搬运条件M缺口；固定供体q时S单项约为S+KV联合的0.96–1.03；t1新值写入k操作改变完整回答，旧修正项单独弱</td>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-k-repair-dependence-v1-2026-11-03/REPORT.zh-CN.md">KRD</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-k-history-carrier-v1-2026-11-03/REPORT.zh-CN.md">KHC</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-k-update-causal-v1-2026-11-03/REPORT.zh-CN.md">KUC</a>。背景和端点有切换，不能当成同一路径的自然中介分解</td>
+</tr>
+</tbody>
+</table>
+<h3 id="42">4.2 旧骨干之后：写入—读取链的条件和边界</h3>
+<p>M为共同强制前缀下的目标竞争；主读数多取目标非首列32条、六场景等权。Y为自然完整正确回答，一般分母48，包含停止与失败。两者分开报告。D在此指直接读取项，不能与早期同名字母的停止分数混用。</p>
+<table>
+<thead>
+<tr>
+<th>实验</th>
+<th>已有结果</th>
+<th>失败、例外与不能推出的结论</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-native-v-write-interaction-v1-2026-11-03/REPORT.zh-CN.md">NVW</a></td>
+<td>原生背景写入k操作M只变+0.28/+0.41/+0.13；V恢复后增强</td>
+<td>原生完整交付无多场景改善，N1210仅0→1/48；不能用整体q/k恢复弱作为选择性写入操作的效应上限</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-local-v-k-v1-2026-11-03/REPORT.zh-CN.md">LVK</a></td>
+<td>局部v恢复后，加写入k操作：新面板Y为16→39、27→48、37→47；M交互/整体V交互为0.87–0.97（旧新面板）</td>
+<td>比值不是准确率份额；N4146局部联合39/48，整体V联合44/48，仍有差距</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-state-read-use-v1-2026-11-03/REPORT.zh-CN.md">SRU</a></td>
+<td>同一LVK端点，t2只换直接读取D：获得侧Y 16→34、27→42、37→45；撤回侧39→18、48→33、47→36</td>
+<td>修正用途较弱且可反向；D单项/联合M为1.02–1.09，不是自然贡献超过100%；部分自然首token不等于强制前缀</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-native-bridge-v1-2026-11-03/REPORT.zh-CN.md">NVB</a></td>
+<td>原生输出下只换留存v，增强约联合恢复的0.11/0.33/0.34；恢复输出后同一留存操作增强+1.45–2.12，固定k时Y增加23/22/11</td>
+<td>主预测P1失败0/3。回答交互是22/14/8，不能与固定k增益混写。C1343原生输出侧Y为0/48、ρ=1.13，模式不同</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-native-bridge-record-v1-2026-11-03/REPORT.zh-CN.md">NBR及更正</a></td>
+<td>已存张量离线重算：固定读者/梯度，换状态来源的投影变化稳定；只换读者变化≤0.02</td>
+<td>原稿换读者同时换梯度，归因被撤回；下游敏感度取决于线性化点，未定。一阶投影和逐层合计不是行为份额</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-state-increment-transfer-v1-2026-11-03/REPORT.zh-CN.md">SIT</a></td>
+<td>恢复来源增量移入原生接收者，k条件效应增加0.53–0.76；反向在恢复背景换回原生增量，固定k少答对18/12/5</td>
+<td>回答交互损失17/4/2是另一量；幅度和方向未分开。原生侧t1几乎已停止，未修复原生行为</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-increment-norm-match-v2-2026-11-03/REPORT.zh-CN.md">NMT v2</a></td>
+<td>保留原生方向、匹配逐层逐头幅度：原生接收背景Φ_up 0.75/0.86/0.91，Φ_dn 0.98/0.86/0.90；恢复背景Φ_up 0.63/0.80/0.73</td>
+<td>单格M未匹配；统一缩放仅0.15–0.38，5次随机内容Φ为负；不能说“幅度决定一切”。未满足合同的跨条件迁移出口</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-chain-generalization-v1-2026-11-03/REPORT.zh-CN.md">CGV r02</a></td>
+<td>L12局部v足以使31→48/48，但k交互为−0.56；27条新结构上M交互约+1，读取可传递部分M</td>
+<td>L12读取没有足够端点缺口，不称读取失效；新结构完整回答只变1–4条；干净背景μ使M降约0.46–0.49但Y仍48/48；一个同角度随机方向不能证明特异性</td>
+</tr>
+</tbody>
+</table>
+<p>NVB→NBR→SIT→NMT沿用已见面板并逐轮改操作，不能算四次独立确认。SDT分层状态差方案并未运行；实际执行的是SIT全G层增量移植，两者不能混记。</p>
+<h3 id="43">4.3 原生缓存恢复与反向移植：必须成对阅读</h3>
+<p>以下分母均48，L0为N4146，L12为C3621；接收背景、时间边界及分组均按各合同。Y由本次脚本从记录标签重新加总，与归档分析一致。</p>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th style="text-align: right;">L0完整正确</th>
+<th style="text-align: right;">L12完整正确</th>
+<th>来源</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>原生受干预T</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">31</td>
+<td>NCC</td>
+</tr>
+<tr>
+<td>T中恢复V历史／S／KV</td>
+<td style="text-align: right;">16 / 48 / 3</td>
+<td style="text-align: right;">48 / 48 / 48</td>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-native-carrier-comparison-v1-2026-11-03/REPORT.zh-CN.md">NCC</a></td>
+</tr>
+<tr>
+<td>C中换入受损S／V历史／KV</td>
+<td style="text-align: right;">48 / 48 / 48</td>
+<td style="text-align: right;">48 / 48 / 48</td>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-native-s-reverse-v1-2026-11-03/REPORT.zh-CN.md">NSR</a></td>
+</tr>
+<tr>
+<td>C中换入全部受损深层CJ</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">31</td>
+<td>NSR；L12 CJ=T是结构桥接</td>
+</tr>
+<tr>
+<td>C中只换入受损q/k历史</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">48</td>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-native-qk-history-v1-2026-11-03/REPORT.zh-CN.md">NQK</a></td>
+</tr>
+<tr>
+<td>C中换入受损V+S+KV，q/k干净</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">30</td>
+<td>NQK；L12与CJ错误集合不完全相同</td>
+</tr>
+<tr>
+<td>C中换入受损S+V／S+KV／V+KV</td>
+<td style="text-align: right;">45 / 32 / 48</td>
+<td style="text-align: right;">48 / 48 / 48</td>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-native-pair-combination-v1-2026-11-03/REPORT.zh-CN.md">NPC及更正</a></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>NCC的“S单独弱”预测失败；L0恢复S后43/48以think或引导语开头但最终全对，恢复V后46/48编号开头但仅16/48正确。首步形式不是完整正确性的代理。</li>
+<li>NSR三条工作预测全部失败。换入另一条干净输入的S，38/48答错，其中32条输出供体答案；这是跨输入参照，不能称为零效应对照，也不能证明针已删除答案信息。</li>
+<li>NQK的“q/k单独会致错”预测失败。V+S+KV不含受损q/k已能致错，但L12有2条CJ错误未复现、3条新增，不能说q/k与损伤无关。</li>
+<li>NPC逐输入最小组合：L0有18条可由含S的两组致错，28条只有三组致错，2条未错；L12有18条仅三组致错。L0前18条中16条错选首列编号，另2条复述后截断；不能全部写成首列偏好，也不等于重现原生停止。</li>
+<li>在已测集合内，所有致错组合含受损S；“S是必要组成”只限该集合。它不证明S单独充分、唯一承载损伤，或天然存在“S内容—V/KV读取”的功能分工。</li>
+</ul>
+<h3 id="44-r1winkvc">4.4 R1、WIN与KVC：恢复关系的横向检验和事实桥接</h3>
+<table>
+<thead>
+<tr>
+<th>资产</th>
+<th>结果及关系</th>
+<th>最重要的边界／更正</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-mechanism-alignment-r1-v1-2026-11-04/REPORT.zh-CN.md">R1对齐</a></td>
+<td>旧事实全层缓存与编号深层缓存并排，揭示恢复分叉</td>
+<td>无新模型实验；形成窗口、校准、范围、128/32生成上限不同；阶段二“conv V”实际为整块q/k+V，不按字面等同V单组</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/window-recovery-win01-v1-2026-11-04/REPORT.zh-CN.md">WIN-01</a></td>
+<td>L0事实W_all恢复R_all为10/48、W_post为47/48；W_all恢复R_all+KV_pre为47/48。编号相应6/48、48/48、48/48</td>
+<td>W_pre覆盖模板＋记录句；窗口改变位置与次数。事实三种判读口径的差异保留，不能以“判定标签不变”隐藏正确数变化</td>
+</tr>
+<tr>
+<td>WIN-01 B</td>
+<td>事实全部KV和全缓存交换各44/44跟随供体；全部递推0/48、深层S 1/48</td>
+<td>B换所有KV位置；不是已定位事实段。与NSR不同记录列表的S移植不是同一操作</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/window-prediction-win02-v1-2026-11-04/REPORT.zh-CN.md">WIN-02</a>关系M</td>
+<td>事实L2 11/11、L3 13/13、R0 27/28，编号R0 38/38救回；另4格天花板</td>
+<td>U+为T与R_all均错；原生编号针无正向检验余量。事实L2/R0各改坏1条，L5天花板格也有1条改坏；未达反例阈值≠零损害</td>
+</tr>
+<tr>
+<td>WIN-02其他预测</td>
+<td>P4原生事实针未获支持；P5恢复增益差成立、停止部分未全成立</td>
+<td>R0 W_all停止事实0/48、编号2/48，却均0/48正确；N4146同窗口均48/48停止。只共享部分恢复响应，不能称同型机制</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/kvpre-content-kvc01-v1-2026-11-05/REPORT.zh-CN.md">KVC-01</a></td>
+<td>L3/N4146/R0的M_other供体事实43/42/43（各44）；B_pre 41/44；M_same接收者事实42–44/44</td>
+<td>实际差异KV仅事实词起至b；22对已见题。针间近饱和，M与B等效性不可判；未测共同读取、唯一载体或原链推广</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-mechanism-broadening-audit-v1-2026-11-04/README.zh-CN.md">拓宽库存审计</a></td>
+<td>核对240份JSON与432行读数库存，144行M可复用、288行缺失</td>
+<td>CPU派生，无新样本；自然t2 hash不能还原logits/状态</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/window-protocol-audit-v1-2026-11-05/audit.json">WIN协议审计</a></td>
+<td>384旧输出：L0/W_post事实S_deep16/48对R_all47/48，编号均48/48；编号四臂全部17 token内终止</td>
+<td>事实S_deep 32/48达到128上限而未交付；名义范数均值2.7875/2.6265、施针25–33/26–27不同；未证任务语义差异</td>
+</tr>
+</tbody>
+</table>
+<p>WPC-01只完成旧数据审计与<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/mechanism-second-half-v1-2026-11-03/WINDOW_COMPARISON.zh-CN.md">共同协议设计</a>，没有新模型测量。编号提高上限不会改变原先已终止的同状态轨迹，属于条件推论，不是已跑过新形成协议。</p>
+<p><strong>连接账目：</strong> R1→WIN是协议问题到任务内窗口操作；WIN→KVC是同版额外KV恢复到供体事实身份替换。二者均没有通过同端点用途操作连接到SRU的t2直接读取。NVB–NMT则紧接LVK的端点与状态增量。文章把这几组放在同一问题下，但不虚构一条已验证的原生全链。</p>
+<h2 id="5">5. 其他研究线与未完成工作</h2>
+<table>
+<thead>
+<tr>
+<th>资产</th>
+<th>当前可登记的状态</th>
+<th>不能升级为</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/README.md">公开配方复现</a></td>
+<td>1,170条采集与完整性核验完成；各配方5题、128 token上限</td>
+<td>210配置全都成功、稳定人格或一般能力无损；并排解释报告尚未完成</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cross-model-foundation-common-v1-2026-11-02/PREFLIGHT_R02.zh-CN.md">跨模型基础F1</a></td>
+<td>四模型预检有记录；写入1%容差存在未过项，后续决策未完成</td>
+<td>跨模型科学结果或完整执行就绪；不同计算路径差不是同路径零分布</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/div01-threshold-split-survey-v1-2026-11-03/REPORT.zh-CN.md">DIV-01</a></td>
+<td>336条，第零步够数闸FAIL；未构成所需STOP/CLEAN对照，按合同停止</td>
+<td>理论假设已否证。离散剂量/有限题集也不足以证明所有通道阈值都严格落在0.5–0.75，更不足以证明停止“只由幅度决定”</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cross-condition-predictor-v1-2026-11-03/INVENTORY.zh-CN.md">跨条件预测草稿</a></td>
+<td>零GPU资产与候选整理，未确认预测规律</td>
+<td>跨条件可预测性结果</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/ec6dbf4b1c481c02d9530cfe9ac70a1054eee7cb/docs/mechanism-second-half-v1-2026-11-03/PROPOSAL.zh-CN.md">机制后半段提案历史 v2</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/pirate-persona-capability-repair-mini-proposal-2026-11-03.zh-CN.md">Pirate修复概念</a></td>
+<td>设计／概念历史材料</td>
+<td>已运行结果或默认待执行队列</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/wsp-process-reproduction-v1-2026-11-03/HANDOFF-2026-11-03-fa01.zh-CN.md">WSP FA-01</a></td>
+<td>双模型前向工程验收，保留首轮失败与数值限制</td>
+<td>作者WSP效果复现或能力提高</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/wsp-coding-painpoint-v1-2026-11-03/REPORT.zh-CN.md">WCP-01</a></td>
+<td>数据、评分隔离、编译权重干预接口验收；运行时针与编译针数值不等价</td>
+<td>编程正式搜索完成／编程能力改善</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/wsp-process-reproduction-v1-2026-11-03/local-runtime-archive-r01/README.zh-CN.md">WSP车队快照</a></td>
+<td>用户此前另行授权后启动；0.8B数学保留1/50 pass并因编辑器拒绝阻断；4B数学在快照中running；后续<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/wsp-process-reproduction-v1-2026-11-03/fleet-v1/runs/diagnostic-r1/README.zh-CN.md">恢复记录</a>将0.8B续接排到队尾，尚非第2 pass完成；编程未有本轮完成收据</td>
+<td>四项已完成、科学阴性或稳定方法收益；此处不改动正在运行的队列</td>
+</tr>
+</tbody>
+</table>
+<p><strong>11-05旁线补登（未运行模型）：</strong> <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/wsp-vlm-screen-data-v1-2026-11-05/README.zh-CN.md">VLM数据v1</a>与<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/wsp-vlm-screen-prep-v2-2026-11-05/README.zh-CN.md">准备v2</a>完成数据／CPU统计验收；B按全量审核固定146组（D58/H88），C为160组（D64/H96）。其合成夹具不属于目标模型结果，也不构成本机制论文的跨模型或实用收益证据。上表WSP车队是11-04快照，本轮不审计或改动正在其他工作流推进的状态。</p>
+<p>旧迁移、跨家族停止、原Q24边界、未完成盲评及根因候选仍按<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/README.md">完整实验目录</a>保留。目录名里的日期是版本名，执行时点以receipt为准。</p>
+<h2 id="6">6. 更正和证据等级</h2>
+<table>
+<thead>
+<tr>
+<th>必须撤回或收窄的说法</th>
+<th>本归档采用的表述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CGV“L12损伤路径就是V，与k无关”</td>
+<td>指定局部v操作足以恢复；指定k去偏移没有正向增益。充分恢复不识别唯一原生损伤路径</td>
+</tr>
+<tr>
+<td>NVB“C1343原生全对”“q余弦高排除读者作用”</td>
+<td>原生输出侧0/48；余弦不控制幅度或任务方向。以报告顶部更正为准</td>
+</tr>
+<tr>
+<td>NBR“换读者时固定了梯度”“没有一个量能单独解释”</td>
+<td>原分析混换了梯度；离线拆开后读者投影小。尚未证明任何单量足以解释，不是证明单量不可能</td>
+</tr>
+<tr>
+<td>SIT把17/4/2叫回答损失</td>
+<td>固定k的正确数差18/12/5；17/4/2是扣除主效应后的交互</td>
+</tr>
+<tr>
+<td>NMT“I_S已匹配”“幅度集中少数层头”</td>
+<td>无明显整体失配；不能排除敏感方向的小失配。分布不均匀不等于已定位到少数层头</td>
+</tr>
+<tr>
+<td>NCC“L12浅层始终受损”</td>
+<td>架构时序排除；L12全深层恢复是结构桥接</td>
+</tr>
+<tr>
+<td>NSR/NQK“只有全部组合才致错”</td>
+<td>是当时只测单组与联合的描述；NPC已补出L0的两组致错，不能继续作为当前普遍结论</td>
+</tr>
+<tr>
+<td>NPC“18条都选首列”“L12等于原生17条”</td>
+<td>首列16/18；本轮三组组合18条错误，与原生17条不等同</td>
+</tr>
+</tbody>
+</table>
+<p>11-04复核是同一助手的资料核对与算术审计，状态为 <strong>ANALYZED_NO_MODEL_RERUN</strong>。没有进行独立模型复现、独立人类语义重评、全部远端张量重验或新文献查重。</p>
+<p>统计与推理检查覆盖11项：分组反转（保留按针／背景／场景区别，不池化）；生态推断（结论限面板）；选择偏差（已见／极值面板明确）；碰撞偏差（Y分母保留停止和失败）；基率（48、32、27等分开）；均值回归（重复用旧题不称确认）；幸存者偏差（失败和跳过保留）；多重探索（冻结阈值不当显著性）；分析路径（旧稿、更正、事后描述保留）；因果越界（投影／恢复不当唯一自然机制）；反向因果（操作时序与结构必然性分开）。本轮不新增p值或等效性结论。</p>
+<p>11-05增补更正：WIN-01全部KV转移与受限KV恢复不混写；WIN-02 P5只能记部分兑现、P4是未获支持；行为非加和不命名状态协同；KVC仅作为有直接文献近邻的桥接。新三卡formal verification均为passed、六份worker receipt均completed，本轮未重跑或独立重判。论文自查见<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/mechanism-paper-skeleton-2026-11-05.zh-CN.md#11-本次交付审计与版本边界">工作稿§11</a>。</p>
+<h2 id="7">7. 仍未解释的部分</h2>
+<ol>
+<li>原始稀疏入口怎样形成共同偏移及相关V变化，尚缺具体计算解释。</li>
+<li>条件性写入—读取链怎样接回原生停止、错选和混合编号，尚未闭合；NCC–NPC增加的是原生背景约束。</li>
+<li>留存增量中哪些目标相关性质决定效应方向，幅度配置为何有效，仍未识别；NMT也保留单格残差。</li>
+<li>跨针、跨任务和跨模型的适用边界未完成确认；CGV提供了明确反例。</li>
+<li>稳定副作用控制仍缺相对基线的正式收益证据；WSP/WCP的工程进度不填补这个科学缺口。</li>
+</ol>
+<p>这些是现有证据的缺口，不是本次新增实验计划或执行授权。</p></main></html>

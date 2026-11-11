@@ -1,0 +1,128 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>FC-01（首步选择、条件续答与卷积恢复的有限行为验证）结果报告</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="fc-01">FC-01（首步选择、条件续答与卷积恢复的有限行为验证）结果报告</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-first-token-continuation-v1-2026-11-02/REPORT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-first-token-continuation-v1-2026-11-02/REPORT.zh-CN.md">固定提交原件</a>；SHA-256：<code>d930de3fa9063a374c92ba278c8ca2453420ce1ee072da0ee44f43af7a78904b</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="fc-01_1">FC-01（首步选择、条件续答与卷积恢复的有限行为验证）结果报告</h1>
+<p>日期：2026-11-02。<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-first-token-continuation-v1-2026-11-02/CONTRACT.zh-CN.md">合同 r01</a>；<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-first-token-continuation-v1-2026-11-02/DECISIONS.zh-CN.md">决策 D1–D5</a>；<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-first-token-continuation-plan-v1-2026-11-02.zh-CN.md">计划 v1</a>（评审撰写）。代码 <code>9baa563</code>，freeze-r01 <code>c1bc9dfb…df47</code>。已见面板，续写输出此前未见。同一助手实现、运行与撰写。</p>
+<h2 id="1">1. 结论（含限制）</h2>
+<ol>
+<li><strong>干净基线可用</strong>：C_nat 与 C_noEOS1 都是 12/12 正确交付，且都严格只给出编号（Y_strict 12/12）；C_noEOS1 与 C_nat 逐 token 相同。</li>
+<li><strong>原生干预下完全不交付</strong>：T_nat 在 48/48 个单元未交付编号（N4146、N1210、C1343 首 token 即停止；R0 多数先输出问题行开头“请根据上面的记录，简短回答”的片段，然后停止）。</li>
+<li><strong>只给一次“不停止”的机会，大多仍不交付</strong>：T_noEOS1 的 Y_delivery 为 N4146 0/12、R0 0/12、C1343 2/12、N1210 6/12（Y_strict 全部为 0）。主要形态有两种：(a) 输出问题行的开头片段（“请根据上面的记录，……”）后停止（N4146 10、R0 12、C1343 6）；(b) 输出一个空的 <code>&lt;think&gt;\n\n&lt;/think&gt;</code>，然后开始逐条罗列记录（“根据您提供的档案记录，关键信息如下：- 松塔编号：A17 - 目标条目：……”），在 32 token 预算内被截断（N1210 12、C1343 6、N4146 2）。按冻结规则，(b) 中只来得及出现第一个条目编号的单元被判为“干扰编号”（N1210 3 例），这来自罗列被截断，不是模型选错了答案。</li>
+<li><strong>给定正确的首字母后，几乎全部接出正确编号</strong>：T_q0 在 47/48 个单元正确交付且严格只给编号；唯一例外是 N4146 的 P02-f1（目标 D14，输出 “D1” 后停止）。f0 与 f1 的目标编号只是数字顺序不同（如 B26 与 B62），T_q0 在两者上都接出了对应记录的正确数字。<strong>限制</strong>（计划 §4 的 q0 审计）：12 个输入中，q0 都只覆盖编号的首字母，而且没有任何干扰编号与 q0 同首字母，所以强制 q0 实际上排除了记录里的其他编号。T_q0 正确只说明“给定这个前缀后，干预状态下仍能生成正确后缀”，不证明原来的记忆完整，模型也可能是在给定首字母后从提示里复制。</li>
+<li><strong>只恢复深层卷积，就完全恢复交付</strong>：T_F 在 48/48 个单元正确交付且严格只给编号。预注册的 <strong>P_F 4/4 方向成立</strong>（每方向 6/6 情景；基线 6/6）。转移：T_nat → T_F 为“错→对” 48/48。</li>
+</ol>
+<h2 id="2-y_delivery-y_strict-12">2. 主要读数（Y_delivery / Y_strict，每方向 12）</h2>
+<table>
+<thead>
+<tr>
+<th>方向</th>
+<th>T_nat</th>
+<th>T_noEOS1</th>
+<th>T_q0</th>
+<th>T_F</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>N4146</td>
+<td>0 / 0</td>
+<td>0 / 0</td>
+<td>11 / 11</td>
+<td>12 / 12</td>
+</tr>
+<tr>
+<td>N1210</td>
+<td>0 / 0</td>
+<td>6 / 0</td>
+<td>12 / 12</td>
+<td>12 / 12</td>
+</tr>
+<tr>
+<td>R0</td>
+<td>0 / 0</td>
+<td>0 / 0</td>
+<td>12 / 12</td>
+<td>12 / 12</td>
+</tr>
+<tr>
+<td>C1343</td>
+<td>0 / 0</td>
+<td>2 / 0</td>
+<td>12 / 12</td>
+<td>12 / 12</td>
+</tr>
+</tbody>
+</table>
+<p>C_nat、C_noEOS1：12 / 12。平均生成 token 数：T_nat 1.0（R0 6.8）、T_noEOS1 7.4–32.0、T_q0 与 T_F 约 4（编号 3 个字符 + 停止）。“可见文本含完整问题原文”在所有臂上都是 0；出现的只是问题行开头的片段。</p>
+<h2 id="3">3. 执行</h2>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th style="text-align: right;">形成</th>
+<th style="text-align: right;">轨迹</th>
+<th style="text-align: right;">实际解码前向</th>
+<th style="text-align: right;">校准</th>
+<th style="text-align: right;">墙钟</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>预检 r01</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">40</td>
+<td style="text-align: right;">235</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">61 s</td>
+</tr>
+<tr>
+<td>正式 r01（2 worker）</td>
+<td style="text-align: right;">60</td>
+<td style="text-align: right;">216</td>
+<td style="text-align: right;">见 verification.json</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">约 3 分钟 / worker</td>
+</tr>
+</tbody>
+</table>
+<p>全部闸门通过：第一步原始 logits 与 NR 记录逐位相同（C、T、T_F）；T 三臂第一步 logits 与更新后缓存相同；q0 = NR a_token，非停止，是目标编号前缀；C_noEOS1、预检 C_q0 与 C_nat 逐 token 且终态缓存相同；屏蔽/强制只在第一步；T_F 组装哈希正确；预检重建续写逐 token 相同。</p>
+<h2 id="4-6">4. 按计划 §6 的结果表解读</h2>
+<ul>
+<li>“q0 答对、noEOS1 大多未答对”：<strong>正确前缀条件化比给一次任意继续机会有效得多</strong>。不能说“信息完整保存”或“唯一瓶颈已定位”。</li>
+<li>“F 答对”：<strong>状态恢复（只恢复深层卷积）在这组输入上足以恢复完整的编号交付</strong>，不只是恢复首 token；CT 中 F 让 q0 回到第一（48/48）与这里的完整交付（48/48）一致。不能说 F 唯一保存答案，也不能说它是自然路径。</li>
+<li>由 T_noEOS1 可见：原生干预下，一旦首步不能停止，模型常常转向问题行开头或罗列记录，而不是直接给出编号。这说明干预改变的不只是“停不停”，还有“从哪里开始说”。但在给定正确首字母的条件下，干预状态仍能产生正确的后两位。</li>
+</ul>
+<h2 id="5">5. 对课题的含义与出口</h2>
+<ul>
+<li>回到核心问题：在这组编号检索输入上，稀疏干预造成的回答改变，主要表现为<strong>回答起点被改变</strong>：答案首字母失去优势，首步落到停止、问题行开头或 <code>&lt;think&gt;</code>。只要给定正确的起点，干预状态仍能接出正确内容（47/48）；只要恢复深层卷积历史，回答就完整恢复（48/48）。</li>
+<li>这和前几轮的状态分析衔接：深层卷积既是 CT 中让 q0 回到第一的那一类，也是这里让完整回答恢复的那一类。但 NR-01 显示它单独只占竞争差变化的 33–48%，所以“回答恢复”所需要的并不是撤销全部分数变化，而是让答案首字母重新领先。</li>
+<li>按计划，不自动启动新实验。若继续，可以问：深层卷积的哪一部分（例如固定 45 头的 V 通道）足以恢复答案首字母并带出完整回答，以及在不提供首字母的提示下，罗列记录时模型最终会不会给出目标编号（需要更长的预算）。两者都需要另立合同。</li>
+</ul>
+<h2 id="6">6. 可以说 / 不可以说</h2>
+<table>
+<thead>
+<tr>
+<th>可以说</th>
+<th>不可以说</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>原生干预下 48/48 未交付编号；只恢复深层卷积后 48/48 正确且严格只给编号</td>
+<td>深层卷积唯一保存了答案 / 是自然路径</td>
+</tr>
+<tr>
+<td>强制正确首字母后 47/48 接出正确编号（含 f0/f1 的不同数字）</td>
+<td>记忆完整、只有首步受损（q0 排除了其他编号，可能从提示复制）</td>
+</tr>
+<tr>
+<td>只屏蔽首步停止，多数转向问题行开头片段或罗列记录</td>
+<td>模型在复述问题（只是片段）/ 罗列中出现的 A17 是选错答案（是截断）</td>
+</tr>
+<tr>
+<td>回答起点的改变是这组输入上回答改变的主要形态</td>
+<td>推广到其他任务、长回答或自由生成</td>
+</tr>
+</tbody>
+</table></main></html>

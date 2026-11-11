@@ -1,0 +1,50 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>四项能力小面板：原版与 EVO 对照</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="evo">四项能力小面板：原版与 EVO 对照</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/capability-screen-v3-2026-10-26/PROTOCOL.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/capability-screen-v3-2026-10-26/PROTOCOL.zh-CN.md">固定提交原件</a>；SHA-256：<code>134cd77f227b8460ce37e7266413ac9b9b5d30e83713989fbfeba1591fb4e0c8</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="evo_1">四项能力小面板：原版与 EVO 对照</h1>
+<p>用户于 2026-10-26 明确要求：数学、代码各扩到 100 题，停止此前全量实验，按小面板重新运行并测量 ETA 和实际用时。此次授权覆盖以下 1,400 对题目；一小时仍为希望达到的量级，不是已经验证的耗时或强停阈值。</p>
+<table>
+<thead>
+<tr>
+<th>任务</th>
+<th style="text-align: right;">每版题数</th>
+<th>主评分</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MMLU</td>
+<td style="text-align: right;">1,000</td>
+<td>acc，按原完整测试集的学科题数加权</td>
+</tr>
+<tr>
+<td>ARC-Challenge</td>
+<td style="text-align: right;">200</td>
+<td>acc_norm，完整选项似然按字符数归一化</td>
+</tr>
+<tr>
+<td>GSM8K</td>
+<td style="text-align: right;">100</td>
+<td>strict-match，另报固定 flexible-extract</td>
+</tr>
+<tr>
+<td>HumanEval</td>
+<td style="text-align: right;">100</td>
+<td>pass@1，官方测试每份 3 秒</td>
+</tr>
+</tbody>
+</table>
+<p>每道题原版与 EVO 同题配对，共 2,800 个题目—条件单元。分别报告原版分数、EVO 分数、下降百分点（原版减 EVO，负值保留）和 95% 配对 bootstrap 区间。MMLU 按学科分层抽样并保留完整测试集学科权重；其余任务固定随机抽样。先独立选择题目，再检查旧运行是否已经完成该题，不能根据答案、长短或完成情况选题。</p>
+<h2 id="_1">复用与不变项</h2>
+<p>复用 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/capability-damage-v2-2026-10-26/protocol.json">v2 的固定模型与推理设置</a>：Qwen3.5-4B 固定 revision、BF16/eager、实际 forward batch=1、greedy、无聊天模板，GSM8K 最多 2,048 新 token、HumanEval 最多 1,024 新 token。停止 token 和任务停止字符串、few-shot 提示及官方评分规则保持一致。</p>
+<p>EVO 仍为动态激活干预：零起始 L14/N8949 +1、L13/N7956 −1；逐题以原版公共提示校准，提示与生成全程注入。没有永久权重修改，也没有新的剂量、位置或机制实验。</p>
+<p>仅复用 v2 中完整且两臂均成功的同题记录，必须匹配完整题目内容、源协议、引擎与数值设置，并记录原文件、回执及 SHA-256。保留旧原文，不修改旧输出。未完成记录不当作答错；旧运行按用户要求中断，不能把它称为全量完成，也不能声称已获得被中断进程的最终权重恢复检查。新运行继续执行自己的资产、权重与钩子恢复核验。</p>
+<h2 id="_2">执行与计时</h2>
+<p>两张 H20 对互不重叠的题目分工，每题两臂在同一张卡依次计算。优先执行生成任务，并让两张卡从数学和代码分别开始，以尽早获得两种任务的耗时样本。任务队列与顺序以冻结的 <code>protocol.json</code> 和启动回执为准。</p>
+<p>ETA 使用各任务已完成的完整配对耗时和未完成数量；显示样本数、截断比例、两卡剩余队列和不确定范围。只有短回答或少数样本时标注为初步估计；不把早结束样本均值当作可靠全程速度，不因到一小时而丢弃慢题。数学和代码各 100 题可能使本轮明显超过一小时。</p>
+<p>计时分别记录：新一轮启动到评分完成的实际等待时间、新推理用时、复用旧结果数量，以及复用部分历史计算时间。新一轮墙钟时间不能包装成“所有 1,400 对均从零计算”的性能。</p>
+<p>HumanEval 沿用已验证的禁网、非 root、资源受限沙箱与官方测试。CPU 收尾仅在新面板依赖完整时运行；禁止重复启动旧收尾。基础设施失败保留为未完成，不记为模型答错，不自动重试或更改已冻结设置。</p>
+<h2 id="_3">证据与状态</h2>
+<p>本轮题目、抽样与权重见 <code>panel_manifest.json</code>；旧结果复用来源见 <code>reuse_manifest.json</code>；冻结设置与代码哈希见 <code>protocol.json</code>。实际状态以 <code>worker-0.json</code>、<code>worker-1.json</code>、各输出收据及 CPU 收尾收据为准。旧实验停止证据保存在 v2 的 <code>user-stop-20261026-r01/</code>。</p>
+<p>抽样成绩不称为官方全量成绩；能力损伤与“evil”行为不是同一个测量。固定面板供日常比较，反复用于调参后属于开发证据。当前报告必须区分准备、运行、完成与复用，只有原文、官方评分及分母核验齐备才发布最终分数。</p></main></html>

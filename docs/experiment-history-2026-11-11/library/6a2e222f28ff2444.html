@@ -1,0 +1,65 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>0.8B数学WSP耗时审计：原作者、讨论与我们的账本</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="08bwsp">0.8B数学WSP耗时审计：原作者、讨论与我们的账本</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/wsp-process-reproduction-v1-2026-11-03/fleet-v1/runs/cost-audit-r1/README.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-process-reproduction-v1-2026-11-03/fleet-v1/runs/cost-audit-r1/README.zh-CN.md">固定提交原件</a>；SHA-256：<code>6a2e222f28ff24441c31c7793095e9e780a4e79b689a93f899421b223c14a434</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="08bwsp_1">0.8B数学WSP耗时审计：原作者、讨论与我们的账本</h1>
+<p>2026-11-04北京时间17:11账本快照，预算切换另于17:13完成。只读现有数据、源码和公开来源，没有新增推理、改变搜索策略或向搜索编辑器提供作者答案。其他实验仍暂停。</p>
+<h2 id="_1">结论</h2>
+<p>有真实重复计算和工程开销，也有此前ETA表述错误。48GPU小时是防截断的资源上限，绝不是WSP必需成本；“还需30–32GPU小时、16–18墙钟小时”是剩余28次全按最大规格长输出运行的高负载情景，不应称为最可能完成时间。目前不知道未来请求的大小和类型，不能给唯一可靠终点。</p>
+<p>作者完整数学搜索也用了20.3墙钟小时；这不等于20.3GPU小时。网上约15美元的计算只计编辑器token，未含GPU租赁；51分钟复现指验证已经发布的修复模型，不是重新搜索。两卡同时运行半小时计1GPU小时，两者必须分开。</p>
+<h2 id="_2">原始来源与讨论</h2>
+<ol>
+<li><a href="https://rikiyat.github.io/blog/weight-space-programming/">作者原文</a>、<a href="https://github.com/RikiyaT/lm_understand-logs/blob/4d09ba6d6a7e891dd8063974dfe81b3d78e3494f/exp8_math/README.md">冻结版实验8说明</a>：50成功pass、158轮、80次Python，20.3墙钟小时，其中4.7小时为编辑器连接等待；完整生成批次可到半小时。作者GPU型号、卡数和总租赁账单未在已核对资料中明确。</li>
+<li><a href="https://x.com/rikiyatakehi/status/2117313742891327994">作者X原帖</a>：已定位链接，但本次直接访问403，未声称完整读取回复串。原文和日志可直接查证；以下讨论来自评论者自己的公开文章。</li>
+<li><a href="https://ashishkumar.ai/blog/weight-space-programming/">Ashish Kumar的成本推算</a>：其约15美元是按token用量及标价自行计算，文章明说不是发票，GPU费用未公开。这里只转述该计算的范围，不把其金额当实际支付凭证或当前价格。</li>
+<li><a href="https://huggingface.co/RikiyaT/Qwen3.5-0.8B-weight-space-programming">Hugging Face模型卡</a>：复用作者最终补丁，H200上2000个回答、4340万token、51分钟。它是补丁重建及评测，不包含找针。单次长队列的吞吐也不能无条件移植到H20的小批次搜索。</li>
+<li><a href="https://feeds.simonwillison.net/2026/Nov/3/qwen-can-interpret-model-weights/">Simon Willison原文</a>：笔记本复现的是17K参数游戏网络识别，每个任务约46–65分钟，不是0.8B数学修复。</li>
+<li><a href="https://honnibal.dev/blog/astra-read-write-misleading">Matthew Honnibal</a>和<a href="https://www.seangoedecke.com/llms-are-not-superhuman-at-reading-and-writing-neural-network-weights/">Sean Goedecke</a>区分“看小网络权重猜行为”和“用Python诊断、运行模型、修改权重”。评论支持成本分类的必要性；不把评论中所有机制论断当已证实事实。</li>
+</ol>
+<p>从作者完整tool_calls.jsonl重新计算（摘要author-summary.json）：69次forward请求，50成功，其中34生成、16teacher-forced；成功生成的服务墙钟合计9.099小时，teacher-forced服务计时12.4秒，19次失败请求合计3.057小时，Python计时252.75秒。按摘要均值乘样本量估算生成1.4547亿token（均值四舍五入，非逐token精确计数）。这些服务计时不是GPU利用时间，不能相加后假称作者GPUh。只有4个生成请求达到每版240–256回答；大部分更小。</p>
+<h2 id="_3">我们的钱和时间花在哪里</h2>
+<p>our-snapshot.json冻结截至22/50；当时16生成、6teacher-forced，已完成输出75,299,524token。统计代码仅只读服务器；不打印回答全文或token数组。</p>
+<table>
+<thead>
+<tr>
+<th>已发生的成本</th>
+<th style="text-align: right;">GPU小时</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>累计资源账本</td>
+<td style="text-align: right;">6.222</td>
+<td>预留GPU数量乘动作墙钟，包含非计算部分</td>
+</tr>
+<tr>
+<td>完成输出的解码引擎累计</td>
+<td style="text-align: right;">4.975</td>
+<td>各卡生成阶段seconds之和</td>
+</tr>
+<tr>
+<td>用户中止动作保守补计</td>
+<td style="text-align: right;">0.398</td>
+<td>turn012；保留实际下界，不称全部工程故障</td>
+</tr>
+<tr>
+<td>其余合计</td>
+<td style="text-align: right;">0.849</td>
+<td>启动/加载/激活重放/诊断/双卡等待等混合项，未全部逐项剖析</td>
+</tr>
+</tbody>
+</table>
+<p>59份本地编辑器receipt合计2607秒，约43.5分钟；这是有收据的编辑器调用时间，不是完整停机/排队时间。此前4B运行、两次用户暂停、等待队尾和断线造成的日历时间不能计作0.8B GPU消耗。</p>
+<p>最近四个完成动作turn046/050/054/057共61,221,456token，占全部输出81.3%，消耗4.403GPU小时，占累计70.8%。原/改每版240–256回答，大多数接近32768上限，每次1.02–1.14GPU小时，墙钟约31–34分钟。它们均未建立可靠改善，编辑版仍大量触顶；作者有效针降低输出长度，我们尚未得到这项节省。错误或阴性候选是自主搜索成本，不等于实现必有bug。</p>
+<h2 id="_4">确认的浪费、疑点与边界</h2>
+<p><strong>重复原版计算。</strong> 11个成功请求的原版输入文件与先前完全相同，重新解码合计1.147GPU小时。9个请求逐样本token完全一致，共0.659GPU小时；另2个分别有3/48、4/240条token不同。固定种子不保证GPU数值轨迹逐位确定。未实现输出缓存是真实效率缺口；但不能声称不经处理即可安全节约全部1.147小时。作者33个生成调用也使用both，原版重测不是仅我们独有。</p>
+<p>同请求且输出一致的例子：turn054与057原版256/256条token完全一致，后一次原版生成约1949.6秒。复用它可避免约0.542GPU小时解码；由于编辑版原本并行运行约1798.8秒，单纯去掉原版并不能把墙钟减半。改变两卡任务切分才可能进一步提速，但会改变数值调度，不能未经验收热改。</p>
+<p><strong>大批搜索策略。</strong> 我们的编辑器在初步证据仍弱时使用48题×5、128题×2的昂贵验证。扩大n增加同题样本，不等于增加独立题目。是否值得由当时假设及信息增量决定；没有证据说每个候选都需要满规格。作者用较多小批次和快速定位。这是可改进的搜索成本分配，强制更改将构成显式策略修订，不能悄悄干预后仍说完全照原过程。</p>
+<p><strong>反复启动。</strong> 当前每次生成重启vLLM。turn057实测编译缓存命中，torch.compile仅0.30秒，引擎初始化23.42秒；长批每卡非生成约一分钟量级。长批约4%左右，短批会占更大比例，常驻服务有节省空间，但不会单靠此把数十分钟变成几秒。checkpoint缓存每次被清理，但同一权重快照在生成间并非总重复，不能把全部重建算作冗余。</p>
+<p><strong>长上下文容量与硬件。</strong> 日志给出约647万KV token，对33667长度最大并发约192；请求有256回答，因此无法始终让256条长序列同时驻留。没有在本次查看的日志中发现preemption警告；此为容量限制线索，不是已测得的重复算力损失。双卡100%仅表明忙碌，不能证明算力效率最优。H200评测约1.42万token/s，我们大批单H20约4000–4300；硬件、长度、批次及实现不同，不能将差值全部归因硬件或全部归因bug。输入prefix缓存关闭，但提示远短于32k回答，目前不是主耗时解释。</p>
+<p><strong>搜索轨迹本身。</strong> 作者早期用有效推理/重复段的配对内部差异及有符号输出贡献定位；我们的注意力消融、短输出筛选及后期少数MLP增益没有找到可靠针。单纯增加50次内的每批回答数不能补偿假设质量。此为已有轨迹对照，尚不能断言某一条路径必然失败，更不向编辑器泄露作者层号、方向或补丁。</p>
+<h2 id="eta">ETA纠正及下一步</h2>
+<p>本次不降低已授权资源上限，也不为了节省时间缩短既定回答、换模型或提前停止。上轮30–32GPU小时仅保留为“剩余28次全部维持每版240–256长输出”的高负载情景；按turn057的每次1563万token算，隐含整轮约5.13亿token，是作者1.45亿的约3.5倍。这主要是负载外推假设，不是已经证明的硬件慢3.5倍。未来请求尚未知，可靠单点ETA不可得。举例：同样28次若由19次每版64回答的长生成和9次快速诊断组成，以已有每卡长生成4000token/s、每条3万token及每批启动约1分钟粗算，约6GPU小时加编辑器时间；这是说明负载结构的假设计算，不是新承诺或获批的搜索设计。</p>
+<p>优先候选是原版结果复用，而非扩大基础设施；需先解决少数token不一致及配对/计费语义，再做有版本记录的实施。其次是常驻引擎的收益是否值得改动。改变筛选批次、采样n或停止规则属于研究策略变化，先明确修订而不在本次只读审计中执行。本报告未启动额外benchmark。</p>
+<p>预算切换17:13:34已完成：成功23/50，累计26468.727461秒=7.352GPU小时，原账保持，cap172800秒生效；控制器原会话续接turn060。切换属上一条用户授权，非本次性能审计引入的算法修改。</p></main></html>

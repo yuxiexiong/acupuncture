@@ -1,0 +1,74 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>NVB-01 合同 r01：保留原生 t1 输出，只改留存状态中的 v</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="nvb-01-r01-t1-v">NVB-01 合同 r01：保留原生 t1 输出，只改留存状态中的 v</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-native-bridge-v1-2026-11-03/CONTRACT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-native-bridge-v1-2026-11-03/CONTRACT.zh-CN.md">固定提交原件</a>；SHA-256：<code>2c3e66b6935323697e317a8a955a3d0aa3d64c1f52c8901a3321a05ba7d45980</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="nvb-01-r01-t1-v_1">NVB-01 合同 r01：保留原生 t1 输出，只改留存状态中的 v</h1>
+<p>依据计划 <code>docs/cache-native-bridge-plan-v2-2026-11-03.zh-CN.md</code>（替代 v1 <code>9fe53c1</code> 的主比较、判读与对照）。授权：2026-11-03 用户“同意推进，然后开始写代码，合同，跑测试然后上卡实验”。冻结后不改本文件；偏离记入 <code>DEVIATIONS.zh-CN.md</code>。</p>
+<h2 id="1">1. 问题</h2>
+<p>保留原生 t1 输出及其非 S 缓存，只把 t1 写入留存状态所用的 v 从 v0 换成 LVK 局部 v1，k 写入操作对 t2 目标选择（C 路线 M）的作用是否增强；增强是否超过匹配随机族。不承诺原生自然回答修复，不承诺自然中介识别。</p>
+<h2 id="2">2. 固定条件</h2>
+<p>LVK 新面板 48 条（已见开发面板），四方向（三个缺口方向 + C1343 诊断），R 族冻结 μ，14 个 G 层，其余全部继承 LVK 合同（形成、校准、停止集合、解析器、MAX_NEW=32）。</p>
+<h2 id="3">3. 操作</h2>
+<ul>
+<li>t1、G 层：o1 = Ŝ(v_c,k_b)ᵀq，返回状态 Ŝ(v_a,k_b)，Ŝ(v,k_b)=αS0−αβk0(k0ᵀS0)+βk_b vᵀ（custom_update 原顺序，擦除键 k0）。主格 B(c,a,b)，c,a,b∈{0,1}，共 8 格；对角 000/001/110/111 重放 LVK L00/L01/L10/L11。</li>
+<li>随机臂 B(0,r_j,b)，j=0…18，b∈{0,1}：状态用 v0+ρ_j，ρ_j 逐层逐头单位高斯方向乘该头 ‖v1−v0‖（FP32），种子 sha256(<code>NVB-RHO|输入|方向|j|层</code>) 前 8 字节；b=0/1 共用。只跑 C 路线。</li>
+<li>t2：C 路线输入冻结共同首 token fF；N 路线输入本格 t1 首 token，贪心到停止或共 32 token。t2 起无写入钩子；C 路线 000/100/010 三格挂只读 q/k 捕获。</li>
+</ul>
+<h2 id="4-nvb_corepy">4. 读数与判读（冻结；实现见 <code>nvb_core.py</code>）</h2>
+<ul>
+<li>M：目标第二 token 减竞争者（目标首列时减第二列）；主子集目标非首列 32 条，六场景等权。Y：完整正确，全 48 条。</li>
+<li>e(c,a)=M(c,a,1)−M(c,a,0)。DS0=e(0,1)−e(0,0)（主）；DS1=e(1,1)−e(1,0)；DO0=e(1,0)−e(0,0)；DO1=e(1,1)−e(0,1)；DF=e(1,1)−e(0,0)；DR_j=e(0,r_j)−e(0,0)。</li>
+<li>支持：场景等权均值 ≥0.25 且 ≥4/6 场景为正；反向对称。</li>
+<li>随机：p=(1+#{j: DR_j≥DS0})/20（场景等权均值），超过本随机族 iff p≤0.05。</li>
+<li>ρ=DS0/DF 仅当 DF≥0.5。</li>
+<li>主标签 P 与读法 R：计划 v2 §3（取第一个满足的；两个单独条件未过线不读成“共同需要”）。多数方向：缺口方向中 ≥2/3 为 beyond_random_substantial。C1343 只作诊断。</li>
+<li>Y 支持：净变化 ≥2 且 ≥2 场景；报告 Y(1,1,b)−Y(1,0,b)、Y(0,1,b)−Y(0,0,b)、J_S(Y)；不进入 P。</li>
+<li>预注册预测 P1–P4：计划 v2 §4（推测档）。</li>
+</ul>
+<h2 id="5">5. 工程闸门（运行中断言，任一失败即停）</h2>
+<p>计划 v2 §5 第 1–4 条，全部在 <code>nvb_run.py::run_item</code> 与 <code>NHook.check</code> 中断言；记录 <code>gates</code>、<code>oracle_max</code>、<code>dserr_max</code>、<code>rhoerr_max</code>、有符号零计数。预检：<code>LVK-H-NA-NQ01-ABC-A</code>、<code>LVK-H-NA-NQ02-ABC-B</code>，全方向全格；失败即停，允许一次有记录的修复重试；正式开始后不改实现、阈值、数据、K。</p>
+<h2 id="6">6. 预算</h2>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th style="text-align: right;">正式 48</th>
+<th style="text-align: right;">预检 2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>形成 / 预填 / 形成 token</td>
+<td style="text-align: right;">240 / 48 / 6390</td>
+<td style="text-align: right;">10 / 2 / 270</td>
+</tr>
+<tr>
+<td>t1 / refs / r_t1</td>
+<td style="text-align: right;">1536 / 768 / 7296</td>
+<td style="text-align: right;">64 / 32 / 304</td>
+</tr>
+<tr>
+<td>c_t2 / r_c_t2 / 轨迹 / n_steps</td>
+<td style="text-align: right;">1536 / 7296 / 1536 / 47616</td>
+<td style="text-align: right;">64 / 304 / 64 / 1984</td>
+</tr>
+<tr>
+<td>decode 总上限</td>
+<td style="text-align: right;">66048</td>
+<td style="text-align: right;">2752</td>
+</tr>
+<tr>
+<td>影子卷积</td>
+<td style="text-align: right;">190848</td>
+<td style="text-align: right;">7952</td>
+</tr>
+<tr>
+<td>设备小时上限</td>
+<td style="text-align: right;">1.2</td>
+<td style="text-align: right;">0.15（重试另 0.15）</td>
+</tr>
+</tbody>
+</table>
+<p>最多 2 worker（每卡 1 个），按场景拆分；每 worker 设备秒上限＝阶段上限/worker 数；存储 ≤12 GiB；心跳 60 秒；预检外推超限即停。总硬上限 1.5 GPUh。</p>
+<h2 id="7">7. 产物</h2>
+<p><code>runs/preflight-r01/</code>、<code>runs/formal-r01/</code>、<code>analysis/nvb-readouts-r01.json</code>、<code>REPORT.zh-CN.md</code>。</p></main></html>

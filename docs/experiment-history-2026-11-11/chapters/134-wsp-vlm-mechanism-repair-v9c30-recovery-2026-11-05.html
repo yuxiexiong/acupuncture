@@ -1,0 +1,103 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>134．v9 C恢复并改为30轮收尾</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="134v9-c30">134．v9 C恢复并改为30轮收尾</h1>
+<p><a href="../README.zh-CN.html">返回总时间线</a></p>
+<p><strong>时间定位</strong>：版本/记录日期 2026-11-05；未从所选收据确定完整运行起止，不据目录名补写时刻。</p>
+<p><strong>当时的目的与设计</strong></p>
+<p>续接中断的C研究者，沿原账本完成累计30轮，然后尝试报告和冻结。</p>
+<p><strong>实际过程、结果与后来更正</strong></p>
+<p>30次完整评价完成，但报告字段错误与后续容量错误导致未正常冻结。原错误、恢复、实际最佳和未知用量均保留；用户停止交接在11月6日另列。</p>
+<p><strong>来源身份</strong>：<code>wsp-vlm-mechanism-repair-v9c30-recovery-2026-11-05</code>；本章主体来源提交 <code>2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274</code>。下方原文中的状态是各文件写作时的状态，不能把早期“尚未运行”覆盖后期正式收据，也不能将后期结果倒填进早期设计。</p>
+<h2 id="_1">原设计、执行过程、结果与更正全文</h2>
+<p>以下按“设计与题目 → 工程/执行记录 → 结果/更正 → 其他历史说明”组织；同类内没有可靠时间时保留路径顺序，不冒充严格先后。正文未删段；仅为本章节重排标题层级、把相对链接指向固定提交。原始字节另外完整保存。</p>
+<h3 id="1c30">原件 1：C恢复：累计30轮后收尾</h3>
+<p>原路径：<code>experiments/wsp-vlm-mechanism-repair-v9c30-recovery-2026-11-05/README.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9c30-recovery-2026-11-05/README.zh-CN.md">固定提交原文</a> · <a href="../library/e8e6b0c24e167b67.html">单独阅读副本</a>；SHA-256：<code>e8e6b0c24e167b67804cbac6a16444b701c2da436ef615264da74b9ac8ddcaf7</code>。</p>
+<hr />
+<h4 id="c30">C恢复：累计30轮后收尾</h4>
+<p><strong>2026-11-06最新用户指示已执行：C完成30组后直接结束并交给下一队列。</strong> 原服务通过stop正常退出，报告/冻结收尾不再等待；原失败收据保留。Gemma已接手，见<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-c30-user-stop-handoff-2026-11-06/REPORT.zh-CN.md">停止、交接与完整归档</a>。下文恢复与失败状态均为历史。</p>
+<p>用户最新授权“恢复工作，把C做到30轮，先不动B”。仅C从已完成26轮接到累计30轮；覆盖C先前50轮目标，B的现有进程和授权不变。旧2B/8B/Gemma不恢复。</p>
+<p>第143研究者回合返回容量错误，无回复、无usage回执、无远端动作。第142回合Python类型错误已返回并留下partial状态。原C broker PID1852016与Python内存仍存活；恢复同一Astra线程，从turn144开始，不重放142/143、不重载目标模型、不重算W0、不清零成本。累计token承接142回执，143尝试计入回合数，用量缺失明确保留。</p>
+<p>复用原v9的Remote、CodexResearcher和run_session；测量、评分、权重、合同与工程身份不变，原30轮硬上限本来就已生效。恢复前核对本地/远端工程hash、原服务身份、同线程、142原始反馈一致、无未决动作，旧C监督器和50轮等待器已退出。只允许一次新恢复进程；再次失败停止留证，不自动重试。原失败监督收据不覆盖，恢复状态见本目录status/preflight/receipt/failure。</p>
+<p>成功条件：累计30个不同非零候选完整评价；提交对应实际最佳的机制报告并冻结；原始回答、失败、轨迹和成本完整交付。开发结果不是独立泛化。到30轮后不进入31轮；x50/C-target-superseded.json记录旧C接续已撤销。</p>
+<h5 id="_2">范围与自查</h5>
+<p>设计卡沿用原v9 PLAN：主问题仍是内部证据驱动修补；新增执行只完成尚缺4候选，候选由同一研究者自主选择，静态补丁、W0、数据和下游响应不变。C最佳60.9375%但有视觉损伤，保留负面；成功/阴性/不确定都以完整回答与控制评价，不承诺收益。原样本384000、研究者5000万token及CPU/动作预算不扩大；存储12GiB、全盘留20GiB不变。容量恢复不是科学成功。</p>
+<table>
+<thead>
+<tr>
+<th>检查</th>
+<th>判定和理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C01–C04</td>
+<td>通过：沿用问题、已完成资产和反例，完成4个剩余开发候选，不新增研究目标。</td>
+</tr>
+<tr>
+<td>C05–C07</td>
+<td>通过：实验数值路径与共享权重不改，只恢复观察者连接；保留原活跃Python状态。</td>
+</tr>
+<tr>
+<td>C08–C10</td>
+<td>通过：不以恢复/测量次数代替机制或完整回答改善，保持原评分和对照责任。</td>
+</tr>
+<tr>
+<td>C11</td>
+<td>通过：容量失败、Python错误与科学阴性分别保存；已下发动作不重放。</td>
+</tr>
+<tr>
+<td>C12</td>
+<td>通过：0基线/模型重载，保留累计预算和失败用量未知；不动B。</td>
+</tr>
+<tr>
+<td>C13</td>
+<td>通过：失败目录不覆盖，从144继续，同线程/源码/最后反馈验证，验收和运行分开记录。</td>
+</tr>
+<tr>
+<td>C14</td>
+<td>通过：30轮报告冻结后停止，不延伸C到50或恢复旧队列。</td>
+</tr>
+</tbody>
+</table>
+<p>反方复查：失败回合没有usage不能当零成本；旧标记仍可能写waiting所以同时核对真实PID与失败收据；原C监督器failed保持不变，防止50续跑误触发；恢复时Python142局部副作用存在，明确交给研究者检查，不直接重放。相关历史错误E10/E16/E22/E23/E25均按上述完整回答、失败保留、开发边界、分离验收/执行及不扩范围处理。同一助手自查，不称独立审查。</p>
+<p>CPU检查：有效恢复边界通过，10种不安全边界均拒绝，0模型调用。真实恢复状态以preflight.json、status.json及新turn回执为准。</p>
+<p><strong>真实恢复已确认：</strong> 原服务PID1852016、恢复进程4055；同一Astra线程完成turn144且工具成功返回。失败143目录保留，142状态由研究者检查而非重放。仍26/30，已恢复不代表剩余4轮已完成。半小时监控已更新为B保持原状、C30。见activation-receipt.json和startup-turn0144。</p>
+<hr />
+<h2 id="_3">时间、运行与停止收据索引</h2>
+<p>下面是所收集JSON的原有时间字段与状态，不把预计结束时间当实际完成时间。未列时间的文件仍有原件链接。完整JSON全部保存在原文归档，不能以此索引中的标量代替完整嵌套内容。</p>
+<table>
+<thead>
+<tr>
+<th>原件</th>
+<th>原记录状态/阶段</th>
+<th>原时间字段（原时区）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9c30-recovery-2026-11-05/activation-receipt.json">activation-receipt.json</a></td>
+<td>{"status": "researcher_and_remote_tool_success"}</td>
+<td>{"time_unix": "2026-11-05T14:51:54.624529+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9c30-recovery-2026-11-05/launch-once.json">launch-once.json</a></td>
+<td>{}</td>
+<td>{"time_unix": "2026-11-05T14:50:09.683850+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9c30-recovery-2026-11-05/launcher.json">launcher.json</a></td>
+<td>{"scope": "C only, total30"}</td>
+<td>{"time_unix": "2026-11-05T14:50:09.528375+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9c30-recovery-2026-11-05/startup-turn0144/receipt.json">startup-turn0144/receipt.json</a></td>
+<td>{}</td>
+<td>{}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9c30-recovery-2026-11-05/startup-turn0144/tool_result.json">startup-turn0144/tool_result.json</a></td>
+<td>{}</td>
+<td>{}</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_4">全部原始资产入口</h2>
+<p>本目录在固定提交下共有15个跟踪文件，包含代码、原回答、失败、收据和压缩证据；文件数不是样本数。<a href="../assets/134-wsp-vlm-mechanism-repair-v9c30-recovery-2026-11-05.tsv">逐文件完整账本</a> · <a href="https://github.com/yuxiexiong/acupuncture/tree/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9c30-recovery-2026-11-05">原目录</a>。未复制模型权重、环境或凭据。</p></main></html>

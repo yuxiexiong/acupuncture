@@ -1,0 +1,151 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>QKD-01 零 GPU 补充：目标失去优势，还是首列被加强？C1343 为什么不坏？</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="qkd-01-gpu-c1343">QKD-01 零 GPU 补充：目标失去优势，还是首列被加强？C1343 为什么不坏？</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-k-computation-diagnostic-v1-2026-11-03/ANALYSIS-target-vs-first.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-k-computation-diagnostic-v1-2026-11-03/ANALYSIS-target-vs-first.zh-CN.md">固定提交原件</a>；SHA-256：<code>ed8943952045c2272509b86f27ceb334da4959a34f4f8cb9cb0fd58d733afbbb</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="qkd-01-gpu-c1343_1">QKD-01 零 GPU 补充：目标失去优势，还是首列被加强？C1343 为什么不坏？</h1>
+<p>日期：2026-11-03。事后描述，不在 freeze 内，无预注册。脚本 <code>analysis/margin_parts_r01.py</code>（服务器上读 QKD 正式张量中强制前缀 t2 的全词表 logits）。读数：三个编号第二 token 的 logit（原值与三者居中值），以及固定竞争者分差 M。</p>
+<h2 id="1-f-v-v-qk-32">1. F → V（只恢复 V 的受损状态 相对 q/k 也恢复的状态），目标不在首列的 32 个输入</h2>
+<table>
+<thead>
+<tr>
+<th>方向</th>
+<th style="text-align: right;">目标 logit 原值变化</th>
+<th style="text-align: right;">首列 logit 原值变化</th>
+<th style="text-align: right;">目标居中变化</th>
+<th style="text-align: right;">首列居中变化</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>N4146</td>
+<td style="text-align: right;">−5.18</td>
+<td style="text-align: right;">−1.32</td>
+<td style="text-align: right;">−2.70</td>
+<td style="text-align: right;">+1.17</td>
+</tr>
+<tr>
+<td>N1210</td>
+<td style="text-align: right;">−2.82</td>
+<td style="text-align: right;">−0.24</td>
+<td style="text-align: right;">−1.66</td>
+<td style="text-align: right;">+0.91</td>
+</tr>
+<tr>
+<td>R0</td>
+<td style="text-align: right;">−2.71</td>
+<td style="text-align: right;">+0.05</td>
+<td style="text-align: right;">−1.77</td>
+<td style="text-align: right;">+0.99</td>
+</tr>
+<tr>
+<td>C1343</td>
+<td style="text-align: right;">−1.93</td>
+<td style="text-align: right;">+0.82</td>
+<td style="text-align: right;">−1.96</td>
+<td style="text-align: right;">+0.80</td>
+</tr>
+</tbody>
+</table>
+<p>读法：前三方向里，<strong>主要是目标自己的 logit 掉下来</strong>，首列编号的原值基本不变或略降；首列的“居中上升”主要是因为三者均值被目标拉低。这更符合“目标相关的区分被削弱，原本存在的首列偏好显露”，而不是“首列被主动加强”。C1343 的首列有小幅上升（+0.82）。</p>
+<h2 id="2-c1343">2. C1343 为什么不坏：起点余量</h2>
+<table>
+<thead>
+<tr>
+<th>方向</th>
+<th style="text-align: right;">F 的 M 均值（最小值）</th>
+<th style="text-align: right;">V 的 M 均值</th>
+<th style="text-align: right;">F→V 下降</th>
+<th style="text-align: right;">V 中 M &lt; 0 的输入</th>
+<th style="text-align: right;">V 自然回答错误数（QKF/本轮）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>N4146</td>
+<td style="text-align: right;">+3.47（+0.25）</td>
+<td style="text-align: right;">−0.19</td>
+<td style="text-align: right;">3.67</td>
+<td style="text-align: right;">32/48</td>
+<td style="text-align: right;">32/48</td>
+</tr>
+<tr>
+<td>N1210</td>
+<td style="text-align: right;">+3.56（+0.75）</td>
+<td style="text-align: right;">+1.23</td>
+<td style="text-align: right;">2.33</td>
+<td style="text-align: right;">16/48</td>
+<td style="text-align: right;">20/48</td>
+</tr>
+<tr>
+<td>R0</td>
+<td style="text-align: right;">+3.66（+1.00）</td>
+<td style="text-align: right;">+1.10</td>
+<td style="text-align: right;">2.56</td>
+<td style="text-align: right;">8/48</td>
+<td style="text-align: right;">10/48</td>
+</tr>
+<tr>
+<td>C1343</td>
+<td style="text-align: right;">+6.47（+4.38）</td>
+<td style="text-align: right;">+3.61</td>
+<td style="text-align: right;">2.86</td>
+<td style="text-align: right;">0/48</td>
+<td style="text-align: right;">0/48</td>
+</tr>
+</tbody>
+</table>
+<p>读法：四个方向里，受损带来的分差下降量相近（2.3–3.7），但 C1343 的起点余量大得多（F 的 M 约 6.5，最小也有 4.4），下降后仍为正；另三个方向起点约 3.5，下降后有相当一部分输入跌到 0 以下。强制前缀下 M &lt; 0 的输入数与自然回答错误数相当接近（32/32、16/20、8/10、0/0）。F 仍带着各方向受针的 S/KV，所以起点余量本身也是受针背景的一部分。</p>
+<h2 id="3">3. 限制</h2>
+<p>M 是强制共同前缀下的诊断分差，不等于自然选择；数量吻合是描述，不是因果证据；只在这块面板、这四个方向上看过。</p>
+<h2 id="4-analysisreserve_check_r01py">4. 逐题检验：起点余量能否预测哪道题会错（脚本 <code>analysis/reserve_check_r01.py</code>）</h2>
+<table>
+<thead>
+<tr>
+<th>方向</th>
+<th style="text-align: right;">V 答错</th>
+<th style="text-align: right;">全部 48 条：AUROC(M_F 区分对/错)</th>
+<th style="text-align: right;">只看目标不在首列的 32 条：答错数</th>
+<th style="text-align: right;">同左：AUROC(M_F)</th>
+<th style="text-align: right;">同左：AUROC(降幅 F−V，错 &gt; 对)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>N4146</td>
+<td style="text-align: right;">32</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">32/32（全部答错）</td>
+<td style="text-align: right;">不适用</td>
+<td style="text-align: right;">不适用</td>
+</tr>
+<tr>
+<td>N1210</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">0.88</td>
+<td style="text-align: right;">18/32</td>
+<td style="text-align: right;">0.91</td>
+<td style="text-align: right;">0.29</td>
+</tr>
+<tr>
+<td>R0</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">0.88</td>
+<td style="text-align: right;">10/32</td>
+<td style="text-align: right;">0.85</td>
+<td style="text-align: right;">0.39</td>
+</tr>
+<tr>
+<td>C1343</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">不适用</td>
+<td style="text-align: right;">0/32</td>
+<td style="text-align: right;">不适用</td>
+<td style="text-align: right;">不适用</td>
+</tr>
+</tbody>
+</table>
+<p>读法：
+- 目标在首列的输入几乎都不会错（首列偏好与目标重合），这是位置的作用；去掉它之后，<strong>F 参照下的起点余量 M_F 对哪道题会错有较好的区分能力</strong>（AUROC 0.91、0.85）。F 是混合恢复状态（V/q/k 取干净、S/KV 仍受针），不是原生干净模型，这里的余量不能直接当作模型原本的抗干扰能力。
+- <strong>降幅与错误呈反向关联</strong>：按“错题降幅更大”评分的 AUROC 为 0.29、0.39，即答错的题降幅反而略小。这不是“降幅完全不能预测”，也不能据此写成“各题受到均匀削弱”（更正初稿）；能说的是：在这两个方向，余量比降幅更能区分错误。
+- 以上均为同一批数据上的事后结果，支持一个解释雏形，未独立验证。
+- 注意：V 自身的分差符号与 V 是否答对在 44–48/48 输入上一致，但这几乎是同义反复（自然第二步就是按这几个候选的分数选），不当作独立证据。M_F 来自 q/k 也恢复的状态，才是独立于 V 的预测量。</p></main></html>

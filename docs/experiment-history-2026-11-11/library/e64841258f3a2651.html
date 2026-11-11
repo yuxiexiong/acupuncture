@@ -1,0 +1,404 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>权重空间编程（WSP）：原始资料、研究方法与 Acupuncture 应用档案</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="wsp-acupuncture">权重空间编程（WSP）：原始资料、研究方法与 Acupuncture 应用档案</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>docs/literature/weight-space-programming-acupuncture-2026-11-03.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/literature/weight-space-programming-acupuncture-2026-11-03.zh-CN.md">固定提交原件</a>；SHA-256：<code>e64841258f3a2651dcb66eaeb57dd3b1d5c92e3abc13d2298291459e98742a4f</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="wsp-acupuncture_1">权重空间编程（WSP）：原始资料、研究方法与 Acupuncture 应用档案</h1>
+<blockquote>
+<p><strong>2026-11-05 后续核查：</strong> <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/literature/weight-space-programming-updates-2026-11-05.zh-CN.md">WSP 原帖新讨论、外部复现与作者资源更新</a>。新增 Jev 条件化决策编辑及事实翻转负例、原版推理设置复测、FLUX/小车线索，并区分最终补丁重建与搜索过程复现。下文仍保留11-03快照；未新增模型运行。</p>
+<p>档案简称：<strong>WSP 方法档案</strong>。本档案整合作者与资源信息、八组实验总览、数学修复的研究过程和精确补丁、成本与复现限制，以及与 Acupuncture 两条研究线的关系。原有文件路径保持不变，便于其他窗口沿用引用。2026-11-03补充归档；原作者报告与本项目判断分开，不代表本项目已复现。</p>
+</blockquote>
+<p>阅读导航：先看§2出处和传播核查、§3数学实验过程；完整八组实验及工具权限看§7；资源、成本和复现入口看§8；“是否蒸馏、能否找人格、能否修副作用”看§9。§1与§4的项目状态是文中明确日期的快照，不承诺随未来实验自动更新。</p>
+<p>日期：2026-11-03。性质：公开资料阅读、方法重建和项目证据对照；本轮未运行模型、未改权重、未申请或使用 GPU，不是下一轮实验合同。</p>
+<h2 id="_1">结论</h2>
+<p>这项工作真实公开了可检查的实验日志和权重补丁。它最直接支持“用前沿模型执行诊断—干预—验证流程，找到有效的稀疏权重修复”，对 Acupuncture 的稳定副作用控制线很有参考价值；对机制线，最有用的是按行为对照构造方向、结合激活与输出权重定位写入者。它没有直接解释我们当前 V 背景如何改变 k 写入的行为效应，也不能把其 0.8B 的层号、通道或补丁搬到 4B。</p>
+<p>不能把我们的当前阶段概括成“还没找到具体计算”。最新 KUC 已有更新项到完整回答的条件性因果证据；NVW 又明确其背景边界，并否定了一项简单幅度解释。我们和他们有重叠，但检验对象及成功标准不同。没有必要因为其方法不全新而拒绝使用，也不能用“我们问题更大”替代对现有缺口的分析。</p>
+<h2 id="1">1. 先核对项目最新状态</h2>
+<p>先读取 GitHub main 的 README、RESEARCH_STATUS、11-03 资产盘点及工作梳理，再读取 KUC/NVW 合同、报告、正式 verification，以及 LVK 方案。固定比较快照为 <code>c8c9f0ec0b694be806ff11c9e57ce587643f0a30</code>；本地部分文件还停在 QC/QCD 阶段，未以本地旧状态代替远端。11-03 资产盘点本身截至 KUC；NVW 通过其后正式报告补齐。总体贡献文档截至 QKD，亦不能当作最新全量结论。</p>
+<p>核心问题保持：<strong>少数通道的激活干预，如何改变写入、历史状态处理和后续读取，最终造成显著回答变化？</strong></p>
+<table>
+<thead>
+<tr>
+<th>已有资产</th>
+<th>当前能支持什么</th>
+<th>必须保留的边界</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>QCO/QKF</td>
+<td>在 V 已恢复的混合背景，去除留一场景估计的共同偏移能恢复编号回答；k 是主要有效分量</td>
+<td>各针方向分别估计；加入随机偏移也可致错；不是任意通道的特有语义机制</td>
+</tr>
+<tr>
+<td>KRD/KHC</td>
+<td>k 修复效应可经 t1 后历史传递；固定 t2 q 为供体时，该历史效应主要存于递推 S</td>
+<td>条件性载体检验，不能推出所有背景下 S 独占作用</td>
+</tr>
+<tr>
+<td>KUC</td>
+<td>t1 新值写入项中的 k 替换可复现主要目标分差效应，并改变自然完整回答；R/A 的写入项效应比约 0.98–1.06</td>
+<td>V 已恢复、14 个深层递推层、固定任务；人工拆开共享 k，不是发现独立解剖通道</td>
+</tr>
+<tr>
+<td>NVW</td>
+<td>同样的写入项操作在 V 恢复背景明显更强；未恢复 V 时原生完整交付未达多场景改善，N1210 仅 0→1/48</td>
+<td>强制前缀目标分差的小改善不能冒充自然交付恢复；C1343、随机结果保留</td>
+</tr>
+<tr>
+<td>NVW 附带记录</td>
+<td>擦除变化不小：ΔE/ΔW 范数约 0.55–0.66，仍行为弱</td>
+<td>“擦除项小所以不起作用”的猜想被否定；为什么行为弱还未解释</td>
+</tr>
+<tr>
+<td>LVK</td>
+<td>已设计局部 v×写入 k 的检验，承接上述条件依赖</td>
+<td>快照中仅计划、自查和文本准备；未运行，不能当结果</td>
+</tr>
+</tbody>
+</table>
+<p>KUC/NVW 正式 verification 均为 passed；本次读取了版本化验证记录，并未重新验证服务器全部张量或复现其计算。KUC 的 t2 读出连接仍含描述性分账，不能说整条自然路径已经逐段因果闭环。</p>
+<p>项目来源：
+- <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-mechanism-experiment-asset-inventory-2026-11-03.zh-CN.md">近期资产盘点</a>
+- <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-mechanism-overall-contribution-2026-11-03.zh-CN.md">截至 QKD 的工作梳理</a>
+- <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-k-update-causal-v1-2026-11-03/REPORT.zh-CN.md">KUC 报告</a>
+- <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-native-v-write-interaction-v1-2026-11-03/REPORT.zh-CN.md">NVW 更正报告</a>
+- <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-local-v-k-plan-v1-2026-11-03.zh-CN.md">LVK 计划及来源审计入口</a></p>
+<h2 id="2">2. 原始出处与传播说法核对</h2>
+<p>作者为 Rikiya Takehi、Jayden Teoh、Alex Zhang、Omar Khattab，MIT CSAIL。原文是 2026-11-02 的公开研究博客；本次未核实到该工作的同行评审论文身份，不把博客称为已录用论文。</p>
+<ul>
+<li><a href="https://rikiyat.github.io/blog/weight-space-programming/">作者原文</a></li>
+<li><a href="https://github.com/RikiyaT/lm_understand-logs">原始日志与代码</a></li>
+<li>阅读固定源码版本：<code>4d09ba6d6a7e891dd8063974dfe81b3d78e3494f</code>。</li>
+<li>作者另链接<a href="https://huggingface.co/RikiyaT/Qwen3.5-0.8B-weight-space-programming">发布的编辑后模型</a>。本次没有下载或运行，也未独立复核第三方重测成绩。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>传播说法</th>
+<th>核对结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>四种游戏全部认对</td>
+<td>作者报告成立；是自制同结构网格游戏，各网络 17,253 参数。提供了网格输入与动作含义，因此不是完全无语义信息的数字盲读</td>
+</tr>
+<tr>
+<td>小车一次修复、1024/1024、约3.5%</td>
+<td>作者报告成立；具体是 Kinetix car-on-ramp，不能误称标准 MountainCar。给了场景、规则、观测布局、全部 actor 权重和失败轨迹。补丁建立基于位置/速度的控制路径</td>
+</tr>
+<tr>
+<td>打砖块胜 PPO500M 约20倍</td>
+<td>Breakout 为 517.4 对 25.3，约20.45倍；给出完整规则与源码。其他两游戏并非也胜500M：Seaquest 53.1&lt;88.9，Asterix 53.2&lt;55.2</td>
+</tr>
+<tr>
+<td>Qwen 数学与 IFEval 大涨</td>
+<td>merged.json 支持 MATH500 7.9→48.1、GSM8K 13.8→67.1、IFEval 21.0→62.3</td>
+</tr>
+<tr>
+<td>不训练、无梯度</td>
+<td>是该实验规则；仍使用练习题答案、批量前向反馈及多轮选补丁，不能称零数据、零搜索或一次盲读</td>
+</tr>
+<tr>
+<td>只用50次前向</td>
+<td>“pass”是工具批次。一次生成最多512份回答；both比较时每模型最多256份；teacher-forced一次最多1024文本、总524288 token。不是50次单样本或单token forward</td>
+</tr>
+<tr>
+<td>没用GPU、没用工具</td>
+<td>Qwen权重分析 kernel 在CPU；前向由外部服务完成。关闭的是Codex内置工具，Python及前向通过作者 harness 执行。不能据此宣称整个研究没有推理算力成本</td>
+</tr>
+<tr>
+<td>改0.016%所以改动很轻</td>
+<td>这是全模型参数数量占比；最终两个矩阵相对改变量约10.64%、8.11%，局部功能改动并不轻微</td>
+</tr>
+</tbody>
+</table>
+<p>核查出处：<a href="https://github.com/RikiyaT/lm_understand-logs/tree/4d09ba6d6a7e891dd8063974dfe81b3d78e3494f/exp1_which_game">实验1</a>、<a href="https://github.com/RikiyaT/lm_understand-logs/blob/4d09ba6d6a7e891dd8063974dfe81b3d78e3494f/exp4_fix_car/README.md">实验4</a>、<a href="https://github.com/RikiyaT/lm_understand-logs/blob/4d09ba6d6a7e891dd8063974dfe81b3d78e3494f/exp5_write_from_scratch/README.md">实验5</a>、<a href="https://github.com/RikiyaT/lm_understand-logs/blob/4d09ba6d6a7e891dd8063974dfe81b3d78e3494f/exp8_math/README.md">实验8</a>。</p>
+<h2 id="3">3. 数学实验究竟怎样找到补丁</h2>
+<p>以下重建来自 p50c 初始提示、执行代码与返回值、experiment_history、final_report；不是仅转述宣传图，也不是独立复现。</p>
+<ol>
+<li><strong>先确定主要失败。</strong> 初次96题中85题达到32768-token上限；日志发现尾部大量重复。目标转为减少重复性思考，而非直接增加数学知识。</li>
+<li><strong>制作配对上下文。</strong> 对四道题分别构造正常推进与反复检查的续写，teacher-forced 读取内部激活。先发现模板插入空think块的问题，随后改用准确原始模板重新读取。它们是人工构造的行为对照，不是天然随机化因果样本。</li>
+<li><strong>找到写入方向与候选。</strong> 对两种续写的尾段残差均值作差，归一化成层相关方向 u；结合 MLP 中间激活差与 down_proj 列在 u 上的投影，找哪些通道在重复条件下更多写入该方向。候选指标可写为：s_j = (mean(a_j,repetitive) − mean(a_j,productive)) × (uᵀ W[:,j])。它测的是有符号的定向写入差，不是只按激活最大或权重最大排序。</li>
+<li><strong>用实际修改检验。</strong> 最早单神经元 L19/N11 切除和单层方向修改增益很弱；转到 L15、L19 两层，比较强度、单层与两层、注意力替代候选，另做正交随机方向的范数配平对照。不是一次看权重就直接写出最终补丁。</li>
+<li><strong>缩成稀疏修改。</strong> 以原始四组上下文的定向写入得分，每层取64列；其他新上下文用于检查迁移。最终选两层、每层64列、系数6的修改。</li>
+<li><strong>冻结后验证。</strong> 另以1152道未用于选择补丁的练习题作配对确认；最后作者在未给编辑器查看的公开benchmark上评价。不能把同题多次采样算成多个独立题。</li>
+</ol>
+<p>这套研究方法也不是完全由 Astra 无提示自发提出：初始提示明确要求先诊断失败类别、做因果定位与剂量比较、用相同题配对、在未用于选补丁的题上确认。值得复用的是这个受约束研究流程及其产物，不只是模型名称。</p>
+<h3 id="31">3.1 最终补丁不是简单“切掉两个神经元”</h3>
+<p>每层有自己的单位方向 u_l，J_l 为选中的64个 MLP 通道。对 l=15、19：</p>
+<p><code>W'_l[:,j] = W_l[:,j] − 6 u_l (u_lᵀ W_l[:,j])，j∈J_l；其他列不变。</code></p>
+<p>等价矩阵形式：<code>W' = W − 6 u [m ⊙ (uᵀW)]</code>。</p>
+<ul>
+<li>共触及 2×64×1024=131072 个标量。BF16舍入后实际位模式改变130188个，约0.016%的全模型参数。</li>
+<li>系数是6，不是正交投影删除的1。精确实数下，所选列原来沿 u 的分量变为 −5 倍；这是方向反转并增强的修正，不能笼统说“把该方向清零”。</li>
+<li>它改的是 MLP 输出权重列；不是把残差坐标、缓存 k 或两个神经元参数直接设零。</li>
+<li>两层各有自己的方向，不能把文字中的“one direction”读成已经证明两个层向量完全相同。</li>
+<li>全过程未改 final norm、embedding、lm_head；这些限制来自实验规则。</li>
+</ul>
+<p>源码：<a href="https://github.com/RikiyaT/lm_understand-logs/blob/4d09ba6d6a7e891dd8063974dfe81b3d78e3494f/exp8_math/runs/p50c/tool_calls.jsonl">tool_calls.jsonl</a>、<a href="https://github.com/RikiyaT/lm_understand-logs/blob/4d09ba6d6a7e891dd8063974dfe81b3d78e3494f/exp8_math/runs/p50c/work_notes/final_report.md">最终报告</a>、<a href="https://github.com/RikiyaT/lm_understand-logs/blob/4d09ba6d6a7e891dd8063974dfe81b3d78e3494f/exp8_math/runs/p50c/edit/manifest.json">精确补丁清单</a>。</p>
+<h3 id="32">3.2 性能证据到哪一步</h3>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>作者公开结果</th>
+<th>解释边界</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>留出练习确认</td>
+<td>1152题，正确率10.6→60.4%；579改对、5改坏</td>
+<td>练习来源内留出；不是公开测试集成绩</td>
+</tr>
+<tr>
+<td>改对来源</td>
+<td>579个救回中576个原先截断；原先完成的子集总体正确率未变</td>
+<td>强烈支持解除循环障碍，但不是排除所有其他路径的完整中介证明</td>
+</tr>
+<tr>
+<td>MATH500</td>
+<td>500题×4采样，平均正确率7.9→48.1；截断93.0→33.05%</td>
+<td>不是best-of-4/pass@4，也不代表循环已完全消除</td>
+</tr>
+<tr>
+<td>GSM8K / IFEval</td>
+<td>分别每题2采样；IFEval为strict prompt-level</td>
+<td>原版与修改版保持同一thinking及采样配置</td>
+</tr>
+<tr>
+<td>较低预算</td>
+<td>10批MATH12.3%；25批14.1%</td>
+<td>三次搜索走出不同补丁，不能当同一编辑的严格算力缩放曲线</td>
+</tr>
+<tr>
+<td>Gemma270M</td>
+<td>低循环背景，MATH6.8→至多7.7，50批为7.0</td>
+<td>没得到类似的大提升；不能推广成“任何模型都能凭改权重补数学能力”</td>
+</tr>
+</tbody>
+</table>
+<p>Qwen 官方 Qwen3.5-0.8B 模型卡说明默认 non-thinking；此实验明确打开 thinking。其主对比在同配置下成立，但不是相对默认模式、最佳解码或训练方法的成本效果胜出证明。本次不拿不同协议的模型卡分数直接比较。<a href="https://huggingface.co/Qwen/Qwen3.5-0.8B">原模型卡</a></p>
+<p>还应保留：
+- p50c为158轮、80次Python执行，墙钟20.3小时，含4.7小时不可达等待。不能把这写成GPU小时，也不能以50批推算全研究成本。
+- 随机对照在完整方向alpha4上做过，日志不支持把它称为最终“相同64列、alpha6”补丁的完全同支持集对照。
+- 中途有模板错误、初始化失败及批处理随机性问题；失败请求不计pass。日志明确要求同一both批内配对，不把不同批输出当严格同seed重复。
+- 仓库只发布博客报告的运行，早期prompt版本试验省略；原始中间激活与练习生成dump未完整发布，实验8专用agent/forward harness亦未完整发布。最终差分、重建脚本、基座revision及hash可用，不等于搜索全过程可一键重现。
+- Gemma追踪使用不同模型、规模与协议，作为失败边界有用，不能单独证明“是否循环”是两模型差异的唯一原因。</p>
+<h2 id="4">4. 与我们两条线的准确关系</h2>
+<table>
+<thead>
+<tr>
+<th>可借鉴部分</th>
+<th>对当前资产的实际价值</th>
+<th>不能替我们完成什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>行为配对后的方向估计</td>
+<td>给异常候选一个可计算的功能定义；可与我们已有共同偏移、正常/受针配对数据衔接</td>
+<td>我们QCO已有共同偏移，不必把重新发现平均差分当增量；方向相关不证明致因</td>
+</tr>
+<tr>
+<td>激活差×输出列投影定位写入者</td>
+<td>对“哪类输入相关写入在产生目标差异”比纯范数热点更有针对性</td>
+<td>MLP写入残差的指标不能直接套在GDN的矩阵状态更新；必须考虑后续读取</td>
+</tr>
+<tr>
+<td>稀疏方向权重补丁</td>
+<td>稳定副作用控制线的具体方法参照：局部功能修复、冻结补丁、留出行为和退化读数</td>
+<td>不保证对4B有效；层号/列号没有跨模型语义一致性；修复不证明原始病因唯一</td>
+</tr>
+<tr>
+<td>正常/重复分支概率与完整答案同时验证</td>
+<td>对我们“分数、开口、目标选择、完整交付分开”有共同方法论</td>
+<td>其长推理循环不等于我们的首步停止或编号错选</td>
+</tr>
+<tr>
+<td>大模型执行研究闭环</td>
+<td>自动执行已有科学方法、保留备选和失败，比让LLM凭名字猜人格更可检查</td>
+<td>原始提示与harness已提供重要研究脚手架；不能当AI无方法先验独自解剖机制</td>
+</tr>
+</tbody>
+</table>
+<h3 id="41">4.1 静态权重修改和我们的动态扎针，怎样联系</h3>
+<p>这是代数联系，不是新实验结果。对相同输入状态的线性层 y=Wa，静态修改 W→W+ΔW 等价于该次计算额外写入 ΔW·a。因此其补丁在该层产生：</p>
+<p><code>Δy_t = −6 u Σ(j∈J) [(uᵀW[:,j]) a_{t,j}]</code>。</p>
+<p>方向固定，强度依赖当步激活和输入。我们的单通道激活增量 δa_j 则额外写入 <code>δa_j W[:,j]</code>。两者都能通过下游计算影响状态与输出，但时间范围、输入依赖和改变的写入方向不同。进入多层、自回归之后，a本身也会变化，不能把这条局部恒等式当全程轨迹等价或自然中介证明。</p>
+<p>这提供了统一的分析语言：看实际残差写入是什么，再看其后续命运，而不是只数“改了几个参数”。它不要求我们立刻把冻结的激活干预改成静态权重实验。</p>
+<h3 id="42">4.2 为什么它不能直接解决当前最难的问题</h3>
+<p>当前关键并非再证明“少数权重可让回答大变”，而是解释：
+1. 为什么相同 k 写入操作在 V 恢复与未恢复背景下作用差很多；
+2. 为什么擦除变化不小，行为效应却弱；
+3. 具体写入怎样经 S、后续读取及输出竞争产生目标选择变化，并接回原生受针背景。</p>
+<p>外部工作未对同一次补丁开展 KV/S/卷积历史拆分、E/W更新项替换或对应V背景检验。它的循环方向是有用干预对象，但没有证明循环经哪些历史载体、怎样被随后读取维持；因此不能据此宣称我们机制线已被其完成。</p>
+<p>另一方面，不能把这些更深问题当作拒绝有效修复结果的理由。其原生自然生成的大规模留出改善，是我们稳定控制线应重视的证据标准；我们的条件性计算拆解，是性能补丁尚未替代的解释任务。</p>
+<h2 id="5">5. 按青蒿素原则怎样理解这份工作</h2>
+<p>把有效的诊断、定向投影、稀疏化与留出验证当可复用部件，不为证明每个部件原创而重造。评价增量应问：是否在明确失效条件下找到可重复、可预测的作用关系，是否既解释成功也解释失败，是否能在新输入上成立。</p>
+<p>本项目已有不少相同工具和控制，真正的可借鉴增量是把“行为对照—实际定向写入—稀疏修改—自然完整交付”连得更紧；不是另起全层热点扫描，也不是照搬其层号。对机制线保留KUC/NVW已形成的问题；对控制线把其作为方法级近邻和未来比较对象。此为研究判断，不是新增可执行矩阵、预算或上卡决定。</p>
+<h2 id="6">6. 本次核查范围与自审</h2>
+<ul>
+<li>原始研究：读作者博客、总README、实验4/5/8说明、p50c初始提示/执行日志/笔记/最终报告/补丁清单、原版及p50c测试汇总、profiles配置、Gemma追踪说明；没有逐条通读1125轮，也没有运行公开补丁。</li>
+<li>项目：先读最新盘点和工作梳理，后以KUC/NVW正式记录更新口径；没有以旧本地状态覆盖远端新结果。</li>
+<li>反方检查：参数少≠改动弱；补丁有效≠解释唯一；同家族≠直接迁移；练习题与反馈≠无数据；随机对照≠最终补丁完全匹配；混合背景有效≠原生恢复。</li>
+<li>修正：小车不是标准MountainCar；最终系数6不是单纯投影清零；两层方向不自动相同；NVW并非绝对零变化，保留N1210的1/48。</li>
+<li>这是作者自审，不是独立评审。没有新增实验设计，不冒用C01–C14“通过”作执行许可。</li>
+</ul>
+<p>来源清单及固定Git blob身份见<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/literature/weight-space-programming-sources-2026-11-03.json">核查清单</a>。</p>
+<h2 id="7">7. 作者信息、八组实验与研究组织方式</h2>
+<h3 id="71">7.1 身份与发布形式</h3>
+<ul>
+<li>原文标题：<em>Sparks of Weight-Space Programming: LLMs can natively read &amp; write neural network weights</em>。</li>
+<li>作者：Rikiya Takehi、Jayden Teoh、Alex Zhang、Omar Khattab；原文列示 MIT CSAIL。</li>
+<li>发布日期：2026-11-02。以公开研究博客及配套代码日志为当前已核验载体；不把传播材料中的年级、录用状态等未经核验信息列为事实。</li>
+<li>编辑/诊断者：作者日志称 OpenAI <code>gpt-6-astra</code>；被读写的对象是另外的网络，两者身份不能混淆。</li>
+<li>所谓 Weight-Space Programming：围绕自然语言任务，让大模型直接检查、构造或改写网络权重。不同实验允许的信息和反馈不同，不能把小游戏的一次无工具编辑套到语言模型的多轮工具实验上。</li>
+</ul>
+<h3 id="72">7.2 全部实验总览</h3>
+<p>下表依作者固定版本总README归纳。§3对数学实验有较深入日志核查；其余条目的概述不冒充逐轮重算或独立复现。</p>
+<table>
+<thead>
+<tr>
+<th>实验</th>
+<th>对象与问题</th>
+<th>作者提供/允许的主要信息与工具</th>
+<th>档案中的证据定位</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1：识别游戏</td>
+<td>从四个同结构游戏网络判断所学游戏</td>
+<td>权重、输入/动作语义；无工具；开放回答</td>
+<td>作者报告四种游戏认对，不能说完全没有任务语义提示</td>
+</tr>
+<tr>
+<td>2：识别生成形状</td>
+<td>判断扩散网络生成圆、方形或三角形</td>
+<td>无工具、无前向</td>
+<td>展示从权重读取任务信息的案例；不直接支持语言模型机制已读懂</td>
+</tr>
+<tr>
+<td>3：识别语言</td>
+<td>从语言模型中间块辨识Python、罗马字或英语</td>
+<td>Python沙箱，不允许前向</td>
+<td>权重分析任务，区别于修改模型行为</td>
+</tr>
+<tr>
+<td>4：修复小车</td>
+<td>Kinetix坡道小车策略失效</td>
+<td>场景、规则、权重和失败轨迹；无工具，一次修改</td>
+<td>作者报告约3.5%权重修改、1024/1024成功；不能当多轮LLM数学修复成本</td>
+</tr>
+<tr>
+<td>5：从零写网络</td>
+<td>MinAtar的Breakout、Seaquest、Asterix</td>
+<td>规则/源码/架构，无工具</td>
+<td>Breakout超过PPO500M约20倍；另两个游戏并未都超过该基线</td>
+</tr>
+<tr>
+<td>6：从零写围棋网络</td>
+<td>构造约150万权重网络</td>
+<td>Python沙箱，0/10/25/50 pass设置</td>
+<td>属于构造策略网络；不能从存在这个实验推断达到任意棋力</td>
+</tr>
+<tr>
+<td>7：识别迎合倾向</td>
+<td>区分迎合与非迎合模型</td>
+<td>四次weights-only尝试，再开放注意力工具，每次三对</td>
+<td>权重独读尝试未成功，注意力读数帮助成功识别；保留这一负面边界</td>
+</tr>
+<tr>
+<td>8：修复数学表现</td>
+<td>Qwen3.5-0.8B；Gemma3 270M跟进</td>
+<td>Python权重分析、批量生成及teacher-forced内部读数</td>
+<td>诊断循环并搜索稀疏权重补丁；完整方法和结果见§3</td>
+</tr>
+</tbody>
+</table>
+<p>出处：<a href="https://github.com/RikiyaT/lm_understand-logs/blob/4d09ba6d6a7e891dd8063974dfe81b3d78e3494f/README.md">固定版本总README</a>。各实验目录沿该页链接进入。</p>
+<h3 id="73">7.3 大模型实际怎样工作</h3>
+<p>作者每一轮调用Codex CLI，关闭其内置shell、文件编辑、搜索等工具；但在允许代码的实验3/6/7/8中，由模型输出Python块，作者的沙箱执行，再把输出作为下一条反馈返回。实验8另使用前向服务。因此日志的“tool-free”审计是针对内置工具调用事件，不意味着数学实验没有工具反馈。</p>
+<p>公开版本记录1125轮，README说明省略了早期提示词试验。日志包含发给模型的提示、模型输出、推理摘要、执行代码、返回值及评价；“推理摘要”不能称作模型全部内部思考。实验8使用max推理档，其他实验用high或xhigh，具体见各轮run.json。</p>
+<p>数学案例可概括为：<strong>任务与权限约束 → 原版失败分类 → 正常/重复配对读数 → 定向写入候选 → 权重编辑与配对反馈 → 剂量/层/随机参照 → 稀疏化 → 冻结 → 未用于搜索的题目确认与benchmark评价。</strong> 这是反馈引导的研究流程，不是穷举所有权重，也不是仅看一次数字就悟出完整机制。</p>
+<h2 id="8">8. 公开资源、复现入口和算力口径</h2>
+<h3 id="81">8.1 可复用的资源</h3>
+<table>
+<thead>
+<tr>
+<th>资源</th>
+<th>用途</th>
+<th>限制</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://rikiyat.github.io/blog/weight-space-programming/">研究博客</a></td>
+<td>全部实验叙事、图表、作者归因</td>
+<td>作者报告，不替代独立复现</td>
+</tr>
+<tr>
+<td><a href="https://github.com/RikiyaT/lm_understand-logs/tree/4d09ba6d6a7e891dd8063974dfe81b3d78e3494f">固定版本仓库</a></td>
+<td>防止源码更新导致引用漂移</td>
+<td>不是所有早期试验均发布</td>
+</tr>
+<tr>
+<td><a href="https://github.com/RikiyaT/lm_understand-logs/blob/4d09ba6d6a7e891dd8063974dfe81b3d78e3494f/exp8_math/README.md">数学实验入口</a></td>
+<td>各预算运行、评价和补丁的对应关系</td>
+<td>精确路径以固定版本README为准</td>
+</tr>
+<tr>
+<td><a href="https://github.com/RikiyaT/lm_understand-logs/tree/4d09ba6d6a7e891dd8063974dfe81b3d78e3494f/exp8_math/runs/p50c">p50c运行目录</a></td>
+<td>提示、逐轮记录、工具代码、笔记及补丁</td>
+<td>中间激活与生成dump不全</td>
+</tr>
+<tr>
+<td><a href="https://github.com/RikiyaT/lm_understand-logs/blob/4d09ba6d6a7e891dd8063974dfe81b3d78e3494f/exp8_math/runs/p50c/work_notes/final_report.md">最终研究报告</a></td>
+<td>主要诊断、对照和留出结果</td>
+<td>报告结论仍需结合原日志看证据边界</td>
+</tr>
+<tr>
+<td><a href="https://github.com/RikiyaT/lm_understand-logs/blob/4d09ba6d6a7e891dd8063974dfe81b3d78e3494f/exp8_math/runs/p50c/edit/manifest.json">补丁manifest</a></td>
+<td>精确差分、身份和重建核对入口</td>
+<td>只匹配指定基座，不可直接移植4B</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/RikiyaT/Qwen3.5-0.8B-weight-space-programming">编辑后模型</a></td>
+<td>作者发布模型的入口</td>
+<td>本项目未下载、未运行、未独立核验其成绩</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/literature/weight-space-programming-sources-2026-11-03.json">本项目来源清单</a></td>
+<td>本次核查固定来源身份</td>
+<td>是阅读收据，不是复现实验收据</td>
+</tr>
+</tbody>
+</table>
+<p>作者公开最终网络/精确权重差分和应用脚本，配套评测资料可用于重建原0.8B补丁和检查结果；实验8的专用搜索agent/forward服务未完整发布，不能承诺一键复跑整场搜索。实验7的17GB微调模型未附，提供数据、脚本和哈希供重建；实验3的第三方Python语料以manifest和重建脚本替代；实验8不附GPQA题目正文，保留分数及逐题结果。</p>
+<p>许可：作者脚本MIT；日志、数据和网络CC BY 4.0；实验5提示中的MinAtar源码GPL-3.0；第三方benchmark保留各自许可。复用时应以作者固定版本LICENSE和数据许可为准，不把仓库整体一概称为MIT。</p>
+<h3 id="82-203">8.2 20.3小时究竟是什么</h3>
+<ul>
+<li>p50c搜索流程记录约20.3小时墙钟，158轮交互、80次Python执行，含约4.7小时服务不可达等待。</li>
+<li>50 pass是前向工具预算单位，允许批量多样本；失败调用与最终额外评价的核算需各自区分。</li>
+<li>公开资料未给出足以核算这场运行的明确GPU型号、卡数及完整设备占用账本，<strong>不能称20.3 H20 GPUh或20.3 H200 GPUh</strong>。</li>
+<li>大模型推理服务、被编辑小模型的生成/内部诊断、CPU分析、等待和最终评测是不同成本。墙钟不能直接充当GPUh或总费用。</li>
+<li>对4B复现的时长与成本目前未实测；不能按0.8B参数量或作者20.3小时简单倍乘。</li>
+</ul>
+<h2 id="9">9. 与本聊天讨论的对应关系</h2>
+<h3 id="91">9.1 是否类似蒸馏</h3>
+<p>有“大模型帮助小模型”的表面共同点，但该数学实验不是用教师答案训练学生拟合，也不是通过梯度下降更新学生。它使用题目/答案和反馈进行诊断与候选选择，最终写入永久权重补丁。因此“没有梯度训练”成立，“没有数据、没有优化或搜索”不成立。</p>
+<h3 id="92">9.2 是否已经解释循环机制</h3>
+<p>行为对照方向、定向写入排名、层/剂量干预、部分随机参照和留出修复提供局部功能及因果证据。579个改对样本中576个原先截断，支持解除重复生成障碍是主要收益来源；不能据此断言没有其他作用，也不能证明完整数学知识未变。</p>
+<p>作者没有闭合“MLP修改 → 历史状态写入/处理 → 后续读取 → 循环或答案”的完整链条。修复还可能绕开或补偿问题；补丁有效不等于已找到唯一病因。它的主要贡献证据是诊断与有效修复，而不是Acupuncture缓存链条的直接替代。</p>
+<h3 id="93">9.3 可否搜索任意人格</h3>
+<p>可以把“提出候选—获得行为反馈—调整”的思路用于人格配方搜索，但这是待验证延伸。目标人格的评分、跨输入稳定性与能力代价都比数学答案更难定义。不能保证任意人格存在少数通道实现，不能把持续加大剂量或局部爬山当必然收敛。作者没有展示通用人格配方搜索成功率。</p>
+<p>搜索者应获得真实任务反馈，而不是只优化角色关键词；固定少数通道激活、稠密方向和永久权重补丁属于不同可行空间。本文不将它们混称为相同recipe。</p>
+<h3 id="94">9.4 对我们的直接用途</h3>
+<p>最直接是<strong>对明确、可重复、可评价的失败，搜索局部修复候选</strong>。在稳定副作用控制线，可以考虑“保留角色行为、恢复受损任务表现”；数学、文字与逻辑任务分别测，不以单项成绩代替全面能力。角色消失不算保留角色的修复，简单降剂量/提示词足够好时也应保留该结论。</p>
+<p>本项目已另存<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/pirate-persona-capability-repair-mini-proposal-2026-11-03.zh-CN.md">海盗角色能力修复讨论稿</a>，其中的海盗五题是本项目既有数据，不是WSP作者实验；拟修复尚未运行。该讨论稿包含自查，但执行设计与预算未冻结，不因本档案归档而新增运行授权。</p>
+<p>对于缓存机制线，该方法可提供候选方向、修复位置与行为反例；具体写入、历史状态和读取关系仍需机制证据。按青蒿素原则，可以借用有效部件，再检验我们的具体问题，不以每个部件原创作为使用前提。</p>
+<h2 id="10">10. 档案状态</h2>
+<p>本次扩充沿用已核查的方法与结果，重新读取作者固定版本总README核对八组实验、工具权限、发布范围和许可，并保留原详细核查及来源清单。未逐轮通读全部1125轮，未复算benchmark、未下载权重、未启动模型。作者自报、从公开日志重建、本项目推断和未运行设想均按章节明确区分。</p>
+<p>为避免其他窗口同时维护多个冲突版本，本档案升级原有文件，不删除旧Git历史，也不复制第三方大规模日志或权重入本项目。后续引用优先使用本文件的固定提交链接。</p></main></html>

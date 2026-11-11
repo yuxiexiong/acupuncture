@@ -1,0 +1,286 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>KHC-01 报告 r01：固定供体 Q 下，k 修复历史的 S×KV 载体检验</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="khc-01-r01-q-k-skv">KHC-01 报告 r01：固定供体 Q 下，k 修复历史的 S×KV 载体检验</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-k-history-carrier-v1-2026-11-03/REPORT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-k-history-carrier-v1-2026-11-03/REPORT.zh-CN.md">固定提交原件</a>；SHA-256：<code>1fbb0766217aaaf94519df134b99644267c47e509fe93bfef06b36ff62d56c0e</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="khc-01-r01-q-k-skv_1">KHC-01 报告 r01：固定供体 Q 下，k 修复历史的 S×KV 载体检验</h1>
+<p>合同 <code>CONTRACT.zh-CN.md</code>（freeze-r01 <code>45b64981…</code>；代码 952638c）。预检、正式均 verification passed，一次通过，没有用重试。判读 <code>analysis/khc-readouts-r01.json</code>。logits 张量（3.4 GB）留服务器 <code>runs/formal-r01/worker-*/tensors</code>。</p>
+<h2 id="0">0. 先说限制</h2>
+<ol>
+<li><strong>不特异。</strong> 随机加入（Ark←F、F←Ark）在三个缺口方向上和共同偏移一样，都判为 S（pS 0.96–0.99）；C1343 上四个共同配对是 S_diag_only，即 M 由 S 承接，但答案不变。“S 承接 H 的效应”是 k 扰动的一般形态，不是共同偏移独有的。</li>
+<li><strong>结论限定在 Q 固定为供体的条件下。</strong> Q 取接收者时（KRD 的 10 格背景）没有拆 S/KV，本轮不外推。</li>
+<li><strong>KV 不是空操作，只是对 M 几乎没有作用。</strong> 1152 个格子里，只换 KV 的 t2 logits 都与 00 格不同；但 |M01 − M00| 的中位数为 0（在 bf16 刻度以下），最大 0.25。所以“KV 的贡献可忽略”只针对 t2 的固定竞争分差和完整答案，不说明 KV 在别的读数上不起作用。</li>
+<li>KV 差异本身来自 t1 上游 G 层的写入，S 和 KV 不是两个独立来源。本轮只说明：到 t2 时，差异保存在 S 里起作用，保存在 A 层 t1 位置 KV 里的那部分几乎不起作用。</li>
+</ol>
+<h2 id="1">1. 工程</h2>
+<ul>
+<li>全部闸门通过：</li>
+<li>五臂 t1 与 QKF/QKD 一致；五臂 C 路线 t2 与 QKD/KRD 逐位一致。</li>
+<li>新 00/11 格的 C 路线 M 和 bf16 全词表 logits 与 KRD 的 01/11 逐位相同（48×4×6×2 = 2304 格）。</li>
+<li><strong>N 路线桥接</strong>：2304 个复用格的 t2 logits 与 KRD 存档逐位相同，下一个 token 与 KRD 轨迹一致；预检中 96 条完整轨迹逐 token 重放一致。</li>
+<li>交换只动指定分量；Q 钩子触发次数与来源核对通过；源缓存不变；预检 80 次工程前向等价。</li>
+<li>计数：解码前向 17232（上限 81408），新自然轨迹 2304。设备时间 1446+1059 = 2505 s（0.70 h），加预检约 0.74 h，在 1.5 h 总上限内。</li>
+</ul>
+<h2 id="2-32-m-48-y_full">2. 主结果（目标非首列 32 条的 M；全 48 条的 Y_full）</h2>
+<p>h＝M11 − M00（H 在 Q=d 下的效应）；pS、pKV 以 h 为分母。</p>
+<table>
+<thead>
+<tr>
+<th>方向</th>
+<th>配对</th>
+<th style="text-align: right;">h</th>
+<th style="text-align: right;">h/g</th>
+<th style="text-align: right;">pS</th>
+<th style="text-align: right;">pKV</th>
+<th>类别</th>
+<th>Y：00→10 / 01 / 11</th>
+<th style="text-align: right;">KRD 10 格比例（Q=r）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>N4146</td>
+<td>Rk←V</td>
+<td style="text-align: right;">−1.19</td>
+<td style="text-align: right;">0.43</td>
+<td style="text-align: right;">1.01</td>
+<td style="text-align: right;">−0.05</td>
+<td>S</td>
+<td>26→16 / 27 / 16</td>
+<td style="text-align: right;">0.70</td>
+</tr>
+<tr>
+<td></td>
+<td>V←Rk</td>
+<td style="text-align: right;">+1.82</td>
+<td style="text-align: right;">0.66</td>
+<td style="text-align: right;">1.02</td>
+<td style="text-align: right;">−0.00</td>
+<td>S</td>
+<td>16→40 / 16 / 40</td>
+<td style="text-align: right;">0.40</td>
+</tr>
+<tr>
+<td></td>
+<td>Ak←F</td>
+<td style="text-align: right;">+2.36</td>
+<td style="text-align: right;">0.63</td>
+<td style="text-align: right;">1.03</td>
+<td style="text-align: right;">0.01</td>
+<td>S</td>
+<td>17→43 / 17 / 42</td>
+<td style="text-align: right;">0.35</td>
+</tr>
+<tr>
+<td></td>
+<td>F←Ak</td>
+<td style="text-align: right;">−1.29</td>
+<td style="text-align: right;">0.34</td>
+<td style="text-align: right;">1.01</td>
+<td style="text-align: right;">−0.03</td>
+<td>S</td>
+<td>37→21 / 36 / 21</td>
+<td style="text-align: right;">0.59</td>
+</tr>
+<tr>
+<td></td>
+<td>Ark←F</td>
+<td style="text-align: right;">+1.54</td>
+<td style="text-align: right;">0.55</td>
+<td style="text-align: right;">0.97</td>
+<td style="text-align: right;">0.01</td>
+<td>S</td>
+<td>25→40 / 26 / 40</td>
+<td style="text-align: right;">0.39</td>
+</tr>
+<tr>
+<td></td>
+<td>F←Ark</td>
+<td style="text-align: right;">−1.03</td>
+<td style="text-align: right;">0.37</td>
+<td style="text-align: right;">0.99</td>
+<td style="text-align: right;">0.00</td>
+<td>S</td>
+<td>43→36 / 43 / 36</td>
+<td style="text-align: right;">0.51</td>
+</tr>
+<tr>
+<td>N1210</td>
+<td>Rk←V</td>
+<td style="text-align: right;">−1.31</td>
+<td style="text-align: right;">0.66</td>
+<td style="text-align: right;">1.01</td>
+<td style="text-align: right;">−0.03</td>
+<td>S</td>
+<td>48→34 / 48 / 35</td>
+<td style="text-align: right;">0.78</td>
+</tr>
+<tr>
+<td></td>
+<td>V←Rk</td>
+<td style="text-align: right;">+1.69</td>
+<td style="text-align: right;">0.85</td>
+<td style="text-align: right;">1.01</td>
+<td style="text-align: right;">0.01</td>
+<td>S</td>
+<td>28→43 / 28 / 43</td>
+<td style="text-align: right;">0.73</td>
+</tr>
+<tr>
+<td></td>
+<td>Ak←F</td>
+<td style="text-align: right;">+2.00</td>
+<td style="text-align: right;">0.82</td>
+<td style="text-align: right;">1.01</td>
+<td style="text-align: right;">0.02</td>
+<td>S</td>
+<td>31→45 / 31 / 45</td>
+<td style="text-align: right;">0.72</td>
+</tr>
+<tr>
+<td></td>
+<td>F←Ak</td>
+<td style="text-align: right;">−1.46</td>
+<td style="text-align: right;">0.60</td>
+<td style="text-align: right;">0.99</td>
+<td style="text-align: right;">0.01</td>
+<td>S</td>
+<td>48→41 / 48 / 41</td>
+<td style="text-align: right;">0.69</td>
+</tr>
+<tr>
+<td></td>
+<td>Ark←F</td>
+<td style="text-align: right;">+1.34</td>
+<td style="text-align: right;">0.78</td>
+<td style="text-align: right;">0.96</td>
+<td style="text-align: right;">0.02</td>
+<td>S</td>
+<td>34→44 / 34 / 44</td>
+<td style="text-align: right;">0.69</td>
+</tr>
+<tr>
+<td></td>
+<td>F←Ark</td>
+<td style="text-align: right;">−1.07</td>
+<td style="text-align: right;">0.62</td>
+<td style="text-align: right;">0.97</td>
+<td style="text-align: right;">0.03</td>
+<td>S</td>
+<td>48→46 / 48 / 46</td>
+<td style="text-align: right;">0.66</td>
+</tr>
+<tr>
+<td>R0</td>
+<td>Rk←V</td>
+<td style="text-align: right;">−1.44</td>
+<td style="text-align: right;">0.70</td>
+<td style="text-align: right;">0.97</td>
+<td style="text-align: right;">0.03</td>
+<td>S</td>
+<td>46→43 / 47 / 42</td>
+<td style="text-align: right;">0.78</td>
+</tr>
+<tr>
+<td></td>
+<td>V←Rk</td>
+<td style="text-align: right;">+1.72</td>
+<td style="text-align: right;">0.84</td>
+<td style="text-align: right;">0.99</td>
+<td style="text-align: right;">0.03</td>
+<td>S</td>
+<td>40→48 / 41 / 48</td>
+<td style="text-align: right;">0.73</td>
+</tr>
+<tr>
+<td></td>
+<td>Ak←F</td>
+<td style="text-align: right;">+2.10</td>
+<td style="text-align: right;">0.81</td>
+<td style="text-align: right;">0.98</td>
+<td style="text-align: right;">0.03</td>
+<td>S</td>
+<td>42→48 / 42 / 48</td>
+<td style="text-align: right;">0.70</td>
+</tr>
+<tr>
+<td></td>
+<td>F←Ak</td>
+<td style="text-align: right;">−1.61</td>
+<td style="text-align: right;">0.62</td>
+<td style="text-align: right;">0.96</td>
+<td style="text-align: right;">0.01</td>
+<td>S</td>
+<td>48→44 / 48 / 44</td>
+<td style="text-align: right;">0.71</td>
+</tr>
+<tr>
+<td></td>
+<td>Ark←F</td>
+<td style="text-align: right;">+1.25</td>
+<td style="text-align: right;">0.71</td>
+<td style="text-align: right;">0.97</td>
+<td style="text-align: right;">0.03</td>
+<td>S</td>
+<td>44→46 / 42 / 46</td>
+<td style="text-align: right;">0.63</td>
+</tr>
+<tr>
+<td></td>
+<td>F←Ark</td>
+<td style="text-align: right;">−1.06</td>
+<td style="text-align: right;">0.60</td>
+<td style="text-align: right;">0.98</td>
+<td style="text-align: right;">0.04</td>
+<td>S</td>
+<td>48→46 / 48 / 46</td>
+<td style="text-align: right;">0.67</td>
+</tr>
+<tr>
+<td>C1343</td>
+<td>四个共同配对</td>
+<td style="text-align: right;">±1.37–1.88</td>
+<td style="text-align: right;">0.60–0.80</td>
+<td style="text-align: right;">1.00–1.02</td>
+<td style="text-align: right;">≤0.03</td>
+<td>S_diag_only</td>
+<td>48 全对不变</td>
+<td style="text-align: right;">0.61–0.81</td>
+</tr>
+<tr>
+<td></td>
+<td>Ark←F / F←Ark</td>
+<td style="text-align: right;">0.45 / −0.43</td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;">—</td>
+<td>small_h</td>
+<td>47 / 48 不变</td>
+<td style="text-align: right;">0.59 / 0.46</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>每个可判格都是：S 单项的 M 移动约等于 S+KV 一起换（pS≈1），只换 KV 几乎不动（|pKV|≤0.05）。M 交互全部不实用（|I|≤0.09），Y 交互 |ΣI|≤2。</li>
+<li>完整答案：只换 S 的 Y 与 S+KV 一起换几乎完全相同（例如 N4146 的 V←Rk，00→10 为 16→40，00→11 也是 16→40）。只换 KV 的 Y 变化 ≤1。</li>
+<li>首列 16 条的类别与主子集相同。</li>
+</ul>
+<h2 id="3">3. 预注册对账与交接</h2>
+<ul>
+<li><strong>P1（每个缺口方向至少 3/4 个共同配对为 S）：3/3 方向成立，每个方向都是 4/4。</strong></li>
+<li>交接：三个无序配对（Rk/V、Ak/F、Ark/F）在三个缺口方向上两侧都是 S → 优先载体为 <strong>G 层递推 S</strong>。</li>
+<li>共同对随机（加入侧）：两边类别相同、pS 相近，按合同只作描述，结论是不特异。</li>
+</ul>
+<h2 id="4">4. 能说什么、不能说什么</h2>
+<p>能说的（限 Q 固定为供体、这个混合背景）：</p>
+<ul>
+<li>KRD 中 t1 后历史包对 k 修复的承载，几乎全部落在 G 层递推 S 上；A 层 t1 位置的注意力 KV 对 t2 的固定竞争分差和完整答案几乎没有贡献。</li>
+<li>这对修复、致错、随机加入都成立，C1343 上也一样（只是答案不翻）。</li>
+</ul>
+<p>不能说的：</p>
+<ul>
+<li>不能说 Q 取接收者或 Q 自由响应时也是如此。</li>
+<li>不能说 S 是一般的必要或充分条件；卷积残留与 t2/t3 的直接通路还在接收者里。</li>
+<li>不能说这是共同偏移特有的计算。</li>
+</ul>
+<h2 id="5">5. 交给第二步</h2>
+<p>按计划 §6，下一步的读出载体定为 <strong>G 层递推 S</strong>：在 t1 的 G 层内核里干预 k 进入更新式的哪一项（擦除项 αβ·k(kᵀS₀) 中的两个 k，写入项 β·k·vᵀ），看 S 的变化及其下游如何按预测改变目标优势和完整回答。需要另写设计、自查和授权；本轮不自动启动。</p></main></html>

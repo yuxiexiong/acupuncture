@@ -1,0 +1,332 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>WPC-01：WIN 恢复分叉的统一协议比较</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="wpc-01win">WPC-01：WIN 恢复分叉的统一协议比较</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>docs/mechanism-second-half-v1-2026-11-03/WINDOW_COMPARISON.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/mechanism-second-half-v1-2026-11-03/WINDOW_COMPARISON.zh-CN.md">固定提交原件</a>；SHA-256：<code>7bde6a2c72f9878bb8fe7d570593d6bc94fed64661ba602c1adbae878e207639</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="wpc-01win_1">WPC-01：WIN 恢复分叉的统一协议比较</h1>
+<p>2026-11-05；设计 v1。状态：<strong>已有数据离线审计已完成；具体比较的作者逻辑自查通过；未实现、未做模型验收、未运行、无新模型/GPU授权。</strong> 本文与 Proposal v7 / Roadmap v7 配套。H1 仍是研究方向，不是已有核心主张。本轮只决定一个已有分叉是否值得带到更宽条件，不承诺由此发现通用机制。</p>
+<h2 id="1">1. 主线、本轮问题与可失败的句子</h2>
+<p>总问题：稀疏干预如何改变写入、历史状态处理与后续读取，进而改变回答；哪些关系能跨条件复用？</p>
+<p>本轮问题：WIN-01 的“全递推相对深层递推的回答恢复优势，在事实面板明显大于编号面板”，在共同生成上限、形成流程、单次施针幅度及次数下是否保留？</p>
+<p><strong>待测操作性预测 P-WPC：</strong> 在下面固定的共同协议和原有两块已见面板上，若干净基线与损伤/恢复余量达到可检验条件，全递推相对深层递推的正确结论率增益，事实面板比编号面板至少高 0.20。定义为 D_fact − D_code ≥ 0.20，D_task = mean(Y_R_all − Y_S_deep)。这个数是沿用 WIN 的实质变化尺度制定的研究决策阈值，不是自然常数、统计显著性或看过新结果后的拟合。</p>
+<p>预测来源是旧数据，因此旧 WIN 结果不算兑现预测；两块面板已见，新协议测量也不叫外部确认。即使兑现，得到的只是<strong>固定操作与预算下可复用的任务面板分叉</strong>，尚未得到形成历史/使用背景的通用条件规律。不能用“当且仅当背景合适”填空制造核心主张。</p>
+<h2 id="2">2. 已有数据实际解决了什么</h2>
+<p>审计固定远端提交 <code>05995a167814d5f28604ada14404b23d54f39c03</code>；读取 WIN-01 两 worker 的 72 份原始记录、两份 receipt、verification、统一 v4 盲读标签及 runner/core/analysis 源码。只提取 L0/N4146、W_post、C/T/S_deep/R_all，共 384 个旧输出。事实标签按 item_id + SHA256(answer_text) 精确连接；编号沿用记录中的 Y。没有重判旧标签或改动冻结分析。</p>
+<p>可复查派生数据：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/window-protocol-audit-v1-2026-11-05/audit.json">逐项读数及方法</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/window-protocol-audit-v1-2026-11-05/audit_existing.py">复算脚本</a>。原始记录以该固定提交及 audit.json 的 Git blob 身份为准。旧 verification passed 不等于本轮独立数值复现。</p>
+<table>
+<thead>
+<tr>
+<th>旧任务／臂</th>
+<th style="text-align: right;">正确结论 / 48</th>
+<th style="text-align: right;">超过 32 token</th>
+<th style="text-align: right;">达到 128 上限且未自然停止</th>
+<th style="text-align: right;">首步停止</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>事实 C</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">33</td>
+<td style="text-align: right;">1（仍有正确结论）</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>事实 T</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">43</td>
+</tr>
+<tr>
+<td>事实 S_deep</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">46</td>
+<td style="text-align: right;">32（均未交付正确结论）</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>事实 R_all</td>
+<td style="text-align: right;">47</td>
+<td style="text-align: right;">35</td>
+<td style="text-align: right;">1（未正确交付）</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>编号 C</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>编号 T</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">47</td>
+</tr>
+<tr>
+<td>编号 S_deep</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>编号 R_all</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+<p>长度包含停止 token。编号四臂最大长度分别为 4、17、15、4，全部因 stop 结束。旧事实判读“follows_fact”检验已有明确正确结论，不要求全文自然终止；不能把 C 的 48/48 写成 48 条自然终止。S_deep 的 32 条截断是预算内未交付，不证明事实信息消失或给更长预算仍失败。</p>
+<p><strong>已能排除的简单解释：</strong> 旧编号结果不是“32 token 上限截掉了后续错误”造成的；这些轨迹都早于上限自然结束。在相同状态、解码器、stop 集合且上限仅作循环退出的条件下，提高到 128 不改变这些旧轨迹。因此无需专门重跑一张“编号延长到 128”卡。这个条件推论不等于新形成流程会重放旧轨迹。</p>
+<p><strong>不采用把事实任务硬截到 32 的建议。</strong> 事实 R_all 的 47 条正确中 34 条全文超过 32；仅凭长度不知道正确结论在截点前还是后。已有 token 可做离线前缀解码和另行判读，但这回答短预算问题，不必作为本轮前置工作；不能把旧全文标签移给截断前缀。</p>
+<table>
+<thead>
+<tr>
+<th>可比性项目</th>
+<th>旧数据核对</th>
+<th>本轮处置</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>原有分叉</td>
+<td>事实 D=31/48；编号 D=0。不是仅比较两个成功率；同输入臂差配对保留</td>
+<td>作为待检分叉，不解释为浅层内容承载</td>
+</tr>
+<tr>
+<td>名义单次投影写入范数</td>
+<td>事实 2.6402–2.9152，平均 2.7875；编号 2.5990–2.6540，平均 2.6265；均值比约 1.0613</td>
+<td>同名 dose=-1 不等强。原记录是 bf16 注入幅度×权重列范数的名义审计，非逐 token 最终输出差的独立测量</td>
+</tr>
+<tr>
+<td>W_post 施针次数</td>
+<td>事实 25–33；编号 26–27</td>
+<td>不能称累计输入扰动已匹配</td>
+</tr>
+<tr>
+<td>形成流程</td>
+<td>事实整前缀 masked forward；编号 0..b prefill 后逐 token 形成</td>
+<td>各自桥接旧实现已通过，不等于跨任务算法/数值路径已对齐</td>
+</tr>
+<tr>
+<td>独立单位</td>
+<td>事实 24 个 base 各两事实；编号 6 情景各 6 或 9 个变体</td>
+<td>48 不是 48 个独立情景；两任务不是跨任务配对样本</td>
+</tr>
+<tr>
+<td>浅层单独恢复</td>
+<td>旧 WIN 没有该臂</td>
+<td>本轮不补；R_all−S_deep 已直接测“深层已恢复时再补其余递推”的操作增益，浅层单独作用是另一问题</td>
+</tr>
+<tr>
+<td>新共同协议下的 C/T/恢复输出</td>
+<td>不存在</td>
+<td>无法由哈希、长度、范数或旧答案推算，需要新测量</td>
+</tr>
+<tr>
+<td>新条件/模型的同一关系</td>
+<td>未由本次审计补齐</td>
+<td>留作横向确认；本轮不宣称共型</td>
+</tr>
+</tbody>
+</table>
+<h2 id="3">3. 选定的最小比较：一个方向、两个任务、两个恢复臂</h2>
+<h3 id="31">3.1 固定项与操作</h3>
+<ul>
+<li>模型、权重、tokenizer、模板沿 WIN-01：Qwen3.5-4B revision <code>851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a</code>；torch 2.6.0+cu124、transformers 5.20.2、bf16、eager、batch=1、enable_thinking=false、确定性设置及权重哈希按原 metadata/freeze 核验。不换模型、改输入或重新选题。</li>
+<li>唯一方向为原 L0/C4146 的负向单通道，hook 仍在 MLP down_proj 输入。<strong>改用固定 bf16 激活加量 −5.96875，不再称逐题 dose=−1。</strong> 选择是旧编号 48 条记录的中位幅度，只依据已有校准数值确定；不根据新恢复表现调参。该列范数 0.44003573060035706，对应名义单次投影扰动 2.626463267020881。</li>
+<li>两任务都只干预末提示 token 之前的最后 <strong>25</strong> 个位置：0-based <code>n−26 .. n−2</code>，均在原 W_post 内；旧最短 W_post 为 25，因此不丢弃输入。新窗口命名 <strong>W_post_tail25</strong>，不能继续冒充原完整 W_post。固定次数用于移除旧次数不匹配；不声称相同语义位置、相同下游状态损伤或相同相对扰动。</li>
+<li>共同形成流程：0..b 一次干净 prefill，b+1..n−2 按位置逐 token 前向；进入 tail25 才施针。C 也使用同一分段/逐 token流程但不施针。τ 为读入最后提示 token 前；此后不施针、不强制前缀、不屏蔽EOS。</li>
+<li>每个输入得到同输入 C 和 T；独立深拷贝 T 构造恢复臂。所有非替换状态保持 τ 时的 T，之后正常更新、读取和生成。不是固定未来 q/k 或整条后续路径。</li>
+<li>共同 greedy 解码：最多 128 新 token，stop IDs 248044/248046；最后提示 token 先正常读入。统一一个 decoder，不因任务换生成代码。只用于评估完整任务结论；记录自然停止/截断，32-token前缀仅可作为离线辅助读数，不作为主判据。</li>
+<li>实际 down_proj 输出舍入差不能由固定幅度保证严格相等。预检及正式形成 forward 内记录每次注入的位置、bf16 delta、名义范数；记录同一投影输入注入前/后的输出差范数作数值审计，不新增反事实模型轨迹。若名义写入目标偏离 &gt;1% 或 hook次数不符，属于工程失败；实际舍入差分布如实报告，不据其微差事后重新调剂量。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>臂</th>
+<th>τ 时状态来源</th>
+<th>唯一用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C</td>
+<td>全部来自共同流程的干净同输入</td>
+<td>干净作答基线与恢复供体</td>
+</tr>
+<tr>
+<td>T</td>
+<td>全部来自共同流程的 tail25 受针同输入</td>
+<td>原始损伤、停止/错误/截断及可救余量</td>
+</tr>
+<tr>
+<td>S_deep</td>
+<td>T 中只将 G14 的 recurrent_states 换为 C</td>
+<td>原深层恢复操作</td>
+</tr>
+<tr>
+<td>R_all</td>
+<td>T 中只将全部线性层的 recurrent_states 换为 C</td>
+<td>与 S_deep 配对，测补其余递推的总行为增益</td>
+</tr>
+</tbody>
+</table>
+<p>G14=<code>13,14,16,17,18,20,21,22,24,25,26,28,29,30</code>。全部线性层=<code>0,1,2,4,5,6,8,9,10,12</code> 加 G14；conv_states 与全部 KV 均不替换。L0 的同层递推结构上应 C=T，列入替换不创造新损伤。不存在“恢复十四层就是十四根针”的计数：<strong>本卡一根针、一个注入层、一个模型、两类已见任务。</strong></p>
+<p>这是一项<strong>共同协议稳健性检验</strong>：幅度、次数、形成流程同时标准化，不能将前后差异唯一归因其中某项。保留原完整 W_post / 逐题相对剂量结果为历史证据，不覆盖或否定它。共同输入策略仍不等于任务随机化；任务内容、模板和难度仍不同，不能把剩余分叉命名为任务语义的纯因果效应。</p>
+<h3 id="32">3.2 样本、终点与估计对象</h3>
+<p>固定原 48 事实输入（24 base×2）和 48 编号输入（6 情景）；不按旧恢复成败筛题。事实统一 v4 的明确最终事实结论标准，编号使用原 y_full 的完整正确编号标准；两者都排除只在思考中提到正确词、同时给出互相矛盾答案、未交付。评分规则必须在新增文本出现前写入合同，保留任务定义的合理差异，不能把两个语义任务强行变成同一正则匹配。</p>
+<p>主读数 Y128：128-token预算内交付明确正确的任务结论；同时报告“Y128且自然终止”、首步stop、其他事实/编号、其他错误、未交付、截断。Y128 不等于无穷预算能力。新文本盲读，隐藏任务之外的针/臂身份；相同 item+完整文本哈希才复用既有标签，冲突按已有盲读规则处理。作者或模型辅助判读的来源照实标注。</p>
+<p>主估计先在每个输入算 Y_R_all−Y_S_deep，再在 base/情景内平均，再对各 base/情景等权，得到 D_fact、D_code 与 Δ。同时给原 48 输入等权计数，避免编号情景 6/9 变体数改变权重而不说明。两任务分别重采样完整 base/情景；不得把 96 条当独立或跨任务配对。</p>
+<p>沿用 WIN 的固定 seed 20261103、2000 次重采样框架，输出 Δ 的 95% percentile区间、各情景差及逐一删除一个 base/情景的敏感性。这是有限已见面板的探索性稳定性读数；只有6个编号情景、模板共享会限制外推，零样本方差不等于总体等效。不是新任务/新针确认，也不把区间当领域普适概率。</p>
+<p>可检验余量：每任务 C 正确至少46/48，T 至少12/48错误，R_all 正确至少36/48。阈值分别用于排除明显基线失效、沿用WIN最小可救余量、确认“全递推可作为强恢复参照”；都是决策门槛。任何一项不满足，仍完整报告四臂，不把不利输入删掉重算“可检验子集”。</p>
+<h2 id="4">4. 哪些结果改变什么判断</h2>
+<p>先检查实现验收，再检查可检验余量；不以科学预期作为工程验收标准。</p>
+<table>
+<thead>
+<tr>
+<th>结果</th>
+<th>得到/撤回的判断</th>
+<th>收尾与后续</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>余量满足，Δ≥0.20且95%区间下界&gt;0.10</td>
+<td>P-WPC在已见面板的共同策略下得到支持；简单旧协议不匹配不足以抹去此分叉</td>
+<td>固定操作关系，下一科学比较转向新输入及非L0/随机方向的横向边界；不先切浅层/头/位置</td>
+</tr>
+<tr>
+<td>余量满足，区间完全落在[-0.10,0.10]</td>
+<td>未保留有实际意义的任务面板增益差；不再以旧31/48差作为新机制的主理由</td>
+<td>结束这条分叉优先级；回已有横向关系/核心主张审计，不说已证明某一校准因素导致旧差异</td>
+</tr>
+<tr>
+<td>余量满足，Δ≤−0.20且区间上界&lt;−0.10</td>
+<td>方向性预测被反向结果推翻</td>
+<td>撤回P-WPC；保留反例，不把“也依赖背景”当成功</td>
+</tr>
+<tr>
+<td>其余余量满足情况，包括点差≥0.20但区间不够明确</td>
+<td>小/部分差异或不可判；不得写“等效”或“已支持”</td>
+<td>本轮结束、暂停该候选；不自动加样本、增生成长度或换阈值追判定</td>
+</tr>
+<tr>
+<td>C低于门槛，或T损伤不足</td>
+<td>当前共同策略下缺少可靠基线或可救空间，无法检验既定分叉</td>
+<td>有效的适用边界；不加剂量、不换题凑阳性；不拿工程通过冒充科学支持</td>
+</tr>
+<tr>
+<td>R_all低于门槛</td>
+<td>“全递推是强恢复参照”的前提在此策略下失败</td>
+<td>记录新边界，停止既定分叉归因，不直接推断改由KV/浅层承载</td>
+</tr>
+<tr>
+<td>工程桥接、对象/位置/数值审计失败，或算力上限用尽</td>
+<td>实现/预算未完成，不是科学阴性</td>
+<td>保存失败，停止；修复与是否继续另议，不自动重跑或扩大范围</td>
+</tr>
+</tbody>
+</table>
+<p>若阳性主要来自 S_deep 的长度截断，它仍可支持<strong>预算内交付的操作差异</strong>，不能支持“内容已丢失”。不另开延长到256/512的循环。两任务都强恢复也不证明同一读取机制；全递推胜深层不证明浅层独立充分或唯一携带内容。</p>
+<p><strong>硬出口：</strong> 本卡最多一轮有界共同协议测量；科学判读只在固定面板完成后进行，不按中途显著、低效果或边界值追加/提前截停样本；工程失败及资源上限按下面规则止损。所有结果交付后即结束。任何后继科学工作先回横向适用范围/反例比较或撤回候选，不自动续局部深挖。当前取消KVC读取、浅层逐组、KV/conv组合、其他窗口和剂量扫描的默认队列。重新开启局部计算必须由后继横向证据提出一个能改变整体解释的问题，不能因本卡还剩残差而启动。</p>
+<h2 id="5">5. 真正缺失的测量、复用与成本</h2>
+<ol>
+<li><strong>缺96输入在共同形成/施针策略下的四臂自然输出。</strong> 384条生成；C/T同输入各形成一次，恢复从它们深拷贝，无候选强制评分、无新校准forward、无层/头扫描。旧tokens/文本/供体身份/模板全部复用，旧状态不能冒充新共同策略形成的状态。</li>
+<li><strong>缺共同实现的数值验收。</strong> 预检固定事实 AR01-f0-required、CRL01-f0-required及编号 LVK-H-NA-NQ01-ABC-A、LVK-H-NA-NQ02-ABC-B；这些是已见工程输入，不作额外确认集。四输入四臂的新协议16轨迹是384条中的一部分，配置/代码不变且验收通过时复用。</li>
+<li><strong>旧协议重放仅4输入×4臂=16条额外生成。</strong> 使用冻结旧形成策略及旧逐题尺度，核对原token序列/首步logits或记录的bf16量/停止；事实旧参考按原来源重建，最多2次旧校准。该桥接检验加载环境，不能要求新共同策略逐位重放旧T。新协议比较器需无操作深拷贝一致、替换字段/供体/非目标逐位正确、上游边界及位置/次数验收；在同次生成/形成中记录，不另铺参照网格。</li>
+<li>总上限400条生成（384新协议+16旧桥接），最多51200个生成token及对应前向；96×2新形成+4×2旧桥接形成，旧事实最多2校准，所有prefill/逐token形成、投影审计、载入/验收成本入回执。预算规划上限<strong>1 GPUh</strong>，含预检与桥接，不能把正式run计时单列绕过上限；这是资源止损上限，不是已测耗时保证。若实现预估无法在上限内完成，先返回设计状态，不削样本后声称完成。</li>
+<li>本次只审计旧记录；上述模型测量<strong>均未运行</strong>。逻辑设计通过不是实现通过，也不是运行授权。新合同/代码冻结、输入和统计判据锁定、工程验收以及明确运行授权仍分开。</li>
+</ol>
+<p>旧数据已解决：计数重算、长度/停止审计、名义尺度/次数范围、现有操作定义与缺臂身份。旧数据不能解决：共同策略的反事实输出、实际数值桥接、128之后能否恢复、任务语义的纯因果效应、跨针跨层通用性。后四项并非本卡必须全部补齐；只新增前两类所需测量。</p>
+<h2 id="6-v6">6. 与v6及截图建议相比</h2>
+<ul>
+<li>v6只有“核协议后选最小比较”，现在已有逐项审计、固定比较、阈值、结果处置与退出，不再将H1称核心候选主张。</li>
+<li>保留L0/N4146、两任务、W_post区域、深/全递推比较；删除浅层单独臂，避免多问一个无法帮助主差的识别问题。</li>
+<li>不采纳事实32-token硬上限：旧记录已显示大量长回答；统一128并把截断单列，避免把缩短预算当机制阴性。</li>
+<li>不只写“同校准尺度”：指定一个固定幅度和25次明确操作；同时承认新tail25不是旧全W_post，也不声称总体任务语义已匹配。</li>
+<li>不要求本卡给出通用 iff 机制规则；它只负责决定一个具体分叉是否值得横向投入。若不能形成有新增意义的跨条件解释，H1方向仍可能停止。</li>
+</ul>
+<h2 id="7">7. 作者设计自查（非独立评审）</h2>
+<p>依据 experiment-design-self-check v1 与 known-basics audit 2026-10-31。设计卡八项分别由§1主线/增量、§2依据反例、§3操作/估计、§4判读、§5范围成本、§4硬出口给出。</p>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th>判定与理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C01 主线</td>
+<td>通过：检验既有状态恢复关系的任务边界，服务写入—状态—读取—回答主线；不转为EOS修复</td>
+</tr>
+<tr>
+<td>C02 增量</td>
+<td>通过：决定旧分叉能否在明确共同策略保留，直接决定横向投入；不把该稳健性检查包装成论文核心</td>
+</tr>
+<tr>
+<td>C03 资产</td>
+<td>通过：72原记录+标签+receipt+源码先审计，编号延长与浅层单独臂被删；见§2</td>
+</tr>
+<tr>
+<td>C04 假设</td>
+<td>通过：P-WPC可失败，面对尺度、次数、生成截断及模板差异；H1仅方向</td>
+</tr>
+<tr>
+<td>C05 操作</td>
+<td>通过：固定针、delta、tail25、τ、14/24递推组及同输入供体；不换conv/KV</td>
+</tr>
+<tr>
+<td>C06 路径</td>
+<td>通过：只固定τ状态来源，之后q/k、更新及自由生成均正常响应；测总操作效果</td>
+</tr>
+<tr>
+<td>C07 耦合</td>
+<td>通过：混合状态可能补偿；不独立拼接k/β或宣称原生轨迹；两恢复臂只差补充递推来源</td>
+</tr>
+<tr>
+<td>C08 归因</td>
+<td>通过：支持条件性操作增益差；不推浅层内容、唯一载体、独立分量或任务语义纯因果作用</td>
+</tr>
+<tr>
+<td>C09 区分</td>
+<td>通过：支持/近零/反向/不确定各有事前出口；多项协议改变只识别共同策略稳健性，不强行归因单因素</td>
+</tr>
+<tr>
+<td>C10 指标</td>
+<td>通过：主终点明确正确结论Y128，终止/截断独立；不以“不停”或内部竞争代替正确</td>
+</tr>
+<tr>
+<td>C11 失败</td>
+<td>通过：余量失败、预测失败、工程失败、预算未完成分开；0.20/0.10是实际意义决策带，不叫显著性</td>
+</tr>
+<tr>
+<td>C12 成本</td>
+<td>通过：384+16轨迹逐格有用途，旧工程输入复用；不加浅层单臂/候选评分/组合矩阵</td>
+</tr>
+<tr>
+<td>C13 可信度</td>
+<td>通过：已见面板身份、24/6聚类、标签来源、固定旧提交、未来冻结与运行授权分离；本次不声称独立重判</td>
+</tr>
+<tr>
+<td>C14 累积</td>
+<td>通过：任何结果结束该卡；阳性去横向确认，阴性/不明停止优先级；局部残差不触发续卡</td>
+</tr>
+</tbody>
+</table>
+<p>相关历史错误：E01/E24保持主线与有界增量；E02/E03/E19由固定模型hook、真实幅度及结构边界约束；E07/E08/E13/E14/E15/E18不把混合状态恢复增益命名载体或原生链；E10/E11/E12由Y128、截断及未消去的一般损伤限定；E16/E20分别保留阴性/不可判与可共存解释；E21不新增“首次”主张，沿核心审计保留直接近邻；E22/E23标明聚类、已见、同一作者自查；E25删无助主判的臂并设固定出口；E26未隔离形成与读取中介，明写τ状态替换的后续总作用。E04不以恒等式为新增发现；E05/E06不涉及k/β/v拆分或用少数变量代表全部写入。</p>
+<p><strong>实质反方检查与修订：</strong>
+1. “全部阳性仍可能只是在同一任务模板上更难作答。”成立：限制为两个固定面板的操作分叉，下一步横向确认，不提升为内容仓库；这不破坏本轮稳健性问题，但限制论文贡献。
+2. “事实32截断会人为制造差异。”已修：128统一且编号旧输出都早停；保留事实128截断未知，不用增加长度救故事。
+3. “同剂量仍不同幅度/次数。”已修：固定可表示bf16幅度与25次，保留实际投影舍入审计；不假称最终状态距离等强。
+4. “改了三项，消失就能说协议伪影？”不能；表中只撤回稳健性，不唯一定位任何旧差原因。
+5. “浅层单独臂更完整。”它识别另一种充分性，不服务已选差；删去后仍能测全递推相对深层的净增益。
+6. “区间很宽就一直扩样本？”不；本轮结束暂停，未检出不叫等效。
+7. “筛选强损伤又称普遍机制？”不筛输入、不按恢复结果挑针；余量不足作为整卡边界交付，不更换面板。</p>
+<p>最后复查 C01/C02/C08/C14：仍回答同一分叉是否保留，并改变研究资源去向。<strong>作者逻辑设计通过；工程实现/数值验收未完成；0新模型调用；运行未授权。</strong></p></main></html>

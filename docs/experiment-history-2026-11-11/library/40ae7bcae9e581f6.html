@@ -1,0 +1,24 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>X公开配方复现：讨论版设计与GPU验收范围</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="xgpu">X公开配方复现：讨论版设计与GPU验收范围</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/x-recipe-reproduction-v1-2026-10-29/DESIGN.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/DESIGN.zh-CN.md">固定提交原件</a>；SHA-256：<code>40ae7bcae9e581f6175876a87ef9105064e8c9451d5c17dce5400650950247d7</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="xgpu_1">X公开配方复现：讨论版设计与GPU验收范围</h1>
+<p>日期：2026-10-30。当前授权是设计、代码与上卡预检；正式全量采集待讨论批准。这里把“T”理解为输入题目，采样温度另外记录，不把两者混用。</p>
+<h2 id="_1">这次比较什么</h2>
+<p>在同一个Qwen3.5-4B固定revision上，对同一问题分别生成原版回答和按公开配方插针后的回答。针加在MLP down_proj输入的指定通道；多点配方同时施加，权重不修改。每个问题使用新上下文，避免上一题输出影响下一题。</p>
+<h2 id="_2">配方与题目</h2>
+<p>已收集232条完整来源记录，合并22条完全重复后为210个配置；其中199个固定参考校准、11个逐提示校准。9条其他模型配方不迁入4B；13个历史缺参数/未完成条目明确保留排除原因，不臆造剂量。来源声称失败、不稳定或出现退化的完整配方同样纳入。</p>
+<p>沿用此前约定：每配置5题、每题最多128个新token。三道共同题是自我介绍、17×23与朋友犯错后的安慰；两道情境题根据来源内容设置，但不要求模型扮演目标人格。蜘蛛腿数、好消息回应和低风险坏主意判断等直接情境在生成前补入，初始草稿保留。最终47个不同输入，所有题目和映射可直接阅读<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/RECIPE_CATALOG.zh-CN.md">完整配方与题目</a>。</p>
+<p>相同题目且解码设置相同的原版只计算一次，其他设置分开。正式计划1,050条插针回答＋120条原版回答＝1,170次生成。共享的原版在每个对应配方页面中重复展示，不能统计成新增独立样本。EOS提前结束照原样保存，不补写满128，也不因答案不好看重试。</p>
+<h2 id="_3">怎样让比较可核查</h2>
+<p>保留原始文本（含特殊符号）、可读文本、完整token ID、输入模板、坐标/剂量、实际BF16增量、校准数值、解码设置、停止原因、文件和token哈希。每个配方展示五题的原版/插针并排原文，失败、重复、截断均保留。报告逐条区分来源描述、本次实际观察和无法判断，不用一个evil总分概括所有变化。</p>
+<p>固定模型为Qwen3.5-4B revision 851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a，BF16/eager、batch 1、关闭thinking、seed 0。保留来源已给出的10组有效解码条件。作者私有残差统计未公开，默认采用公开REFERENCE_TEXT回退；历史缺失设置采用明确声明的默认值。HF采样与作者CPU随机实现不保证逐token相同。因此这是公开配方在统一模型上的有限场景复现，不冒充原实验逐字重放。</p>
+<h2 id="gpu-ready">GPU Ready验收与停止关口</h2>
+<ol>
+<li>CPU测试：同层多通道、正负/零剂量、校准下中位数、异常撤钩子、权重不变、对照去重、分片、导出哈希/原文完整性，以及无正式批准不得占GPU。</li>
+<li>校准：一次干净参考前向取得32层尺度，校验12个模型资产文件并冻结科学输入和代码。</li>
+<li>每张拟用GPU运行24条技术记录：原版/零剂量/双针/撤针后原版，覆盖10组解码、逐提示校准和同层多点。零剂量、撤针后与原版须逐token一致；所有记录核验停止、token哈希、hook次数及权重恢复。</li>
+<li>通过后回传全部证据，给出实际耗时及正式运行预算估计，然后停止。预检文本不混入正式五题，也不用于选择配方或修改剂量。</li>
+</ol>
+<p>正式运行命令额外要求formal_approval.json中的批准状态和本次freeze哈希一致。当前不创建批准文件，不启动正式采集、其他模型或旧停止实验。GPU Ready表示技术可执行，不表示已验证210个人格成立；显卡在验收后释放，不持续占用。</p>
+<p>完整技术规则见<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/PROTOCOL.zh-CN.md">协议</a>，配置见<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/contract.json">contract.json</a>。我们讨论后若改题目/剂量/模型/方法，必须重做相应冻结与受影响检查。</p></main></html>

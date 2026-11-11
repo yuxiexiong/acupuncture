@@ -1,0 +1,85 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>FX-01（固定 45 头卷积 V 的完整回答恢复）合同 r01</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="fx-01-45-v-r01">FX-01（固定 45 头卷积 V 的完整回答恢复）合同 r01</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-fixed-v-delivery-v1-2026-11-02/CONTRACT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-fixed-v-delivery-v1-2026-11-02/CONTRACT.zh-CN.md">固定提交原件</a>；SHA-256：<code>4b0056086dee0ce46c5770ac54b91091bdc1f580a87ba2f3d886b8b97e2b4c9b</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="fx-01-45-v-r01_1">FX-01（固定 45 头卷积 V 的完整回答恢复）合同 r01</h1>
+<p>日期：2026-11-02。设计：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-fixed-v-delivery-plan-v1-2026-11-02.zh-CN.md">计划 v1</a>（评审撰写，239bc8e）+ 补充二（报告各臂实际恢复的卷积 V 差异范数，作描述性协变量，已被接受）。授权：用户 2026-11-02「同意，直接写合同代码，测试后上卡跑」。P 面板已见；本操作的续写结果未见。与 SP-01 独立立项、记账。</p>
+<h2 id="1">1. 操作</h2>
+<p>模型、revision、BF16、内核、token、L0 剂量 −1、窗口、四方向、12 条 P 输入、worker/GPU 分配、进程内校准（须等于 B3）都沿用 FC-01。每输入形成 C，跑 C_nat；每方向形成 T，从以下起点各跑一条自然贪心续写（32 token、停止 {248044, 248046}、生成期不注入）：</p>
+<table>
+<thead>
+<tr>
+<th>臂</th>
+<th>起点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T_nat</td>
+<td>T（重放 FC-01）</td>
+</tr>
+<tr>
+<td>T_F</td>
+<td>T，14 个深层 G 层完整 q/k/v 卷积恢复为 C（重放 FC-01）</td>
+</tr>
+<tr>
+<td>T_V</td>
+<td>T，全部 448 个深层值头的卷积 V 通道恢复为 C，q/k 卷积保持 T</td>
+</tr>
+<tr>
+<td>T_FIXV</td>
+<td>只恢复固定 45 头（fixed-heads-r01.json，SHA256 dbc7f130…）的卷积 V 通道</td>
+</tr>
+<tr>
+<td>T_RESTV</td>
+<td>只恢复其余 403 头的卷积 V 通道</td>
+</tr>
+<tr>
+<td>T_U</td>
+<td>只恢复冻结随机名单（fix-random-r01.json，SHA256 5a2ddbcb…，每输入 subsets[input][0]，与 FIX 逐层配平）的卷积 V 通道</td>
+</tr>
+</tbody>
+</table>
+<p>V 通道布局：头 h 占卷积缓冲第 4096 + 128h 到 4096 + 128h + 127 通道，用已验证的 conv_subset 组装（参数顺序：T 为底，列出的头取 C）。递推 S、注意力 KV、浅层与 q/k 卷积不动。每臂记录被恢复槽位上 C − T 的卷积 V 差异范数（描述性协变量；不按它改判据）。</p>
+<h2 id="2">2. 预算</h2>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th style="text-align: right;">形成</th>
+<th style="text-align: right;">轨迹</th>
+<th style="text-align: right;">解码前向上限</th>
+<th style="text-align: right;">校准</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>预检（P01-f0/f1，1 worker；首输入另做 C/T4146 重建续写）</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">52</td>
+<td style="text-align: right;">1664</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td>正式（12 输入，2 worker）</td>
+<td style="text-align: right;">60</td>
+<td style="text-align: right;">300</td>
+<td style="text-align: right;">9600</td>
+<td style="text-align: right;">6</td>
+</tr>
+<tr>
+<td>合计</td>
+<td style="text-align: right;">72</td>
+<td style="text-align: right;">352</td>
+<td style="text-align: right;">11264</td>
+<td style="text-align: right;">7</td>
+</tr>
+</tbody>
+</table>
+<p>GPU ≤1 小时，产物 ≤8 GiB；预检工程失败可记账后重试一次；正式不重试。</p>
+<h2 id="3">3. 工程闸门（任一不过即停止）</h2>
+<p>两份名单哈希与冻结值一致；FIX + REST = 448、U 与 FIX 逐层配平；校准、GPU 分配等于 B3；L0 写入 ≤1%；第一步 logits：C_nat = NR C_native、T_nat = NR T_native、T_F = NR R010（逐位）；C_nat、T_nat、T_F 的续写与 FC-01 逐 token 相同；V 臂组装：q/k 卷积 = T、列出头的 V 槽 = C、其余 V 槽 = T（逐位），S/KV/浅层哈希 = T；供体不变；生成前无 hook；预检重建一致。</p>
+<h2 id="4-3-fc-01">4. 判读（计划 §3，沿用 FC-01 解析器）</h2>
+<p>“完整救回”：某情景两事实都满足“C_nat 正确、T_nat 未交付、该臂正确”（Y_delivery）。方向内 ≥5/6 情景救回为支持；C_nat 两事实都正确的情景不足 5 个记基线不足；整体以固定分母 4、≥3 个方向支持为达成。<strong>P_V</strong>（T_V）与 <strong>P_FIX</strong>（T_FIXV）为推测档预测，P_FIX 允许失败。FIX 对 U：方向内 FIX 救回而 U 不救回的情景 ≥2 且没有反向情景，记“对这一 U 有优势”；跨方向报告 k/4；不做总体随机特异性推断。另报 T_RESTV、T_F、Y_strict、互斥主分类与协变量。出口与措辞照计划 §3（FIX 失败而 V 成功 → 结束固定名单分支，不重筛；V 失败而 F 成功 → 不以排除法指认 q/k）。</p>
+<h2 id="5">5. 交付</h2>
+<p><code>runs/{preflight,formal}-r01/</code>（逐轨迹 token、解码全文、终止原因、第一步哈希、各臂恢复范数；入 Git）、<code>analysis/fx-readouts-r01.json</code>、<code>REPORT.zh-CN.md</code>。</p></main></html>

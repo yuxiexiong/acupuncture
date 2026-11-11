@@ -1,0 +1,56 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>给独立研究 agent 的委托：从 GitHub 证据设计早层机制探索</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="agent-github">给独立研究 agent 的委托：从 GitHub 证据设计早层机制探索</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>docs/早层机制_独立研究建议_prompt_2026-10-28.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/%E6%97%A9%E5%B1%82%E6%9C%BA%E5%88%B6_%E7%8B%AC%E7%AB%8B%E7%A0%94%E7%A9%B6%E5%BB%BA%E8%AE%AE_prompt_2026-10-28.md">固定提交原件</a>；SHA-256：<code>fdf6fa20f40c7609dc14cdcb7ea7ac454fb522da997e7e97b4a092b36c4f6872</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="agent-github_1">给独立研究 agent 的委托：从 GitHub 证据设计早层机制探索</h1>
+<p>你是一位独立的语言模型机制研究合作者。请实际阅读 GitHub 仓库 https://github.com/yuxiexiong/acupuncture ，重点研究“早层单通道干预后，输出提前终止、重复、失序或偏离任务”的现象、已做实验及外部线索，给出下一步探索机制的计划。不要只复述现有报告，也不需要迎合报告作者的解释；你可以指出过度推断，提出更简单的解释，或建议暂时不做某类实验。</p>
+<p>本次只做阅读和计划，不授权运行模型、GPU、训练、新实验或改写原始数据。请从仓库自己形成判断，不使用本聊天先前结论或其他 agent 的意见。你的身份是一个独立阅读者，不是多位专家共识。</p>
+<h2 id="_1">来源与读取要求</h2>
+<ol>
+<li>仓库默认分支 main。本委托已通过 GitHub 连接核实的提交为 <code>3d00273b9a21b0f1160ead0c91eb3d9e94a1ec35</code>。先独立验证 GitHub 可访问及提交身份，并以此提交固定阅读；后续新增材料单列。优先用 GitHub 连接的 fetch_file/fetch 等只读能力，不要只读本地摘要就声称读了 GitHub。</li>
+<li>先读 AGENTS.md、README.md、docs/RESEARCH_STATUS.zh-CN.md、experiments/README.md、docs/原始回答与实验数据索引.md、docs/Acupuncture_实验总结_导师版_2026-10-28.md。区分最终核验与执行文件中的历史“运行中”快照。</li>
+<li>核心证据入口：
+   - <code>experiments/layer-trace-extension-v1-2026-10-28/analysis-early-r01/</code> 中的 REPORT.zh-CN.md、POSITION.zh-CN.md、stats-note.md、summary.json、fourb-cases.zh-CN.md / fourb-cases.json、cross-model-cases.md / cross-model-cases.json。
+   - <code>experiments/early-layer-mechanism-v1-2026-10-28/</code> 的 CONTRACT.zh-CN.md、PLAN.zh-CN.md、trace_engine.py、原始记录和最终核验。
+   - <code>experiments/layer-trace-extension-v1-2026-10-28/</code> 与 <code>experiments/llama31-early-layer-trace-v1-2026-10-28/</code> 的合同及归档验收；总覆盖核对 <code>archive-r01/combined-verification.json</code>。
+   - 之前逐层十点与剂量实验：<code>layer-survey-toy-v1-2026-10-27</code>、<code>layer-dose-survey-toy-v1-2026-10-27</code>、<code>layer-negative-dose-survey-toy-v1-2026-10-27</code>、<code>llama31-layer-survey-v1-2026-10-28</code>、<code>llama31-single-point-dose-survey-v1-2026-10-28</code>。先读各自协议和 FIRST_PASS，再按你提出的关键判断回查原文及对照；不是要求无差别读完全部文件。
+   - 现有二维观察台说明 <code>experiments/neuron-explorer-multimodel-v2-2026-10-26/analysis-view-r01/README.zh-CN.md</code>，以及可视化验收。它是既有观测的展示，不是新增因果实验。</li>
+<li>外部线索入口：<code>docs/literature/x-clues-summary.zh-CN.md</code>；沿引用读与你的机制问题真正相关的方法、失败与反例。另看 <code>docs/literature/hanlab-mechanism-primary-audit-2026-10-26.zh-CN.md</code> 和 <code>mechanistic-interventions-2026-10-26.json</code>。要区分外部作者报告、本项目实测、你的推断和未运行方案。若某条外部方法是计划的关键依据，回查对应原论文/官方源码；没有回查就注明仅依据仓库转录，不能伪造全文阅读。</li>
+<li>GitHub 保存原始回答、运行记录、代码和分析摘要；大型压缩内部轨迹没有放进普通 Git。先读 <code>migration/2026-10-28-full-results-git-r01/README.zh-CN.md</code> 及必要清单。不因缺少大文件而要求重跑模型，也不能声称已读取未取得的张量。以 GitHub 文本证据为基础；如需要本地只读复核，须核对与该提交/外部清单的身份，并在报告明确列为“本地补充”，不得与 GitHub 直接阅读混淆。</li>
+<li>对自己的主要建议，至少回查相应原文、一个匹配对照或反例、测量定义/代码。报告实际阅读范围，不用虚构覆盖数量。引用固定提交的 GitHub 文件链接及必要行号/trace ID；大文件无法访问时明确限制。</li>
+</ol>
+<h2 id="_2">要回答的问题</h2>
+<ul>
+<li>目前关于早层究竟知道了什么？哪些是输出层面的直接现象，哪些已经有内部观测支持，哪些仍是未验证解释？不同模型哪些一致，哪些明确不一致？</li>
+<li>“早层扎针后输出溃散”是否包含不同过程？请自己判断怎样拆分才有解释价值，避免把空答、重复、句式保持但内容偏移、任务错误都混成单一损伤分数。</li>
+<li>提出少量、彼此可区分的竞争假设。每个假设列出已有支持、反例/缺口、可证伪预测；尤其说明哪项新结果能把它与其他假设区分开。</li>
+<li>X 和文献线索中哪些真正能转成我们现在可做的机制实验，哪些只是命名、截图相关性或不值得优先追？请说明对应关系，不罗列文献目录。</li>
+<li>现在已有数据还可回答哪些问题？哪些问题确实需要新干预？不要把现有可视化/同前缀参照能够回答的问题包装为新实验。</li>
+</ul>
+<h2 id="_3">下一步计划的格式与约束</h2>
+<p>先用几句话给出你最推荐的研究主线。随后输出：证据判断、竞争假设表、优先实验计划、路线分支与当前不建议做的事。</p>
+<p>每个实验必须明确标为以下一种主目的：</p>
+<ul>
+<li><strong>观察现象</strong>：测量什么、补什么缺口、何种图/原文对照能让现象清楚；不能凭观察设计直接声称因果。</li>
+<li><strong>验证假设</strong>：检验哪一个假设，怎样操纵变量，什么结果支持、反驳或仍不能区分。</li>
+</ul>
+<p>对每项列出：具体问题；最小起步模型/点位/题目选择理由；实验变量、固定条件与匹配对照；关键读数及原文核查；可能结果及其解释；剩余混淆；进入下一步或停止扩展的条件。先给最小且信息增益高的试验，再写确有必要时如何扩展。不要直接开全模型全层全通道大扫描。</p>
+<p>请特别核对这些解释风险，但不要因此预设机制答案：</p>
+<ul>
+<li>单通道稀疏不等于幅度小；正负剂量归一化、局部相对尺度和方向是否真正可比。</li>
+<li>现有注入覆盖提示及后续生成输入。文本历史、内部缓存、当前一步的注入分别能否被设计区分；如果提出撤针/恢复/替换，必须明确前缀来源、缓存是否重建、操作位置和时间。</li>
+<li>同前缀无针参照拥有独立缓存，不等于中途撤针，也不是干净自由生成回答。</li>
+<li>layer/component 差分、logit 变化、静态权重投影、图上相邻都不能直接证明必要或充分机制。不要把替换整个残差恢复输出当作定位到了细机制。</li>
+<li>BF16 并列最高候选、首个不同 token、128-token 截断、EOS 后没有后续观测、题目/通道复用、单点剂量代表性及跨模型模板/架构差异。</li>
+<li>控制是否支持我们真正想声称的结论；没有预期效果也要能交付有意义的否定结果。</li>
+</ul>
+<p>保持原始结果不变。新实验若建议改变最大生成长度、题目、剂量或引入新控制，需写成独立新设计及理由。不要把它写成已经运行或已授权。不要新增人格/道德/安全神经元命名。样本量、统计、预算应与实验问题对应；没有实际测速就只给条件数/前向次数的估算方法，不编造 GPU 小时和金额，不套已撤销的历史固定预算。</p>
+<p>最后明确：<strong>如果下一轮只能做一项实验，你选哪一项，为什么；得到正、负、混合结果各往哪里走？</strong> 可以不同意仓库现有机制解释，但必须给出证据。</p>
+<h2 id="_4">交付</h2>
+<ul>
+<li>用中文撰写独立报告，先说清建议，再展开。</li>
+<li>在文首记录来源提交、实际读取方式、证据范围与“新计划尚未运行”。</li>
+<li>保存完整报告到本地仓库 <code>docs/早层机制_独立研究建议_2026-10-28.md</code>。</li>
+<li>保存简洁的实际阅读记录到 <code>docs/早层机制_独立研究建议_阅读记录_2026-10-28.json</code>，列出 GitHub 直接读取、本地补充、外部原文、未取得材料，保留来源 URL/身份。</li>
+<li>不改其他文件、不提交/push、不发外部消息、不启动或恢复任何实验。读完并写完后向本聊天返回你的主要建议和报告路径。</li>
+</ul></main></html>

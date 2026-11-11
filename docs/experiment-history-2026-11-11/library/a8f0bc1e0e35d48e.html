@@ -1,0 +1,456 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DWC-01 独立材料确认：正式结果</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="dwc-01">DWC-01 独立材料确认：正式结果</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-write-read-confirm-v1-2026-11-07/REPORT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-write-read-confirm-v1-2026-11-07/REPORT.zh-CN.md">固定提交原件</a>；SHA-256：<code>a8f0bc1e0e35d48e19d7cb58f33a2a442f3c67536d74926b3d867dd8c29ff77b</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="dwc-01_1">DWC-01 独立材料确认：正式结果</h1>
+<p>2026-11-07。<strong>计算完成，恢复验收通过，冻结分析完成。</strong> 正式 <code>formal-r01</code>；冻结 <code>39b5a300e57e53fa24b0c7ed0098e120ce16cb5b60b1b6dc69d737ed4efc727a</code>。</p>
+<p><strong>主方向N4146完成了独立材料上的来源—写入—直接读取—答案选择量级确认。N1210的关系同向复现，但获得量级预测失败：其95%区间上界0.234低于预设M=.25。</strong> 不能写两方向共同确认，也不能把第二方向写成无效或仍仅因区间跨M而不可判。两方向E用途的G/W/R均为负，全部报告。</p>
+<h2 id="1">1. 实验做了什么</h2>
+<p>总问题仍是稀疏干预如何通过历史、写入、旧状态处理和后续读取影响完整回答。本卡不增加针、层或模型，检验既有DWB/DWR关系能否预测未参与开发的新材料。</p>
+<ul>
+<li>Qwen3.5-4B，固定N4146/N1210；六结构族各16个新基础情境，共96；864接收者，每个8供体，每方向每供体臂6912个配对。生成材料在模型前向前冻结，沿用旧校准与操作，不按答对率挑题。</li>
+<li>O=L11o使用自身干净V历史计算影子v；F=L11d使用供体干净V历史；两端点共享接收者原生受针预填及t1写入k去偏移。仅t1的14个指定GDN层联合改变写入，随后自然响应。</li>
+<li>t2获得：O在D或E输出用途中读F的S₁；撤回：F读O的S₁。当前层持久S2不被替换；高层驱动与后续生成可响应。因此测量是指定用途的条件总效果，不是唯一自然中介或机制份额。</li>
+<li>96情境为主统计单位，族内配对重抽20000次，固定种子2026110703；不把81648轨迹当独立样本。净供体转移D_tr不是准确率。确认须F/G/W下界均≥.25、冲突配对自身恢复R下界&gt;0及全部护栏通过。</li>
+<li>24预定情境另作三路预测诊断，432额外干净供体；每方向1296诊断配对，位置/实体/编号预测互不相同、平衡覆盖。诊断不并入主D_tr，也不决定主成功。</li>
+</ul>
+<p>正式主矩阵73440轨迹＋诊断8208轨迹＝81648；预检7260条计划轨迹不并入科学结果。协议见<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-write-read-confirm-v1-2026-11-07/CONTRACT.zh-CN.md">合同</a>与<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-write-read-confirm-plan-v1-2026-11-07.zh-CN.md">方案</a>。旧合同预算须联读<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-write-read-confirm-v1-2026-11-07/CONTRACT-BUDGET-SUPPLEMENT-r01.zh-CN.md">延期授权</a>。</p>
+<h2 id="2">2. 主要结果</h2>
+<p>下表均为点估计与95%族内场景重抽区间。F为净转移；G/W为同端点配对差；R为每方向3456个AL/BD冲突配对的自身正确比例差，三者不是同一指标。</p>
+<table>
+<thead>
+<tr>
+<th>方向</th>
+<th>用途</th>
+<th style="text-align: right;">写入端点F</th>
+<th style="text-align: right;">获得G</th>
+<th style="text-align: right;">撤回W</th>
+<th style="text-align: right;">自身恢复R</th>
+<th>冻结结局</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>N4146</td>
+<td>D</td>
+<td style="text-align: right;">0.588 [0.564, 0.611]</td>
+<td style="text-align: right;">0.311 [0.291, 0.331]</td>
+<td style="text-align: right;">0.473 [0.452, 0.495]</td>
+<td style="text-align: right;">0.394 [0.374, 0.414]</td>
+<td>独立材料量级确认</td>
+</tr>
+<tr>
+<td>N4146</td>
+<td>E</td>
+<td style="text-align: right;">0.588 [0.564, 0.611]</td>
+<td style="text-align: right;">-0.013 [-0.018, -0.009]</td>
+<td style="text-align: right;">-0.037 [-0.047, -0.027]</td>
+<td style="text-align: right;">-0.022 [-0.027, -0.017]</td>
+<td>异号证据</td>
+</tr>
+<tr>
+<td>N1210</td>
+<td>D</td>
+<td style="text-align: right;">0.309 [0.285, 0.332]</td>
+<td style="text-align: right;">0.213 [0.192, 0.234]</td>
+<td style="text-align: right;">0.294 [0.270, 0.318]</td>
+<td style="text-align: right;">0.322 [0.299, 0.344]</td>
+<td>关系为正；获得上界低于M</td>
+</tr>
+<tr>
+<td>N1210</td>
+<td>E</td>
+<td style="text-align: right;">0.309 [0.285, 0.332]</td>
+<td style="text-align: right;">-0.004 [-0.007, -0.001]</td>
+<td style="text-align: right;">-0.024 [-0.031, -0.017]</td>
+<td style="text-align: right;">-0.014 [-0.019, -0.010]</td>
+<td>异号证据</td>
+</tr>
+</tbody>
+</table>
+<p>N4146的F/G_D/W_D下界分别为0.564/0.291/0.452，均超过.25；R_D下界0.374为正。N1210的F和W_D通过，G_D为0.213 [0.192,0.234]，有稳定正效应但上界低于M。冻结代码总标签仍为<code>positive_relation_magnitude_unconfirmed</code>，更细的<code>G_level=below</code>必须一并解读，正文写明量级预测失败。不得改阈值、挑方向或追加已见材料救门槛。</p>
+<p>冲突配对中，D撤回使自身答案从N4146的820/3456增至2182/3456，N1210从2021/3456增至3133/3456；E撤回则分别降至745/3456与1972/3456。两方向D的作用超出一般作答退化。主比较全部交付/可达护栏通过，但N1210并非每条均交付：O有1/864停止，两个获得臂各8/6912停止，均保留分母。</p>
+<p>D−E的获得配对差：N4146 0.324 [0.304, 0.344]；N1210 0.217 [0.195, 0.238]。撤回配对差分别为0.510 [0.488, 0.532]、0.318 [0.294, 0.343]。这是预指定次要比较，不是以多个比较挑主成功。E的异号不意味着E在一般计算中无作用，也不能将D/E相加为答案解释率。</p>
+<p>六个结构族的预存分组点估计如下。主确认针对六族等权平均，并不要求每个族都达到M；例如N4146的NQ01/NQ05获得低于.25。这是解释范围的重要异质性，不作事后逐族显著性筛选。</p>
+<table>
+<thead>
+<tr>
+<th>结构族</th>
+<th style="text-align: right;">N4146 G_D</th>
+<th style="text-align: right;">N4146 W_D</th>
+<th style="text-align: right;">N1210 G_D</th>
+<th style="text-align: right;">N1210 W_D</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NQ01</td>
+<td style="text-align: right;">0.117</td>
+<td style="text-align: right;">0.171</td>
+<td style="text-align: right;">0.208</td>
+<td style="text-align: right;">0.253</td>
+</tr>
+<tr>
+<td>NQ02</td>
+<td style="text-align: right;">0.352</td>
+<td style="text-align: right;">0.521</td>
+<td style="text-align: right;">0.139</td>
+<td style="text-align: right;">0.259</td>
+</tr>
+<tr>
+<td>NQ03</td>
+<td style="text-align: right;">0.502</td>
+<td style="text-align: right;">0.632</td>
+<td style="text-align: right;">0.030</td>
+<td style="text-align: right;">0.082</td>
+</tr>
+<tr>
+<td>NQ04</td>
+<td style="text-align: right;">0.372</td>
+<td style="text-align: right;">0.616</td>
+<td style="text-align: right;">0.301</td>
+<td style="text-align: right;">0.390</td>
+</tr>
+<tr>
+<td>NQ05</td>
+<td style="text-align: right;">0.156</td>
+<td style="text-align: right;">0.354</td>
+<td style="text-align: right;">0.409</td>
+<td style="text-align: right;">0.571</td>
+</tr>
+<tr>
+<td>NQ06</td>
+<td style="text-align: right;">0.367</td>
+<td style="text-align: right;">0.546</td>
+<td style="text-align: right;">0.189</td>
+<td style="text-align: right;">0.208</td>
+</tr>
+</tbody>
+</table>
+<h2 id="3">3. 完整回答与交付分账</h2>
+<table>
+<thead>
+<tr>
+<th>方向</th>
+<th>臂</th>
+<th style="text-align: right;">分母</th>
+<th style="text-align: right;">有效完整编号</th>
+<th style="text-align: right;">自身正确</th>
+<th style="text-align: right;">停止无编号</th>
+<th style="text-align: right;">其他</th>
+<th style="text-align: right;">截断</th>
+<th style="text-align: right;">到达t2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>N4146</td>
+<td>C0</td>
+<td style="text-align: right;">864</td>
+<td style="text-align: right;">864</td>
+<td style="text-align: right;">864</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">864</td>
+</tr>
+<tr>
+<td>N4146</td>
+<td>L00</td>
+<td style="text-align: right;">864</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">861</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">7</td>
+</tr>
+<tr>
+<td>N4146</td>
+<td>L11o</td>
+<td style="text-align: right;">864</td>
+<td style="text-align: right;">864</td>
+<td style="text-align: right;">735</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">864</td>
+</tr>
+<tr>
+<td>N4146</td>
+<td>L11d</td>
+<td style="text-align: right;">6912</td>
+<td style="text-align: right;">6912</td>
+<td style="text-align: right;">2500</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">6912</td>
+</tr>
+<tr>
+<td>N4146</td>
+<td>gainD</td>
+<td style="text-align: right;">6912</td>
+<td style="text-align: right;">6912</td>
+<td style="text-align: right;">3116</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">6912</td>
+</tr>
+<tr>
+<td>N4146</td>
+<td>withdrawD</td>
+<td style="text-align: right;">6912</td>
+<td style="text-align: right;">6912</td>
+<td style="text-align: right;">4662</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">6912</td>
+</tr>
+<tr>
+<td>N4146</td>
+<td>gainE</td>
+<td style="text-align: right;">6912</td>
+<td style="text-align: right;">6912</td>
+<td style="text-align: right;">6044</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">6912</td>
+</tr>
+<tr>
+<td>N4146</td>
+<td>withdrawE</td>
+<td style="text-align: right;">6912</td>
+<td style="text-align: right;">6912</td>
+<td style="text-align: right;">2363</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">6912</td>
+</tr>
+<tr>
+<td>N1210</td>
+<td>C0</td>
+<td style="text-align: right;">864</td>
+<td style="text-align: right;">864</td>
+<td style="text-align: right;">864</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">864</td>
+</tr>
+<tr>
+<td>N1210</td>
+<td>L00</td>
+<td style="text-align: right;">864</td>
+<td style="text-align: right;">33</td>
+<td style="text-align: right;">33</td>
+<td style="text-align: right;">809</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">132</td>
+</tr>
+<tr>
+<td>N1210</td>
+<td>L11o</td>
+<td style="text-align: right;">864</td>
+<td style="text-align: right;">863</td>
+<td style="text-align: right;">805</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">864</td>
+</tr>
+<tr>
+<td>N1210</td>
+<td>L11d</td>
+<td style="text-align: right;">6912</td>
+<td style="text-align: right;">6912</td>
+<td style="text-align: right;">4695</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">6912</td>
+</tr>
+<tr>
+<td>N1210</td>
+<td>gainD</td>
+<td style="text-align: right;">6912</td>
+<td style="text-align: right;">6904</td>
+<td style="text-align: right;">5035</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">6912</td>
+</tr>
+<tr>
+<td>N1210</td>
+<td>withdrawD</td>
+<td style="text-align: right;">6912</td>
+<td style="text-align: right;">6912</td>
+<td style="text-align: right;">6309</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">6912</td>
+</tr>
+<tr>
+<td>N1210</td>
+<td>gainE</td>
+<td style="text-align: right;">6912</td>
+<td style="text-align: right;">6904</td>
+<td style="text-align: right;">6487</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">6912</td>
+</tr>
+<tr>
+<td>N1210</td>
+<td>withdrawE</td>
+<td style="text-align: right;">6912</td>
+<td style="text-align: right;">6912</td>
+<td style="text-align: right;">4627</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">6912</td>
+</tr>
+</tbody>
+</table>
+<p>截断是终止状态，可能同时计入“其他”，不能把两列相加；完整各类及场景值见分析JSON。干净C0为864/864自身正确；原生L00自身正确仅1/864与33/864，说明本轮确有干预损伤。L00的停止/其他不是被读取实验筛掉的样本。O/F首token一致率为N4146 1.000、N1210 0.997685；协议允许不一致各自自然续写，没有强制共同token或删除这部分输入。后者限制严格共同前缀解释，不影响冻结完整回答判据。</p>
+<h2 id="4">4. 三路诊断：位置预测较强，不能命名纯位置编码</h2>
+<p>所有432额外供体干净运行均正确。以下各臂每方向1296对、24情境，全部有效且无截断；三种预测互斥且平衡。</p>
+<table>
+<thead>
+<tr>
+<th>方向</th>
+<th>臂</th>
+<th style="text-align: right;">位置匹配</th>
+<th style="text-align: right;">实体匹配</th>
+<th style="text-align: right;">编号匹配</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>N4146</td>
+<td>L11d</td>
+<td style="text-align: right;">0.561 [0.539, 0.583]</td>
+<td style="text-align: right;">0.217 [0.203, 0.231]</td>
+<td style="text-align: right;">0.222 [0.211, 0.233]</td>
+</tr>
+<tr>
+<td>N4146</td>
+<td>gainD</td>
+<td style="text-align: right;">0.473 [0.454, 0.492]</td>
+<td style="text-align: right;">0.258 [0.245, 0.271]</td>
+<td style="text-align: right;">0.269 [0.260, 0.279]</td>
+</tr>
+<tr>
+<td>N4146</td>
+<td>withdrawD</td>
+<td style="text-align: right;">0.410 [0.396, 0.424]</td>
+<td style="text-align: right;">0.302 [0.295, 0.310]</td>
+<td style="text-align: right;">0.288 [0.279, 0.296]</td>
+</tr>
+<tr>
+<td>N1210</td>
+<td>L11d</td>
+<td style="text-align: right;">0.467 [0.442, 0.492]</td>
+<td style="text-align: right;">0.265 [0.248, 0.280]</td>
+<td style="text-align: right;">0.269 [0.258, 0.279]</td>
+</tr>
+<tr>
+<td>N1210</td>
+<td>gainD</td>
+<td style="text-align: right;">0.433 [0.415, 0.451]</td>
+<td style="text-align: right;">0.282 [0.271, 0.292]</td>
+<td style="text-align: right;">0.285 [0.277, 0.294]</td>
+</tr>
+<tr>
+<td>N1210</td>
+<td>withdrawD</td>
+<td style="text-align: right;">0.346 [0.340, 0.352]</td>
+<td style="text-align: right;">0.330 [0.327, 0.333]</td>
+<td style="text-align: right;">0.324 [0.319, 0.329]</td>
+</tr>
+</tbody>
+</table>
+<p>全部预指定成对差亦保留：</p>
+<table>
+<thead>
+<tr>
+<th>方向</th>
+<th>臂</th>
+<th style="text-align: right;">位置−实体</th>
+<th style="text-align: right;">位置−编号</th>
+<th style="text-align: right;">实体−编号</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>N4146</td>
+<td>L11d</td>
+<td style="text-align: right;">0.344 [0.309, 0.378]</td>
+<td style="text-align: right;">0.339 [0.308, 0.370]</td>
+<td style="text-align: right;">-0.005 [-0.019, 0.009]</td>
+</tr>
+<tr>
+<td>N4146</td>
+<td>gainD</td>
+<td style="text-align: right;">0.215 [0.184, 0.246]</td>
+<td style="text-align: right;">0.204 [0.177, 0.231]</td>
+<td style="text-align: right;">-0.012 [-0.023, 0.000]</td>
+</tr>
+<tr>
+<td>N4146</td>
+<td>withdrawD</td>
+<td style="text-align: right;">0.107 [0.086, 0.129]</td>
+<td style="text-align: right;">0.122 [0.100, 0.144]</td>
+<td style="text-align: right;">0.015 [0.006, 0.023]</td>
+</tr>
+<tr>
+<td>N1210</td>
+<td>L11d</td>
+<td style="text-align: right;">0.202 [0.163, 0.243]</td>
+<td style="text-align: right;">0.198 [0.164, 0.233]</td>
+<td style="text-align: right;">-0.004 [-0.015, 0.008]</td>
+</tr>
+<tr>
+<td>N1210</td>
+<td>gainD</td>
+<td style="text-align: right;">0.151 [0.123, 0.180]</td>
+<td style="text-align: right;">0.147 [0.122, 0.173]</td>
+<td style="text-align: right;">-0.004 [-0.012, 0.005]</td>
+</tr>
+<tr>
+<td>N1210</td>
+<td>withdrawD</td>
+<td style="text-align: right;">0.015 [0.007, 0.025]</td>
+<td style="text-align: right;">0.022 [0.011, 0.032]</td>
+<td style="text-align: right;">0.006 [0.003, 0.009]</td>
+</tr>
+</tbody>
+</table>
+<p>F及gainD在两方向均更符合位置预测；撤回后位置偏向减弱，仍有残余。固定答自身或首行在平衡诊断里不会自动偏向位置解释。这使原来实体与编号始终绑定的歧义得到部分解决，新增的是<strong>这些操作下的行为预测区分</strong>。三种匹配非零不直接证明三个独立机制，位置占优也不等于定位了位置编码或证明V只存位置。诊断未做新一轮内部编码识别。</p>
+<h2 id="5">5. 对论文补上什么</h2>
+<ul>
+<li><strong>G0：主方向的同端点双向量级缺口补上。</strong> 历史来源经指定写入形成的差异，能通过后续D用途获得、撤回，并恢复自身答案。第二方向有正向关系而获得低于关注量级，不作统一强度结论。</li>
+<li><strong>G1：供体写入—读取链走出开发面板。</strong> 固定操作在96新情境上得到前瞻检验；N4146确认、N1210边界清楚。独立性针对新材料，目标仍是固定六族与有限词表，不扩称新任务/模型或原LVK/SRU所有端点都已确认。</li>
+<li><strong>G2：增加三路诊断与D/E用途区分。</strong> 同一新材料上的行为更符合位置预测，但不恢复已被NWC否定的首列错答特异性主张。</li>
+<li><strong>G3/G4/G5未补：</strong> 稀疏入口如何形成v/k变化、完整原生停答过程、跨模型/非编号任务和真实转向收益仍需相应证据。</li>
+</ul>
+<p>论文的增量是从开发链推进为可在新材料上预测的写入—读取关系，同时识别方向和用途的边界。下一优先级应讨论可比模型/任务的预测检验；不自动扩N1210样本、扫描层或放宽M。本卡结束，没有启动下一实验。</p>
+<h2 id="6">6. 工程验收、偏离与成本</h2>
+<ul>
+<li>GPU计算于北京时间2026-11-07 23:31完成。worker0/1分别48情境、40824轨迹，均returncode=0；控制器及两worker均已退出。没有终止其他任务。</li>
+<li>控制器最终自动验收原件为failed：预算延期时新增<code>readiness/budget_extension_r01.py</code>进入<code>readiness/*.py</code>路径集合。200个原冻结文件全部hash相同，仅新增成员导致<code>Frozen source changed</code>。这是本次工程归档疏漏，不能宣称自动验收一次通过。</li>
+<li>已保留原控制器回执，将工具原字节移至<code>readiness/budget-extension-r01/</code>，没有修改冻结或忽略比较。原<code>check_freeze</code>恢复精确200文件身份；原<code>verify_worker</code>完整重验通过。恢复收据和新verification明确标注CPU恢复验收，旧failed未改写。预算仅按用户已授权的48正式/51全包GPU进程小时核对，未改科学范围。</li>
+<li>正式原始记录1392个hash全部通过；18144次零用途逐位检查、60480次读取钩子交付、模型权重和钩子卸载通过。最大写入/读取误差为2.5250e-7/4.0044e-8，低于1e-5。</li>
+<li>正式17.460514 GPU进程小时；预检0.770576；合计18.231091。共享负载等待、加载、存盘和调试附加均计入；不把GPU进程小时当满负荷计算小时。各worker峰值约11.14GiB。</li>
+<li>首次CPU分析因输出目录未建立而未能保存；补目录后重跑同一冻结脚本成功，无模型调用、无效应选择。随后本地对全量原始输出重算，分析结果逐字段完全一致。</li>
+</ul>
+<p>证据：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-write-read-confirm-v1-2026-11-07/runs/formal-r01/verification.json">正式验收</a> · <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-write-read-confirm-v1-2026-11-07/runs/formal-r01/controller.json">保留的控制器失败</a> · <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-write-read-confirm-v1-2026-11-07/readiness/final-verification-recovery-r01.json">恢复验收记录</a> · <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-write-read-confirm-v1-2026-11-07/analysis/dwc-readouts-formal-r01.json">冻结分析</a> · <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-write-read-confirm-v1-2026-11-07/analysis/delivery-audit.json">交付复核</a> · <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-write-read-confirm-v1-2026-11-07/analysis/audit_delivery.py">复核脚本</a>。本报告与正文自查由同一助手完成，不是独立审稿。</p></main></html>

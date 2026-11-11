@@ -1,0 +1,75 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>跨通道计划的旧数据核对：执行前自查</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="_1">跨通道计划的旧数据核对：执行前自查</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cross-channel-planning-audit-v1-2026-10-31/SELF_CHECK.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cross-channel-planning-audit-v1-2026-10-31/SELF_CHECK.zh-CN.md">固定提交原件</a>；SHA-256：<code>e8715f736496fd28b30e48203e5e8382bec808baf0f3f4919ff9bd1cbbd13fd0</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="_2">跨通道计划的旧数据核对：执行前自查</h1>
+<p>2026-10-31；仅 Python 标准库读取本地旧 JSON，不加载模型/张量，不联网执行服务器程序，不运行 GPU。用户授权核对已有多针多剂量数据并编写下一轮计划。</p>
+<p>设计卡：主线是针如何改变写入/缓存/读取；本审计为跨通道选择提供真实覆盖，避免把十通道单剂量当十通道多剂量。对象为 4B、L0、旧十点调查和正负剂量调查正式记录、共享基线、采样/选择清单、协议与收据。核对文件哈希、唯一条件、剂量、题目覆盖、首 token EOS、空正文、128-token 截断、与基线 token 完全相同数。后四者是机械读数，不作能力或语义判断。输出 JSON 和原始回答摘录、来源 manifest。全部十通道保留，不依这些结果筛掉弱通道。只扫描既定来源，缺失/哈希失败停止汇总，不自动补跑。当前查看过少量记录结构，非盲分析；正式全表汇总尚未执行。</p>
+<table>
+<thead>
+<tr>
+<th>检查</th>
+<th>结论及理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C01</td>
+<td>通过：服务原主线代表性，非另设停止检测课题。</td>
+</tr>
+<tr>
+<td>C02</td>
+<td>通过：确定跨通道/跨剂量的真实覆盖，约束下一轮对比。</td>
+</tr>
+<tr>
+<td>C03</td>
+<td>通过：协议/正式收据/原始JSON优先于摘要和合同旧状态。</td>
+</tr>
+<tr>
+<td>C04</td>
+<td>通过：旧时窗与机制实验不同，旧行为阳性不能推出缓存同机制。</td>
+</tr>
+<tr>
+<td>C05</td>
+<td>通过：只读既有数据，不改条件。</td>
+</tr>
+<tr>
+<td>C06</td>
+<td>通过：无干预；来源生成时段差异单列。</td>
+</tr>
+<tr>
+<td>C07</td>
+<td>不适用：不拼换张量或共享变量。</td>
+</tr>
+<tr>
+<td>C08</td>
+<td>通过：只报告覆盖/机械输出统计，不作因果归因。</td>
+</tr>
+<tr>
+<td>C09</td>
+<td>通过：未测、没有EOS、其他输出变化分别记录，不混称无效。</td>
+</tr>
+<tr>
+<td>C10</td>
+<td>通过：EOS、空正文、截断、token相同不等于正确/错误。</td>
+</tr>
+<tr>
+<td>C11</td>
+<td>通过：文件不符是审计失败，不改成科学阴性。</td>
+</tr>
+<tr>
+<td>C12</td>
+<td>通过：标准库CPU复用旧数据，无新模型测量。</td>
+</tr>
+<tr>
+<td>C13</td>
+<td>通过：保存逐记录哈希/来源，八题非八独立通道，数据已见。</td>
+</tr>
+<tr>
+<td>C14</td>
+<td>通过：决定下一轮应补齐哪些配对，而非自动加网格。</td>
+</tr>
+</tbody>
+</table>
+<p>历史错误：E01保持主线；E02不把L0特殊性当事实；E03单位剂量为残差归一化并非激活加1；E04统计不是机制；E05/E06无变量拼换；E07不从旧阳性推自然路径；E08来源明确；E09不做状态因果交互；E10停止与交付分开；E11不推信息删除；E12无零分布主张；E13无恢复供体；E14覆盖/机制分开；E15旧时窗不能硬接新链；E16阴性保留；E17无撤销操作；E18余量不命名；E19哈希一致只为工程；E20行为类型不互斥；E21不主张方法新颖；E22按通道与题目配对报告；E23同助手自查、非独立复现；E24覆盖核对本身对设计有用；E25只审计L0与相关来源、不重扫模型；E26明确旧调查持续注入、新机制晚段窗口不同。</p>
+<p>反方：首步EOS多不代表同机制；因此不按EOS强弱选机制成功者。正负小剂量只有一通道，无法校准其他通道等效行为强度；下一轮不以搜剂量制造相似。旧收据声称完成不等于当前文件完整；逐记录哈希核对。规则修正后仍有用：区分已测覆盖与待补对比。结论：离线审计设计通过，可在当前授权下执行；不授权任何模型运行。后续实验另写完整自查。</p></main></html>

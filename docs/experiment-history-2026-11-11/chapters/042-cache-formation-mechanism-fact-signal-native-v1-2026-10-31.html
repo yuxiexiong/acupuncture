@@ -1,0 +1,368 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>042．原生事实信号的CPU分析</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="042cpu">042．原生事实信号的CPU分析</h1>
+<p><a href="../README.zh-CN.html">返回总时间线</a></p>
+<p><strong>时间定位</strong>：版本/记录日期 2026-10-31；未从所选收据确定完整运行起止，不据目录名补写时刻。</p>
+<p><strong>当时的目的与设计</strong></p>
+<p>读取已有轨迹，检查事实差分方向、幅度以及预先定义的v保留/误差项变弱类别。</p>
+<p><strong>实际过程、结果与后来更正</strong></p>
+<p>36格中只有8格具备进入特定比较的条件，原类别未命中；事实差方向转动而范数未普遍消失。没有据零命中排除全模型所有失配，完整判读条件保留。</p>
+<p><strong>来源身份</strong>：<code>cache-formation-mechanism-fact-signal-native-v1-2026-10-31</code>；本章主体来源提交 <code>7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8</code>。下方原文中的状态是各文件写作时的状态，不能把早期“尚未运行”覆盖后期正式收据，也不能将后期结果倒填进早期设计。</p>
+<h2 id="_1">原设计、执行过程、结果与更正全文</h2>
+<p>以下按“设计与题目 → 工程/执行记录 → 结果/更正 → 其他历史说明”组织；同类内没有可靠时间时保留路径顺序，不冒充严格先后。正文未删段；仅为本章节重排标题层级、把相对链接指向固定提交。原始字节另外完整保存。</p>
+<h3 id="1-v1">原件 1：缓存形成机制｜原生事实信号分析 v1：分析计划（冻结后再算）</h3>
+<p>原路径：<code>experiments/cache-formation-mechanism-fact-signal-native-v1-2026-10-31/ANALYSIS_PLAN.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-mechanism-fact-signal-native-v1-2026-10-31/ANALYSIS_PLAN.zh-CN.md">固定提交原文</a> · <a href="../library/f63091e569df0eaf.html">单独阅读副本</a>；SHA-256：<code>f63091e569df0eafc7da9d0a3d4a4be6b26b4c46c25d016ebe6e6ee578f33e8f</code>。</p>
+<hr />
+<h4 id="v1">缓存形成机制｜原生事实信号分析 v1：分析计划（冻结后再算）</h4>
+<ul>
+<li>日期：2026-10-31。零 GPU，只读 CFM-S2 formal-r01 的已有资产（84 条轨迹的 L16–18 驱动量与读出，84 份完整 Mτ）以及 S2 记录里的候选分数。</li>
+<li>授权：用户 2026-10-31"认可，写分析计划然后直接算"。所在方向是用户提出的工作假说与三点补充（见下）。</li>
+<li>本计划在计算之前提交。判读规则以提交时的文本为准，不按结果修改。</li>
+</ul>
+<h5 id="1">1. 要回答的问题</h5>
+<p>在<strong>同一运行条件</strong>下，模型对两种事实（f0 与 f1）的区别，在以下各处怎样变化：</p>
+<ol>
+<li>撤针时（τ）的全层缓存，包括 32 层的递推状态与全注意力 KV；</li>
+<li>L16–18 每一步的新 value v、旧记忆预测 m = (αS_{t−1})ᵀk̂、实际修正量 e = v − m，以及读出 o = S_tᵀq̂。</li>
+</ol>
+<p>并据此在三种情况之间作<strong>约束性</strong>判断：</p>
+<ul>
+<li>情况 I：value 里的事实区别已经变弱；</li>
+<li>情况 II：value 里还在，但在减去旧记忆预测后、实际修正中变弱，即"匹配关系"假说；</li>
+<li>情况 III：局部读出里事实区别仍在，但候选分数对事实不敏感。</li>
+</ul>
+<p>本分析是约束，不是因果证明。所有结果都是在原生轨迹上的描述，不改动任何前向计算。</p>
+<h5 id="2">2. 记号与量</h5>
+<ul>
+<li>条件 X：00（干净）、10、01、11，两个锚点 L0/C4146/−1、L12/C3621/−1。情景：VAR01、VAR02、VRD01、VRD02、VRL01、VRL02，f0 与 f1 位置对齐。</li>
+<li>事实区别：D_X(·) = 量(f0 运行) − 量(f1 运行)，同一条件、同一位置、同一层与头。</li>
+<li><strong>参照方向</strong>：干净运行的事实区别 D_C。理由：干净模型用这份区别答对了题。</li>
+<li>对任一量，把位置、头（以及适用时的矩阵元素）合并后，报告三项：</li>
+<li><strong>保留系数</strong> ρ = Σ⟨D_X, D_C⟩ / Σ‖D_C‖²，即沿干净方向保留了多少；</li>
+<li><strong>方向余弦</strong> cos = Σ⟨D_X, D_C⟩ / √(Σ‖D_X‖² · Σ‖D_C‖²)；</li>
+<li><strong>范数比</strong> r = √(Σ‖D_X‖² / Σ‖D_C‖²)。</li>
+<li>位置类：</li>
+<li>F = 第一个 f0/f1 不同 token 到 b（事实段末）；</li>
+<li>post = b+1..n−2（问句、指令、模板尾）；</li>
+<li>last = 末提示 token；</li>
+<li>cand = 候选位置。</li>
+</ul>
+<p>第一个不同 token 之前的位置，事实区别恒为 0，不计入。</p>
+<h5 id="3-m">3. 分析一：撤针时全层的事实区别（Mτ）</h5>
+<ul>
+<li>递推状态：对每个线性层 ℓ，D_X = S_ℓ(f0) − S_ℓ(f1)（32 头 × 128 × 128），在 τ 处计算 ρ、cos、r。</li>
+<li>KV：对每个全注意力层，F 位置的 K、V 与 post 位置的 K、V 分开计算 ρ、cos、r。</li>
+<li>卷积缓冲（最后 3 个 post 位置）只作报告，不入判读。</li>
+<li>产出：两锚点 × 三个带针条件 × 6 情景的"事实区别随深度"曲线。</li>
+</ul>
+<p>判读规则（事先写死）：</p>
+<ul>
+<li>对每个（锚点、条件、情景），<strong>首个弱化层</strong>定义为从 L1 起、递推状态 ρ ≤ 0.5 的第一层；若没有，记"未弱化"。</li>
+<li>KV 在 F 位置的 ρ 单独报告。KV 写入后不衰减、不擦除，所以 F 位置 KV 的 ρ 低，只能来自 F 写入时的差别，不能来自后续保留或擦除（推导档）。</li>
+</ul>
+<h5 id="4-l1618-vmeo">4. 分析二：L16–18 每一步的 v、m、e、o</h5>
+<ul>
+<li>由 S2 记录的驱动量，用 S1 的 float64 递推重建每步状态（S2 已验证：与内核暴露状态的误差 ≤ 界的 1.25%）。按源码约定：k̂、q̂ 经 l2 归一化，q 乘 d_k^{−1/2}；α = exp(g)。</li>
+<li>每步计算 v、m = (α_t S_{t−1})ᵀk̂_t、e = v − m、o = S_tᵀq̂_t（按头），对每个量求 D_X 及 ρ、cos、r。</li>
+<li>位置类分开报告 F、post、last、cand；判读用"post + last"合并（事实必须经这些位置才能到达答案）。三层分开报告，判读用三层合并。</li>
+</ul>
+<p>判读规则（事先写死；条件 X ∈ {10, 01, 11}，与 00 比较）：</p>
+<table>
+<thead>
+<tr>
+<th>情况</th>
+<th>条件</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>I value 已弱</td>
+<td>ρ_v ≤ 0.5</td>
+</tr>
+<tr>
+<td>II value 仍在，修正中变弱</td>
+<td>ρ_v &gt; 0.5，且 ρ_e ≤ 0.5 · ρ_v</td>
+</tr>
+<tr>
+<td>II′ 写入仍在，读出中变弱</td>
+<td>ρ_v &gt; 0.5、ρ_e &gt; 0.5 · ρ_v，且 ρ_o ≤ 0.5</td>
+</tr>
+<tr>
+<td>III 局部读出仍在，候选不敏感</td>
+<td>ρ_o &gt; 0.5，且候选事实敏感度比 S_fact(X)/S_fact(00) ≤ 0.5</td>
+</tr>
+<tr>
+<td>未分类</td>
+<td>其余</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>0.5 是描述性切点，所有连续值同时报告。cos 与 r 用于说明 ρ 的变化是方向偏转还是幅度缩小，不进判读。</li>
+<li>若分析一显示事实区别在 L16 之前已经弱化（首个弱化层 &lt; 16），则 L16–18 的情况 I 只读作"进入本窗口时已弱"，<strong>不</strong>判为"形成端问题"。这是用户补充第 1 点。</li>
+</ul>
+<h5 id="5">5. 与回答的联系</h5>
+<ul>
+<li>每个（锚点、条件、情景）并列给出：候选事实敏感度比 S_fact(X)/S_fact(00)（S2 记录的候选分数）、分析一的首个弱化层、分析二的 ρ_v、ρ_m、ρ_e、ρ_o。</li>
+<li>不计算相关系数，不作因果解读，只逐点并列（用户补充第 3 点）。</li>
+</ul>
+<h5 id="6">6. 不能回答的</h5>
+<ul>
+<li>任何因果结论：差异在哪里变弱，不等于那里是损失的原因。</li>
+<li>L16–18 之外各层每一步的 v、m、e：只有 Mτ 状态，没有逐步驱动量。</li>
+<li>以干净方向为参照，可能漏掉带针条件下以新方向编码、但模型仍可用的事实信息；正交残差 r 与 cos 会报告，但无法判断其是否可用。</li>
+</ul>
+<hr />
+<h3 id="2-v1">原件 2：原生事实信号分析 v1：结果报告</h3>
+<p>原路径：<code>experiments/cache-formation-mechanism-fact-signal-native-v1-2026-10-31/REPORT.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-mechanism-fact-signal-native-v1-2026-10-31/REPORT.zh-CN.md">固定提交原文</a> · <a href="../library/da58ac4a49c976be.html">单独阅读副本</a>；SHA-256：<code>da58ac4a49c976be84c1e58ecb427ea48f38fa64cd7a4e05af0f6ca3f1a75ebe</code>。</p>
+<hr />
+<h4 id="v1_1">原生事实信号分析 v1：结果报告</h4>
+<p>日期：2026-10-31。计划 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-mechanism-fact-signal-native-v1-2026-10-31/ANALYSIS_PLAN.zh-CN.md">ANALYSIS_PLAN.zh-CN.md</a>，计算前提交（76fcd15）。零 GPU，只读 CFM-S2 formal-r01 的 84 条轨迹与 84 份 Mτ。结果 <code>analysis/fact-signal-r01.json</code>。</p>
+<p>全部是原生轨迹上的描述与约束，<strong>没有因果结论</strong>。</p>
+<h5 id="0">0. 先说不利与出乎预期的部分</h5>
+<ol>
+<li><strong>"匹配关系"在事实一侧没有出现。</strong> 36 个（锚点、条件、情景）格中，没有一个属于情况 II（value 里还在、修正量 e 里变弱）。在 L16–18，e 的事实区别保留系数始终与 v 几乎相同：减去旧记忆预测 m 并没有专门抵掉事实区别。对工作假说在事实这一侧，这是一条不利约束，仅限这个窗口。</li>
+<li><strong>冻结规则的"情况 I"在 L0 上掩盖了一个更重要的现象：事实区别转向，而不是消失。</strong> L0 早段针下，沿干净方向的保留系数 ρ 与余弦都≈0，但范数比为 0.3–3.1，区别仍在，只是换到了与干净方向近乎正交的方向。计划第 6 节写明的局限在这里正好成立：本分析无法判断这些换向的区别是否仍可被利用；候选事实敏感度≈0，说明至少在这批候选上没有被用上。</li>
+<li>L0 的格都带"进入窗口前已弱"的标注：L16–18 的结果不能当作形成端判决。决定性的信息在下面的全层曲线里。</li>
+</ol>
+<h5 id="1-6-cos">1. 撤针时全层的事实区别（递推状态；6 情景中位数，ρ / cos / 范数比）</h5>
+<table>
+<thead>
+<tr>
+<th>层</th>
+<th>L0·10</th>
+<th>L0·01</th>
+<th>L0·11</th>
+<th>L12·10</th>
+<th>L12·01</th>
+<th>L12·11</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>L1</td>
+<td>0.45 / 0.67 / 0.8</td>
+<td>1.06 / 0.80 / 1.3</td>
+<td>0.36 / 0.53 / 0.7</td>
+<td>1.00</td>
+<td>1.00</td>
+<td>1.00</td>
+</tr>
+<tr>
+<td>L2</td>
+<td>0.14 / 0.24 / 0.7</td>
+<td>1.32 / 0.73 / 1.7</td>
+<td>0.05 / 0.09 / 0.6</td>
+<td>1.00</td>
+<td>1.00</td>
+<td>1.00</td>
+</tr>
+<tr>
+<td>L4</td>
+<td>0.07 / 0.11 / 0.6</td>
+<td>1.09 / 0.73 / 1.5</td>
+<td>0.02 / 0.05 / 0.5</td>
+<td>1.00</td>
+<td>1.00</td>
+<td>1.00</td>
+</tr>
+<tr>
+<td>L10</td>
+<td>0.00 / 0.01 / 0.3</td>
+<td>0.78 / 0.60 / 1.2</td>
+<td>−0.00 / −0.01 / 0.6</td>
+<td>1.00</td>
+<td>1.00</td>
+<td>1.00</td>
+</tr>
+<tr>
+<td>L13</td>
+<td>−0.00 / −0.01 / 0.3</td>
+<td>0.31 / 0.26 / 1.2</td>
+<td>0.00 / 0.01 / 0.6</td>
+<td>0.86 / 0.91 / 0.9</td>
+<td>0.65 / 0.69 / 0.9</td>
+<td>0.45 / 0.67 / 0.7</td>
+</tr>
+<tr>
+<td>L16</td>
+<td>0.00 / 0.00 / 0.3</td>
+<td>0.41 / 0.39 / 1.1</td>
+<td>0.00 / 0.01 / 0.7</td>
+<td>0.62 / 0.67 / 0.9</td>
+<td>0.29 / 0.46 / 0.6</td>
+<td>0.18 / 0.34 / 0.5</td>
+</tr>
+<tr>
+<td>L20</td>
+<td>0.07 / 0.08 / 0.8</td>
+<td>0.90 / 0.72 / 1.2</td>
+<td>0.07 / 0.09 / 1.0</td>
+<td>0.84 / 0.76 / 1.1</td>
+<td>0.82 / 0.85 / 1.0</td>
+<td>0.70 / 0.68 / 1.0</td>
+</tr>
+<tr>
+<td>L26</td>
+<td>0.03 / 0.05 / 0.5</td>
+<td>0.63 / 0.55 / 1.2</td>
+<td>0.08 / 0.12 / 0.7</td>
+<td>0.80 / 0.75 / 1.1</td>
+<td>0.75 / 0.64 / 1.0</td>
+<td>0.54 / 0.52 / 1.0</td>
+</tr>
+<tr>
+<td>L30</td>
+<td>0.01 / 0.03 / 0.5</td>
+<td>0.36 / 0.37 / 1.0</td>
+<td>0.03 / 0.04 / 0.6</td>
+<td>0.61 / 0.63 / 1.0</td>
+<td>0.53 / 0.52 / 1.0</td>
+<td>0.35 / 0.37 / 0.9</td>
+</tr>
+</tbody>
+</table>
+<p><strong>全注意力 KV（ρ 中位数）。</strong> "F"指事实段位置，"post"指事实之后的位置。</p>
+<table>
+<thead>
+<tr>
+<th>层</th>
+<th>L0·10：K_F / V_F / V_post</th>
+<th>L0·01：K_F / V_F / V_post</th>
+<th>L12·10：K_F / V_F / V_post</th>
+<th>L12·01：K_F / V_F / V_post</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>L3</td>
+<td>0.35 / 0.33 / 0.35</td>
+<td>1.00 / 1.00 / 0.11</td>
+<td>1.00 / 1.00 / 1.00</td>
+<td>1.00 / 1.00 / 1.00</td>
+</tr>
+<tr>
+<td>L7</td>
+<td>0.33 / 0.22 / 0.04</td>
+<td>1.00 / 1.00 / 0.13</td>
+<td>1.00 / 1.00 / 1.00</td>
+<td>1.00 / 1.00 / 1.00</td>
+</tr>
+<tr>
+<td>L15</td>
+<td>0.20 / 0.08 / 0.00</td>
+<td>1.00 / 1.00 / 0.07</td>
+<td>0.71 / 0.63 / 0.92</td>
+<td>1.00 / 1.00 / 0.53</td>
+</tr>
+<tr>
+<td>L23</td>
+<td>0.47 / 0.74 / −0.00</td>
+<td>1.00 / 1.00 / 0.07</td>
+<td>0.90 / 1.01 / 0.76</td>
+<td>1.00 / 1.00 / 0.46</td>
+</tr>
+<tr>
+<td>L31</td>
+<td>0.64 / 0.57 / 0.01</td>
+<td>1.00 / 1.00 / 0.03</td>
+<td>0.91 / 0.90 / 0.78</td>
+<td>1.00 / 1.00 / 0.52</td>
+</tr>
+</tbody>
+</table>
+<h5 id="2_1">2. 这些数据约束了什么（描述档；括号内为依据）</h5>
+<p><strong>L0 早段针（10）：事实在写入的那一刻就被改写，并且从第一个受影响层开始。</strong></p>
+<ul>
+<li>递推状态的事实区别沿干净方向在 L1 只剩 0.45、L2 只剩 0.14，此后各层≈0。</li>
+<li>事实段位置的 KV 在 L3–L15 只剩 0.08–0.35。KV 写入后既不衰减也不擦除，所以这部分偏离只能发生在写入时（推导，来自源码）。</li>
+<li>针在事实 token 上直接扰动残差，此后各层在这些位置上算出的 k、v 都带着扰动，这是架构上的必然路径。数据显示，扰动使事实区别在写入时就偏离了干净方向。</li>
+<li>因此在 L0 早段针上，"事实写对了、后来被保留或擦除弄丢"的解释得不到支持；"事实在形成时被改写（转向）"与数据一致。深层（L23–L31）事实段 KV 沿干净方向的投影系数为 0.47–0.82，候选事实敏感度≈0（−0.01–0.23）。投影系数不是语义信息的保留比例，不能据此说"事实仍在深层"（勘误 2026-10-31，用户指出）。</li>
+</ul>
+<p><strong>L0 晚段针（01）：事实段写入与干净运行相同；差异出现在事实之后。</strong>（勘误：初稿写"丢在事实之后的携带上"。旧事实 KV 不变，不等于证明了后续携带失败，答案也可能直接读取旧 KV；"携带失败"未经检验。）</p>
+<ul>
+<li>事实段在针开始前写入，事实段 KV 全层精确保留（ρ = 1.00）；浅层递推保留到 L10。</li>
+<li>损失出现在两处：L12 及以上的递推状态（多数层 0.31–0.63，L20 例外为 0.90）；事实之后位置写入的 KV（0.03–0.13）。后者正是针所在的位置。</li>
+<li>候选事实敏感度比 0.00–0.51。</li>
+</ul>
+<p><strong>L12：事实大体保留，弱化从 L13 开始，在晚段针在场时更明显。</strong></p>
+<ul>
+<li>早段针（10）的保留最多：L16–18 约 0.62–0.68，深层 0.6–0.8，事实之后位置的 KV 保留 0.65–0.92；候选事实敏感度比 0.13–0.89。</li>
+<li>晚段针在场时（01、11），递推在 L14–L18 降到 0.18–0.44，事实之后位置的 KV 降到 0.37–0.53。</li>
+</ul>
+<p><strong>L16–18 内部（逐步 v、m、e、o）</strong>：e 始终跟着 v；读出 o 略低于 e（L12 中 3 格判为"写入仍在、读出变弱"）。在这个窗口里，事实区别的变化发生在输入的 value 本身，而不是在新信号与旧记忆预测相减的那一步。</p>
+<p><strong>按冻结规则的分类</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>锚点·条件</th>
+<th>分类（6 情景）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>L0·10</td>
+<td>I 6（全部"进入窗口前已弱"）</td>
+</tr>
+<tr>
+<td>L0·01</td>
+<td>I 6（全部"进入窗口前已弱"）</td>
+</tr>
+<tr>
+<td>L0·11</td>
+<td>I 6（全部"进入窗口前已弱"）</td>
+</tr>
+<tr>
+<td>L12·10</td>
+<td>II′ 1、III 1、未分类 4</td>
+</tr>
+<tr>
+<td>L12·01</td>
+<td>I 4（其中 3 个"进入窗口前已弱"）、II′ 2</td>
+</tr>
+<tr>
+<td>L12·11</td>
+<td>I 6（全部"进入窗口前已弱"）</td>
+</tr>
+</tbody>
+</table>
+<h5 id="3">3. 对工作假说的含义</h5>
+<ul>
+<li><strong>停嘴与事实分开解释是对的。</strong> 停嘴：S3 的介入证据指向晚段 v。事实：本分析显示，差异出现在针所在的位置。早段针下事实区别在写入时就转向；晚段针下事实段写入与干净运行相同，差异出现在事实之后的位置与较深递推。后者的含义未经检验。</li>
+<li><strong>"新信号与旧记忆预测之间的错配"在事实这一侧没有观察到</strong>，至少在 L16–18。它仍可能在更浅层（如 L1–L3）起作用，但本分析在那些层只有撤针时的状态，没有逐步的 v、m、e。</li>
+<li><strong>事实区别的"转向"是新问题。</strong> 早段针下，事实区别没有消失，而是被写成了与干净运行不同的方向。它是否仍被模型以别的方式使用，本分析答不了；候选分数显示这批候选上没有被用上。</li>
+</ul>
+<h5 id="4">4. 由数据指向的下一个连接（只提出，未执行）</h5>
+<p>数据把 L0 事实丢失指向一个具体位置与变量：<strong>事实段位置上、第一个受影响层组（L1–L3）的写入</strong>。下一步若做模型实验，只需补这一处：</p>
+<ul>
+<li>只在事实段位置、只在 L1–L3，把写缓存变量换回干净值，其余全部原生，看候选事实敏感度是否恢复；</li>
+<li>反过来，只把这些层这些位置的带针值移植进干净运行，看能否制造出事实丢失。</li>
+</ul>
+<p>两者结果一致时，才能把"事实在形成时被改写"从描述升级为因果结论。规模很小，每情景几条运行。另外，若要检验更浅层是否存在"错配"，需要捕获 L1–L3 的逐步驱动量，也是很小的一轮运行。两者都需要你另外授权。</p>
+<h5 id="5_1">5. 文件</h5>
+<ul>
+<li><code>ANALYSIS_PLAN.zh-CN.md</code>：冻结的计划与判读规则（76fcd15）。</li>
+<li><code>analyze_fact_signal.py</code>：分析代码，含自检。</li>
+<li><code>analysis/fact-signal-r01.json</code>：逐（锚点、条件、情景）的分类与全部连续值；全层 ρ / cos / 范数比；L16–18 按位置类与层的 v、m、e、o。</li>
+</ul>
+<h5 id="6_1">6. 执行记录</h5>
+<p>第一次启动时，自检因测试向量用 float32、容差设为 10⁻¹² 而失败，但由于命令把输出接进管道，分析仍被启动了。发现后停掉，没有产生任何结果文件；把测试改为 float64 后自检通过，再单独启动分析。被测的计算逻辑本身没有改动。</p>
+<hr />
+<h2 id="_2">时间、运行与停止收据索引</h2>
+<p>下面是所收集JSON的原有时间字段与状态，不把预计结束时间当实际完成时间。未列时间的文件仍有原件链接。完整JSON全部保存在原文归档，不能以此索引中的标量代替完整嵌套内容。</p>
+<table>
+<thead>
+<tr>
+<th>原件</th>
+<th>原记录状态/阶段</th>
+<th>原时间字段（原时区）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>本目录未提取到上述类型JSON</td>
+<td>不据此推断运行成功或失败</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_3">全部原始资产入口</h2>
+<p>本目录在固定提交下共有6个跟踪文件，包含代码、原回答、失败、收据和压缩证据；文件数不是样本数。<a href="../assets/042-cache-formation-mechanism-fact-signal-native-v1-2026-10-31.tsv">逐文件完整账本</a> · <a href="https://github.com/yuxiexiong/acupuncture/tree/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-mechanism-fact-signal-native-v1-2026-10-31">原目录</a>。未复制模型权重、环境或凭据。</p></main></html>

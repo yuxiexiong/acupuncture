@@ -1,0 +1,31 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>C1-P结果核对与下一步研究取舍</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="c1-p">C1-P结果核对与下一步研究取舍</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>docs/cache-c1p-result-review-and-next-direction-2026-11-01.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-c1p-result-review-and-next-direction-2026-11-01.zh-CN.md">固定提交原件</a>；SHA-256：<code>c045e56268e5caf6537ca837d652a8dd927d29c5344d78b7ba5007646e27d1ba</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="c1-p_1">C1-P结果核对与下一步研究取舍</h1>
+<p>2026-11-01。核对来源：965cc9f的REPORT、CONTRACT、DECISIONS、analysis/readouts-r01.json、worker-0收据、c1p_analysis/core代码及P01-f0选头清单。复算JSON，不是独立模型复现；无新增模型/GPU。本文是下一轮研究设计建议，未冻结执行合同。</p>
+<h2 id="_1">已核对的结果</h2>
+<ul>
+<li>按逐输入差值重算六情景：H主判断6/6；保留率0.9331–1.0905；相对四个随机子集中位数高1.9453–2.8237 logit。</li>
+<li>FIX次要判断6/6；保留率0.9787–1.0663。报告0.99下限应更正为约0.98，不影响通过结论。</li>
+<li>C_native与N:CC首步停止0/12；T_native、N:CT、N:CH、N:CFIX为12/12；随机子集分别0、0、1、0/12。仅首步，不代表正常完整回答或一般行为成功率。</li>
+<li>FIX来自旧12输入平均排名，在新评分前冻结；故这项结果比新输入上自适应选头多提供了固定材料集合的跨实例迁移证据。H与FIX表现接近不等于统计等价。</li>
+<li>控制U由H的逐层头数生成；P01-f0的H与FIX层分布确实不同。FIX与全V的迁移结果成立，但其相对U优势没有专门匹配FIX的层分布，下一轮必须分清。</li>
+<li>本次每情景f0按旧规则重新校准、f0/f1共用：继承的是校准方法，不是旧题绝对幅度。实际28次形成、158次评分，0模板、0生成。</li>
+<li>答案侧F为负却套用F&gt;0的判据，是设计遗漏。保留冻结的不可充分检验判断；49%–71%等只作事后描述，不能追认确认性通过。这不推翻停止侧主判断。</li>
+</ul>
+<h2 id="_2">累积位置与新增认识</h2>
+<p>A确认历史材料在指定评分窗口中的条件性作用；B1及后续限制若干计算解释；B2确认H的V作用及Q条件依赖；C1-P确认选头规则和固定名单在一小组新实例中可迁移。新增的是前瞻材料预测，不是新机制。B计算链仍未接通，C只完成一小部分边界检验。一般幅度/几何/饱和尚未被排除；两个不同子集都能接近全V效应，不推出唯一必要集合。</p>
+<h2 id="_3">下一轮建议：固定名单的跨干预方向迁移</h2>
+<p>问题：同一FIX是否在其他干预方向下仍保留较大的停止侧V效应？可同时记录原规则重新选出的H，区分固定集合迁移和自适应规则迁移。不重启第13层或末端投影筛选。</p>
+<p>建议固定范围：沿用P01–P06两个事实版本（现为已见输入，不能再称新题），原L0/N4146作为锚点，另选既有面板顺序中的L0/N1210，以及既有随机残差方向R0、R1。两个随机方向仅有限参照，不代表随机方向总体。不得按新结果挑有效方向。继承同一模型、注入窗口、N评分操作和Q=C的V主效应比较。</p>
+<p>关键操作：FIX原样冻结；H可按每输入/方向的参考运行重算，子集结果前冻结。对FIX生成四个各层头数完全匹配的随机头子集，其SHA定序规则事先冻结；随机头子集不是随机入口干预方向。H只作次要保留率读数；若不给H专属配平控制，不声称H的排名优越性。</p>
+<p>幅度可比性：同一输入各方向共用锚点校准尺度m0，原通道按权重列范数转换、随机方向单位化后在同一L0残差写入位置注入；记录BF16后的逐token实际增量。名义同幅不等于实际同幅，更不等于深层V变化同幅。运行前根据旧数据规定数值误差容差；不按新输出重新调剂量。无法实现匹配时只作限定的方向比较，不声称特异性或单位扰动效率。</p>
+<p>主估计仍为各方向自己的F=Z_CT−Z_CC、FIX=Z_CFIX−Z_CC和相对其专属随机控制的差。停止侧沿用F≥1、保留率≥0.5、优势≥0.2、情景两事实同向、至少5/6的决策框架，分别对每个方向报告；不合并方向掩盖失败。F不足、异号、工程失败分别记录。答案侧保留有符号效应为次要描述；若要确认性检验须先定义方向，不能看结果再翻符号。</p>
+<p>结果用途：FIX跨方向成功支持有限范围的共享材料集合；FIX弱但H保留支持输入/方向自适应的材料选择线索，未证明同一机制；全V足够而两者弱限制迁移主张；全V弱则当前剂量/条件下无法充分检验。以上均不单独证明或排除一般饱和。</p>
+<p>成本与下一实际动作：先用已有XCHAN和C1-P资产核对方向、校准、缓存格式和计数，不做新热点筛选。每输入每方向拟需T_native、N:TT、N:CC、N:CT、H、FIX及四个FIX控制，共10评分，另每输入C_native一次：正式492评分。若全部重新形成，正式为12个C加48个T共60前缀；已有供体只有身份逐项匹配才可抵扣。预检、校准前向、失败上限、实际token和GPU时长另在执行合同计入；当前不得把492称为总预算或直接上卡。本建议不预批执行。完成这一次资产核对后应交付执行合同或具体阻塞，不另开一轮定位分析。</p>
+<h2 id="_4">设计卡与自查</h2>
+<p>主线及增量：固定材料集合是否超出原针适用，见上；依据为C1-P前瞻阳性，反例是同模板/同针和幅度未匹配。操作、估计、判读、边界和成本如上。结束条件：完成固定面板即结账，不补方向/剂量救结果。此轮不研究完整生成，不取代总课题。</p>
+<p>C01通过：保持主线，边界预测不称机制。C02通过：新方向子集作用尚未知。C03通过：复用XCHAN方向和C1-P操作，不重测完整历史拆分。C04通过：同模板与幅度解释保留。C05通过（设计层面）：明确形成/评分和供体；来源哈希待执行合同。C06通过：起始N固定，下游正常响应。C07通过：不拆共享q/k，不作写入补偿。C08通过：限定材料替换总效果。C09通过：固定集合与自适应规则可给出不同结果，不伪装机制二选一。C10通过：首步、答案候选、完整交付分开。C11通过：方向无效与预测失败分开。C12通过（规划层面）：模型调用仅补新方向子集结果；总成本尚未冻结，不能上卡。C13通过：已见输入、有限方向、固定名单和控制各自冻结。C14通过：阳性/阴性均结束该面板，不自动扩展。</p>
+<p>历史错误重点：E03/E12不把名义同幅或头数匹配当充分对照；E08/E14/E15/E26不跨实验拼自然机制；E10/E11区分首步与答案；E16/E22保留不可判及已见身份；E18/E20不以排除命名一般饱和；E23自查非独立复现；E24保留材料预测价值；E25不同时扩大任务、剂量和生成长度。其余沿用已读标准，无本轮新增对应操作。</p>
+<p>反方自查：即使FIX到处成功，也可能只是大幅写入普遍经这组材料影响停止竞争；本轮只能给共享范围，不能授予机制。即使只原针成功，别的方向可能根本无全V效应；因此需分开F不足与FIX失效。U必须匹配FIX而非H，这次明确纠正。建议科学问题成立；执行合同、工程验收和总预算未冻结，当前不具备开跑状态。</p></main></html>

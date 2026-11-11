@@ -1,0 +1,230 @@
+# 072．SP：共享首字母排除首词透露目标
+
+[返回总时间线](../README.zh-CN.md)
+
+**时间定位**：已提取运行收据的最早时间锚点（可含预检） 2026-11-02T12:02:54.467967+08:00；不能当作全部子运行起止。
+
+**当时的目的与设计**
+
+改为所有候选编号共享首字母，在相同首字母后看后续选择，并比较完整卷积恢复。
+
+**实际过程、结果与后来更正**
+
+四方向正确数4/4/4/5，各12题；47/48输出第一条记录。完整卷积恢复为12/12/10/12。开始输出编号与选对目标分别保留。
+
+**来源身份**：`cache-shared-prefix-continuation-v1-2026-11-02`；本章主体来源提交 `7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8`。下方原文中的状态是各文件写作时的状态，不能把早期“尚未运行”覆盖后期正式收据，也不能将后期结果倒填进早期设计。
+
+
+## 原设计、执行过程、结果与更正全文
+
+以下按“设计与题目 → 工程/执行记录 → 结果/更正 → 其他历史说明”组织；同类内没有可靠时间时保留路径顺序，不冒充严格先后。正文未删段；仅为本章节重排标题层级、把相对链接指向固定提交。原始字节另外完整保存。
+
+### 原件 1：SP-01：共享首token后的内容选择验证 v1
+
+原路径：`docs/cache-shared-prefix-continuation-plan-v1-2026-11-02.zh-CN.md`。 [固定提交原文](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-shared-prefix-continuation-plan-v1-2026-11-02.zh-CN.md) · [单独阅读副本](../library/f5519f7a5b5ea06c.md)；SHA-256：`f5519f7a5b5ea06c4440a46a75769d79d75f9ef3b98202494d794ddd958acdea`。
+
+---
+
+#### SP-01：共享首token后的内容选择验证 v1
+
+2026-11-02；状态：设计及同一助手自查通过，非独立评审；未实现、未生成新面板、未运行，无新增GPU授权。A优先于B，但B不以A阳性为前置条件。主线仍为稀疏干预如何改变历史状态、后续读取和回答。
+
+##### 1. 设计卡与依据
+本轮问：消除首字母唯一定位目标的捷径后，强制共同首token是否仍能恢复正确编号选择？同时检验完整深层卷积恢复能否迁移。
+增量：FC-01的T_q0 47/48正确但所有干扰编号首字母不同；T_F 48/48严格交付、T_nat 0/48、首步禁停8/48。新面板区分“提供唯一目标线索”和“提供所有候选共有的起点”；不判断记忆是否完整或信息是否删除。
+已核[FC报告](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-first-token-continuation-v1-2026-11-02/REPORT.zh-CN.md)、[合同](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-first-token-continuation-v1-2026-11-02/CONTRACT.zh-CN.md)、正式verification；前计划6486eff。基础事实按canonical工作区基础审计：生成反馈使文本和状态共同变化，短卷积有限宽不等于模型影响有限长。旧logits不能提供新面板自由续写，故需要新测量；先做CPU文本/分词审计。
+估计对象：各操作对配对完整交付的总效果；共同前缀仍提示答案格式，不是无信息干预。正面结果只支持该提示条件下的内容选择；反面结果保留未交付/选错/预算不足等区别。
+
+##### 2. 新面板的固定构造与冻结
+六个新情景SP01–06，每个三条记录、一个明确目标条目；沿用P问题模板及编号语法，但使用新条目名称和新编号。每情景三编号共享同一大写字母，仅数字不同。f0/f1编号集合完全相同，交换目标条目和一条干扰条目的编号；目标名称及问题不变。目标在首/中/末各两情景，事实对内位置固定。三个编号在实际分词后的首token完全相同，第二token两两不同；不得仅按字符推断。
+面板作者在任何模型输出前一次写齐12输入及目标/干扰清单、token IDs、边界b/n、校准规则和SHA256。仅允许CPU修复语法/分词不合格，保留修订日志；看模型输出后不换题、不挑编号、不增剂量。分词器不可用则冻结工作阻塞，不能声称面板验收通过。新面板是由FC发现启发的针对性验证，不是独立任务泛化；使用原模板仍有适用范围。
+校准沿用FC算法，在每情景f0的新上下文重新计算，f1复用配对校准；各阶段重复校准必须逐值一致，保存原值，不能沿用旧P的数值或按损伤调幅。
+q_shared由三个候选实际token化的共同首token预先确定，不从T输出或赢家选择；C实际自然首token若不同，保留该事实并停止“与FC同类起点”的推断，不改q_shared。
+
+##### 3. 臂与辅助读数
+每输入C_nat、C_noEOS1；每方向T_nat、T_noEOS1、T_shared、T_F，共18轨迹/输入。T_shared只强制第一步为q_shared；C_noEOS1/T_noEOS1只首步屏蔽停止集合。T_F与FC一样恢复14个深层G层完整q/k/v卷积缓冲，其他S/KV/浅层保持T。层号13,14,16,17,18,20,21,22,24,25,26,28,29,30。
+预检两输入C_shared并核对是否与C_nat完整轨迹相同；若C_nat首token不是共同前缀，这是已观察基线现象，不把不同轨迹当程序故障。若首token相同却轨迹不同，才是工程失败。
+主要比较：T_shared与T_nat、T_noEOS1、T_F逐输入的Y_delivery/Y_strict与错误类型。附加读数不多开模型臂：在C_nat实际首token等于q_shared的单元，比较其第二步与T_shared的目标第二token减最大干扰第二token的原始logit差M。token集合逐输入冻结且两两不同；无可比前缀记NA，不把M当完整内容或信息存量。
+
+##### 4. 先决条件、预测和退出
+固定全样本分母。每方向：干净C至少5/6情景两事实均Y_delivery=1，才具备基线；否则“基线不足”，输出照常保存，不换题。干预损伤条件：至少4/6情景两事实T_nat均Y_delivery=0。基线合格但损伤条件不满足，记“原干预效应未稳定迁移”，是科学结果；仍报告所有臂表现，但不以其高正确率宣称救回。
+在基线和损伤都合格的方向上，P_A1（T_F）与P_A2（T_shared）分别预测至少5/6情景两事实正确；整体预期至少3/4方向达到。不能缩分母至可判方向：不足3个合格方向则未达到整体恢复支持，并明列基线不足/迁移失败原因。附列错→对、对→对、对→错、错→错；不将自然已正确算救回。
+依据：P_A1来自FC状态恢复；P_A2只是弱预测，FC的事实对能生成相应数字，但可能靠唯一首字母检索。失败允许且有价值。
+T_shared与T_F都恢复：共同起点足以绕过部分障碍，但不能说唯一损伤在首步；T_shared失败而F恢复：状态恢复提供了单个共同token未提供的条件；F也失败：完整恢复的迁移边界，停止直接推广；干预无损伤：记录结构改变削弱了原效应，不能通过筛选面板救假设。混合结果逐方向保留，不硬归一。不会自动开展更长生成、扫描层或新模型。
+
+##### 共用身份、生成与端点
+沿用FC-01 `5a1c166` 的模型/分词器及配置哈希：Qwen3.5-4B revision `851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a`，BF16；L0、剂量−1、原晚段形成窗口b+1…n−2，评分最后prompt token。四方向N4146/N1210/R0/C1343；R0复用冻结向量。生成期间不注入、没有针hook。C/T供体来自同一输入、同一方向身份，不跨事实混用。
+贪心、平局最小token ID、最多32新token（含强制token/EOS），停止集合{248044,248046}；无额外解码处理。各轨迹从独立评分前缓存克隆，处理末prompt后沿真实选择token更新；恢复仅起点一次，不持续钳制未来缓存。
+沿用FC-01冻结解析器：think外完整目标编号且没有其他不同编号为Y_delivery（主要）；去首尾空白后仅为目标编号为Y_strict（同时报告）。多编号、干扰编号、其他编号、EOS未交付、32-token预算未交付分别报告；think和问题行片段是正交标签。不得把罗列中出现某个编号解释为最终选择。保留全token、特殊token、原文、终止原因和首次编号位置。
+统计单位为六情景，每情景f0/f1配对；共享C不重复计样本。全12输入都报告，不能只筛受损或恢复输入；不给12独立样本的显著性结论。阈值是工程研究的实用判读，不是总体统计推断。
+工程验收：冻结模型、输入、分词器、源码、方向、名单、校准及供体哈希；供体不变、独立clone；各来源逐类哈希；实际选择token正确喂入；EOS/强制仅规定步生效；记录器开关不影响轨迹。合成测试覆盖正确、反向、混合、缺失、基线失败、预算截断及边界，不靠测试函数镜像实现。任何闸门失败停止，不自动重试或改科学阈值。
+完整回执须分列形成、prefill、形成token前向、校准、评分/解码前向、轨迹数、实际新token、各设备占用时间及峰值显存。预算内预检也计费；耗时不足停止汇报，不缩长度/样本。旧供体仅在身份、哈希、重放一致时复用，保守预算不预扣复用收益。
+
+##### 5. 完整预算与交付
+正式12输入：60形成、216轨迹、至多6912解码前向、6校准。预检SP01双事实：10形成、36轨迹、1152前向、1校准；C_shared等价2轨迹64前向（无额外形成）；关闭记录器独立重建C/T4146各一次：2形成、2轨迹64前向。
+总计72形成、256轨迹、8192评分/解码前向、7校准；形成token前向/prefill另按冻结token长度计入回执，不冒称8192是全部成本。预检SP01之后正式重复有明确工程目的；该情景因预检已见，单列观察顺序，其余五情景不提前查看。
+建议独立硬预算1 GPU设备小时、2 CPU核小时、8 GiB产物；非实测耗时承诺。先预检测速度再判断能否在剩余预算完成，未授权不开始。目录拟experiments/cache-shared-prefix-continuation-v1-2026-11-02/；交付输入/manifest、合同、测试、原始输出、所有失败及回执。面板与合同冻结后才可运行。不得因A通过自动运行B。
+
+##### 6. 相对前案修正及反方复查
+相比FC：新增同前缀、同编号集合交换目标的面板，保留六核心条件；不增加长生成/H臂。相比截图：将“无损伤”从“面板不可用”改为迁移结果；共同token不等于正确答案唯一线索；明确第二token区分及全分母。
+反例1：共同B仍告诉模型要输出编号。承认格式提示，阳性不证明原记忆完整。反例2：F供体重新带入答案。承认恢复总效果，不宣称信息保存。反例3：新面板根本不受针影响。保留迁移失败，不调强度。反例4：只在好做的受损题上分析。禁止筛样本，基线/损伤门槛只标解释状态。反例5：第二位优势大但第三位错。Y_delivery主判，M辅助。反例6：32token内罗列未完。记预算未交付，不作知识删除判断。
+
+##### 必过自查 C01–C14（规范v1）
+
+| 项 | 同一助手判定及依据 |
+|---|---|
+| C01 | 通过：主线与本轮问题见§1；不改为EOS修复。 |
+| C02 | 通过：新增完整交付的解释约束，正反均改变判断。 |
+| C03 | 通过：明确FC/C2资产和旧数据不能提供的新测量。 |
+| C04 | 通过：最不利证据与允许失败的预测明列。 |
+| C05 | 通过：形成、起点一次恢复与生成时间分开。 |
+| C06 | 通过：未操纵分量保留T但下游自然响应，不声称固定未来。 |
+| C07 | 通过：拼换状态的条件性与布局验收明列。 |
+| C08 | 通过：不把恢复充分效果解释为必要/唯一/原生中介。 |
+| C09 | 通过：混合、反向与替代解释均有出口。 |
+| C10 | 通过：完整交付为主，首token/logit/EOS分开。 |
+| C11 | 通过：工程失败、基线不足、科学未迁移、预算未交付分开。 |
+| C12 | 通过：复用资产并计完整形成/预检/重放成本，无可选矩阵。 |
+| C13 | 通过：样本身份、冻结、全分母与配对汇总明确。 |
+| C14 | 通过：阴性停止既定解释，不自动扩层/剂量/长度。 |
+
+历史错误逐项处理：E01主线保留；E02不以层号作机制；E03不以少通道当小扰动，重校准核写入；E04恒等重放仅工程；E05/E06局部V/完整卷积不代表全部写入；E07恢复非原生路径；E08供体来源逐类冻结；E09不以状态/行为共同改变直接归因；E10完整交付区别EOS；E11条件续答非记忆存量；E12对照不自动消除一般损伤；E13正确供体/共同前缀的信息明确；E14必要/充分/形成分开；E15跨阶段操作和终点不拼接；E16科学阴性不认定实现错误；E17恢复不等于撤销历史全部后果；E18剩余效果不靠排除命名；E19等价是工程；E20多个解释允许共存；E21不主张领域首次，当前未做新颖性查重；E22配对情景不作12独立样本，观察历史透明；E23同一助手非独立审查；E24只要求本轮有边界增量；E25不加长生成/层扫；E26起点恢复测总效果而非形成中介。
+
+最终复查：上述反例已通过修订判读、固定资产与分母处理，不需扩展矩阵即可保留实质增量。逻辑设计通过；本文仅文档与预算核算通过，分词/名单映射、实现测试、模型重放与耗时仍待验收。没有模型运行授权，截图中的其他会话命令不当本会话授权。运行合同必须逐项落实本计划的冻结资产；未落实不得上卡。
+
+---
+
+### 原件 2：SP-01（共享首 token 面板上的条件续答与卷积恢复）合同 r01
+
+原路径：`experiments/cache-shared-prefix-continuation-v1-2026-11-02/CONTRACT.zh-CN.md`。 [固定提交原文](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-shared-prefix-continuation-v1-2026-11-02/CONTRACT.zh-CN.md) · [单独阅读副本](../library/8dfe26d402cc6ed0.md)；SHA-256：`8dfe26d402cc6ed06b28330b078f3f46209951f8f0b55ec31376961e35565eb8`。
+
+---
+
+#### SP-01（共享首 token 面板上的条件续答与卷积恢复）合同 r01
+
+日期：2026-11-02。设计：[计划 v1](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-shared-prefix-continuation-plan-v1-2026-11-02.zh-CN.md)（评审撰写，239bc8e）+ 补充一（q_shared 按不带前导空格的写法确定，冻结前分词核对，已被接受）。授权：用户 2026-11-02「同意，直接写合同代码，测试后上卡跑」。**新面板，此前没有任何模型输出**（SP01 在预检中先被看到，单列观察顺序）。
+
+##### 1. 面板（冻结于 data/inputs-r01.json）
+
+6 个情景 SP01–SP06，字母 U/V/W/X/Y/Z（P 面板未用过）。每条记录三个条目、三个编号同字母、首位数字两两不同；f0/f1 编号集合相同，只交换目标条目与一个干扰条目的编号；目标位置首/中/末各两个情景，事实对内位置不变。问题与 P 面板逐字相同。真实分词器核对（readiness）：三个编号不带空格时首 token 相同（就是该字母），第二个 token 两两不同；带前导空格时首 token 不同（故 q_shared 取不带空格的写法）；无跨段 token；目标编号正则在 12 条输入上都正确。
+
+##### 2. 操作
+
+模型、revision、BF16、内核、L0 剂量 −1、晚段窗口 b+1…n−2、四方向与 FC-01 相同。**校准在新上下文上重新计算**（每情景 f0，f1 复用），正式运行中 SP01 的校准必须与预检逐值相同。每输入形成 C；每方向形成 T。臂与解码规则同 FC-01，只是 T_q0 改为 **T_shared**：第一个输出强制为 q_shared（由分词器事先确定，不取自任何输出）。T_F 恢复 14 个深层 G 层的完整卷积缓冲。32 新 token、贪心、停止 {248044, 248046}、生成期不注入。另在第二步记录目标第二 token 与两个干扰第二 token 的原始 logit（M 读数）。
+
+##### 3. 预算
+
+| 阶段 | 形成 | 轨迹 | 解码前向上限 | 校准 |
+|---|---:|---:|---:|---:|
+| 预检（SP01-f0/f1；含 C_shared ×2、重建续写 ×2） | 12 | 40 | 1280 | 1 |
+| 正式（12 输入，2 worker） | 60 | 216 | 6912 | 6 |
+| 合计 | 72 | 256 | 8192 | 7 |
+
+GPU ≤1 小时，产物 ≤8 GiB；预检工程失败可记账后重试一次，正式不重试。
+
+##### 4. 工程闸门（任一不过即停止）
+
+L0 写入 ≤1%；q_shared 与第二 token 规则成立；C_nat 首 token 非停止时，C_noEOS1 与 C_nat 逐 token 且终态缓存相同；预检中若 C_nat 首 token = q_shared，C_shared 与 C_nat 同上（若不等，记为基线现象而非故障）；T 三臂第一步 logits 与更新后缓存相同；屏蔽/强制只在第一步且强制 token 实际喂入；T_F 组装哈希正确；供体不变；生成前无 hook；预检重建缓存哈希一致、续写逐 token 相同；正式中 SP01 校准等于预检。
+
+##### 5. 判读（沿用 FC-01 冻结解析器 + 计划 §4）
+
+Y_delivery（主）、Y_strict、互斥主分类与正交标签同 FC-01。每方向：基线 = C_nat 两事实都正确的情景 ≥5/6；损伤 = T_nat 两事实都未交付的情景 ≥4/6。基线不足 → 记“基线不足”；基线合格而损伤不足 → 记“原干预效应未稳定迁移”（科学结果）；两者都合格时，**P_A1**（T_F）与 **P_A2**（T_shared）分别以“两事实都正确的情景 ≥5/6”判支持；整体以固定分母 4 个方向、≥3 个支持为达成（推测档；P_A2 是弱预测）。另报转移表与 M（只在 C_nat 首 token = q_shared 的单元）。措辞：T_shared 正确只说明“给定所有候选共有的起点后能选出正确编号”，不推出记忆完整；共享首字母仍提示答案格式。
+
+##### 6. 交付
+
+`runs/{preflight,formal}-r01/`（逐轨迹 token、解码全文、终止原因、屏蔽/强制标记、第一步哈希、第二步 M 读数；入 Git）、`analysis/sp-readouts-r01.json`、`REPORT.zh-CN.md`。
+
+---
+
+### 原件 3：SP-01（共享首 token 面板上的条件续答与卷积恢复）结果报告
+
+原路径：`experiments/cache-shared-prefix-continuation-v1-2026-11-02/REPORT.zh-CN.md`。 [固定提交原文](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-shared-prefix-continuation-v1-2026-11-02/REPORT.zh-CN.md) · [单独阅读副本](../library/4d4eeb8d5caa7eb8.md)；SHA-256：`4d4eeb8d5caa7eb8567fd72530a867ad078e88294dcc024c0712679fc94da45d`。
+
+---
+
+#### SP-01（共享首 token 面板上的条件续答与卷积恢复）结果报告
+
+日期：2026-11-02。[合同 r01](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-shared-prefix-continuation-v1-2026-11-02/CONTRACT.zh-CN.md)；[决策 D1–D5](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-shared-prefix-continuation-v1-2026-11-02/DECISIONS.zh-CN.md)；[计划 v1](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-shared-prefix-continuation-plan-v1-2026-11-02.zh-CN.md)（评审撰写）。代码 `1341c93`，freeze-r01 `20136829…70cd`。**新面板，此前无任何模型输出**（SP01 在预检中先被看到）。同一助手实现、运行与撰写。
+
+##### 1. 结论（不利的先说）
+
+1. **P_A2 不成立（0/4 方向）：去掉首字母捷径后，强制正确的共享首字母不再能恢复正确编号。** T_shared 每个方向只有 4–5/12 正确交付，其余 7–8/12 输出的是干扰编号（同字母、不同数字）。FC-01 中 T_q0 的 47/48 不能迁移到去掉该捷径的面板，原解释必须降级；两轮换了面板，首字母唯一性本身的因果贡献没有单独估计，所以不说“完全由捷径造成”。“干预只改变了回答起点、后续内容完整”这个解释在这里不成立：给定所有候选共有的起点后，干预状态下的模型**选不出目标条目**。
+2. **合同外的描述性发现（事后核对，未预注册）**：T_shared 在 47/48 个单元输出的都是**记录里列在第一位的编号**，与目标在哪个位置无关；它那 4–5 个“正确”恰好是目标列在第一位的情景（SP01、SP04；C1343 多 1 个）。对比之下，T_F 的输出按目标的实际位置分布（首/中/末 = 4/4/4，R0 为 6/4/2）。也就是说，干预之后，模型在被迫开始写编号时退回到“记录里的第一个编号”，而不是读出目标条目对应的编号。
+3. **P_A1 成立（3/4 方向）：只恢复深层卷积，在新面板上也恢复完整交付。** N4146、N1210、C1343 都是 12/12 正确且严格只给编号；R0 为 10/12（2 例输出了列在第一位的干扰编号），判为未支持（4/6 情景）。
+4. **先决条件都满足**：干净基线 12/12 正确且严格；C 的首 token 在 12/12 个输入上等于共享首字母（C_shared 与 C_nat 逐位相同）；干预损伤在四个方向都是 6/6 情景（T_nat 全部未交付）。所以新面板上原干预效应稳定迁移，P_A2 的失败不是“面板不可用”。
+5. **第二步数字优势 M**（C 首 token 等于共享首字母，12/12 都可算）：干净运行中目标第二位数字领先干扰 2.5–11.1 logit；T_shared 中，目标列在第一位的情景仍为正（约 +2 到 +3），其余情景为负（约 −0.1 到 −2.6，C1343 有 1 例为 +1.9）。这与第 2 条一致：强制首字母后，第二位数字的竞争偏向第一位编号。
+
+##### 2. 主要读数（每方向 12）
+
+| 方向 | T_nat | T_noEOS1 | T_shared | T_F |
+|---|---|---|---|---|
+| N4146 | 0 | 0（预算内未交付 4、多编号 3） | 4（干扰 8） | 12 |
+| N1210 | 0 | 5（干扰 5、多编号 2；think 12） | 4（干扰 8） | 12 |
+| R0 | 0 | 0 | 4（干扰 8） | 10（干扰 2） |
+| C1343 | 0 | 6（多编号 3、停止 3） | 5（干扰 7） | 12 |
+
+（数字为 Y_delivery，Y_strict 同值，T_noEOS1 的 Y_strict 为 0。）C_nat、C_noEOS1 为 12/12。
+
+T_noEOS1 的可见文本除“请根据上面的……”片段和罗列记录外，出现了新的形态：模型说输入里“包含大量重复的‘对话’字样”“包含了一些重复的‘目标条目’……”，即把提示描述成有重复或格式错误的文本（例如 N4146 的 SP01、SP02）。这只是描述，冻结标签为“预算内无编号”。
+
+##### 3. 执行
+
+| 阶段 | 形成 | 轨迹 | 实际解码前向 | 校准 | 墙钟 |
+|---|---:|---:|---:|---:|---:|
+| 预检 r01 | 12 | 40 | 273 | 1 | 63 s |
+| 正式 r01（2 worker） | 60 | 216 | 1662 | 6 | 130 / 150 s |
+
+全部闸门通过：q_shared 规则成立；C_noEOS1 = C_nat；C_shared = C_nat（预检）；T 三臂第一步一致；屏蔽/强制只在第一步；T_F 组装哈希正确；供体不变；重建一致；正式中 SP01 校准与预检逐值相同。实现期一次在冻结前被就绪检查拦下的错误见 D3（无模型调用受影响）。
+
+##### 4. 按计划 §4 的解读
+
+- “T_shared 失败而 F 恢复”：**状态恢复提供了单个共同起点 token 没有提供的条件**。在这组输入上，干预损伤不只在回答起点，也在“读出目标条目对应的编号”这一步；恢复深层卷积历史后两者都恢复。
+- 修正上一轮的叙述：FC-01 中“给定正确首字母就能接出正确编号”不能迁移到首字母不唯一的面板（是否“依赖”首字母唯一性未单独估计）；去掉这一捷径后，干预状态下模型系统性地退回到第一个编号（合同外描述）。不能再说“后续内容完整、只有开头受损”。
+- 也不能反过来说“目标信息被删除”：模型可能仍能在别的提示下读出目标，只是在强制开头、32 token 内的这个条件下没有读出。
+
+##### 5. 可以说 / 不可以说
+
+| 可以说 | 不可以说 |
+|---|---|
+| 去掉首字母捷径后，强制共同首字母只救回 4–5/12（P_A2 0/4） | 干预只损伤回答起点 |
+| 强制首字母后，干预状态下 47/48 输出记录里的第一个编号（事后描述） | 干预删除了目标信息 |
+| 只恢复深层卷积，新面板上 3/4 方向 12/12 完整交付，R0 10/12 | 深层卷积是唯一或自然的承载者 |
+| 新面板上干预损伤稳定迁移（四方向 6/6），基线 12/12 | 结论推广到其他任务或长回答 |
+
+---
+
+### 原件 4：SP-01 决策日志
+
+原路径：`experiments/cache-shared-prefix-continuation-v1-2026-11-02/DECISIONS.zh-CN.md`。 [固定提交原文](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-shared-prefix-continuation-v1-2026-11-02/DECISIONS.zh-CN.md) · [单独阅读副本](../library/ed82e3a95fd40822.md)；SHA-256：`ed82e3a95fd40822083a92950afb1415d0b950faa12a306dc5c73bba25610a7e`。
+
+---
+
+#### SP-01 决策日志
+
+- **D1 计划由评审撰写**（239bc8e），加补充一（q_shared 按不带空格写法确定、冻结前分词核对）。
+- **D2 面板构造**（冻结前、无任何模型输出）：字母 U–Z；编号首位数字两两不同；f0/f1 交换目标与一个干扰；位置首/中/末各二。分词核对结果见 readiness/cpu-check-r01.json。
+- **D3 runner 由 FC-01 改写**：首版复制后，样板尾部重复定义的 items()/plan() 覆盖了新面板函数、会退回 P 面板；readiness 在冻结前发现（KeyError 'target'），已删除重复定义，并在测试中加入“items/plan 必须返回 SP 面板 ID”的断言。没有任何模型调用受影响。
+- **D4 无 B3/NR 重放**：新面板没有历史记录可对拍；改用内部一致性闸门（C 臂等价、T 三臂共享第一步、T_F 组装哈希、重建一致、校准跨阶段一致）。
+- **D5 M 读数**：生成循环在第二步记录目标第二 token 与干扰第二 token 的原始 logit；不新增模型臂。
+
+---
+
+
+## 时间、运行与停止收据索引
+
+下面是所收集JSON的原有时间字段与状态，不把预计结束时间当实际完成时间。未列时间的文件仍有原件链接。完整JSON全部保存在原文归档，不能以此索引中的标量代替完整嵌套内容。
+
+| 原件 | 原记录状态/阶段 | 原时间字段（原时区） |
+|---|---|---|
+| [readiness/cpu-receipt-r01.json](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-shared-prefix-continuation-v1-2026-11-02/readiness/cpu-receipt-r01.json) | {"status": "passed"} | {} |
+| [runs/formal-r01/controller.json](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-shared-prefix-continuation-v1-2026-11-02/runs/formal-r01/controller.json) | {"status": "completed", "stage": "formal"} | {"started_at": "2026-11-02T04:04:33.508431+00:00", "finished_at": "2026-11-02T04:07:06.587259+00:00"} |
+| [runs/formal-r01/verification.json](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-shared-prefix-continuation-v1-2026-11-02/runs/formal-r01/verification.json) | {"status": "passed", "stage": "formal"} | {"verified_at": "2026-11-02T04:07:06.587099+00:00"} |
+| [runs/formal-r01/worker-0/receipt.json](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-shared-prefix-continuation-v1-2026-11-02/runs/formal-r01/worker-0/receipt.json) | {"status": "completed", "stage": "formal"} | {"started_at": "2026-11-02T04:04:33.603175+00:00", "last_record_at": "2026-11-02T04:06:41.667024+00:00", "finished_at": "2026-11-02T04:06:43.694180+00:00"} |
+| [runs/formal-r01/worker-1/receipt.json](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-shared-prefix-continuation-v1-2026-11-02/runs/formal-r01/worker-1/receipt.json) | {"status": "completed", "stage": "formal"} | {"started_at": "2026-11-02T04:04:33.603256+00:00", "last_record_at": "2026-11-02T04:07:01.485037+00:00", "finished_at": "2026-11-02T04:07:03.538575+00:00"} |
+| [runs/preflight-r01/controller.json](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-shared-prefix-continuation-v1-2026-11-02/runs/preflight-r01/controller.json) | {"status": "completed", "stage": "preflight"} | {"started_at": "2026-11-02T04:02:54.467967+00:00", "finished_at": "2026-11-02T04:04:00.506405+00:00"} |
+| [runs/preflight-r01/verification.json](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-shared-prefix-continuation-v1-2026-11-02/runs/preflight-r01/verification.json) | {"status": "passed", "stage": "preflight"} | {"verified_at": "2026-11-02T04:04:00.506261+00:00"} |
+| [runs/preflight-r01/worker-0/receipt.json](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-shared-prefix-continuation-v1-2026-11-02/runs/preflight-r01/worker-0/receipt.json) | {"status": "completed", "stage": "preflight"} | {"started_at": "2026-11-02T04:02:54.559882+00:00", "last_record_at": "2026-11-02T04:03:55.965780+00:00", "finished_at": "2026-11-02T04:03:57.993383+00:00"} |
+
+## 全部原始资产入口
+
+本目录在固定提交下共有68个跟踪文件，包含代码、原回答、失败、收据和压缩证据；文件数不是样本数。[逐文件完整账本](../assets/072-cache-shared-prefix-continuation-v1-2026-11-02.tsv) · [原目录](https://github.com/yuxiexiong/acupuncture/tree/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-shared-prefix-continuation-v1-2026-11-02)。未复制模型权重、环境或凭据。

@@ -1,0 +1,24 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>开发面板判读与确认前锁定（r01）</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="r01">开发面板判读与确认前锁定（r01）</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/early-state-localization-v1-2026-10-29/readiness/development-interpretation-r01.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-state-localization-v1-2026-10-29/readiness/development-interpretation-r01.zh-CN.md">固定提交原件</a>；SHA-256：<code>6dc6f1adaef4fd0aa0ad5f5afaee98a3b957c1c7110ce624f95634bedefd1e54</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="r01_1">开发面板判读与确认前锁定（r01）</h1>
+<p>开发面板 development-r01：3,288 条，两 worker exit 0，launcher 与逐 worker verify 通过；墙钟 2.38 h（与 jevrep 共卡）。判读按冻结脚本 analyze_localize.py（freeze-r03）。确认面板此前从未运行，无任何确认输出。</p>
+<h2 id="_1">开发观察（锁定）</h2>
+<ol>
+<li>主预测（≥2 个锚定条件判“线性层→递推”）在开发面板不成立：N4146 +1 递推；N5251 −1 线性层两者；N5063 +1 单洗任一类均部分恢复。</li>
+<li>衰减预测（H-rec：前半段注入损伤更轻）三锚定条件均“反向”：B1 R=0.007/0.28/0.30，B2 R=0.48/0.77/0.83。提示前部位置更关键。</li>
+<li>26 条件中 16 个判“either_needed”（只洗 KV 与只洗线性层都达部分恢复但均未入参照带）；按数值读作两类缓存各承载一部分损伤（如 N4146 +1：A2 0.45、A5 0.50）。判读表命名不改，报告中并列此读法。</li>
+<li>首步 EOS 与 R 指向不同承载者：只洗递推（A3）或只洗 conv（A4）后首步 EOS 在所有条件为 0；只洗 KV（A2）在 N4146 +1（24→16）、N4146 −1（24→24）、V1_L00 −1（24→24）、V0_L00 +1（5→13）仍有 EOS。R 则以 A2 恢复最多（0.45–0.66），A4 最少（约 0.1）。</li>
+<li>末位对首 token 的注意力：A0 高于原版（L3 0.21 对 0.09）；损伤最重的 B1 与原版相近（0.11）。sink 注意力被削弱不是本面板的机制（读数粗，推导档）。</li>
+<li>阴性对照 L25/N2747 +1 A0 R=0.87，各臂无实质差别，符合预期。</li>
+</ol>
+<h2 id="_2">确认面板预测（在任何确认输出出现前冻结）</h2>
+<ul>
+<li>原主预测（合同 §2/§5.2）不改。</li>
+<li>原衰减预测（合同 §5.3，H-rec 方向）不改。</li>
+<li>P-dev1：A0 首步 EOS ≥ 12/24 的条件中，多数满足 EOS(A3) &lt; EOS(A0) 且 EOS(A2) ≥ EOS(A3)。</li>
+<li>P-dev2：三锚定条件中至少 2 个衰减检验判“reversed”。</li>
+<li>P-dev3：A0 判 failed 的早层条件中，多数判 either_needed。
+判读脚本、参照带、档界不变；结果按“成立/不成立/无法判断（分母为 0）”报告。</li>
+</ul></main></html>

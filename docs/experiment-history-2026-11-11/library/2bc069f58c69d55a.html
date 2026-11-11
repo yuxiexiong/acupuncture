@@ -1,0 +1,241 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CGV-01 报告 r02：写入—读取关系的三项边界探索</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="cgv-01-r02">CGV-01 报告 r02：写入—读取关系的三项边界探索</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-chain-generalization-v1-2026-11-03/REPORT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-chain-generalization-v1-2026-11-03/REPORT.zh-CN.md">固定提交原件</a>；SHA-256：<code>2bc069f58c69d55a4b2c5ce3055676b6b72012a1f8d0c3054d18855cdf870f27</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="cgv-01-r02_1">CGV-01 报告 r02：写入—读取关系的三项边界探索</h1>
+<p>合同 <code>CONTRACT.zh-CN.md</code>（freeze-r02 <code>3dce4b86…</code>；代码见 DEVIATIONS X2：41d7cc8 ＝ main 7517a18）。准备阶段 r01、预检 r02、正式 r02 均 verification passed；预检 r01 为合同执行失败（DEVIATIONS X1，预算算术错误），按计划用掉唯一一次重试。判读 <code>analysis/cgv-readouts-r02.json</code>。本轮是<strong>探索阶段</strong>：结论只作描述，不输出“机制成立/失效”标签；确认要另用独立材料。</p>
+<h2 id="0">0. 先说不利的部分</h2>
+<ol>
+<li><strong>跨层针 L12 上，k 写入这一段不成立。</strong> L12 针让完整正确数从 48 降到 31，但只换局部 v（L10）就恢复到 48/48；在局部 v 条件下再去掉 μ_L12，k 效应反而为负（e₁ −0.30，I_local −0.56，6 个场景中的稳定反向）。也就是说，L12 造成的损伤由卷积 V 承担，k 偏移在这里不起修复作用。读取段因为 L10/L11 端点都已满分、M 差只有 0.30，没有可传递的缺口，<strong>没有测到</strong>（不是读取失效）。</li>
+<li><strong>新任务结构上，M 层面的关系迁移了，但完整答案几乎没有跟着动。</strong> 原生受针下这些任务几乎全错（0–1/27），局部 v 只救回 10–13/27（NQ 面板是 16–37/48），所以 L10/L11 之间只有 2 条答案差，读取能搬运的行为差也只有 1–4 条。</li>
+<li><strong>GS01（表格结构）偏弱</strong>：N4146 上写入交互只有 +0.21（不稳定），读取几乎为 0；预先固定的随机写入链也恰好在这里，全部接近 0，无法区分。</li>
+<li><strong>干净背景挑战没有越过答案边界</strong>：μ 写入让 M 下降 0.46–0.49（稳定），但 48 条全部仍答对；读取交换只搬运了其中一小部分（DE 约 0.12–0.19，缺口不足 0.5，比值不计算）。</li>
+<li>同角度随机旋转的作用远小于 μ（M −0.08，不稳定）。这是本线第一次在夹角、长度都匹配时看到 μ 与随机明显不同，但只有一个随机方向、只在干净背景、效应也小，<strong>不能</strong>作为方向特异性的结论。</li>
+</ol>
+<h2 id="1">1. 工程</h2>
+<ul>
+<li>全部闸门通过：</li>
+<li>准备阶段：旧开发文本的 base/C 哈希等于 QCD；L12 写入审计通过；μ_L12（范数约 324）与三份新场景校准写入清单，作为授权证据。</li>
+<li><strong>SRU 桥接</strong>：LVK-H-NA-NQ01-ABC-A × N4146 的端点与 gain/withdraw 三格，与 SRU-01 正式记录逐位一致。</li>
+<li>零操作：t1 无操作自定义更新等于原生；t2 的 a=b=0 读取钩子等于原生。</li>
+<li>μ 链的 t1 全层桥接（L10≡V、L11≡VW，只有 V 旧槽不同）在 G1、G2 全部通过。</li>
+<li>FP64 核对最大 1.9e−7；11 格对原核喂 S_d 最大 4.5e−8；同角度旋转的夹角误差最大 2.0e−8、长度误差 1.9e−7。</li>
+<li>计数：decode 13930（包络 83991）；自然轨迹 2461（其余在 t1 停止）。设备时间：准备 126 s、预检 r02 132 s、正式 914+583 s，合计约 0.5 h。</li>
+</ul>
+<h2 id="2-g1-l12c36211-48">2. G1：跨层针 L12/C3621/−1（新面板 48 条）</h2>
+<table>
+<thead>
+<tr>
+<th>读数</th>
+<th>值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>针的影响（C→L00）</td>
+<td>M −8.65（稳定）；首步 G −6.27；完整正确 48 → 31</td>
+</tr>
+<tr>
+<td>首步停止</td>
+<td>0/48（L12 不让模型在第一步停止）；但 L00 的首 token 只有 6/48 等于 f</td>
+</tr>
+<tr>
+<td>只换局部 v（L00→L10）</td>
+<td>M +2.55；完整正确 31 → 48；首 token 48/48 等于 f</td>
+</tr>
+<tr>
+<td>k 写入（去 μ_L12）</td>
+<td>e₀ +0.26，e₁ −0.30，I_local −0.56（6 场景稳定反向）；完整答案无变化（L10/L11 都 48/48）</td>
+</tr>
+<tr>
+<td>读取（L10↔L11）</td>
+<td>缺口 g 只有 0.30，D/E/DE 都很小，完整答案满分无差：未测到</td>
+</tr>
+</tbody>
+</table>
+<p>解读（推导档）：L12 针的答错几乎全部能由“t1 写入时换成 V 恢复背景的当步 v”消除，k 偏移（按 QCO 规则估出的 μ_L12）对此没有正向贡献。这一段链条在 L12 上不迁移；L12 的损伤路径是 V，而不是 k 写入。</p>
+<h2 id="3-g227">3. G2：三种新任务结构（27 条）</h2>
+<table>
+<thead>
+<tr>
+<th>方向</th>
+<th>结构</th>
+<th style="text-align: right;">针的影响 Y（C→L00）</th>
+<th style="text-align: right;">局部 v 救回</th>
+<th style="text-align: right;">I_local(M)</th>
+<th>读取 gain：D / DE，DE/g</th>
+<th>读取的 Y 变化（gain / withdraw）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>N4146</td>
+<td>合计</td>
+<td style="text-align: right;">27 → 0</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;"><strong>+1.06</strong>（3/3 场景同号）</td>
+<td>1.01 / 0.94，0.79</td>
+<td>+2 / −4</td>
+</tr>
+<tr>
+<td></td>
+<td>GS01 表格</td>
+<td style="text-align: right;">9 → 0</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">+0.21</td>
+<td>0.02 / 0.06</td>
+<td>0 / −1</td>
+</tr>
+<tr>
+<td></td>
+<td>GS02 两段关系</td>
+<td style="text-align: right;">9 → 0</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">+1.00</td>
+<td>1.08 / 0.96，0.85</td>
+<td>0 / 0</td>
+</tr>
+<tr>
+<td></td>
+<td>GS03 交换后绑定</td>
+<td style="text-align: right;">9 → 0</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">+1.98</td>
+<td>1.94 / 1.79，0.83</td>
+<td>+2 / −3</td>
+</tr>
+<tr>
+<td>N1210</td>
+<td>合计</td>
+<td style="text-align: right;">27 → 1</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;"><strong>+0.99</strong>（3/3 场景同号）</td>
+<td>1.04 / 0.98，0.77</td>
+<td>+2 / −1</td>
+</tr>
+<tr>
+<td></td>
+<td>GS01</td>
+<td style="text-align: right;">9 → 1</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">+0.77</td>
+<td>0.50 / 0.44</td>
+<td>0 / 0</td>
+</tr>
+<tr>
+<td></td>
+<td>GS02</td>
+<td style="text-align: right;">9 → 0</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">+0.75</td>
+<td>1.06 / 0.94，0.82</td>
+<td>0 / 0</td>
+</tr>
+<tr>
+<td></td>
+<td>GS03</td>
+<td style="text-align: right;">9 → 0</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">+1.46</td>
+<td>1.54 / 1.56，0.90</td>
+<td>+2 / −1</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>写入交互与直接读取在 M 上迁移到新结构：两方向的 I_local 都约 +1.0 且三场景同号；读取时只换 D 等于两项一起换的 1.05–1.08 倍，修正项 E 约 0（略反向），DE 搬运缺口的 0.77–0.81。这与 LVK/SRU 在 NQ 面板上的形态一致。</li>
+<li>但行为层面很弱：局部 v 只救回 10–13/27，L10 与 L11 之间只差 2 条答案，读取能搬运的完整答案变化只有 1–4 条。旧标签描述符为 diag_only/joint_only。</li>
+<li>随机写入链（GS01×N4146）：R01、R11 的 M 变化为 0.06、0.00；读取也都约 0。因为 GS01 上的 μ 链本身就弱，这一对照无法区分。</li>
+</ul>
+<h2 id="4-g3-c-48">4. G3-C：干净背景挑战（新面板 48 条）</h2>
+<table>
+<thead>
+<tr>
+<th>方向</th>
+<th>μ 写入（A0→Aμ）</th>
+<th>同角度随机（A0→AR）</th>
+<th>读取 μ 链：施加 / 撤销（DE）</th>
+<th>读取随机链：施加 / 撤销（DE）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>N4146</td>
+<td>M −0.46（5/6 场景同号，稳定）；Y 48 → 48</td>
+<td>M −0.08（不稳定）；Y 48 → 48</td>
+<td>−0.12 / +0.19</td>
+<td>+0.24 / −0.19</td>
+</tr>
+<tr>
+<td>N1210</td>
+<td>M −0.49（稳定）；Y 48 → 48</td>
+<td>M −0.08（不稳定）；Y 48 → 48</td>
+<td>−0.11 / +0.15</td>
+<td>+0.23 / −0.13</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>在干净背景里，只在写入项加 μ 就能让目标优势下降约 0.5 logit，但远不足以让答案翻错。</li>
+<li>读取交换只搬运了这 0.5 的一部分（约 25–40%）；缺口不足 0.5，按合同不计算比值。</li>
+<li>随机链的读取方向与预期相反（施加侧 M 反而 +0.23），但其端点缺口只有 0.08，这些读数接近噪声尺度，只作记录。</li>
+</ul>
+<h2 id="5">5. 各组断在哪一段（描述，不作标签）</h2>
+<table>
+<thead>
+<tr>
+<th>组</th>
+<th>干预造成的答案差</th>
+<th>t1 写入交互</th>
+<th>t2 直接读取的传递</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NQ 面板 L0（LVK/SRU，参照）</td>
+<td>有</td>
+<td>有（I_local ≈ +1.5–2.3）</td>
+<td>有（D 为主，双向改变答案）</td>
+</tr>
+<tr>
+<td>G1 L12</td>
+<td>有（−17 条）</td>
+<td><strong>无，反向</strong>（损伤由 V 承担）</td>
+<td>无缺口，未测到</td>
+</tr>
+<tr>
+<td>G2 新结构</td>
+<td>有（几乎全错）</td>
+<td>有（M 上 ≈ +1.0；GS01 弱）</td>
+<td>M 上有（D 为主），行为上很弱（局部 v 救回少）</td>
+</tr>
+<tr>
+<td>G3-C 干净背景</td>
+<td>μ 写入不跨答案边界</td>
+<td>不适用（单次写入挑战）</td>
+<td>弱（缺口小）</td>
+</tr>
+</tbody>
+</table>
+<h2 id="6">6. 能说什么、不能说什么</h2>
+<p>能说的：</p>
+<ul>
+<li>“t1 写入项 k 与当步 v 共同决定 → t2 直接读取”的形态，在三种新任务结构上（M 层面）重复出现，GS01 最弱。</li>
+<li>在 L12 针上，这条 k 写入链不承担损伤：答错由 V 承担，局部 v 足以全部恢复。</li>
+<li>在干净背景中，单独施加 μ 写入只能小幅压低目标优势，不足以致错。</li>
+</ul>
+<p>不能说的：</p>
+<ul>
+<li>不能说读取在 L12 上失效：那里没有可传递的端点差，读取未测到。</li>
+<li>不能把新结构上的 M 迁移说成行为迁移：完整答案变化只有 1–4 条。</li>
+<li>不能据一个随机方向下结论说 μ 有方向特异性。</li>
+<li>新结构只有 27 条、3 个场景；G1/G3 用的是已见过的新面板；全部是探索性描述。</li>
+</ul>
+<h2 id="7">7. 出口</h2>
+<p>按计划，探索结果交给下一轮决定确认阶段的范围。候选问题（都需另立设计）：</p>
+<ul>
+<li>L12 的损伤为什么全部落在 V、与 k 偏移无关——L12 与 L0 针在卷积 q/k/V 偏移上的差异；</li>
+<li>新结构上局部 v 为什么只能救回少数答案——那里的主要瓶颈在哪一段；</li>
+<li>在独立材料上确认“μ 与同角度随机写入的差异”。</li>
+</ul>
+<p>本轮不自动追加实验。</p></main></html>

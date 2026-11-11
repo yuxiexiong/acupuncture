@@ -1,0 +1,487 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>051．C1P：固定45头到新输入</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="051c1p45">051．C1P：固定45头到新输入</h1>
+<p><a href="../README.zh-CN.html">返回总时间线</a></p>
+<p><strong>时间定位</strong>：已提取运行收据的最早时间锚点（可含预检） 2026-11-01T19:50:23.270658+08:00；不能当作全部子运行起止。</p>
+<p><strong>当时的目的与设计</strong></p>
+<p>在6个新场景12输入上冻结旧45头规则，与完整V、自适应45头等比较。</p>
+<p><strong>实际过程、结果与后来更正</strong></p>
+<p>固定头保留约98%–107%的停止侧效应，自适应为93%–109%；修正后的答案侧描述仅约35%–46%。旧答案侧解释的更正保留。</p>
+<p><strong>来源身份</strong>：<code>cache-head-rule-prospective-v1-2026-11-01</code>；本章主体来源提交 <code>7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8</code>。下方原文中的状态是各文件写作时的状态，不能把早期“尚未运行”覆盖后期正式收据，也不能将后期结果倒填进早期设计。</p>
+<h2 id="_1">原设计、执行过程、结果与更正全文</h2>
+<p>以下按“设计与题目 → 工程/执行记录 → 结果/更正 → 其他历史说明”组织；同类内没有可靠时间时保留路径顺序，不冒充严格先后。正文未删段；仅为本章节重排标题层级、把相对链接指向固定提交。原始字节另外完整保存。</p>
+<h3 id="1c1-p">原件 1：C1-P方案：冻结选头规则在新输入上的因果预测检验</h3>
+<p>原路径：<code>docs/cache-head-rule-prospective-input-plan-v1-2026-11-01.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-head-rule-prospective-input-plan-v1-2026-11-01.zh-CN.md">固定提交原文</a> · <a href="../library/471adca49cb33374.html">单独阅读副本</a>；SHA-256：<code>471adca49cb33374d85626cdc30f7f54e0daddbab8686fb79e745da60b27576d</code>。</p>
+<hr />
+<h4 id="c1-p">C1-P方案：冻结选头规则在新输入上的因果预测检验</h4>
+<p>2026-11-01；v1 r2（冻结前修订：§3.1 校准口径、§4.1 固定名单迁移臂、§7 预算；见文末 r2 记录）；设计与自查交付，未执行。科学比较已定义；token清单、来源绑定及实现验收尚未完成，因此不是可直接启动的执行合同。当前无新GPU/模型运行授权。</p>
+<h5 id="1">1. 设计卡</h5>
+<ul>
+<li>主线：稀疏干预如何经历史状态及后续计算改变回答。</li>
+<li>本轮问题：旧规则按停止侧局部直接投影选出的45个层—头位置，在新输入上能否保留较大的V因果效应，并优于同层同数量的随机头子集？</li>
+<li>目的：检验局部分析是否有事前选择材料的实用预测能力；为整体课题保留一个可复用的预测结果或明确的失败边界。</li>
+<li>新增信息：此前选头和因果验证都在已见六情景、同一针上。新输入的子集替换结果不能由结构恒等式或旧结果推出。</li>
+<li>依据：FV-local-path d7dc093/75ecbf8及B2结果4da6cc4。H自身停止侧V效应3.4–5.2 logit，R为1.1–2.6。最不利证据：本地直接投影与完整效应差距大，H含正负方向；规则可能只适用于旧输入。</li>
+<li>估计对象：特定N背景下的V子集替换总效果，不是自然机制份额、计算中介、通道特异性或小扰动效率。</li>
+<li>身份：提前开展C的有限预测边界任务；B细拆暂停、B机制未完成。科学结果出来后，不将本轮改称计算机制检验。</li>
+<li>预算：24次新前缀形成、120次正式单步评分、24次预检评分，另最多3次模板前向。无生成、训练或剂量搜索。详见§7。</li>
+<li>退出：规则无优势、异质或主效应不足分别报告；不自动加层、改头数、换题或扩干预方向。</li>
+</ul>
+<h5 id="2">2. 固定的新输入面板</h5>
+<p>六情景×两事实版本，分析单位为六情景；不是十二个独立样本。新写实例为未测结果面板，不声称新任务分布、随机抽样或总体代表性。每条精确提示由下表“记录”接一个换行，再接统一问句组成。竖线分隔的是表格备选事实，不是提示文字。</p>
+<p>统一问句：<code>请根据上面的记录，简短回答：目标条目的编号是什么？只需给出编号。</code></p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>f0记录（完整第一行）</th>
+<th>f1唯一替换</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P01</td>
+<td>档案记录：松塔编号为A17，目标条目海桥编号为B26，麦田编号为C38。</td>
+<td>B26改为B62</td>
+</tr>
+<tr>
+<td>P02</td>
+<td>设备登记：目标条目微泵编号为D41，风机编号为E53，温箱编号为F68。</td>
+<td>D41改为D14</td>
+</tr>
+<tr>
+<td>P03</td>
+<td>样品清单：石英编号为G72，铜片编号为H85，目标条目陶环编号为J93。</td>
+<td>J93改为J39</td>
+</tr>
+<tr>
+<td>P04</td>
+<td>箱件列表：蓝箱编号为K24，目标条目灰箱编号为L36，白箱编号为M57。</td>
+<td>L36改为L63</td>
+</tr>
+<tr>
+<td>P05</td>
+<td>站点登记：目标条目北亭编号为N48，东湾编号为P61，西岭编号为Q79。</td>
+<td>N48改为N84</td>
+</tr>
+<tr>
+<td>P06</td>
+<td>卷宗目录：晨光编号为R32，暮色编号为S54，目标条目星河编号为T86。</td>
+<td>T86改为T68</td>
+</tr>
+</tbody>
+</table>
+<p>输入ID固定为P01-f0、P01-f1，依此至P06-f1；随机控制的ID使用此完整输入ID。所有行在任何新模型评分前冻结。源文本若与既有已评分记录完全重复，本方案停止修订并另记版本，不偷偷换题。不得根据干净答对、针有效、EOS变化或选头集中度筛选输入。保留无效、答错及所有事实版本。</p>
+<p>工程准备必须导出UTF-8文本、模型模板后token IDs、n、b、mask及SHA256；b定义为完整记录行（含换行）结束的最后token。tokenizer跨边界编码需用offset验证；无法无歧义对齐则停止，不任取最近token。统一问句不是事实段。冻结时间与Git提交记录保留。</p>
+<h5 id="3">3. 模型、形成及评分操作</h5>
+<p>Qwen3.5-4B revision <code>851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a</code>，继承CONV-FACTOR/B2的tokenizer、BF16/eager与逐token路线。L0/N4146，旧校准剂量−1；不能把−1当绝对激活幅度，不重新校准以追求停止。</p>
+<p>每输入独立形成C和T到τ=n−2。C全程无针；T仅在b+1…τ注入，n−1为无针评分token。实际剂量标度、hook算术、软件环境与来源文件哈希须从旧CONV/E2合同和收据绑定；缺失即工程阻塞。新输入不可复用旧提示的缓存或入口。允许复用同一新输入C/T供体，所有评分深拷贝，禁止评分污染供体。</p>
+<p>先获取该新输入的C_native和T_native单步评分。C_native冻结答案候选a（干净非停止赢家，不能叫真实答案），T_native记录13层入口x_T。N评分沿用B2：浅层C，13层入口覆盖为x_T，深层S_T和全注意力KV_T；在G层历史卷积中组合Q/V。N是原生后半段边界重放，不等于完整自然轨迹。</p>
+<p>G层：13、14、16、17、18、20、21、22、24、25、26、28、29、30；每层32个值头。Q是q/k卷积历史合并段，V按值头切片。沿用B2核验的通道布局和全部4槽复制（单步实际读取最近3槽）。每次仅改评分起始历史，当前q/k/v、门控、后续S/KV更新和下游计算正常响应。无后续生成。</p>
+<h5 id="4">4. 冻结规则及对照</h5>
+<p>规则沿用d7dc093/75ecbf8的同入口重算法：在新输入N:TT运行各层自己的入口，分别配T/C的F_V，得到每头的停止侧局部直接投影c_s46；按绝对值降序取45/448，平局按层、头升序。使用旧定义的投影方向、归一化处理，不增加拟合或重新调参。不是直接复制旧45头；也不是在新数据上优化头数。</p>
+<p>每输入得到H后，在任何子集评分前导出名单、分数、来源哈希并冻结。规则可以使用新输入的完整参考运行；因此是“局部分析预测未测的子集操作”，不是零模型调用的预测，也不是完全不用测试输入的固定头名单迁移。</p>
+<p>U1–U4为四组随机头子集，每层头数与H相同，总数45。可与H重叠，必报重叠，不重抽。为避免实现RNG差异，每个输入ID、控制编号j、层l、头h生成字符串 <code>C1P-v1|ID|j|l|h</code> 的SHA256（十进制数不补零），按摘要字典序取该层所需头数；跨输入和控制编号独立。随机子集匹配的是数量和层分布，不是实际扰动范数或方向；不主张幅度控制后的效率。它们也不是随机L0注入方向。</p>
+<p>每输入十格：</p>
+<table>
+<thead>
+<tr>
+<th>格</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C_native、T_native</td>
+<td>冻结答案候选、获取x_T及原生读数；核对N:TT重放</td>
+</tr>
+<tr>
+<td>N:TT（Q=T,V=T）</td>
+<td>选头参考与深层重放</td>
+</tr>
+<tr>
+<td>N:CC（Q=C,V=C）</td>
+<td>子集比较基线</td>
+</tr>
+<tr>
+<td>N:CT（Q=C,V=T）</td>
+<td>全V效应基准</td>
+</tr>
+<tr>
+<td>N:CH（Q=C，仅H的V=T）</td>
+<td>主预测对象</td>
+</tr>
+<tr>
+<td>N:CU1…CU4</td>
+<td>同层同数量对照</td>
+</tr>
+</tbody>
+</table>
+<p>主比较Q固定C，与B2中V单独效应的定义对齐；不重测Q条件依赖八格。所有H/U起始S/KV及入口相同。H与U的实际缓存改变量、每层出口范数均保存作描述，禁止将除以范数解释为等剂量因果比较。</p>
+<h5 id="5">5. 估计量与冻结判读</h5>
+<p>主要Z为停止token248046的去词表均值logit；次要为冻结a的同一读数。保存全词表logits、D与首步赢家，EOS只辅助报告。答案候选变化不等于答对，首步不停止不等于完整交付。</p>
+<p>每输入计算有符号差：F=Z_CT−Z_CC，H=Z_CH−Z_CC，U_j=Z_CUj−Z_CC；E=H−median_j(U_j)。先算差，再对每情景两事实取均值；E保留事实级结果。不取绝对值把反向效应当成功。</p>
+<p>每情景主预测成立须同时满足：</p>
+<ol>
+<li>F情景均值≥1 logit，两个事实F均&gt;0；否则全V目标效应不足，记该情景无法检验预定保留率。</li>
+<li>H均值≥0.5F均值，且两个事实H均&gt;0。</li>
+<li>E均值≥0.2 logit，且两个事实E均&gt;0。</li>
+</ol>
+<p>至少5/6情景同时满足，才支持“该冻结规则在此新面板上保留至少一半全V效应，并优于这四组层数匹配对照”。50%是有用的大效应预测目标，0.2是沿用项目的实质效应线，5/6是一致性线；均非p值、置信度或所有随机子集的显著优越性。结果可以超出100%，如实报告非加和，不叫贡献份额。</p>
+<p>分类：</p>
+<ul>
+<li>H保留效应但E无优势：支持稀疏子集可有效，未验证这条排名比规定对照更好。</li>
+<li>F足够而H不足、异号或E不足：预定规则在该面板未稳定兑现；不改比例、改符号或换头补救。</li>
+<li>少于5情景F足够：总体预测无法得到本轮预定支持；分别报告效应适用范围和规则未充分检验，不把无效原针写成选头失败。</li>
+<li>缺失/工程失败：不当科学阴性，不缩小六情景分母；工程失败停止。</li>
+</ul>
+<p>所有比值仅在分母情景均值绝对值≥1且两事实同号时附报，无epsilon，不删小分母情景。答案侧只作预定次要结果，不救停止侧主判。保留6×2全部原值、四个控制而非只报中位数。</p>
+<h5 id="6">6. 验收与冻结顺序</h5>
+<p>顺序：本设计及源文本提交→token/参数/来源清单静态验收→运行授权→供体形成及参考评分→CPU选头与控制名单冻结→子集评分。参考评分、预检与失败尝试全部入账；预检不得触发科学阈值调整。</p>
+<p>必要实现验收：N:TT与T_native端点重放；C/T同输入token、时点和供体哈希；选头重算对旧资产的复现；逐头V切片/槽位与供体一致；每评分独立供体；零补丁、补丁恢复、记录器不改变输出。沿用旧路线可逐位复现的检查必须逐位一致，不把旧CPU近似容差误当GPU重放容差。CPU重算沿用既有≤0.02相对误差标准，零范数用旧舍入底噪规则；具体实现/来源及零范数定义须在合同绑定，不凭本方案宣称验收完成。</p>
+<p>当前缺口：新token清单、旧校准与实现依赖哈希、实际吞吐和运行端验收未完成。它们是执行准备，不是新增科学候选；不允许借补齐工程清单改变提示或比较。</p>
+<h5 id="7">7. 成本与停止</h5>
+<p>新输入必须新形成历史：12输入×C/T=24次前缀形成，每条处理n−1个token，总形成token账为2Σ(n_i−1)。不能沿用前几轮的“0形成”。</p>
+<p>正式12×10=120次单步评分。P01两个事实作为固定工程预检：每条十格加零补丁/恢复检查各一格，共24评分；重复进入正式评分仍计费。预检形成的两对供体通过哈希验收后复用，其余输入随后形成，因此总形成仍24；若需重建或重试，不在本合同自动增加。另最多3次模板前向，逐次登记实际token数。无生成。</p>
+<p>拟申请GPU占用上限1小时、CPU处理上限1小时；这是本轮可接受上限而非已测耗时估计，不沿用项目历史总预算。运行前按冻结token数量及旧实测吞吐核算；若预计超出上限，则交付成本阻塞，不自行削减对照或启动。当前未申请、未启动GPU。</p>
+<p>若获得主支持，下一份独立合同才考虑其他针与随机注入方向，须先解决实际扰动与全V效应范围的可比性。即使方向间有差别，也不直接推特异机制；随机方向同样成功不证明一般饱和。当前不预批该后续实验。</p>
+<h5 id="8">8. 自查记录</h5>
+<p>规范：experiment-design-self-check v1；本次是同一设计者自查，不是独立审查。</p>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th>判定与理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C01</td>
+<td>通过：§1保持干预—历史—输出主线，明确本轮只检验材料预测，B未完成。</td>
+</tr>
+<tr>
+<td>C02</td>
+<td>通过：§1/4测旧规则在未测新实例的子集因果结果，不再重复直接投影定位。</td>
+</tr>
+<tr>
+<td>C03</td>
+<td>通过：复用B2操作和FV局部算法、已有非线性知识；新前缀不能假称已有。</td>
+</tr>
+<tr>
+<td>C04</td>
+<td>通过：面对投影与真实效应差距、正负抵消、一般几何和已见面板选择偏差。</td>
+</tr>
+<tr>
+<td>C05</td>
+<td>通过：§2/3定义文本、针、窗、缓存供体与评分边界；机器绑定为明确工程待验收。</td>
+</tr>
+<tr>
+<td>C06</td>
+<td>通过：只固定起始材料与入口，下游响应；不从局部投影推总效果。</td>
+</tr>
+<tr>
+<td>C07</td>
+<td>通过：Q捆绑q/k且固定C；不拆共享系数，不称混合状态天然轨迹。</td>
+</tr>
+<tr>
+<td>C08</td>
+<td>通过：仅称指定背景子集替换总作用；不声称自然中介或跨阶段完整因果链。</td>
+</tr>
+<tr>
+<td>C09</td>
+<td>通过：比较明确的规则与对照预测，不承诺区分一般饱和和特异机制。</td>
+</tr>
+<tr>
+<td>C10</td>
+<td>通过：§5连续读数主判，答案候选/EOS/完整行为分开。</td>
+</tr>
+<tr>
+<td>C11</td>
+<td>通过：效应不足、规则失败、异质及工程失败分报；阈值不是显著性。</td>
+</tr>
+<tr>
+<td>C12</td>
+<td>通过：旧数据不能提供新提示子集结果；已计形成/参考/预检，不同时扩针。</td>
+</tr>
+<tr>
+<td>C13</td>
+<td>通过：新文本、规则、后续名单按时序冻结，六情景单位，四个随机控制全部报告。</td>
+</tr>
+<tr>
+<td>C14</td>
+<td>通过：无优势则停止该预测主张；成功也不重启B定位或宣布机制成立。</td>
+</tr>
+</tbody>
+</table>
+<p>历史错误：E01/E10/E11保留总问题、首步与回答边界；E02/E04/E19不重新发现架构恒等式；E03/E12不把头少或层数匹配当小幅度/几何匹配；E05/E06/E07/E08/E13/E14/E15/E17/E26明确供体、反事实和总效果，未检验形成中介；E09/E18/E20不把相关投影或剩余项命名机制；E16保留有效阴性；E21不以规则迁移宣称领域首次；E22新实例但小面板，按情景计数；E23自查/验收/授权/结果分开；E24保留有价值的材料预测增量；E25暂不加跨针、方向和完整生成矩阵。</p>
+<p>与上轮差异：结束H×Q局部/末端筛选，保留B2材料阳性；从已见输入的交互定位切换为明示的预测边界任务。与19:08建议差异：先做新输入一个问题；其他方向另立合同；不把方向比较的成功/失败当机制二选一。</p>
+<p>反方检查及修正：</p>
+<ol>
+<li>即使全部成功，可能只是局部几何在新实例可预测。接受：这是本轮承诺；不能写成解释了计算或排除了饱和。</li>
+<li>同输入参考运行选头是否泄漏？允许参考输入/驱动，禁止子集结果参与选择。称输入自适应规则迁移，不称固定头名单或零计算预测。</li>
+<li>H若集中后层，随机全层会不公平。已修为逐层相同数量；实际幅度仍未匹配，故不许效率/特异性结论。</li>
+<li>原针在新题没效应是否反驳选头？不；先保留F效应不足状态，不挑有效题重新跑。</li>
+<li>四个随机子集能证明普遍优越吗？不能；结论限定四个预定控制，计数线非显著性。</li>
+<li>为什么不直接做完整回答？当前候选只预测首步指定效应；完整回答无对应机制预测。此边界任务不能替代路线图最终责任，但能决定现有材料预测是否值得保留。</li>
+</ol>
+<p>结论：有界科学设计通过；执行准备与数值验收尚未完成，无运行结果。未解决的总体机制空缺明示保留。</p>
+<h5 id="9-r2-2026-11-01">9. r2 修订（冻结前，2026-11-01）</h5>
+<ol>
+<li><strong>校准口径（§3）：</strong> 旧流程的剂量 −1 相对于 <code>engine.calibrate</code> 在该题 f0 上下文上得到的 <code>residual_scales</code>（同一题 f0/f1 共用，执行时断言等于 II-B 归档）。新输入没有归档值，采用与旧流程同构的做法：在每个新情景的 f0 上下文上按同一 <code>calibrate</code> 规则计算一次，f0/f1 共用，记录并在任何评分前写入记录。这是“按旧规则做的新校准”，不是为追求停止而重新调剂量；不沿用旧题校准值。</li>
+<li><strong>固定名单迁移臂（§4，次要）：</strong> 另设 N:CFIX（Q=C，仅固定 45 头的 V=T）。固定名单在任何新评分前由旧 FV 局部分析结果（d7dc093 results-r01.json，N 背景）计算：每头在 12 个旧输入上的 |c_s46| 平均排名，取前 45（平局按层、头升序）。它不使用新输入的参考运行，检验“跨输入稳定的头集合”这一更强说法；判读与主臂同式（H 换成 FIX），只作次要报告，不救主判。</li>
+<li><strong>预算（§7）：</strong> 每输入 11 格（原 10 格 + N:CFIX）。预检 P01-f0/f1 每条另加全集（448 头 V=T，应等于 N:CT）与空集（应等于 N:CC）两格，共 2×13=26 评分；正式 12×11=132 评分；预检形成不跨运行复用，正式重新形成全部 12 输入，形成合计 4+24=28 次。N 格由形成缓存直接组装（C 浅层 + T 深层），不需要模板前向。合计 158 评分、28 次形成、0 模板，GPU ≤1 小时。</li>
+<li><strong>段落规则（实现）：</strong> 旧冻结规则要求提示含“\n问题：”与“\n请根据”，新提示只有后者。按 §2“b = 完整记录行（含换行）结束的最后 token”实现同构规则：fact = 记录行 + 换行；其余用户文本为 instruction；逐 token 按首字符归段，跨段 token 即停止。</li>
+</ol>
+<hr />
+<h3 id="2c1-p-r01">原件 2：C1-P（冻结选头规则在新输入上的因果预测）实验合同 r01</h3>
+<p>原路径：<code>experiments/cache-head-rule-prospective-v1-2026-11-01/CONTRACT.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-head-rule-prospective-v1-2026-11-01/CONTRACT.zh-CN.md">固定提交原文</a> · <a href="../library/99c5c88b68f62c74.html">单独阅读副本</a>；SHA-256：<code>99c5c88b68f62c74686b5f27ac06446a082a4831b5266d0c3d6ad75d05a3de60</code>。</p>
+<hr />
+<h4 id="c1-p-r01">C1-P（冻结选头规则在新输入上的因果预测）实验合同 r01</h4>
+<p>日期：2026-11-01。设计：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-head-rule-prospective-input-plan-v1-2026-11-01.zh-CN.md">方案 r2</a>（5fe14e0 + r2 冻结前修订）；输入 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-head-rule-prospective-v1-2026-11-01/data/inputs-r01.json">inputs-r01.json</a>、固定名单 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-head-rule-prospective-v1-2026-11-01/data/fixed-heads-r01.json">fixed-heads-r01.json</a> 在任何新评分前冻结。授权：用户 2026-11-01“按你的建议改好后直接写合同代码上卡跑”。偏离记入 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-head-rule-prospective-v1-2026-11-01/DECISIONS.zh-CN.md">DECISIONS</a>。</p>
+<h5 id="1_1">1. 对象与操作</h5>
+<p>Qwen3.5-4B 851bf6e8，BF16、eager；6 新情景 × 2 事实（P01–P06）。每情景在 f0 上下文上按旧 <code>engine.calibrate</code> 规则校准一次，f0/f1 共用。每输入：b = 记录行（含换行）最后 token；C（无针）与 T（L0/N4146/−1，b+1…n−2）逐 token 形成；评分 C_native、T_native；N 背景（C 浅层 + T 深层 S/KV，decoder13 入口 = T_native 的 x_T）评分 N:TT、N:CC、N:CT；在 N:TT 上按 F_V 局部路径算法（d7dc093）选 H（|c_s46| 前 45，平局层、头升序），写入不可改文件后，评分 N:CH、N:CU1–4（SHA256 定序、逐层同数）、N:CFIX（旧数据固定名单）。全部 Q=C；V 按头替换，四槽全复制。</p>
+<h5 id="2_1">2. 预算</h5>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th style="text-align: right;">前缀形成</th>
+<th style="text-align: right;">单步评分</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>预检（P01-f0/f1，每条 11 格 + 全集 + 空集）</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">26</td>
+</tr>
+<tr>
+<td>正式（12 × 11）</td>
+<td style="text-align: right;">24</td>
+<td style="text-align: right;">132</td>
+</tr>
+<tr>
+<td>合计上限</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">158</td>
+</tr>
+</tbody>
+</table>
+<p>0 模板、0 生成；GPU ≤1 小时；存储 ≤6 GiB。</p>
+<h5 id="3_1">3. 工程闸门</h5>
+<ol>
+<li>段落：无跨段 token，fact 连续，晚段非空；提示 token 哈希记录。</li>
+<li>校准：每情景一次，写入记录与文件后才形成。</li>
+<li>重放：N:TT logits 逐位等于 T_native；每个 N 格第13层入口 = x_T。</li>
+<li>选头重算：v 与 out_proj 重算相对误差 ≤0.02；名单在子集评分前写入不可改文件并记入收据哈希。CPU 预演已在旧数据上逐一复现 B2 冻结的 12 份 H 名单。</li>
+<li>布局：第13层每个子集格的每个值头 v 逐位等于 N:CT（选中）或 N:CC（未选中）。</li>
+<li>命中：每格 14 个 G 层 recurrent 内核各 1 次、chunk 0 次；N 格入口钩子 1 次。</li>
+<li>预检：全集子集 = N:CT、空集子集 = N:CC（逐位）。</li>
+<li>冻结一致。</li>
+</ol>
+<h5 id="4-5">4. 判据（方案 §5，冻结）</h5>
+<p>Z = 去词表均值 logit（停止 248046 主；C_native 非停止赢家 a 次）。F = Z_CT − Z_CC；H = Z_CH − Z_CC；U_j；E = H − median_j U_j。情景先平均两事实。情景通过：F 均值 ≥1 且两事实 F&gt;0；H 均值 ≥0.5·F 均值且两事实 H&gt;0；E 均值 ≥0.2 且两事实 E&gt;0。≥5/6 通过 → 支持；F 足够情景 &lt;5 → 无法充分检验；保留率 ≥5/6 但 E 不足 → 子集有效但无排名优势；否则 → 规则未兑现。固定名单臂同式（H→FIX），次要。答案侧次要。比值只附表。</p>
+<h5 id="5_1">5. 停止</h5>
+<p>任一闸门失败 → 停止，记工程失败；不换题、不改头数或阈值、不扩针或方向。</p>
+<hr />
+<h3 id="3c1-p">原件 3：C1-P（冻结选头规则在新输入上的因果预测）结果报告</h3>
+<p>原路径：<code>experiments/cache-head-rule-prospective-v1-2026-11-01/REPORT.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-head-rule-prospective-v1-2026-11-01/REPORT.zh-CN.md">固定提交原文</a> · <a href="../library/3ca46b0ef230cec2.html">单独阅读副本</a>；SHA-256：<code>3ca46b0ef230cec2a1ec9906600b6e9a6d3a0d1cc5b17e9328921c5acf543ed4</code>。</p>
+<hr />
+<h4 id="c1-p_1">C1-P（冻结选头规则在新输入上的因果预测）结果报告</h4>
+<p>日期：2026-11-01。<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-head-rule-prospective-input-plan-v1-2026-11-01.zh-CN.md">方案 r2</a>；<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-head-rule-prospective-v1-2026-11-01/CONTRACT.zh-CN.md">合同 r01</a>；<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-head-rule-prospective-v1-2026-11-01/DECISIONS.zh-CN.md">决策 D1–D6</a>。代码 1d40adb，freeze-r01 <code>0993942d…3461</code>。同一助手实现、运行与撰写，不是独立复核。</p>
+<h5 id="1_2">1. 结论（限制先说）</h5>
+<p><strong>限制：</strong>（1）同一根针、同一方向、同一剂量规则；6 个新情景来自同一种“记录 + 编号查询”模板，多样性有限，不代表任务分布。（2）随机对照只匹配头数与层分布，不匹配实际扰动幅度或方向，不能据此宣称每头效率或方向特异；一般饱和/一般几何解释没有被本轮检验。（3）主臂是按新输入参考运行自适应选头，不是零计算预测；固定名单臂才是不看新输入的迁移。（4）答案侧冻结判据要求 F&gt;0，与答案侧的针效应方向（F&lt;0）不匹配，按规则只能记为“无法充分检验”——这是方案判据的写法问题，下面的答案侧数字只作事后描述。</p>
+<p><strong>主判断（停止侧，H 臂）：支持，6/6 情景通过。</strong> 冻结规则在新输入上选出的 45 个头，只替换它们的 V 历史就保留了全 V 效应的 0.93–1.09 倍，并比四组层配平随机子集的中位数高 1.95–2.82 logit（门槛 0.2）。</p>
+<table>
+<thead>
+<tr>
+<th>停止侧（情景均值，logit）</th>
+<th style="text-align: right;">P01</th>
+<th style="text-align: right;">P02</th>
+<th style="text-align: right;">P03</th>
+<th style="text-align: right;">P04</th>
+<th style="text-align: right;">P05</th>
+<th style="text-align: right;">P06</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>全 V 效应 F</td>
+<td style="text-align: right;">3.76</td>
+<td style="text-align: right;">3.14</td>
+<td style="text-align: right;">3.06</td>
+<td style="text-align: right;">3.08</td>
+<td style="text-align: right;">3.78</td>
+<td style="text-align: right;">3.15</td>
+</tr>
+<tr>
+<td>H（自适应 45 头）</td>
+<td style="text-align: right;">3.62</td>
+<td style="text-align: right;">2.93</td>
+<td style="text-align: right;">3.15</td>
+<td style="text-align: right;">3.36</td>
+<td style="text-align: right;">3.76</td>
+<td style="text-align: right;">3.16</td>
+</tr>
+<tr>
+<td>FIX（旧数据固定 45 头）</td>
+<td style="text-align: right;">3.71</td>
+<td style="text-align: right;">3.07</td>
+<td style="text-align: right;">3.04</td>
+<td style="text-align: right;">3.28</td>
+<td style="text-align: right;">3.73</td>
+<td style="text-align: right;">3.31</td>
+</tr>
+<tr>
+<td>四组随机子集均值</td>
+<td style="text-align: right;">1.04</td>
+<td style="text-align: right;">0.85</td>
+<td style="text-align: right;">1.10</td>
+<td style="text-align: right;">1.03</td>
+<td style="text-align: right;">0.91</td>
+<td style="text-align: right;">1.32</td>
+</tr>
+<tr>
+<td>E = H − 随机中位数</td>
+<td style="text-align: right;">2.68</td>
+<td style="text-align: right;">2.13</td>
+<td style="text-align: right;">2.25</td>
+<td style="text-align: right;">2.55</td>
+<td style="text-align: right;">2.82</td>
+<td style="text-align: right;">1.95</td>
+</tr>
+</tbody>
+</table>
+<p><strong>固定名单臂（次要）：同样 6/6 通过。</strong> 不使用新输入任何运行、只按旧 12 个输入的平均排名取出的 45 个头，在新输入上保留 0.98–1.07 倍全 V 效应，E = 2.09–2.79（注意：四组随机子集按自适应 H 的逐层头数配平，不是按 FIX；FIX 尚无专属的逐层匹配对照，其 E 只作参考）。新输入上自适应选出的 H 与固定名单每输入重合 24–30 个头，与随机子集重合 1–12 个。</p>
+<p><strong>行为（辅助）：</strong> 首步停止 T_native 12/12；N:CT、N:CH、N:CFIX 各 12/12；四组随机子集 0、0、1、0/12；N:CC 与 C_native 0/12。</p>
+<p><strong>答案侧（事后描述，非判据）：</strong> 针压低干净首词候选（F = −7.7 至 −10.0）。H 替换保留其 49%–71%（−4.5 至 −6.8），比随机子集均值多压低 3.7–4.9；FIX 保留 35%–46%。</p>
+<h5 id="2_2">2. 执行</h5>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th style="text-align: right;">形成</th>
+<th style="text-align: right;">评分</th>
+<th style="text-align: right;">墙钟</th>
+<th>闸门</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>预检 r01（P01-f0/f1）</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">26</td>
+<td style="text-align: right;">30 s</td>
+<td>全过</td>
+</tr>
+<tr>
+<td>正式 r01（12 输入，2 worker）</td>
+<td style="text-align: right;">24</td>
+<td style="text-align: right;">132</td>
+<td style="text-align: right;">各 48 s</td>
+<td>全过</td>
+</tr>
+<tr>
+<td>合计 / 上限</td>
+<td style="text-align: right;">28 / 28</td>
+<td style="text-align: right;">158 / 158</td>
+<td style="text-align: right;"></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>闸门：段落无跨段（n 59–61，b 31–33）；每情景 f0 校准后才形成；N:TT 与 T_native logits 逐位一致；选头重算 v 与 out_proj ≤0.004，名单写入不可改文件后才评分子集（D3）；第13层逐头布局；每格 14 个 G 层内核各 1 次、chunk 0 次；预检全集 = N:CT、空集 = N:CC。CPU 预演中同一选头函数在旧数据上逐一复现 B2 冻结的 12 份 H 名单。无失败尝试。</p>
+<h5 id="3_2">3. 可以说 / 不可以说</h5>
+<table>
+<thead>
+<tr>
+<th>可以说</th>
+<th>不可以说</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>按 CPU 局部直接投影选头的规则，在 6 个未参与选头的新情景上，预测出承担几乎全部停止侧 V 效应的 45 头子集，且远超层配平随机子集</td>
+<td>这些头是停止机制或语义载体；规则对任意任务、针或方向成立</td>
+</tr>
+<tr>
+<td>旧数据得出的固定 45 头名单可直接迁移到这些新提示</td>
+<td>每头效率更高、方向特异（幅度未匹配）</td>
+</tr>
+<tr>
+<td>这为“局部分析具有可复用的材料预测价值”提供了预注册的前瞻证据</td>
+<td>已解释计算机制；阶段 B 完成；排除一般饱和</td>
+</tr>
+</tbody>
+</table>
+<h5 id="4-7">4. 下一步（方案 §7，不是运行授权）</h5>
+<p>方案预定：获得主支持后，另立合同考虑其他针与随机注入方向，并先解决实际扰动与全 V 效应范围的可比性；随机方向同样成功不证明一般饱和，只有原针成功也不直接证明特异机制。答案侧判据需按效应方向重新冻结后才可确认性检验。阶段 B 的计算解释仍未完成。</p>
+<h5 id="5-2026-11-01">5. 复核后的更正（2026-11-01）</h5>
+<p>外部复核复算 JSON：FIX 保留率下限为 0.98（原写 0.99，P02 = 3.07/3.14）；随机子集的层分布匹配 H 而非 FIX，FIX 缺专属对照。§1 已改，判定不变。</p>
+<hr />
+<h3 id="4c1-p">原件 4：C1-P 决策日志</h3>
+<p>原路径：<code>experiments/cache-head-rule-prospective-v1-2026-11-01/DECISIONS.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-head-rule-prospective-v1-2026-11-01/DECISIONS.zh-CN.md">固定提交原文</a> · <a href="../library/f5c6d51065a6d893.html">单独阅读副本</a>；SHA-256：<code>f5c6d51065a6d8931707a9a9194abad6a1c9a4acbfbf25f3f99614152a43f07f</code>。</p>
+<hr />
+<h4 id="c1-p_2">C1-P 决策日志</h4>
+<ul>
+<li><strong>D1 段落规则（冻结前）</strong>：旧冻结 <code>segment_spans</code> 要求提示含“\n问题：”和“\n请根据”，新提示只有后者。按方案 §2 实现同构规则：fact = 记录行 + 换行；逐 token 按首字符归段；跨段即停止。CPU 预演 12/12 无跨段（n 59–61，b 31–33）。</li>
+<li><strong>D2 校准（冻结前，方案 r2 §9.1）</strong>：每情景在 f0 上下文上用 <code>engine.calibrate</code> 计算一次，f0/f1 共用；不沿用旧题校准值。</li>
+<li><strong>D3 进程内选头冻结</strong>：选头在同一 worker 进程内完成：参考格评分后计算名单，写入不可改的 <code>selections/{id}.json</code> 并把哈希写入收据，然后才评分子集格。名单只依赖参考运行（N:TT、C/T 缓存），不依赖任何子集结果。</li>
+<li><strong>D4 预检形成不跨运行复用</strong>：方案原写“预检供体复用”，实现为正式运行重新形成全部 12 输入（总形成 28 = 4 + 24），避免跨运行缓存搬运；已写入方案 r2 §9.3。</li>
+<li><strong>D5 N 格组装</strong>：由形成的 C、T 缓存直接组装（深拷贝 T，浅层 0–12 换成 C），不需要模板前向。</li>
+<li><strong>D6 写错文件（实现期）</strong>：一次把测试代码写进了 <code>c1p_analysis.py</code>，覆盖了分析脚本；发现后移为 <code>test_c1p.py</code> 并重写分析脚本，均在任何运行前完成。</li>
+</ul>
+<hr />
+<h2 id="_2">时间、运行与停止收据索引</h2>
+<p>下面是所收集JSON的原有时间字段与状态，不把预计结束时间当实际完成时间。未列时间的文件仍有原件链接。完整JSON全部保存在原文归档，不能以此索引中的标量代替完整嵌套内容。</p>
+<table>
+<thead>
+<tr>
+<th>原件</th>
+<th>原记录状态/阶段</th>
+<th>原时间字段（原时区）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-head-rule-prospective-v1-2026-11-01/readiness/cpu-receipt-r01.json">readiness/cpu-receipt-r01.json</a></td>
+<td>{"status": "passed"}</td>
+<td>{}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-head-rule-prospective-v1-2026-11-01/runs/formal-r01/controller.json">runs/formal-r01/controller.json</a></td>
+<td>{"status": "completed", "stage": "formal"}</td>
+<td>{"started_at": "2026-11-01T11:51:40.273997+00:00", "finished_at": "2026-11-01T11:52:31.639372+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-head-rule-prospective-v1-2026-11-01/runs/formal-r01/verification.json">runs/formal-r01/verification.json</a></td>
+<td>{"status": "passed", "stage": "formal"}</td>
+<td>{"verified_at": "2026-11-01T11:52:31.639192+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-head-rule-prospective-v1-2026-11-01/runs/formal-r01/worker-0/receipt.json">runs/formal-r01/worker-0/receipt.json</a></td>
+<td>{"status": "completed", "stage": "formal"}</td>
+<td>{"started_at": "2026-11-01T11:51:40.362937+00:00", "last_record_at": "2026-11-01T11:52:26.619044+00:00", "finished_at": "2026-11-01T11:52:28.701844+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-head-rule-prospective-v1-2026-11-01/runs/formal-r01/worker-1/receipt.json">runs/formal-r01/worker-1/receipt.json</a></td>
+<td>{"status": "completed", "stage": "formal"}</td>
+<td>{"started_at": "2026-11-01T11:51:40.363110+00:00", "last_record_at": "2026-11-01T11:52:26.869690+00:00", "finished_at": "2026-11-01T11:52:28.936930+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-head-rule-prospective-v1-2026-11-01/runs/preflight-r01/controller.json">runs/preflight-r01/controller.json</a></td>
+<td>{"status": "completed", "stage": "preflight"}</td>
+<td>{"started_at": "2026-11-01T11:50:23.270658+00:00", "finished_at": "2026-11-01T11:50:56.363812+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-head-rule-prospective-v1-2026-11-01/runs/preflight-r01/verification.json">runs/preflight-r01/verification.json</a></td>
+<td>{"status": "passed", "stage": "preflight"}</td>
+<td>{"verified_at": "2026-11-01T11:50:56.363650+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-head-rule-prospective-v1-2026-11-01/runs/preflight-r01/worker-0/receipt.json">runs/preflight-r01/worker-0/receipt.json</a></td>
+<td>{"status": "completed", "stage": "preflight"}</td>
+<td>{"started_at": "2026-11-01T11:50:23.357810+00:00", "last_record_at": "2026-11-01T11:50:51.345560+00:00", "finished_at": "2026-11-01T11:50:53.389946+00:00"}</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_3">全部原始资产入口</h2>
+<p>本目录在固定提交下共有84个跟踪文件，包含代码、原回答、失败、收据和压缩证据；文件数不是样本数。<a href="../assets/051-cache-head-rule-prospective-v1-2026-11-01.tsv">逐文件完整账本</a> · <a href="https://github.com/yuxiexiong/acupuncture/tree/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-head-rule-prospective-v1-2026-11-01">原目录</a>。未复制模型权重、环境或凭据。</p></main></html>

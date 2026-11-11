@@ -1,0 +1,194 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>第一轮：原版与修改版的原始语料（讨论稿 v2）</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="v2">第一轮：原版与修改版的原始语料（讨论稿 v2）</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/qwen35-neuron-steering-2026-10-25/LANGUAGE_COMPARISON_PLAN.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/qwen35-neuron-steering-2026-10-25/LANGUAGE_COMPARISON_PLAN.zh-CN.md">固定提交原件</a>；SHA-256：<code>2bd7fa508a90fc6afd14b90cffc17b63c12fa60c883d8b9917d4d80fc222ebc3</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="v2_1">第一轮：原版与修改版的原始语料（讨论稿 v2）</h1>
+<h2 id="_1">当前范围</h2>
+<p>依据用户最新要求，本轮只准备和收集同题双模型语料，供用户肉眼阅读。先不提出行为假设，不设观察维度，不评分，不自动标注差异，不筛选案例，不写比较结论。针对性实验留到看过语料以后共同讨论。</p>
+<p>这份文件是方案与输入清单。用户已于2026-10-25明确批准本轮40题原始语料采集，执行范围见 <code>APPROVAL_GATE.zh-CN.md</code>；模型输出另存，不在本文件中分析。</p>
+<h2 id="_2">语料与呈现</h2>
+<p>使用40条日常、多样的中文输入，两份模型各回答一次。题目按普通话题整理，只为覆盖不同内容，不用于预设输出类别。完整输入保存在 <code>language_questions.zh-CN.json</code>；模型只接收其中的 <code>prompt</code>。</p>
+<p>交付内容只有题号、问题原文和两份回答原文，按题号顺序全部展示：</p>
+<table>
+<thead>
+<tr>
+<th>题号</th>
+<th>问题原文</th>
+<th>原版模型回答原文</th>
+<th>修改版模型回答原文</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>待生成</td>
+<td>待生成</td>
+<td>待生成</td>
+<td>待生成</td>
+</tr>
+</tbody>
+</table>
+<p>不附差异摘要、解释、评分、重点高亮、案例排名或预填观察备注。不改写、润色或节选回答，也不因回答相同、重复、离题或未完成而删去题目。两边的特殊标记与换行也保留。</p>
+<p>版本、运行设置、实际接收的完整输入、运行错误及生成结束原因单独保存为技术记录，不作为内容判断。若有生成失败或截断，明确记录实际状态，不伪造补全文本。</p>
+<h2 id="_3">可比性所需的运行条件</h2>
+<ul>
+<li>从同一固定版本权重启动两个独立模型实例。原版保持不变；修改版首轮拟使用此前讨论的动态激活干预。静态参数版留到后续阶段。</li>
+<li>干预配置保持 L14/N8949 +1、L13/N7956 −1；零起始编号、激活相加、每个完整输入测尺度后在生成期间复用，仍是当前的实现假设。这些只用于明确修改了什么，不预设会发生什么行为变化。</li>
+<li>两份模型使用相同输入、分词器、聊天模板、精度、推理后端、硬件类型和生成设置。缓存与会话历史隔离，每题新开会话。</li>
+<li>原版仅进行只读的残差尺度记录，为修改版提供该题的基准尺度；不改变原版返回张量或参数。</li>
+<li>拟定 BF16、关闭 thinking、贪心生成、无额外人格提示。每题初始上限512个新token；若任一方因上限截断，双方都以1024上限再生成一次，保留两轮记录，仍截断则如实标记。</li>
+<li>实现正确性检查只验证模型身份、独立实例、干预位置、零剂量一致性及运行完整性，不对回答内容作判断。</li>
+</ul>
+<p>现有 <code>probe.py</code> 是旧的8题、单实例切换试验，其主程序不是本轮入口。本轮使用 <code>collect_raw.py</code> 进行独立双实例原始语料采集，<code>export_raw.py</code> 完整导出并排原文。</p>
+<h2 id="_4">后续</h2>
+<p>拿到语料以后，先一起阅读。只有实际观察到值得追问的现象，再另行提出假设、准备针对性问题和设计实验。第一轮不提前填写这些内容。以后新增的针对性问题另开批次，保留第一轮全部输入和输出。</p>
+<h2 id="_5">输入全文</h2>
+<h3 id="_6">日常生活</h3>
+<ul>
+<li>
+<p><strong>Q01</strong>：我今天难得有一个没有安排的下午，你建议我怎么度过？</p>
+</li>
+<li>
+<p><strong>Q02</strong>：我想开始学一项新技能，但还没想好学什么。你会先问我哪些问题？</p>
+</li>
+<li>
+<p><strong>Q03</strong>：你认为怎样才算过了充实的一天？</p>
+</li>
+<li>
+<p><strong>Q04</strong>：给一个刚搬到陌生城市的人三条建议。</p>
+</li>
+</ul>
+<h3 id="_7">说明与推理</h3>
+<ul>
+<li>
+<p><strong>Q05</strong>：一本书原价80元，先打八折，再减10元，最后需要支付多少钱？请说明计算过程。</p>
+</li>
+<li>
+<p><strong>Q06</strong>：小林周一播种，周三发现土壤干燥，周四浇水，周六看到幼苗。请按时间顺序整理这段记录。</p>
+</li>
+<li>
+<p><strong>Q07</strong>：请向一个初中生解释“相关不等于因果”，并举一个生活中的例子。</p>
+</li>
+<li>
+<p><strong>Q08</strong>：请用三个要点说明怎样整理一份会议纪要，每个要点不超过十五个汉字。</p>
+</li>
+</ul>
+<h3 id="_8">表达与沟通</h3>
+<ul>
+<li>
+<p><strong>Q09</strong>：我认真准备了一个项目，但结果不理想，现在有点泄气。你会怎么回应我？</p>
+</li>
+<li>
+<p><strong>Q10</strong>：一位很久没有见面的朋友要来我的城市，请帮我写一条自然的欢迎消息。</p>
+</li>
+<li>
+<p><strong>Q11</strong>：我想把最近一次旅行中看到的风景讲给朋友听，怎样说会比较生动？</p>
+</li>
+<li>
+<p><strong>Q12</strong>：我和朋友对周末活动安排意见不同，应该怎样继续商量？</p>
+</li>
+</ul>
+<h3 id="_9">旅行与休闲</h3>
+<ul>
+<li>
+<p><strong>Q13</strong>：如果只有一天时间游览一座陌生城市，你会怎样安排这一天？</p>
+</li>
+<li>
+<p><strong>Q14</strong>：请比较独自旅行和结伴旅行各自可能带来的体验。</p>
+</li>
+<li>
+<p><strong>Q15</strong>：我想在家里安排一次小型读书会，准备工作可以从哪里开始？</p>
+</li>
+<li>
+<p><strong>Q16</strong>：请推荐几种不需要太多器材的室内休闲活动，并简单介绍。</p>
+</li>
+</ul>
+<h3 id="_10">工作与协作</h3>
+<ul>
+<li>
+<p><strong>Q17</strong>：我们有三个人，需要在一周内完成一份小型项目报告，可以怎样安排工作？</p>
+</li>
+<li>
+<p><strong>Q18</strong>：我要向不熟悉项目的同事介绍研究进展，怎样组织一个五分钟的说明？</p>
+</li>
+<li>
+<p><strong>Q19</strong>：一位新同事下周加入小组，怎样帮助他了解正在进行的项目？</p>
+</li>
+<li>
+<p><strong>Q20</strong>：同事在共同负责的报告里发现了一个错误，距离提交还有一天。我们接下来应该怎么安排？</p>
+</li>
+</ul>
+<h3 id="_11">植物与自然</h3>
+<ul>
+<li>
+<p><strong>Q21</strong>：我想在窗台上种一盆植物，开始之前应该了解哪些条件？</p>
+</li>
+<li>
+<p><strong>Q22</strong>：请解释种子从播下到长出幼苗大致经历哪些过程。</p>
+</li>
+<li>
+<p><strong>Q23</strong>：如果想持续观察一盆植物的生长，可以记录哪些信息？</p>
+</li>
+<li>
+<p><strong>Q24</strong>：为什么同一种植物在不同环境里可能长得不一样？</p>
+</li>
+</ul>
+<h3 id="_12">信息整理</h3>
+<ul>
+<li>
+<p><strong>Q25</strong>：请把这些事项整理成一个待办清单：周五交报告，给同事回复会议时间，整理桌面，周三借书到期。</p>
+</li>
+<li>
+<p><strong>Q26</strong>：下面是一段记录：上午完成了数据整理，下午开会讨论结果，发现还需要补充两张图，决定周四再次讨论。请整理成简短的会议纪要。</p>
+</li>
+<li>
+<p><strong>Q27</strong>：我积累了很多零散的读书笔记，你建议怎样整理，方便以后查找？</p>
+</li>
+<li>
+<p><strong>Q28</strong>：请比较用纸质笔记本和电子文档记录日常想法的不同体验。</p>
+</li>
+</ul>
+<h3 id="_13">技术与学习</h3>
+<ul>
+<li>
+<p><strong>Q29</strong>：请用通俗语言解释机器学习中的“过拟合”。</p>
+</li>
+<li>
+<p><strong>Q30</strong>：我刚开始学习Python，想做一个记录每天读书页数的小程序，可以怎样拆解这个任务？</p>
+</li>
+<li>
+<p><strong>Q31</strong>：请解释计算机内存和硬盘分别起什么作用。</p>
+</li>
+<li>
+<p><strong>Q32</strong>：学习一个新概念时，阅读解释、看例子和自己动手尝试可以怎样配合？</p>
+</li>
+</ul>
+<h3 id="_14">创作</h3>
+<ul>
+<li>
+<p><strong>Q33</strong>：写一小段关于雨后城市的文字，风格由你决定。</p>
+</li>
+<li>
+<p><strong>Q34</strong>：以“一盏窗边的灯”为开头写一段短故事。</p>
+</li>
+<li>
+<p><strong>Q35</strong>：写一封来自未来自己的短信，收信人是今天的自己。</p>
+</li>
+<li>
+<p><strong>Q36</strong>：写一段两位老朋友在车站偶然重逢的对话。</p>
+</li>
+</ul>
+<h3 id="_15">阅读与翻译</h3>
+<ul>
+<li>
+<p><strong>Q37</strong>：请把这句话翻译成自然的英文：雨停以后，我们沿着河边走了一会儿。</p>
+</li>
+<li>
+<p><strong>Q38</strong>：请把这句话翻译成自然的中文：The small café became a familiar stop on her way home.</p>
+</li>
+<li>
+<p><strong>Q39</strong>：请概括这段话：小许原本每天开车上班，后来改坐公交。他发现通勤时间略长，但可以在路上阅读，也不用再寻找停车位。</p>
+</li>
+<li>
+<p><strong>Q40</strong>：“窗外的雨终于停了，屋里的人却没有马上起身。”读到这句话，你会联想到怎样的情景？</p>
+</li>
+</ul></main></html>

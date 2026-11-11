@@ -1,0 +1,215 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>C-FV-01 v1 设计自查</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="c-fv-01-v1">C-FV-01 v1 设计自查</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>docs/wsp-c-frozen-validation-v1-2026-11-06/SELF_CHECK.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/wsp-c-frozen-validation-v1-2026-11-06/SELF_CHECK.zh-CN.md">固定提交原件</a>；SHA-256：<code>93d725402ba076e270a375783cca0279967d245a692dcc63d5e76679adbaa9c3</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="c-fv-01-v1_1">C-FV-01 v1 设计自查</h1>
+<p>日期：2026-11-06。按 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/experiment-design-self-check.zh-CN.md">实验设计自查规范 v1</a> 审查 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/wsp-c-frozen-validation-v1-2026-11-06/PLAN.zh-CN.md">方案</a>。审查者为设计本方案的同一助手；不是独立审核、工程验收或实验结果。</p>
+<h2 id="_1">设计结论与未完成状态</h2>
+<p><strong>逻辑设计通过；数据容量与实现/数值验收未通过验收，执行未授权、未运行。</strong> 这两个状态不能合并成“可开跑”。T200 是否存在仍待曝光账本、近重复复核及标签复核；基线的 Qwen3-VL 适配也尚未实现。本版不承诺已有 200 个可用样本。</p>
+<p>本轮保持“第一轮 C 是否具有可泛化且有比较价值的修复效果”这一问题。完整设计卡见方案 §1；证据指向原始闭环归档、评分代码、数据审核表和两家作者资料，哈希见 sources.json。</p>
+<h2 id="c01c14">C01–C14</h2>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>判定与理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C01 主线</td>
+<td>通过。§1/§8 固定首轮 C 行为验证；未换成数学、第三轮搜索、EOS 或全机制。</td>
+</tr>
+<tr>
+<td>C02 增量</td>
+<td>通过。新来源与冻结新措辞、提示/已有方法的比较会改变是否继续作为修复方法的判断，不只是重复 D 涨分。</td>
+</tr>
+<tr>
+<td>C03 资产</td>
+<td>通过。§2 原始自然回答与候选张量身份；§3 真实库存；§5 PvP/Nullu 原文与代码。文献已有不包装成新发明。</td>
+</tr>
+<tr>
+<td>C04 假设</td>
+<td>通过。明确50候选选择、词汇依赖、旧H曝光及更便宜提示替代等反例；不预定必须成功。</td>
+</tr>
+<tr>
+<td>C05 操作</td>
+<td>通过。固定实际BF16补丁、tied embedding/lm_head、norm位置；基线的方向、时段、层/秩网格及提示文本已定。细节落地另作工程验收。</td>
+</tr>
+<tr>
+<td>C06 路径</td>
+<td>通过。补丁后全部自然传播允许变化；测部署总效果，不把未手动修改的模块称保持原值。</td>
+</tr>
+<tr>
+<td>C07 耦合</td>
+<td>通过。共享词表输入/读出不可分；不声明词行仅改变语义解析。PvP提问路由和静态编辑性质区分；不切拼缓存或补偿共享变量。</td>
+</tr>
+<tr>
+<td>C08 归因</td>
+<td>通过。只声称固定方法对规定终点的效果；不推唯一机制、norm单独贡献、原生证据选择路径或WSP搜索过程优势。</td>
+</tr>
+<tr>
+<td>C09 区分</td>
+<td>通过。新来源旧问法/新问法、LEX/P*、已有方法分别约束来源过拟合、措辞依赖、可替代性；解释可共存，不强作互斥机制。</td>
+</tr>
+<tr>
+<td>C10 指标</td>
+<td>通过。§2/§6 用原始Jcf而非相同数值的J4冒充主指标；完整自然回答、五条件保护、修对/改错、格式/截断分列。</td>
+</tr>
+<tr>
+<td>C11 失败</td>
+<td>通过。适配/重放错误与测试无增益分开；不显著不叫等效，保护区间太宽允许未决。样本不足不降门槛偷开跑。</td>
+</tr>
+<tr>
+<td>C12 成本</td>
+<td>通过。旧记录先CPU复算；每臂对应明确比较；预算含拟合/重放/特征/SVD/失败。未来资源门槛为12GPUh待验，不用旧吞吐宣称保证完成。</td>
+</tr>
+<tr>
+<td>C13 可信度</td>
+<td>通过。D开发、旧H已见、T待准备分开；来源连通分量去重、全运行曝光账本、金标准隔离、统一解码、冻结与全量失败保留。数据足额和双人审核尚未实现，明确阻止终验。</td>
+</tr>
+<tr>
+<td>C14 累积</td>
+<td>通过。§6 判读直接决定能说有效、能说有优势、只可说局部适配或必须撤回；阴性不自动引向第三轮搜索。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_2">与前一阶段的比较</h2>
+<table>
+<thead>
+<tr>
+<th>方面</th>
+<th>v8/v9 开发阶段</th>
+<th>本方案改变及理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>研究对象</td>
+<td>反馈驱动不断试补丁</td>
+<td>固定v8 R45；将搜索成绩转化为外部验证问题。</td>
+</tr>
+<tr>
+<td>选择集</td>
+<td>D反复查看；H也已见</td>
+<td>复用D给替代方法调参，新T不提供反馈；旧H不复活为留出。</td>
+</tr>
+<tr>
+<td>输入</td>
+<td>两套固定问法</td>
+<td>新来源上交叉旧/新模板，U2避开编辑词；不混淆只换数据与只换问法。</td>
+</tr>
+<tr>
+<td>对比</td>
+<td>主要对W0及开发候选</td>
+<td>加入便宜提示和两个已有技术家族；不用作者数学模型的数字跨任务比。</td>
+</tr>
+<tr>
+<td>主张</td>
+<td>开发收益与搜索轨迹</td>
+<td>仅固定补丁的条件泛化、比较效果、代价与损伤；不宣称等预算算法胜出。</td>
+</tr>
+<tr>
+<td>机制</td>
+<td>反馈与探针用于找补丁</td>
+<td>本轮不再找点；机制推迟至行为效用成立后，避免把机制与终验揉成一个巨型实验。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="e01e26">E01–E26 历史错误复核</h2>
+<table>
+<thead>
+<tr>
+<th>错误</th>
+<th>处理</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>E01/E24</td>
+<td>主线保留，有意义的局部行为验证即可，不强求完整机制闭环。</td>
+</tr>
+<tr>
+<td>E02</td>
+<td>从实际评分/张量/源码确认模型与索引；不把L18–23解释成天然普适层。</td>
+</tr>
+<tr>
+<td>E03</td>
+<td>修改标量少不等于扰动小；保留张量身份、实际损伤和成本，不以35792证明安全。</td>
+</tr>
+<tr>
+<td>E04/E19</td>
+<td>零操作/投影恒等校验只算工程；历史CPU复算不算新科学实验。</td>
+</tr>
+<tr>
+<td>E05/E06/E08/E13/E15/E17</td>
+<td>本轮不操作缓存、供体或拼接路径，不适用这些特定反事实错误；各方法的修改边界仍完整记录。</td>
+</tr>
+<tr>
+<td>E07/E14</td>
+<td>行为改善不证明原生路径、必要性、唯一充分性或机制份额。</td>
+</tr>
+<tr>
+<td>E09/E11</td>
+<td>不用激活距离或投影大小替代完整答题效果；不把prior抑制说成知识删除。</td>
+</tr>
+<tr>
+<td>E10</td>
+<td>格式错/截断仍判错；停止、完整输出、正确率分别记录。</td>
+</tr>
+<tr>
+<td>E12</td>
+<td>配对不自动消除一般损伤；五条件保护单列，不能只用净修对数。</td>
+</tr>
+<tr>
+<td>E16</td>
+<td>阴性不自动归咎实现；实现验收在看T结果之前完成。</td>
+</tr>
+<tr>
+<td>E18/E20</td>
+<td>未排除解释不叫机制；字词依赖、读出改变、norm作用可以同时存在。</td>
+</tr>
+<tr>
+<td>E21</td>
+<td>对实际新主张核近邻；PvP/Nullu已存在，不说首次模型修复。</td>
+</tr>
+<tr>
+<td>E22</td>
+<td>来源组为n；模板、次序不是独立样本；旧H、预审核素材、模型曝光明确分层。</td>
+</tr>
+<tr>
+<td>E23</td>
+<td>本记录为作者自查；计划、数据验收、适配、执行分开。</td>
+</tr>
+<tr>
+<td>E25</td>
+<td>不加入全模型迁移、完整消融/随机矩阵/新训练法；七臂均有实际比较目的。</td>
+</tr>
+<tr>
+<td>E26</td>
+<td>tied读出可能直接影响答案，本轮称总效果，不称纯输入形成机制。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_3">实质反方检查与已完成的修订</h2>
+<ol>
+<li><strong>“四条件分数和原主指标一样，所以换个定义也没关系。”</strong> 不成立。本次CPU重算确认Jcf/J4恰好同分，修正为原Jcf主终点，J5与单条件作保护；不保留歧义。</li>
+<li><strong>“704组扣160就是足够新数据。”</strong> 不成立。核出318 pool、244审核、166通过、78失败，现成候选只有74＋6。改为先审来源/曝光容量，T200不足不开终验，不能把计划配额冒充资产。</li>
+<li><strong>“只要不在D/H，就是新样本。”</strong> 不成立。scale、Gemma等运行也可能曝光；改为全C运行账本和来源分量去重。此账本待做，不虚报新颖性。</li>
+<li><strong>“更听图像意味着修好了。”</strong> 不成立。主指标要求同图两类题都对，五条件保护；PvP按题双向路由，不故意用单一视觉方向做弱对照。</li>
+<li><strong>“第一轮只是在权重里做同义词替换。”</strong> 仍可能；LEX、P*及U2直接测可替代性。由于tied权重/传播不同，打败LEX也不等于证明norm机制。</li>
+<li><strong>“CANON看了gold或condition标签，是oracle。”</strong> 原设想有风险。现改成明确的输入文本路由，保护对象名、保存路由，不读标签或反事实身份；承认只适用于已知任务接口。</li>
+<li><strong>“Nullu失败只是错误转置或拿错表征。”</strong> 必须在T前验收原操作语义、配对ID、mean embedding/padding、PyTorch权重方向和零操作；如失败不记科学负结果。</li>
+<li><strong>“补丁看过50轮，其他方法只有12轮，不能说方法优越。”</strong> 接受。保留产品比较，但撤回等预算搜索/AI研究者优势主张；逐家列实际预算，已有方法称规定适配版，非全家族上限。</li>
+<li><strong>“平均提升掩盖U2失败或常识损伤。”</strong> 分模板报告并设五条件保护；若U2反向，不作广泛问法稳健性结论。已明示非劣效可能因精度不足而未决。</li>
+<li><strong>“200组足以检出任何优势。”</strong> 不成立。写出条件性MDE约6–12pp；3pp仅实用目标，不能伪造power保证；小差异允许未决，禁止补样本追显著性。</li>
+<li><strong>“成功就能写普适修复论文。”</strong> 不成立。只能固定一个模型、一个任务族、两种新问法和规定基线；本轮成功是继续机制/扩展的依据，不是发表承诺。</li>
+<li><strong>“没有随机编辑/消融，实验无意义。”</strong> 对本轮效用问题不构成硬伤。若要声称选点特殊、词行norm协同或机制唯一才需要另立因果实验；现在加上只会扩大成本与主张。</li>
+</ol>
+<p>修订后重过 C01/C02/C08/C10/C12/C13/C14：仍回答同一实质问题，撤回的是无证据的额外主张；没有把目标缩成“只要有输出变化”。</p>
+<h2 id="_4">交付验收状态</h2>
+<ul>
+<li>已完成：读取规范和实际归档、CPU复算Jcf/J4/J5、库存计数、核作者原文/代码、完整计划与反方检查。</li>
+<li>未完成：全运行曝光账本、足额新数据、独立双人语义审核、模型适配代码、数值/吞吐验收、所有新前向。</li>
+<li>当前新增模型加载/调用/GPU：<strong>0/0/0</strong>。本轮只交付文档；Git提交不构成执行授权。</li>
+</ul></main></html>

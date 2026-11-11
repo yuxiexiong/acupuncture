@@ -1,0 +1,48 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>可视化工具使用指南</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="_1">可视化工具使用指南</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>docs/可视化工具使用指南.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/%E5%8F%AF%E8%A7%86%E5%8C%96%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97.md">固定提交原件</a>；SHA-256：<code>c24ee6c4049cfe4a83e1ce216084af33606fc4b9d0646dfb415e3549b914d435</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="_2">可视化工具使用指南</h1>
+<p><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/README.md">返回项目首页</a> · <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/%E5%8E%9F%E5%A7%8B%E5%9B%9E%E7%AD%94%E4%B8%8E%E5%AE%9E%E9%AA%8C%E6%95%B0%E6%8D%AE%E7%B4%A2%E5%BC%95.md">回答原文索引</a></p>
+<h2 id="_3">三个入口分别看什么</h2>
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>最适合查看</th>
+<th>本地地址</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>三维层图与内部轨迹</strong></td>
+<td>注入位置、模型层结构、选定预测步的组件变化与原版/干预回答</td>
+<td><a href="http://127.0.0.1:8794/?model=4b">http://127.0.0.1:8794/?model=4b</a></td>
+</tr>
+<tr>
+<td><strong>剂量原文与传播热图</strong></td>
+<td>同一点的正负剂量回答、层×预测步变化、停止与候选 token 竞争</td>
+<td><a href="http://127.0.0.1:8794/analysis.html?model=4b">http://127.0.0.1:8794/analysis.html?model=4b</a></td>
+</tr>
+<tr>
+<td><strong>历史实验结果库</strong></td>
+<td>首轮双针、能力评测、迁移、修复及停止记录</td>
+<td><a href="http://127.0.0.1:8794/library.html">http://127.0.0.1:8794/library.html</a></td>
+</tr>
+</tbody>
+</table>
+<p>这些地址连接查看者自己的电脑，GitHub 不托管这三个服务页面。导师图文报告是另一份<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/Acupuncture_%E5%AE%9E%E9%AA%8C%E7%BB%93%E6%9E%9C_%E5%AF%BC%E5%B8%88%E5%B1%95%E7%A4%BA_2026-10-28.html">可单独下载打开的 HTML</a>。</p>
+<h2 id="_4">启动与查看</h2>
+<ol>
+<li>本地仓库中双击 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/neuron-explorer-multimodel-v2-2026-10-26/open-brainmap.command">open-brainmap.command</a>，启动只读服务。服务不加载模型、不发起新推理。</li>
+<li>打开上面的三维或二维地址，选择模型、注入层、通道、剂量和题目。</li>
+<li>先看原版与干预后的回答，再切预测步查看内部差异和候选词变化。每层十通道只测了 +1，其中一个通道有完整正负五档；未测剂量不能当作零变化。</li>
+<li>有内部轨迹的范围是：4B 全部32层，2B、9B和Llama的 L0–L5。其他条件仍有回答，但没有对应的内部过程数据。</li>
+</ol>
+<p>已有本地目录保留了运行所需数据。<strong>新克隆仓库后</strong>，需要先按<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/migration/2026-10-28-full-results-git-r01/external-assets.jsonl">外部文件清单</a>取回压缩轨迹与缓存，放到清单的本地相对路径并核对 SHA-256；无需重跑模型。环境要求见<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/neuron-explorer-multimodel-v2-2026-10-26/trace-view-r01/README.zh-CN.md">原工具说明</a>。</p>
+<h2 id="_5">读图时的两个区别</h2>
+<ul>
+<li>“原版回答”是原模型独立生成的文字；内部数值中的“无针参照”则强制读取与干预分支相同的文字历史。二者不是同一个对照。</li>
+<li>三维位置、连线和组件差分帮助定位现象；它们还不是已确认的因果路径或功能区边界。尚未验收的传播曲面草稿保存在原实验的 <code>propagation-view-r01/pending-source</code>，不当作已交付功能。</li>
+</ul>
+<p>详细操作和已有验收记录：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/neuron-explorer-multimodel-v2-2026-10-26/trace-view-r01/README.zh-CN.md">三维层图</a> · <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/neuron-explorer-multimodel-v2-2026-10-26/analysis-view-r01/README.zh-CN.md">剂量与热图</a> · <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/neuron-explorer-multimodel-v2-2026-10-26/all-experiments-r01/README.zh-CN.md">历史结果库</a>。</p></main></html>

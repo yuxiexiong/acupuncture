@@ -1,0 +1,154 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>FXS-01（固定名单恢复的首步固定候选连续分数）结果报告</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="fxs-01">FXS-01（固定名单恢复的首步固定候选连续分数）结果报告</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-fx-fixed-score-followup-v1-2026-11-02/REPORT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-fx-fixed-score-followup-v1-2026-11-02/REPORT.zh-CN.md">固定提交原件</a>；SHA-256：<code>a1986cef9f61615f3515efa81cff3502d1dcebfc93010d8b7303c3e08797ee92</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="fxs-01_1">FXS-01（固定名单恢复的首步固定候选连续分数）结果报告</h1>
+<p>日期：2026-11-02。<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-fx-fixed-score-followup-v1-2026-11-02/CONTRACT.zh-CN.md">合同 r01</a>；<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-fx-fixed-score-followup-v1-2026-11-02/DECISIONS.zh-CN.md">决策 D1–D6</a>；计划 v1（5b6127c，评审撰写）+ 修订 v2（032a17c）。代码 <code>8147edb</code>，freeze-r01 <code>d5bcbff4…039c</code>。P 面板与 FX-01 离散结果已见；本轮新测的是首步数值 logits 与新臂 T_Ubar。同一助手实现、运行与撰写。</p>
+<h2 id="1">1. 结论（不利的先说）</h2>
+<ol>
+<li><strong>“联合成功只是各自跨不过阈值、合起来跨过”在固定名单切分上不成立。</strong> 在固定候选分差 m = z(q0) − z(s0) 上，FIX/REST 切分 3/4 方向为<strong>超加</strong>（N4146、N1210、R0 都是 6/6 或 5/6 情景超加），C1343 混合。J_FIX 均值 2.3–4.4 logit，容差 τ 约 1.0–1.2；全部 48 个输入中 J_FIX 最小 −0.19、最大 5.5。最不利精度汇总不改变任何方向标签。按冻结定义“与首步阈值解释相容”的输入只有 0/0/2/3（N4146/N1210/R0/C1343）。</li>
+<li>这只是<strong>输出分数上的非加和</strong>，不定位内部哪一步计算产生它，也不证明 FIX 特殊（合同 §2）。</li>
+<li><strong>随机切分 U/Ubar 在 4/4 方向混合</strong>（J_U 均值 0.9–1.7，多个情景落在 τ 附近，精度敏感 2–5 个输入）。逐输入 J_FIX &gt; J_U 为 12/11/10/9（共 12）。一份随机切分只是配对参照，不是零分布，<strong>不能说 FIX 切分的超加显著大于随机</strong>。</li>
+<li><strong>描述性观察（合同外的读法，单份随机切分）</strong>：恢复 Ubar（U 的补集，403 头）的 V，首步 argmax = q0 有 11/12/11/12；恢复 REST（FIX 的补集，同为 403 头）为 0/48。两者被恢复的 V 差异范数几乎相同（436–464 对 436–464），δ_Ubar 8.4–10.2 对 δ_REST 2.4–3.6。也就是说，<strong>从全部 V 恢复里拿掉固定 45 头，首步效应大部分消失；拿掉这一份随机 45 头则基本保留</strong>。这只在首步、只对这一份 U 成立；Ubar 没有做自然续写，不能说它恢复完整交付。</li>
+<li>工程全部通过：C 与五个旧 T 臂的首步 logits 哈希、更新后缓存哈希、argmax 都与 FX-01 正式记录逐位相同。</li>
+</ol>
+<h2 id="2-12-logit">2. 读数（12 输入均值，logit）</h2>
+<table>
+<thead>
+<tr>
+<th>方向</th>
+<th style="text-align: right;">m_nat</th>
+<th style="text-align: right;">δ_V</th>
+<th style="text-align: right;">δ_FIX</th>
+<th style="text-align: right;">δ_REST</th>
+<th style="text-align: right;">J_FIX</th>
+<th>标签 FIX</th>
+<th style="text-align: right;">δ_U</th>
+<th style="text-align: right;">δ_Ubar</th>
+<th style="text-align: right;">J_U</th>
+<th>标签 U</th>
+<th style="text-align: right;">阈值相容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>N4146</td>
+<td style="text-align: right;">−7.02</td>
+<td style="text-align: right;">11.31</td>
+<td style="text-align: right;">3.97</td>
+<td style="text-align: right;">2.95</td>
+<td style="text-align: right;">4.39</td>
+<td>超加 6/6</td>
+<td style="text-align: right;">0.29</td>
+<td style="text-align: right;">9.28</td>
+<td style="text-align: right;">1.73</td>
+<td>混合</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>N1210</td>
+<td style="text-align: right;">−6.33</td>
+<td style="text-align: right;">11.21</td>
+<td style="text-align: right;">5.67</td>
+<td style="text-align: right;">2.37</td>
+<td style="text-align: right;">3.17</td>
+<td>超加 6/6</td>
+<td style="text-align: right;">0.48</td>
+<td style="text-align: right;">9.29</td>
+<td style="text-align: right;">1.44</td>
+<td>混合</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>R0</td>
+<td style="text-align: right;">−6.11</td>
+<td style="text-align: right;">9.74</td>
+<td style="text-align: right;">3.92</td>
+<td style="text-align: right;">3.50</td>
+<td style="text-align: right;">2.32</td>
+<td>超加 5/6</td>
+<td style="text-align: right;">0.42</td>
+<td style="text-align: right;">8.38</td>
+<td style="text-align: right;">0.94</td>
+<td>混合</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr>
+<td>C1343</td>
+<td style="text-align: right;">−6.60</td>
+<td style="text-align: right;">11.92</td>
+<td style="text-align: right;">7.06</td>
+<td style="text-align: right;">3.57</td>
+<td style="text-align: right;">1.29</td>
+<td>混合（超加 4/6）</td>
+<td style="text-align: right;">0.76</td>
+<td style="text-align: right;">10.21</td>
+<td style="text-align: right;">0.95</td>
+<td>混合</td>
+<td style="text-align: right;">3</td>
+</tr>
+</tbody>
+</table>
+<p>首步 argmax = q0（共 12）：T_V 12/12/12/12，T_Ubar 11/12/11/12，T_nat、T_FIXV、T_RESTV、T_U 全为 0。停止赢家在所有臂都是 248046。q0 − 全词表其他最大值的均值：T_V +1.7 到 +2.2，T_Ubar +0.9 到 +1.6，T_FIXV −1.2 到 −3.8，T_RESTV −2.7 到 −4.1。被恢复 V 差异范数：T_V 460–489，REST 与 Ubar 436–464，FIX 与 U 147–156。U 与 FIX 重叠每输入 4–10 头。</p>
+<p>精度：FIX 切分精度敏感输入 0/0/2/7，U 切分 2/4/5/5；最不利汇总（敏感输入记未定）下方向标签与原标签完全相同。</p>
+<h2 id="3">3. 执行</h2>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th style="text-align: right;">形成</th>
+<th style="text-align: right;">评分</th>
+<th style="text-align: right;">校准</th>
+<th style="text-align: right;">墙钟</th>
+<th style="text-align: right;">峰值显存</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>预检 r01（1 worker）</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">52</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">51 s</td>
+<td style="text-align: right;">9.8 GB</td>
+</tr>
+<tr>
+<td>正式 r01（2 worker）</td>
+<td style="text-align: right;">60</td>
+<td style="text-align: right;">300</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">103 / 103 s</td>
+<td style="text-align: right;">9.7 GB</td>
+</tr>
+</tbody>
+</table>
+<p>合计约 0.07 GPU 设备小时（上限 0.5）。形成 token 前向：预检 312、正式 1560。全词表 logits 张量在服务器 <code>runs/*/worker-*/tensors/</code>（正式每 worker 约 75 MB），哈希在各 worker 的 <code>receipt.json</code>。</p>
+<h2 id="4">4. 解读与出口</h2>
+<ul>
+<li>对 FX-01 的修正：FX-01 的“单独失败、联合成功”在分数层面<strong>不是</strong>完全可加（固定切分 3/4 方向超加），所以“分数完全可加、只是合起来越过阈值”不足以描述它。分数超加与行为跨阈值可以同时发生，因此不写“不是跨阈值”；也不能把它叫内部协同，这需要内部测量。</li>
+<li>固定 45 头在这里的位置比 FX-01 显示的更强：单独恢复它们的首步分差 δ_FIX（4.0–7.1）大于其余 403 头（2.4–3.6），且从全部 V 中拿掉它们会让首步效应大部分消失，而拿掉一份同规模随机名单不会。这些都是首步、单份随机参照的描述，<strong>不重开固定名单分支</strong>（合同 §5），也不主张必要性。</li>
+<li>按合同，本补测到此关闭。</li>
+</ul>
+<h2 id="5">5. 可以说 / 不可以说</h2>
+<table>
+<thead>
+<tr>
+<th>可以说</th>
+<th>不可以说</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>首步固定候选分差上，FIX/REST 切分 3/4 方向超加，阈值相容输入只有 5/48</td>
+<td>FX-01 的联合恢复是内部协同</td>
+</tr>
+<tr>
+<td>一份随机切分 U/Ubar 4/4 方向混合，逐输入 J_FIX &gt; J_U 42/48</td>
+<td>FIX 切分的超加显著大于随机</td>
+</tr>
+<tr>
+<td>恢复 Ubar（403 头）首步选 q0 46/48，恢复 REST（403 头）0/48，二者恢复范数相同</td>
+<td>Ubar 能恢复完整交付；固定 45 头是必要的</td>
+</tr>
+</tbody>
+</table></main></html>

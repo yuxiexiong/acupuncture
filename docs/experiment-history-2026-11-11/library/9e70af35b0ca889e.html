@@ -1,0 +1,22 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>WSP-VLM v8：双卡各30轮开放修补</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="wsp-vlm-v830">WSP-VLM v8：双卡各30轮开放修补</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/wsp-vlm-open-repair-v8-2026-11-05/README.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-open-repair-v8-2026-11-05/README.md">固定提交原件</a>；SHA-256：<code>9e70af35b0ca889e7802070ab8fd6d254a247675eda504c7871726e15dc81422</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="wsp-vlm-v830_1">WSP-VLM v8：双卡各30轮开放修补</h1>
+<p>此版覆盖旧v7/v7r1串行两小时截止安排；旧记录保留，不能按旧队列重启。用户确认一次不同的非零权重修补＋完整开发评估为一轮，B、C各30轮；诊断和重复不计。总GPU/墙钟硬截止已撤销。</p>
+<ul>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-open-repair-v8-2026-11-05/PLAN.zh-CN.md">方案、自查与计数规则</a></li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-open-repair-v8-2026-11-05/remote-audit/batch-acceptance-B.json">B真实批量重复验收</a></li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-open-repair-v8-2026-11-05/batch-acceptance-C.json">C真实批量验收</a>；<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-open-repair-v7r2-2026-11-05/batch_trials.json">吞吐测试</a></li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-open-repair-v8-2026-11-05/offline-r3.log">30项离线验收</a>；初次失败及修复日志同时保留。</li>
+<li><code>run_rounds.py --task B/C</code> 是当前入口，<code>round_broker.py</code> 是远端观察者，<code>monitor.py</code> 只读监控。两任务独立，不使用复制的历史 <code>run_c.py</code>。</li>
+</ul>
+<h2 id="2026-11-05-1419">已观察状态（2026-11-05 14:19 北京时间快照）</h2>
+<p>C物理GPU1、B物理GPU0，batch64。C已完成1/30轮，B完成完整W0基线、0/30轮。B远端PID1741153，C1736582；启动/监督回执为实际身份来源。B首次启动因SSH握手断开失败，失败文件保留在failed-B-launch-01，核对后恢复，未重复启动远端模型。</p>
+<p>C批量4至256的256条工程输入均与逐题生成token一致；64为45.94条/秒，128为46.48、256为45.22，选64保留显存余量。B batch64原版/旧补丁各464输入约40.32/38.98秒，两次重复完全一致、输入hash一致；但相对旧逐题运行有3/2条答案变化。因此两线都完整重测相同batch64的W0，所有修补只与这个同制度基线比较。不能把批量制度带来的差异当作WSP收益。</p>
+<p>远端run：<code>/workspace/acupuncture/external/wsp-vlm-open-repair-v8-2026-11-05/{B,C}</code>。原模型、数据来源仍在v7 external目录；不提交模型权重或凭据。工程逐题raw无损打包在remote-audit/B-batch-raw.tar.gz和v7r2/batch-raw.tar.gz，旁有逐文件SHA256清单。搜索中的raw持续写在远端，结束后单独归档。</p>
+<h2 id="_1">边界与下一步</h2>
+<p>AI自主诊断、选点和非梯度修改；未固定层/神经元配方。完整无收益或未过保护的候选仍计轮；重复权重不计。第30轮自动按冻结规则选最佳，W0可胜出。仅看到开发集收益，不构成独立确认、通用机制或泛化证明；旧H已经看过，只是回归面板。30轮之后仍缺新的独立来源组确认和最终补丁重载验收。</p>
+<p>每30分钟监控磁盘、GPU、完整轮数、修对/改错和ETA；当前轮数少，完成时间未知。保留单次工具超时及动作/样本/token防失控额度，触及额度需报告真实阻塞，不能把不足30轮报成完成。方案自查不是独立审查。</p>
+<h2 id="1504-50">15:04 后续：条件满足，总目标提高至各50轮</h2>
+<p>按最近5个完整轮间隔估算，B/C的30轮预计分别15:49/16:38，均早于用户规定的17:23，因此已启动<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-open-repair-v8x50-2026-11-05/README.md">50轮自动续接</a>。当前v8正常跑到30保存并退出，等待器随后恢复同研究者thread和run继续31–50；不热改、不打断当前评估。总目标50已授权并排队，真实续接尚待30轮边界回执。</p></main></html>

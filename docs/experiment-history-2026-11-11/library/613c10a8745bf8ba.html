@@ -1,0 +1,25 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Qwen C30按用户要求结束与Gemma队列交接</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="qwen-c30gemma">Qwen C30按用户要求结束与Gemma队列交接</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/wsp-vlm-c30-user-stop-handoff-2026-11-06/REPORT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-c30-user-stop-handoff-2026-11-06/REPORT.zh-CN.md">固定提交原件</a>；SHA-256：<code>613c10a8745bf8ba9877c520ae13d87658b38696bff51823676c08bdf84a3921</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="qwen-c30gemma_1">Qwen C30按用户要求结束与Gemma队列交接</h1>
+<p>2026-11-06。用户明确要求：C若已完成30组，就直接结束并撤出，把资源交给下一个队列。该指示覆盖此前必须等待研究者报告、冻结的收尾要求，不授权C31–50。</p>
+<h2 id="_1">已执行</h2>
+<ul>
+<li>核对C恰好30个完整候选、没有未决动作，使用原服务的<code>stop</code>接口发送唯一动作<code>user-stop-C30-20261106</code>。停止成功，原PID1852016退出，两卡短暂均为3MiB显存；没有杀进程替代停止，也没有新增C模型调用。</li>
+<li>保留实际最佳<code>c-9652d71dc3f8671029f03a284ca51fb4e013a51510c29e99d4fe3ae3424dd53d</code>，开发分数60.9375%，W0为58.203125%，修对28、改错10。状态标明研究结束，但报告未接受、候选未冻结，不伪造成功收尾或独立泛化。</li>
+<li>B50保持结束及原交付身份，未重启或修改B。</li>
+<li>发现Gemma r02排队门禁仍要求Qwen B/C都达到50轮；C早已改为30，即使正常退出也会一直等待。最小修复只允许：C累计恰好30、研究结束且有本次明确用户停止动作成功收据时释放该依赖；B仍须50轮完成。Gemma v9仍等v8两组完整结束。</li>
+<li>修复前源码和清单完整保留于<code>before/</code>，修复后于<code>after/</code>，差异见两个queue.patch。v8/v9各6项无模型测试通过，涵盖C29、C未结束、缺停止收据和B不足50仍应等待。</li>
+<li>4个远端旧排队器均先核实只有waiting状态、无engineering/search目录，无任何Gemma模型动作；仅替换这些等待进程，旧PID和状态归档。本地4个原控制器短暂停住以避免交接窗口误报，随即继续；没有重新创建研究者线程或重放动作。</li>
+<li>Gemma v8 B/C已分别进入GPU0/1工程验收和有界batch校准，实测GPU利用率100%/97%，PID2108588/2108587为工程子进程；v9 B/C保持waiting_gemma_v8。工程通过才进入正式搜索，不把当前工程计入30轮。</li>
+</ul>
+<h2 id="_2">原因与边界</h2>
+<p>C的第166回合机制报告缺少candidate字段而被拒；第167回合出现429/容量错误，没有成功usage回执。此前恢复合同禁止自动重复容量失败，所以没有重试；但未及时处理长时间占卡及排队门禁与新目标不一致的问题，导致后续任务一直等待。此次按新的明确指示结束C，不继续修补它的研究者报告。</p>
+<p>本次只改变结束授权与调度交接，不改变Gemma数据、模型、评分、候选预算、修改范围、批量校准规则或工程验收门槛。Gemma原有独立授权见original-v8/v9-queue-authorization.json；旧2B/8B及旧Gemma队列仍不恢复。失败数据、动作及不确定结果全部保留。</p>
+<p>C正式累计目标样本80,956、目标token10,844,818、Python94.223秒；研究者已知累计27,088,282 token，143/167失败用量未知。停止动作新增模型调用0，停止本身约0.0014秒。当前研究者报告/冻结未完成是用户允许的结束状态，不再阻挡资源交接。</p>
+<h2 id="_3">证据与后续</h2>
+<p><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-c30-user-stop-handoff-2026-11-06/C-stop-action/response.json">C停止动作</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-c30-user-stop-handoff-2026-11-06/C-final-state.json">实际最终状态</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-c30-user-stop-handoff-2026-11-06/queue-restart-receipt.json">排队替换收据</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-c30-user-stop-handoff-2026-11-06/next-queue-live.json">下一队列实际占卡</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-c30-user-stop-handoff-2026-11-06/queue-tests.json">CPU测试</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-c30-user-stop-handoff-2026-11-06/C-researcher-trace.tar.gz">完整C研究者轨迹</a>。C全部远端文件保留原路径，完整本地备份位于<code>external/wsp-vlm-mechanism-repair-v9-2026-11-05/archive-C30-user-stop-2026-11-06/</code>，文件来源及SHA见C-remote-files.json。</p>
+<p>半小时心跳已更新为Gemma四组队列巡检，不再等待或恢复Qwen C。工程状态、完整轮次、异常、资源、用量和实测ETA继续按阶段汇报。</p>
+<h2 id="_4">归档核验结果</h2>
+<p><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-c30-user-stop-handoff-2026-11-06/C-verification.json">离线核验</a>通过：10,311个远端文件、1,997,427,301字节逐项SHA一致；30个不同非零候选、31次完整评价、79,360条原始回答重新评分一致。1,824个研究者文件逐字节核对，含失败143/167；完整轨迹和<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-c30-user-stop-handoff-2026-11-06/C-evaluations-and-candidates.json.gz">C评价及候选</a>已纳入交付。新增C模型调用为0，没有以离线核验补造机制报告或冻结。</p></main></html>

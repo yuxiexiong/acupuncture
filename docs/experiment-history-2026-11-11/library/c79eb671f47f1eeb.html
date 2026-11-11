@@ -1,0 +1,149 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>跨条件检验集盘点（第 1 件，零 GPU）</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="1-gpu">跨条件检验集盘点（第 1 件，零 GPU）</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>docs/cross-condition-predictor-v1-2026-11-03/INVENTORY.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cross-condition-predictor-v1-2026-11-03/INVENTORY.zh-CN.md">固定提交原件</a>；SHA-256：<code>c79eb671f47f1eeb74d3b07b80d2f3aa12b8688436ed007c16d5adf0e62f773c</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="1-gpu_1">跨条件检验集盘点（第 1 件，零 GPU）</h1>
+<blockquote>
+<p><strong>2026-11-04 当前导航：</strong> 本页是历史资产/候选/草稿，旧 EOS 预注册不进入当前队列。后续以 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/mechanism-second-half-v1-2026-11-03/PROPOSAL.zh-CN.md">Proposal v3</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-mechanism-broadening-roadmap-2026-11-04.zh-CN.md">Roadmap v3</a>及<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-mechanism-todo.zh-CN.md">当前 To-do</a>为准；第一步仍在讨论推进思路。以下旧更正及数据保持原样。</p>
+<p><strong>更正（2026-11-03，作者）</strong>：本文“同层同剂量写入范数相同，因此层内差异只能来自方向、是最有判别力的地方”过头。DIV-01 第零步（main dc88ccc，4B L0）显示：固定剂量下“不停止”的通道多为其他形态的崩溃（单 token 重复等），首步 EOS 条数不能当损伤程度；停止转变在所测 20 个通道、8 题、0.5/0.75 两档下集中在 0.5–0.75。这只说明该层该分辨率下的停止转变区间，不证明幅度决定整体损伤，也不排除方向的作用。固定剂量下的 EOS 差异不再作为“方向起主导”的论据；本线后续由 <a href="https://github.com/yuxiexiong/acupuncture/blob/50a485803f59fe6fe55fbede3f4b8edcc8edab06/docs/mechanism-second-half-v1-2026-11-03/PROPOSAL.zh-CN.md">下半场 Proposal v2</a> 取代，原 EOS 排序预注册不执行。原文以下不改。</p>
+</blockquote>
+<p>2026-11-03。只读服务器 <code>/workspace/acupuncture/experiments/</code> 与 GitHub 已有产物；没有新推理、没有计算任何候选量。目的：弄清哪些已有数据能当跨条件检验集，哪些已经被用来提炼过解释、不能再当测试。</p>
+<h2 id="1">1. 行为数据（因变量）</h2>
+<table>
+<thead>
+<tr>
+<th>数据</th>
+<th>模型 / 层</th>
+<th>通道</th>
+<th>剂量</th>
+<th>记录（核验）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>layer-survey-toy-v1-2026-10-27</code></td>
+<td>Qwen3.5 2B（24 层）、4B、9B（32 层）</td>
+<td>每层 10 个随机通道，共 880</td>
+<td>+1</td>
+<td>7,064 = 7,040 + 24 原版；<code>monitoring/delivery-verification-r01.json</code></td>
+</tr>
+<tr>
+<td><code>layer-dose-survey-toy-v1-2026-10-27</code></td>
+<td>同上</td>
+<td>每层 1 个（从 10 个中随机），共 88</td>
+<td>+1/16 … +1</td>
+<td>3,544；<code>readiness/formal-completion-verification-r01.json</code></td>
+</tr>
+<tr>
+<td><code>layer-negative-dose-survey-toy-v1-2026-10-27</code></td>
+<td>同上</td>
+<td>同 88</td>
+<td>−1/16 … −1（文件内含正剂量）</td>
+<td>7,064；同上</td>
+</tr>
+<tr>
+<td><code>llama31-layer-survey-v1-2026-10-28</code></td>
+<td>Llama-3.1-8B，32 层</td>
+<td>每层 10 个，共 320</td>
+<td>+1</td>
+<td>2,568；<code>monitoring/completion-local-r01.json</code></td>
+</tr>
+<tr>
+<td><code>llama31-single-point-dose-survey-v1-2026-10-28</code></td>
+<td>同上</td>
+<td>每层 1 个，共 32</td>
+<td>±1/16 … ±1</td>
+<td>2,568；<code>monitoring/export-local-verification-r01.json</code></td>
+</tr>
+</tbody>
+</table>
+<p>共同设置：
+- 干预点是门控 MLP 中间通道，加在 <code>down_proj</code> 之前。偏移 c = d·m/‖W_down[:,n]‖，m 是该层干净提示上逐 token 残差范数的中位数，按题计算。
+- <strong>因此写入残差的向量范数恒为 d·m，与通道无关</strong>（推导）。同一层、同一剂量下，各通道只差写入方向。
+- 所有提示位置和解码步都注入；greedy、BF16、最多 128 token；8 道中文短答题 Q01–Q08。原版回答在同一文件（<code>layer=None</code>）。
+- 通道是随机抽的，种子写在合同里，不是按激活大小挑的。</p>
+<p>可以从已存字段准确导出的读数（不需要标注）：
+- 首步 EOS（<code>generated_token_count==1</code> 且 <code>end_reason=='eos_token'</code>）；
+- 首 token 是否与原版不同；
+- 8 题中不同首 token 数（问题依赖度）；
+- 长度、是否撞 128 上限、token 编辑距离、4-gram 重复。</p>
+<p><strong>没有的</strong>：正确性标签（8 题中只有 Q01/Q02/Q08 有可核对答案，部分原版本身答错）、logit 或 margin。</p>
+<h2 id="2">2. 内部轨迹（候选量的来源）</h2>
+<table>
+<thead>
+<tr>
+<th>数据</th>
+<th>覆盖</th>
+<th>记录了什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>early-layer-mechanism-v1-2026-10-28</code>、<code>layer-trace-extension-v1-2026-10-28</code>、<code>llama31-early-layer-trace-v1-2026-10-28</code></td>
+<td>2B/9B/Llama 注入 L0–L5，4B 注入 L0–L31；每（模型，层）152 条 = 10 通道 +1 ＋ 1 个剂量通道 × 9 档，× 8 题；共 7,632 条</td>
+<td>每层的 attention/GDN 输出、MLP 输出、块输出残差，在每个提示位置和生成步上记录 clean 与 steer 的范数、差范数、相对差、余弦；每步最终 logit 的 KL、停止优势、候选 token logprob</td>
+</tr>
+<tr>
+<td><code>early-state-localization-stage2-v2-2026-10-30</code></td>
+<td>4B，L0–L31 × 1 通道 × ±1；<strong>不同的提示（AR/RD/RL 48 条）</strong></td>
+<td>每层 KV / 递推 / 卷积缓存的整张量差范数（只在提示前缀末）；门控衰减</td>
+</tr>
+<tr>
+<td><code>neuron-explorer-multimodel-v2-2026-10-26</code></td>
+<td>2B/4B/9B</td>
+<td>静态的权重→词表 top token；每通道在另一组英文提示上的 steer KL</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>轨迹逐条重放行为调查的记录（<code>source_token_ids_match=true</code>），可以一一连接。</li>
+<li>clean 参照是强制走同一 token 序列的影子运行，不是自然的原版回答。</li>
+<li><strong>没有</strong>：中间层 logit lens、完整向量、调查条件上的缓存内容。</li>
+<li>已有每条轨迹的特征表 <code>layer-trace-extension-v1-2026-10-28/analysis-early-r01/features.jsonl.gz</code>（只覆盖各模型 L0–L5）。</li>
+<li>不用跑模型就能得到的静态量：权重本身（W_down 列、最终 RMSNorm 的 γ、unembedding），在 CPU 上读 safetensors 即可。</li>
+</ul>
+<h2 id="3">3. 已经被看过的部分（污染登记）</h2>
+<table>
+<thead>
+<tr>
+<th>内容</th>
+<th>谁看过</th>
+<th>后果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>四模型 L0–L7 每个通道 +1 的首步 EOS 数；全层 +1 的首 token 种数；剂量阶梯 L0–L7</td>
+<td>10-28 剂量标定建议、本会话（11-03）</td>
+<td>这些<strong>结局</strong>已知，不能再算前瞻检验</td>
+</tr>
+<tr>
+<td>各模型 L0–L5 的层均值：注入层相对残差、最终残差相对差与余弦、首步 KL、停止优势</td>
+<td>10-28、本会话</td>
+<td>层级别的候选量—结局关系已看过；本会话据此事后提出的"最终余弦排序胜过相对残差"作废，不登记</td>
+</tr>
+<tr>
+<td>4B L0/N4146、L2/N5251、L12/N8296、L13/N248、L25/N2747 等</td>
+<td>早层输入约束、阶段二、CFM 全线</td>
+<td>这些通道已被深挖，不能当测试</td>
+</tr>
+<tr>
+<td>早层输入约束 C1–C6（全部成立）</td>
+<td>已发表在仓库</td>
+<td>深度排序（早 &gt; 中 &gt; 晚）已知，不能再当新预测</td>
+</tr>
+</tbody>
+</table>
+<p><strong>没被看过的</strong>：
+- 任何候选量在<strong>通道层面</strong>的取值，以及它和结局的对应关系；
+- 静态权重候选量（从未计算过）；
+- Llama 层内各通道的轨迹特征；
+- 4B L6–L31 每条轨迹的特征。</p>
+<h2 id="4">4. 对检验设计的含义</h2>
+<ol>
+<li><strong>结局大多已经见过。</strong> 现有数据只能做"盲算候选量"的回顾性检验：先冻结候选量的定义和计算代码，再计算，最后才和结局连接。这比前瞻检验弱，必须照实标注。</li>
+<li><strong>真正的前瞻检验需要新数据</strong>：在层内差异大的层上新抽随机通道，先登记预测再生成（需要 GPU，放在后续阶段）。</li>
+<li><strong>层内差异是最有判别力的地方。</strong> 同层同剂量时写入幅度相同，所以层内差异只能来自方向。幅度类解释在这里预测"没有差异"，方向类解释必须说明哪些通道会停、哪些不会。</li>
+<li><strong>剂量数据每层只有 1 个通道</strong>，层与通道混在一起；剂量类问题只能做描述，或者只在这些点上比较符号不对称。</li>
+<li><strong>范围边界</strong>：中层的"换事实"类错误没有数值标签，本轮不纳入；首步停止与问题依赖度崩溃是本轮的因变量。</li>
+</ol></main></html>

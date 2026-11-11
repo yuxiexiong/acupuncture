@@ -1,0 +1,121 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>NQ-01 v2 设计自查</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="nq-01-v2">NQ-01 v2 设计自查</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>docs/cache-name-query-order-self-check-v2-2026-11-02.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-name-query-order-self-check-v2-2026-11-02.zh-CN.md">固定提交原件</a>；SHA-256：<code>4eed4a7a1a78b606684dbc0f549cdab44bbe096fcb0096921db13b326c4947e6</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="nq-01-v2_1">NQ-01 v2 设计自查</h1>
+<p>日期2026-11-02。范围：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-name-query-order-plan-v2-2026-11-02.zh-CN.md">计划</a>；规范：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/experiment-design-self-check.zh-CN.md">experiment-design-self-check v1</a>。身份：同一设计助手自查，不是独立评审。使用 academic-research-suite 的实验规划流程，项目规范优先。</p>
+<h2 id="_1">设计结论与比较</h2>
+<p><strong>设计逻辑通过；实现、数值验收、模型运行均未完成。</strong> 新增量是独立改变记录排列和询问对象后，区分位置跟随与查询跟随，并以固定身份偏好作为替代结果。主问题仍是稀疏干预如何造成回答变化。</p>
+<p>相对SVQ/SP：不再在有“目标条目”标签的记录上假装只改问题；新面板去标签、按名称提问。沿用6场景f0绑定，3循环顺序×3目标；不增加f1、不重新筛45头、不拆层。四臂C/T_nat/T_V/T_F，q/k单独恢复不重复。自然交付是主终点，共同前缀只作分离的条件诊断。旧29/32分析已见且事后，不当本轮独立确认。</p>
+<p>相对截图建议：采纳新面板与两道适用性检查；修正“位置、条目、编号三个独立变量”的暗示——绑定未变时条目与编号不可分。还补了逐格来源、查询形成史边界、实际解析类别、数值误差、固定汇总规则及重建/预检成本。T_F不是上限；未迁移方向不会被删掉后重算成功率。</p>
+<p>相对v1的实质纠错：v1自查遗漏了被问名字落在注入窗口的可预见混淆，也错误地用数值阈值承担Q科学支持判定。原“通过”不能作为本版依据。v2问题在前、记录在中、固定指令在后；6个场景各校准一次；Q仅描述；702条正式轨迹一次运行，适用性由冻结代码自动判。没有独立评审或真实模型验收。</p>
+<p>证据身份：直接核对旧SP runner的 <code>run_item</code>，确认边界由label_tokens生成、窗口range(b+1,n-1)、前缀先无hook预填；SVQ的conv_mix确认q/k与V缓冲分块。截图的SP02 token切分是评审报告，本次未独立运行该分词核验；新模板的实际token边界仍是必须通过的工程闸门。</p>
+<h2 id="c01c14">C01–C14</h2>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th>决定与理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C01</td>
+<td>通过。§1/6把目标选择连回干预后的读取与回答，不把EOS恢复当目的。</td>
+</tr>
+<tr>
+<td>C02</td>
+<td>通过。§2正交改问/改排列，旧数据中首列身份固定的混淆得到可检验对照。</td>
+</tr>
+<tr>
+<td>C03</td>
+<td>通过。§1引用SVQ合同、报告、SP输入和FXS；操作沿用SVQ，不把旧计划当结果。</td>
+</tr>
+<tr>
+<td>C04</td>
+<td>通过。§5预测面对C1343例外、按名查询难度、旧首字母捷径；明确可能失败。</td>
+</tr>
+<tr>
+<td>C05</td>
+<td>通过。§3同提示供体、起点一次恢复、14层短卷积块、问题与记录均在无注入前缀，固定后缀接受形成期干预，生成无hook。模型资产实施时再核manifest。</td>
+</tr>
+<tr>
+<td>C06</td>
+<td>通过。§3其余缓存保留T只指起点，之后都正常响应；不声称整条路径固定。</td>
+</tr>
+<tr>
+<td>C07</td>
+<td>通过。混合q/k与V不代表自然允许的形成轨迹；诊断强制前缀与自然流分开。</td>
+</tr>
+<tr>
+<td>C08</td>
+<td>通过。§1/3/6只承诺条件性操作效果与行为跟随；不称信息存储、路由定位或唯一因果路径。</td>
+</tr>
+<tr>
+<td>C09</td>
+<td>通过。9格使纯首位/固定身份/查询规则各有不同输出；Q仅作描述，不承担科学支持标签；位置与查询变化可同时表现；未交付有出口。</td>
+</tr>
+<tr>
+<td>C10</td>
+<td>通过。§5自然完整交付主判，严格交付/首步/候选分差/诊断另列，不能替代。</td>
+</tr>
+<tr>
+<td>C11</td>
+<td>通过。§4面板不适用、§7工程失败、§6科学失败分离；阈值是操作分类，不伪装显著性。</td>
+</tr>
+<tr>
+<td>C12</td>
+<td>通过。旧诊断已复用，新增提示没有旧轨迹；不加无关QK臂。§7全量预算含历史重放与重建。</td>
+</tr>
+<tr>
+<td>C13</td>
+<td>通过。冻结54提示和规则，6场景重复测量，非外部未见任务；旧事后线索标明；原始记录保留。</td>
+</tr>
+<tr>
+<td>C14</td>
+<td>通过。§6位置/身份/查询/不适用均改变解释，且有终止出口，不自动扩实验。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="e01e26">E01–E26历史错误处理</h2>
+<ul>
+<li>E01、E24、E25：保持总主线，用一个位置/查询关系问题推进；无需闭合全部机制，不按层扫。</li>
+<li>E02、E03：层范围来自已有布局，不称特殊层；沿用剂量并记录新提示实际扰动，不把稀疏等于小效应。</li>
+<li>E04、E09：Q公式只定义读数；分数响应与自然选择不一致不自动变成内部机制。</li>
+<li>E05、E06、E07、E08：起点短卷积块来源列清，其余T正常演化；不把V/qk恢复当写入/处理的纯分离，也不称原生路径。</li>
+<li>E10、E11：完整交付和诊断分开；共同首token后有目标响应不能推断信息完整。</li>
+<li>E12：没有随机零分布或一般损伤消除主张；6场景配对只控制本设计的提示差异。</li>
+<li>E13、E14、E15：干净供体可重新带入任务信息；恢复不是原记忆保存；在同一新面板检验，拒绝跨P/SP拼链。</li>
+<li>E16、E18：基线不足/损伤未迁移/工程失败各单列，不把剩余解释都算支持。</li>
+<li>E17：不使用向量减法冒充撤销；只做已定义缓存替换。</li>
+<li>E19：旧轨迹重放是工程验收，不算科学发现。</li>
+<li>E20：位置偏好与查询引起的分数响应可共同成立；分类不强制解释互斥。</li>
+<li>E21：本轮无原创性或领域首次声明，无新增文献结论；不以多做矩阵证明贡献。</li>
+<li>E22：54提示属于6场景内重复测量，四方向也不独立；词汇和绑定已见，记录组合为新。</li>
+<li>E23：本记录仅自查，未运行不写成实测；文档推送不是GPU授权。</li>
+<li>E26：形成期注入与读取期替换时段明确；本轮测试恢复操作的总效果，不称形成中介。</li>
+</ul>
+<h2 id="_2">反方检查与修正</h2>
+<ol>
+<li><strong>预期结果全出现仍可能只是编号本身偏好？</strong> 三循环顺序让同一编号遍历首中末；固定编号赢家不会满足8/9首位跟随。但条目与编号无法进一步分开，已从主张中删除该区分。</li>
+<li><strong>按名字提问变难，阴性只是任务不成立？</strong> 全面板一次运行，C与T_nat适用性按冻结脚本判读；不合格标不可判，不删格。不能只挑能答对/被损伤的格后宣称普遍性。</li>
+<li><strong>强制共同首token本身提示答案？</strong> 三编号共享首token，不能唯一指定目标；仍会提供格式提示，因此诊断不作为自然交付、记忆完整证据。</li>
+<li><strong>查询变化时剂量与形成史也变？</strong> 每场景固定一次校准，九条复用，避免逐查询剂量混淆；形成史仍不同，明确比较完整运行，不称固定状态的纯读取效应。</li>
+<li><strong>TF失败意味着V必然失败？</strong> 不成立。逐格双向不一致均报告；不以旧R0失败定义天花板，不排除C1343。</li>
+<li><strong>输出目标就是读取成功？</strong> 本轮只在模板内评价完整编号交付及目标跟随；可能是重新从提示提取，不区分存储、重新计算或检索路径。</li>
+<li><strong>阈值让预测容易成功？</strong> 9格中固定首位与真实目标只重合3格；8/9要求能区分规则。所有9格计分，不把拒答删去。≥5/6场景、≥3/4方向预定，不能临时改。</li>
+<li><strong>正Q超过量化误差就能证明查询作用？</strong> 不能。v1这里未通过，v2删除全部Q支持阈值与汇总标签。半ULP仅作数值敏感性，C仅作阳性参照，不冒充科学零分布。</li>
+<li><strong>重复单元伪显著？</strong> 不做把216格当独立样本的检验；场景内/方向内完整表保留，汇总为预定支持计数。</li>
+<li>
+<p><strong>真正相反的结果能否结束？</strong> 能。固定身份赢家撤回首位解释；TV跟随查询撤回旧SP模式普适性；TF也失败停止这组恢复推断；不增加新层/剂量补救。</p>
+</li>
+<li>
+<p><strong>问题被干预直接写坏，TF失败被误解为读取失败？</strong> 将问题与记录放在b前，固定指令窗口逐token验收。仍可能在后续处理时改变查询相关状态；因此TF失败只否定此恢复在本任务的有效性，不证明信息删除或故障位置。若token窗口不一致，工程停止。</p>
+</li>
+<li><strong>问题前置导致任务变化？</strong> 必须重验C和损伤迁移，不沿用SP的可用性；同一面板四臂比较才是估计对象。</li>
+<li><strong>一次全跑浪费或人工挑选？</strong> 固定702条规模可控，避免分阶段重建和人工放行；科学适用性仅影响解释，不隐藏任何结果。损伤不迁移时即结束，不自动换面板。</li>
+</ol>
+<h2 id="_3">离线检查与待验收</h2>
+<p>本次只做文档与有限算术/设计检查：三循环×三查询的覆盖、分类反例、预算及相对链接。场景表对应SP f0绑定；新模板真实分词、缓存位置、实际剂量、模型重放和数值精度均未在本次运行，必须由实现阶段验收。</p>
+<p>算术：正式54×5=270形成，54×13=702自然/诊断轨迹；加新预检13、重建2、旧重放13，合730；校准预算6+1+0+1=8（含预检与旧校准核对），形成282；730×32=23360解码步，加730诊断为24090。形成prefill与校准内部前向未混入解码次数，实施合同须补其token和迭代预算。硬上限拟2设备小时/8GiB，不授权执行。</p>
+<p>最后复查：上述修正仍回答“受干预后的回答如何跟随查询与位置”；既不重新包装固定45头，也不把任务缩成不停止。本轮文档逻辑自查通过；工程验收未完成，模型/GPU运行未获本次授权。设计通过不等于假设通过。</p></main></html>

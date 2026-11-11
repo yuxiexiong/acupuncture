@@ -1,0 +1,111 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>008．三模型分析页与内部差分采集准备</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="008">008．三模型分析页与内部差分采集准备</h1>
+<p><a href="../README.zh-CN.html">返回总时间线</a></p>
+<p><strong>时间定位</strong>：已提取运行收据的最早时间锚点（可含预检） 2026-10-26T21:49:28.922412+08:00；不能当作全部子运行起止。</p>
+<p><strong>当时的目的与设计</strong></p>
+<p>将十候选根因对照、迁移映射和19条件能力记录接入只读界面；准备4B clean/A/B/AB差分采集器，未采集时保持空态。</p>
+<p><strong>实际过程、结果与后来更正</strong></p>
+<p>此准备不等于真实轨迹采集。已有记录导出、界面和CPU检查与后续正式trace分开；原地图连接也不是本轮实测传播。详细准备收据、后续界面更新和缺项保留。</p>
+<p><strong>来源身份</strong>：<code>neuron-explorer-analysis-v1-2026-10-26</code>；本章主体来源提交 <code>7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8</code>。下方原文中的状态是各文件写作时的状态，不能把早期“尚未运行”覆盖后期正式收据，也不能将后期结果倒填进早期设计。</p>
+<h2 id="_1">原设计、执行过程、结果与更正全文</h2>
+<p>以下按“设计与题目 → 工程/执行记录 → 结果/更正 → 其他历史说明”组织；同类内没有可靠时间时保留路径顺序，不冒充严格先后。正文未删段；仅为本章节重排标题层级、把相对链接指向固定提交。原始字节另外完整保存。</p>
+<h3 id="1">原件 1：三模型可视化分析：准备范围与验收</h3>
+<p>原路径：<code>experiments/neuron-explorer-analysis-v1-2026-10-26/PREPARATION.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/neuron-explorer-analysis-v1-2026-10-26/PREPARATION.zh-CN.md">固定提交原文</a> · <a href="../library/e9f908e03e0a4bb4.html">单独阅读副本</a>；SHA-256：<code>e9f908e03e0a4bb4e64c7a26dde4ab9f35daa25091acb0bd1421413aaa2ea08a</code>。</p>
+<hr />
+<h4 id="_2">三模型可视化分析：准备范围与验收</h4>
+<h5 id="material-passport">Material Passport</h5>
+<ul>
+<li>Origin Skill / Mode：academic-research-suite / experiment-agent plan；ponytail用于最小实现，Sites用于本地页面验收。</li>
+<li>日期：2026-10-26；版本：analysis-preparation-v1。</li>
+<li>当前任务：用户同意现在开始准备，无需等待2B/9B全图。新增工作限于已有证据导出、只读界面、差分采集器及CPU检查。</li>
+<li>新模型采集、根因追加诊断与跨模型机制确认均未启动；本准备不改变其他实验的暂停边界。</li>
+</ul>
+<h5 id="_3">三项交付</h5>
+<ol>
+<li><strong>已有根因对照。</strong> 展示全部十候选、逐题六条件和已计算统计；正确率与连续分数分开。C01/C05是attention组件贡献，不标成MLP通道。修复线索与反向证据不足同时展示。</li>
+<li><strong>跨模型比较。</strong> 导入原迁移的映射、原生通道近似、19条件及四项能力面板。几何保留比例不是保留的功能比例；随机条件和缺失项保持可见。</li>
+<li><strong>内部差分准备。</strong> 4B固定输入的clean/A/B/AB采集器和真实trace导入视图。未采集时保持空态，不以示例数值或旧排名汇总伪造轨迹。AB−A−B+clean仅为同输入下的代数交互差分。</li>
+</ol>
+<p>原Neuron Explorer三模型地图保留不动。分析页使用现有文件，运行在本地，浏览不会调用模型。来源路径、SHA-256、导出时间随数据保存；导出不是独立重跑原实验。</p>
+<h5 id="_4">实现与执行分界</h5>
+<p>现有RootEngine的干预、校准和组件采集为4B专用。新采集器首先复用该实现，并明确记录观察点、实际token、参考尺度和代码身份。无执行开关时只做准备校验，不加载模型；真实采集需要绑定当前输入、模型及新输出目录的后续授权记录，代码哈希随收据保存。本轮不生成执行授权。</p>
+<p>新采集器不修改旧冻结源，不覆盖旧收据或原始回答。采集上限用于控制单次记录体积；超出上限明确拒绝，不能静默截断。记录前后需验证权重未改变、钩子移除、状态隔离与有限值。</p>
+<p>2B/9B的机制采集和局部修复适配属于后续工作；已有三模型地图和映射不意味着这些检查已经完成。跨模型不同编号、坐标、层深和颜色不直接构成功能对应。新方法若使用旧测试结果开发，应另留确认材料。</p>
+<h5 id="_5">准备验收标准</h5>
+<ul>
+<li>导出值与已有机器记录一致，十候选和19条件完整，缺失/未操作不填成零。</li>
+<li>页面可选择模型、任务、候选和条件；原始证据链接可用，未采集轨迹清楚标识。</li>
+<li>无GPU的检查覆盖输入/身份校验、差分方向、零差分、条件一致性与失败保全；合成网络检查不称为Qwen实测。</li>
+<li>只读服务仅开放页面和清单引用的原始记录，无模型执行按钮。</li>
+<li>最终准备状态及未完成检查写入prepare-receipt.json；三模型原版完成状态仍以其独立收据为准。</li>
+</ul>
+<h5 id="_6">后续真实采集前需要固定</h5>
+<p>实际输入、观察位置、剂量、模型身份和执行资源；先完成真实模型的零干预/采集无影响/输入对齐检查，再记录耗时。这里不规定新的科学样本数、不改变旧判据，也不根据界面效果挑选成功题。</p>
+<hr />
+<h3 id="2acupuncture">原件 2：Acupuncture 可视化探索</h3>
+<p>原路径：<code>experiments/neuron-explorer-analysis-v1-2026-10-26/README.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/neuron-explorer-analysis-v1-2026-10-26/README.zh-CN.md">固定提交原文</a> · <a href="../library/cbed72115e7f91e8.html">单独阅读副本</a>；SHA-256：<code>cbed72115e7f91e868f117524f0ab4702e5538400cb504f70944003b6f2d22b8</code>。</p>
+<hr />
+<h4 id="acupuncture">Acupuncture 可视化探索</h4>
+<p>双击本目录 <code>open.command</code>，或运行 <code>python3 serve.py</code> 后打开 http://127.0.0.1:8800/ 。首页为可点击的模型图，浏览不调用模型。原三维地图可从图中位置链接打开，也可用前一版本的 <code>open.command</code>。</p>
+<ul>
+<li><strong>全层调查（默认入口）</strong>：切换2B/4B/9B和八道题，点击每层的实测通道，直接并排阅读原版与干预回答。金色标记表示该点有五档正剂量，可切换剂量或展开六栏；未测剂量留空。图色只表示空正文、自然结束和长度上限，不表示能力或功能区。上/下一层按钮方便沿深度浏览。</li>
+<li><strong>根因候选图</strong>：4B 的32层 attention/MLP 图标出两针和十个候选；颜色取真实梯度修复预测，可按任务、题目和位置切换。点击候选查看实际修复/重现证据。颜色不是实时激活，图中不绘制未经验证的因果传播线。</li>
+<li><strong>跨规模对应图</strong>：三模型按各自实际层数展示，虚线连接已有真实/随机源映射；显示原生通道投影的能量保留比例。几何对应不是功能等价。</li>
+<li><strong>已有根因对照</strong>（证据详情页）：切换任务和十个候选，查看六条件正确率、连续分数、配对区间和逐题原始记录。未操作的答案位置单独标注。</li>
+<li><strong>跨模型比较</strong>：切换2B/9B及真实/随机源，查看映射位置、几何误差、全部19条件诊断和独立的正式能力面板。随机源选择不会改变只对真实配方测过的正式面板。</li>
+<li><strong>内部差分</strong>：尚无新采集数据。以后导入采集器生成的trace.json；文件只在当前浏览器解析，不上传。原地图缓存和修复排名不是激活轨迹。</li>
+</ul>
+<p><code>evidence.json</code>由既有记录导出，<code>evidence-manifest.json</code>保存793份来源及SHA-256。页面不是独立复现实验，也不把修复线索或跨模型损伤称为共同根因。</p>
+<p><code>survey-evidence.json</code>复用已完成的全层调查与五档正剂量结果：880个点、88个五档点、9,880份唯一回答（24份原版、7,040份+1、2,816份低剂量）。<code>survey-manifest.json</code>保存来源哈希及原文路径；不包含预检或尚未完成的负剂量实验。原始文字、特殊标记、token数和终止原因均保留。重新导出和核验只需运行 <code>python3 export_survey.py</code>、<code>python3 test_survey.py</code>，均不加载模型。</p>
+<h5 id="_7">差分采集准备</h5>
+<p><code>capture_differences.py</code>先支持固定版本4B。它复用旧校准和两针实现，比较相同文本的clean/A/B/AB，记录每层attention、MLP贡献、层末残差的逐token差分摘要，以及选定通道的注入后读数。有限位置可另存完整向量。</p>
+<p>仅准备、不加载模型：</p>
+<pre><code class="language-sh">python3 capture_differences.py --input capture-example.json --output runtime/example-prepared
+</code></pre>
+<p>输出目录必须不存在。示例文本只用于验证准备流程，不是新研究题集。真实采集需要另外明确输入和执行授权；本轮未运行。2B/9B的机制采集和修复适配也未执行。</p>
+<p>准备范围与边界见<code>PREPARATION.zh-CN.md</code>；历史准备检查以<code>prepare-receipt.json</code>为准。关闭本地服务窗口会关闭此分析页连接；本页的静态浏览不依赖远程模型服务。</p>
+<hr />
+<h2 id="_8">时间、运行与停止收据索引</h2>
+<p>下面是所收集JSON的原有时间字段与状态，不把预计结束时间当实际完成时间。未列时间的文件仍有原件链接。完整JSON全部保存在原文归档，不能以此索引中的标量代替完整嵌套内容。</p>
+<table>
+<thead>
+<tr>
+<th>原件</th>
+<th>原记录状态/阶段</th>
+<th>原时间字段（原时区）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/neuron-explorer-analysis-v1-2026-10-26/capture-cpu-receipt.json">capture-cpu-receipt.json</a></td>
+<td>{"status": "passed"}</td>
+<td>{"recorded_at": "2026-10-26T13:49:10.252414+00:00", "finished_at": "2026-10-26T13:51:17.036220+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/neuron-explorer-analysis-v1-2026-10-26/graph-receipt-r01.json">graph-receipt-r01.json</a></td>
+<td>{"status": "passed", "scope": "Graph-first view of existing evidence; no new model runs"}</td>
+<td>{"created_at": "2026-10-26T14:06:32.787426+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/neuron-explorer-analysis-v1-2026-10-26/prepare-receipt.json">prepare-receipt.json</a></td>
+<td>{"status": "preparation_passed", "scope": "existing-evidence viewer and 4B fixed-input trace collector preparation"}</td>
+<td>{"created_at_utc": "2026-10-26T13:51:34.599411+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/neuron-explorer-analysis-v1-2026-10-26/runtime/example-prepared/receipt.json">runtime/example-prepared/receipt.json</a></td>
+<td>{"status": "prepared"}</td>
+<td>{"started_at": "2026-10-26T13:49:28.922412+00:00", "finished_at": "2026-10-26T13:49:28.922518+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/neuron-explorer-analysis-v1-2026-10-26/survey-ui-receipt-r01.json">survey-ui-receipt-r01.json</a></td>
+<td>{"status": "completed", "scope": "Existing full-layer survey and positive five-dose answers displayed in the local evidence map", "new_model_inference": false}</td>
+<td>{"verified_at": "2026-10-27T14:18:39.739497+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/neuron-explorer-analysis-v1-2026-10-26/ui-verification.json">ui-verification.json</a></td>
+<td>{"status": "passed"}</td>
+<td>{"checked_at_utc": "2026-10-26T13:51:34.598634+00:00"}</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_9">全部原始资产入口</h2>
+<p>本目录在固定提交下共有37个跟踪文件，包含代码、原回答、失败、收据和压缩证据；文件数不是样本数。<a href="../assets/008-neuron-explorer-analysis-v1-2026-10-26.tsv">逐文件完整账本</a> · <a href="https://github.com/yuxiexiong/acupuncture/tree/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/neuron-explorer-analysis-v1-2026-10-26">原目录</a>。未复制模型权重、环境或凭据。</p></main></html>

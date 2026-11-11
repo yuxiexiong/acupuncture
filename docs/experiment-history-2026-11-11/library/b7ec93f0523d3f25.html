@@ -1,0 +1,253 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>EH-XC（14 根针的入口 × 深层历史 2×2）结果报告</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="eh-xc14-22">EH-XC（14 根针的入口 × 深层历史 2×2）结果报告</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-eh-cross-channel-v1-2026-11-02/REPORT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-eh-cross-channel-v1-2026-11-02/REPORT.zh-CN.md">固定提交原件</a>；SHA-256：<code>b7ec93f0523d3f254aacc480b3ee6fd3c7464a496b936c49e3d5efbfbdf4a034</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="eh-xc14-22_1">EH-XC（14 根针的入口 × 深层历史 2×2）结果报告</h1>
+<p>日期：2026-11-02。<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-eh-cross-channel-v1-2026-11-02/CONTRACT.zh-CN.md">合同 r01</a>（评审版，c751914）；<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-eh-cross-channel-v1-2026-11-02/DECISIONS.zh-CN.md">决策 D1–D6</a>；<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-eh-cross-channel-plan-v1-2026-11-02.zh-CN.md">方案 v1</a>。代码 <code>a53222c</code>，freeze-r01 <code>381b1a4c…21f2</code>。针与输入的旧行为已见，新增的是 8 个验证通道的 EH 关系。同一助手实现、运行与撰写。</p>
+<h2 id="1">1. 结论（含限制）</h2>
+<ol>
+<li><strong>P_XC 达成：8/8 个验证通道达到联合复现标签</strong>（目标 ≥6/8）。历史关系与新交互门槛分别也是 8/8。每个通道的联合支持情景数为 5 或 6（满分 6）。</li>
+<li><strong>P_R 达成：4/4 条随机方向也达到同一联合标签</strong>（目标 ≥3/4）。</li>
+<li><strong>限制在前</strong>：随机方向与原生通道没有任何可见差别。这与旧 XCHAN 的先验一致，说明“深层历史为主、入口放大、两者正交互”是<strong>这类 L0 同幅写入的一般性质</strong>，不是原生通道特有的机制。结论只覆盖所测的 14 个方向、L0、剂量 −1、这 12 条输入；不能推到任意方向、其他层、其他剂量或其他模型。</li>
+<li>锚点（不计入 8 个）：4146 的联合支持为 5/6，1210 为 4/6（历史 5、交互 5，但在同一批情景上同时满足的只有 4 个）。1210 在 EH 里就是历史份额最低的方向；它在新的、更严格的交互门槛下没有达到联合标签。锚点只作重放核对，不影响 P_XC。</li>
+<li>所有 168 个单元（14 针 × 12 输入）都满足适用条件（原生 ΔD ≥ 1 且 e1 ≥ 1），没有反向、原生不足或“原生强、混合弱”的单元。固定候选差 F 上没有出现“D 上交互达标、F 上不达标”的情况（0/168），说明交互不是靠竞争者换人凑出来的。</li>
+</ol>
+<h2 id="2-12-d-logit">2. 读数（12 输入均值，D 单位 logit）</h2>
+<table>
+<thead>
+<tr>
+<th>针</th>
+<th style="text-align: right;">N（原生）</th>
+<th style="text-align: right;">E（联合）</th>
+<th style="text-align: right;">H0（历史｜干净入口）</th>
+<th style="text-align: right;">X0（入口｜干净历史）</th>
+<th style="text-align: right;">H1</th>
+<th style="text-align: right;">X1</th>
+<th style="text-align: right;">I</th>
+<th style="text-align: right;">联合支持</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C1343</td>
+<td style="text-align: right;">14.53</td>
+<td style="text-align: right;">7.60</td>
+<td style="text-align: right;">4.84</td>
+<td style="text-align: right;">1.18</td>
+<td style="text-align: right;">6.43</td>
+<td style="text-align: right;">2.77</td>
+<td style="text-align: right;">1.59</td>
+<td style="text-align: right;">6</td>
+</tr>
+<tr>
+<td>C2191</td>
+<td style="text-align: right;">13.69</td>
+<td style="text-align: right;">7.20</td>
+<td style="text-align: right;">4.74</td>
+<td style="text-align: right;">1.29</td>
+<td style="text-align: right;">5.91</td>
+<td style="text-align: right;">2.46</td>
+<td style="text-align: right;">1.17</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr>
+<td>C3152</td>
+<td style="text-align: right;">13.71</td>
+<td style="text-align: right;">7.91</td>
+<td style="text-align: right;">4.91</td>
+<td style="text-align: right;">1.37</td>
+<td style="text-align: right;">6.54</td>
+<td style="text-align: right;">3.00</td>
+<td style="text-align: right;">1.63</td>
+<td style="text-align: right;">6</td>
+</tr>
+<tr>
+<td>C3959</td>
+<td style="text-align: right;">14.31</td>
+<td style="text-align: right;">9.03</td>
+<td style="text-align: right;">5.03</td>
+<td style="text-align: right;">1.41</td>
+<td style="text-align: right;">7.62</td>
+<td style="text-align: right;">3.99</td>
+<td style="text-align: right;">2.59</td>
+<td style="text-align: right;">6</td>
+</tr>
+<tr>
+<td>C6137</td>
+<td style="text-align: right;">13.61</td>
+<td style="text-align: right;">9.01</td>
+<td style="text-align: right;">5.44</td>
+<td style="text-align: right;">1.62</td>
+<td style="text-align: right;">7.39</td>
+<td style="text-align: right;">3.57</td>
+<td style="text-align: right;">1.95</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr>
+<td>C6547</td>
+<td style="text-align: right;">14.40</td>
+<td style="text-align: right;">7.48</td>
+<td style="text-align: right;">4.60</td>
+<td style="text-align: right;">1.32</td>
+<td style="text-align: right;">6.17</td>
+<td style="text-align: right;">2.89</td>
+<td style="text-align: right;">1.57</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr>
+<td>C6616</td>
+<td style="text-align: right;">14.51</td>
+<td style="text-align: right;">7.18</td>
+<td style="text-align: right;">5.01</td>
+<td style="text-align: right;">0.83</td>
+<td style="text-align: right;">6.35</td>
+<td style="text-align: right;">2.17</td>
+<td style="text-align: right;">1.34</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr>
+<td>C8215</td>
+<td style="text-align: right;">13.97</td>
+<td style="text-align: right;">6.44</td>
+<td style="text-align: right;">4.38</td>
+<td style="text-align: right;">0.58</td>
+<td style="text-align: right;">5.85</td>
+<td style="text-align: right;">2.06</td>
+<td style="text-align: right;">1.47</td>
+<td style="text-align: right;">6</td>
+</tr>
+<tr>
+<td>锚 C1210</td>
+<td style="text-align: right;">13.79</td>
+<td style="text-align: right;">8.42</td>
+<td style="text-align: right;">4.73</td>
+<td style="text-align: right;">1.81</td>
+<td style="text-align: right;">6.61</td>
+<td style="text-align: right;">3.69</td>
+<td style="text-align: right;">1.88</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr>
+<td>锚 C4146</td>
+<td style="text-align: right;">14.22</td>
+<td style="text-align: right;">7.91</td>
+<td style="text-align: right;">5.64</td>
+<td style="text-align: right;">1.10</td>
+<td style="text-align: right;">6.81</td>
+<td style="text-align: right;">2.27</td>
+<td style="text-align: right;">1.17</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr>
+<td>R0</td>
+<td style="text-align: right;">12.62</td>
+<td style="text-align: right;">8.43</td>
+<td style="text-align: right;">4.90</td>
+<td style="text-align: right;">1.12</td>
+<td style="text-align: right;">7.30</td>
+<td style="text-align: right;">3.53</td>
+<td style="text-align: right;">2.40</td>
+<td style="text-align: right;">6</td>
+</tr>
+<tr>
+<td>R1</td>
+<td style="text-align: right;">14.04</td>
+<td style="text-align: right;">7.93</td>
+<td style="text-align: right;">5.50</td>
+<td style="text-align: right;">0.83</td>
+<td style="text-align: right;">7.09</td>
+<td style="text-align: right;">2.43</td>
+<td style="text-align: right;">1.59</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr>
+<td>R2</td>
+<td style="text-align: right;">13.52</td>
+<td style="text-align: right;">7.72</td>
+<td style="text-align: right;">4.31</td>
+<td style="text-align: right;">1.60</td>
+<td style="text-align: right;">6.12</td>
+<td style="text-align: right;">3.42</td>
+<td style="text-align: right;">1.81</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr>
+<td>R3</td>
+<td style="text-align: right;">13.61</td>
+<td style="text-align: right;">7.96</td>
+<td style="text-align: right;">4.97</td>
+<td style="text-align: right;">0.91</td>
+<td style="text-align: right;">7.06</td>
+<td style="text-align: right;">2.99</td>
+<td style="text-align: right;">2.08</td>
+<td style="text-align: right;">6</td>
+</tr>
+</tbody>
+</table>
+<p>首步行为：四格（00/10/01/11）全部不停止；完整原生运行 P 在 13 根针上停止 12/12，R0 为 1/12（与此前一致）。</p>
+<h2 id="3">3. 执行</h2>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th style="text-align: right;">形成</th>
+<th style="text-align: right;">评分</th>
+<th style="text-align: right;">校准</th>
+<th style="text-align: right;">墙钟</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>预检（P01-f0，14 针 + 记录器关闭重建）</td>
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">59</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">57 s</td>
+</tr>
+<tr>
+<td>正式（12 输入，2 worker）</td>
+<td style="text-align: right;">180</td>
+<td style="text-align: right;">684</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">234 / 221 s</td>
+</tr>
+<tr>
+<td>合计 / 上限</td>
+<td style="text-align: right;">197 / 197</td>
+<td style="text-align: right;">743 / 743</td>
+<td style="text-align: right;">7 / 7</td>
+<td style="text-align: right;">≈0.15 GPU·h / 1</td>
+</tr>
+</tbody>
+</table>
+<p>闸门全部通过：校准、GPU 分配等于 B3；C_native 与 B3、EH 逐位相同；EH 的四个方向上 T_native、X10、H01、XH11 与 EH 逐位相同，XH11 与 B3 的 N:CC 逐位相同；H01 的自然入口等于 x_C；X10/XH11 的入口等于 x_T；深层 H 与卷积分别哈希，组装正确；每个方向评分前后 C、T 供体哈希不变；预检中记录器开/关逐位一致、重建缓存哈希一致。产物 0.69 GB。</p>
+<p>数值精度：相关赢家 logit 的局部 BF16 间隔为 0.125，D 与 I 以此为步长，交互门槛 0.5 约为 4 个步长。<strong>更正</strong>：初稿此处写“没有单元落在门槛的一个步长以内”，这句未经核对，是错的。实际有 21 个单元（共 168 个）落在某个门槛的 ±0.125 以内，多数是情景 P02 的交互项，其次是 C3959、R2、C1210 的历史份额。敏感性检查（不改变任何冻结标签）：假设所有贴近门槛的“支持”全部翻转，联合支持情景数会降为 C3959 4/6、R2 3/6、C3152 5/6、R0 5/6、4146 4/6、1210 3/6，其余不变；P_XC 最坏仍为 7/8（≥6），P_R 最坏仍为 3/4（≥3）。所以两条汇总预测对这一级数值精度不敏感，但 C3959 与 R2 的单针标签属于精度敏感。这只是精度敏感标记，不是误差界。</p>
+<h2 id="4-7">4. 含义与出口（合同 §7）</h2>
+<ul>
+<li>关系在 8 个验证通道中复现，支持把 EH 的结论扩大到所测的 L0 方向范围；随机方向同样复现，所以<strong>不主张原生通道特异性</strong>：这是 L0 同幅写入在这个模型、这个面板上的一般性质。</li>
+<li>课题层面：稀疏干预造成的首步竞争变化（ΔD 约 13–14），其承载方式在不同干预方向之间高度一致：深层历史为主、入口放大、正交互，固定 45 头卷积 V 历史另贡献一块。干预“写在哪个通道”并不重要，重要的是写入在后续历史中留下了什么。</li>
+<li>按合同，不自动启动 S/KV 拆分、其他层/模型或新剂量；如果继续，需要独立的目的和授权。最直接的下一问仍是：深层历史内部，递推状态 S 与注意力 KV 哪个承载这 5 logit 左右的作用（入口保持在干预值作为条件）。</li>
+</ul>
+<h2 id="5">5. 可以说 / 不可以说</h2>
+<table>
+<thead>
+<tr>
+<th>可以说</th>
+<th>不可以说</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>在所测 8 个原生通道与 4 条随机方向上，EH 关系（历史 ≥ 一半且大于入口、I ≥ max(0.5, 0.1E)）全部复现</td>
+<td>这是原生通道特有的机制 / 任意方向都如此</td>
+</tr>
+<tr>
+<td>交互不依赖竞争者换人（F 上同样成立，0/168 例外）</td>
+<td>已定位到 S 或 KV</td>
+</tr>
+<tr>
+<td>锚点 1210 在新门槛下联合支持 4/6</td>
+<td>1210 是反例（旧锚点只作重放核对）</td>
+</tr>
+</tbody>
+</table></main></html>

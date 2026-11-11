@@ -1,0 +1,40 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>B1 配对传播分析：结果</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="b1">B1 配对传播分析：结果</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-b1-paired-propagation-v1-2026-11-01/REPORT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-b1-paired-propagation-v1-2026-11-01/REPORT.zh-CN.md">固定提交原件</a>；SHA-256：<code>b4d4d0a745df688726db99a7efddde6bc0cc8d0c882dbd3d23f99d8676be265e</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="b1_1">B1 配对传播分析：结果</h1>
+<p>日期：2026-11-01。<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-b1-paired-propagation-analysis-plan-v1-2026-11-01.zh-CN.md">方案 r2</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-b1-paired-propagation-v1-2026-11-01/CONTRACT.zh-CN.md">合同 r01</a> 与筛选代码在运行前提交（6bb338b）。CPU 离线，0 模型调用、0 GPU，1.5 s；B1 formal-r01 的 12 份张量按收据校验后读取。结果 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-b1-paired-propagation-v1-2026-11-01/results-r01.json">results-r01.json</a>，代码 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-b1-paired-propagation-v1-2026-11-01/analyze.py">analyze.py</a>。同一助手分析，不是独立复核。</p>
+<h2 id="1">1. 决定（按冻结规则）</h2>
+<p><strong>无合格候选：结束本次 B1 传播追踪，暂停第13层 V×Q 写入交互分支，不自动扩层。</strong> 筛选失败不证明 36 个模块都无关：规则要求超过两条随机参照，而这些随机方向到第13层出口时已比真实删除大 1.9–2.5 倍，使筛选偏保守。 36 个模块（第14–31层 × {mix, rest}）在 N 停止侧没有一个入选；最好的模块（31:rest、31:mix、27:mix）也是 0/6 情景通过。M_T 同样无入选，答案词侧也无。</p>
+<h2 id="2">2. 闸门</h2>
+<p>张量/记录哈希、层间边界逐位连续（13–30，第31层出口 = final:h）、同背景各格第13层入口逐位相同、恢复的补丁后 core 哈希等于 B1 记录、账目闭合（最大误差 4.4e−16）全部通过。</p>
+<h2 id="3">3. 描述性结果（不是因果结论）</h2>
+<p><strong>表一：改动进入了残差流，但真实删除方向在第13层内部比随机方向衰减更多。</strong> 第13层出口差范数相对 R：M_T 0.187、N 0.088（中位数）。core 位置真实与随机逐头范数相同（相对 0.37 / 0.12），经门控归一化与 out_proj 后，随机方向在第13层出口的范数是真实删除的 1.9 倍（M_T，范围 1.5–2.8）与 2.5 倍（N，2.1–3.4）。这只是记录边界上的描述，未单独干预归一化。</p>
+<p><strong>表二：差异持续存在并增长，但早层模块的响应与输入差异反向。</strong> DEL 的差向量范数从第14层到第31层：M_T 1.4 → 7.0，N 0.7 → 1.8（中位数）。第14–19层 cos(e_l, d_in,l) 中位数 −0.16 至 −0.44（两背景相同形态），第20层后接近 0（第27层 −0.25 / −0.45）。这是“有抵消形态”的记录，不证明网络主动纠错。</p>
+<p><strong>表三：差异基本不朝停止方向走。</strong> 固定终点方向投影：第13层出口 p_s46 在 −0.05 至 +0.01（两背景）；终点 p_s46 M_T −0.62 至 −0.27、N −0.11 至 +0.14；实际 ΔZ_s46 M_T −0.79 至 −0.42、N −0.09 至 +0.06。分母项 ε 不可忽略（最大 0.35 / 0.17 logit），舍入项 ≤0.07。答案词侧 N 也在 ±0.17 内。</p>
+<p><strong>单位改动响应 γ = ΔZ / ‖d_13out‖（描述性，§3.4 的限制适用）：</strong></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>M_T DEL</th>
+<th>M_T 随机</th>
+<th>N DEL</th>
+<th>N 随机</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>停止侧，情景</td>
+<td>−0.51 至 −0.32（6/6 负）</td>
+<td>−0.14 至 +0.17</td>
+<td>−0.06 至 +0.01</td>
+<td>−0.09 至 +0.06</td>
+</tr>
+</tbody>
+</table>
+<p>按方案允许的读法：N 中真实删除与随机方向的 γ 都低——<strong>这些已测方向在 N 中的单位改动输出响应较低</strong>，不能说原生背景对第13层整体不敏感。N 与 M_T 的 DEL γ 相差近一个数量级、并不接近，所以这些数据<strong>不支持</strong>“B1 的 N 阴性主要由删除量小造成”；但方向与下游背景不同、模型非线性，比值也不能把大小与敏感性分开。M_T 中真实删除的 γ 一致为负且大于随机，是方向相关的传播差异线索（仅混合背景）。</p>
+<h2 id="4-b">4. 对阶段 B 的含义（不是运行授权）</h2>
+<p>第13层这一支两次因果操作（LOCAL 的 S×读取交互、B1 的 V×Q 写入交互）与一次配对追踪都没有给出原生背景的候选，按规则结束。保留的描述性事实：原生入口下，第13层改动传进残差后，早层有反向响应，之后的差异增长，但在停止方向上的投影较小（未测夹角，不说“正交”）。B 阶段若继续，需要不依赖第13层的、有独立依据的新候选；本轮不指定接班对象。</p>
+<h2 id="5-2026-11-01">5. 复核后的修订（2026-11-01）</h2>
+<p>外部复核指出：“几乎与停止方向正交”应收紧为“停止方向投影较小”；筛选失败不等于模块无关（随机参照在第13层出口已偏大）。§1、§4 已改，数值未变。</p></main></html>

@@ -1,0 +1,145 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>138．v7r1连接恢复与批内权重复用</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="138v7r1">138．v7r1连接恢复与批内权重复用</h1>
+<p><a href="../README.zh-CN.html">返回总时间线</a></p>
+<p><strong>时间定位</strong>：版本/记录日期 2026-11-05；未从所选收据确定完整运行起止，不据目录名补写时刻。</p>
+<p><strong>当时的目的与设计</strong></p>
+<p>等待旧远端动作完成后续接同一研究者，改为持久inbox及同批一次载入候选，保持输入、补丁、解码和评分不变。</p>
+<p><strong>实际过程、结果与后来更正</strong></p>
+<p>保留SSH断开、后台管道超时、r2脱离启动、原预算不重置及真实批一致性验收记录。恢复工程和有效候选轮数分开，不把重连算新实验收益。</p>
+<p><strong>来源身份</strong>：<code>wsp-vlm-open-repair-v7r1-2026-11-05</code>；本章主体来源提交 <code>2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274</code>。下方原文中的状态是各文件写作时的状态，不能把早期“尚未运行”覆盖后期正式收据，也不能将后期结果倒填进早期设计。</p>
+<h2 id="_1">原设计、执行过程、结果与更正全文</h2>
+<p>以下按“设计与题目 → 工程/执行记录 → 结果/更正 → 其他历史说明”组织；同类内没有可靠时间时保留路径顺序，不冒充严格先后。正文未删段；仅为本章节重排标题层级、把相对链接指向固定提交。原始字节另外完整保存。</p>
+<h3 id="1">原件 1：原始文档</h3>
+<p>原路径：<code>experiments/wsp-vlm-open-repair-v7r1-2026-11-05/RESEARCHER.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-open-repair-v7r1-2026-11-05/RESEARCHER.md">固定提交原文</a> · <a href="../library/c1ce04c7e05a3933.html">单独阅读副本</a>；SHA-256：<code>c1ce04c7e05a39338489e06cd775b544bad1cebc7e9dc60f24f5ec94dfbcafd5</code>。</p>
+<hr />
+<p>You are the researcher. The human fixes task, evaluation, data access and costs.
+You diagnose failures, choose measurements, select parameters, calculate edits and
+revise your ideas using actual feedback. No layer, neuron ranking, or edit schedule
+has been prescribed. No successful patch is required. You may stop with a negative
+or inconclusive result. Explain your evidence, next action and expected observation
+before exactly one fenced <code>python</code> or <code>forward</code> block. A plain final reply stops.</p>
+<p>Python runs persistently on CPU in an isolated directory. NumPy is <code>np</code>.
+<code>catalog()</code>, <code>NAMES</code>, <code>load_original(name)</code>, <code>load(name)</code>, <code>save_edit(name,array)</code>,
+<code>drop_edit(name)</code>, <code>edited()</code> expose parameter inspection and staging.
+You write the selection and modification algorithm yourself. No target-model
+training or unmetered model execution is allowed. Disclose any labels/fitting used.
+<code>EVIDENCE</code> contains only permitted development data; <code>ARTIFACTS</code> contains complete
+tool feedback. Successful controls and failures are equally available. No sealed
+confirmation data is accessible. Target-model prompts never receive gold labels.</p>
+<p><code>forward</code> JSON takes <code>op</code> and relevant fields:</p>
+<ul>
+<li><code>status</code>: current, best, resource use. Start here or with <code>evidence</code>/<code>catalog</code>.</li>
+<li><code>evidence</code>, optional <code>ids</code>: input, gold, prior raw answers; initial answers may
+  be absent until original evaluation. Large results are paginated, not discarded.</li>
+<li><code>image</code>, <code>request_id</code>, <code>kind</code> = <code>input</code> or <code>preview</code>: attaches a verified image
+  to your next turn. You may request any allowed development example.</li>
+<li><code>catalog</code>: parameter names/shapes/dtypes/tied aliases from the checkpoint.</li>
+<li><code>runtime_catalog</code>: actual runtime named modules/parameters; counts wall/load cost.</li>
+<li><code>measure</code>, <code>candidate</code>, <code>ids</code>, <code>spec</code>: teacher-forced internal readout. <code>spec</code>
+  supports <code>continuation</code>, <code>score_token_ids</code>, <code>capture</code> and <code>interventions</code>.
+  A capture supplies <code>module</code>, <code>where</code> (<code>input</code>/<code>kwargs</code>/<code>output</code>), <code>path</code> (tuple/dict keys),
+  optional <code>flat_indices</code>. Results retain actual tensor shape, input token IDs,
+  decoder image-token positions and image grid. Vision tensor axes require
+  inspection; do not assume they are decoder-token axes. No arbitrary gradient
+  diagnostic or attention-probability extractor is implemented yet.
+  Temporary interventions additionally supply explicit <code>flat_indices</code>, <code>values</code>
+  and <code>operation</code> (<code>add</code>, <code>replace</code>, <code>scale</code>); arbitrary replacement values may be
+  calculated in Python. They do not become weight edits or best candidates.</li>
+<li><code>commit</code>, <code>parent</code>, <code>rationale</code>: validate staged tensors and create an immutable
+  candidate. Parent must equal current checkout. Actual effective scalars are
+  counted against W0; tied parameters count once. Staging clears on commit.</li>
+<li><code>checkout</code>, <code>candidate</code>: return to any recorded candidate or W0; clears staging.
+  Python variables remain, so explicitly refresh arrays after checkout.</li>
+<li><code>evaluate</code>, <code>candidate</code>, optional <code>ids</code>: paired original/parent/candidate outputs
+  under identical inputs. Omitting ids evaluates the fixed full development pack.
+  Local subsets are diagnostic only; raw answers and repaired/worsened IDs return.</li>
+<li><code>accept</code>, <code>candidate</code>: observer applies the frozen full-development selection
+  and protection rules. Failures do not automatically expand budgets or scope.</li>
+<li><code>artifact</code>, <code>name</code>, optional <code>offset</code>/<code>length</code>: read a page of full returned JSON.</li>
+<li><code>freeze</code>: freeze the current best within the final sparsity budget; ends search.
+  This is a development selection, not evidence of independent generalization.</li>
+<li><code>stop</code>, <code>reason</code>: end with an honest negative/inconclusive result.</li>
+</ul>
+<p>Every tool operation (including errors), selected parent, code and result is logged.
+Weight edits preserve architecture, tensor names and shapes. Do not alter scoring,
+input images, generation settings or budgets. Final deployment must be ordinary
+inference from a reloaded static patch with no diagnostic hooks. An engineering
+tool error is not evidence against the scientific hypothesis.</p>
+<p>This is the first bounded development exploration after original-model screening.
+Use all available development successes and failures, not only a preselected error
+pattern. Read /evidence/bundle.json using Python for the complete package; it
+includes previous_predictions. The human has not established a failure mechanism.
+B concerns total vs spatially conditioned counts. C concerns visual vs usual
+size judgments under original/counterfactual images and no-image controls.
+Do not assume a missing neuron, a particular layer, or one shared cause.</p>
+<p>Selection: ordinary-prompt joint correctness, averaging wording/order within each
+source group then groups equally. B pairs total/subset; C pairs counterfactual
+usual/visual. All conditions and both prompt arms are protected per wording/order
+cell: maximum 0.035 accuracy loss vs original, format/truncation each &lt;= 0.01.
+Only full fixed development evaluation can select a best candidate. Ties prefer
+fewer changed scalars. C's original/no-image controls and five-way correctness
+must also be reported. View raw responses and repaired/worsened IDs.
+Temporary support &lt;=4,000,000 and final support &lt;=1,000,000 actual BF16 scalars
+relative to W0, across any legitimate parameter locations. Wall limit 7200 seconds
+includes your thinking time, model loading, diagnostics and evaluations. No need
+to use all 100 turns. Budget exhausted or no useful patch is a valid outcome.
+Your persistent CPU workspace has NumPy only; use the metered observer for every
+model forward. Select your own observations and edit computation. You may change
+your hypothesis using feedback; an engineering error is not a task failure.</p>
+<hr />
+<h3 id="2v7r1">原件 2：v7r1：连接中断恢复与批内权重复用</h3>
+<p>原路径：<code>experiments/wsp-vlm-open-repair-v7r1-2026-11-05/README.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-open-repair-v7r1-2026-11-05/README.zh-CN.md">固定提交原文</a> · <a href="../library/3c38e752200751e0.html">单独阅读副本</a>；SHA-256：<code>3c38e752200751e0f46c888a326d91a5bfe101ec6f5d93670cf7d8d10520dafc</code>。</p>
+<hr />
+<h4 id="v7r1">v7r1：连接中断恢复与批内权重复用</h4>
+<p><strong>13:18追加：当前权威队列改为<code>sequence-r2.json</code>，入口<code>recovery_r2.py</code>。</strong> 首版恢复启动的shell后台任务仍持有SSH管道，30秒超时导致本机队列退出；远端broker PID 1711513实际仍在等待，已核实并复用，不重启。r2只修启动/核对：C用Python Popen显式断开stdin/stdout/stderr并新建会话。真实短CPU脱离启动检查4.95秒返回，子进程持续15秒；无模型或研究者调用。原预算未重置。首版失败栈/队列及r2检查见audit。批处理的真实数值验收仍待原评估完成，尚未声称通过。</p>
+<p>2026-11-05 12:53启动快照。继承v7、B/C推进方案及用户“bug直接修复”授权。<strong>B原有候选评估仍在运行；新恢复进程只等待其锁和完整回执，不重复原调用。C尚未启动。</strong> 当前队列以本目录sequence.json为准；旧v7/sequence.json保留其stopped_on_error历史状态。</p>
+<h5 id="_2">发现与处理</h5>
+<ul>
+<li>本机SSH在约31分钟后报Connection reset by peer，研究者流程停止；远端原评估仍由timeout保护运行。保留原stderr、异常栈、请求、停止回执于audit。没有将通信失败解释为候选失败。</li>
+<li>原实现每道题都校验、读取、装载及恢复同一整张候选张量；AI只改一个标量时也会反复处理整张词嵌入矩阵。本次不是增加修补算子：候选张量、输入、生成、评分均不变，只将同一批评价包在一次candidate上下文内。内层同候选复用，跨候选嵌套拒绝，整批异常仍恢复W0。</li>
+<li>新broker使用持久inbox/action/response。短SSH仅传输JSON和读取状态，网络断开不结束远端计算。同ID/同内容可确认投递，已执行回执直接读取，未完成动作不重放。</li>
+<li>B等待旧观察者锁释放且每个已登记动作都有回执，然后加载同一配置、状态、候选与预算。研究者续接原thread和累计token/轮数，从第19轮继续；告知Python变量因重启丢失，已有work、提案和测量文件保留。<strong>没有提供新的选点或修改配方。</strong></li>
+<li>B继续沿用约14:00的原始截止，不补回断线/等待时间。C在B退出后独立最多2小时，从W0开始；技术异常仍停止队列，正常结束或预算耗尽继续C。</li>
+</ul>
+<h5 id="_3">验收状态</h5>
+<p>29项本机离线测试通过，增加同候选嵌套、跨候选拒绝及恢复检查。初次本机缺复制的config.template.json（1项错误）、服务器缺原数学解析器文件（4项错误）均保留日志；补齐本机模板后通过。服务器不运行研究者解析器，实际解析仍在本机。</p>
+<p><strong>真实批处理一致性尚待执行。</strong> B原完整评估结束并释放锁后，新broker先用该候选前两条既有输出比较自然生成token、输入/模板hash和图像尺寸，再检查异常退出后的W0自然输出；共3次工程前向，费用计入剩余共享工程预算并记录batch_acceptance.json。通过后才允许新的研究者动作，C也检查这一验收和源文件hash。不把离线通过冒充真实通过，不把等待状态叫作修复成功。</p>
+<h5 id="_4">自查</h5>
+<p>这是实现修复，未修改原实验设计、标签、终点、保护界限或预算，仍沿用v7 PLAN及C01–C14。关键复查：C03保留原版本/raw；C05/C06候选值完全相同、生成等价须实测；C08不作能力/机制结论；C11先验收再继续；C12保留原开始时间、失败费用及全部额度；C13未给研究者H；C14不扩预算。自查不是独立审查。</p>
+<p>反方风险：连接恢复不能猜测动作是否完成，因此锁未释放或缺回执时只等；Python变量重建由AI自行处理；批内复用可能掩盖回滚错误，因此真实同候选输出和异常W0检查为硬门槛；完整评估若耗尽B预算，允许B无可用结果，不能重置计时。尚未证明补丁有效，也未进行独立泛化确认。</p>
+<p>启动：本机recovery.py；远端broker.py；原run目录和配置仍在v7，所有原始回答持续写原目录。代码及恢复证据单独放v7r1，未替换正在运行的v7源文件。以后监控同时读两版本的队列和回执。</p>
+<hr />
+<h2 id="_5">时间、运行与停止收据索引</h2>
+<p>下面是所收集JSON的原有时间字段与状态，不把预计结束时间当实际完成时间。未列时间的文件仍有原件链接。完整JSON全部保存在原文归档，不能以此索引中的标量代替完整嵌套内容。</p>
+<table>
+<thead>
+<tr>
+<th>原件</th>
+<th>原记录状态/阶段</th>
+<th>原时间字段（原时区）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-open-repair-v7r1-2026-11-05/audit/detached-launch-check-r2.json">audit/detached-launch-check-r2.json</a></td>
+<td>{}</td>
+<td>{}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-open-repair-v7r1-2026-11-05/audit/launch-r2.json">audit/launch-r2.json</a></td>
+<td>{}</td>
+<td>{"time_unix": "2026-11-05T05:17:14.496964+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-open-repair-v7r1-2026-11-05/audit/offline_receipt.json">audit/offline_receipt.json</a></td>
+<td>{"model_calls": 0}</td>
+<td>{"time_unix": "2026-11-05T04:54:16.822580+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-open-repair-v7r1-2026-11-05/launch_receipt.json">launch_receipt.json</a></td>
+<td>{}</td>
+<td>{"time_unix": "2026-11-05T04:52:18.880090+00:00"}</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_6">全部原始资产入口</h2>
+<p>本目录在固定提交下共有42个跟踪文件，包含代码、原回答、失败、收据和压缩证据；文件数不是样本数。<a href="../assets/138-wsp-vlm-open-repair-v7r1-2026-11-05.tsv">逐文件完整账本</a> · <a href="https://github.com/yuxiexiong/acupuncture/tree/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-open-repair-v7r1-2026-11-05">原目录</a>。未复制模型权重、环境或凭据。</p></main></html>

@@ -1,0 +1,221 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>C-FV-02 设计自查与数据验收</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="c-fv-02">C-FV-02 设计自查与数据验收</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/wsp-c-frozen-validation-v2-2026-11-06/SELF_CHECK.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/wsp-c-frozen-validation-v2-2026-11-06/SELF_CHECK.zh-CN.md">固定提交原件</a>；SHA-256：<code>ed97ec19d2a2c1a5dd71e5d6b930b2796586b8d55caa1932dedc1ddcf1c4e8a6</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="c-fv-02_1">C-FV-02 设计自查与数据验收</h1>
+<p>日期：2026-11-06。依据：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/experiment-design-self-check.zh-CN.md">experiment-design-self-check v1</a>。本文件是主助手自查，非独立设计审查；独立子代理仅完成数据盲审，不为方案或结果背书。</p>
+<h2 id="_1">设计卡与前版比较</h2>
+<p>设计卡完整见 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/wsp-c-frozen-validation-v2-2026-11-06/PLAN.zh-CN.md">PLAN §1</a>。主线不变：第一轮 C 固定补丁是否在新来源/新问法上改善按题选用视觉与常识证据，并具有相对提示/已有方法的价值。</p>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>v1</th>
+<th>本版及理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>数据数量</td>
+<td>目标 T200，容量未证明</td>
+<td>实审 ROME 80＋VLind 10；不同层不合并。用户在看任何新模型结果前授权按实际合格数量修订。</td>
+</tr>
+<tr>
+<td>复核身份</td>
+<td>计划两名审核者，未完成</td>
+<td>四个新上下文 AI 子代理；ROME A/B 各负责一半，VLind C/D 全量双盲审，主助手补审不计独立第二审。公开非人工双审，承认相关误差。</td>
+</tr>
+<tr>
+<td>数据条件</td>
+<td>计划每来源完整五条件</td>
+<td>ROME 缺正常图，三条件；VLind 10 组五条件。主 Jcf 定义保持原样，撤回主集完整五条件保护承诺。</td>
+</tr>
+<tr>
+<td>主估计</td>
+<td>T200 来源均值</td>
+<td>ROME 80 来源均值；320 面板不能作 n=320；扩展单列。</td>
+</tr>
+<tr>
+<td>分词</td>
+<td>待真实 tokenizer 查验</td>
+<td>同 revision 三文件哈希匹配历史；完整聊天文本 U2 四 edited IDs 零命中，保留 runtime processor 验收。</td>
+</tr>
+<tr>
+<td>对照</td>
+<td>七臂及 D64 选择</td>
+<td>保留；修复 CANON 将长度/高度扩展一律改为 larger 的潜在语义错误。</td>
+</tr>
+<tr>
+<td>保护</td>
+<td>五条件正式保护</td>
+<td>ROME 三条件单侧 98.333% 下界；VLind 五条件为小样本描述，不能补足广泛正常能力证据。</td>
+</tr>
+<tr>
+<td>工作量</td>
+<td>101,056 自然回答上限</td>
+<td>61,296（含开发/重放），另 3,072 表征序列；GPUh 未实测，无运行授权。</td>
+</tr>
+<tr>
+<td>统计误读</td>
+<td>融合“无可靠增量”可能被误写无增量</td>
+<td>明确不显著只表示未证实；比较优势和等效分开。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="c01c14">C01–C14</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>判定及实质理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C01 主线</td>
+<td>通过。PLAN §1/4 保留原 Jcf：同图 usual/visual 同时正确；不改成只提高视觉准确率，也不转第三补丁搜索。</td>
+</tr>
+<tr>
+<td>C02 增量</td>
+<td>通过。新来源且结果不可见地固定补丁/问法，能检验开发收益是否保留及提示能否替代；即使阴性也终止过强泛化主张。</td>
+</tr>
+<tr>
+<td>C03 资产</td>
+<td>通过。使用原补丁 SHA、旧 D/H 身份、外部审计、固定公开 revisions 和实际图像；不重新搜索或重做无必要测量。原方法配方指向 v1 §5，明确任务适配身份。</td>
+</tr>
+<tr>
+<td>C04 假设</td>
+<td>通过。正面旧 D +12.5pp 与反面 50 次选择、关键词编辑、H 曝光、n 小并列；不使用旧效应估计未来 power。</td>
+</tr>
+<tr>
+<td>C05 操作</td>
+<td>通过。模型 revision、R45 11 张量、剂量及共享 embedding/lm_head 写清；未来基线位置/网格沿用原冻结配方，真实工程另验。</td>
+</tr>
+<tr>
+<td>C06 路径</td>
+<td>通过。静态参数改变后所有正常下游可变；不把少数参数当局部、输入词行当纯输入端效应。</td>
+</tr>
+<tr>
+<td>C07 耦合</td>
+<td>通过。共享输出权重明确；U2 零命中不隔离 output-head 或 norm 的贡献。无缓存状态拼接，本轮不做路径机制归因。</td>
+</tr>
+<tr>
+<td>C08 归因</td>
+<td>通过。估计固定部署总效果；不能推断自然机制、恢复某种内部知识或模型修复领域首次。</td>
+</tr>
+<tr>
+<td>C09 区分</td>
+<td>通过。LEX/P* 可说明便宜提示的可替代性，U1/U2/旧模板分别估计措辞依赖；这些解释可并存，不以排除法认定 norm 机制。</td>
+</tr>
+<tr>
+<td>C10 指标</td>
+<td>通过。自然回答 Jcf；无图/正常图各条件、J5/截断分别报告，缺正常图不造 J5。相同来源等权，所有方法共用分母。</td>
+</tr>
+<tr>
+<td>C11 失败</td>
+<td>通过。数据分歧直接排除，不改 gold；实现失败/污染/缺失与科学阴性分开；不显著不等效，保护不通过区分明确损伤和区间不足。</td>
+</tr>
+<tr>
+<td>C12 成本</td>
+<td>通过。当前只 CPU/人工式 AI 目视/分词；先冻结再请求未来执行。七臂均对应原问题；无新机制网格、第三补丁或 469 组全面扩展。全成本列开发和表征。</td>
+</tr>
+<tr>
+<td>C13 可信度</td>
+<td>通过。逐图记录、匿名盲审输入、来源/像素哈希、输入/gold 分离、排除账本和 freeze 全部保存。新上下文 AI 不等于真人独立；旧曝光扫描有范围与时效边界。</td>
+</tr>
+<tr>
+<td>C14 累积</td>
+<td>通过。强外部收益才另立机制；提示更优/问法依赖撤回对应主张；区间不足保留未决，不自动加样本救论文。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="e01e26">E01–E26 历史错误核对</h2>
+<ul>
+<li>E01：保留固定补丁的外部 Jcf 验证；样本量下降不换题。</li>
+<li>E02：不把历史修改 L18–23 当通用特殊层；无需新模型测量来重新确认已有身份。</li>
+<li>E03：35,792 标量不等于小功能扰动，损伤单列。</li>
+<li>E04：分词与统计公式只是 CPU 验收，不算机制发现。</li>
+<li>E05/E06/E08/E13/E15/E17/E19/E26：本轮无缓存供体、共享状态拆换、路径中介或形成期操作；不能将本轮静态总效果包装成这些因果结论。</li>
+<li>E07/E14/E18：可能双向正确或对照失败都不定位唯一自然路径；不以剩余解释命名机制。</li>
+<li>E09：没有内部状态读数，不凭行为变化拼内部因果链。</li>
+<li>E10/E11：完整自然回答为终点；不以 teacher-forced 分数、特征方向或 token 命中代替能力表现。</li>
+<li>E12：配对差不自动消除损伤；三单条件及扩展五单条件分别报告。没有伪随机反向对照。</li>
+<li>E16：负结果允许；身份检查与是否涨分分开，不能事后救实现。</li>
+<li>E20：措辞与视觉表征适配可同时成立，不强设互斥机制候选。</li>
+<li>E21：方法已有/项目开发收益/本轮验证增量分开；本轮未重做全领域新颖性检索，不声称“无人做过”。</li>
+<li>E22：80 来源与 320 主面板分开；VLind 10 来源不凑主样本；旧 H 不叫独立留出，重复对象/模板限制人口推断。</li>
+<li>E23：自查≠独立审查；AI 盲审≠人工金标准；数据冻结≠方法就绪≠目标模型运行。</li>
+<li>E24：不要求本轮识别完整机制，保留外部行为比较这一实质增量。</li>
+<li>E25：不加入第三补丁、不跑 469 组杂项，不为正常图缺口临时造合成图。</li>
+</ul>
+<h2 id="_2">对抗性自查与修正</h2>
+<table>
+<thead>
+<tr>
+<th>最强反例</th>
+<th>对承诺的影响及已采取措施</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>90/22 初审都说通过，却仍可能是错 gold</td>
+<td>真正分开上下文、匿名图重新作答。发现 ROME 10、VLind 12 来源不合格，直接排除；不把初审数冒充最终数。</td>
+</tr>
+<tr>
+<td>审核者知道预期是“反常的大物体”而跟随标签</td>
+<td>子代理不读答案键、初审结论或来源 statement；先独立作答再程序比对。图片本身暴露风格无法消除；仍披露 AI 相关误差。</td>
+</tr>
+<tr>
+<td>改成 80 个后，只挑简单图使收益更好</td>
+<td>筛选仅依据可判读性，任何目标输出不可见；全部初审候选固定代表，无按错误/收益抽样。结论条件于审核通过子集，不推广原 benchmark 全量。</td>
+</tr>
+<tr>
+<td>80 个都缺正常图，仍称低损伤广泛修复</td>
+<td>已修正：主集只承诺三条件，正常图扩展单列且小样本；没有完整五条件无损结论。缺口保留，不用免责声明掩饰错误承诺。</td>
+</tr>
+<tr>
+<td>把 five-condition 扩展数用来提高主检验 n</td>
+<td>已修正：主检验严格 n=80；10 组只扩展，不做合并显著性。</td>
+</tr>
+<tr>
+<td>U2 不含四个词，因此证明 norm 机制</td>
+<td>拒绝。共享 lm_head 的输出行仍可影响回答；只说明四个输入 token 未直接出现，不能拆解机制。T0 也零命中，不能讲成旧问法全依赖 edited words。</td>
+</tr>
+<tr>
+<td>CANON 把“更长”改成“更大”，让简单提示吃亏</td>
+<td>已修正：按文本先识别维度再路由，不读条件标签；扩展问法和金标准保留具体维度。</td>
+</tr>
+<tr>
+<td>只跑补丁/弱提示后看到效果，再给 PvP/Nullu 调参</td>
+<td>禁止。七臂选择/适配仅旧 D；全方法冻结后终验；缺失已有方法不能宣称比较优胜。</td>
+</tr>
+<tr>
+<td>同一对象出现多次使置信区间偏窄</td>
+<td>来源对等权，报告对象集中度敏感性和模板条件性；不把全部来源当已证明 IID，不推广全新概念人口。</td>
+</tr>
+<tr>
+<td>n=80 出不了小优势，于是事后加题或改主指标</td>
+<td>禁止增样本救显著性。事前给 9.6–19.1pp 条件 MDE 范围；宽区间就是未决。</td>
+</tr>
+<tr>
+<td>扩展 10 组未见下降，就声称无损</td>
+<td>禁止。普通区间与逐题错误报告，小样本扩展不能承担正式非劣效。</td>
+</tr>
+<tr>
+<td>完美/常数差产生零方差，t 程序误报确定胜出</td>
+<td>PLAN §6 专门定义退化处理；有限面板差不能变成人口确定性。</td>
+</tr>
+<tr>
+<td>测试发布后，题包被其他流程拿去调参</td>
+<td>freeze 是文件身份，不是永久防污染保证；开跑前核对新增使用，污染即停止该版，不补位。</td>
+</tr>
+</tbody>
+</table>
+<p>最后复查：修正后仍是固定补丁的来源外/问法外联合行为验证；没有为了数量或功效偷换成只问视觉、全量合成扩展或第三轮搜索。<strong>逻辑设计通过。</strong> 这不是“80 个足以完成论文”的结论。</p>
+<h2 id="_3">复核独立性门的补正</h2>
+<p>主助手写入 VLind 判断前已收到 C 的概括性问题提示，不能因尚未打开逐题答案文件就称严格独立。已补充新上下文 D，对全部 44 张 VLind 图片重新盲审，未见 C/主审结论；最终数量仍为 10 组。C/D 的全量独立盲审承担新增正常图的独立性要求，主审只保留为附加保守检查。禁止用主审与 C 的一致率冒充独立一致率。</p>
+<h2 id="cpu">CPU 验收中发现并处理的历史记录差异</h2>
+<p>旧审计 ROME 像素 SHA 不能按本次显式算法重放（80/80），但文件字节 SHA 全部匹配；原生 VLind 20/20 像素 SHA 匹配。未把差异抹掉或伪报全匹配，也未推测未证实的原因。本版重算像素身份，并重新比较 100×1,454 图，三类重复计数均为 0；原记录保持不变。此项是数据工程更正，不是新增模型实验。</p>
+<h2 id="_4">工程状态与执行边界</h2>
+<p><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/wsp-c-frozen-validation-v2-2026-11-06/validation.json">validation.json</a> 记录 CPU 验收：ID/矩阵/图像哈希/分词/评分/确定性重建；输入文件本身和所有审查记录列入 freeze。</p>
+<p>尚未验收：实际补丁重载、真实 processor 展开、batch 数值一致性、PvP/Nullu 实现、D 上选择结果及实际 GPU 耗时。本轮没有目标模型加载、前向或新 GPU 作业。用户授权数据准备和方案交付，明确禁止暂时运行模型；该边界保持有效。</p></main></html>

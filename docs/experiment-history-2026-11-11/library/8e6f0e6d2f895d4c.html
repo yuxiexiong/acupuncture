@@ -1,0 +1,138 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>FX-01：固定45头卷积V的完整回答恢复验证 v1</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="fx-0145v-v1">FX-01：固定45头卷积V的完整回答恢复验证 v1</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>docs/cache-fixed-v-delivery-plan-v1-2026-11-02.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-fixed-v-delivery-plan-v1-2026-11-02.zh-CN.md">固定提交原件</a>；SHA-256：<code>8e6f0e6d2f895d4c0f980b4764bdf75c6cbe7630e81507de794bea83efd55a7c</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="fx-0145v-v1_1">FX-01：固定45头卷积V的完整回答恢复验证 v1</h1>
+<p>2026-11-02；状态：设计及同一助手自查通过，非独立评审；未实现、未运行，无新增GPU授权。与SP-01独立立项、授权及记账。建议A先行、B随后；B不依赖A阳性，也不自动扩到SP面板。</p>
+<h2 id="1">1. 设计卡与依据</h2>
+<p>主线：稀疏干预如何通过历史状态和读取改变回答。本轮问：已经冻结的45头V历史规则，能否在原生T背景下恢复完整编号交付？增量是将停止侧材料规则连接到行为，避免再次只解释停止logit。
+已读FC-01报告、合同与正式verification（5a1c166）：T_F 48/48严格交付，T_nat 0/48。已读C2合同及随机名单结构；C2的N混合背景、停止侧结果不等于本轮原生背景完整交付，因此不能直接拼成既定机制。
+复用P01–06双事实旧面板、FC四方向与全部身份；这是已见面板上的新操作结果，不是独立泛化验证。最不利依据：此前固定名单答案侧并未接通；恢复供体可带入任务信息；全卷积有效不保证V子集有效。正反结果都能检验既定规则，不再寻找新名单。
+估计对象：一次恢复指定旧卷积槽位后所有下游自然响应产生的完整交付效果。不是最初形成来源、唯一存储位置、必要性或自然中介比例。</p>
+<h2 id="2">2. 冻结名单与操作</h2>
+<p>校准沿用FC的P面板每情景f0数值、f1复用；重建校准逐值核对，不能按恢复效果调幅。
+固定45头来自experiments/cache-head-rule-prospective-v1-2026-11-01/data/fixed-heads-r01.json，SHA256 <code>dbc7f13071d6c387079447d843c2c90e086638c8cd463c2b2d2274e6ea1ed3cb</code>。
+随机U使用C2 experiments/cache-c2-cross-direction-v1-2026-11-01/data/fix-random-r01.json（SHA256 <code>5a2ddbcb122a232d5f2766435c567c52a13dbbf9f8c79e23b5b03a8aa1b31bb1</code>）中每输入subsets[input][0]，预先选择第一份，不按结果挑。原文件每输入四份，不能描述为一份全局名单。核对45头数量、逐层计数与FIX匹配、与FIX重叠数量；无须强行去重，不能重新采样。只比较这一冻结对照，不代表随机集合总体分布。
+14个深层G层的卷积V缓冲按实际值头布局复制全部旧槽位；Q/K卷积及其余V保持T，不触碰递推S/注意力KV/浅层。必须按C2实现核对head到通道区间映射，不能把共享Q/K头编号当V头编号；详细映射及哈希冻结进合同。复合状态允许，但只解释此恢复操作的总效果。</p>
+<table>
+<thead>
+<tr>
+<th>条件</th>
+<th>原生T起点的变化</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T_nat</td>
+<td>不恢复，重放FC</td>
+</tr>
+<tr>
+<td>T_F</td>
+<td>完整深层q/k/v卷积恢复C，重放FC</td>
+</tr>
+<tr>
+<td>T_V</td>
+<td>所有深层V恢复C，q/k保持T</td>
+</tr>
+<tr>
+<td>T_FIXV</td>
+<td>仅冻结45头V恢复C</td>
+</tr>
+<tr>
+<td>T_RESTV</td>
+<td>其余深层值头V恢复C</td>
+</tr>
+<tr>
+<td>T_U</td>
+<td>仅冻结U的45头V恢复C</td>
+</tr>
+</tbody>
+</table>
+<p>每输入另C_nat，所有臂自然续写，无强制token、无EOS屏蔽。每方向6T臂，加共享C，共25轨迹/输入。FIX与REST互补且并集为V，先做CPU来源矩阵核对；互补不是单臂效果相加的假设。全F覆盖深层G层13,14,16,17,18,20,21,22,24,25,26,28,29,30。</p>
+<h2 id="3">3. 判据、预测与退出</h2>
+<p>主端点Y_delivery，Y_strict及答案首token名次/竞争差辅助。每情景双事实：C正确、T_nat未交付、待测恢复臂正确，才记“完整救回”；至少5/6情景达到支持一方向，整体至少3/4方向。必须全分母报告基线不足、自然未损伤、恢复恶化；不挑受损输入。FC原生/F/C应逐token复现；若身份相同而不复现是工程失败，停止而非科学阴性。
+P_V：T_V整体达标，弱依据是此前V恢复停止侧有效，非保证答案。P_FIX：T_FIXV整体达标，是允许失败的规则迁移预测，没有把它预设正确。报告T_FIXV−T_U逐情景配对Y_delivery/Y_strict及胜/平/负；“对这一U有优势”要求方向内至少2/6情景FIX双事实成功而U不满足、且没有反向情景；跨方向仍报k/4，不做总体随机特异性推断。该差距门槛是预先约定的实际差距，不能称显著性。
+FIX成功且U成功：多个集合可恢复，无FIX特异性证据。FIX成功而REST失败：仅当前背景下FIX恢复较有效，不称必要。FIX和REST都成功：允许双方分别足以恢复。FIX失败但V成功：停止侧名单没有接通完整交付，结束固定名单分支，不重筛。V失败但F成功：V单独不足，不能直接命名Q/K是唯一机制，也不自动开Q/K实验。所有新子集失败保留阴性。是否转到SP或形成机制，需结合实际结果另立问题；本合同不预付下一轮运行。</p>
+<h2 id="_1">共用身份、生成与端点</h2>
+<p>沿用FC-01 <code>5a1c166</code> 的模型/分词器及配置哈希：Qwen3.5-4B revision <code>851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a</code>，BF16；L0、剂量−1、原晚段形成窗口b+1…n−2，评分最后prompt token。四方向N4146/N1210/R0/C1343；R0复用冻结向量。生成期间不注入、没有针hook。C/T供体来自同一输入、同一方向身份，不跨事实混用。
+贪心、平局最小token ID、最多32新token（含强制token/EOS），停止集合{248044,248046}；无额外解码处理。各轨迹从独立评分前缓存克隆，处理末prompt后沿真实选择token更新；恢复仅起点一次，不持续钳制未来缓存。
+沿用FC-01冻结解析器：think外完整目标编号且没有其他不同编号为Y_delivery（主要）；去首尾空白后仅为目标编号为Y_strict（同时报告）。多编号、干扰编号、其他编号、EOS未交付、32-token预算未交付分别报告；think和问题行片段是正交标签。不得把罗列中出现某个编号解释为最终选择。保留全token、特殊token、原文、终止原因和首次编号位置。
+统计单位为六情景，每情景f0/f1配对；共享C不重复计样本。全12输入都报告，不能只筛受损或恢复输入；不给12独立样本的显著性结论。阈值是工程研究的实用判读，不是总体统计推断。
+工程验收：冻结模型、输入、分词器、源码、方向、名单、校准及供体哈希；供体不变、独立clone；各来源逐类哈希；实际选择token正确喂入；EOS/强制仅规定步生效；记录器开关不影响轨迹。合成测试覆盖正确、反向、混合、缺失、基线失败、预算截断及边界，不靠测试函数镜像实现。任何闸门失败停止，不自动重试或改科学阈值。
+完整回执须分列形成、prefill、形成token前向、校准、评分/解码前向、轨迹数、实际新token、各设备占用时间及峰值显存。预算内预检也计费；耗时不足停止汇报，不缩长度/样本。旧供体仅在身份、哈希、重放一致时复用，保守预算不预扣复用收益。</p>
+<h2 id="4">4. 完整预算与交付</h2>
+<p>正式12输入每输入1C+4T供体：60形成、300轨迹、最多9600评分/解码前向、6校准。预检P01双事实：10形成、50轨迹、1600前向、1校准。记录器关闭独立重建C/T4146：2形成、2自然轨迹、64前向。总计72形成、352轨迹、11264前向、7校准。旧C/T/F重放已计在臂内，不另加重复预算；额外形成token前向/prefill按冻结输入长度列清。
+建议独立上限1 GPU设备小时、2 CPU核小时、8 GiB产物；先预检实测，不照搬FC耗时。若预检不能支持剩余预算则停止，不删臂。目录拟experiments/cache-fixed-v-delivery-v1-2026-11-02/；原始生成、逐臂来源表、名单哈希、重放校验、实测成本、失败及报告必须提交。
+实现前先用CPU检查槽位/名单/哈希/计数；全F/C/T原始首步logits及完整token轨迹与FC相同；源缓存不被轨迹修改。T_V/FIX/REST/U仅更改指定V字节范围，其他分类来源哈希相同；对空集、并集和C到C替换做CPU/已有张量检查，不添加科学臂凑完整性。</p>
+<h2 id="5">5. 相对前案修正及反方复查</h2>
+<p>相比C2：从N背景单步停止侧改到原生T完整交付，不能沿用原先结论；相比FC：固定既定集合验证，不再次扫层；相比截图：U精确定义为逐输入第一份，不误写全局随机名单；完整预算含自然T/C、重放与预检。
+反例1：FIX成功只是供体带回答案。承认条件恢复而非原记忆保存。反例2：FIX和随机都成功。允许且不主张特异。反例3：REST也成功。允许双方恢复，不用互斥分类。反例4：停止下降但答错。只按完整交付判成功。反例5：V失败全F成功便指认Q/K。禁止排除法定位。反例6：B必须等A通过。两问题独立，只是执行优先级；本轮不混入新面板。</p>
+<h2 id="c01c14v1">必过自查 C01–C14（规范v1）</h2>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th>同一助手判定及依据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C01</td>
+<td>通过：主线与本轮问题见§1；不改为EOS修复。</td>
+</tr>
+<tr>
+<td>C02</td>
+<td>通过：新增完整交付的解释约束，正反均改变判断。</td>
+</tr>
+<tr>
+<td>C03</td>
+<td>通过：明确FC/C2资产和旧数据不能提供的新测量。</td>
+</tr>
+<tr>
+<td>C04</td>
+<td>通过：最不利证据与允许失败的预测明列。</td>
+</tr>
+<tr>
+<td>C05</td>
+<td>通过：形成、起点一次恢复与生成时间分开。</td>
+</tr>
+<tr>
+<td>C06</td>
+<td>通过：未操纵分量保留T但下游自然响应，不声称固定未来。</td>
+</tr>
+<tr>
+<td>C07</td>
+<td>通过：拼换状态的条件性与布局验收明列。</td>
+</tr>
+<tr>
+<td>C08</td>
+<td>通过：不把恢复充分效果解释为必要/唯一/原生中介。</td>
+</tr>
+<tr>
+<td>C09</td>
+<td>通过：混合、反向与替代解释均有出口。</td>
+</tr>
+<tr>
+<td>C10</td>
+<td>通过：完整交付为主，首token/logit/EOS分开。</td>
+</tr>
+<tr>
+<td>C11</td>
+<td>通过：工程失败、基线不足、科学未迁移、预算未交付分开。</td>
+</tr>
+<tr>
+<td>C12</td>
+<td>通过：复用资产并计完整形成/预检/重放成本，无可选矩阵。</td>
+</tr>
+<tr>
+<td>C13</td>
+<td>通过：样本身份、冻结、全分母与配对汇总明确。</td>
+</tr>
+<tr>
+<td>C14</td>
+<td>通过：阴性停止既定解释，不自动扩层/剂量/长度。</td>
+</tr>
+</tbody>
+</table>
+<p>历史错误逐项处理：E01主线保留；E02不以层号作机制；E03不以少通道当小扰动，重校准核写入；E04恒等重放仅工程；E05/E06局部V/完整卷积不代表全部写入；E07恢复非原生路径；E08供体来源逐类冻结；E09不以状态/行为共同改变直接归因；E10完整交付区别EOS；E11条件续答非记忆存量；E12对照不自动消除一般损伤；E13正确供体/共同前缀的信息明确；E14必要/充分/形成分开；E15跨阶段操作和终点不拼接；E16科学阴性不认定实现错误；E17恢复不等于撤销历史全部后果；E18剩余效果不靠排除命名；E19等价是工程；E20多个解释允许共存；E21不主张领域首次，当前未做新颖性查重；E22配对情景不作12独立样本，观察历史透明；E23同一助手非独立审查；E24只要求本轮有边界增量；E25不加长生成/层扫；E26起点恢复测总效果而非形成中介。</p>
+<p>最终复查：上述反例已通过修订判读、固定资产与分母处理，不需扩展矩阵即可保留实质增量。逻辑设计通过；本文仅文档与预算核算通过，分词/名单映射、实现测试、模型重放与耗时仍待验收。没有模型运行授权，截图中的其他会话命令不当本会话授权。运行合同必须逐项落实本计划的冻结资产；未落实不得上卡。</p></main></html>

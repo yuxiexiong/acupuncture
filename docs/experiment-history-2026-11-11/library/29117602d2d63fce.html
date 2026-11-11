@@ -1,0 +1,123 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>QST-01（查询相关卷积 q/k 历史能否定向改变完整答案）结果报告</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="qst-01-qk">QST-01（查询相关卷积 q/k 历史能否定向改变完整答案）结果报告</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-query-state-transfer-v1-2026-11-02/REPORT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-query-state-transfer-v1-2026-11-02/REPORT.zh-CN.md">固定提交原件</a>；SHA-256：<code>29117602d2d63fce2a314e16379bafed8137d042084ebf00c2843586094676d2</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="qst-01-qk_1">QST-01（查询相关卷积 q/k 历史能否定向改变完整答案）结果报告</h1>
+<p>日期：2026-11-02。<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-query-state-transfer-v1-2026-11-02/CONTRACT.zh-CN.md">合同 r01</a>；<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-query-state-transfer-v1-2026-11-02/DECISIONS.zh-CN.md">决策 D1–D5</a>；<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-query-state-transfer-v1-2026-11-02/DEVIATIONS.zh-CN.md">冻结后偏离</a>；计划 v1（d4cc83c，评审撰写）。代码 <code>ccefeac</code>，freeze-r01 <code>ae35e8f6…d6e</code>。外来供体轨迹运行前无输出。同一助手实现、运行与撰写。</p>
+<h2 id="1">1. 结论（阴性先说）</h2>
+<ol>
+<li><strong>没有任何定向转移。</strong> 换入另一个查询形成的 q/k 历史后，干净接收者（U）和“受针背景 + 干净 q/k”（H_C）在四个方向都 <strong>84/84 仍然交付接收者自己的答案</strong>；W 全部为 0；J 除 R0 的 H_T 有一条为 0.5（NA-NQ03-ABC-C：自供体输出 W35，换供体 NA-NQ03-ABC-B 后输出原题 W19，未跟随供体目标；R0 H_T 等权 J = 1/72）外均为 0（更正初稿“J 全部为 0”）。九种臂类型（U；四方向 H_C、H_T）都没有达到稳定正向或反向标准；受针削弱判据的前提（H_C 稳定正向）不成立。</li>
+<li><strong>在指定替换下，输出对供体查询身份不敏感。</strong>（更正：初稿写“不同查询留下的 q/k 历史几乎相同”，但本轮没有测 q/k 张量距离，小输出变化也可能来自读出不敏感、冗余或替换背景。） 把 q/k 换成同组另一个查询的，首步共同首字母分数的变化中位数 0、最大 0.125–0.25 logit，诊断三候选分数最大变化 0.125–0.25 logit（1–2 个 BF16 间距），所有臂与方向都如此。这些数值是记录中的输出差，不是张量距离；BF16 间距也不是已测定的噪声上界。</li>
+<li><strong>但“干净 vs 受针”在这块状态里差别很大。</strong> 自供体时，干净 q/k（H_C(a,a) = 旧 T_F）四方向 48/48 交付原题；受针 q/k（H_T(a,a) = 旧 T_V）只有 16/48（N4146）、28/48（N1210）、38/48（R0）、48/48（C1343）。外来受针 q/k（H_T）在 N4146 的 36 个主接收者上两个供体都输出首列编号（36/36），即旧的“首列”偏好，与供体身份无关。</li>
+<li>按计划出口（§7 第 5 行）：<strong>一般恢复成立，查询定向候选未获支持；本候选结束。</strong> 能说的是：深层卷积 q/k 历史对“选对目标”的作用，在这个面板上与“是哪个查询”基本无关，而与“是否在受针条件下形成”有关。</li>
+<li>限制：只测了 NA 原布局、宽窗口 B1、读出前四个模板位置的 q/k 投影；阴性不证明模型没有查询信息：恢复后接收者仍答自己的题，说明整个接收背景保有可用的任务约束，但本轮没有把它定位到递推 S、全注意力 KV 或浅层（更正初稿“S 与 KV 里显然有”）。</li>
+<li>工程全部通过：base、C、T 哈希等于 QCD 阶段 G；624 条自供体臂与 QCD 逐位重放（T_nat 192、U(a,a) 48、H_C(a,a) 192、H_T(a,a) 192）；预检中未替换 C = U(a,a)、两文本重建一致、卷积 4 槽滑窗在形成逐 token 与首读一步都核对通过。</li>
+</ol>
+<h2 id="2">2. 主读数（每格：外来供体的输出 = 原题 / 供体目标 / 其他单编号 / 其他；自供体同列）</h2>
+<table>
+<thead>
+<tr>
+<th>臂</th>
+<th>外来 84</th>
+<th>自供体 48</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>U（干净接收者）</td>
+<td>原题 84</td>
+<td>原题 48</td>
+</tr>
+<tr>
+<td>H_C，四方向各</td>
+<td>原题 84</td>
+<td>原题 48</td>
+</tr>
+<tr>
+<td>H_T N4146</td>
+<td>原题 28 / 供体 28 / 其他单编号 28</td>
+<td>原题 16 / 其他单编号 32</td>
+</tr>
+<tr>
+<td>H_T N1210</td>
+<td>原题 48 / 供体 12 / 其他单编号 14 / 停止 7 / 多编号 2 / 其他 1</td>
+<td>原题 28 / 其他单编号 14 / 停止 4 / 其他 2</td>
+</tr>
+<tr>
+<td>H_T R0</td>
+<td>原题 67 / 供体 9 / 其他单编号 8</td>
+<td>原题 38 / 其他单编号 10</td>
+</tr>
+<tr>
+<td>H_T C1343</td>
+<td>原题 84</td>
+<td>原题 48</td>
+</tr>
+<tr>
+<td>T_nat 四方向</td>
+<td>—</td>
+<td>0 交付（停止 45–48，多编号 0–3）</td>
+</tr>
+</tbody>
+</table>
+<p>H_T 中“供体”计数来自首列偏好：在 N4146 的 36 个主接收者上，两个外来供体下都输出首列编号；当首列恰是某个供体的目标时就被记成“供体”，但 J = 0。</p>
+<h2 id="3">3. 执行</h2>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th style="text-align: right;">形成</th>
+<th style="text-align: right;">自然轨迹</th>
+<th style="text-align: right;">实际解码前向</th>
+<th style="text-align: right;">诊断</th>
+<th style="text-align: right;">墙钟（每 worker）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>预检</td>
+<td style="text-align: right;">30</td>
+<td style="text-align: right;">150</td>
+<td style="text-align: right;">561</td>
+<td style="text-align: right;">150</td>
+<td style="text-align: right;">150 s</td>
+</tr>
+<tr>
+<td>正式</td>
+<td style="text-align: right;">240</td>
+<td style="text-align: right;">1380</td>
+<td style="text-align: right;">5317</td>
+<td style="text-align: right;">1380</td>
+<td style="text-align: right;">701 / 485 s</td>
+</tr>
+</tbody>
+</table>
+<p>合计约 0.37 GPU 设备小时（上限 3）；张量在服务器，哈希在 receipt。</p>
+<h2 id="4">4. 对主线的含义</h2>
+<ul>
+<li>前几轮里“q/k 与 V 一起恢复才能选对”这件事，现在可以更准确地读：在有恢复差距的三个方向，测试过的同组干净 q/k 供体都能补足差距，正确查询身份不是这些成功恢复的必要来源条件。这不是“需要干净 q/k”的必要性定理——C1343 的受针 q/k 同样 48/48。</li>
+<li>所以“受针改变了哪一部分历史、怎样导致选错/复述”，答案不在“查询身份被写进 q/k”这条路上；更可能在 q/k 历史的一般状态（受针形成后整体偏离）如何与读取交互。下一步若继续，应先问：受针形成的 q/k 历史与干净的差在哪些层、哪个方向，这种差能否用一个与查询无关的方向描述——这需要新的计划，本轮不自动展开。</li>
+</ul>
+<h2 id="5">5. 可以说 / 不可以说</h2>
+<table>
+<thead>
+<tr>
+<th>可以说</th>
+<th>不可以说</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>换入另一查询的干净 q/k 历史，U 与 H_C 答案 84/84 不变；输出对供体查询身份不敏感（首步分数变化 ≤0.25 logit）</td>
+<td>q/k 张量跨查询几乎相同；查询信息在 S/KV；模型不编码查询</td>
+</tr>
+<tr>
+<td>恢复所需的是“干净形成”的 q/k，与查询无关</td>
+<td>q/k 是选择模块 / 不是选择模块（本轮只否定了“携带查询身份”这一点）</td>
+</tr>
+<tr>
+<td>受针 q/k 在 N4146 下导致首列偏好，与供体身份无关</td>
+<td>针删除了查询信息</td>
+</tr>
+</tbody>
+</table></main></html>

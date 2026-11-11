@@ -1,0 +1,229 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>WIN-02 设计稿 v2：对预留条件的预测检验</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="win-02-v2">WIN-02 设计稿 v2：对预留条件的预测检验</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>docs/cache-mechanism-win02-prediction-plan-v1-2026-11-04.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-mechanism-win02-prediction-plan-v1-2026-11-04.zh-CN.md">固定提交原件</a>；SHA-256：<code>ad80aad42feea27103d68c151375197ce20b5d01fef4b0a99c6f3cef41bab494</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="win-02-v2_1">WIN-02 设计稿 v2：对预留条件的预测检验</h1>
+<p>2026-11-04。<strong>设计稿 v2，未冻结、未实现、未运行，无 GPU 授权。</strong> v1 见提交 <code>fd59004</code>，本版按 11-04 评审修订。依据：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/window-recovery-win01-v1-2026-11-04/REPORT.zh-CN.md">WIN-01 报告（含更正 1–6）</a>、WIN-01 合同 §11 的预留条件。档位：<strong>推导</strong>＝有论证链；<strong>类比</strong>＝相邻证据；<strong>推测</strong>＝待验证；<strong>探索</strong>＝没有足够依据，不下预测。</p>
+<p><strong>v2 相对 v1 的改动</strong>
+1. W_pre 统一写作"模板＋记录句（0..b）"，不再写"记录句之前"。
+2. 关系 W 不再合并成"前段靠 KV、后段靠递推"，拆成三项逐格检验。
+3. 天花板只免除正向检验；补 KV 改坏原本答对的输入，照常作为反例检验。冻结前给出每个 (针, 任务) 的可检验性。
+4. 跨窗口比较以全体输入的配对差为主判据；救回比例只用于同一窗口内的比较。
+5. 每条预测都写明方向；结论写明限定。
+6. 进入"跨针推广"的节点写死分母、门槛，以及六类结果的展示方式。
+7. 写明不做 S_deep 与 B 块只是本阶段的取舍。</p>
+<h2 id="1">1. 要回答什么</h2>
+<p>本卡要交付一张证据表：<strong>WIN-01 得到的关系，哪些跨针保持、哪些出现分叉、哪些尚无法检验。</strong> 随后再选择能解释共同现象或稳定分叉的写入—读取问题，进入 R3。</p>
+<p>WIN-01 留下的待检验关系（只在两个针条件、两个任务上看到过）：</p>
+<ul>
+<li><strong>关系 W（窗口与错误形态），拆成三项，不预设统一分工：</strong></li>
+<li>W-a：干预只覆盖模板＋记录句（W_pre）时，是否出现首步停止；</li>
+<li>W-b：各窗口下 T 是否答错；</li>
+<li>W-c：各窗口下，恢复递推与恢复 KV 哪一种救回答案。</li>
+</ul>
+<p>WIN-01 中，L0 的 W_pre 两任务都不停但答错、主要由 KV 修复；L1 编号在 W_post 下完全无损伤。这些是逐格观察，不是已成立的机制。
+- <strong>关系 M（同背景下的条件性作用）</strong>：在全前缀干预背景里，恢复全部递推之后，再补模板＋记录句位置（0..b）的 KV，是否有额外作用。成立时只能说"在递推已恢复的背景下，补入这部分 KV 有额外作用"，不能说递推与 KV 的必要分工或完整交互机制。</p>
+<p><strong>阶段取舍</strong>：本卡不做 S_deep（WIN-01 剩下的事实 16 对编号 48 残差），也不做 B 块（跨版本移植）。答案选择、写入与读取问题仍在后续路线（R3）上，只是等本卡的证据表出来后再定对象，不从计划中删除。</p>
+<h2 id="2-win-01-11">2. 条件（全部来自 WIN-01 合同 §11 预留，冻结前不增删）</h2>
+<table>
+<thead>
+<tr>
+<th>针</th>
+<th>来源</th>
+<th>阶段二全前缀下事实任务已见的结果（不算预测）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>L2/C5251/−1</td>
+<td>阶段二固定面板</td>
+<td>T 0/24、0/24；首步停止 0、6；恢复递推 20/24、17/24；恢复 KV 12/24、16/24</td>
+</tr>
+<tr>
+<td>L3/C7666/−1</td>
+<td>同上</td>
+<td>T 6/24、1/24；恢复递推救回 15/18、13/23；恢复 KV 18/18、18/23</td>
+</tr>
+<tr>
+<td>L5/C2467/−1</td>
+<td>同上</td>
+<td>T 7/24、7/24；恢复递推救回 17/17、13/17（历史面板改坏 5）；恢复 KV 13/17、14/17</td>
+</tr>
+<tr>
+<td>R0_L00/−1</td>
+<td>XCHAN 固定随机方向 R0（每位置写入范数与原生针相同）</td>
+<td>无（事实任务从未跑过）</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>已见与未见</strong>：</li>
+<li>已见：事实任务全前缀（W_all）下的 T、R_all、KV_all、R+KV_all。</li>
+<li>未见：事实的 W_pre、W_post；编号任务全部格；全部 R_all＋KV_pre 格；R0 全部格。</li>
+<li>预测只对未见格下注；已见格在新运行中逐位桥接，只作基线。</li>
+<li><strong>代表性限制</strong>：这是固定面板上的三个早中层针，加一个固定随机方向，不是全层或多针的代表性样本。</li>
+<li><strong>剂量不变</strong>：无损伤（T 答错少于 12/48）记为"不适用"，也是结果；不为出现恢复效果而加大剂量。</li>
+</ul>
+<h2 id="3-win-01">3. 操作（沿用 WIN-01 代码与闸门）</h2>
+<ul>
+<li><strong>任务与输入</strong>：事实（阶段二两面板 48 条）、编号（LVK 新面板 48 条）。b 的定义与 WIN-01 相同。</li>
+<li><strong>窗口</strong>：W_all、W_pre、W_post，两任务各沿用本家族的形成实现（WIN-01 D2）。</li>
+<li><strong>臂</strong>：T、R_all、KV_all、R+KV_all；W_all 下加 R_all＋KV_pre；C。</li>
+<li>每输入 53 条轨迹（4 针 × 3 窗口 × 4 臂 ＋ 4 ＋ C）。</li>
+</ul>
+<h2 id="4">4. 读数与判据（数据前写死）</h2>
+<p><strong>通用</strong>
+- 单位为输入，场景等权。场景分层 bootstrap 2000 次，种子 20261103，所有比较共用同一组重抽索引。
+- 方向性标签（每条比较事先写明预期方向）：
+  - <strong>成立</strong>：Δ 与预期同向，区间不含 0，且 |Δ| ≥ 0.20；
+  - <strong>反方向</strong>：Δ 与预期反向，区间不含 0，且 |Δ| ≥ 0.20；
+  - <strong>无可检出差别</strong>：区间完全落在 [−0.10, 0.10]；
+  - <strong>不可判</strong>：其余情况。
+- <strong>无损伤（不适用）</strong>：相应窗口的 T 答错少于 12/48。</p>
+<p><strong>跨窗口比较</strong>
+- 主判据用全体 48 个输入的配对差 Δ ＝ E(w1, A) − E(w2, A)，其中 E ＝ Y(A) − Y(T)（WIN-01 §8.2–8.3 的量）。
+- 救回比例不同窗口间答错的是不同输入，只作辅助描述，不用于判定。</p>
+<p><strong>同窗口比较</strong>：在同一批 T 答错的输入上配对。</p>
+<p><strong>关系 M（W_all 下，R_all＋KV_pre 对 R_all）分两面：</strong>
+- <strong>正向</strong>：在 T 答错且 R_all 也答错的输入上，R_all＋KV_pre 救回的比例。判"成立 / 无差别 / 不可判"（预期为正）。需要至少 10 个这样的输入，否则记<strong>天花板</strong>，不做正向判定。
+- <strong>反向（改坏）</strong>：在 R_all 已答对的输入上，R_all＋KV_pre 改坏的比例。若区间下界 ≥ 0.10，记为<strong>改坏反例</strong>。所有格都检验，包括天花板格。
+- 另报全体输入的配对差（与 WIN-01 M5 同一量），作为描述。</p>
+<p><strong>判读</strong>：事实用盲读（WIN-01 流程，D7、D8）。一读说明写入 V4 的截断规则：答案写出前截断＝not_delivered；修正已给结论时截断＝unclear。编号用 <code>y_full</code>。</p>
+<h2 id="5">5. 预测（数据前登记）</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>预测（方向）</th>
+<th>检验格</th>
+<th>档位</th>
+<th>依据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P1</td>
+<td>W_pre 下 T 的首步停止 ≤ 2/48</td>
+<td>8 格（4 针 × 2 任务）。若该 (针, 任务) 在 W_all、W_post 下也都 &lt; 12 条停止，记"无信息"，不计入成立</td>
+<td>类比</td>
+<td>WIN-01 中 L0 两任务 W_pre 都是 0/48，而 W_all、W_post 几乎全停</td>
+</tr>
+<tr>
+<td>P2</td>
+<td>在 T 首步停止 ≥ 12/48 的窗口，R_all 把停止降到 ≤ 2/48</td>
+<td>由 T 决定的格</td>
+<td>类比</td>
+<td>WIN-01 L0 两任务</td>
+</tr>
+<tr>
+<td>P3</td>
+<td>关系 M 正向成立（预期为正）；且不出现改坏反例</td>
+<td>8 格。事实已知：L2 剩 11 条、L3 剩 13 条可做正向；L5 只剩 4 条，记天花板，只检验改坏。编号与 R0 按 §4 规则在数据后确定</td>
+<td><strong>类比</strong></td>
+<td>WIN-01 M5 四格全部有作用</td>
+</tr>
+<tr>
+<td>P4</td>
+<td>W_pre 下，KV_all 的救回比例高于 R_all（预期为正，同一批 T 答错输入配对）</td>
+<td>W_pre 可检验的格</td>
+<td>推测</td>
+<td>WIN-01 三格成立（L0 两任务、L1 编号），事实 L1 不明显（23 对 17）</td>
+</tr>
+<tr>
+<td>P5</td>
+<td>R0 下 Δ ＝ E(W_post, R_all) − E(W_all, R_all) &gt; 0（预期为正）；W_all、W_post 首步停止 ≥ 12/48，W_pre ≤ 2/48</td>
+<td>R0 × 2 任务</td>
+<td>类比</td>
+<td>EH-XC 中随机方向在 L0 复现原生关系</td>
+</tr>
+<tr>
+<td>E1</td>
+<td>L2、L3、L5 在 W_pre、W_post 下的损伤大小；编号任务上是否有损伤</td>
+<td>—</td>
+<td><strong>探索</strong></td>
+<td>已见数据只有事实全前缀，且 L2 已与 L1 不同</td>
+</tr>
+<tr>
+<td>E2</td>
+<td>各针 W-c（哪种恢复有效）的逐格图样</td>
+<td>—</td>
+<td>探索</td>
+<td>不预设统一分工</td>
+</tr>
+</tbody>
+</table>
+<p><strong>结论限定</strong>：
+- P5 成立只说明"该现象不是 N4146 这个原生通道独有"，不说"不依赖方向"（只有一个随机方向）。
+- P3 成立只说明"在递推已恢复的背景下，补入模板＋记录句位置 KV 有额外作用"。</p>
+<h2 id="6">6. 证据表与进入下一步的节点（数据前写死）</h2>
+<p><strong>证据表</strong>：每条预测逐格列出，每格归入以下一类，全部展示，不只报成功格：
+- 成立；
+- 反方向（含改坏反例）；
+- 无可检出差别；
+- 不可判；
+- 天花板（只检验了改坏）；
+- 无损伤 / 无信息（不适用）。</p>
+<p><strong>节点</strong>（P3 的分母是 8 个 (针, 任务) 格）：</p>
+<table>
+<thead>
+<tr>
+<th>情况</th>
+<th>读法</th>
+<th>下一步</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>正向可检验格 ≥ 4，其中 ≥ 3/4 判成立，且全部 8 格都没有反方向或改坏反例</td>
+<td>关系 M 在本卡条件下跨针保持</td>
+<td>进入 R3：选一个代表条件，连接写入—读取（补回的 KV 里哪些位置、哪些层被后续读取所用，再看同一读取是否解释 WIN-01 B 块的答案转移）</td>
+</tr>
+<tr>
+<td>正向可检验格 &lt; 4</td>
+<td>大部分不可判，<strong>不进入推广分支</strong></td>
+<td>照实记录覆盖范围；先讨论如何得到可检验条件，不用剩下的少数成功格恢复单点深挖</td>
+</tr>
+<tr>
+<td>任何一格出现反方向或改坏反例</td>
+<td>关系 M 有条件边界，分叉保留</td>
+<td>下一卡围绕这个分叉：对比成立格与反例格，先查损伤来源（W_pre 下 T 的答错与停止），再决定检验对象</td>
+</tr>
+<tr>
+<td>只有 1–2 格成立，其余不可判或无差别</td>
+<td>证据不足以推广</td>
+<td>不据此深挖单个条件；与上一行一样先讨论</td>
+</tr>
+<tr>
+<td>P1、P2、P4 的结果</td>
+<td>逐格记入证据表</td>
+<td>不单独立卡；只作为关系 W 的覆盖说明</td>
+</tr>
+<tr>
+<td>P5 成立 / 反方向</td>
+<td>该窗口图样不是 / 不只是 N4146 独有</td>
+<td>并入证据表，说明适用范围</td>
+</tr>
+</tbody>
+</table>
+<h2 id="7">7. 成本与判读量（粗估，以预检实测为准）</h2>
+<ul>
+<li><strong>GPU</strong>：</li>
+<li>事实每对约 2 × 53 条生成，按 WIN-01 实测约 420 s，共约 2.8 GPUh；</li>
+<li>编号每条约 40 s，共约 0.5 GPUh；</li>
+<li>合计约 3.3 GPUh，上限 7 GPUh，双卡。</li>
+<li><strong>盲读</strong>：</li>
+<li>事实范围内约 2,544 条回答；</li>
+<li>W_all 下 T、R_all、KV_all、R+KV_all 逐位桥接阶段二，沿用标签（L2/L3/L5 约 576 条；R0 无阶段二记录）；</li>
+<li>去重后新读估计 1,200–1,600 个文本。</li>
+</ul>
+<h2 id="8-gpu">8. 冻结前要做的（零 GPU）</h2>
+<ol>
+<li><strong>R0 写入审计</strong>：R0 的 scale 用事实本题 f0 版校准，与原生针同一规则；冒烟中确认写入范数误差 ≤ 1%。</li>
+<li><strong>代码改动</strong>：
+   - 针集合改为预留四个；
+   - 去掉 S_deep 与 B 块；
+   - 分析实现 §4 的方向性标签、关系 M 的正反两面、天花板与改坏反例、§6 的证据表与节点；
+   - 一读说明加 V4 截断规则。</li>
+<li><strong>CPU 测试与 6.2 演示</strong>：成立、反方向、无差别、不可判、天花板、改坏反例、无信息，各演示能满足与不能满足。</li>
+<li><strong>按惯例推进</strong>：合同 → 冒烟 → 冻结 → 预检 → 正式 → 盲读 → 冻结分析 → 报告。</li>
+</ol></main></html>

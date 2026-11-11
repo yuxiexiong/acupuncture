@@ -1,0 +1,511 @@
+# 021．内部轨迹A：Qwen早层首批
+
+[返回总时间线](../README.zh-CN.md)
+
+**时间定位**：版本/记录日期 2026-10-28；未从所选收据确定完整运行起止，不据目录名补写时刻。
+
+**当时的目的与设计**
+
+对既有单针回答重放内部计算：2B/4B注入L0–L3，9B注入L0–L5，同时观测模型全部层，追踪差异沿层与生成步的传播。
+
+**实际过程、结果与后来更正**
+
+完成2152正式轨迹和42预检。它们是既有回答的内部重放，不能和原回答数相加作为新样本；完整采集字段、零剂量与撤钩子验收、归档哈希见本章。
+
+**来源身份**：`early-layer-mechanism-v1-2026-10-28`；本章主体来源提交 `7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8`。下方原文中的状态是各文件写作时的状态，不能把早期“尚未运行”覆盖后期正式收据，也不能将后期结果倒填进早期设计。
+
+
+## 原设计、执行过程、结果与更正全文
+
+以下按“设计与题目 → 工程/执行记录 → 结果/更正 → 其他历史说明”组织；同类内没有可靠时间时保留路径顺序，不冒充严格先后。正文未删段；仅为本章节重排标题层级、把相对链接指向固定提交。原始字节另外完整保存。
+
+### 原件 1：早层内部轨迹采集合同
+
+原路径：`experiments/early-layer-mechanism-v1-2026-10-28/CONTRACT.zh-CN.md`。 [固定提交原文](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-layer-mechanism-v1-2026-10-28/CONTRACT.zh-CN.md) · [单独阅读副本](../library/099575a1818dd1ff.md)；SHA-256：`099575a1818dd1ffd7a32e14e2afdab2bd11386ca7902586a49cad1e68561ea2`。
+
+---
+
+#### 早层内部轨迹采集合同
+
+日期：2026-10-28。实验：`early-layer-mechanism-v1-2026-10-28`。来源设计见 [PLAN.zh-CN.md](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-layer-mechanism-v1-2026-10-28/PLAN.zh-CN.md)，机器可读范围见 [contract.json](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-layer-mechanism-v1-2026-10-28/contract.json)。
+
+本合同记录已授权范围和验收条件；合同存在本身不表示 CPU 测试、GPU 预检或正式采集已经通过。各阶段结果以运行收据为准。本轮研究目标是补足内部资料，交付三模型可比较的机制线索；发现统一根因不是成功前提。
+
+##### 1. 用户授权与执行边界
+
+用户原话：
+
+> 好的，你现在写合同，写代码，然后做测试，全部通过了以后，你直接上服务器排队，现在服务器上应该是有实验，你上服务器排队，等他退出服务器以后，你直接跑实验。
+
+授权链为：实现与 CPU 测试 → 将冻结代码和来源部署到服务器排队 → 既有实验结束且资源释放后运行有限真实 GPU 预检 → 三模型全部预检通过后自动开始正式采集。正式采集无需再次询问。预检失败则保留失败证据并停止本轮，修正工程问题后重新冻结、重新验证；不得静默放松标准或增加科学条件。
+
+等待中的既有任务为 `llama31-single-point-dose-survey-v1-2026-10-28/survey-r01`。启动须同时确认该任务成功结束、原 workers 退出、GPU 0/1 没有计算进程。不得杀掉、暂停或挤占既有作业；仅有空闲显存不构成可以启动的证据。队列在服务器独立进程中运行，运行状态及日志落盘。
+
+本轮只采集 Qwen3.5-2B、4B、9B 的既有条件。用户已撤下因果修复/反向替换阶段；不得重新加入 patch、移植、随机方向、新题、新剂量、新通道或新模型。不得训练、改模型参数或启动旧项目中未获授权的试验。
+
+##### 2. 固定来源、身份和数量
+
+三份源文件及 SHA-256 均固定在 `contract.json`。它们分别来自既有全层十点、正剂量、负剂量实验的 `delivery-r01/all.records.jsonl`。先验证文件哈希，再按 `(model_id, layer, channel, dose, question_id)` 去重；原版身份使用空层/通道、零剂量。完整源集为 13,400 个唯一身份和 4,272 次相同 token 的重复引用。相同身份输出冲突必须失败；保留来源行号、原始记录位置和哈希，不覆盖旧记录。
+
+| 模型 | 原模型总层数 | 核心注入层 | 边界注入层 | 干预回答 | 共享原版 | 合计 |
+|---|---:|---|---|---:|---:|---:|
+| Qwen3.5-2B | 24 | L0–L2 | L3 | 608 | 8 | 616 |
+| Qwen3.5-4B | 32 | L0–L2 | L3 | 608 | 8 | 616 |
+| Qwen3.5-9B | 32 | L0–L4 | L5 | 912 | 8 | 920 |
+| 合计 | — | 11 层 | 3 层 | 2,128 | 24 | **2,152** |
+
+每层原来有十个通道各 +1 的八题回答，以及其中一个既有通道的四档低正剂量、五档负剂量：`(10 + 4 + 5) × 8 = 152`。剂量为 ±1/16、±1/8、±1/4、±1/2、±1；不是给全部十通道补足十档。共享零剂量原版每模型仅八份。4B L6 案例不在范围内。
+
+模型 revision、目录、维度沿用原实验并写入合同。题目、共同指令、原 prompt、原校准、通道及 BF16 偏移、原输出 token 和历史 shard 都须保留身份。本轮按模型内排序后的 `(layer, channel, dose)` 条件交替分配执行 shard，同一条件八题在同一 shard，八份原版归 shard 0；`historical_shard` 与本轮 `shard` 分开保存。重新分片仅用于负载分配，不改变科学条件。运行资产及依赖代码另行冻结哈希；运行时校验后才加载模型。失败和修正版写入新运行目录，禁止覆盖原始回答或把不一致输出替代旧证据。
+
+##### 3. 干预与生成保持原样
+
+干预仍是 gated MLP 进入 `down_proj` 前的一个原坐标，覆盖全部 prompt 和实际生成输入位置。偏移公式为 `c = dose × m / ||W_down[:, channel]||₂`，其中 `m` 是原清洁 prompt 的逐层 token 残差范数中位数，排除首 token。每档从原比例计算后单独转 BF16；不把已舍入的 +1 偏移乘剂量，不用生成前缀重新校准。
+
+沿用原 chat template、thinking 关闭、BF16、eager、greedy、batch=1、cache 开启、最多 128 个新 token、原停止 token。EOS 自然结束，不补 token、不续写、不为语义结果重试。逐条要求与源 token 序列、prompt/token 哈希、校准尺度和干预身份一致。字数短、原版错误或干预没有效果均是有效观测。
+
+##### 4. 内部观察和同前缀无针参照
+
+注入范围限于早层，但观察覆盖模型**全部层**的 attention/GatedDeltaNet 输出、MLP 输出、层末残差。从 prompt 全位置记录至实际生成停止；最终输出 token 之后不人为追加一次前向。每个位置保存清洁/干预范数、差分范数、相对清洁幅度和余弦。零清洁范数产生的未定义值须显式标明，不能填零。
+
+干预分支使用原生成路径自由生成；无针参照使用独立 cache，按相同增量方式强制接收干预分支已经选择的 token。在强制 token 选择前记录无针 logits。它是“相同历史下无针会怎样预测”的参照；不是原版自由生成回答，也不能取两条已经分叉的自由回答按 token 序号相减。权重可共用，cache 和干预 hook 状态必须分离。
+
+每个预测步记录两分支停止 token 的 logits/概率、最高非停止候选、各自 top 候选及并集交叉分数、实际 token、前缀身份、首次预测分叉。停止优势为 `max(stop_logits) − max(nonstop_logits)`。保存原版自由回答和干预原文，保证每个图上点能返回真实来源。
+
+在 GPU 端计算摘要、集中回传，不默认保存全量高维向量。无针参照属于本轮必要测量对照：增加计算量，但不增加正式科学条件数。GatedDeltaNet 不能伪造为标准 attention 矩阵。
+
+##### 5. 冻结、测试与真实预检
+
+CPU 测试须先验证来源去重和冲突拒绝、2,152 条范围与历史身份、预检选择确定性、注入/观察位置计算、摘要定义、强制前缀逻辑及队列互斥。CPU 通过只证明实现检查通过，不代表真实模型输出已复现。
+
+真实预检固定三个模型、每模型两个 worker，每 worker 七个有观察器案例：Q01 清洁 baseline，四个互不重复的既有干预代表（单 EOS、长正剂量输出、负剂量、低正剂量），Q01 零剂量，Q01 撤针恢复。四个代表来自该模型的本轮执行 shard；没有单 EOS 时选最短输出替代，保留替代事实。最短/最长按 token 长度和 trace ID 排序，负剂量与低正剂量按 trace ID 取未选过的第一条；零剂量点取该 shard 最小 trace ID 的原注入点。Q01 在两个预检 worker 上重复用于校验执行环境，历史来源 shard 另行保留，不改来源身份。精确身份在冻结来源清单中记录。
+
+前五个案例各加一次无观察器重放；每个有观察器案例包含实际分支和独立 cache 的无针参照。因此每 worker 为 `7 × 2 + 5 = 19` 条生成流，六个 worker 共 **42 个观察案例、30 个无观察器重放、114 条生成流**。正式 2,152 个来源有 4,304 条生成流；预检结果不加入正式条件分母、不写作新增现象。清洁校准和权重校验的额外成本另计。精确来源清单及实现未冻结不得提交正式队列。
+
+预检必须验证：
+
+1. 组件观察器开启/关闭时生成 token 一致、同输入 clean logits 守恒；不仅检查文本相同。“关闭”分支仍保留只读 logits 记录以便逐步哈希比较，不采集组件张量。
+2. 每个代表来源严格重放，包含原 prompt/校准/偏移身份；128 token 上限与 EOS 停止均保留。
+3. 零剂量等于清洁分支，撤针后恢复；所有 hook 清除，目标权重前后哈希相同。
+4. 独立 cache 与强制前缀正确；记录的是强制选择前的 clean logits，shadow token 等于目标 token。
+5. 全层三类组件和全部应有位置覆盖；同 prompt 下针前组件不受修改；数值有限或有明示的零范数未定义原因。
+
+所有三模型预检通过后才开始正式采集。任一失败、身份冲突、源 token 不一致或位置缺失均不得带病进入正式运行；失败证据和已采集数据保留。
+
+##### 6. 完成标准、成本与结论边界
+
+正式完成须有 2,152 个唯一来源身份，全部通过精确重放、内部位置覆盖及数值检查；重复、缺失和失败均须逐条列出，不能用只统计成功的分母。记录每个 worker 起止、实际 GPU/墙钟耗时、预检与 shadow 附加成本；来源旧耗时不能冒充本轮实测。当前 [ETA.json](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-layer-mechanism-v1-2026-10-28/ETA.json) 的 2.5–4.5 小时机器预算依赖未实测 hook 倍率，排队时间另计。
+
+本轮数值可支持三维层图的实测差分覆盖、token 步切换和原文联动。三维坐标或静态权重连线不等于因果路径；不同模型的不同维度向量不能直接相减，同层号/同通道号也不等于同功能区。保留绝对层号、相对深度、组件类型和原始尺度。
+
+差分、停止倾向或跨模型重复模式是待解释的线索；本轮不能单独证明根因、人脑式功能分区、跨模型同源区或“道德/安全神经元”。无共同模式也是可交付结果。合同验收依赖资料完整和测量有效，不依赖论文结论成立。
+
+---
+
+### 原件 2：早层干预的内部资料采集与跨规模比较：第一轮实验设计
+
+原路径：`experiments/early-layer-mechanism-v1-2026-10-28/PLAN.zh-CN.md`。 [固定提交原文](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-layer-mechanism-v1-2026-10-28/PLAN.zh-CN.md) · [单独阅读副本](../library/be142764b0aa58dd.md)；SHA-256：`be142764b0aa58dd27ebb773fb0c728a95a6164ee20f73e802a8f98c0db6a977`。
+
+---
+
+#### 早层干预的内部资料采集与跨规模比较：第一轮实验设计
+
+##### Material Passport
+
+- 日期：2026-10-28，北京时间。
+- Origin Skill / Mode：academic-research-suite / experiment-agent plan；实现遵循 Ponytail full，复用既有引擎和采集点。
+- 状态（2026-10-28 02:23更新）：合同与代码已冻结，服务器24项CPU测试全过，后台队列正在等待前置Llama实验；尚未启动GPU预检或正式采集。见[执行记录](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-layer-mechanism-v1-2026-10-28/EXECUTION.zh-CN.md)。以下ETA保留为预检前规划估计。
+- 用户目标：将早层现象列为当前研究优先项；为这些层已经做过的全部条件补充内部记录，并寻找空答、乱码、重复和语义离题的原因。
+- 本轮决策：按用户最新纠正，2B、4B、9B作为同一轮、按相同规格完整采集并比较。撤下原拟4B因果验证阶段；本轮不进行候选修复、反向替换或额外随机方向试验。
+- 修订说明：旧方案的采集阶段原本已经包含三模型；本次保留全部覆盖，把交付重心放在可比较的内部资料和三维观察，未执行过被撤下的阶段。
+- 证据等级：范围与旧耗时为本地原记录实算；新采集开销和交付时间为规划情景；机制解释尚未验证。
+
+##### 1. 研究问题和范围
+
+研究问题：早层既有单通道干预在整个模型内部产生怎样的逐层、逐token变化；这些变化如何随剂量和问题改变，如何与空答、重复、乱码或语义离题相伴；2B、4B、9B中有哪些共同模式和差异？本轮收集机制线索，不以确认根因为完成条件。
+
+以下“早层”来自旧观察，不是已确认的功能区。层号从0开始。边界层用于避免只看异常最强的区域，不能单靠一个边界层证明早层独特性。
+
+| 模型 | 核心范围 | 紧邻边界对照 | 全部既有干预回答 | 共享原版 | 本轮重放来源数 |
+|---|---|---|---:|---:|---:|
+| Qwen3.5-2B | L0–L2，3层 | L3 | 608 | 8 | 616 |
+| Qwen3.5-4B | L0–L2，3层 | L3 | 608 | 8 | 616 |
+| Qwen3.5-9B | L0–L4，5层 | L5 | 912 | 8 | 920 |
+| 合计 | 11个核心层 | 3个边界层 | 2,128 | 24 | **2,152** |
+
+仅核心范围为1,672份干预+24份原版=1,696份。4B的L6基因例不属于这个核心，本轮不悄悄扩大到L6。
+
+每层是十个旧通道各+1、每点八题（80份），其中一个旧通道另有四档低正剂量及五档负剂量（72份），合计152份。**不是每层十点均有十档剂量。** 本轮补内部观察，不补齐原来未测的通道—剂量组合。
+
+三轮源JSONL按模型、层、通道、剂量、题号去重，13,400条唯一记录、4,272次相同token的重复引用核对通过。来源SHA和本轮数量见[ETA.json](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-layer-mechanism-v1-2026-10-28/ETA.json)。
+
+##### 2. 不变的实验条件
+
+- 沿用三模型原权重revision、库版本、原八题、共同指令、聊天模板、thinking关闭、BF16/eager、greedy、batch=1。
+- 沿用每题原prompt的清洁校准：`c=d*m/||W_down[:,n]||`；不把答案或新增前缀加入m的重新校准。
+- 注入点仍为gated MLP进入down_proj前的同一坐标；覆盖原完整prompt及全部生成步。
+- 正负剂量仍为±1/16、±1/8、±1/4、±1/2、±1；按既有身份保留实际BF16偏移。
+- 独立上下文/cache，最多128新token，EOS自然停止，不续写、不补齐、不为好看重试。
+- 原版错误、异常回答、正常回答和不符合预期的结果全部保留。128上限不直接判为循环；EOS不直接判为答对。
+
+##### 3. 全部旧条件加观察hook，记录实际轨迹和同输入差分
+
+###### 3.1. 完整自由生成重放
+
+每个模型先重放八份原版，再重放范围内全部干预来源。观察hook启用后，token序列应与对应旧来源一致；不一致先作为技术问题排查，不能默默替换旧结果。
+
+从prompt全位置到生成结束，记录每一层的三个观察点：
+
+1. attention或GatedDeltaNet组件输出；
+2. MLP向残差写入的输出贡献；
+3. 层末残差。
+
+这覆盖首次EOS，也覆盖先成句后乱码/重复的全过程。图上每个点都能回到旧原文与此次重放记录。
+
+###### 3.2. 相同前缀的无针参照（shadow clean）
+
+干预分支自由选择下一个token；另有独立cache的无针参照分支，逐步接收干预分支已经生成的相同token。两个分支在相同完整历史下计算下一步，比较同位置内部量。
+
+- 初次输出前，两者都读原prompt；后续逐步强制喂入相同的干预前缀。
+- 无针参照的预测仅记录，不决定下一步输入；它是**同历史反事实参照**，不是原版自由生成的回答。
+- 保留独立的原版自由回答，供用户比较真实行为。不得把两条分叉后的自由回答按token序号直接相减。
+- 逐步使用原cached前向方式，避免把整段teacher forcing与原增量生成数值默认等同。
+- 两条cache分离；同一份权重按分支分别启用/撤去干预，不需复制两份模型。
+- 若在错误历史下无针参照也预测重复，记录为历史反馈线索，不宣称原针没有作用：原针可能正是错误前缀的来源。
+
+###### 3.3. 保存什么
+
+全层、全prompt位置及全部实际生成步保存：清洁/干预输出范数、差分范数、相对清洁幅度和余弦变化；清洁范数为零时相对量记未定义。不同深度同时显示参考尺度，不能将绝对范数更大直接叫作扰动放大。
+
+每个预测步保存两分支的：指定停止token分数/概率、最高非停止候选、各自top候选，以及对两分支候选并集的交叉评分。停止优势定义为 `max(logit_stop)-max(logit_nonstop)`。记录当前前缀、实际选择token及首次分叉位置。
+
+本轮保存数值摘要，足以进行逐层和逐token比较；若以后需要局部完整向量，再单独确定采集范围。完整全层向量会产生数十到数百GiB，不作为第一轮默认交付；避免把旧采集器的逐hook `.cpu()` 同步拷贝直接搬进生成循环。摘要在设备端计算、集中搬运；原始输出和身份完整保留。
+
+这些数值属于观察证据。大的差分、早的变化或词概率倾向均不能单独确定原因；GatedDeltaNet输出也不能画成标准attention矩阵。
+
+##### 4. 三模型共同分析：先搜集和比较线索
+
+2B、4B、9B都完成相同三类组件观察、同前缀无针参照、逐步输出读数和原文联动；不把2B/9B降为只有外部回答的附属验证。
+
+本轮优先回答：
+
+1. **同样的早层异常，内部变化是否相似？** 对照空答、重复/特殊标记、乱码、流畅离题及正常回答，观察差分集中于哪些组件、提示位置和生成时刻；不预设三模型必须共享一种原因。
+2. **剂量转折在哪里？** 看同一点低剂量到高剂量、正向到负向时，内部差异和词概率竞争怎样变化；保持离散档位，不拟合未测的精确阈值。
+3. **哪些模式跨题出现、哪些只在特定题出现？** 保留原八题逐题读数和反例，不把模型原版自身的错误计为新增损伤。
+4. **规模差异表现在哪里？** 比较各模型内部归一化后的差分、方向变化、停止优势、首次输出分叉位置和输出形态。绝对层号与相对深度同时列出；attention/GatedDeltaNet/MLP类型分开。
+
+跨模型可以并排比较模式，不能直接对不同维度的激活相减，也不能把相同通道号、相近三维坐标或相对层深视为功能对应。只有确认测量定义相同后才作汇总；三维色标说明归一化方式，原值仍可查看。
+
+保留全部数值与原文，程序只统计客观停止/长度/数值变化；nonsense、乱码、重复、离题的语义判断分别保留阅读依据。128上限不是循环标签，流畅不等于正确。
+
+观察hook和相同前缀的无针参照继续保留：它们是把资料收集正确所需的对照，不属于被撤下的因果验证阶段。本轮不新增修复、反向移植、候选筛选后追加推理或自然功能命名。
+
+##### 5. 验收、可视化与交付
+
+真实预检将覆盖每模型的短EOS、长输出、低剂量和负剂量；比较观察hook开/关、零剂量、撤针恢复、目标权重哈希、位置计数、分支cache隔离、输出token与数值有限性。预检数量在实现冻结时确定并单列，当前不执行。
+
+应验证原prompt中注入之前的同层组件不被观察器误改；清洁—清洁差分为零；观察器不改变原生成结果。任何身份或重放不一致先修复工程问题、保留失败收据，不能放宽成“差不多”。
+
+复用现有3D层图，增加本轮实测差分覆盖和token步选择：点开看注入层/通道/剂量、同前缀组件差分、停止优势、原版/干预回答；静态权重连线继续标成结构线索；三模型采用同一套数据入口和比较方式，不把差分自动连成已确认路径。
+
+交付为：全条件来源索引与重放收据、逐层逐位置摘要、逐步输出读数、原文对照、三维入口、三模型共同模式/差异及反例，以及可继续讨论的机制线索和未解问题。未测值保持缺失，不填零。
+
+现成采集器仅支持旧4B A/B/AB和有限剂量，需复用其观察点而适配当前三模型单针身份；旧科学代码与原数据保持原样。Serena在本会话不可用，本轮通过本地源码和收据核对复用范围。
+
+##### 6. ETA：历史实测底座与新增工作分开
+
+按每条原记录的`output.batch_seconds`，按原shard求和取慢卡，再串行相加各模型。来源哈希、去重校验与实算结果见[ETA.json](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-layer-mechanism-v1-2026-10-28/ETA.json)。
+
+| 范围 | 来源数 | 旧生成token | 旧双卡纯生成参考 |
+|---|---:|---:|---:|
+| 2B核心+边界 | 616 | 38,057 | 14.94分钟 |
+| 4B核心+边界 | 616 | 19,662 | 10.89分钟 |
+| 9B核心+边界 | 920 | 33,065 | 19.39分钟 |
+| 全部 | 2,152 | 90,784 | **45.22分钟** |
+
+新采集计算情景：`旧时间×约2条前向分支×记录开销倍率`。倍率1.5–2.5是**未实测的工程预算假设**，不是置信区间；前提是GPU端摘要和集中拷贝。得到约136–226分钟，再留15–30分钟作预检、加载、校验和保存，取整为**2.5–4.5小时**。
+
+若记录开销达到4倍，采集计算本身约362分钟，含上述准备约6.3–6.6小时。此情景说明当前ETA并无硬上界；未来短/长输出真实预检后要重估，不能拿45分钟对外承诺完整hook实验。
+
+| 部分 | 规划耗时 | 口径 |
+|---|---:|---|
+| 实现适配及CPU核验 | 1–2小时 | 工程预算，不是已完成工作 |
+| 全三模型采集、预检及保存 | 2.5–4.5小时 | 两张可用H20；同前缀双分支及内部摘要 |
+| 初步分析、接图与证据导出 | 0.5–1小时 | 程序汇总及代表性原文/反例复核；不含独立人工全量盲评 |
+| 从开始实现至首轮可讨论交付 | **约4–8小时有效工作时间** | 保守取整，不含等待其他任务释放GPU |
+
+机器采集阶段约**2.5–4.5小时**；若两卡全程占用，约**5–9 GPU小时**。实现、采集、初步分析的区间相加为4–7.5小时，向外取整为4–8小时，不含排队。与上一版相比，撤去约0.5–1小时的4B因果定位预算，三模型采集预算没有重复增加。
+
+三模型是同一批覆盖，不承诺在两张GPU上三模型同时加载。保持每模型两worker、模型分批调度；某模型先完成可先查看，但本轮完成条件是三模型全部采集、核验并接入比较。历史45.22分钟底座按这一调度计算，未来预检后再确定实际顺序和更新时间。
+
+没有检查或抢占服务器当前任务，不给绝对完成钟点。这里的ETA是交付三模型完整内部记录、三维比较和第一轮线索分析的时间，**不是保证在这些小时内发现统一根因或完成论文的时间**。
+
+##### 7. 依据
+
+- [全层协议](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-survey-toy-v1-2026-10-27/PROTOCOL.zh-CN.md)及[首次开放阅读](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-survey-toy-v1-2026-10-27/qualitative-pass-r01/FIRST_PASS.zh-CN.md)
+- [正剂量协议](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-dose-survey-toy-v1-2026-10-27/PROTOCOL.zh-CN.md)及[正式完成记录](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-dose-survey-toy-v1-2026-10-27/FORMAL_EXECUTION.zh-CN.md)
+- [负剂量协议](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-negative-dose-survey-toy-v1-2026-10-27/PROTOCOL.zh-CN.md)及[耗时账本](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-negative-dose-survey-toy-v1-2026-10-27/readiness/formal-cost-final-r01.json)
+- [内部差分准备](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/neuron-explorer-analysis-v1-2026-10-26/README.zh-CN.md)及[CPU准备收据](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/neuron-explorer-analysis-v1-2026-10-26/prepare-receipt.json)
+- [三维脑图验收收据](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/neuron-explorer-multimodel-v2-2026-10-26/brainmap-r01/receipt.json)
+- [旧两针根因实验的结果边界](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/root-cause-toy-v1-2026-10-26/RESULTS.zh-CN.md)
+
+---
+
+### 原件 3：早层失稳机制归因：七步查重报告
+
+原路径：`docs/literature/early-layer-mechanism-related-work-audit-2026-10-28.zh-CN.md`。 [固定提交原文](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/literature/early-layer-mechanism-related-work-audit-2026-10-28.zh-CN.md) · [单独阅读副本](../library/74194f1680c15622.md)；SHA-256：`74194f1680c15622998174249ec312dd00db4f9e48cd7e0696442dcd904350ed`。
+
+---
+
+#### 早层失稳机制归因：七步查重报告
+
+日期：2026-10-28（北京时间晚）。状态：**纯覆盖报告**，不含新颖性论证；新颖性段落等合同 1 结果站稳后再写。对象是 [下一阶段建议](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/next-stage-dose-calibration-proposal-2026-10-28.zh-CN.md) 保留下来的主线：早层扎针后输出溃散的机制归因（主张 A、第 3.1 节四格仪器、主张 C）。剂量单位与输入依赖判据已由 [10-28 剂量查重](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/literature/dose-calibration-related-work-audit-2026-10-28.zh-CN.md) 覆盖，本报告不重做，只在新证据改变其判读时注明。
+
+全文对推断按三档标注：**推导**（有论证链）、**类比**（有邻域证据，跨域未验证）、**推测**（需独立验证）。被占的每一行都标层：**方法被占**不致命；**对象被占**、**结论被占**致命。
+
+##### 0. 结论先行
+
+坏消息先说。这里只放事实约束与竞争解释；"前人见过"不算坏消息，按青蒿素判据另列于后。
+
+1. **C3 的定性几何是结论被占。** "同一常向量加到所有位置使表示向 ĉ 收拢"可以由两条已发表结果推出：2602.02712 命题 4.1（α→∞ 时 logits 收敛到 LN(v)Wᵀ，与输入无关）和 2510.06477 定理 1、推论 2（共同大分量迫使最大奇异值占优，并给出各向异性与熵的界）。这句定性陈述只作必引。两者都没给出的是：有限剂量下哪一层、多大剂量已进入渐近区。这一步是提纯，见第 4.1 节。
+2. **"压缩导致题目信息不可用"有直接反证。** 2510.06477 显示正常模型的中层本来就压缩到约 0.02 比特熵，而模型照常工作。所以收拢本身不足以解释失稳，第 3.1 节"方向收拢不等于信息已被抹掉"的保留是对的，而且必须升格为待检验的分叉。
+3. **C1 的"早层天生更脆弱"有不利的类比证据。** 2606.11375 发现按每层激活尺度归一化之后，探针层面的深度脆弱性梯度大部分消失。C1 应限定在输出层面陈述，不能写成"早层表示更脆弱"。
+4. **C5 有一条文献支撑更强的竞争解释。** 2608.12149 在包括 Qwen3.5 在内的混合线性注意力模型里发现，massive activation 在每个全注意力层的前一层写入首 token 与标点，在全注意力层充当 sink，随后被抵消；删掉其中最大的 4 个坐标，下游准确率相对下降 21.9%–63.6%。仓库数据里 2B/4B 的失稳恰在 L3（第一个全注意力层）骤停。"注入破坏 sink 形成"必须作为对照假说写进合同。这一条属于**类比**。
+
+先例支持现象的普遍性（青蒿入药，不是否证）：
+
+- **C1 的现象在相邻干预类型上已被观察。** Ben-Artzy 与 Schwartz（2409.03621）把前面 token 的隐藏态在早层换成等范数随机向量，任务掉到随机水平；在后 30–50% 层这样做几乎无损。Lad 等（2406.19384）删或换第一层是灾难性的，作者解释为后续网络"对当前 token 失明"。它们说明早层失明不是我们配方或 Qwen3.5 的特例。只禁一句过度声明："首次发现早层干预使输出与输入无关"。
+- C1 的后一半"深层保持题目依赖"，在提示位置这部分与两段式结果一致，可直接引作解释。
+
+仍空着的，均在对象层：
+
+- 单个原生 MLP 通道、按残差范数标定的加性剂量、早层全层扫描、四模型的输出失稳分型。Liu 2606.19831 全文点名的神经元最早在 L8，正文没有 L0–L7。
+- 用"信息在场对读出被压"的读数去**归属转向导致的崩溃**。概念上的区分已有（Shih 2606.29522），但对象是成功的功能向量转向、中层、微调后的状态追踪模型。
+- Qwen3.5-2B/4B/9B 上 sink 形成层与失稳区边界的关系。2608.12149 覆盖的 Qwen3.5 是 27B、35B-A3B、122B、397B。
+
+本轮是 C2–C5 按现行表述的**第一轮**检索；C1 的一部分在 10-28 剂量查重中经过一轮。存活不等于强度，见第 5 节阅读量。
+
+##### 1. 被查主张与预期结论句
+
+| 编号 | 主张 |
+|---|---|
+| C1 | 单通道 MLP 加性干预（剂量 = 该层残差范数中位数的倍数，全提示位置注入）在 L0–L3 使输出与题目无关（首步 EOS、常数 token 循环、模板回声）；深层保持题目依赖、坏在内容；控制实际强度与注入时段后仍成立 |
+| C2 | 配对事实题（只差一个关键事实）上的事实边际与压制量组成四格，区分"信息受损"与"输出被压制" |
+| C3 | RMSNorm 之后同一常向量加到所有位置，各位置方向向 ĉ 收拢，位置间角度差被压缩；早层残差约等于 embedding、范数小，故更脆弱 |
+| C4 | 早层崩溃是 prefill 位置现象，只解码注入在早层不崩 |
+| C5（推测） | 失稳持续到哪一层，由残差中 embedding 以外成分的占比决定 |
+
+结论层检索用的预期结论句：S1 早层扰动使输出与提示无关而深层不会；S2 早层干预破坏信息、后层干预偏置读出；S3 常向量加到所有位置使表示塌缩；S4 早层扰动造成崩溃的机制是破坏 attention sink 或 massive activation 的形成。
+
+##### 2. 七步执行记录
+
+按协议记忆的修订顺序执行：6 → 5 → 1/2/3/4 → 7。判生死的引用一律取 PDF、`pdftotext` 抽文本后 `grep` 核对；搜索摘要器的转述不作证据。本轮就抓到一次摘要器转述错误：2606.11375 把 APEX 描述为"输出不再依赖输入时的噪声水平"，而 APEX 原文（2602.03586）是 CIFAR-10 上 top-1 概率降到 0.5 以下的噪声尺度，与输入无关性无关。
+
+| 步 | 做法与查询数 | 主要命中 |
+|---|---|---|
+| 6 对抗检索（前置） | 显式问"什么能杀死它"；11 条 | Shih 2606.29522（状态对偏置）；2608.12149（Qwen3.5 族 PAS）；2510.06477（sink 与压缩谷，定理 1）；2511.17194（BOS 锚定扰动沿压缩谷放大）；2606.11375（归一化后深度梯度消失）；Ben-Artzy 2409.03621；SKOP 2605.06342（转向改 QK 匹配致注意力改道） |
+| 5 引用链 | Semantic Scholar 前向被引 6 个邻居，取到 4 个；OpenAlex 补 1 个 | 2510.06477 的 62 个被引中取出 2610.16745（sink 形成前的隐藏态几何，可因果改变 sink）；2409.03621 的 37 个被引中取出 2605.06105（SPEED，上层只给解码 token 可见）；2606.29522 被引 3、2608.12149 被引 2，无新威胁；2606.19831 被引 0；2602.02712 与 2511.17194 限流未取到，OpenAlex 对 2602.02712 计数为 0 |
+| 1 抽象阶梯 | 模板"干预 T 在深度 d 毁掉输入依赖（早）或内容（晚）"，T 取替换、冻结、删层、换层、噪声、零化 massive activation、KV 替换；4 条 | 删换层（Lad）、替换冻结（Ben-Artzy）、零化 massive activation（Sun 2402.17762：置零灾难，置均值无损）、上层提示 KV 可换成同模板中性填充（2605.30574） |
+| 2 方法论单独搜 | 配对反事实提示 + 答案 logit 差；信息在场读数；注意力改道读数；3 条 | 配对只差一个事实的提示与答案 logit 差是 patching 的标准做法（Ben-Artzy 的 Italy/France 中途替换即一例；Shih 用目标答案 margin）；SKOP 的焦点集注意力质量；Patchscopes 及其忠实性警告（解码可能被先验覆盖） |
+| 3 蕴含检索 | 找能把预期结果变成推论的工作；3 条 | 2602.02712 命题 4.1；2510.06477 定理 1、推论 2；Grassmannian Geodesic Steering（NeurIPS 2026，仅海报摘要：加性转向在强干预下可证明地塌缩有效秩）；两段式结果蕴含 C1 后一半 |
+| 4 同义术语 | rank collapse / over-smoothing / token uniformity / anisotropy / compression valley / attention sink / massive activation / super weight / entropy neuron / suppression / prompt-independent / context neglect；中文一条；4 条 | Stolfo 2406.16254 熵神经元（单神经元经末层归一化尺度统一缩放 logits）；2603.05498（massive activation 造成跨层近常量表示，作用类似隐式参数）；中文检索无直接命中 |
+| 7 边界申报 | 见第 6 节 | |
+
+##### 3. 逐篇覆盖表
+
+"全文定向"指取到全文并针对本报告的问题读了相关段落，不是通读。
+
+| 论文 | 与本线主张的关系 | 读取程度 |
+|---|---|---|
+| Shih, Winnicki, Darve, *When Does Activation Steering Change What a Model Computes From?*, 2606.29522 | C2 的概念对手。区分"写入后续计算会用的状态"与"把后续计算偏向同一输出"。对象是功能向量转向、中层、微调出的状态追踪 7B 模型；单层替换只得到全程 patch 的不到 2% margin 增益，转向向量范数是自然变化的 77 倍（Qwen）与 26 倍（Llama）。不碰崩溃、早层、单神经元 | 全文定向（摘要、§1、§8） |
+| Su 等, *Massive Activations in Hybrid Linear Attention LLMs*, 2608.12149（在审） | C5 的竞争解释。PAS 紧挨全注意力层之前出现，写在首 token、标点与分隔符（换行、句号、逗号）上；write–sink–cancel：前一层写入，全注意力层充当 sink，同层反号抵消；删最大 4 坐标下游准确率相对降 21.9%–63.6%。覆盖 12 个公开检查点，含 Qwen3.5-27B/35B-A3B/122B/397B，不含 2B/4B/9B | 全文定向（摘要、§4.1、附录模型表） |
+| Queipo-de-Llano 等, *Attention Sinks and Compression Valleys…*, 2510.06477（ICLR 2026） | C3 结论被占的来源之一。定理 1：σ₁² ≥ M + αR；推论 2 给出占优比、各向异性与熵的界。正常模型中层熵约 0.02 比特仍正常工作；Llama3-8B 在 L0 消融 BOS 的 MLP 贡献后 sink 与压缩都消失 | 全文定向（§3.2、图 4） |
+| Taimeskhanov 等, *Towards Understanding Steering Strength*, 2602.02712（ICML 2026） | C3 结论被占的另一来源。命题 4.1：对所有位置非零的 v，α→±∞ 时 logits 趋于 LN(±v)Wᵀ，输出分布与输入无关。附录 A.2 两处说早层转向"已知效果更差"，未给逐层机制 | 全文定向（§4、§5、附录 A.2） |
+| Ben-Artzy & Schwartz, *Attend First, Consolidate Later*, 2409.03621 | C1、C4 的模板层覆盖。对前面 token 的第 k 层隐藏态做等范数随机替换、打乱、冻结：早层掉到随机水平，约后 30–50% 层几乎无损；Italy→France 中途替换，顶部三分之一层被忽略、之前则模型跟着改答。模型为 Llama2-7B、Mistral-7B、Yi 等。是替换不是叠加 | 全文定向（摘要、§2.1、图 2–4） |
+| Lad, Lee, Gurnee, Tegmark, *The Remarkable Robustness of LLMs: Stages of Inference?*, 2406.19384 | C1 的模板层覆盖。删或换第一层对所有模型都是灾难；作者推断第一层是 embedding 的延伸，消融后"后续网络对当前 token 失明" | 全文定向（§3–4） |
+| Reblitz-Richardson, *When Probing Accuracy Saturates, Fragility Resolves*, 2606.11375 | C1 的不利类比证据。原始噪声下深层显得更稳，是因为深层激活更大；按每层 RMS 归一化后深度梯度大部分消失（OLMo-2 1B，探针层面，高斯噪声） | 全文定向（摘要、§4.4） |
+| Sun, Chen, Kolter, Liu, *Massive Activations in LLMs*, 2402.17762 | C5 背景。LLaMA2-7B 的 massive activation 在 L2 首次出现；置零致灾难，置均值无损 | 全文定向（§3–4，表 3） |
+| Yang & Song, *Before Attention Sinks Form*, 2610.16745 | C5 的可检验性先例。sink 形成前 2–3 层的隐藏态谱变化可预测且可因果改变后续 sink，对照为等范数随机谱扰动；Qwen2.5、GLM-Z1、GPT-OSS | 全文定向（摘要、§1） |
+| Luo 等, *Don't Lose Focus: SKOP*, 2605.06342 | C2、C3 的方法层近邻。主张转向改变 QK 匹配，把注意力从焦点 token 挪走，是效用下降的主因；焦点集注意力质量是现成读数。Llama-3.1-8B、Gemma-2-9B，所有层注入；不做逐层失稳 | 全文定向（摘要、§3、§5） |
+| Liu, *Leverage Is Not Reach*, 2606.19831 | 提议自列的最大风险"附录已覆盖早层"。全文点名的神经元最早 L8，L0–L7 无条目；每模型 24 个随机神经元的抽层范围在所读段落未写明；代码未查 | 全文定向（§4.1，全文神经元编号计数） |
+| *A Single Layer to Explain Them All*, 2605.08504 | C5 背景。Qwen3-4B、Qwen3-8B（稠密 Qwen3，非 3.5）的 massive emergence 层为 L7；RMSNorm 与 FFN 共同产生 | 全文定向（§3） |
+| Xu 等, *Progressive Behavioral Drift through Compression Valleys*, 2511.17194 | 小扰动锚定在 BOS、沿压缩谷被自回归放大；对象是保持流畅的行为漂移，不是崩溃 | 全文定向（摘要、§1） |
+| Kumar 等, *Probing the Prompt KV Cache*, 2605.30574 | C4 模板层：上层提示 KV 换成同模板中性填充几乎不掉分，置零则崩；Qwen3、Gemma 3、Llama 3 | 摘要 |
+| *SPEED: Shallow Prefill, Deep Decoding*, 2605.06105 | C4 模板层：Llama-3.1-8B 只在 75% 的层给提示 token 建 KV，分数 51.2 对 51.4 | 摘要 |
+| Stolfo 等, *Confidence Regulation Neurons*, 2406.16254 | C2 压制分支的机制先例：熵神经元写入反嵌入零空间，经末层归一化统一缩放 logits | 摘要 |
+| *The Spike, the Sparse and the Sink*, 2603.05498 | massive activation 造成跨层近常量表示；sink 让单个头偏向短程依赖 | 摘要 |
+| Liu 等, *Grassmannian Geodesic Steering*（NeurIPS 2026） | C3：加性转向在强干预下可证明地塌缩有效秩 | 仅海报摘要，证明未核 |
+| *How Do Language Models Choose Between Context and Memory?*, 2609.00753 | C2 设计参考：配对提示上的方向交换与匹配对照 | 摘要 |
+| APEX, 2602.03586 | 方法层；CIFAR-10 的逃逸噪声；无 LLM 证据 | 检索片段 |
+
+##### 4. 逐条覆盖判定
+
+| 主张 | 判定 | 层 | 依据 |
+|---|---|---|---|
+| C1 前一半：早层使输出与题目无关 | 部分覆盖 | 结论在相邻干预类型上被占；对象未被占 | Ben-Artzy（替换前 token 隐藏态）、Lad（删换第一层）。加性、单原生通道、剂量阶梯、四模型全层的对象未找到；Liu 无 L0–L7 |
+| C1 后一半：深层保持题目依赖 | 已被蕴含（提示位置部分） | 结论 | 两段式结果：上层不再从前 token 读信息（Ben-Artzy；2605.30574；SPEED）。深层"坏在内容"应来自末位与解码位置的注入，未被蕴含 |
+| C1 限定语：控制强度后早层仍更脆弱 | 有不利类比证据 | 结论 | 2606.11375：RMS 归一化后探针脆弱性深度梯度大部分消失。陈述须限定在输出层面 |
+| C2 概念：信息受损对读出被压 | 已覆盖 | 方法（概念） | Shih 2606.29522 的状态对偏置区分 |
+| C2 读数：配对事实题与答案 logit 差 | 已覆盖 | 方法 | patching 标准做法；SKOP 焦点集注意力质量；Patchscopes |
+| C2 对象：用这组读数归属转向导致的崩溃 | 未找到 | — | 检索到的工作都用于成功转向或自然行为 |
+| C3 几何：常向量使表示收拢 | 已覆盖 | 结论 | 2602.02712 命题 4.1；2510.06477 定理 1 与推论 2；Grassmannian（摘要） |
+| C3 因果：收拢导致题目信息不可用 | 未找到，且有反证 | — | 2510.06477：正常中层高度压缩仍工作 |
+| C4：早层崩溃是 prefill 现象 | 部分覆盖 | 结论（一臂） | "提示除末位"一臂的深度形态已被 Ben-Artzy 蕴含；"末位加解码"一臂在早层的结果未找到；Yap 2603.16335 为单模型零结果（见 10-28 报告） |
+| C5：由非 embedding 成分占比决定 | 未找到覆盖；出现竞争解释 | — | 2608.12149、2605.08504、2510.06477、2610.16745 支撑"sink 与 massive activation 形成层"这一替代解释 |
+
+###### 4.1 被占各行：前人到哪、我们推到哪、谁改做法
+
+按"青蒿素判据"，被占的行先进这张表，再谈删留。"我们推到哪"只写仓库已有数据，不写计划。
+
+| 主张 | 前人到哪 | 我们推到哪（已有数据） | 谁改做法 |
+|---|---|---|---|
+| C1 前一半 | 替换、冻结、删换整层，看任务准确率；Llama2、Mistral、Yi | 单原生通道加性注入；Qwen3.5 2B/4B/9B 与 Llama-3.1-8B 全层每层十点；正负剂量阶梯；失稳按首步 EOS、常数 token、模板回声分型；去重 18,272 份回答 | 在早层用单神经元或转向配方的人（Liu 配方、lyra 一类工具）：早层剂量上限要单独定 |
+| C1 后一半 | 上层不再从前 token 读信息（替换、KV 置换），只看准确率 | 深层 ±1 多数保持 8 种首 token，坏在内容；全位置加性注入 | 在深层做转向的人：深层失败不会被首 token 或输入依赖判据抓到，要用内容判据；排查应看末位与解码位置 |
+| C1 限定语 | 归一化后探针脆弱性深度梯度消失 | 无表示层数据；只有输出层数据 | 写法改变：主张限于输出层面 |
+| C2 概念与读数 | 状态对偏置的区分；patching、答案 margin、焦点集注意力质量 | 尚无数据；仓库只有首 token 种数、首步 EOS、范数与余弦轨迹 | 若做成：解释转向失败的人可以分清"信息没了"还是"被压住"，前者只能降剂量，后者可以从读出端修 |
+| C3 几何 | 命题 4.1 只给 α→∞ 的极限；定理 1 的压缩界以单个大范数 token 为参照 | 有限剂量阶梯、逐层、四模型的失稳数据；9B L0 的通道常数输出；注入层可由归档反解每位置与写入方向的夹角，尚未算 | 选剂量的人：若第 4.2 节检验成立，早层在什么剂量进入渐近区、会吐出哪个 token，可以只凭权重预报，不用跑生成 |
+| C4 | 提示位置的上层 KV 可弃；Yap 单模型零结果 | 全部已有数据都是全位置注入，无时段对照 | 选注入位置的人：早层是否只需避开提示位置 |
+
+###### 4.2 由本轮检索推出的两个零 GPU 检验
+
+两条都只读既有归档或模型权重，不跑生成。
+
+1. **命题 4.1 是否已解释 9B L0 的通道常数输出。**（推导）命题 4.1 预言大剂量下输出趋于注入方向本身的反嵌入。9B L0 有 4 个通道八题输出逐字相同、换通道换一个固定词（托、Stack、映、换行）。检验：对这 4 个通道取 down_proj 对应列，经末层 RMSNorm 增益后乘反嵌入矩阵，看最大 token 是否就是观测到的固定词。若是，这一条观测降为命题 4.1 的推论；若否，说明 dose 1 在 L0 尚未进入渐近区，常数输出另有来源。
+2. **失稳区边界是否等于 sink 形成层。**（类比）轨迹归档存有每层每位置的原版残差范数。检验：读出四个模型首 token 范数相对其余位置的跃升层，与"八题同首 token 的通道数"随层的下降点对齐比较。2B/4B 是否在 L2→L3 跃升、9B 是否更晚，决定 C5 与竞争解释谁更站得住。
+
+###### 4.3 对合同 1 设计的直接影响
+
+以下是建议，不改变冻结状态，也未授权运行。
+
+- **四格仪器要加一个残差层面的信息在场读数。** 事实边际取在答案位置的 logits 上，量的是"在输出端可用"，不是"在残差里还在"。"信息受损"一格因此混了两种情况：残差里已没有该事实，与残差里还有但注意力不再路由过去。建议加线性探针或把干预后残差 patch 进干净前向的读数，并加 SKOP 式的焦点集注意力质量。Patchscopes 类解码有被先验覆盖的风险，不宜单用。
+- **把 sink 破坏写成登记的对照假说。** 读数：注入后 L3（或各模型首个 sink 层）对首 token 的注意力占比。2610.16745 已示范等范数随机扰动作对照。
+- **"提示除末位"一臂在早层与深层的预期形态，按 Ben-Artzy 预先写成文献派生预言。** 这一臂用来标定，不用来宣称发现。
+- **C1 的陈述限定在输出层面**，在动机段引 2606.11375 作为必须回应的反证。
+
+##### 5. 阅读量与检验轮次
+
+| 项 | 数 |
+|---|---:|
+| Web 检索查询 | 20 |
+| 引用链：取到前向被引的邻居 | 4 / 6 |
+| 取到全文并定向阅读 | 13 |
+| 仅摘要 | 6 |
+| 仅检索片段或海报摘要 | 若干，未计入阅读 |
+
+按 CLAUDE.md 语料质量自查，"读过"只算取到全文并做了定向追问的 13 篇。C2–C5 按现行表述只经过本轮检验；C1 另有 10-28 剂量查重中的一轮。
+
+##### 6. 边界申报
+
+- **引用链不完整。** Semantic Scholar 限流，2602.02712 与 2511.17194 的被引没取到；OpenAlex 对 2602.02712 的被引计数为 0，可能是索引滞后。
+- **Liu 代码未查。** 24 个随机神经元的抽层范围只能从正文推断，代码与补充材料可能含早层。
+- **Grassmannian Geodesic Steering 只读到 NeurIPS 海报摘要**，未找到 arXiv 版本，证明未核。
+- **2608.12149 在审**，结论可能变动；它的 Qwen3.5 覆盖不含 2B/4B/9B，小模型上的 PAS 位置未验证。
+- **非英文只跑了一条中文查询**，无直接命中；日韩等未查。
+- **非 arXiv 渠道**只经由检索引擎间接覆盖，ACL Anthology 与 OpenReview 未系统检索。
+- **并行未公开工作与知识截止**：检索截至 2026-10-28；本线检索词刚好落在 sink 与 massive activation 的活跃区，近期并行工作的概率不低。
+- **阅读深度**：全文定向阅读不是通读；未逐页核对附录。
+
+##### 7. 查询日志
+
+1. "When Does Activation Steering Change What a Model Computes From" arXiv 2606.29522
+2. early layer activation steering output independent of prompt mechanism attention sink massive activations collapse
+3. steering vector information destroyed versus readout bias linear probe decodability after intervention LLM
+4. adding constant vector all token positions RMSNorm representation collapse token uniformity steering large coefficient
+5. layer-wise sensitivity noise injection hidden states LLM early layers most fragile perturbation output degenerate
+6. single neuron early layer intervention causes end-of-sequence empty output LLM
+7. arXiv 2511.17194 BOS anchor low-rank collapse amplified over depth
+8. arXiv 2608.12149 massive activations hybrid linear attention Qwen3.5 Gated DeltaNet pre-attention spikes
+9. APEX Ren 2026 escape noise Gaussian noise hidden activations output stops depending on input LLM
+10. "stages of inference" layer deletion swapping first layer critical detokenization LLM robustness
+11. steering intervention early layers model ignores context prompt-agnostic output information vs suppression logit lens analysis
+12. activation steering disrupts attention sink causes degenerate repetitive output mechanism
+13. steering vector applied only to prompt tokens versus only generated tokens comparison effect prefill decode injection positions
+14. LLM outputs same token regardless of input after intervention early layer input-independent OR prompt-independent collapse depth
+15. rank collapse over-smoothing token uniformity activation steering perturbation LLM residual stream depth
+16. entropy neurons suppression neurons final layernorm scale EOS probability single neuron confidence regulation LLM
+17. patchscopes decode information from hidden state after intervention information present but not used by output
+18. arXiv 2605.30574 "Probing the Prompt KV Cache" dispensable layers
+19. 激活引导 早层 干预 模型输出崩溃 与输入无关 神经元 注入
+20. "Grassmannian Geodesic Steering" rank-preserving additive steering collapses effective rank arXiv
+
+引用链：Semantic Scholar `graph/v1/paper/arXiv:{id}/citations`，对 2602.02712、2606.19831、2510.06477、2608.12149、2606.29522、2511.17194、2409.03621；OpenAlex `works?filter=cites:` 对 2602.02712。
+
+##### 8. 更正记录（2026-10-28 晚，第二版）
+
+用户问本报告是否适用了青蒿素原则。复核后更正两处，均为本报告自身的判读错误，不涉及检索结果。
+
+| 原稿 | 更正 |
+|---|---|
+| 把"C1 现象在替换、删层上已被观察"列入第 0 节坏消息 | 这是先例支持现象普遍性，不是否证。移出坏消息，另列为先例；只禁"首次发现"这一句 |
+| C3 几何与 C1 后一半的"谁改做法"写"无；作必引" | 过严。定性陈述作必引不变；有限剂量与逐层的测量、深层失败的内容判据是提纯，各自写出改做法的人 |
+
+---
+
+### 原件 4：三模型早层内部轨迹：准备与执行记录
+
+原路径：`experiments/early-layer-mechanism-v1-2026-10-28/EXECUTION.zh-CN.md`。 [固定提交原文](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-layer-mechanism-v1-2026-10-28/EXECUTION.zh-CN.md) · [单独阅读副本](../library/d5f8a1748d836f6e.md)；SHA-256：`d5f8a1748d836f6e7fec44a72a3fbe9ea5c7f11ae906241bf6ed7ddfd6e29035`。
+
+---
+
+#### 三模型早层内部轨迹：准备与执行记录
+
+2026-10-28 02:23（北京时间）快照：**合同、代码和服务器24项CPU测试通过；后台队列已启动，正在等待前置Llama实验。GPU预检和正式采集均尚未开始。**
+
+##### 范围与交付
+
+沿用2B、4B、9B已有全层十点及单点正负剂量结果，给早层核心和相邻边界层的旧条件补内部轨迹：2B L0–L3共616条、4B L0–L3共616条、9B L0–L5共920条，合计2,152条来源（24原版、2,128干预）。每条均观察模型全部层的attention/GatedDeltaNet输出、MLP输出和残差。无新科学条件、无修复/反向替换实验。
+
+自由生成仍走冻结的原引擎；每条输出必须与旧来源逐token一致。另用独立cache强制相同历史，记录无针参照；它不是原版自由回答。保存逐位置范数/差分/余弦、逐步EOS竞争和候选词评分，以及全部身份、原文和hash；不落盘全部高维激活。结果可供后续三维轨迹与原文联动，此时尚无新的轨迹结果或机制结论。
+
+合同：[CONTRACT.zh-CN.md](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-layer-mechanism-v1-2026-10-28/CONTRACT.zh-CN.md)；来源：[source-manifest.json](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-layer-mechanism-v1-2026-10-28/source-manifest.json)；代码：[trace_engine.py](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-layer-mechanism-v1-2026-10-28/trace_engine.py)、[trace_run.py](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-layer-mechanism-v1-2026-10-28/trace_run.py)、[queue_run.py](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-layer-mechanism-v1-2026-10-28/queue_run.py)。冻结SHA256：`23374b5a0b86835fd8c95801c32839ae49d8850f3d08b2a589957fba77d94620`。
+
+##### 验收
+
+- 全三源SHA、13,400唯一条件题记录、4,272重复引用一致性通过；本轮2,152条已逐一对回原始record、完成收据及模型metadata。
+- 本地24项测试：18项通过，6项因本机无torch明确跳过，未将其标记为数值验收通过。
+- 服务器冻结版本CPU测试：**24/24通过，0失败、0错误、0跳过**。`CUDA_VISIBLE_DEVICES`为空；仅使用CPU小型mock，没有加载真实模型。证据：[CPU收据](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-layer-mechanism-v1-2026-10-28/readiness/cpu-tests-r01.json)、[完整日志](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-layer-mechanism-v1-2026-10-28/readiness/cpu-tests-r01.log)。
+- 测试覆盖完整范围、重复冲突、分片、固定预检身份、EOS/128上限、同前缀独立cache、组件观察不改变输出logits、零剂量/撤针、异常hook清理、权重不变、授权/冻结篡改、前驱/GPU占用/重复队列，以及预检失败阻断正式实验。
+- 两次CPU准备失败已保留：[失败记录](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-layer-mechanism-v1-2026-10-28/readiness/cpu-failed-attempts.json)。分别为测试隔离导致重复导入torch，以及远端缺少本地汇总源文件；均已修复。未删除实验失败回答或放宽任何科学验收阈值。
+
+GPU预检固定六worker，每worker七条有组件观察（各两分支）及五条无组件观察重放，共42条案例、114条生成流。六worker全部通过后才运行正式2,152条/4,304条生成流。任一来源重放、校准、偏移、数值或完整性检查失败即停，保留部分证据。
+
+##### 服务器队列
+
+- 服务器：`gqa-h20`；后台PID `2285813`，实查PPID=1，已脱离SSH/Codex会话。
+- 远端：`/workspace/acupuncture/experiments/early-layer-mechanism-v1-2026-10-28/execution-r01`。
+- [用户授权与预算](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-layer-mechanism-v1-2026-10-28/readiness/queue-authorization-r01.json)、[启动收据](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-layer-mechanism-v1-2026-10-28/readiness/queue-launch-r01.json)、[排队快照](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-layer-mechanism-v1-2026-10-28/execution-r01/queue-state.json)。快照不是自动刷新的本地实时页面。
+- 前置任务：Llama 3.1 8B单点正负剂量`survey-r01`，02:23实查仍运行，两个worker共1,840/2,304，PID 2275684/2275685各占约16,198MiB。新增队列未加载模型，没有增加GPU进程。
+- 每10秒检查前驱成功收据、worker退出码和绑定PID实例；前驱进程退出且两张GPU均无其他计算进程后，按4B→2B→9B做预检，再按相同顺序正式采集。每模型两卡分片，不抢占现有实验。
+- 程序在服务器独立运行；关闭Codex不会使这个排队进程退出。失败时只停止自身子进程并保留日志，不终止前驱或其他人的任务。
+
+##### ETA
+
+沿用[ETA.json](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-layer-mechanism-v1-2026-10-28/ETA.json)中的规划估算：正式机器采集约2.5–4.5小时，**不含排队，也尚未用本轮GPU测量校准hook开销**。源实验重放底座45.2分钟，新增成对前向与观察开销仍属假设。GPU预检完成后应以真实短/长输出时间更新，不在排队阶段承诺完成钟点。
+
+---
+
+
+## 时间、运行与停止收据索引
+
+下面是所收集JSON的原有时间字段与状态，不把预计结束时间当实际完成时间。未列时间的文件仍有原件链接。完整JSON全部保存在原文归档，不能以此索引中的标量代替完整嵌套内容。
+
+| 原件 | 原记录状态/阶段 | 原时间字段（原时区） |
+|---|---|---|
+| [archive-r01/execution-r01/preflight/2b-shard-0/receipt.json](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-layer-mechanism-v1-2026-10-28/archive-r01/execution-r01/preflight/2b-shard-0/receipt.json) | {"status": "completed", "mode": "preflight"} | {"started_utc": "2026-10-27T18:37:14.331471+00:00", "updated_utc": "2026-10-27T18:38:12.826516+00:00", "ended_utc": "2026-10-27T18:38:13.560325+00:00"} |
+| [archive-r01/execution-r01/preflight/2b-shard-1/receipt.json](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-layer-mechanism-v1-2026-10-28/archive-r01/execution-r01/preflight/2b-shard-1/receipt.json) | {"status": "completed", "mode": "preflight"} | {"started_utc": "2026-10-27T18:37:14.331911+00:00", "updated_utc": "2026-10-27T18:38:12.940690+00:00", "ended_utc": "2026-10-27T18:38:13.839855+00:00"} |
+| [archive-r01/execution-r01/preflight/4b-shard-0/receipt.json](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-layer-mechanism-v1-2026-10-28/archive-r01/execution-r01/preflight/4b-shard-0/receipt.json) | {"status": "completed", "mode": "preflight"} | {"started_utc": "2026-10-27T18:35:53.702496+00:00", "updated_utc": "2026-10-27T18:37:06.646852+00:00", "ended_utc": "2026-10-27T18:37:08.884613+00:00"} |
+| [archive-r01/execution-r01/preflight/4b-shard-1/receipt.json](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-layer-mechanism-v1-2026-10-28/archive-r01/execution-r01/preflight/4b-shard-1/receipt.json) | {"status": "completed", "mode": "preflight"} | {"started_utc": "2026-10-27T18:35:53.704159+00:00", "updated_utc": "2026-10-27T18:37:07.375642+00:00", "ended_utc": "2026-10-27T18:37:09.611458+00:00"} |
+| [archive-r01/execution-r01/preflight/9b-shard-0/receipt.json](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-layer-mechanism-v1-2026-10-28/archive-r01/execution-r01/preflight/9b-shard-0/receipt.json) | {"status": "completed", "mode": "preflight"} | {"started_utc": "2026-10-27T18:38:24.771131+00:00", "updated_utc": "2026-10-27T18:40:00.312073+00:00", "ended_utc": "2026-10-27T18:40:05.052891+00:00"} |
+| [archive-r01/execution-r01/preflight/9b-shard-1/receipt.json](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-layer-mechanism-v1-2026-10-28/archive-r01/execution-r01/preflight/9b-shard-1/receipt.json) | {"status": "completed", "mode": "preflight"} | {"started_utc": "2026-10-27T18:38:24.771295+00:00", "updated_utc": "2026-10-27T18:40:01.745641+00:00", "ended_utc": "2026-10-27T18:40:06.518678+00:00"} |
+| [archive-r01/execution-r01/survey/2b-shard-0/receipt.json](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-layer-mechanism-v1-2026-10-28/archive-r01/execution-r01/survey/2b-shard-0/receipt.json) | {"status": "completed", "mode": "survey"} | {"started_utc": "2026-10-27T19:08:12.991475+00:00", "updated_utc": "2026-10-27T19:41:03.150416+00:00", "ended_utc": "2026-10-27T19:41:03.713326+00:00"} |
+| [archive-r01/execution-r01/survey/2b-shard-1/receipt.json](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-layer-mechanism-v1-2026-10-28/archive-r01/execution-r01/survey/2b-shard-1/receipt.json) | {"status": "completed", "mode": "survey"} | {"started_utc": "2026-10-27T19:08:12.985176+00:00", "updated_utc": "2026-10-27T19:41:43.461841+00:00", "ended_utc": "2026-10-27T19:41:44.054995+00:00"} |
+| [archive-r01/execution-r01/survey/4b-shard-0/receipt.json](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-layer-mechanism-v1-2026-10-28/archive-r01/execution-r01/survey/4b-shard-0/receipt.json) | {"status": "completed", "mode": "survey"} | {"started_utc": "2026-10-27T18:40:16.351320+00:00", "updated_utc": "2026-10-27T18:59:15.068899+00:00", "ended_utc": "2026-10-27T18:59:17.339501+00:00"} |
+| [archive-r01/execution-r01/survey/4b-shard-1/receipt.json](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-layer-mechanism-v1-2026-10-28/archive-r01/execution-r01/survey/4b-shard-1/receipt.json) | {"status": "completed", "mode": "survey"} | {"started_utc": "2026-10-27T18:40:16.350751+00:00", "updated_utc": "2026-10-27T19:07:40.163721+00:00", "ended_utc": "2026-10-27T19:07:42.296799+00:00"} |
+| [archive-r01/execution-r01/survey/9b-shard-0/receipt.json](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-layer-mechanism-v1-2026-10-28/archive-r01/execution-r01/survey/9b-shard-0/receipt.json) | {"status": "completed", "mode": "survey"} | {"started_utc": "2026-10-27T19:42:11.007717+00:00", "updated_utc": "2026-10-27T20:22:10.998928+00:00", "ended_utc": "2026-10-27T20:22:15.775221+00:00"} |
+| [archive-r01/execution-r01/survey/9b-shard-1/receipt.json](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-layer-mechanism-v1-2026-10-28/archive-r01/execution-r01/survey/9b-shard-1/receipt.json) | {"status": "completed", "mode": "survey"} | {"started_utc": "2026-10-27T19:42:11.010076+00:00", "updated_utc": "2026-10-27T20:22:01.952728+00:00", "ended_utc": "2026-10-27T20:22:06.667205+00:00"} |
+| [archive-r01/verification.json](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-layer-mechanism-v1-2026-10-28/archive-r01/verification.json) | {"status": "verified"} | {"verified_utc": "2026-10-28T06:21:10.934389+00:00"} |
+| [readiness/queue-launch-r01.json](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-layer-mechanism-v1-2026-10-28/readiness/queue-launch-r01.json) | {} | {"started_utc": "2026-10-27T18:22:52.381401+00:00"} |
+
+## 全部原始资产入口
+
+本目录在固定提交下共有2283个跟踪文件，包含代码、原回答、失败、收据和压缩证据；文件数不是样本数。[逐文件完整账本](../assets/021-early-layer-mechanism-v1-2026-10-28.tsv) · [原目录](https://github.com/yuxiexiong/acupuncture/tree/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-layer-mechanism-v1-2026-10-28)。未复制模型权重、环境或凭据。

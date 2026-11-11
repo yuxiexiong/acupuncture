@@ -1,0 +1,86 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>前六层对齐及4B全层内部轨迹：追加执行记录</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="4b">前六层对齐及4B全层内部轨迹：追加执行记录</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/layer-trace-extension-v1-2026-10-28/EXECUTION.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/EXECUTION.zh-CN.md">固定提交原件</a>；SHA-256：<code>1f53a9b386f18a1911abc9df7af1062315127e6e5987be17f4b67a66a135385d</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="4b_1">前六层对齐及4B全层内部轨迹：追加执行记录</h1>
+<p>北京时间2026-10-28 02:54快照：<strong>合同与来源冻结、本地10项及服务器34项CPU测试全部通过，原六worker GPU预检收据核验通过。独立追加队列已启动，正在等待原2,152条采集结束；追加模型尚未加载，新增记录0/4,560。</strong></p>
+<h2 id="_1">顺序与覆盖</h2>
+<table>
+<thead>
+<tr>
+<th>顺序</th>
+<th>本次追加范围</th>
+<th style="text-align: right;">新增内部轨迹</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>当前原队列继续完成2B/4B早部及9B前六层</td>
+<td style="text-align: right;">原2,152条，保持原运行</td>
+</tr>
+<tr>
+<td>2</td>
+<td>4B L4–L5，再2B L4–L5</td>
+<td style="text-align: right;">304＋304＝608</td>
+</tr>
+<tr>
+<td>3</td>
+<td>4B L6–L31</td>
+<td style="text-align: right;">3,952</td>
+</tr>
+</tbody>
+</table>
+<p>新增合计4,560条，与原2,152条身份无交集。两批完成后唯一覆盖6,712条：2B前六层920条、4B全32层4,872条、9B前六层920条。每层仍为原十通道各+1，以及其中一个原通道的四档低正与五档负剂量，全部使用原八题；不扩展到十通道各十档。</p>
+<p>每条仍记录全部模型层的attention/GatedDeltaNet输出、MLP输出、残差和逐步logits；无针参照强制相同历史，独立cache。输出、剂量、校准和来源身份逐条精确核验，失败保留并停止自身任务。L0–L5仅为统一观察窗口，4B全层用于寻找其他深度的规律，不先命名功能分区。</p>
+<h2 id="_2">最小实现与测试</h2>
+<ul>
+<li>复用原冻结的 <code>trace_engine.py</code> 和 worker/验收逻辑；新 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/supplement.py">supplement.py</a> 只负责选择缺失来源、调整运行路径与后继队列。未修改任何正在运行的冻结代码。</li>
+<li>原独立清洁回答与已通过GPU预检直接核验复用；不重复生成旧内部记录、旧baseline或旧预检。新包中的16份baseline来源仅供模型加载后的原八题校准前向。</li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/CONTRACT.zh-CN.md">合同</a> / <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/contract.json">机器合同</a> / <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/source-manifest.json">来源清单</a>。新冻结SHA256：<code>9c6f106d112571a06bf71ed5a832819fa433e54f5cf36635d368c0978de74c1d</code>。</li>
+<li>本地新增测试10/10通过：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/readiness/local-cpu-tests-r01.json">收据</a>。服务器原24项＋新增10项，<strong>34/34通过、零失败零错误零跳过</strong>：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/readiness/cpu-tests-r01.json">收据</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/readiness/cpu-tests-r01.log">日志</a>。服务器测试屏蔽CUDA，仅CPU小型mock，不占用现有模型显存。</li>
+<li>原三模型六worker、114条生成流的GPU验收及所有hash已只读核验：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/readiness/inherited-gpu-validation-r01.json">继承GPU验收</a>。新增生成流预算9,120（4,560条各两分支），清洁校准前向另计。</li>
+</ul>
+<h2 id="_3">后台队列</h2>
+<ul>
+<li>服务器 <code>gqa-h20</code>；后台PID <strong>2295050</strong>，实查PPID=1，脱离SSH/Codex会话。</li>
+<li>远端输出：<code>/workspace/acupuncture/experiments/layer-trace-extension-v1-2026-10-28/execution-r01</code>。</li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/readiness/queue-authorization-r01.json">授权</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/readiness/queue-launch-r01.json">启动收据</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/execution-r01/queue-state.json">状态快照</a>。本地快照不自动实时刷新。</li>
+<li>前驱为原内部采集队列PID2285813；02:54实查仍在4B正式采集，447/2,152。原GPU进程2291350/2291351仍运行，追加队列没有新增GPU进程。</li>
+<li>前驱成功完成2,152条、全部worker退出码为0、主进程退出、两GPU无其他计算进程，且原全部记录/预检核验通过后，追加批次才自动启动。补前六层全部完成后才进入4B深层；任一阶段失败阻断后续。</li>
+<li>队列互斥且输出目录不得覆盖；只管理自己创建的子进程。关闭Codex不影响服务器队列运行。</li>
+</ul>
+<h2 id="_4">追加耗时</h2>
+<p>按原记录精确输出长度与本次真实GPU采集计时外推：4B单条成对采集约 <code>0.1980 + 0.13248×输出token数</code> 秒，2B约 <code>0.1277 + 0.09758×输出token数</code> 秒。来源答案必须逐token复现，因此可按已知长度估算，仍需保留吞吐/核验波动。</p>
+<table>
+<thead>
+<tr>
+<th>追加段</th>
+<th style="text-align: right;">输出token总数</th>
+<th style="text-align: right;">双卡采集预计墙钟</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>4B L4–L5</td>
+<td style="text-align: right;">15,661</td>
+<td style="text-align: right;">19.62分钟</td>
+</tr>
+<tr>
+<td>2B L4–L5</td>
+<td style="text-align: right;">23,407</td>
+<td style="text-align: right;">19.90分钟</td>
+</tr>
+<tr>
+<td>4B L6–L31</td>
+<td style="text-align: right;">210,330</td>
+<td style="text-align: right;">243.36分钟</td>
+</tr>
+<tr>
+<td>合计</td>
+<td style="text-align: right;">249,398</td>
+<td style="text-align: right;">约4小时43分</td>
+</tr>
+</tbody>
+</table>
+<p>加模型重载、来源校验、全部结果终验与波动，<strong>追加阶段预留约5–5.5小时</strong>，当前队列剩余时间另加。这是基于实测吞吐的外推，尚不是追加批次实际完成耗时；可视化接图、分析和根因结论不计入计算队列完成时间。</p></main></html>

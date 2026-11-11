@@ -1,0 +1,242 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>NVW-01：V 恢复与 t1 写入项 k 编辑的条件依赖</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="nvw-01v-t1-k">NVW-01：V 恢复与 t1 写入项 k 编辑的条件依赖</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>docs/cache-native-v-write-interaction-plan-v1-2026-11-03.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-native-v-write-interaction-plan-v1-2026-11-03.zh-CN.md">固定提交原件</a>；SHA-256：<code>24e77eca8202a9a74056fbc4949c2b17487cad9568c2daec00adf2382dc5a424</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="nvw-01v-t1-k_1">NVW-01：V 恢复与 t1 写入项 k 编辑的条件依赖</h1>
+<p>日期：2026-11-03；版本：v1。状态：设计与作者逻辑自查完成；实现、模型数值验收、运行授权和结果均未完成。本次交付不启动模型。</p>
+<h2 id="1">1. 问题与新增认识</h2>
+<p>主线：解释稀疏激活干预怎样改变写入、历史状态处理和后续读取，最终改变回答。</p>
+<p>本轮问：<strong>KUC 已证明有效的 t1 写入项 k 操作，在 V 未恢复的受干预背景中是否仍改变首步决策和后续目标竞争；恢复 V 怎样改变这一作用？</strong> 自然完整回答用于检验这些计算变化是否成为实际交付。首步停止只是这条机制在原生背景的一个观测窗口。</p>
+<p>KUC 已回答“在指定混合背景里，k 的效应通过哪项更新实现”；NVW 回答“这项关系怎样依赖 V 恢复”。不重复拆 q/k、S/KV，不以分账份额重新筛选机制。正结果将把局部计算干预接近原生运行；负结果将明确其背景依赖。两者都不能直接证明跨模型共同原则。</p>
+<h2 id="2">2. 材料、事实与待测量</h2>
+<p>来源基线为仓库 <code>780387accb1fb5c1d05421d3e6a9690d3800c179</code>；下列相对链接对应这份基线已有文件，执行冻结须记录其 SHA256。</p>
+<table>
+<thead>
+<tr>
+<th>来源</th>
+<th>已有信息</th>
+<th>本轮用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-k-update-causal-plan-v1-2026-11-03.zh-CN.md">KUC 计划</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-k-update-causal-v1-2026-11-03/CONTRACT.zh-CN.md">合同</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-k-update-causal-v1-2026-11-03/REPORT.zh-CN.md">结果</a></td>
+<td>在 V 已恢复背景，写入项承担约 0.98–1.06 的完整 t1 k 效应；擦除项很弱；完整回答随之改变。随机加入也有类似形式</td>
+<td>继承操作、输入、offset、实现和重放参照；新增 V 未恢复一侧</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-k-update-causal-v1-2026-11-03/runs/formal-r01/verification.json">KUC 正式验收</a></td>
+<td>48 输入，240 次形成，2688 自然轨迹，14926 实际 decode；工程通过</td>
+<td>核算新增运行，不把旧授权复制过来</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-k-history-carrier-v1-2026-11-03/REPORT.zh-CN.md">KHC 结果</a></td>
+<td>固定供体 Q 时，历史效应主要由递推 S 承接</td>
+<td>解释为何沿 t1 写入连接；不扩成任意 Q 下结论</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-sp-v-qk-delivery-v1-2026-11-02/REPORT.zh-CN.md">SVQ 结果</a></td>
+<td>旧面板只恢复 q/k，交付 0/48；其中有复述而非首步停止</td>
+<td>原生恢复可能弱的先验；不是当前面板的新测量</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-fx-fixed-score-followup-v1-2026-11-02/REPORT.zh-CN.md">FX 结果</a></td>
+<td>另一面板的 V 恢复结果</td>
+<td>不与 SVQ 数字拼成当前实验的充分必要结论</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-mechanism-experiment-asset-inventory-2026-11-03.zh-CN.md">资产盘点</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-mechanism-known-basics-audit-2026-10-31.zh-CN.md">架构常识审计</a></td>
+<td>保留原生、混合状态、计算操作的区别</td>
+<td>限定本轮估计对象与后续跨架构问题</td>
+</tr>
+</tbody>
+</table>
+<p>KUC 未测本轮原生 T 背景下的 W-only 操作。整体 q/k 恢复失败不推出选择性 W-k 编辑失败；不把“原生救不回来”预先写成结果。源码给出 k 进入更新的方式，不决定实际行为效应及 V×k 交互。</p>
+<p>材料护照：同一模型与同一旧面板的机制开发实验；48 输入属于 6 个场景，按场景汇总，四方向不是四份独立样本。它们已多轮使用；本轮是新干预比较，不是留出验证。</p>
+<h2 id="3">3. 固定对象与四种背景</h2>
+<p>继承 KUC 的 Qwen3.5-4B revision <code>851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a</code>，torch 2.6.0+cu124、transformers 5.20.2、BF16/eager/batch1、torch 原核；禁用替代 fla/hub/causal_conv1d 包。实际模型、tokenizer、源码与运行依赖哈希须与 KUC 冻结材料核对。</p>
+<p>输入原样继承 KUC 正式 48 个 ID、文本、顺序、NA 原布局、B1 窗口、−1 形成强度及旧校准；不重新筛题或校准。方向 N4146、N1210、R0、C1343 全保留。32 个目标非首列为 M 的主要面板；16 个目标首列单报；自然完整回答报告全部 48 和两个分层。</p>
+<p>零起算 G 层：<code>[13,14,16,17,18,20,21,22,24,25,26,28,29,30]</code>；A 层：<code>[15,19,23,27,31]</code>。G 卷积缓存形状 <code>[1,8192,4]</code>，q=<code>[0,2048)</code>，k=<code>[2048,4096)</code>，V=<code>[4096,8192)</code>。t1 是消费最后一个提示 token 并预测第一个生成 token；t2 消费第一个生成 token。</p>
+<p>同输入干净来源 C 和受干预来源 T，在同一 t1 前边界形成。每一臂从来源深拷贝，来源只读。四种背景如下：</p>
+<table>
+<thead>
+<tr>
+<th>背景</th>
+<th>G 卷积 q/k</th>
+<th>G 卷积 V</th>
+<th>递推 S、注意力 KV、浅层及其余缓存</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T</td>
+<td>T</td>
+<td>T</td>
+<td>T</td>
+</tr>
+<tr>
+<td>V</td>
+<td>T</td>
+<td>C</td>
+<td>T</td>
+</tr>
+<tr>
+<td>Q</td>
+<td>C</td>
+<td>T</td>
+<td>T</td>
+</tr>
+<tr>
+<td>F</td>
+<td>C</td>
+<td>C</td>
+<td>T</td>
+</tr>
+</tbody>
+</table>
+<p>Q 是本轮定义的背景名称，不是 t2 的 q 节点钳制。所有替换覆盖所列 G 层相应卷积通道的全部 4 槽。<strong>T↔V、Q↔F 各自只差卷积 V</strong>；不能以 T↔F 估计 V 恢复效应。只有 T 的无操作臂是原生受干预运行；Q 仍是混合状态。</p>
+<h2 id="4-t1">4. t1 写入操作与固定矩阵</h2>
+<p>沿用 KUC 的共同 k 偏移 μ 与随机 r_post：μ 由其他 5 场景估计，当前场景不参与；逐输入、逐层取原冻结张量，不重新估计或抽随机数。随机仅检验所保留的加入方向，不作为去除方向的零分布。</p>
+<table>
+<thead>
+<tr>
+<th>家族</th>
+<th>V 未恢复 / 已恢复</th>
+<th>影子 k 来源</th>
+<th>科学比较</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>R，去除</td>
+<td>T / V</td>
+<td>当前分支卷积 k 旧槽减 μ</td>
+<td>原生与 V 恢复背景中去除的效应</td>
+</tr>
+<tr>
+<td>A，加入</td>
+<td>Q / F</td>
+<td>当前分支卷积 k 旧槽加 μ</td>
+<td>q/k 已恢复时，加入效应对 V 的依赖</td>
+</tr>
+<tr>
+<td>Z，随机加入</td>
+<td>Q / F</td>
+<td>当前分支卷积 k 旧槽加 r_post</td>
+<td>与 A 同背景、同端点的随机参照</td>
+</tr>
+</tbody>
+</table>
+<p>每个家族×V 背景含 <code>0</code> 无操作、<code>W</code> 仅写入项 k、<code>K</code> 完整 t1 k 节点替换。共享的无操作臂去重：T、V、Q、F 共 4；3 家族×2 背景×W/K 共 12；<strong>合计每输入×方向 16 条自然轨迹</strong>。R 的主要矩阵是 V 恢复×W 操作的 2×2；A/Z 各有同样 2×2。K 用于判断 W 是否还代表同背景下完整 k 操作，不要求 W 一定占优。擦除项不另开臂：本轮重点是背景依赖，新增它不能替代核心比较。</p>
+<p>每个 G 层 t1 调用前先克隆未被原地更新的卷积缓存，仅影子 k 通道旧槽 <code>[1,4)</code> 按 KUC 的 BF16 顺序编辑；用该分支同一个当前输入 x、同一个卷积函数、SiLU、reshape/repeat、L2 归一化产生 k1。实际卷积缓存仍执行未编辑更新，不写回影子槽。k0 为该分支原生计算的 k。</p>
+<p>使用 key×value 状态约定：</p>
+<p><code>D = α S0</code></p>
+<p><code>S1(kE,kW) = D − β kE (kEᵀ D) + β kW vᵀ</code></p>
+<p><code>o1 = S1ᵀ q</code></p>
+<p>0：kE=kW=k0；W：kE=k0、kW=k1；K：kE=kW=k1。E 项两个 k 位置共同使用 kE，不拆开。实现沿用 KUC 的原核加校正形式：</p>
+<p><code>S_nativeE = D + kE ⊗ [β(v − kEᵀD)]</code></p>
+<p><code>S1 = S_nativeE + (kW − kE) ⊗ (βv)</code></p>
+<p>只在 t1 操作；t2 前卸载全部更新/影子 hook。q、v、α、β、上层当前输入和所有下游状态自由响应，不从另一臂钳住；不固定 t2 q。V 背景改变后，影子 k 的实际改变量也可能改变，须记录其范数。故 V×W 衡量这套干预的条件总效应，不是孤立 βkv 乘积的解析交互或单一路径份额。</p>
+<h2 id="5">5. 三层读数与配对估计</h2>
+<h3 id="51">5.1 首步决策：原生接回的首要读数</h3>
+<p><code>t1 G = logit(答案共同首 token) − max(logit(248044), logit(248046))</code>。</p>
+<p>G 越大越倾向答案起始；同时保存两个停止 logit、答案 token logit、全词表最大竞争者、首步实际 token 与停止率。目标首 token 按原 tokenizer 固定，不把“非停止”一律计为开始正确回答。停止优势 D_stop=−G，只是反号展示，计算统一用 G。</p>
+<p>R/T 的 G 变化是原生首步作用的主要连续端点。该 token 未成为赢家时，分差改善仍不等于实际停止被修复。</p>
+<h3 id="52">5.2 条件性目标竞争</h3>
+<p>每条臂的 t1 后缓存分叉一次 C 路线，消费同输入旧 KUC F 的共同首 token，测 t2：M=目标编号区分 token logit−首列编号区分 token logit；目标首列时减第二条，并另报 M_all=目标−最强其他编号。逐 token 身份、词表和解析口径原样继承 KUC。</p>
+<p>主 M 使用 32 个目标非首列输入、六场景等权均值。其余输入单列。C 路线即使原生自然运行在 t1 已停止也执行；它回答固定前缀下的目标竞争，不能称为原生自然可达的第二步。</p>
+<h3 id="53">5.3 自然完整交付</h3>
+<p>N 路线从每臂 t1 logits 贪心生成，最多 32 个新 token（含首 token），两个停止 ID 均终止；沿用 KUC 完整正确交付解析器。保存原文/token、Y_full、首步停止、后续停止、首列错答、多编号/复述、其他错答和截断。类别规则冻结，禁止按新输出临时改变正确标准。报告所有配对“修好/改坏/保持”计数；目标第一的位置不能掩盖首列偏好。</p>
+<h3 id="54">5.4 操作效应与交互</h3>
+<p>对每家族 f、背景 v∈{0,1}、读数 Z∈{G,M,Y_full}，分别计算：</p>
+<p><code>e_f,v(Z) = mean[Z(f,v,W) − Z(f,v,0)]</code></p>
+<p><code>I_f(Z) = e_f,1(Z) − e_f,0(Z)</code>。</p>
+<p>逐输入先相减，再场景等权；Y 同时报原始正确数与配对变化。R 的方向预测为 e&gt;0；A 为 e&lt;0；Z 不要求同共同偏移分离。I 是同一读数尺度上的干预交互。G、M、Y 不相加，不以某背景显著/另一背景不显著代替交互；二元 Y 的地板/天花板不能单独证明内部耦合。</p>
+<p>K 效应同定义，W−K 单列。只有 |K 的场景等权效应|≥0.5 logit 才展示 W/K 连续比例，否则标小分母并保留原值；Y 不用比例替代计数。随机 A/Z 对比首先报告各自绝对配对变化；按各自 K 缺口归一化只在两边均过 0.5 时作描述，不设置“共同偏移必须更强”的通过门槛。</p>
+<h2 id="6">6. 冻结预测、判读与出口</h2>
+<p>这些是本轮操作性标签，不是统计显著性，也不假定一个结果适用于所有方向。连续量“稳定定向变化”：场景等权均值绝对值≥0.25 logit，且至少 4/6 场景同号；G 用全 48，M 用目标非首列。每方向分别报告，跨三个缺口方向仅在≥2/3同向时用“多数方向”；C1343始终单列。</p>
+<ol>
+<li><strong>工作预测</strong>：R 在 V 恢复背景仍有修复作用；原生 T 的完整交付改善可能较弱，但是否改变 G、M 和是否有 I 均待测。高 V 臂与 KUC 的精确复现是工程检查，不冒充新的科学确认。</li>
+<li><strong>原生连续作用成立</strong>：R/T 的 G 或 M 达到定向标准时，只对达标的端点分别表述。只有 M 改善，称条件性目标竞争改变；G 改善但停止/交付不变，称竞争变化未跨行为边界。</li>
+<li><strong>原生行为改变</strong>：逐方向报告 Y 正确数及净改善，至少净增 2/48 且至少两个场景出现修好才标“多场景交付改善”；同时公开改坏数。零改善也保留连续量，不称 k 无作用。</li>
+<li><strong>背景依赖</strong>：对 I 使用相同的≥0.25及4/6同号标准，R 正 I 是 V 恢复后修复效应更大，A 负 I 是 V 恢复后致错效应更大。原生效应与背景依赖可以同时成立。I 未达标称未得到稳定交互，不能宣称两背景等效。</li>
+<li><strong>W 的适用边界</strong>：若原生中 K 起作用而 W 不起作用，结论为 KUC 的写入项结果不能直接推广到该背景；不把剩余自动命名为擦除项。不补跑新矩阵救解释。</li>
+<li><strong>反向/随机/C1343</strong>：A 与 R 不对称分别保留，因为背景和操作方向不同。随机相似支持一般 k 扰动的背景依赖，不推翻共同偏移干预的实际作用。C1343 只移动分差而答案不翻时保留该现象；不把 F 的余量解释成 V 损伤来源。</li>
+<li><strong>零或混合结果</strong>：所有工程检查通过而新增 T/Q 臂无稳定变化，结束本轮，报告关系局限于恢复背景或尚未区分。不同方向异号、M 与 G 相反、交付改坏均独立列明，不汇成“有效”。</li>
+</ol>
+<p>本轮不作总体 p 值承诺；报告六场景配对明细、均值/中位数/范围及全样本计数，避免把重复方向当独立重复。阈值只决定冻结标签，原始连续数值完整保留。</p>
+<h2 id="7">7. 配套记录，不单独开实验</h2>
+<p>t1 各 G 层/头保存 k0/k1 范数与夹角、||kEᵀD||、||v||、β，以及在同一个局部 D/v/β 下实际 ΔE、ΔW 的范数和夹角摘要。明确归一化前后与求和轴；不全量落盘 S，不加模型前向。</p>
+<p>这用于检查“擦除变化小”的数量级线索。||kᵀD||≪||v|| 即使成立，也不单独证明擦除的行为作用弱；还涉及 k 的变化、方向与下游读取。本轮不重新提出擦除项主导的检验。</p>
+<h2 id="8">8. 工程验收与冻结</h2>
+<p>新运行目录预定 <code>experiments/cache-native-v-write-interaction-v1-2026-11-03/</code>，实现完成才创建运行材料。合同/实现冻结须列模型、源码、输入、μ、随机、校准、解析器和参考记录的哈希；本计划与自查一并引用。缺任何来源则停止，不换供体或偷偷重估。</p>
+<p>CPU 先检查16臂唯一性、四背景逐字段来源、公式、计数、分母与缺失分类；用合成 logits 演示原生连续改善但仍停止、仅V恢复后起效、反向与全零四类，确认判读不会强行判阳性。</p>
+<p>模型预检只用 KUC 同一两个输入 ID（<code>NA-NQ01-ABC-A</code>、<code>NA-NQ02-ABC-B</code>）、四方向全矩阵。以下验收正式48也执行：</p>
+<ul>
+<li>同输入四背景只允许表中切片不同，未操作来源哈希不变；各臂从独立深拷贝出发。</li>
+<li>4个无操作背景各做原核t1参考；6个K臂各做原核直接输入影子k的t1参考。自定义更新的logits与缓存逐值一致；比较前统一设备和dtype。仅按KUC既有规则单列±0字节差，不能容忍其他漂移。</li>
+<li>6个W臂用实际捕获数值作FP64公式验算；FP32实现相对最大误差 <code>maxabs(error)/max(1,maxabs(oracle))≤1e−5</code>。容差仅验算公式，不用于放宽控制重放。</li>
+<li>高V背景的8条唯一轨迹（V/F及R/A/Z的W/K），与KUC对应00/01/11桥接：t1输出/缓存、C t2全词表和自然完整tokens一致。由本轮同一自然运行完成，不额外生成一遍。KUC参考不能用持续编辑Rk/Ak/Ark替代t1-only端点。</li>
+<li>shadow在实际卷积更新前克隆，14层各一次；只改旧k槽，无写回；t2起hook数为0。W与K保持其定义，不以效果好坏验收。</li>
+<li>保留自然分支的t1后缓存，另克隆运行C路线；C不能回写N；所有原始输出、计数、缺失、失败均保存。</li>
+</ul>
+<p>预检最多一次记录完整的工程修复重试；正式执行不改实现、阈值、数据。失败即停并记录；不得把代码失败作为科学阴性。旧KUC控制若不能桥接，先解决来源或实现差异，不改旧结果。</p>
+<h2 id="9">9. 完整拟预算</h2>
+<p>每输入一次共同前缀预填，重建1个C及4个T形成；四背景和全部分支由此产生，不增加供体形成。每输入×方向16自然轨迹，每条最多32次N前向（含t1）及1次C t2；另10次t1工程参考（4无操作+6完整k）。影子局部运算18次/输入/方向/层（12编辑臂+6完整k参考），不等于整模型前向。</p>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th style="text-align: right;">正式48输入</th>
+<th style="text-align: right;">每次预检2输入</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>前缀预填次数/token</td>
+<td style="text-align: right;">48 / 1452</td>
+<td style="text-align: right;">2 / 61</td>
+</tr>
+<tr>
+<td>C+四T形成次数/token</td>
+<td style="text-align: right;">240 / 6375</td>
+<td style="text-align: right;">10 / 265</td>
+</tr>
+<tr>
+<td>自然轨迹＝输入×4×16</td>
+<td style="text-align: right;">3072</td>
+<td style="text-align: right;">128</td>
+</tr>
+<tr>
+<td>N decode上限＝轨迹×32</td>
+<td style="text-align: right;">98304</td>
+<td style="text-align: right;">4096</td>
+</tr>
+<tr>
+<td>C t2 前向</td>
+<td style="text-align: right;">3072</td>
+<td style="text-align: right;">128</td>
+</tr>
+<tr>
+<td>原核t1参考＝输入×4×10</td>
+<td style="text-align: right;">1920</td>
+<td style="text-align: right;">80</td>
+</tr>
+<tr>
+<td>decode总上限</td>
+<td style="text-align: right;">103296</td>
+<td style="text-align: right;">4304</td>
+</tr>
+<tr>
+<td>影子局部调用＝输入×4×18×14</td>
+<td style="text-align: right;">48384</td>
+<td style="text-align: right;">2016</td>
+</tr>
+</tbody>
+</table>
+<p>正常含一次预检：3200轨迹、107600 decode、250次形成/6640token、50次预填/1513token、50400影子调用。含唯一预检重试硬数量上限：3328轨迹、111904 decode、260次形成/6905token、52次预填/1574token、52416影子调用。形成/预填 token 数继承 KUC 同输入身份，冻结前用真实 tokenizer 复算，不符先修订预算，不能静默增量。</p>
+<p>KUC正式0.49 GPUh是实测参照；本轮粗估正式0.6–0.9设备GPU小时，尚未测新记录开销。正式硬上限2.0 GPUh；预检每次0.2，最多两次；总硬上限2.4 GPUh，最多2 worker，计加载、形成和I/O占用在内的设备时间总和。预检外推超限先停，不删条件赶预算。新增存储上限12 GiB；保存t1/C t2 BF16全词表、原始文本/tokens、配对读数、局部摘要、来源哈希、执行及失败日志。权重与缓存大张量不入Git，原始项目证据按仓库规则归档。</p>
+<h2 id="10">10. 交付与后续方向</h2>
+<p>运行后交付四背景来源表、16臂逐输入读数、三个端点各自的效应/交互、KUC桥接、随机/C1343、实际资源账本及偏离记录。无需等某假设成立才写报告。</p>
+<p>本轮结束后优先冻结有证据的条件关系，在未用于开发的新输入上检验；另针眼验证要保留同一操作语义，不能只复现错误率。跨架构要检验“写入操作如何通过历史影响后续目标竞争”的功能关系，不要求另一架构有相同k、卷积槽或更新式。NVW本身尚不提供跨架构证据；原生与混合背景的关系会决定应迁移哪条预测。新面板、跨针、跨模型均另立设计，不随本轮自动启动。</p>
+<p>作者自查见<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-native-v-write-interaction-self-check-v1-2026-11-03.zh-CN.md">SELF CHECK</a>。</p></main></html>

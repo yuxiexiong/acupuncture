@@ -1,0 +1,715 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>候选布局 token 位置（CPU 审计，真实分词器）</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="token-cpu">候选布局 token 位置（CPU 审计，真实分词器）</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-layout-token-audit-v1-2026-11-02/LAYOUT-AUDIT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-layout-token-audit-v1-2026-11-02/LAYOUT-AUDIT.zh-CN.md">固定提交原件</a>；SHA-256：<code>9b89a93a8247b377398d071341955f742f3978b37431e0faf17ee5f3e3cb933e</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="token-cpu_1">候选布局 token 位置（CPU 审计，真实分词器）</h1>
+<p>2026-11-02。只切 token，不运行模型。脚本 <code>layout_audit.py</code>，逐条结果 <code>layout-audit-r01.json</code>。文本来自 NQ-01 的 54 个“场景×顺序×查询”格，各有按名、标签两种规格。</p>
+<h2 id="_1">布局</h2>
+<ul>
+<li><strong>L0</strong> 问题 → 记录 → 指令（NQ/NB 式，参照）</li>
+<li><strong>L1</strong> 记录 → 问题 → 指令（QC/QCD 的 NA、LA）</li>
+<li><strong>L2</strong> 记录 → 指令 → 问题；指令改写为“请根据上面的记录，简短回答下面的问题，只需给出编号。”（多 2 个 token）</li>
+<li><strong>L2s</strong> 记录 → 指令 → 问题；指令与 L0/L1 逐字相同（只挪动问题）</li>
+</ul>
+<p>候选窗口（都在读出位 n−1 之前结束）：B = 记录后到 n−2；E20 = 记录后前 20 个；N20 = 读出前最后 20 个；Q = 恰好问题本身的 token。</p>
+<h2 id="_2">事实</h2>
+<ol>
+<li>四种布局、两种规格下<strong>没有任何跨段 token</strong>；同一输入的问题 token 在各布局中<strong>逐位相同</strong>（108/108）。问题长 6 个 token（标签全部；按名 33 条），按名另 21 条为 5 个。</li>
+<li>L1 与 L2s 的提示长度 n 完全相同（只是重排）；L2 因改写指令多 2 个 token。</li>
+<li>L0 的问题在记录之前、位于预填段内（Q 窗口不在形成窗口里），现有形成期注入不能只打在 L0 的问题上。</li>
+<li>L2 的 E20 只覆盖问题的 5/6 个 token，把问题切开，不宜作候选。</li>
+</ol>
+<h2 id="_3">由此可构造的配对（各自的残余差别）</h2>
+<table>
+<thead>
+<tr>
+<th>配对</th>
+<th>相同</th>
+<th>不同</th>
+<th>残余混淆</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Q 窗口：L1 vs L2s</strong>（同内容、不同时刻）</td>
+<td>问题 token 逐位相同、长度 5/6、剂量可同</td>
+<td>窗口末端到读出 22 对 9 个 token；窗口后未注入更新 21 对 8 步</td>
+<td>问题之前的上下文不同（L1 紧跟记录；L2s 跟在指令后）；问题与指令的先后不同；之后处理的内容不同</td>
+</tr>
+<tr>
+<td><strong>N20：L1 vs L2s</strong>（同时刻、不同内容）</td>
+<td>长度 20、都在读出前 1 位结束、之后 0 步未注入；模板尾 8 个 token 相同</td>
+<td>L1 覆盖整条指令 12 个；L2s 覆盖指令末 5–6 个 + 换行 + 问题 5–6 个</td>
+<td>两个布局本身不同（问题位置），C 基线需分别检验；被替换掉的是指令前半段，不是“空白”</td>
+</tr>
+<tr>
+<td><strong>E20 / B：L1 vs L2s</strong>（同组成、不同顺序）</td>
+<td>覆盖的段与 token 数相同（问题 6 + 换行 + 指令 12 + 模板尾 1；B 再加 7 个模板尾）</td>
+<td>段内顺序：L1 问题在前，L2s 指令在前</td>
+<td>同上；E20 结束后仍有 7 步未注入更新（两布局相同）</td>
+</tr>
+</tbody>
+</table>
+<p>这些只是 token 层面的可比性；问题位置改变本身会改变模型此前见过什么、问题与记录的关系和任务难度，任何配对都不是只改了“覆盖内容”或只改了“时刻”。L2s 的指令出现在问题之前，干净基线是否成立必须实测（LB 曾因模板变化没过基线）。</p>
+<p>问题 token 在各布局中是否逐位相同（按 规格×输入）：{True: 108}</p>
+<table>
+<thead>
+<tr>
+<th>规格</th>
+<th>布局</th>
+<th>提示长度 n</th>
+<th>跨段 token</th>
+<th>窗口</th>
+<th style="text-align: right;">长度</th>
+<th>覆盖（段: token 数）</th>
+<th style="text-align: right;">末 token 到读出</th>
+<th style="text-align: right;">窗口后未注入更新</th>
+<th style="text-align: right;">文本数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>label</td>
+<td>L0</td>
+<td>{61: 18, 60: 9, 58: 9, 59: 9, 62: 9}</td>
+<td>0</td>
+<td>B</td>
+<td style="text-align: right;">20</td>
+<td>{"instruction": 12, "tail": 8}</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">54</td>
+</tr>
+<tr>
+<td>label</td>
+<td>L0</td>
+<td>{61: 18, 60: 9, 58: 9, 59: 9, 62: 9}</td>
+<td>0</td>
+<td>E20</td>
+<td style="text-align: right;">20</td>
+<td>{"instruction": 12, "tail": 8}</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">54</td>
+</tr>
+<tr>
+<td>label</td>
+<td>L0</td>
+<td>{61: 18, 60: 9, 58: 9, 59: 9, 62: 9}</td>
+<td>0</td>
+<td>N20</td>
+<td style="text-align: right;">20</td>
+<td>{"instruction": 12, "tail": 8}</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">54</td>
+</tr>
+<tr>
+<td>label</td>
+<td>L0</td>
+<td>{61: 18, 60: 9, 58: 9, 59: 9, 62: 9}</td>
+<td>0</td>
+<td>Q</td>
+<td style="text-align: right;">6</td>
+<td>{"question": 6}</td>
+<td style="text-align: right;">52</td>
+<td style="text-align: right;">51</td>
+<td style="text-align: right;">18</td>
+</tr>
+<tr>
+<td>label</td>
+<td>L0</td>
+<td>{61: 18, 60: 9, 58: 9, 59: 9, 62: 9}</td>
+<td>0</td>
+<td>Q</td>
+<td style="text-align: right;">6</td>
+<td>{"question": 6}</td>
+<td style="text-align: right;">51</td>
+<td style="text-align: right;">50</td>
+<td style="text-align: right;">9</td>
+</tr>
+<tr>
+<td>label</td>
+<td>L0</td>
+<td>{61: 18, 60: 9, 58: 9, 59: 9, 62: 9}</td>
+<td>0</td>
+<td>Q</td>
+<td style="text-align: right;">6</td>
+<td>{"question": 6}</td>
+<td style="text-align: right;">49</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">9</td>
+</tr>
+<tr>
+<td>label</td>
+<td>L0</td>
+<td>{61: 18, 60: 9, 58: 9, 59: 9, 62: 9}</td>
+<td>0</td>
+<td>Q</td>
+<td style="text-align: right;">6</td>
+<td>{"question": 6}</td>
+<td style="text-align: right;">50</td>
+<td style="text-align: right;">49</td>
+<td style="text-align: right;">9</td>
+</tr>
+<tr>
+<td>label</td>
+<td>L0</td>
+<td>{61: 18, 60: 9, 58: 9, 59: 9, 62: 9}</td>
+<td>0</td>
+<td>Q</td>
+<td style="text-align: right;">6</td>
+<td>{"question": 6}</td>
+<td style="text-align: right;">53</td>
+<td style="text-align: right;">52</td>
+<td style="text-align: right;">9</td>
+</tr>
+<tr>
+<td>label</td>
+<td>L1</td>
+<td>{61: 18, 60: 9, 58: 9, 59: 9, 62: 9}</td>
+<td>0</td>
+<td>B</td>
+<td style="text-align: right;">27</td>
+<td>{"instruction": 12, "newline": 1, "question": 6, "tail": 8}</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">54</td>
+</tr>
+<tr>
+<td>label</td>
+<td>L1</td>
+<td>{61: 18, 60: 9, 58: 9, 59: 9, 62: 9}</td>
+<td>0</td>
+<td>E20</td>
+<td style="text-align: right;">20</td>
+<td>{"instruction": 12, "newline": 1, "question": 6, "tail": 1}</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">54</td>
+</tr>
+<tr>
+<td>label</td>
+<td>L1</td>
+<td>{61: 18, 60: 9, 58: 9, 59: 9, 62: 9}</td>
+<td>0</td>
+<td>N20</td>
+<td style="text-align: right;">20</td>
+<td>{"instruction": 12, "tail": 8}</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">54</td>
+</tr>
+<tr>
+<td>label</td>
+<td>L1</td>
+<td>{61: 18, 60: 9, 58: 9, 59: 9, 62: 9}</td>
+<td>0</td>
+<td>Q</td>
+<td style="text-align: right;">6</td>
+<td>{"question": 6}</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">54</td>
+</tr>
+<tr>
+<td>label</td>
+<td>L2</td>
+<td>{63: 18, 62: 9, 60: 9, 61: 9, 64: 9}</td>
+<td>0</td>
+<td>B</td>
+<td style="text-align: right;">29</td>
+<td>{"instruction": 14, "newline": 1, "question": 6, "tail": 8}</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">54</td>
+</tr>
+<tr>
+<td>label</td>
+<td>L2</td>
+<td>{63: 18, 62: 9, 60: 9, 61: 9, 64: 9}</td>
+<td>0</td>
+<td>E20</td>
+<td style="text-align: right;">20</td>
+<td>{"instruction": 14, "newline": 1, "question": 5}</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">54</td>
+</tr>
+<tr>
+<td>label</td>
+<td>L2</td>
+<td>{63: 18, 62: 9, 60: 9, 61: 9, 64: 9}</td>
+<td>0</td>
+<td>N20</td>
+<td style="text-align: right;">20</td>
+<td>{"instruction": 5, "newline": 1, "question": 6, "tail": 8}</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">54</td>
+</tr>
+<tr>
+<td>label</td>
+<td>L2</td>
+<td>{63: 18, 62: 9, 60: 9, 61: 9, 64: 9}</td>
+<td>0</td>
+<td>Q</td>
+<td style="text-align: right;">6</td>
+<td>{"question": 6}</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">54</td>
+</tr>
+<tr>
+<td>label</td>
+<td>L2s</td>
+<td>{61: 18, 60: 9, 58: 9, 59: 9, 62: 9}</td>
+<td>0</td>
+<td>B</td>
+<td style="text-align: right;">27</td>
+<td>{"instruction": 12, "newline": 1, "question": 6, "tail": 8}</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">54</td>
+</tr>
+<tr>
+<td>label</td>
+<td>L2s</td>
+<td>{61: 18, 60: 9, 58: 9, 59: 9, 62: 9}</td>
+<td>0</td>
+<td>E20</td>
+<td style="text-align: right;">20</td>
+<td>{"instruction": 12, "newline": 1, "question": 6, "tail": 1}</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">54</td>
+</tr>
+<tr>
+<td>label</td>
+<td>L2s</td>
+<td>{61: 18, 60: 9, 58: 9, 59: 9, 62: 9}</td>
+<td>0</td>
+<td>N20</td>
+<td style="text-align: right;">20</td>
+<td>{"instruction": 5, "newline": 1, "question": 6, "tail": 8}</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">54</td>
+</tr>
+<tr>
+<td>label</td>
+<td>L2s</td>
+<td>{61: 18, 60: 9, 58: 9, 59: 9, 62: 9}</td>
+<td>0</td>
+<td>Q</td>
+<td style="text-align: right;">6</td>
+<td>{"question": 6}</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">54</td>
+</tr>
+<tr>
+<td>name</td>
+<td>L0</td>
+<td>{59: 18, 58: 3, 57: 9, 55: 9, 56: 6, 60: 9}</td>
+<td>0</td>
+<td>B</td>
+<td style="text-align: right;">20</td>
+<td>{"instruction": 12, "tail": 8}</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">54</td>
+</tr>
+<tr>
+<td>name</td>
+<td>L0</td>
+<td>{59: 18, 58: 3, 57: 9, 55: 9, 56: 6, 60: 9}</td>
+<td>0</td>
+<td>E20</td>
+<td style="text-align: right;">20</td>
+<td>{"instruction": 12, "tail": 8}</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">54</td>
+</tr>
+<tr>
+<td>name</td>
+<td>L0</td>
+<td>{59: 18, 58: 3, 57: 9, 55: 9, 56: 6, 60: 9}</td>
+<td>0</td>
+<td>N20</td>
+<td style="text-align: right;">20</td>
+<td>{"instruction": 12, "tail": 8}</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">54</td>
+</tr>
+<tr>
+<td>name</td>
+<td>L0</td>
+<td>{59: 18, 58: 3, 57: 9, 55: 9, 56: 6, 60: 9}</td>
+<td>0</td>
+<td>Q</td>
+<td style="text-align: right;">6</td>
+<td>{"question": 6}</td>
+<td style="text-align: right;">50</td>
+<td style="text-align: right;">49</td>
+<td style="text-align: right;">18</td>
+</tr>
+<tr>
+<td>name</td>
+<td>L0</td>
+<td>{59: 18, 58: 3, 57: 9, 55: 9, 56: 6, 60: 9}</td>
+<td>0</td>
+<td>Q</td>
+<td style="text-align: right;">5</td>
+<td>{"question": 5}</td>
+<td style="text-align: right;">47</td>
+<td style="text-align: right;">46</td>
+<td style="text-align: right;">9</td>
+</tr>
+<tr>
+<td>name</td>
+<td>L0</td>
+<td>{59: 18, 58: 3, 57: 9, 55: 9, 56: 6, 60: 9}</td>
+<td>0</td>
+<td>Q</td>
+<td style="text-align: right;">6</td>
+<td>{"question": 6}</td>
+<td style="text-align: right;">51</td>
+<td style="text-align: right;">50</td>
+<td style="text-align: right;">9</td>
+</tr>
+<tr>
+<td>name</td>
+<td>L0</td>
+<td>{59: 18, 58: 3, 57: 9, 55: 9, 56: 6, 60: 9}</td>
+<td>0</td>
+<td>Q</td>
+<td style="text-align: right;">5</td>
+<td>{"question": 5}</td>
+<td style="text-align: right;">49</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">6</td>
+</tr>
+<tr>
+<td>name</td>
+<td>L0</td>
+<td>{59: 18, 58: 3, 57: 9, 55: 9, 56: 6, 60: 9}</td>
+<td>0</td>
+<td>Q</td>
+<td style="text-align: right;">5</td>
+<td>{"question": 5}</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">47</td>
+<td style="text-align: right;">6</td>
+</tr>
+<tr>
+<td>name</td>
+<td>L0</td>
+<td>{59: 18, 58: 3, 57: 9, 55: 9, 56: 6, 60: 9}</td>
+<td>0</td>
+<td>Q</td>
+<td style="text-align: right;">6</td>
+<td>{"question": 6}</td>
+<td style="text-align: right;">49</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr>
+<td>name</td>
+<td>L0</td>
+<td>{59: 18, 58: 3, 57: 9, 55: 9, 56: 6, 60: 9}</td>
+<td>0</td>
+<td>Q</td>
+<td style="text-align: right;">6</td>
+<td>{"question": 6}</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">47</td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr>
+<td>name</td>
+<td>L1</td>
+<td>{59: 18, 58: 3, 57: 9, 55: 9, 56: 6, 60: 9}</td>
+<td>0</td>
+<td>B</td>
+<td style="text-align: right;">27</td>
+<td>{"instruction": 12, "newline": 1, "question": 6, "tail": 8}</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">33</td>
+</tr>
+<tr>
+<td>name</td>
+<td>L1</td>
+<td>{59: 18, 58: 3, 57: 9, 55: 9, 56: 6, 60: 9}</td>
+<td>0</td>
+<td>B</td>
+<td style="text-align: right;">26</td>
+<td>{"instruction": 12, "newline": 1, "question": 5, "tail": 8}</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">21</td>
+</tr>
+<tr>
+<td>name</td>
+<td>L1</td>
+<td>{59: 18, 58: 3, 57: 9, 55: 9, 56: 6, 60: 9}</td>
+<td>0</td>
+<td>E20</td>
+<td style="text-align: right;">20</td>
+<td>{"instruction": 12, "newline": 1, "question": 6, "tail": 1}</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">33</td>
+</tr>
+<tr>
+<td>name</td>
+<td>L1</td>
+<td>{59: 18, 58: 3, 57: 9, 55: 9, 56: 6, 60: 9}</td>
+<td>0</td>
+<td>E20</td>
+<td style="text-align: right;">20</td>
+<td>{"instruction": 12, "newline": 1, "question": 5, "tail": 2}</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">21</td>
+</tr>
+<tr>
+<td>name</td>
+<td>L1</td>
+<td>{59: 18, 58: 3, 57: 9, 55: 9, 56: 6, 60: 9}</td>
+<td>0</td>
+<td>N20</td>
+<td style="text-align: right;">20</td>
+<td>{"instruction": 12, "tail": 8}</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">54</td>
+</tr>
+<tr>
+<td>name</td>
+<td>L1</td>
+<td>{59: 18, 58: 3, 57: 9, 55: 9, 56: 6, 60: 9}</td>
+<td>0</td>
+<td>Q</td>
+<td style="text-align: right;">6</td>
+<td>{"question": 6}</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">33</td>
+</tr>
+<tr>
+<td>name</td>
+<td>L1</td>
+<td>{59: 18, 58: 3, 57: 9, 55: 9, 56: 6, 60: 9}</td>
+<td>0</td>
+<td>Q</td>
+<td style="text-align: right;">5</td>
+<td>{"question": 5}</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">21</td>
+</tr>
+<tr>
+<td>name</td>
+<td>L2</td>
+<td>{61: 18, 60: 3, 59: 9, 57: 9, 58: 6, 62: 9}</td>
+<td>0</td>
+<td>B</td>
+<td style="text-align: right;">29</td>
+<td>{"instruction": 14, "newline": 1, "question": 6, "tail": 8}</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">33</td>
+</tr>
+<tr>
+<td>name</td>
+<td>L2</td>
+<td>{61: 18, 60: 3, 59: 9, 57: 9, 58: 6, 62: 9}</td>
+<td>0</td>
+<td>B</td>
+<td style="text-align: right;">28</td>
+<td>{"instruction": 14, "newline": 1, "question": 5, "tail": 8}</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">21</td>
+</tr>
+<tr>
+<td>name</td>
+<td>L2</td>
+<td>{61: 18, 60: 3, 59: 9, 57: 9, 58: 6, 62: 9}</td>
+<td>0</td>
+<td>E20</td>
+<td style="text-align: right;">20</td>
+<td>{"instruction": 14, "newline": 1, "question": 5}</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">33</td>
+</tr>
+<tr>
+<td>name</td>
+<td>L2</td>
+<td>{61: 18, 60: 3, 59: 9, 57: 9, 58: 6, 62: 9}</td>
+<td>0</td>
+<td>E20</td>
+<td style="text-align: right;">20</td>
+<td>{"instruction": 14, "newline": 1, "question": 5}</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">21</td>
+</tr>
+<tr>
+<td>name</td>
+<td>L2</td>
+<td>{61: 18, 60: 3, 59: 9, 57: 9, 58: 6, 62: 9}</td>
+<td>0</td>
+<td>N20</td>
+<td style="text-align: right;">20</td>
+<td>{"instruction": 5, "newline": 1, "question": 6, "tail": 8}</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">33</td>
+</tr>
+<tr>
+<td>name</td>
+<td>L2</td>
+<td>{61: 18, 60: 3, 59: 9, 57: 9, 58: 6, 62: 9}</td>
+<td>0</td>
+<td>N20</td>
+<td style="text-align: right;">20</td>
+<td>{"instruction": 6, "newline": 1, "question": 5, "tail": 8}</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">21</td>
+</tr>
+<tr>
+<td>name</td>
+<td>L2</td>
+<td>{61: 18, 60: 3, 59: 9, 57: 9, 58: 6, 62: 9}</td>
+<td>0</td>
+<td>Q</td>
+<td style="text-align: right;">6</td>
+<td>{"question": 6}</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">33</td>
+</tr>
+<tr>
+<td>name</td>
+<td>L2</td>
+<td>{61: 18, 60: 3, 59: 9, 57: 9, 58: 6, 62: 9}</td>
+<td>0</td>
+<td>Q</td>
+<td style="text-align: right;">5</td>
+<td>{"question": 5}</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">21</td>
+</tr>
+<tr>
+<td>name</td>
+<td>L2s</td>
+<td>{59: 18, 58: 3, 57: 9, 55: 9, 56: 6, 60: 9}</td>
+<td>0</td>
+<td>B</td>
+<td style="text-align: right;">27</td>
+<td>{"instruction": 12, "newline": 1, "question": 6, "tail": 8}</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">33</td>
+</tr>
+<tr>
+<td>name</td>
+<td>L2s</td>
+<td>{59: 18, 58: 3, 57: 9, 55: 9, 56: 6, 60: 9}</td>
+<td>0</td>
+<td>B</td>
+<td style="text-align: right;">26</td>
+<td>{"instruction": 12, "newline": 1, "question": 5, "tail": 8}</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">21</td>
+</tr>
+<tr>
+<td>name</td>
+<td>L2s</td>
+<td>{59: 18, 58: 3, 57: 9, 55: 9, 56: 6, 60: 9}</td>
+<td>0</td>
+<td>E20</td>
+<td style="text-align: right;">20</td>
+<td>{"instruction": 12, "newline": 1, "question": 6, "tail": 1}</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">33</td>
+</tr>
+<tr>
+<td>name</td>
+<td>L2s</td>
+<td>{59: 18, 58: 3, 57: 9, 55: 9, 56: 6, 60: 9}</td>
+<td>0</td>
+<td>E20</td>
+<td style="text-align: right;">20</td>
+<td>{"instruction": 12, "newline": 1, "question": 5, "tail": 2}</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">21</td>
+</tr>
+<tr>
+<td>name</td>
+<td>L2s</td>
+<td>{59: 18, 58: 3, 57: 9, 55: 9, 56: 6, 60: 9}</td>
+<td>0</td>
+<td>N20</td>
+<td style="text-align: right;">20</td>
+<td>{"instruction": 5, "newline": 1, "question": 6, "tail": 8}</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">33</td>
+</tr>
+<tr>
+<td>name</td>
+<td>L2s</td>
+<td>{59: 18, 58: 3, 57: 9, 55: 9, 56: 6, 60: 9}</td>
+<td>0</td>
+<td>N20</td>
+<td style="text-align: right;">20</td>
+<td>{"instruction": 6, "newline": 1, "question": 5, "tail": 8}</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">21</td>
+</tr>
+<tr>
+<td>name</td>
+<td>L2s</td>
+<td>{59: 18, 58: 3, 57: 9, 55: 9, 56: 6, 60: 9}</td>
+<td>0</td>
+<td>Q</td>
+<td style="text-align: right;">6</td>
+<td>{"question": 6}</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">33</td>
+</tr>
+<tr>
+<td>name</td>
+<td>L2s</td>
+<td>{59: 18, 58: 3, 57: 9, 55: 9, 56: 6, 60: 9}</td>
+<td>0</td>
+<td>Q</td>
+<td style="text-align: right;">5</td>
+<td>{"question": 5}</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">21</td>
+</tr>
+</tbody>
+</table>
+<h2 id="name">例（name，第一个输入）</h2>
+<ul>
+<li>L0：<code>'铁锚的编号是什么？\n仓储台账：铁锚编号为U17，竹篮编号为U43，陶罐编号为U86。\n请根据上面的记录，简短回答，只需给出编号。'</code>，n=59，b=37，段区间 {'record': [10, 36], 'question': [3, 8], 'instruction': [38, 49]}</li>
+<li>L1：<code>'仓储台账：铁锚编号为U17，竹篮编号为U43，陶罐编号为U86。\n铁锚的编号是什么？\n请根据上面的记录，简短回答，只需给出编号。'</code>，n=59，b=30，段区间 {'record': [3, 29], 'question': [31, 36], 'instruction': [38, 49]}</li>
+<li>L2：<code>'仓储台账：铁锚编号为U17，竹篮编号为U43，陶罐编号为U86。\n请根据上面的记录，简短回答下面的问题，只需给出编号。\n铁锚的编号是什么？'</code>，n=61，b=30，段区间 {'record': [3, 29], 'question': [46, 51], 'instruction': [31, 44]}</li>
+<li>L2s：<code>'仓储台账：铁锚编号为U17，竹篮编号为U43，陶罐编号为U86。\n请根据上面的记录，简短回答，只需给出编号。\n铁锚的编号是什么？'</code>，n=59，b=30，段区间 {'record': [3, 29], 'question': [44, 49], 'instruction': [31, 42]}</li>
+</ul></main></html>

@@ -1,0 +1,125 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>查重记录：WIN-01/02、KVC-01 与&quot;状态类型损伤图谱&quot;的先行工作</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="win-0102kvc-01">查重记录：WIN-01/02、KVC-01 与"状态类型损伤图谱"的先行工作</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>docs/literature/state-type-damage-map-prior-art-2026-11-05.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/literature/state-type-damage-map-prior-art-2026-11-05.zh-CN.md">固定提交原件</a>；SHA-256：<code>0e0951ee1c7de09db879df5ef984ed08b1581bd85227d646ab2ab08874841af7</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="win-0102kvc-01_1">查重记录：WIN-01/02、KVC-01 与"状态类型损伤图谱"的先行工作</h1>
+<p>2026-11-05。七步查重（子代理执行、作者核对要点），约 15 条查询 × 一轮，外加 10-31 自查与 11-01 合并文献文档（<code>merged-prior-art-artemisinin-2026-11-01</code>）的已知线索。</p>
+<p><strong>取到正文并定向追问的有 5 篇</strong>：
+- 2609.04434：全文；
+- 2609.33093：混合模型一节；
+- 2606.17107、2609.15545、2606.19831：各读前约 10 万字符。</p>
+<p>另有约 25 篇只看过摘要或片段。档位：<strong>推导</strong>、<strong>类比</strong>、<strong>推测</strong>。</p>
+<h2 id="_1">坏消息先说</h2>
+<ol>
+<li><strong>KVC-01 的主体结果被蕴含（高置信，推导）。</strong>
+   - 2609.04434（Findings EMNLP 2026，<em>What Attention Recalls and Recurrence Controls</em>）在 Qwen3.5-4B 上做整缓存的状态交换：答案取值来自 KV 一侧，只保留递推时精确检索为 0。
+   - 2609.33093 在 Qwen3.5-4B/9B 上做整缓存供体替换：KV 恢复 96–100%，递推只恢复 0.2–3.6%。
+   - 我们"递推移植 0/48、KV 移植跟随供体"是它们的推论。KVC-01 剩下可能新的只有两点：只换局部位置、受针背景。
+   - 2609.04434 和 11-01 合并文档早已登记，我在设计 KVC-01 时没有引用它，这是作者疏忽。</li>
+<li><strong>KVC-01 的"局部位置"区分不了先行工作关心的东西（推导）。</strong> 2606.17107（纯 Transformer）发现：字段自身的 KV 对决策贡献不到 1%，决策写在下游分隔符位置的"笔记"里，由约 12 个晚层头读取。KVC-01 替换的是"记录句事实词起到 b"，字段和下游同时被换，恰好没分开。</li>
+<li><strong>"跨模型状态类型地图"大半已被预言（高置信，推导）。</strong>
+   - 2609.04434 已覆盖 Qwen3.5 4B/9B/27B、Falcon-H1 3B/7B/34B，另有 Kimi-Linear、Olmo-Hybrid、Jamba2-3B 的点估计，并在 4B 上做过半层粒度的扫描。
+   - 若图谱只报"检索靠 KV、语言/模式靠递推"，就是复现。</li>
+<li><strong>更正旧口径</strong>：
+   - "递推仅 0.2–3.6%"出自 2609.33093，不是 2609.04434（10-31 记忆写错了出处）；
+   - 2512.00918 的摘要没有提到"只输出 EOS"，这一说法未核实。</li>
+</ol>
+<h2 id="_2">对照表</h2>
+<table>
+<thead>
+<tr>
+<th>我们的结果</th>
+<th>最近的先行工作</th>
+<th>它做了什么</th>
+<th>判定</th>
+<th>档位</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>WIN-01/02：扰动窗口决定哪种恢复有效；停止消失 ≠ 答案恢复</td>
+<td>2609.04434</td>
+<td>干净上下文中只保留 KV 或只保留递推：语言、persona 走递推，检索走 KV</td>
+<td><strong>部分蕴含</strong>：递推管"怎么说"可类比为管停嘴、KV 管"说什么"；"内部扰动窗口 × 恢复类型""停止消失 ≠ 答案恢复"这个对象未找到</td>
+<td>类比</td>
+</tr>
+<tr>
+<td>同上</td>
+<td>2606.29522</td>
+<td>行为等价 ≠ 机制等价；单层修补不到参照效应的 2%</td>
+<td>相邻</td>
+<td>类比</td>
+</tr>
+<tr>
+<td>KVC-01：局部 KV 移植跟随供体、递推不迁移</td>
+<td>2609.04434；2609.33093</td>
+<td>整缓存、无针、无位置限制</td>
+<td><strong>蕴含</strong></td>
+<td>推导</td>
+</tr>
+<tr>
+<td>KVC-01 的位置限定</td>
+<td>2606.17107；Feng &amp; Steinhardt 2310.17191；2409.05448</td>
+<td>字段 KV 贡献小、下游笔记决定；Transformer 上下文位置修补是常规做法</td>
+<td>相邻</td>
+<td>推导</td>
+</tr>
+<tr>
+<td>横向图谱</td>
+<td>2609.04434</td>
+<td>多模型 split-prefill；只在 Qwen3.5-4B 上做半层扫描；干净条件</td>
+<td><strong>部分覆盖</strong></td>
+<td>推导</td>
+</tr>
+<tr>
+<td>横向图谱</td>
+<td>2609.33093</td>
+<td>只在纯 GLA/GDN 上逐层定位；混合模型只有整缓存替换</td>
+<td>相邻</td>
+<td>推导</td>
+</tr>
+<tr>
+<td>横向图谱</td>
+<td>2609.15545</td>
+<td>在 Qwen3.5-4B 等模型上恢复源位置的 K 或 V；归纳电路走"GDN 层携带 → 全注意力层匹配"，主要路线是 K</td>
+<td>相邻、直接相关：应把 KV 拆成 K 和 V</td>
+<td>推导</td>
+</tr>
+<tr>
+<td>横向图谱</td>
+<td>2603.22473</td>
+<td>Qwen3.5-0.8B、Falcon-H1-0.5B 组件消融，有逐层结果，无状态恢复</td>
+<td>相邻（只看摘要）</td>
+<td>—</td>
+</tr>
+<tr>
+<td>单 MLP 通道 → 首步停止</td>
+<td>2606.19831；2512.00918</td>
+<td>单神经元剂量；少数 down_proj 神经元导致"崩溃"</td>
+<td>都没讲首步停止，读取侧与缓存侧都未测</td>
+<td>推测</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_3">仍然空着的维度（在已检索范围内，推导）</h2>
+<ul>
+<li>卷积缓冲单独拆出来（两篇都并进了"递推"）；</li>
+<li>KV 拆成 K 和 V（参照 2609.15545）；</li>
+<li>损伤来源是<strong>内部稀疏注入</strong>（MLP 通道），不是上下文内容；</li>
+<li>恢复与污染两个方向（充分性的对称检验）；</li>
+<li>结果分档：首步停止 / 错答 / 完整恢复；</li>
+<li>扰动窗口（位置）× 状态类型。</li>
+</ul>
+<p><strong>谁会因此改做法（推测）</strong>：
+- 混合模型的缓存压缩、恢复与服务（2609.15030、2609.15021、2610.41508 HiState、2608.30386 DASC）：他们需要知道某层出问题时，存哪种状态、恢复哪种状态才够；
+- 在混合模型上做 steering 或安全干预的人。</p>
+<p><strong>必须引用</strong>：2609.04434、2609.33093、2609.15545、2606.17107、2603.22473、Sharma 2404.03646、Ensign 2407.14008、2507.06457。</p>
+<p><strong>实现风险</strong>：切点只喂最后一个 token，应走 seq_len==1 路径；仍需按 2609.04434 附录 B 的建议，证明恢复的状态确实改变了 logits（Δ ≠ 0）。</p>
+<h2 id="_4">边界</h2>
+<ul>
+<li>被引链未能系统跑（Semantic Scholar 限流），2610 之后的跟进工作可能漏掉；</li>
+<li>只搜 arXiv 与英文，未覆盖在审稿件、OpenReview、并行未公开的工作；</li>
+<li>多篇只读前 10 万字符，附录未读；</li>
+<li>搜索工具会摘要改写，有漏检；</li>
+<li>"空着"只表示这一轮没找到，不代表想法强。</li>
+</ul></main></html>

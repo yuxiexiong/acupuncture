@@ -1,0 +1,252 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>缓存机制线：先验知识审计与主线纠偏</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="_1">缓存机制线：先验知识审计与主线纠偏</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>docs/cache-mechanism-known-basics-audit-2026-10-31.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-mechanism-known-basics-audit-2026-10-31.zh-CN.md">固定提交原件</a>；SHA-256：<code>945f3348da8bdb82298db462c17b029dabf5d554f5831796cc5a1c78202c6c81</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="_2">缓存机制线：先验知识审计与主线纠偏</h1>
+<h2 id="material-passport">Material Passport</h2>
+<p>2026-10-31；basics-audit-r01；academic-research-suite / deep-research / fact-check。用户要求：先找清架构、公式和已有研究已经回答的问题，避免继续花算力重复发现；每份后续计划先核对主线及认识增量。本轮仅阅读源码、原始文献、项目合同与已有证据；新增模型前向、GPU使用、训练、生成和候选评分均为0。</p>
+<p><strong>当前决定：暂停上一版组前/组后八组合的推进，不将其列为默认下一轮；保留为有条件的定位工具。EOS屏蔽也不自动接替。当前先完成知识与未知的边界，不在这份审计末尾再推出一套新GPU网格。</strong></p>
+<h2 id="1">1. 需要纠正的是研究推进方式</h2>
+<p>卷积、递推与全注意力怎样连接，属于实验前必须掌握的定义和实现，不应被说成做完四格后得到的机制发现。这里不是资料不存在：旧阶段二合同第5节已写出“注意力先于MLP、本层及上游缓存不受本次注入影响、L31为结构边界”。问题是后续方案没有持续把这些知识用作筛除重复问题的前提。</p>
+<p>过去实验仍提供了特定权重、输入和干预下的效应大小、方向及回答证据；这些不是仅凭架构图就能知道的。但“存在状态延续”“模块会相互影响”“联合操作可能非加和”不能继续充当推进本线的新发现。</p>
+<h3 id="_3">本线主旨</h3>
+<p>沿用<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-mechanism-proposal-2026-10-30.zh-CN.md">立项问题</a>：解释少数通道的暂时激活干预，怎样改变历史状态，并在停止干预后影响回答。</p>
+<p>更具体的核心未知是：<strong>在真实训练好的模型里，干预改动的哪部分历史信号，经由什么写入、保持和读取计算，解释了特定后续行为的方向、强弱或持续性；这种解释能否提前作出可被反例推翻的预测？</strong></p>
+<p>“模型内部存在一条允许影响传播的路”是架构知识；“这条路承载了我们关心的实际效应，以及为什么这个条件强、那个条件弱”才是需要证据的研究问题。解释可以沿用既有理论，不要求发明新的缓存原理；但不能只是运行完整模型后再把输出改述成机制。</p>
+<p>当前范围是冻结权重模型的推理历史状态。本线不自动变成缓存加速算法、所有LLM通用记忆理论、拔针攻击或修复EOS的方法；若要改变主旨，应明确提出并讨论，而不是随最近的异常悄悄改题。</p>
+<h2 id="2-gpu14">2. 不需要大规模GPU重新发现的14项基础知识</h2>
+<p>标记：<strong>A</strong>=当前架构/实现定义；<strong>T</strong>=在明确条件下可直接推导；<strong>E</strong>=工程正确性检查。源码版本与来源见第7节；未把上游源码检查说成服务器已安装文件的逐字节认证。</p>
+<table>
+<thead>
+<tr>
+<th>编号</th>
+<th>先验知识及成立边界</th>
+<th>对实验的直接约束</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>K01 A</td>
+<td>hook停止只终止后续激活修改，不清除此前形成的KV、递推、卷积状态，也不撤回已生成文字</td>
+<td>撤针后仍可能有影响是预期；持续多久、具体影响什么仍未知。不能只以“还有影响”作为机制成果</td>
+</tr>
+<tr>
+<td>K02 T/E</td>
+<td>down_proj为线性投影；单通道加法在注入处等价于加该权重列乘幅度。现有引擎还按列范数和参考尺度校准</td>
+<td>少数坐标不等于小扰动；不能因“只改一个神经元”就预设高度特异或排除一般损伤。浮点近似由工程检查处理</td>
+</tr>
+<tr>
+<td>K03 A/T</td>
+<td>同一token内注意力/缓存更新先于MLP。固定相同输入token序列时，MLP注入只可能影响后续层缓存，不会逆向写到本层/上游</td>
+<td>L31提示注入后、末token撤针的缓存边界是结构对照，不是末层“没有记忆”的发现；自由生成token改变时不套用固定序列结论</td>
+</tr>
+<tr>
+<td>K04 A</td>
+<td>4B是32层、每三层线性接一层全注意力，卷积核宽4；L12属于重复布局的一处</td>
+<td>不以层号赋予独特功能；固定点位的强效只能作条件相关的经验结果</td>
+</tr>
+<tr>
+<td>K05 A</td>
+<td>短卷积形成当前q/k/v，递推据此先更新再读取；输出经残差、归一化、MLP传到后续层。门α/β/z来自当前层输入投影</td>
+<td>不把三类缓存当三个独立投票箱；不要再用完整实验验证“它们会配合”。固定本层输入时，卷积不直接修改本层门，但会影响后续计算</td>
+</tr>
+<tr>
+<td>K06 A/T</td>
+<td>卷积缓冲是固定长度的最近投影输入，不是任意长历史存储；在未来投影输入完全相同时，旧槽位被替换后，缓冲差异必然消失</td>
+<td>不用扫生成长度去证明有限窗口。卷积曾造成的影响可以已写入递推/下游KV，因此不能断言整模型影响在4 token后消失</td>
+</tr>
+<tr>
+<td>K07 A/T</td>
+<td>递推更新是输入依赖的遗忘＋定向修正＋当前写入，固定更新系数时对旧状态为仿射映射</td>
+<td>可先推导旧状态差异如何传播；不能把固定系数下的代数恒等式当GPU发现，也不能把它直接套到输入/门也变化的两条轨迹</td>
+</tr>
+<tr>
+<td>K08 T</td>
+<td>状态只有通过当前读方向才能影响当前输出；非零状态差异可能在当前读方向上投影为零</td>
+<td>张量距离大不等于行为损伤大；局部无读出效应不等于历史信息不存在或以后不能被读到</td>
+</tr>
+<tr>
+<td>K09 A</td>
+<td>普通动态全注意力缓存追加新K/V，旧槽位不在每一步重新编码；K/V是带上下文的表征，非原文字典。查询及新K/V仍由当前隐藏向量产生</td>
+<td>“旧KV未变”不等于其作用未变；也不保证一次KV编辑不会经后续计算或生成反馈放大</td>
+</tr>
+<tr>
+<td>K10 A/T</td>
+<td>“线性注意力”不等于整个模型对干预线性；q/k规范化、门、SiLU、RMSNorm、softmax及MLP均影响映射</td>
+<td>非加和是允许出现的普通性质，其存在本身不构成新原理；范数和效应不必成比例</td>
+</tr>
+<tr>
+<td>K11 T/E</td>
+<td>固定权重、完整有效状态、输入、位置、mask及数值路径后，下一步计算已确定；把这些全部恢复C应重放C</td>
+<td>全状态恢复恒等是可信实现的检查，不是定位了唯一机制。随机采样还需控制RNG，有限精度仍需核验</td>
+</tr>
+<tr>
+<td>K12 A/T</td>
+<td>自由生成把上一步token送回模型；分叉后，内部状态和外部文字历史都变了。同一输入token也不保证各层hidden/q相同</td>
+<td>不能把自由回答持续偏离全部归于原始缓存残留；同文字对照只控制文字，未控制读取条件</td>
+</tr>
+<tr>
+<td>K13 T</td>
+<td>max、argmax、概率和序列评分不是同一个读数；原始logits加和不保证其max加和；分数变化不保证跨过作答阈值</td>
+<td>四格D/S交互不能直接命名内部协作；先排评分变换。单位置同上下文的两token logprob差可抵消归一化项，多token不同后缀不能一概这样处理</td>
+</tr>
+<tr>
+<td>K14 A/E</td>
+<td>张量形状、位置、长度、初始化标记、是否真正读取恢复状态、深拷贝与原地更新，决定状态操作是否有效</td>
+<td>这些是必要验收，不是论文结果；相同形状和合法管理字段仅保证可运行，不保证拼接状态来自自然轨迹</td>
+</tr>
+</tbody>
+</table>
+<p>K01/K05/K06/K07/K09/K10来自对应版本的模型及缓存实现；K04来自固定revision配置；K02/K03还结合本项目hook及阶段二结构检查。T项的推导不需要加载4B；E项的少量运行验收仍可能必要，不能因为“理论已知”就跳过实现正确性。</p>
+<h2 id="3">3. 三个可以在上卡前完成的推导</h2>
+<h3 id="31">3.1 固定驱动时，旧递推差异不会靠这一个更新算子自发爆炸</h3>
+<p>采用实现的key×value方向：</p>
+<p>[
+S_t=A_tS_{t-1}+B_t,
+\quad A_t=\alpha_t(I-\beta_t k_tk_t^\top),
+\quad B_t=\beta_t k_tv_t^\top.
+]</p>
+<p>若比较的两条局部计算具有相同k/v/α/β，则</p>
+<p>[
+\Delta S_t=A_t\Delta S_{t-1}.
+]</p>
+<p>在当前规范化和门控下，实数模型满足 (|k_t|_2\le1)、(0\le\beta_t\le1)、(0\le\alpha_t\le1)。矩阵 (I-\beta kk^\top) 在k方向的特征值是 (1-\beta|k|^2)，在正交方向是1，因此</p>
+<p>[
+|\Delta S_t|<em>F\le\alpha_t|\Delta S</em>{t-1}|_F.
+]</p>
+<p>这是本次从已知更新规则和规范化作出的条件性推导，不是新的实测结果或新颖性主张。它约束的是<strong>同一头、固定驱动下的旧状态差异</strong>，不保证整模型logits、读出或生成行为收缩。若实际轨迹的输入和门不同，还有驱动差异项：</p>
+<p>[
+\Delta S_t=A_t^T\Delta S_{t-1}+(A_t^T-A_t^C)S_{t-1}^C+(B_t^T-B_t^C).
+]</p>
+<p>上式上标C/T表示干净/受干预来源，转置另用(\top)表示。不能以“模型有递推”就猜旧状态差异必然在递推内部放大。需解释的可能是新驱动不断产生差异、读取方向改变或后续映射；它们是否主导当前异常仍未知。浮点舍入另论，不以此公式替代数值审计。</p>
+<h3 id="32">3.2 状态不一样，不保证当前读取不一样</h3>
+<p>本地更新后读出可写作 (o=S^\top w+n)，其中</p>
+<p>[
+w=\alpha[q-\beta k(k^\top q)],\qquad n=\beta v(k^\top q).
+]</p>
+<p>固定驱动时 (\Delta o=(\Delta S)^\top w)。于是“有差异但没被当前方向读到”和“差异很小但刚好沿重要方向”本来就是允许的。观察一次这种现象不足以提出新机制。真正有用的是确定实际方向、幅度及其如何预测目标行为；只验证乘法恒等式无需新的模型实验。</p>
+<h3 id="33">3.3 评分交互不必来自内部交互</h3>
+<p>构造一个无需模型的例子：四格原始二维logits为 (z_{00}=(0,0),z_{10}=(1,0),z_{01}=(0,1),z_{11}=(1,1))。两因素在logits上完全加和；取max后得到0、1、1、1，四格交互为−1。</p>
+<p>所以旧D含max这一点，已经足以说明“D有交互→内部有对应协作”不是有效推论；这不证明旧D交互实际全部来自max。类似地，不能把S里的全部变化一概归咎于softmax：同上下文同位置的两token对数概率差等于原始logit差，候选后缀分叉后才涉及不同条件分布。</p>
+<h2 id="4">4. 前人已经做过的部分，与架构必然性分开</h2>
+<table>
+<thead>
+<tr>
+<th>原始研究</th>
+<th>作者已经研究/报告的内容</th>
+<th>本项目必须避免的重复或误用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://proceedings.mlr.press/v119/katharopoulos20a.html">Transformers are RNNs（ICML 2020）</a></td>
+<td>线性注意力的递推表示与高效自回归实现</td>
+<td>递推状态承接历史不是我们新发现；其具体公式不能不加修改替代Gated DeltaNet</td>
+</tr>
+<tr>
+<td><a href="https://arxiv.org/html/2412.06464">Gated DeltaNet（2025）</a></td>
+<td>遗忘门与delta更新的设计、更新公式和混合架构实验</td>
+<td>“既能遗忘又能定向更新”是设计起点；设计目标不保证某个训练后头实际承担某种语义功能</td>
+</tr>
+<tr>
+<td><a href="https://arxiv.org/html/2507.08799v2">KV Cache Steering v2</a></td>
+<td>一次缓存编辑后继续生成并改变行为</td>
+<td>“一次修改可以持续作用”已有直接先例。其减少持续注入的论证不能当作我们整模型完全无放大的定理</td>
+</tr>
+<tr>
+<td><a href="https://arxiv.org/html/2609.04434">What Attention Recalls and Recurrence Controls</a></td>
+<td>混合模型的缓存拆分、状态交换与任务功能差别；卷积与递推合为一通道；讨论拼接失配</td>
+<td>不再以小规模重做类型功能分工为主要推进；作者明确限定功能作用，不等于证明互斥静态内容仓库</td>
+</tr>
+<tr>
+<td><a href="https://arxiv.org/html/2605.12770v4">WriteSAE v4</a></td>
+<td>递推写入替换、写入—传播—读取分析及局部logit近似</td>
+<td>直接借用适用公式，不训练SAE来重新证明状态可编辑。下游简化带经验假设，4B特定设置有失败，不能把作者高R²当我们的保证</td>
+</tr>
+<tr>
+<td><a href="https://arxiv.org/html/2309.16042v2">Activation Patching: Metrics and Methods v2</a></td>
+<td>污染方法、读数与联合层替换会改变定位结果；讨论分布外干预和联合非线性</td>
+<td>“联合恢复不等于单项恢复之和”已有方法论前例。新增热点或扩大窗口不自动增加机制认识</td>
+</tr>
+<tr>
+<td><a href="https://papers.neurips.cc/paper_files/paper/2023/hash/3927bbdcf0e8d1fa8aa23c26f358a281-Abstract-Conference.html">Does Localization Inform Editing?（NeurIPS 2023）</a></td>
+<td>在所研究的知识编辑任务中，因果定位强度不能直接预测最佳编辑位置</td>
+<td>定位与实际可控机制之间存在证据缺口；该论文不是我们缓存实验的直接否定，也不是所有定位都无价值的证明</td>
+</tr>
+</tbody>
+</table>
+<p>以上区分作者实测、设计定义和我们的推论，均未在本轮独立复现。文献不能证明当前现象已经被完整解释，但已经排除了若干可独占的新颖性说法。</p>
+<h2 id="5">5. 剩下真正需要解释的东西</h2>
+<p>已知架构不会直接给出以下答案：L0/C4146/−1为什么在这批输入上造成首步停止；相同状态组合为什么有的回答改写前提、有的仍正确；指定状态差异的哪部分被实际读取，如何影响最终竞争。没有单凭结构就给这些答案的捷径。</p>
+<p>已有数据的价值是给解释施加约束：</p>
+<ul>
+<li>TT首步EOS24/24，而局部只清理递推能解除全部首步停止，却未恢复旧无矛盾核心判据：解释应容纳“停止”和“内容交付”分离。</li>
+<li>TC核心24/24，同时S仍低于CC：解释不能把候选敏感度降低直接等同信息丢失。</li>
+<li>只污染组4 KV有4条核心矛盾，整组污染反而没有这些矛盾：解释不能预设污染数量与损伤单调对应。</li>
+<li>组4是历史筛选出的条件相关候选，不具备代表所有层或所有模型的证据。</li>
+</ul>
+<p>数字来自<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-mechanism-path-audit-2026-10-31.zh-CN.md">已完成CPU复算</a>，不是本轮新增实验；旧标签的模型辅助来源与限制不变。</p>
+<p>目前“内容改变、读取改变、组合不一致”仍是过宽的解释类别，并不互斥。继续追问“哪一类存在”很容易永远绕圈。下一份计划必须把至少两个候选解释落实到<strong>具体变量、相反或可区分的预测，以及一个有含义的终点</strong>。若结果无论怎样都只会建议继续切层、切头，这个计划没有通过主线检查。</p>
+<p>好的机制解释不必压缩为一个神经元或唯一原因；也允许证明现有异常主要是普通大扰动/测量效应，因而不足以支持原机制主张。不能为了保住课题而不断改变成功标准。</p>
+<h2 id="6">6. 对现有候选工作的取舍</h2>
+<table>
+<thead>
+<tr>
+<th>工作</th>
+<th>当前判断</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>证明三种缓存存在相互影响</td>
+<td>从科学主问题中删除；架构已给出连接和可发生的交互</td>
+</tr>
+<tr>
+<td>验证固定驱动的局部更新/读取恒等式</td>
+<td>公式推导；必要时少量工程验收，不包装成机制结果</td>
+</tr>
+<tr>
+<td>扫更多层组、通道、模型来找更强热点</td>
+<td>当前不推进；没有对应的明确反驳或预测增量</td>
+</tr>
+<tr>
+<td>再做一次自然KV/递推功能拆分</td>
+<td>当前不推进；近邻已有直接工作，需先说明要检验其哪条边界</td>
+</tr>
+<tr>
+<td>屏蔽EOS看能否开口</td>
+<td>辅助诊断，不能自动占据机制线主实验位置</td>
+</tr>
+<tr>
+<td>上一版组前/组后八组合</td>
+<td><strong>暂停默认推进。</strong> 可定位背景依赖，但当前尚未给出足够具体的计算候选；正反结果仍可能只导向继续定位。未来若成为检验明确预测的最便宜手段，可以重用，不永久否定工具</td>
+</tr>
+<tr>
+<td>继续利用旧结果约束解释</td>
+<td>保留；先查已有记录和公式，缺少关键张量要如实说缺，不能把日志哈希当可重放张量</td>
+</tr>
+</tbody>
+</table>
+<p>这次不再用另一个“小实验”替代被暂停的实验。先让核心论断可被检验，再决定需不需要新增模型计算。</p>
+<h2 id="7">7. 核查来源、范围与边界</h2>
+<p>核查日期2026-10-31；主证据为以下固定实现、原始论文相关章节和本地证据：</p>
+<ul>
+<li><a href="https://huggingface.co/Qwen/Qwen3.5-4B/blob/851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a/config.json">Qwen3.5-4B固定revision配置</a>：层布局、卷积宽度、头维度；配置中的导出时transformers版本不替代实际运行回执。</li>
+<li><a href="https://github.com/huggingface/transformers/blob/v5.20.2/src/transformers/models/qwen3_5/modeling_qwen3_5.py">transformers v5.20.2模型源码</a>：<code>causal_conv1d_update</code>、<code>torch_recurrent_gated_delta_rule</code>、<code>Qwen3_5GatedDeltaNet</code>、<code>Qwen3_5Attention</code>、<code>Qwen3_5DecoderLayer</code>、gated RMSNorm。</li>
+<li><a href="https://github.com/huggingface/transformers/blob/v5.20.2/src/transformers/cache_utils.py">同版本cache_utils</a>：<code>DynamicLayer.update</code>、<code>LinearAttentionLayer</code>及其缓冲管理。</li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-input-control-v1-2026-10-29/control_engine.py">本地hook实现</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-state-localization-stage2-v2-2026-10-30/CONTRACT.zh-CN.md">阶段二合同</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-complement-analysis-v1-2026-10-31/source/stage2.py">取回的冻结stage2实现</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-complement-analysis-v1-2026-10-31/source/runs/b_validate-r01/worker-0/receipt.json">II-B回执</a>。</li>
+<li>第4节论文：核对原始摘要和与论断对应的相关章节；不声称全文逐字审计、代码复现或穷尽查重。</li>
+</ul>
+<p>检索主题包括Gated DeltaNet状态转移/规范化、Qwen3.5混合结构、activation patching的指标与分布外限制、定位与编辑的区别。搜索中的第三方教程仅用于发现线索，未作为技术结论依据。一次误访不存在的2309.16042v4返回404，随后核实该文使用v2；不把失败链接计作已阅读。</p>
+<p>本次由AI辅助完成。数学边界是明确假设下的推导；模型功能仍需实际证据。架构允许某种现象不等于解释了其经验分布，近邻观察到某种分工也不等于所有模型遵守它。</p>
+<h2 id="8">8. 后续每份计划必须先回答的六句话</h2>
+<p><strong>后续用户澄清：课题主旨保持稳定，不在每一轮重新收敛、缩小核心问题。每轮要明确的是实验目的及其对主线的直接贡献；实验范围有限不等于课题范围收缩。结果应逐步连接、累积成对整体机制的理解。前文“核心未知”等措辞不得解释成不断缩题，也不默认将课题收窄为首步EOS。</strong></p>
+<ol>
+<li><strong>主线：</strong> 本轮目的怎样直接推进“暂时激活干预→历史状态→撤针后行为”的机制理解？不随本轮可测量的现象重新定义课题。</li>
+<li><strong>已知：</strong> 哪些结论由源码/公式给出，哪些是前人报告，哪些已由本项目结果支持？这些不再占科学实验预算。</li>
+<li><strong>实验目的：</strong> 明确本轮要检验的关系或补齐的证据，以及为什么它直接回答我们最关心的问题；不能只说“进一步定位/看看机制”。</li>
+<li><strong>结果的判别价值：</strong> 不同结果分别改变什么理解？适合比较竞争解释时写出可区分预测，不机械要求所有实验都只有一个未知或必须两假说对决。若不论结果都继续切层，先停。</li>
+<li><strong>最便宜的证据：</strong> 为什么旧数据、公式或CPU分析不够？确需模型计算时，仅缺哪些量，完整成本包括重建、参考重放和工程验收。</li>
+<li><strong>认识累积与退出：</strong> 结果怎样与已有理论、相关工作和实验相连，补齐整体机制的哪部分？什么结果意味着停止这个分支，而不是自动扩规模或缩小课题？</li>
+</ol>
+<p>以上是用户明确要求的持续工作规则，不是额外审批流程。它不要求每次重新征求已给出的授权，也不允许绕过当前“不要跑GPU”的边界。</p></main></html>

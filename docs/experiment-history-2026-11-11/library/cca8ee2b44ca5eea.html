@@ -1,0 +1,89 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>QKF-01（共同偏移的 q/k 分量与完整回答效应）合同 r01</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="qkf-01-qk-r01">QKF-01（共同偏移的 q/k 分量与完整回答效应）合同 r01</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-qk-component-factor-v1-2026-11-02/CONTRACT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-qk-component-factor-v1-2026-11-02/CONTRACT.zh-CN.md">固定提交原件</a>；SHA-256：<code>cca8ee2b44ca5eeab459faac40b27db7e5b4dc0cb550f3ae8ddcbe04f1bae242</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="qkf-01-qk-r01_1">QKF-01（共同偏移的 q/k 分量与完整回答效应）合同 r01</h1>
+<p>日期：2026-11-02。设计：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-qk-component-factor-plan-v1-2026-11-02.zh-CN.md">计划 v1</a>（评审撰写，7289925d）+ <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-qkf-self-check-v1-2026-11-02.zh-CN.md">自查</a>。授权：用户 2026-11-02「如果这个计划你没有什么问题就直接实施，小问题直接修复，大问题跟我沟通」。输入、形成与编辑位置沿用 QCO-01；V/F/R/A/R_rand/A_rand 已见（作为重放参照），单半臂与 r_post 臂运行前无输出。本合同照计划执行，唯一改动见 §0。</p>
+<h2 id="0-d3">0. 相对计划的小修复（决策 D3）</h2>
+<p>r_post 的逐头配平容差由 5% 改为 <strong>6%</strong>。依据：在任何模型输出之前，用采集阶段保存的同一组基底 q/k、冻结的 μ 与 r_pre，在 CPU 上按运行时完全相同的算术（FP32 相加后一次转 BF16）模拟了全部 258,048 次逐头检查：2 次超过 5%（最大 5.03%），全部低于 6%。5% 会让 1–2 个随机对照因 BF16 舍入被判“工程不可判”，与配平本身是否成功无关。r_post 构建脚本在冻结后、预检前再次运行同一模拟并写入清单；清单状态 passed 才允许授权。</p>
+<h2 id="1-n4146n1210r0c1343">1. 臂（每输入 × 方向 N4146、N1210、R0；C1343 无缺口，不加入）</h2>
+<p>接收者 T(i,d)；G 卷积 V（四槽）取 C(i)；S/KV/浅层取 T(i,d)。q 通道 [0, 2048)、k 通道 [2048, 4096)，只编辑槽 [1, 4)。</p>
+<table>
+<thead>
+<tr>
+<th>臂族</th>
+<th>q/k 基底</th>
+<th>编辑</th>
+<th style="text-align: right;">数量</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>V / F</td>
+<td>Q_T / Q_C</td>
+<td>无</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr>
+<td>R_{u,h}</td>
+<td>Q_T</td>
+<td>减 m_h·u</td>
+<td style="text-align: right;">9</td>
+</tr>
+<tr>
+<td>A_{u,h}</td>
+<td>Q_C</td>
+<td>加 m_h·u</td>
+<td style="text-align: right;">9</td>
+</tr>
+</tbody>
+</table>
+<p>u ∈ {μ（QCO 留一场景共同偏移）, r_pre（QCO 卷积前等范数随机）, r_post（r_pre 按层×分量×头缩放，使首读旧槽卷积贡献等于 μ）}，h ∈ {q, k, qk}。另 C 自然 1 条、每方向 T_nat 1 条。V、F、R_μ,qk、A_μ,qk、R_pre,qk、A_pre,qk、C、T_nat 与 QCO 正式记录逐位重放。只读观察器在首个读出步保存 14 层 in_proj_qkv 的 q/k 输出（x_now），供 §4.3 的描述分析。</p>
+<h2 id="2-qkf_corepy-56">2. 判据（冻结，qkf_core.py；照计划 §5–§6）</h2>
+<ul>
+<li>E_s 六场景等权；G = E_s[Y_F − Y_V]，适用当 G &gt; 0 且 ≥4 场景缺口为正；D_i = 1[Y_F = 1 且 Y_V = 0]；P(u,h) = E_s[Y_R − Y_V]/G；B(u,h) = E_s[D_i·1(ids_A = ids_V)]/E_s[D_i]。</li>
+<li>单半（μ）：恢复成立当 P ≥ 0.5 且 ≥4 场景净改善为正；复现成立当 B ≥ 0.5 且 ≥4 场景出现逐 token 复现。</li>
+<li>对随机档的优势：P_μ − P_tier ≥ 0.25（B 同），仅当该档配平检查对全部输入通过（r_pre：同掩码同侧实际总编辑范数相对差 ≤5%；r_post：逐层×分量×头首读旧槽贡献相对差 ≤6%）；否则该比较“工程不可判”。</li>
+<li><strong>推测档预测（允许失败）</strong>：k 分量强于 q：P_k − P_q ≥ 0.25 且 B_k − B_q ≥ 0.25，恢复差 ≥4/6 场景为正，复现差在有 D 的场景中 ≥⌈2/3⌉ 为正；反向为 q 强；仅一侧为不对称；否则无排序。</li>
+<li>四格交互：I_Y^R、I_Y^A、I_B、I_M（固定竞争者：目标非首列取首列，否则取第二条）；|I| ≥ 0.10 且 ≥4 场景同号才称“该指标上可见非加和”；饱和导致的负 I 不称拮抗。</li>
+<li>三方向逐一报告；不设跨方向多数门槛；出口按计划 §7。</li>
+</ul>
+<h2 id="3">3. 预算</h2>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th style="text-align: right;">预填</th>
+<th style="text-align: right;">形成</th>
+<th style="text-align: right;">自然轨迹</th>
+<th style="text-align: right;">解码上限</th>
+<th style="text-align: right;">诊断</th>
+<th style="text-align: right;">设备时间上限</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>预检（2 输入，含每方向 R_zero/A_zero）</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">140</td>
+<td style="text-align: right;">4480</td>
+<td style="text-align: right;">140</td>
+<td style="text-align: right;">0.25 h</td>
+</tr>
+<tr>
+<td>正式（48 输入，2 worker）</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">192</td>
+<td style="text-align: right;">3072</td>
+<td style="text-align: right;">98304</td>
+<td style="text-align: right;">3072</td>
+<td style="text-align: right;">1.5 h</td>
+</tr>
+</tbody>
+</table>
+<p>全轮 ≤2 设备小时、产物 ≤12 GiB；张量（含 x_now、r_post）留服务器，哈希入 Git。预检工程失败可修复重试一次；正式不重试。</p>
+<h2 id="4">4. 工程闸门</h2>
+<p>C/T 哈希 = QCD G；每臂 V 块 = C(i)、q/k 槽 0 = 基底、S/KV/浅层 = T，未编辑臂 q/k = 基底；供体与基底不变；参照臂与 QCO 逐位重放（同时证明观察器只读）；预检零编辑无写入且逐位复现 V/F；r_post 清单 passed 且哈希一致；生成前无 hook。</p>
+<h2 id="5">5. 交付</h2>
+<p><code>runs/{preflight,formal}-r01/</code>、<code>runs/rpost-r01/rpost.pt</code>（服务器）、<code>analysis/rpost-manifest-r01.json</code>、<code>analysis/qkf-readouts-r01.json</code>、首读几何描述、<code>REPORT.zh-CN.md</code>。</p></main></html>

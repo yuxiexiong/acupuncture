@@ -1,0 +1,1130 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>025．早中晚层比较、注入时段、撤针重建和局部替换</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="025">025．早中晚层比较、注入时段、撤针重建和局部替换</h1>
+<p><a href="../README.zh-CN.html">返回总时间线</a></p>
+<p><strong>时间定位</strong>：已提取运行收据的最早时间锚点（可含预检） 2026-10-29T02:41:39.092434+08:00；不能当作全部子运行起止。</p>
+<p><strong>当时的目的与设计</strong></p>
+<p>开发与新题确认分别比较早L0–3、中L12–15、后L24–27的原生点及共同随机方向；再分full/prefill/最后提示位置/decode等时段，并在可生成条件的第4/16步比较继续扎针、撤针、同文本无针重建，最后做固定局部候选替换。</p>
+<p><strong>实际过程、结果与后来更正</strong></p>
+<p>正式各阶段记录分别为4632、1210、552、3480、1440、576。早层±1异常主要是首步停止；L0/N4146和L2/N5251只改提示前部即可让24/24不交付。N5063的部分异常撤针不恢复而重建恢复；中后层模式不同。四个局部候选未得到特异性修复。预检r02/r03失败及r04通过保留；后来的事实敏感度更正也保留，不能沿用旧“知道但停嘴”读法。</p>
+<p><strong>来源身份</strong>：<code>early-input-control-v1-2026-10-29</code>；本章主体来源提交 <code>7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8</code>。下方原文中的状态是各文件写作时的状态，不能把早期“尚未运行”覆盖后期正式收据，也不能将后期结果倒填进早期设计。</p>
+<h2 id="_1">原设计、执行过程、结果与更正全文</h2>
+<p>以下按“设计与题目 → 工程/执行记录 → 结果/更正 → 其他历史说明”组织；同类内没有可靠时间时保留路径顺序，不冒充严格先后。正文未删段；仅为本章节重排标题层级、把相对链接指向固定提交。原始字节另外完整保存。</p>
+<h3 id="1acupuncture">原件 1：Acupuncture：早层输入约束、停止竞争与异常维持实验合同</h3>
+<p>原路径：<code>experiments/early-input-control-v1-2026-10-29/CONTRACT.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-input-control-v1-2026-10-29/CONTRACT.zh-CN.md">固定提交原文</a> · <a href="../library/fae2cdd745e04446.html">单独阅读副本</a>；SHA-256：<code>fae2cdd745e04446513e38f16dcfa90ac1d8af87b7f9fe32bddb70d68ade4117</code>。</p>
+<hr />
+<h4 id="acupuncture">Acupuncture：早层输入约束、停止竞争与异常维持实验合同</h4>
+<p>日期：2026-10-29。实验目录：<code>early-input-control-v1-2026-10-29</code>。当前状态为合同、实现与测试准备；本文件不表示测试通过或正式实验已经运行。机器可读条件、来源与运行边界以本目录 <code>contract.json</code>、固定数据、选择清单、代码冻结及相应授权收据共同限定。</p>
+<h5 id="1">1. 当前授权与终点</h5>
+<p>用户本轮原话：</p>
+<blockquote>
+<p>写合同，代码，做测试，然后报给我 ETA。</p>
+</blockquote>
+<p>本轮执行范围是：实现已讨论方案、CPU 测试、在资源空闲时完成有界真实 GPU 预检、保留证据并用本轮实测估计后续 ETA。<strong>本轮不启动正式开发网格、确认集推理、正式撤针调查或正式局部替换调查，不建立自动正式启动队列。</strong> GPU 预检可以覆盖这些路径的少量工程样例，其结果只计入预检，不冒充正式机制证据。</p>
+<p>允许使用已经登记的 <code>gqa-h20</code>、<code>/workspace/acupuncture</code> 与 <code>/workspace/acupuncture/.venv-bench/bin/python</code>，最多两个 worker。启动前检查真实 GPU 计算进程与项目运行身份；不得抢占、停止或挤占其他任务。不得据旧 PID、空闲显存或历史完成标签判断资源可用。</p>
+<p>旧实验的授权、冻结和预检只提供历史来源，不授权重启旧根因、判断/报告、千问、Llama、能力面板或 Q25–Q40。旧原文、失败、partial 与收据均保留。不得训练、修改权重、下载新模型、删除旧结果/权重/缓存或上传原文到外部模型服务。</p>
+<h5 id="2">2. 科学问题与竞争解释</h5>
+<p>主问题：在尺度校准的干预下，早层是否比中后层更容易使回答脱离题目信息？异常由当前注入、受干预历史内部状态，还是已经生成的错误文字维持？</p>
+<p>待验证猜想：某些早层干预使题目信息难以约束后续输出；改变的内部状态与错误文字历史可能参与维持偏离。本轮不预设信息被抹掉，也不预设所有症状有同一根因。</p>
+<table>
+<thead>
+<tr>
+<th>竞争解释</th>
+<th>应检查的结果</th>
+<th>不允许的推断</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>题目信息利用减弱</td>
+<td>事实变化与对应答案/规定措辞预测的变化关系</td>
+<td>空答或两候选失败不等于内部知识消失</td>
+</tr>
+<tr>
+<td>停止或重复竞争过强</td>
+<td>事实相关预测差异与 EOS/实际重复内容竞争分开记录</td>
+<td>候选偏好正确不等于自由回答正确或“知道但不肯说”</td>
+</tr>
+<tr>
+<td>异常历史维持偏离</td>
+<td>继续注入、真实撤针、无针增量重放后续的差别</td>
+<td>无针重放仍重复不等于永远无法恢复或只有文字原因</td>
+</tr>
+</tbody>
+</table>
+<p>不同深度无明显差别、事实敏感性保留而停止竞争升高、撤针/替换不支持预期解释，均为可交付的否定或不确定结果。验收以实现正确、资料完整和测量可解释为依据，不以主假设成立为依据。</p>
+<h5 id="3">3. 固定模型、层与方向</h5>
+<p>模型沿用 Qwen/Qwen3.5-4B，revision <code>851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a</code>，远端模型目录 <code>/data/models/Qwen3.5-4B-851bf6e</code>。模型文件、分词器、环境版本及目标权重哈希以来源资产清单和运行收据核验。固定 BF16、eager、greedy、forward batch 1、每 worker 4 个 CPU 线程，原生聊天模板与 <code>enable_thinking=false</code>。</p>
+<p>原生单通道主比较使用零起始层号：</p>
+<table>
+<thead>
+<tr>
+<th>深度窗口</th>
+<th>层</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>早层</td>
+<td>L0、L1、L2、L3</td>
+</tr>
+<tr>
+<td>中层</td>
+<td>L12、L13、L14、L15</td>
+</tr>
+<tr>
+<td>后层</td>
+<td>L24、L25、L26、L27</td>
+</tr>
+</tbody>
+</table>
+<p>三个窗口具有相同的三层 linear attention/GatedDeltaNet 加一层 full attention 排列。此选择减少层型混杂；它不是自然功能边界，也没有匹配所有下游计算深度。</p>
+<p>每层选两个既有原生通道：第一个为旧每层剂量实验的固定随机入选点；第二个从旧该层十点中剩余九点按排序后的候选和本轮固定种子抽取一次。种子、候选、入选点及来源 SHA 写入选择清单。不得按新旧输出好坏更换通道。共 24 个层—通道点。</p>
+<p>原生主比较剂量为 <code>−1、−0.5、−0.25、+0.25、+0.5、+1</code>，共享零剂量原版。历史 ±0.0625、±0.125 保留为来源资料，不在本轮开发网格中自动补跑。</p>
+<p>共同方向对照另固定两条随机单位残差方向。同一条向量以同一坐标方向放到 L0、L3、L12、L15、L24、L27 的 MLP 输出；各层按自己的参考尺度缩放。剂量为 <code>−1、−0.5、+0.5、+1</code>，共 <code>2×6×4=48</code> 个条件。向量生成算法、种子、维度、数值文件或确定性重建身份及 SHA 均冻结；两条方向不能用于估计一般随机方向的总体分布。</p>
+<p>共同方向是独立的 MLP 输出加法对照，不冒充 gated MLP 原坐标单针；它用于检查深度差异是否完全由不同原生方向造成，不证明跨层具有同源语义功能。</p>
+<h5 id="4">4. 输入、真值、校准与代际边界</h5>
+<p>开发材料为上一轮联合测量中的 <code>RD01–RD04</code>、<code>AR01–AR04</code>、<code>RL01–RL04</code>，各保留 <code>required</code> 需求的两个事实版本。共 12 个基础情景、24 个输入，源 prompt、两条自然候选、目标索引、事实解释逐项保留。旧题已经看过，因此只称开发材料。</p>
+<p>确认材料另构造并事先冻结 12 个新基础情景，阅读、计算、关系各 4 个，每个两种事实，共 24 个输入。必须改变情景结构或干扰信息，不能只换旧题的人名和数字。准备阶段可以检查真值、输入结构与分词，不采集或阅读确认模型输出。确认条件在开发结果解释及机制候选冻结后才能运行。</p>
+<p>原 Q01–Q08 作为历史现象锚点另列，保留旧共同指令和原文；不加入层间主网格的 24 输入分母，不恢复 Q09 以后旧语料，更不越过 Q24 历史用户停止边界。开放问题没有明确真值时只做原文观察，不强制计算答案正确率。</p>
+<p>诊断使用原生 user 消息模板，不把自然候选展示给模型，不添加 A/B 选项、强制答案前缀或新 system 消息。原题锚点按其历史完整提示构造，不能将不同提示身份混为同一题的精确重放。</p>
+<p><strong>每个基础情景仅用 fact 0 的清洁提示做一次逐层校准，两个事实、所有方向、剂量、时段和分支共享该参考。</strong> 每层尺度为无针 block 输出中排除首 token 后各位置 L2 范数的中位数。保存参考提示/token 哈希和当前输入提示/token 哈希，二者分别记账。不得因事实变更、候选续写、分时注入或错误前缀重新调针。</p>
+<p>原生通道偏移为 <code>dose × reference_scale / ||W_down[:, channel]||₂</code>；每档从原比例独立计算后转 BF16，不缩放已经舍入的高剂量偏移。共同方向写入为 <code>dose × reference_scale × unit_vector</code>，保留实际 BF16 向量及范数差异。原生输入通道加法与输出方向加法分别审计。</p>
+<p>原 Q 锚点复用旧输出时须核对完整提示、模板、校准、通道、剂量、环境与 token；诊断的新共享参考不能冒充旧每题参考。身份不相同的记录不得复用为精确对照。尺度匹配不称“等效损伤”，实际写入量与位置数必须报告。</p>
+<h5 id="5">5. 第一部分：固定深度比较</h5>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th style="text-align: right;">原生条件</th>
+<th style="text-align: right;">共同方向条件</th>
+<th style="text-align: right;">原版</th>
+<th style="text-align: right;">输入/条件</th>
+<th style="text-align: right;">自由回答</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>开发</td>
+<td style="text-align: right;">24 点×6 剂量＝144</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">24</td>
+<td style="text-align: right;"><strong>4,632</strong></td>
+</tr>
+<tr>
+<td>新题确认</td>
+<td style="text-align: right;">24 点×4 剂量＝96</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">24</td>
+<td style="text-align: right;"><strong>3,480</strong></td>
+</tr>
+<tr>
+<td>固定合计</td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;"><strong>8,112</strong></td>
+</tr>
+</tbody>
+</table>
+<p>确认的原生剂量固定为 ±0.5、±1，不声称确认了弱剂量边界或全部剂量曲线。若未来准备主张开发中出现的 ±0.25 边界，须在查看确认结果前单独冻结相应扩展；本合同不自动增加条件。</p>
+<p>原版按输入共享，不按层或通道重复计新来源。候选续写、校准、预检、强制历史重放、撤针分支与替换分支不计为额外独立题目，实际调用与成本另记。正式运行分片按基础情景固定，两个事实及相应条件保持配对，不能用成功记录数整除猜测覆盖完整。</p>
+<h5 id="6">6. 第二部分：发生时段与异常维持</h5>
+<p>正式机制条件最多 6 个。早层锚点是 L0/N4146、L2/N5063、L2/N5251；各自符号、剂量和适用题目须以独立机制选择收据冻结。最多另选 3 个中后层参照，保留选取理由、无匹配症状或正常结果，不声称它们是未经选择的层总体样本。尚未冻结的机制条件不能当作已经选定或执行。</p>
+<p>时段条件：</p>
+<table>
+<thead>
+<tr>
+<th>模式</th>
+<th>注入位置</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>full</td>
+<td>提示全部位置，以及后续实际生成输入位置</td>
+</tr>
+<tr>
+<td>prefill</td>
+<td>仅提示全部位置</td>
+</tr>
+<tr>
+<td>decode</td>
+<td>提示不注入，从读入第一个已生成 token、预测第二个输出 token 时开始注入</td>
+</tr>
+<tr>
+<td>prompt_last</td>
+<td>仅提示最后一个位置，后续生成不注入</td>
+</tr>
+<tr>
+<td>prompt_except_last</td>
+<td>提示除最后位置外全部位置，后续生成不注入</td>
+</tr>
+</tbody>
+</table>
+<p>prefill 包含第一个输出 token 的预测；其首步 EOS 不能单独定位为输入编码失败。prompt_last 与 prompt_except_last 只用于最多 3 个已冻结首步停止参照条件。时段条件的总写入位置数不同，不能将结果解释为等总注入量下哪一阶段更敏感。</p>
+<p>对未结束的 full 来源，在累计生成 <code>k=4</code> 或 <code>k=16</code> 个 token 后建立分支。分叉边界固定为：前 <code>k−1</code> 个生成 token 已增量读入，第 <code>k</code> 个已经选出但尚未读入模型。继续、撤针使用相同的受干预历史状态；无针重建使用相同的提示和前 <code>k−1</code> 个生成 token 从头按同一增量路径重放。</p>
+<table>
+<thead>
+<tr>
+<th>分支</th>
+<th>分叉前状态</th>
+<th>分叉后注入</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>continue</td>
+<td>full 历史状态</td>
+<td>继续原针</td>
+</tr>
+<tr>
+<td>withdraw</td>
+<td>同一 full 历史状态</td>
+<td>关闭原针</td>
+</tr>
+<tr>
+<td>rebuild</td>
+<td>无针增量重建同一文字历史的状态</td>
+<td>无针</td>
+</tr>
+</tbody>
+</table>
+<p>各分支首先读入相同的第 <code>k</code> 个 token，在自由选择下一个 token 前记录可比较的预测。随后才允许各自自由生成。复制或确定性重建的状态须通过工程测试证明无跨分支污染；每个分支具有独立 cache/递归状态。不能用原先独立无针 shadow 冒充真实撤针。</p>
+<p>若此前已经 EOS，或者未达到 k，记录不适用及原因，不强行生成、不填零效果、不以另一分叉步替换。每个分支的已有生成前缀加后续生成总长最多 128 个 token，不能越过已有 EOS；不为补足长度延长。强制重放、状态构建与分支新生成分别计时，分支继承前缀不是新独立来源。</p>
+<h5 id="7">7. 第三部分：有限局部替换</h5>
+<p>正式替换最多研究 2 类已观察症状、每类最多 2 个候选组件。候选可为 attention/GatedDeltaNet 或 MLP 输出；具体条件、组件、预测步、替换位置、来源、对照及预期终点在确认前另行冻结。不得在确认集上遍历所有组件并只报告修复最好者。首次确认模型输出出现前，同时锁定这些条件/组件在全部 24 个确认输入上的复验清单。确认网格后的机制与替换使用该历史锁定清单；后继来源记录可另建哈希清单，但不能据确认结果改选候选，也不能在已经看过输出后仍声称确认输出未见。</p>
+<p>每个候选包含六类对照，适用性逐项记录：同事实 clean→有针修复、有针→clean 反向重现、另一事实 clean→有针、clean 自替换、有针自替换、邻近非候选组件替换。另一事实来源只适用于具有事实配对的诊断材料；原开放题不伪造反事实来源。</p>
+<p>所有来源和接收运行使用明确的前缀、预测位置与校准身份。匹配长度/位置规则，不能把自由生成已经分叉后的第 n 个 token 当成相同语境。只替换冻结的局部输出，不修改权重，不用整条模型状态或最终答案 logits 的覆盖冒充局部机制。</p>
+<p>修复须检查停止/循环、任务交付、两个事实是否各自得到对应答案及新增矛盾。仅输出变长、EOS 降低、候选余量升高不能算事实处理恢复。单独修复可能是补偿；修复与反向重现共同支持的也只是这些条件下的局部因果贡献，不自动证明必要充分性或完整根因。另一事实来源引导回答改变可增加内容相关作用的证据，但仍须保留相应对照。</p>
+<h5 id="8">8. 生成、竞争读数与阅读</h5>
+<p>自由回答最多 128 个新 token，保留真实 EOS 长度、全部 token IDs、raw text、解码正文、停止原因、哈希及实际耗时。空答、乱码、循环、达到128、无作用、反向不对称和非单调都是科学观测，不是技术失败，不做语义重试。</p>
+<p>在每个实际预测步保留实际 token、top 候选、EOS 与最强非 EOS 的差值，以及预设必要候选的读数；同历史分支保存并集交叉读数或可重建所需值。只在关键位置保留局部替换所需的向量及来源，不默认保存全词表×全层×全位置的大型张量。</p>
+<p>诊断两条自然答案续写保存完整提示后的逐 token log probability、总和、token 长度、候选文本与输入哈希。先验证完整提示是提示加候选 token 的精确前缀；候选不改变原提示边界。分词长度、评分位置和数值实现独立预检：独立手工 <code>model.forward</code> 参照使用全新 cache，先读完整提示，再逐步读入同一候选历史；不调用待验评分器。它必须与生成评分路径在每一步的全词表 logits 哈希、候选逐 token log probability 及总 log likelihood 上精确一致。整段一次性 forward 属于另一计算形状，其逐 token 差异另行完整保存为数值诊断，不作为已经证实等价的精确参照。两候选是有限措辞诊断，不代表全部词表正确性；实际生成的第三种错误内容不能被忽略。</p>
+<p>原文逐条匿名记录：事实跟随、明确错误、未交付、前后矛盾、无法判断；停止、重复、任务完成与具体风格另列，不合成为语义总分、效价比或人格标签。答案核心正确但附语错误时两者均保留。匿名阅读先锁定观察再揭盲，标注模型辅助，不冒充独立人类评审；争议和修改历史保留。</p>
+<p>原版必须先检查测量可解释性。原版未正确跟随的情景保留并单列，不算“会→不会”的新增损伤；不得看到干预结果后删题、换题或调真值。某任务族原版不足以支持解释时，暂缓该族机制结论并报告，不能为继续运行而降门槛。</p>
+<p>按基础情景保留配对，分任务族、层、原生点与共同方向报告。token、事实变体、重复判读、同一 greedy 重跑不是新增独立样本。开发选择与新题确认分开；固定面板的差异不直接推广整个模型、所有方向或其他模型。</p>
+<h5 id="9">9. 测试、冻结和正式门槛</h5>
+<p>代码导入与普通 CPU 测试不得加载模型。CPU 验证至少覆盖：固定计数和唯一身份、选点可复现、旧开发题逐字复制、确认事实反转与真值、事实对共享校准、时段位置 mask、分叉边界与128/EOS规则、状态隔离、正确局部替换/撤除、授权/冻结不符拒绝运行、失败与已有输出不覆盖。</p>
+<p>真实 GPU 预检须覆盖：模型/环境/权重身份，清洁与零写入/撤hook恢复，旧原生引擎重放，正负原生与共同方向实际写入，提示位置拆分，continue 对原轨迹一致，withdraw/rebuild 的状态边界和清洁对照，局部自替换，候选逐token索引及独立同路径增量精确参照，另一形状整段forward的完整差异诊断，hook清除与权重前后哈希一致。有限非零机制样例只验证计算路径，不要求出现预期症状或修复效果。</p>
+<p><strong>预检精确清单、最大生成流/重放/评分调用与token预算必须在模型加载前由 <code>readiness/preflight-cases-r01.json</code> 和本轮授权文件冻结绑定。</strong> 上限如下，不能把上限冒称实际已完成量：</p>
+<table>
+<thead>
+<tr>
+<th>预检资源</th>
+<th style="text-align: right;">每worker上限</th>
+<th style="text-align: right;">两worker上限</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>自由生成或分叉续写流</td>
+<td style="text-align: right;">128</td>
+<td style="text-align: right;">256</td>
+</tr>
+<tr>
+<td>每流累计新token（含其分叉前缀）</td>
+<td style="text-align: right;">128</td>
+<td style="text-align: right;">—</td>
+</tr>
+<tr>
+<td>候选续写读取</td>
+<td style="text-align: right;">512</td>
+<td style="text-align: right;">1,024</td>
+</tr>
+<tr>
+<td>donor/验证强制重放</td>
+<td style="text-align: right;">32</td>
+<td style="text-align: right;">64</td>
+</tr>
+<tr>
+<td>清洁校准上下文</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">40</td>
+</tr>
+</tbody>
+</table>
+<p>每worker包含60条固定计时样本：6层×6个原生剂量＝36条；L0/L15/L24×2条共同方向×4剂量＝24条。两worker使用不同开发base并覆盖三族和两事实，精确分配由清单锁定。其余最多68条技术流覆盖clean/zero/restored、历史±1重放、五种时段位置规则、k4/16撤针与无针增量重建及六类patch路径。固定计时样本和技术流分别记账，不能选择较短结果替换计时样本。强制重放不越过来源EOS，其最多128个生成历史token另记；候选读取按冻结的实际续写长度记录，不计为自由生成。</p>
+<p>授权须引用用户本轮原话、科学freeze、代码/清单哈希与可执行模式；本轮只允许 <code>preflight</code>，正式 <code>development</code>、<code>confirmation</code>、<code>mechanism</code>、<code>patch</code> 均必须拒绝。未形成清单或授权不匹配不得运行。确认题只允许分词和真值检查，不产生其模型回答。实际测试状态与分母写入各自收据，不以本合同的条目列表代替通过证据。</p>
+<p>后续正式开发网格必须有新的正式授权，以及通过的CPU、GPU预检、数据审核和冻结身份。正式机制部分另需测量有效性复核和机制选择清单；正式确认另需锁定开发解释、候选和读取规则，且无提前查看确认模型输出。关口证据不能只写 passed，须列出对应文件/hash及逐项核验。</p>
+<p>任何工程失败保留错误、已完成与partial，停止相应尝试；不得覆盖旧冻结/收据、重复启动正常运行任务或静默放宽数值门槛。修复以最小工程变更、新版本身份和重新验收进行，不改变科学条件。旧流程中已停止的任务不会因本目录出现而恢复。</p>
+<p>工程修订记录：<code>preflight-r01</code> 因候选增量评分与整段forward的最大逐 token 差值 <code>0.06250286102294922</code> 超过原 <code>0.02</code> 检查值而失败，旧失败状态不改判。旧合同、代码与freeze已封存于 <code>readiness/source-freeze-r01.tar.gz</code>，旧原文、错误、收据和退出证据继续保留。新版本将数值正确性门槛改为上述独立同路径逐步精确核对，同时继续记录整段forward差异；不通过提高原容差放行，不改变题目、校准、剂量或正式生成路径。路径/形状差异是待核对的工程解释，现有差值本身不足以证明其完全来自BF16。新CPU和真实GPU预检均通过后才能报告修订已验收。</p>
+<p>第二次工程修订：<code>preflight-r02</code>（freeze-r02）在首次调用独立手工参照时崩溃（rotary 位置长度 45 对输入 1 token），未到达精确核对，属合同执行失败。根因是手工增量 forward 未传 <code>position_ids</code>，generate 已置 <code>rope_deltas</code> 后模型按完整 attention mask 推导位置。修订只让手工参照显式传入与 generate 相同的文本位置 <code>arange(past, past+width)</code>；生成路径、题目、校准、剂量与精确一致门槛均不变。失败证据见 <code>readiness/preflight-failure-r02.json</code>，旧源码在 <code>readiness/source-freeze-r02.tar.gz</code>。</p>
+<h5 id="10-eta">10. 本轮 ETA 与交付</h5>
+<p>本轮报告必须明确区分：CPU已通过、真实GPU已通过/失败/待执行、正式计算未开始。固定开发4,632和确认3,480合计8,112份自由回答；时段、撤针、替换及其新题确认全部额外记账，不把8,112写作整轮总调用量。</p>
+<p>ETA使用本轮预检的自由生成长度、每步/每条耗时、原生/方向/机制路径及候选读取成本。两worker并行阶段取较慢worker，串行阶段再相加。正式机制条件尚未选定时，报告明确条件数量上限下的情景估计，不编造已经发生的耗时。continue 的完整轨迹重放、withdraw/rebuild 的前缀状态重建、patch 每个输入×条件的精确来源重放及每臂 donor 构建均单独计入；这些计算不能当作免费复用。确认后继使用的同类操作也按实际调用计入。</p>
+<p>至少分别列实测长度情景和剩余生成均达到128的情景；后者不是置信区间或硬上限，不乘任意安全系数。模型装载/哈希、校准、生成、候选读取、重放/分支、替换、核验归档、排队和阅读分别列。未测速的阅读不编ETA；未提供GPU单价不估金额。正常任务不因超过预计时间被自动停止。</p>
+<p>运行与测试保存execution身份、授权/freeze、receipt/exit、真实PID命令、GPU状态、必要日志和最后有效记录时间。磁盘检查覆盖远端项目、模型、临时目录实际文件系统及本地归档盘，相同分区不重复累加；保留可用GiB、输出大小和归档需求，不仅看使用百分比。</p>
+<p>本轮完成交付为：合同及机器清单、源代码和测试、真实预检的完整raw/token/校准/审计/失败记录、退出/hook/权重及本地文件哈希核验、按实际路径测得的ETA与限制。机器预检通过不等于主假设成立，也不自动启动正式实验。</p>
+<hr />
+<h3 id="2_1">原件 2：早层输入约束、停止竞争与异常维持：结果报告</h3>
+<p>原路径：<code>experiments/early-input-control-v1-2026-10-29/REPORT.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-input-control-v1-2026-10-29/REPORT.zh-CN.md">固定提交原文</a> · <a href="../library/5214ae0ef98df2ca.html">单独阅读副本</a>；SHA-256：<code>5214ae0ef98df2cab611636dfdc89eb6bf94a92fa38f50821ecd607daff13a0c</code>。</p>
+<hr />
+<h4 id="_2">早层输入约束、停止竞争与异常维持：结果报告</h4>
+<p>2026-10-29。模型 Qwen3.5-4B（revision 851bf6e），BF16、greedy、最多 128 新 token。全部数字来自盲读锁定后揭盲的标签与机械读数；阅读为模型辅助子代理，不是人类评审。分档：<strong>推导</strong>＝有本实验读数支撑的论证链；<strong>类比</strong>＝相邻证据支持但未在本实验验证；<strong>推测</strong>＝需要独立检验。</p>
+<h5 id="0">0. 先说不利的部分</h5>
+<blockquote>
+<p><strong>2026-10-29 更正</strong>：后续零 GPU 读数 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-stop-knowledge-readout-v1-2026-10-29/RESULTS.zh-CN.md"><code>early-stop-knowledge-readout-v1-2026-10-29</code></a> 显示，早层 ±1 下强制续写两候选的事实敏感度保留比 R 开发 0.03/0.05、确认 0.12/0.11（16/16 未检出）。下文 §0 第 1 条与 §5 中“原猜想在早层未获支持”只对<strong>自由回答的形态</strong>成立；在“题目事实是否仍约束答案”这一层面，<strong>约束被削弱得到支持</strong>，其外显形态是停止而非错答。“知道但停嘴”被否定。</p>
+</blockquote>
+<ol>
+<li><strong>原猜想中“题目信息约束被削弱”这一形态在早层没有出现。</strong> 早层干预造成的异常几乎全部是<strong>停止</strong>（首个 token 即 EOS、空答），不是改答另一事实或跟错题面。改答另一事实、前后矛盾等“约束类”错误集中在<strong>中层</strong>。开发与新题确认一致（预测 C2、C3 成立）。</li>
+<li><strong>早层异常的维持机制本轮测不到。</strong> 早层源回答在第 1 个 token 就结束，k=4/16 分叉全部 NA；撤针三臂只对中后层与旧锚点 L2/N5063 有数据。</li>
+<li><strong>局部替换没有找到任何局部因果贡献</strong>（两类症状 × 两个候选 × 六臂），开发与确认面板一致。</li>
+<li><code>other_fact</code> 中有相当部分是“算错碰巧”（算术题读者报告确认集 14/14 均如此），不能直接读作模型采用了另一事实。</li>
+<li>原生方向只有每层两个通道、共同方向只有两条随机方向；结论限于这个固定面板，不推广到模型总体或其他模型。</li>
+</ol>
+<h5 id="1_1">1. 工程验收</h5>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th style="text-align: right;">记录</th>
+<th>两 worker exit</th>
+<th>launcher 核验</th>
+<th>逐 worker verify</th>
+<th>本地归档核验</th>
+<th style="text-align: right;">墙钟 h</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>preflight-r02</td>
+<td style="text-align: right;">—</td>
+<td>1 / −15</td>
+<td>失败（手工参照 position_ids 缺失）</td>
+<td>—</td>
+<td>随 Git</td>
+<td style="text-align: right;">0.04</td>
+</tr>
+<tr>
+<td>preflight-r03</td>
+<td style="text-align: right;">99+99</td>
+<td>0 / 0</td>
+<td>失败（我写的授权文件少结尾换行）</td>
+<td>—</td>
+<td>随 Git</td>
+<td style="text-align: right;">0.09</td>
+</tr>
+<tr>
+<td>preflight-r04</td>
+<td style="text-align: right;">99+99</td>
+<td>0 / 0</td>
+<td>passed</td>
+<td>passed</td>
+<td>216 文件哈希一致</td>
+<td style="text-align: right;">0.09</td>
+</tr>
+<tr>
+<td>development-r01</td>
+<td style="text-align: right;">4632</td>
+<td>0 / 0</td>
+<td>passed</td>
+<td>passed</td>
+<td>passed</td>
+<td style="text-align: right;">2.32</td>
+</tr>
+<tr>
+<td>mechanism-development-r01</td>
+<td style="text-align: right;">1210</td>
+<td>0 / 0</td>
+<td>passed</td>
+<td>passed</td>
+<td>passed</td>
+<td style="text-align: right;">0.69</td>
+</tr>
+<tr>
+<td>patch-development-r01</td>
+<td style="text-align: right;">552</td>
+<td>0 / 0</td>
+<td>passed</td>
+<td>passed</td>
+<td>passed</td>
+<td style="text-align: right;">0.26</td>
+</tr>
+<tr>
+<td>confirmation-r01</td>
+<td style="text-align: right;">3480</td>
+<td>0 / 0</td>
+<td>passed</td>
+<td>passed</td>
+<td>passed</td>
+<td style="text-align: right;">2.49</td>
+</tr>
+<tr>
+<td>mechanism-confirmation-r01</td>
+<td style="text-align: right;">1440</td>
+<td>0 / 0</td>
+<td>passed</td>
+<td>passed</td>
+<td>passed</td>
+<td style="text-align: right;">0.93</td>
+</tr>
+<tr>
+<td>patch-confirmation-r01</td>
+<td style="text-align: right;">576</td>
+<td>0 / 0</td>
+<td>passed</td>
+<td>passed</td>
+<td>passed</td>
+<td style="text-align: right;">0.33</td>
+</tr>
+</tbody>
+</table>
+<p>每阶段均核验：身份、冻结（freeze-r03 <code>dc0556c7…</code>）、全部记录与资产哈希、hook 清除、目标权重哈希前后一致、退出码、覆盖完整（计划条数 = 记录条数）。精确同路径候选核对 8/8 通过；一次性整段 forward 差值 0.0026–0.104 nats 仅作数值诊断，是否全部来自 BF16 <strong>未验证</strong>。</p>
+<p>合计墙钟 7.25 h，两卡并行，约 14.5 GPU 小时；未提供单价，不估金额。GPU 已释放。</p>
+<h5 id="2-4632-3480">2. 固定深度比较（开发 4632 + 确认 3480）</h5>
+<p>原版：开发 24/24、确认 24/24 跟随题面事实，三族均可解释，无暂缓题族。</p>
+<p>受影响“条件×基础情景”数（异常＝other_fact / other_wrong / not_delivered 或前后矛盾，仅原版正确输入）：</p>
+<table>
+<thead>
+<tr>
+<th>窗口</th>
+<th>剂量</th>
+<th style="text-align: right;">开发 +</th>
+<th style="text-align: right;">开发 −</th>
+<th style="text-align: right;">确认 +</th>
+<th style="text-align: right;">确认 −</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>早 L0–3 原生</td>
+<td>±1</td>
+<td style="text-align: right;">84/96</td>
+<td style="text-align: right;">95/96</td>
+<td style="text-align: right;">94/96</td>
+<td style="text-align: right;">95/96</td>
+</tr>
+<tr>
+<td>中 L12–15 原生</td>
+<td>±1</td>
+<td style="text-align: right;">48/96</td>
+<td style="text-align: right;">41/96</td>
+<td style="text-align: right;">61/96</td>
+<td style="text-align: right;">67/96</td>
+</tr>
+<tr>
+<td>后 L24–27 原生</td>
+<td>±1</td>
+<td style="text-align: right;">21/96</td>
+<td style="text-align: right;">27/96</td>
+<td style="text-align: right;">42/96</td>
+<td style="text-align: right;">34/96</td>
+</tr>
+<tr>
+<td>早 原生</td>
+<td>±0.5</td>
+<td style="text-align: right;">14/96</td>
+<td style="text-align: right;">21/96</td>
+<td style="text-align: right;">37/96</td>
+<td style="text-align: right;">44/96</td>
+</tr>
+<tr>
+<td>后 原生</td>
+<td>±0.5</td>
+<td style="text-align: right;">4/96</td>
+<td style="text-align: right;">4/96</td>
+<td style="text-align: right;">12/96</td>
+<td style="text-align: right;">7/96</td>
+</tr>
+<tr>
+<td>早 共同方向</td>
+<td>±1</td>
+<td style="text-align: right;">30/48</td>
+<td style="text-align: right;">44/48</td>
+<td style="text-align: right;">41/48</td>
+<td style="text-align: right;">47/48</td>
+</tr>
+<tr>
+<td>后 共同方向</td>
+<td>±1</td>
+<td style="text-align: right;">8/48</td>
+<td style="text-align: right;">5/48</td>
+<td style="text-align: right;">21/48</td>
+<td style="text-align: right;">15/48</td>
+</tr>
+</tbody>
+</table>
+<p>异常形态（早层原生 ±1，原版正确的 192 输入）：not_delivered 开发 157/187、确认 156/181；首 token 即 EOS 开发 120/144、确认 120/143；other_fact 开发 3/0、确认 3/0。中层原生 ±1 的 other_fact + other_wrong：开发 52 条、确认 127 条；早层 5 条、22 条。</p>
+<p>确认预测（冻结于 <code>f0d7914</code>，判定脚本冻结于 <code>2a6b385</code>）：C1 深度排序、C2 早层以停止为主、C3 事实类错误不集中于早层、C4 共同方向同样有深度差——<strong>全部成立</strong>（<code>reading/confirmation-r01/predictions-C1-C4.json</code>）。确认题对早层 ±0.5 的敏感度高于开发题，弱剂量边界随题而变。</p>
+<h5 id="3_1">3. 发生时段与异常维持</h5>
+<h6 id="_3">早层首步停止（推导）</h6>
+<p>L0/N4146 +1、L2/N5251 −1：full、prefill、prompt_except_last 下 24/24 未交付，prompt_last 下几乎全部交付（开发 24/24 正常；确认 22/24 正常）。<strong>写入提示中除最后位置以外的部分即足以产生首步停止</strong>；只写最后一个提示位置不足以产生。C5 在确认 24/24 成立。</p>
+<p>反例：确认题上 L0/N4146 +1 只在 decode 注入时 12/24 异常（开发 0/24）。所以“只依赖提示前部”只对<strong>首步停止</strong>成立，不能说早层干预只在编码阶段起作用。</p>
+<h6 id="full-k">撤针三臂（原版正确且 full 异常的输入；k 为分叉步）</h6>
+<table>
+<thead>
+<tr>
+<th>条件</th>
+<th>面板</th>
+<th>k</th>
+<th style="text-align: right;">撤针即恢复</th>
+<th style="text-align: right;">仅无针重建恢复</th>
+<th style="text-align: right;">重建仍异常</th>
+<th style="text-align: right;">反向（撤针好、重建坏）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>L2/N5063 +1</td>
+<td>开发锚点</td>
+<td>4 / 16</td>
+<td style="text-align: right;">0 / 0</td>
+<td style="text-align: right;">4 / 4</td>
+<td style="text-align: right;">0 / 0</td>
+<td style="text-align: right;">0 / 0</td>
+</tr>
+<tr>
+<td>L2/N5063 +1</td>
+<td>确认</td>
+<td>4 / 16</td>
+<td style="text-align: right;">2 / 0</td>
+<td style="text-align: right;">18 / 9</td>
+<td style="text-align: right;">0 / 0</td>
+<td style="text-align: right;">0 / 0</td>
+</tr>
+<tr>
+<td>L12/N8296 −1</td>
+<td>开发</td>
+<td>4 / 16</td>
+<td style="text-align: right;">11 / 8</td>
+<td style="text-align: right;">7 / 2</td>
+<td style="text-align: right;">0 / 8</td>
+<td style="text-align: right;">0 / 0</td>
+</tr>
+<tr>
+<td>L12/N8296 −1</td>
+<td>确认</td>
+<td>4 / 16</td>
+<td style="text-align: right;">8 / 5</td>
+<td style="text-align: right;">10 / 4</td>
+<td style="text-align: right;">4 / 13</td>
+<td style="text-align: right;">0 / 0</td>
+</tr>
+<tr>
+<td>L13/N248 +1</td>
+<td>开发</td>
+<td>4 / 16</td>
+<td style="text-align: right;">10 / 6</td>
+<td style="text-align: right;">6 / 3</td>
+<td style="text-align: right;">3 / 6</td>
+<td style="text-align: right;">0 / 3</td>
+</tr>
+<tr>
+<td>L13/N248 +1</td>
+<td>确认</td>
+<td>4 / 16</td>
+<td style="text-align: right;">8 / 9</td>
+<td style="text-align: right;">4 / 2</td>
+<td style="text-align: right;">2 / 5</td>
+<td style="text-align: right;">3 / 1</td>
+</tr>
+<tr>
+<td>L25/N2747 +1</td>
+<td>开发</td>
+<td>4 / 16</td>
+<td style="text-align: right;">2 / 0</td>
+<td style="text-align: right;">0 / 0</td>
+<td style="text-align: right;">21 / 24</td>
+<td style="text-align: right;">1 / 0</td>
+</tr>
+<tr>
+<td>L25/N2747 +1</td>
+<td>确认</td>
+<td>4 / 16</td>
+<td style="text-align: right;">7 / 0</td>
+<td style="text-align: right;">0 / 0</td>
+<td style="text-align: right;">16 / 24</td>
+<td style="text-align: right;">1 / 0</td>
+</tr>
+</tbody>
+</table>
+<p>读法（按冻结规则 r01 §5）：</p>
+<ul>
+<li><strong>受干预历史内部状态参与维持</strong>（撤针不改善、无针重建改善）：L2/N5063 +1 证据最强，开发锚点 4/4、新题确认 18/20（k=4）与 9/9（k=16）。L12、L13 各有一部分。（推导）</li>
+<li><strong>当前持续注入参与维持</strong>（撤针即改善）：L12、L13 在 k=4 时是最常见的一类之一，但比例随面板变化（L12 开发 11 对 7、确认 8 对 10）。（推导）</li>
+<li><strong>已生成文字可能参与维持</strong>（无针重建仍异常）：分叉越晚越多；L25 在 k=16 两个面板均 24/24（C6 成立）。这一读数不能排除“文字历史本身已构成循环”以外的原因，不断言唯一根因。（推导，根因未定）</li>
+<li>反向模式（撤针恢复、重建反而异常）在 L13 出现 3–4 例，作为反例保留。</li>
+</ul>
+<h5 id="4_1">4. 有限局部替换</h5>
+<p>候选在读机制结果前按规则 r02 冻结（<code>5e8a886</code>），只替换预测步 0 的单一组件输出。</p>
+<p><strong>开发面板</strong>：</p>
+<ul>
+<li>S1 首步停止（L0/N4146 +1，24 输入）：L0 MLP 与 L3 attention 的 repair 均 24/24 仍首步 EOS；reverse 均 0/24；邻近组件同样 24/24；自替换与原回答一致。<strong>无修复、无反向重现。</strong></li>
+<li>S2 内容错误（L13/N248 +1，22 输入）：L13 MLP repair 后异常 16、有针自替换 19、邻近 17；4 例仅候选修复、2 例仅邻近修复、1 例新增异常。L15 attention repair 后异常 18、邻近 19。reverse 0/22；另一事实来源几乎不产生 other_fact。<strong>未见局部特异性修复。</strong></li>
+</ul>
+<p><strong>确认面板</strong>：在全部 24 个确认输入上复验同一 4 个候选（<code>patch-confirmation-r01</code>，第二读者 22/22 一致）。</p>
+<ul>
+<li>S1（L0/N4146 +1）：L0 MLP 与 L3 attention repair 均 24/24 仍首步 EOS，reverse 均 0/24，邻近组件 24/24，另一事实来源 22/22 EOS（2 例长度不匹配 NA）。<strong>复现开发结论：无修复、无反向重现。</strong></li>
+<li>S2（L13/N248 +1）：L13 MLP 有针自替换异常 17、repair 16、邻近 16；3 例仅候选修复、1 例仅邻近修复、2 例新增异常。L15 attention repair 异常 17（与自替换相同）、邻近 18，0 例修复；reverse 1/24 出现矛盾。另一事实来源各 1 例 other_fact。<strong>复现开发结论：无局部特异性修复。</strong></li>
+</ul>
+<p>读法：在“预测位置、单组件”这一局部尺度上，两类症状没有找到所选位点的局部因果贡献；与 §3 中“早层停止由提示前部多位置写入驱动”相容。不排除多位置或多组件的联合作用。</p>
+<h5 id="5_1">5. 早层猜想推进到哪里</h5>
+<ul>
+<li><strong>得到支持（开发 + 新题确认，预测冻结在前）</strong>：在尺度校准的单通道与共同方向写入下，早层比中后层<strong>更容易让回答脱离任务</strong>，且这种深度差异不只由原生方向造成。</li>
+<li><strong>不支持原表述</strong>：早层脱离任务的主要形态是<strong>停止竞争压过作答</strong>（首步 EOS），而不是“题目信息不再约束答案、改答另一事实”。后一形态更多出现在中层。若坚持“早层削弱题目约束”，需要另行说明为何约束削弱表现为停止而非错答——本实验没有这一证据。</li>
+<li><strong>机制</strong>：早层首步停止由提示前部的写入驱动，单位置写入不足；对能分叉的早层条件（N5063），撤针不恢复而无针重建恢复，支持受干预历史内部状态参与维持。中后层的维持随分叉时间由“当前注入”转向“已生成文字”。</li>
+<li><strong>竞争解释仍在</strong>：①停止/EOS 竞争的直接偏置（早层写入抬高 EOS）与“题目信息可用性下降”在首步读数上尚未分离——本轮没有在首步对比本事实候选与 EOS 的竞争差值以外的内部读数；②与 sink/首 token 形成层相关的解释（相关工作审计 C5）本轮未检验；③L25 的文字维持可能只是循环自持。</li>
+<li><strong>下一步可执行</strong>：在首步同时读出 EOS 优势与两事实候选 logprob 差，检验“事实敏感性保留而停止竞争升高”；对首步停止做多位置（提示前部）替换以定位写入作用的位置范围；对 N5063 型条件扩大可分叉样本。</li>
+</ul>
+<h5 id="6_1">6. 交付清单</h5>
+<ul>
+<li>原文与 token：<code>exports/*-answers.jsonl.zst</code>（全部 4632+1210+552+3480+1440+576 条记录的原文、token、停止原因、逐步 stop advantage、候选 logprob）；完整原始记录（含逐步读数、校准、写入审计、donor）保存在 gqa-h20 实验目录与本地 zstd 归档，SHA 见 <code>readiness/raw-archive-manifest.json</code> 与 <code>readiness/archive-verify-*.json</code>。</li>
+<li>盲读：<code>reading/*/packets</code>、<code>labels</code>、<code>second-read</code>、<code>lock.json</code>、<code>key.json.zst</code>、<code>joined.json.zst</code>；第二读者一致率开发 263/268、机制 55/55、替换 19/19、确认 279/281、机制确认 68/71（fact 标签）。读者口径分歧（首尾答案冲突、只复述题面、“无法判断”归类）逐条保留在读者报告与 note 中，未以多数票覆盖。</li>
+<li>规则与锁定：<code>readiness/reading-and-selection-rules-r01</code>、<code>patch-candidate-rules-r02</code>、<code>development-interpretation-r01</code>、<code>mechanism-selection-r01/r02</code>、各 stage gate 与正式授权。</li>
+<li>失败与偏离：<code>readiness/preflight-failure-r02.json</code>、<code>preflight-failure-r03.json</code>；EXECUTION 决策日志。</li>
+</ul>
+<hr />
+<h3 id="3-r01">原件 3：开发解释与确认预测锁定 r01（确认输出首次打开前）</h3>
+<p>原路径：<code>experiments/early-input-control-v1-2026-10-29/readiness/development-interpretation-r01.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-input-control-v1-2026-10-29/readiness/development-interpretation-r01.zh-CN.md">固定提交原文</a> · <a href="../library/86e4a3435f4f6c94.html">单独阅读副本</a>；SHA-256：<code>86e4a3435f4f6c94208c28e10ca105877cfc3252900a8493e9c72ca03521ba73</code>。</p>
+<hr />
+<h4 id="r01">开发解释与确认预测锁定 r01（确认输出首次打开前）</h4>
+<p>写于 2026-10-29 北京时间，<code>confirmation</code> 阶段尚未运行，确认题模型输出从未生成或读取。本文件、<code>readiness/reading-and-selection-rules-r01.zh-CN.md</code>、<code>readiness/patch-candidate-rules-r02.zh-CN.md</code> 与 <code>readiness/mechanism-selection-r02.json</code> 共同构成确认前锁定；提交 hash 记入 confirmation stage gate。</p>
+<h5 id="1_2">1. 开发面板观察（锁定）</h5>
+<p>证据：<code>reading/development-r01/</code>（盲读，4 名主读者 + 10% 第二读者，fact 一致 263/268），<code>reading/development-r01/summary.json</code>。原版 24/24 跟随事实，三族均可解释。</p>
+<ol>
+<li><strong>深度差异存在，早层最敏感</strong>：原生 ±0.5 受影响“条件×基础情景”早 14/96、21/96，中 6/96、9/96，后 4/96、4/96；±1 早 84/96、95/96，中 48/96、41/96，后 21/96、27/96。±0.25 各层几乎无作用。</li>
+<li><strong>早层异常的形态是停止，不是改答另一事实</strong>：早层 ±1 的原版正确输入中 not_delivered 157/192、187/192，首个 token 即 EOS 120、144 条；other_fact 3、0 条。</li>
+<li><strong>事实约束类错误（other_fact / other_wrong / 矛盾）集中在中层</strong>：中层 ±1 other_fact 15/8、other_wrong 15/14、矛盾 20/23；早层分别仅 3/0、2/0、5/0。算术题的 other_fact 部分为“算错碰巧”，不能直接读作采用另一事实。</li>
+<li><strong>两条共同随机方向重现同一深度模式</strong>（早 ±1 30/48、44/48 受影响，首步 EOS 48 条；后层 8/48、5/48）：深度差异不只由原生通道方向造成；两条方向不代表随机方向总体。</li>
+</ol>
+<h5 id="2_2">2. 机制观察（开发面板，锁定）</h5>
+<p>证据：<code>reading/mechanism-development-r01/</code>（第二读者 55/55 一致）。</p>
+<ol start="5">
+<li><strong>早层首步停止由提示前部写入驱动</strong>：L0/N4146 +1 与 L2/N5251 −1 在 full、prefill、prompt_except_last 下 24/24 未交付，prompt_last 与 decode 下 24/24 跟随事实；旧锚点 L2/N5063 +1 同型（8/8 vs 7/8 正常）。</li>
+<li><strong>早层异常的维持无法用撤针三臂检验</strong>：源回答第 1 个 token 即 EOS，k=4/16 全部 NA。</li>
+<li><strong>中后层撤针三臂</strong>（原版可解释且 full 异常）：L12/N8296 −1 k=4 撤针恢复 11、仅重建恢复 7、重建仍异常 0；k=16 为 8/2/8。L13/N248 +1 k=4 为 10/6/3，k=16 为 6/3/6（另 3 例撤针恢复而重建异常，反例）。L25/N2747 +1 k=4 为 2/0/21，k=16 为 0/0/24。旧锚点 N5063 4 例 k=4/16 均为“撤针不恢复、重建恢复”。</li>
+<li>读法：越晚分叉，“重建仍异常”越多，支持已生成文字参与维持（L25 最强）；L12/L13 早分叉时当前注入为主，另有一部分依赖受干预历史状态；不能断言唯一根因。</li>
+</ol>
+<h5 id="3_2">3. 局部替换（开发面板）</h5>
+<p>见 §5。</p>
+<h5 id="4_2">4. 确认预测（在任何确认输出出现前冻结）</h5>
+<p>确认网格：原生 ±0.5、±1 与两条共同方向 ±0.5、±1，24 个新输入；读法与开发相同（同一盲读规则、同一异常定义、原版不正确的输入单列）。</p>
+<ul>
+<li><strong>C1 深度排序</strong>：原生 ±1 两个符号上，受影响“条件×基础情景”数早层 &gt; 中层 &gt; 后层；原生 ±0.5 上早层 &gt; 后层。</li>
+<li><strong>C2 早层形态</strong>：早层原生 ±1 原版正确输入中 not_delivered 占多数（&gt; 1/2），且首 token EOS 条数多于 other_fact 条数。</li>
+<li><strong>C3 事实类错误不集中于早层</strong>：原生 ±1 的 other_fact + other_wrong 条数，中层 ≥ 早层。</li>
+<li><strong>C4 共同方向</strong>：早层共同方向 ±1 受影响基础情景数 &gt; 后层共同方向 ±1。</li>
+<li><strong>C5 时段（确认机制）</strong>：L0/N4146 +1 在确认输入上若 full 首步 EOS，则 prompt_except_last 同样未交付、prompt_last 不未交付的输入占该条件 full 首步 EOS 输入的多数。</li>
+<li><strong>C6 维持（确认机制）</strong>：L25/N2747 +1 在确认输入上 full 异常时，k=16 “重建仍异常”占可分叉异常输入的多数。</li>
+</ul>
+<p>每条报告“成立 / 不成立 / 无法判断（分母为 0 或原版不可解释）”，附计数与逐条清单；不汇总为总分。不成立是可交付的科学结果。</p>
+<h5 id="5_2">5. 局部替换开发观察（锁定）</h5>
+<p>证据：<code>reading/patch-development-r01/</code>（第二读者 19/19 一致），候选按 <code>patch-candidate-rules-r02</code> 在读机制前冻结。仅替换预测步 0 的单一组件输出。</p>
+<ol start="9">
+<li><strong>S1 首步停止（L0/N4146 +1，24 输入）</strong>：候选 a（L0 MLP）与 b（L3 attention）repair 臂均 24/24 仍首步 EOS，reverse 臂 0/24 出现 EOS；邻近组件同样 24/24；另一事实来源 22/22 EOS（2 例 token 长度不匹配 NA）。自替换两臂与原回答一致。无修复、无反向重现。</li>
+<li><strong>S2 内容错误（L13/N248 +1，22 输入）</strong>：候选 a（L13 MLP）repair 后异常 16 / 有针自替换 19 / 邻近 17；4 例仅候选修复，2 例仅邻近修复，1 例新增异常。候选 b（L15 attention）repair 异常 18 / 邻近 19，1 例修复。两候选 reverse 均 0/22，另一事实来源几乎不产生 other_fact（1/20、0/20）。</li>
+<li>读法：在“预测位置、单组件”这一局部尺度上未找到两类症状的局部因果贡献；与 §2 中“提示前部写入驱动早层停止”相容。不排除多位置或多组件的联合作用，也不构成完整根因判断。</li>
+</ol>
+<p>确认复验沿用同一 4 个候选、同一预测步、全部 24 个确认输入（<code>mechanism-selection-r02.json</code> 的 <code>confirmation_item_ids</code>）。</p>
+<hr />
+<h3 id="4-eta">原件 4：早层输入约束机制：准备、测试与 ETA</h3>
+<p>原路径：<code>experiments/early-input-control-v1-2026-10-29/EXECUTION.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-input-control-v1-2026-10-29/EXECUTION.zh-CN.md">固定提交原文</a> · <a href="../library/a5821ed58c84d494.html">单独阅读副本</a>；SHA-256：<code>a5821ed58c84d494eb13875bf9a928703c7b25f79d36d40de113099806ae4d5a</code>。</p>
+<hr />
+<h4 id="eta">早层输入约束机制：准备、测试与 ETA</h4>
+<p>2026-10-29。用户本轮授权为“写合同，代码，做测试，然后报给我 ETA”。正式实验尚未获本轮启动授权；所有正式阶段仍须独立授权与对应证据关口。</p>
+<h5 id="_4">当前准备</h5>
+<ul>
+<li>合同及代码保存在本独立目录；旧实验代码、冻结、原文和收据未改。</li>
+<li>开发24输入、新确认24输入、历史锚点8输入已生成；56条材料独立模型辅助审核通过。</li>
+<li>真实分词器验证56输入和候选边界通过；未加载模型、未生成确认题输出。</li>
+<li>最新服务器CPU验收 <code>readiness/cpu-receipt-r04.json</code>：39项通过，失败/错误/跳过均0。包含独立逐token前向评分与生成评分的合成核对。不能把CPU测试当作真实GPU通过。</li>
+<li>真实GPU <code>runs/preflight-r01</code> 未通过：候选整段forward与增量forward差值0.062502861 nats，超过原0.02检查。worker0退出1；worker1由控制器停止，退出-15，不是第二个独立失败。原始68个记录文件及10个资产文件已回传并核验哈希，旧代码保存在 <code>readiness/source-freeze-r01.tar.gz</code>。</li>
+<li>修复后用独立manual forward＋fresh cache同路径逐token核对全词表hash和logprob精确一致；整段forward差异仍保留为数值诊断。科学条件/正式生成路径未改，也未直接提高容差。</li>
+<li>当前冻结 <code>freeze-r02.json</code> SHA <code>4c372a47738657f8be5e10ea49b0265ad17a979d721d98fa34fe7265234a95c4</code>。旧 <code>freeze-r01.json</code> 与失败收据保留。修复后的GPU复验尚未启动；当前没有正式授权、没有自动队列、没有可用的整轮实测ETA。</li>
+<li>2026-10-29用户要求立即交接至另一窗口；本窗口不继续启动GPU复验。修订独立静态审核 <code>readiness/independent-code-review-r03.json</code> 已通过。接手窗口应创建绑定最新freeze/CPU/审核的仅预检授权，在新 <code>runs/preflight-r02</code> 验证后再估ETA；旧r01授权与freeze不再适用于当前代码。</li>
+</ul>
+<h5 id="_5">正式规模与限制</h5>
+<p>开发193条件×24输入＝4,632；新题确认145条件×24输入＝3,480，固定核心共8,112份。最多六干预条件的时段、撤针、位置拆分及最多四候选的局部替换另计；continue技术重放、源重放、donor、候选评分、校准、预检与阅读均不能隐藏在8,112内。</p>
+<p>当前没有自动正式启动队列。确认问题只允许准备、真值审核、分词检查；不得在预检中读取其模型输出。</p>
+<p>最近真实资源快照为北京时间2026-10-29 02:44:19：两GPU无计算进程、各3MiB，控制器与两个worker均退出；远端项目分区可用约123.35GiB，模型/tmp同一分区可用约48.35GiB。这是历史快照，接手启动前须重新检查。机器测试未验收，不报告整轮ETA，也不把预检原文当正式结果。</p>
+<h5 id="2026-10-29">接手窗口执行记录（2026-10-29，北京时间）</h5>
+<p>用户原话（接手后）："你按照handoff指令一直跑到实验结束，如果有bug和问题，按照实验设计文档中的内容修复，然后续跑。半小时更新一次eta和实验运行情况"。据此按 handoff 顺序为各正式阶段逐个建立绑定证据的正式授权；每阶段门槛仍按合同执行。</p>
+<table>
+<thead>
+<tr>
+<th>时间（UTC）</th>
+<th>事件</th>
+<th>类型</th>
+<th>证据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>18:59</td>
+<td><code>preflight-r02</code>（freeze-r02）启动；worker0 在首次调用独立手工参照时崩溃（rotary 位置 45 对 1 token），worker1 被控制器停止（-15）</td>
+<td>合同执行失败（代码）</td>
+<td><code>readiness/preflight-failure-r02.json</code>，<code>runs/preflight-r02/</code></td>
+</tr>
+<tr>
+<td>19:05</td>
+<td>修复：手工参照显式传 generate 相同的文本 <code>position_ids</code>；CPU r05 39/0/0/0，新断言在 freeze-r02 代码上报错；独立静态复审 r04 passed_with_risks（指出新 CPU 测试只验位置算术，真实路径只能由 GPU 验）</td>
+<td>工程修订</td>
+<td><code>cpu-receipt-r05.json</code>，<code>independent-code-review-r04.json</code>，<code>freeze-r03.json</code></td>
+</tr>
+<tr>
+<td>19:10</td>
+<td><code>preflight-r03</code> 两 worker 完成、exit 0，launcher 核验失败：我手写的授权文件缺结尾换行，与 worker 副本字节哈希不同</td>
+<td>合同执行失败（操作者）</td>
+<td><code>readiness/preflight-failure-r03.json</code>；r03 不复用</td>
+</tr>
+<tr>
+<td>19:17</td>
+<td><code>preflight-r04</code>（授权 r04 经 <code>experiment.write</code> 生成）通过：两 worker exit 0、controller completed、verification passed、各99记录；逐 worker <code>experiment.py verify</code> passed；本地216文件哈希一致</td>
+<td>工程验收</td>
+<td><code>runs/preflight-r04/</code>，<code>readiness/preflight-verify-r04.json</code></td>
+</tr>
+<tr>
+<td>19:23</td>
+<td>精确同路径候选核对 8/8 通过；一次性整段 forward 差值 0.0026–0.104 nats，仅作数值诊断，未证实全部来自 BF16</td>
+<td>诊断</td>
+<td><code>runs/preflight-r04/worker-*/records/candidate-check-*.json</code></td>
+</tr>
+<tr>
+<td>19:24</td>
+<td>ETA r01；development gate r01 与正式授权 r01 生成并干校验（其他阶段均拒绝）；<code>development-r01</code> 启动</td>
+<td>正式阶段</td>
+<td><code>timing-estimate-r01.json</code>，<code>stage-gate-development-r01.json</code>，<code>formal-authorization-development-r01.json</code></td>
+</tr>
+</tbody>
+</table>
+<p>偏离记账：<code>development-r01</code> 启动命令多写了 <code>&gt; /dev/null</code>，controller stdout 未进入 <code>readiness/development-controller-r01.log</code>；状态与错误仍由 <code>controller.json</code> 记录，worker 日志不受影响。不影响任何科学结论。</p>
+<p>ETA r01（较慢 worker、阶段串行，仅机器时间）：实测长度情景 development 2.10 h、confirmation 1.57 h（固定网格 3.67 h），机制/替换按最大未选定工作量另计 3.47 h，合计 7.12 h；全128情景 6.37/4.84（固定 11.21 h），合计 19.51 h。阅读、审核等待、传输未计。原始证据 6.4–22.9 GiB：服务器足够，本地归档盘不足（5.9 GiB）。</p>
+<h6 id="2026-10-29-0745">决策日志（确认输出出现前，2026-10-29 北京时间约 07:45）</h6>
+<ul>
+<li>确认预测判定脚本 <code>analysis/evaluate_predictions.py</code> 在 confirmation-r01 运行中、任何确认输出被读取前写定：C1/C2/C4 两个符号都成立才算成立；C3 合并两符号；“多数”=&gt;1/2；分母为 0 记无法判断。开发数据上试跑 6/6 成立（预期，因预测源自开发）；把早层与后层计数对调的合成摘要上 C1/C2/C4 判为不成立，演示判据可失败。</li>
+<li><code>analysis/summarize_development.py</code> 题族解析改为去掉确认题 <code>C</code> 前缀；开发结果不受影响。</li>
+<li>读者口径分歧（开发阅读）：首尾答案冲突时 RL01 读者按首个答案、其余读者按最终结论；两者均标 contradiction，故规则 r01 §3 的“异常”判定不受影响，但 <code>other_fact</code>/<code>follows_fact</code> 分布受影响，报告单列。机制与替换阅读起统一为“有明确改口按最终结论，否则按首个答案”。</li>
+</ul>
+<h5 id="2026-10-29_1">正式阶段完成记录（2026-10-29）</h5>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th style="text-align: right;">记录</th>
+<th style="text-align: right;">墙钟 h</th>
+<th>核验</th>
+<th>盲读锁定</th>
+<th>归档核验</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>development-r01</td>
+<td style="text-align: right;">4,632</td>
+<td style="text-align: right;">2.32</td>
+<td>launcher + 逐 worker passed</td>
+<td><code>reading/development-r01/lock.json</code></td>
+<td>passed</td>
+</tr>
+<tr>
+<td>mechanism-development-r01</td>
+<td style="text-align: right;">1,210</td>
+<td style="text-align: right;">0.69</td>
+<td>passed</td>
+<td><code>reading/mechanism-development-r01/lock.json</code></td>
+<td>passed</td>
+</tr>
+<tr>
+<td>patch-development-r01</td>
+<td style="text-align: right;">552</td>
+<td style="text-align: right;">0.26</td>
+<td>passed</td>
+<td><code>reading/patch-development-r01/lock.json</code></td>
+<td>passed</td>
+</tr>
+<tr>
+<td>confirmation-r01</td>
+<td style="text-align: right;">3,480</td>
+<td style="text-align: right;">2.49</td>
+<td>passed</td>
+<td><code>reading/confirmation-r01/lock.json</code></td>
+<td>passed</td>
+</tr>
+<tr>
+<td>mechanism-confirmation-r01</td>
+<td style="text-align: right;">1,440</td>
+<td style="text-align: right;">0.93</td>
+<td>passed</td>
+<td><code>reading/mechanism-confirmation-r01/lock.json</code></td>
+<td>passed</td>
+</tr>
+<tr>
+<td>patch-confirmation-r01</td>
+<td style="text-align: right;">576</td>
+<td style="text-align: right;">0.33</td>
+<td>passed</td>
+<td><code>reading/patch-confirmation-r01/lock.json</code></td>
+<td>passed</td>
+</tr>
+</tbody>
+</table>
+<p>正式合计 11,890 条记录；含预检 r02–r04 在内墙钟约 7.25 h，两卡并行约 14.5 GPU 小时；GPU 已释放，无本实验进程残留。确认首次打开前的锁定：解释与预测 <code>f0d7914</code>，判定脚本 <code>2a6b385</code>。冻结预测 C1–C6 全部成立。结果与限制见 <code>REPORT.zh-CN.md</code>。</p>
+<p>偏离与例外（均不改变科学条件）：
+- 机制选点中 L0 与 L2 在替换规则 S1 上平局（48/48），按规则取 L0。
+- 机制确认的 1,440 条超过 ETA r01 情景上限 1,152（确认面板对 6 个条件均用全部 24 输入、3 个条件含首步拆分），在合同条件上限内。
+- mechanism-confirmation 与 patch-confirmation 的 <code>measurement_usable</code> 依据：确认原版 24/24 跟随事实（盲读锁定）。
+- 读者对“只复述题面”“信息充分却说无法判断”“首尾冲突”的边界判读有差异，逐条保留于读者 note，未以多数票改写。</p>
+<hr />
+<h3 id="5-r02">原件 5：局部替换候选规则 r02（读机制结果前冻结）</h3>
+<p>原路径：<code>experiments/early-input-control-v1-2026-10-29/readiness/patch-candidate-rules-r02.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-input-control-v1-2026-10-29/readiness/patch-candidate-rules-r02.zh-CN.md">固定提交原文</a> · <a href="../library/264f2a21db5c704c.html">单独阅读副本</a>；SHA-256：<code>264f2a21db5c704c6eb969fedcc21dff126df2d32452eb33bd1aa1c0296def28</code>。</p>
+<hr />
+<h4 id="r02">局部替换候选规则 r02（读机制结果前冻结）</h4>
+<p>写于 2026-10-29 北京时间约 06:35，<code>mechanism-development-r01</code> 运行中、未读其任何输出。本文件提交 hash 即冻结点；偏离记入 EXECUTION 决策日志。补充 <code>reading-and-selection-rules-r01</code> §6。</p>
+<h5 id="1-2">1. 症状（最多 2 类）</h5>
+<ul>
+<li><strong>S1 首步停止</strong>：在已选早层原生条件（L0/N4146、L2/N5251，开发面板）中，取 full 与 prefill 两种时段下“首个生成 token 即 EOS”的输入数之和最多者（平局取 L0）。预测步 <code>prediction_step=0</code>。适用输入：该条件 full 首步 EOS 的全部输入；若某基础情景只有一个事实满足，仍纳入两事实（配对）。</li>
+<li><strong>S2 内容错误</strong>：中层参照 L13/N248 +1。适用输入：开发阅读中该条件下相对原版异常（规则 r01 §3）的基础情景的两事实输入。预测步 <code>prediction_step=0</code>（首个答案 token；后续步的分叉语境随样本不同，不能统一定位）。若机制阅读显示该条件 full 重放后的异常基础情景少于 2 个，则不设 S2，如实报告。</li>
+</ul>
+<h5 id="2-2">2. 候选组件（每类最多 2 个）与邻近对照</h5>
+<p>对注入层 L：</p>
+<table>
+<thead>
+<tr>
+<th>候选</th>
+<th>组件</th>
+<th>邻近非候选对照</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>a</td>
+<td>注入层 L 的 MLP 输出（注入位点本身，只替换预测位置）</td>
+<td>L+1 层 MLP 输出</td>
+</tr>
+<tr>
+<td>b</td>
+<td>L 之后第一个 full attention 层的 attention 输出（L0/L2→L3，L13→L15）</td>
+<td>该层之后一层的 attention 输出（L4 / L16）</td>
+</tr>
+</tbody>
+</table>
+<p>不在确认集或开发集上遍历其他组件，不按修复效果更换候选。</p>
+<h5 id="3_3">3. 六臂与读法</h5>
+<p>六臂按合同 §7 全部运行：同事实 clean→有针修复、有针→clean 反向重现、另一事实 clean→有针、clean 自替换、有针自替换、邻近组件替换。读法：</p>
+<ul>
+<li>修复：有针接收方在替换后首步不再 EOS（S1），或核心答案恢复为本事实且无新增矛盾（S2）；须逐条读完整回答，变长或 EOS 降低本身不算事实处理恢复。</li>
+<li>反向：clean 接收方替换有针 donor 后出现同类症状。</li>
+<li>另一事实来源：回答是否改为另一事实答案（内容相关作用的证据）。</li>
+<li>自替换两臂须与原回答逐 token 一致（工程对照）。</li>
+<li>邻近组件替换若同样修复，则候选不具局部特异性。</li>
+<li>只报告计数与逐条清单，不设恢复百分比阈值。</li>
+</ul>
+<h5 id="4_3">4. 确认复验清单</h5>
+<p>确认首次打开前，锁定同一症状/条件/组件/预测步在全部 24 个确认输入上的复验（<code>confirmation_item_ids</code>），不得据确认结果改选。</p>
+<hr />
+<h3 id="6-r01">原件 6：开发阅读判读与机制选点规则 r01（看结果前冻结）</h3>
+<p>原路径：<code>experiments/early-input-control-v1-2026-10-29/readiness/reading-and-selection-rules-r01.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-input-control-v1-2026-10-29/readiness/reading-and-selection-rules-r01.zh-CN.md">固定提交原文</a> · <a href="../library/dd02e1e145d4507e.html">单独阅读副本</a>；SHA-256：<code>dd02e1e145d4507e6bbf752026764d7846012ee9c40c0977c47979bd237b7cba</code>。</p>
+<hr />
+<h4 id="r01_1">开发阅读判读与机制选点规则 r01（看结果前冻结）</h4>
+<p>写于 2026-10-29 北京时间约 04:00，<code>development-r01</code> 运行中；写作者此前未读任何开发回答文本，只看过记录计数。本文件在开发阅读前提交到 Git，提交 hash 即冻结点。之后的偏离记入 EXECUTION 决策日志。</p>
+<h5 id="1_3">1. 阅读</h5>
+<ul>
+<li>工具 <code>analysis/reading_packets.py</code>：按基础情景出包；同题内文本完全相同的回答只读一次，标签映射到全部副本。读者只见题面、本事实答案、另一事实答案、真值解释与匿名回答，不见层、通道、剂量、方向、时段或分支。</li>
+<li>读者为模型辅助的子代理，每个读者只拿到自己的 packet 文件，不接触 <code>key.json</code>；全部标签写完后先 <code>lock</code>（记录标签哈希），再 <code>join</code> 揭盲。读者身份如实标注，不冒充人类评审。</li>
+<li>标签：<code>fact</code> ∈ follows_fact / other_fact / other_wrong / not_delivered / unclear；<code>contradiction</code>、<code>repetition</code> 布尔；<code>note</code> 记具体风格与附带错误。EOS、长度、128 截断与 n-gram 重复由代码机械计算，单列，不与语义标签合并。</li>
+<li>争议：主读者之外，按固定种子抽 10% 唯一文本给第二读者独立复读；不一致逐条列出，不以多数票覆盖，只在报告中并列。</li>
+</ul>
+<h5 id="2_3">2. 测量有效性（原版）</h5>
+<ul>
+<li>某基础情景记为“可解释”：原版两事实均 <code>follows_fact</code>。</li>
+<li>原版不是 <code>follows_fact</code> 的输入保留并单列，不计入“原版正确→干预后异常”的分母。</li>
+<li>某任务族 4 个基础情景中可解释者少于 3 个时，该族机制结论暂缓，原样报告；不删题、不换题、不降门槛。</li>
+</ul>
+<h5 id="3_4">3. 异常定义（仅用于选点，不作科学判档）</h5>
+<p>对可解释输入，某条件下的回答若 <code>fact</code> ∈ {other_fact, other_wrong, not_delivered} 或 <code>contradiction=true</code>，记为“相对原版异常”。一个基础情景在某条件下只要任一事实异常即记为“该条件异常基础情景”。<code>unclear</code> 不计入异常，单列。</p>
+<h5 id="4-6">4. 机制条件（最多 6 个）</h5>
+<ol>
+<li><strong>L0/N4146、L2/N5251（开发网格内）</strong>：在 6 档剂量中取“异常基础情景数”最多者；平局依次取 |剂量| 较大、正号。适用题目＝该条件下全部异常基础情景的两事实输入；若异常基础情景少于 2 个，取全部 12 个基础情景（作为无/弱症状参照，如实标注）。</li>
+<li><strong>L2/N5063（不在开发网格）</strong>：只用已支持的旧 +1 适配，<code>legacy_layer_survey_v1</code>，历史锚点 Q01–Q08 全部 8 个，剂量 +1；不伪造开发诊断来源。</li>
+<li><strong>中后层参照（最多 3 个）</strong>：中层窗口（L12–15）与后层窗口（L24–27）各取原生点×剂量中异常基础情景最多者（平局同上；再平局取层号小、通道号小）。第三个取其余中后层条件（含 L15/L24/L27 共同方向）中异常基础情景最多且 ≥1 者；无则不设。若某窗口全无异常，仍选该窗口 +1 剂量、首个层—通道点作为正常参照，适用题目取全部 12 个基础情景。</li>
+<li><strong>first_step_split</strong>：所选条件在其适用输入中至少一条首个生成 token 即 EOS 时设为 true；最多 3 个，超出时按首步 EOS 条数从多到少取。</li>
+</ol>
+<h5 id="5_3">5. 撤针三臂的读法（预先写死）</h5>
+<p>以“原版可解释且 full 异常”的输入为配对单位，比较同一输入的 continue / withdraw / rebuild：</p>
+<ul>
+<li>withdraw 相对 continue 改善（异常→非异常）：支持当前持续注入参与维持异常。</li>
+<li>withdraw 不改善、rebuild 改善：增加受干预历史内部状态参与的证据。</li>
+<li>rebuild 仍异常：文字历史可能参与维持；不据此断言唯一根因。</li>
+<li>源回答在 k 之前已经 EOS 的记 NA，单列。</li>
+<li>只报告计数和逐条清单，不设恢复百分比阈值或总分。</li>
+</ul>
+<h5 id="6_2">6. 局部替换候选</h5>
+<p>在读完开发机制结果后另行冻结，规则届时写入 <code>readiness/mechanism-selection-rNN.json</code>，并在打开确认输出前锁定全部 24 个确认输入的复验清单。本文件不预选组件。</p>
+<hr />
+<h2 id="_6">时间、运行与停止收据索引</h2>
+<p>下面是所收集JSON的原有时间字段与状态，不把预计结束时间当实际完成时间。未列时间的文件仍有原件链接。完整JSON全部保存在原文归档，不能以此索引中的标量代替完整嵌套内容。</p>
+<table>
+<thead>
+<tr>
+<th>原件</th>
+<th>原记录状态/阶段</th>
+<th>原时间字段（原时区）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-input-control-v1-2026-10-29/readiness/cpu-receipt-r01.json">readiness/cpu-receipt-r01.json</a></td>
+<td>{"status": "passed"}</td>
+<td>{"created_at": "2026-10-28T18:37:25.094703+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-input-control-v1-2026-10-29/readiness/cpu-receipt-r02.json">readiness/cpu-receipt-r02.json</a></td>
+<td>{"status": "passed"}</td>
+<td>{"created_at": "2026-10-28T18:38:43.116860+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-input-control-v1-2026-10-29/readiness/cpu-receipt-r03.json">readiness/cpu-receipt-r03.json</a></td>
+<td>{"status": "passed"}</td>
+<td>{"created_at": "2026-10-28T18:40:52.651887+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-input-control-v1-2026-10-29/readiness/cpu-receipt-r04.json">readiness/cpu-receipt-r04.json</a></td>
+<td>{"status": "passed"}</td>
+<td>{"created_at": "2026-10-28T18:47:25.934709+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-input-control-v1-2026-10-29/readiness/cpu-receipt-r05.json">readiness/cpu-receipt-r05.json</a></td>
+<td>{"status": "passed"}</td>
+<td>{"created_at": "2026-10-28T19:05:25.799844+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-input-control-v1-2026-10-29/readiness/preflight-launch-r01.json">readiness/preflight-launch-r01.json</a></td>
+<td>{"stage": "preflight"}</td>
+<td>{"created_at": "2026-10-28T18:42:22.542821+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-input-control-v1-2026-10-29/readiness/stage-gate-confirmation-r01.json">readiness/stage-gate-confirmation-r01.json</a></td>
+<td>{"status": "passed", "stage": "confirmation"}</td>
+<td>{"created_at": "2026-10-28T23:07:25.662433+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-input-control-v1-2026-10-29/readiness/stage-gate-development-r01.json">readiness/stage-gate-development-r01.json</a></td>
+<td>{"status": "passed", "stage": "development"}</td>
+<td>{"created_at": "2026-10-28T19:24:23.806429+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-input-control-v1-2026-10-29/readiness/stage-gate-mechanism-confirmation-r01.json">readiness/stage-gate-mechanism-confirmation-r01.json</a></td>
+<td>{"status": "passed", "stage": "mechanism"}</td>
+<td>{"created_at": "2026-10-29T01:38:13.521491+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-input-control-v1-2026-10-29/readiness/stage-gate-mechanism-development-r01.json">readiness/stage-gate-mechanism-development-r01.json</a></td>
+<td>{"status": "passed", "stage": "mechanism"}</td>
+<td>{"created_at": "2026-10-28T21:59:48.127477+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-input-control-v1-2026-10-29/readiness/stage-gate-patch-confirmation-r01.json">readiness/stage-gate-patch-confirmation-r01.json</a></td>
+<td>{"status": "passed", "stage": "patch"}</td>
+<td>{"created_at": "2026-10-29T02:35:07.833263+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-input-control-v1-2026-10-29/readiness/stage-gate-patch-development-r01.json">readiness/stage-gate-patch-development-r01.json</a></td>
+<td>{"status": "passed", "stage": "patch"}</td>
+<td>{"created_at": "2026-10-28T22:45:26.713338+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-input-control-v1-2026-10-29/reading/confirmation-r01/summary.json">reading/confirmation-r01/summary.json</a></td>
+<td>{}</td>
+<td>{}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-input-control-v1-2026-10-29/reading/development-r01/selection-summary.json">reading/development-r01/selection-summary.json</a></td>
+<td>{}</td>
+<td>{}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-input-control-v1-2026-10-29/reading/development-r01/summary.json">reading/development-r01/summary.json</a></td>
+<td>{}</td>
+<td>{}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-input-control-v1-2026-10-29/runs/confirmation-r01/controller.json">runs/confirmation-r01/controller.json</a></td>
+<td>{"status": "completed", "stage": "confirmation"}</td>
+<td>{"started_at": "2026-10-28T23:07:28.844650+00:00", "finished_at": "2026-10-29T01:36:58.923595+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-input-control-v1-2026-10-29/runs/confirmation-r01/verification.json">runs/confirmation-r01/verification.json</a></td>
+<td>{"status": "passed"}</td>
+<td>{"verified_at": "2026-10-29T01:36:58.923204+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-input-control-v1-2026-10-29/runs/confirmation-r01/worker-0/receipt.json">runs/confirmation-r01/worker-0/receipt.json</a></td>
+<td>{"status": "completed", "stage": "confirmation"}</td>
+<td>{"started_at": "2026-10-28T23:07:29.950261+00:00", "last_record_at": "2026-10-29T01:36:10.410039+00:00", "finished_at": "2026-10-29T01:36:18.719193+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-input-control-v1-2026-10-29/runs/confirmation-r01/worker-1/receipt.json">runs/confirmation-r01/worker-1/receipt.json</a></td>
+<td>{"status": "completed", "stage": "confirmation"}</td>
+<td>{"started_at": "2026-10-28T23:07:29.950130+00:00", "last_record_at": "2026-10-29T01:35:00.595100+00:00", "finished_at": "2026-10-29T01:35:08.157869+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-input-control-v1-2026-10-29/runs/development-r01/controller.json">runs/development-r01/controller.json</a></td>
+<td>{"status": "completed", "stage": "development"}</td>
+<td>{"started_at": "2026-10-28T19:24:33.842852+00:00", "finished_at": "2026-10-28T21:43:52.515767+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-input-control-v1-2026-10-29/runs/development-r01/verification.json">runs/development-r01/verification.json</a></td>
+<td>{"status": "passed"}</td>
+<td>{"verified_at": "2026-10-28T21:43:52.515393+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-input-control-v1-2026-10-29/runs/development-r01/worker-0/receipt.json">runs/development-r01/worker-0/receipt.json</a></td>
+<td>{"status": "completed", "stage": "development"}</td>
+<td>{"started_at": "2026-10-28T19:24:33.902209+00:00", "last_record_at": "2026-10-28T21:43:08.502551+00:00", "finished_at": "2026-10-28T21:43:14.893855+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-input-control-v1-2026-10-29/runs/development-r01/worker-1/receipt.json">runs/development-r01/worker-1/receipt.json</a></td>
+<td>{"status": "completed", "stage": "development"}</td>
+<td>{"started_at": "2026-10-28T19:24:33.902281+00:00", "last_record_at": "2026-10-28T21:41:01.703531+00:00", "finished_at": "2026-10-28T21:41:08.205564+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-input-control-v1-2026-10-29/runs/mechanism-confirmation-r01/controller.json">runs/mechanism-confirmation-r01/controller.json</a></td>
+<td>{"status": "completed", "stage": "mechanism"}</td>
+<td>{"started_at": "2026-10-29T01:38:16.712886+00:00", "finished_at": "2026-10-29T02:33:56.679591+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-input-control-v1-2026-10-29/runs/mechanism-confirmation-r01/verification.json">runs/mechanism-confirmation-r01/verification.json</a></td>
+<td>{"status": "passed"}</td>
+<td>{"verified_at": "2026-10-29T02:33:56.679320+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-input-control-v1-2026-10-29/runs/mechanism-confirmation-r01/worker-0/receipt.json">runs/mechanism-confirmation-r01/worker-0/receipt.json</a></td>
+<td>{"status": "completed", "stage": "mechanism"}</td>
+<td>{"started_at": "2026-10-29T01:38:17.810541+00:00", "last_record_at": "2026-10-29T02:33:22.580355+00:00", "finished_at": "2026-10-29T02:33:30.114225+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-input-control-v1-2026-10-29/runs/mechanism-confirmation-r01/worker-1/receipt.json">runs/mechanism-confirmation-r01/worker-1/receipt.json</a></td>
+<td>{"status": "completed", "stage": "mechanism"}</td>
+<td>{"started_at": "2026-10-29T01:38:17.808122+00:00", "last_record_at": "2026-10-29T02:33:31.824674+00:00", "finished_at": "2026-10-29T02:33:42.452622+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-input-control-v1-2026-10-29/runs/mechanism-development-r01/controller.json">runs/mechanism-development-r01/controller.json</a></td>
+<td>{"status": "completed", "stage": "mechanism"}</td>
+<td>{"started_at": "2026-10-28T21:59:58.772501+00:00", "finished_at": "2026-10-28T22:41:40.568268+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-input-control-v1-2026-10-29/runs/mechanism-development-r01/verification.json">runs/mechanism-development-r01/verification.json</a></td>
+<td>{"status": "passed"}</td>
+<td>{"verified_at": "2026-10-28T22:41:40.567856+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-input-control-v1-2026-10-29/runs/mechanism-development-r01/worker-0/receipt.json">runs/mechanism-development-r01/worker-0/receipt.json</a></td>
+<td>{"status": "completed", "stage": "mechanism"}</td>
+<td>{"started_at": "2026-10-28T21:59:59.614351+00:00", "last_record_at": "2026-10-28T22:38:14.415824+00:00", "finished_at": "2026-10-28T22:38:21.551563+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-input-control-v1-2026-10-29/runs/mechanism-development-r01/worker-1/receipt.json">runs/mechanism-development-r01/worker-1/receipt.json</a></td>
+<td>{"status": "completed", "stage": "mechanism"}</td>
+<td>{"started_at": "2026-10-28T21:59:59.614222+00:00", "last_record_at": "2026-10-28T22:41:25.949334+00:00", "finished_at": "2026-10-28T22:41:30.788616+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-input-control-v1-2026-10-29/runs/patch-confirmation-r01/controller.json">runs/patch-confirmation-r01/controller.json</a></td>
+<td>{"status": "completed", "stage": "patch"}</td>
+<td>{"started_at": "2026-10-29T02:35:11.743669+00:00", "finished_at": "2026-10-29T02:54:41.914606+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-input-control-v1-2026-10-29/runs/patch-confirmation-r01/verification.json">runs/patch-confirmation-r01/verification.json</a></td>
+<td>{"status": "passed"}</td>
+<td>{"verified_at": "2026-10-29T02:54:41.914390+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-input-control-v1-2026-10-29/runs/patch-confirmation-r01/worker-0/receipt.json">runs/patch-confirmation-r01/worker-0/receipt.json</a></td>
+<td>{"status": "completed", "stage": "patch"}</td>
+<td>{"started_at": "2026-10-29T02:35:13.100598+00:00", "last_record_at": "2026-10-29T02:54:30.643401+00:00", "finished_at": "2026-10-29T02:54:34.732320+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-input-control-v1-2026-10-29/runs/patch-confirmation-r01/worker-1/receipt.json">runs/patch-confirmation-r01/worker-1/receipt.json</a></td>
+<td>{"status": "completed", "stage": "patch"}</td>
+<td>{"started_at": "2026-10-29T02:35:13.100743+00:00", "last_record_at": "2026-10-29T02:53:20.503029+00:00", "finished_at": "2026-10-29T02:53:30.114777+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-input-control-v1-2026-10-29/runs/patch-development-r01/controller.json">runs/patch-development-r01/controller.json</a></td>
+<td>{"status": "completed", "stage": "patch"}</td>
+<td>{"started_at": "2026-10-28T22:45:30.174359+00:00", "finished_at": "2026-10-28T23:01:22.156291+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-input-control-v1-2026-10-29/runs/patch-development-r01/verification.json">runs/patch-development-r01/verification.json</a></td>
+<td>{"status": "passed"}</td>
+<td>{"verified_at": "2026-10-28T23:01:22.156071+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-input-control-v1-2026-10-29/runs/patch-development-r01/worker-0/receipt.json">runs/patch-development-r01/worker-0/receipt.json</a></td>
+<td>{"status": "completed", "stage": "patch"}</td>
+<td>{"started_at": "2026-10-28T22:45:31.374844+00:00", "last_record_at": "2026-10-28T22:57:19.737845+00:00", "finished_at": "2026-10-28T22:57:25.254149+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-input-control-v1-2026-10-29/runs/patch-development-r01/worker-1/receipt.json">runs/patch-development-r01/worker-1/receipt.json</a></td>
+<td>{"status": "completed", "stage": "patch"}</td>
+<td>{"started_at": "2026-10-28T22:45:31.374690+00:00", "last_record_at": "2026-10-28T23:01:09.948261+00:00", "finished_at": "2026-10-28T23:01:16.737273+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-input-control-v1-2026-10-29/runs/preflight-r01/controller.json">runs/preflight-r01/controller.json</a></td>
+<td>{"status": "failed", "stage": "preflight"}</td>
+<td>{"started_at": "2026-10-28T18:41:39.092434+00:00", "finished_at": "2026-10-28T18:43:53.152264+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-input-control-v1-2026-10-29/runs/preflight-r01/worker-0/receipt.json">runs/preflight-r01/worker-0/receipt.json</a></td>
+<td>{"status": "failed", "stage": "preflight"}</td>
+<td>{"started_at": "2026-10-28T18:41:39.148677+00:00", "latest_record_at": "2026-10-28T18:43:48.106542+00:00", "finished_at": "2026-10-28T18:43:50.653657+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-input-control-v1-2026-10-29/runs/preflight-r01/worker-1/receipt.json">runs/preflight-r01/worker-1/receipt.json</a></td>
+<td>{"status": "running", "stage": "preflight"}</td>
+<td>{"started_at": "2026-10-28T18:41:39.148790+00:00", "latest_record_at": "2026-10-28T18:43:49.843240+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-input-control-v1-2026-10-29/runs/preflight-r02/controller.json">runs/preflight-r02/controller.json</a></td>
+<td>{"status": "failed", "stage": "preflight"}</td>
+<td>{"started_at": "2026-10-28T18:59:12.767087+00:00", "finished_at": "2026-10-28T19:01:25.820714+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-input-control-v1-2026-10-29/runs/preflight-r02/worker-0/receipt.json">runs/preflight-r02/worker-0/receipt.json</a></td>
+<td>{"status": "failed", "stage": "preflight"}</td>
+<td>{"started_at": "2026-10-28T18:59:12.823041+00:00", "latest_record_at": "2026-10-28T19:01:20.849988+00:00", "finished_at": "2026-10-28T19:01:23.619002+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-input-control-v1-2026-10-29/runs/preflight-r02/worker-1/receipt.json">runs/preflight-r02/worker-1/receipt.json</a></td>
+<td>{"status": "running", "stage": "preflight"}</td>
+<td>{"started_at": "2026-10-28T18:59:12.823188+00:00", "latest_record_at": "2026-10-28T19:01:23.580239+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-input-control-v1-2026-10-29/runs/preflight-r03/controller.json">runs/preflight-r03/controller.json</a></td>
+<td>{"status": "failed", "stage": "preflight"}</td>
+<td>{"started_at": "2026-10-28T19:10:35.178431+00:00", "finished_at": "2026-10-28T19:16:14.325475+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-input-control-v1-2026-10-29/runs/preflight-r03/worker-0/receipt.json">runs/preflight-r03/worker-0/receipt.json</a></td>
+<td>{"status": "completed", "stage": "preflight"}</td>
+<td>{"started_at": "2026-10-28T19:10:35.235389+00:00", "latest_record_at": "2026-10-28T19:16:10.361382+00:00", "finished_at": "2026-10-28T19:16:12.509383+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-input-control-v1-2026-10-29/runs/preflight-r03/worker-1/receipt.json">runs/preflight-r03/worker-1/receipt.json</a></td>
+<td>{"status": "completed", "stage": "preflight"}</td>
+<td>{"started_at": "2026-10-28T19:10:35.235265+00:00", "latest_record_at": "2026-10-28T19:15:59.402295+00:00", "finished_at": "2026-10-28T19:16:01.492482+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-input-control-v1-2026-10-29/runs/preflight-r04/controller.json">runs/preflight-r04/controller.json</a></td>
+<td>{"status": "completed", "stage": "preflight"}</td>
+<td>{"started_at": "2026-10-28T19:17:38.195086+00:00", "finished_at": "2026-10-28T19:23:17.884307+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-input-control-v1-2026-10-29/runs/preflight-r04/verification.json">runs/preflight-r04/verification.json</a></td>
+<td>{"status": "passed"}</td>
+<td>{"verified_at": "2026-10-28T19:23:17.884140+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-input-control-v1-2026-10-29/runs/preflight-r04/worker-0/receipt.json">runs/preflight-r04/worker-0/receipt.json</a></td>
+<td>{"status": "completed", "stage": "preflight"}</td>
+<td>{"started_at": "2026-10-28T19:17:38.251056+00:00", "latest_record_at": "2026-10-28T19:23:12.895272+00:00", "finished_at": "2026-10-28T19:23:15.040428+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-input-control-v1-2026-10-29/runs/preflight-r04/worker-1/receipt.json">runs/preflight-r04/worker-1/receipt.json</a></td>
+<td>{"status": "completed", "stage": "preflight"}</td>
+<td>{"started_at": "2026-10-28T19:17:38.251194+00:00", "latest_record_at": "2026-10-28T19:23:02.947035+00:00", "finished_at": "2026-10-28T19:23:05.027945+00:00"}</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_7">全部原始资产入口</h2>
+<p>本目录在固定提交下共有2204个跟踪文件，包含代码、原回答、失败、收据和压缩证据；文件数不是样本数。<a href="../assets/025-early-input-control-v1-2026-10-29.tsv">逐文件完整账本</a> · <a href="https://github.com/yuxiexiong/acupuncture/tree/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-input-control-v1-2026-10-29">原目录</a>。未复制模型权重、环境或凭据。</p></main></html>

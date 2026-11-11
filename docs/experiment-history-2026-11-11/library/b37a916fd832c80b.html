@@ -1,0 +1,91 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>FORM-AB 已有资产离线核对：设计与自查 r01</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="form-ab-r01">FORM-AB 已有资产离线核对：设计与自查 r01</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-formation-asset-audit-v1-2026-10-31/SELF_CHECK.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-asset-audit-v1-2026-10-31/SELF_CHECK.zh-CN.md">固定提交原件</a>；SHA-256：<code>b37a916fd832c80b2f4eafaa3ab703a3dab6c1132d18526c5250caa9b123ae67</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="form-ab-r01_1">FORM-AB 已有资产离线核对：设计与自查 r01</h1>
+<p>2026-10-31；规范 experiment-design-self-check v1；同一助手自查，非独立审查。使用 academic-research-suite 实验规划/证据核查流程。逻辑审查通过；文件可达、内容和计算验收待执行。仅 CPU 读取既有数据，无模型加载/前向/GPU，无新干预。</p>
+<h2 id="_1">设计卡（分析前冻结）</h2>
+<ol>
+<li>主线：解释稀疏激活干预怎样改变写入、旧状态处理和读取，导致大回答变化。本轮核对 A5 的实际测量能否与 A1/A3 连接，明确缺口；不以 EOS 取代主线。</li>
+<li>增量：将“据称保存”推进到实际文件/字段/哈希核对，并用已有全词表输出区分固定竞争对变化与 max 赢家变化；不再重复声称 B 恢复比例。</li>
+<li>来源：固定 181d80a 的 FORM-AB 合同、实现、源码、两 worker 收据、12 条记录和既有张量；资产盘点 r2、基础知识审计；本地已归档 S2/S3 合同/提取证据。最不利证据：VRL04 的 D 与 m 读数不一致、混合评分 EOS 0/12、S3 供体10而 A5 为C、面板不同。</li>
+<li>操作：不改变模型。逐个核验12个张量SHA256和结构，CPU weights_only 加载，每次释放；不导入运行引擎。检查 delta0/r0、供体位置/层/字段、深层末端状态和 logits；对照保存源码。针仍为 L0 N4146 −1、晚段；不生成缺失张量。</li>
+<li>估计对象：主要比较 X0 与 XB，另保留 C/T_native/XA/XAB。逐输入重算 D、EOS、C固定e<em>/c</em>的m、赢家身份。定义 gE=max_E z−z[e<em>]、gN=max_nonE z−z[c</em>]，恒等式 D=m+gE−gN；故 B效果 D0−DB=(m0−mB)+(gE0−gEB)−(gN0−gNB)。这是输出端算术分解，不是内部机制归因。两事实平均后形成六情景描述，逐事实保留，不做显著性检验。</li>
+<li>判读：固定对与D同向，支持竞争差异不只体现为换赢家；不一致则禁止单一固定停止方向解释。恒等式不是新发现；实测分量才约束当前解释。字段存在但仅末端，不能重建每步写入；不可达/哈希失败为审计缺口，不当科学阴性。若有完整轨迹也只列可分析量，不自动启动新探索。</li>
+<li>复用与成本：只读既有约8.9GB张量，顺序CPU核验/解析；保留小型JSON提取和源文件，不复制整套权重/张量入Git。网络、核验、提取单列；12输入不是12独立情景。已见面板、事后探索，非留出确认。</li>
+<li>退出：完成12条或记录明确不可达/损坏即报告覆盖；不为缺失量重跑模型。没有逐步深层驱动/读取时，停止在“缺测量”，不把范数热点当中介。</li>
+</ol>
+<h2 id="c01c14">C01–C14</h2>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th>判定与理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C01</td>
+<td>通过：设计卡1以形成—读取—回答链为主，输出竞争是诊断。</td>
+</tr>
+<tr>
+<td>C02</td>
+<td>通过：核实资产实际可用性及哪种输出竞争发生改变，支持下一轮有依据地指定缺失测量。</td>
+</tr>
+<tr>
+<td>C03</td>
+<td>通过：固定原收据/代码与A1/A3/A5，使用K08/K13读出与max边界。</td>
+</tr>
+<tr>
+<td>C04</td>
+<td>通过：明确VRL04、混合EOS及供体/面板不一致反例，不预选V主导。</td>
+</tr>
+<tr>
+<td>C05</td>
+<td>通过：只读固定旧张量；形成τ与评分末token区分。</td>
+</tr>
+<tr>
+<td>C06</td>
+<td>通过：无新固定/阻断；A5原操作的当前响应和深层历史照常演化，混合评分身份保留。</td>
+</tr>
+<tr>
+<td>C07</td>
+<td>通过：不拼换共享变量、不从末端状态倒推出唯一驱动。</td>
+</tr>
+<tr>
+<td>C08</td>
+<td>通过：输出分解不称内部路径归因；文件存在不称测量完备。</td>
+</tr>
+<tr>
+<td>C09</td>
+<td>通过：不同竞争分量有可区分结果；不将写入/读取假说强制互斥。</td>
+</tr>
+<tr>
+<td>C10</td>
+<td>通过：D、m、EOS与交付分开；无自由回答和事实候选就不报告恢复。</td>
+</tr>
+<tr>
+<td>C11</td>
+<td>通过：哈希/算术失败与科学阴性分开；不新设效果阈值。</td>
+</tr>
+<tr>
+<td>C12</td>
+<td>通过：全部旧数据/CPU；缺失仅列清单，没有模型回放。</td>
+</tr>
+<tr>
+<td>C13</td>
+<td>通过：固定来源，12输入/6已见情景；提取结果和命令保留，自查非独立复现。</td>
+</tr>
+<tr>
+<td>C14</td>
+<td>通过：完整轨迹允许后续有界离线工作，末端资产不足则具体列缺测量，不能默认继续扫层。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_2">历史错误覆盖与反方复查</h2>
+<p>E01/E02/E03/E04：不换主线、不赋层号天然意义、不称小幅针；算术分解非机制发现。E05/E06/E07/E08：本轮无变量拼换，不声称A5恢复回原生路径，明确C供体。E09/E10/E11/E12：竞争分解非内部因果，分数非交付/信息存量，相减不消除一般损伤。E13/E14/E15：S3供体10、已见01/02与A5 C供体03/04不能直接拼链，末端承载不等于形成来源。E16/E17/E18/E19：读取失败不算阴性，入口抵消不撤销针，剩余不自动命名；恒等式仅验收。E20/E21：候选可并存，不作领域首次主张，本轮不做新文献新颖性评估。E22/E23：六情景、事后分析、同助手审查明确。E24/E25：允许有限增量，不加网格。E26：沿用统一浅层评分隔离，只讨论深层末态在该背景下的效果。</p>
+<p>最强反例1：D与m一致仍可能由非语义扰动产生。处理：只报告竞争结构，不声称内容机制。
+最强反例2：末端状态与logits同变不能证明V介导。处理：必须把逐步驱动/读取与介入连接列为缺口，不做相关性到中介的升级。
+最强反例3：代码声明保存不保证文件存在。处理：分开“合同/代码”“收据”“实际哈希/加载”三档，无法读取不伪造通过。
+与上一方案比较：不执行倒序层恢复、不扩大针数、不补跑V替换；承接资产盘点5.2的第一二步，先检验已有材料的可解释边界。
+复查结论：通过本轮离线核对的逻辑审查；没有授予GPU或新模型计算权限。结果文件须另报实际完成范围。</p></main></html>

@@ -1,0 +1,31 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Llama-3.1-8B-Instruct 跨家族迁移：GPU Ready</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="llama-31-8b-instruct-gpu-ready">Llama-3.1-8B-Instruct 跨家族迁移：GPU Ready</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cross-family-transfer-toy-v1-2026-10-26/GPU_READY.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cross-family-transfer-toy-v1-2026-10-26/GPU_READY.zh-CN.md">固定提交原件</a>；SHA-256：<code>a7193e11ed5527ca4e17ea27cf7a6c684da28437f3a9776f39f03004de4c77a4</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="llama-31-8b-instruct-gpu-ready_1">Llama-3.1-8B-Instruct 跨家族迁移：GPU Ready</h1>
+<p>2026-10-26 15:02:35 北京时间，最终 CPU 准备程序完成并输出 <strong>GPU_READY</strong>。本次交付的含义是代码、固定输入、模型资产和评分依赖已准备齐全；正式模型 GPU 预检、迁移采集、干预生成和能力评测均尚未运行。</p>
+<h2 id="_1">交付入口</h2>
+<ul>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cross-family-transfer-toy-v1-2026-10-26/PROTOCOL.zh-CN.md">实验设计</a>：先映射稠密方向，再有条件地检验两通道近似。</li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cross-family-transfer-toy-v1-2026-10-26/CONTRACT.zh-CN.md">执行合同</a>：固定科学设置、四项 Benchmark、阶段门、授权及失败保留规则。</li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cross-family-transfer-toy-v1-2026-10-26/EXECUTION.zh-CN.md">执行说明</a>及<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cross-family-transfer-toy-v1-2026-10-26/pipeline.py">运行入口</a>：默认只显示计划，不运行模型。</li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/GPU_READY.json">GPU Ready 实际回执</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/freeze.json">216个输入冻结清单</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cross-family-transfer-toy-v1-2026-10-26/runs/llama31-r01/local-verification.json">本地收回后逐项复核</a>。</li>
+</ul>
+<h2 id="_2">已验证的准备工作</h2>
+<ol>
+<li>官方目标为 <code>meta-llama/Llama-3.1-8B-Instruct@0e9e39f249a16976918f6564b8830bc894c89659</code>，位于服务器 <code>/workspace/models/Llama-3.1-8B-Instruct-0e9e39f2</code>。四个权重分片共16,060,556,376字节，完整官方 SHA-256 全部匹配；官方小文件及权重索引覆盖亦通过。见<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cross-family-transfer-toy-v1-2026-10-26/assets/download-r02/receipt.json">下载完成回执</a>。</li>
+<li>最终准备重新核验源模型11个文件与目标10个必需文件的官方身份；没有以3.0、量化或适配器版本替代。</li>
+<li>四个 CPU 测试文件全部通过，包含真正的 CPU 微型随机 LLaMA 钩子、生成和评分集成测试，以及阶段门负例；这些是实现验证，不是正式模型效果。</li>
+<li>两端真实 tokenizer 在320文档、11,777个共同文字前缀位置对齐；128条对比输入和固定1,400题 Benchmark 上下文检查通过。</li>
+<li>HumanEval 沙箱5项控制测试与59个离线评分任务加载通过。128份历史源校准、固定题库和相关代码进入冻结清单。本地收回后再次逐项核验216个文件哈希及 CPU 日志。</li>
+</ol>
+<p>冻结清单 SHA-256：<code>53aa00e02c10216309af74ae0a330ec62f59e6b22da7fd6b66360a93fb3afa03</code>。</p>
+<h2 id="eta">实际耗时与 ETA 校对</h2>
+<ul>
+<li>第一次官方下载记录开始于14:11:46，全部文件校验完成于14:59:25，墙钟约47分39秒；包含路线试验和续传切换，已有 partial 没有重新下载。</li>
+<li>最后一轮 CPU 准备：15:01:43至15:02:35，实测51.43秒。</li>
+<li>前次给出的下载 ETA 为15:05–15:15；实际提前约6–16分钟。GPU实验尚未运行，因此没有实测实验 ETA。</li>
+</ul>
+<h2 id="_3">后续运行边界</h2>
+<p>启动仍需本次正式 GPU 运行授权。第一阶段 <code>true_D_match</code> 完成固定四项评测并通过合同中的 PASS 门，第二阶段 <code>true_S_recipe</code> 才开放；技术失败或结论不足不能被当作通过，也不能通过改题目、剂量或评分绕过。</p>
+<p>收尾时两张 H20 均有其他任务占用（每卡约10,121MiB），未被本任务停止或抢占。GPU Ready 表示准备完成，不表示显卡已经为本轮预留。运行器仍会核验无其他活动计算进程，才执行未来获准的任务。本次没有恢复根因实验或修改静态权重。</p></main></html>

@@ -1,0 +1,196 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>第13层读取干预：计划、代码与结果复核</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="13">第13层读取干预：计划、代码与结果复核</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>docs/cache-local-readout-result-review-2026-11-01.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-local-readout-result-review-2026-11-01.zh-CN.md">固定提交原件</a>；SHA-256：<code>36cce9b8e68ea954e6ed261e2d2b69bc1df91d8e49ff4b21b28d70dfc8857779</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="13_1">第13层读取干预：计划、代码与结果复核</h1>
+<h2 id="material-passport">Material Passport</h2>
+<p>日期：2026-11-01。Verification Status：<strong>ANALYZED</strong>。性质：对已完成实验的源码、Git记录、冻结身份及数值汇总复核；非模型独立复现。采用 Academic Research Suite 验证流程、Ponytail full代码审查；Serena不可用，直接阅读源码。无新增模型前向、GPU或生成。远端大张量未重新下载/复算，真实模型验收依据原运行的收据、记录与代码断言，不冒称本次重新运行。</p>
+<p>固定审查版本：<a href="https://github.com/yuxiexiong/acupuncture/commit/2457a110489e5b1776f7a65b55608dcfd330a0ad"><code>2457a110489e5b1776f7a65b55608dcfd330a0ad</code></a>；运行代码提交 <code>227cd542e5cd88976fdcf46a4631b9dff5f276ed</code>；我们交付的r2提交 <code>f05ba374a2a85df4c388c0b2d72bca7f64f4f403</code>。来源为实验目录 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-local-readout-causal-v1-2026-11-01/CONTRACT.zh-CN.md">合同</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-local-readout-causal-v1-2026-11-01/DECISIONS.zh-CN.md">决策日志</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-local-readout-causal-v1-2026-11-01/REPORT.zh-CN.md">结果报告</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-local-readout-causal-v1-2026-11-01/analysis/readouts-r01.json">原汇总</a>及逐输入记录。本次派生核对数值见<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-local-readout-result-review-2026-11-01.json">复核JSON</a>。原冻结材料不改写。</p>
+<h2 id="1">1. 总判断</h2>
+<p><strong>实验已完成，核心操作与我们要做的单层实验一致；原生背景下该项的单独删除效果很小。</strong> 它是对具体候选的有效约束，不足以断言第13层不承载针效应，更不能否定整个S/F机制。</p>
+<p>执行采用开跑前修订的r3，不是逐字照搬r2。两版研究对象和132正式+32预检评分矩阵相同；精度、缓存对象初始化和描述性分档有明示调整。报告中“零处竞争者切换”与原记录不符；“不是承载点”“没有可分辨作用”“与随机不可区分”也应改为限定本操作的表述。</p>
+<h2 id="2">2. 跑的是不是我们设计的操作</h2>
+<table>
+<thead>
+<tr>
+<th>设计要求</th>
+<th>实际代码与证据</th>
+<th>判断</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>同针、同输入、同历史；不重新形成前缀</td>
+<td>Qwen3.5-4B revision 851bf6e8、BF16/eager；加载原bridge的C/T缓存与12输入，验证原收据哈希和prompt token哈希</td>
+<td>一致</td>
+</tr>
+<tr>
+<td>M统一浅层、N原生后半段</td>
+<td><code>build_y</code>构造C浅层+T深层；<code>Entry</code>只在N的decoder13入口写入归档x_T</td>
+<td>一致，原生身份限评分后半段重放</td>
+</tr>
+<tr>
+<td>每个背景使用自己的读系数差</td>
+<td>M由旧C/Y_T驱动计算；N先测R及只换第13层F_C的shadow，<code>four_cells</code>固定g/β计算I/J</td>
+<td>一致，未把M的项直接挪到N</td>
+</tr>
+<tr>
+<td>只改第13层当前core输出</td>
+<td><code>Patch._wrap</code>仅命中layer13且seq_len=1；真实内核执行后返回修改core和原s_new对象</td>
+<td>一致，没有改成缓存清零或继续生成</td>
+</tr>
+<tr>
+<td>后续计算自然响应，格间独立</td>
+<td><code>bridge.score</code>每次深拷贝缓存；本层门控/归一化/out_proj和后续层继续；输出记录包含layer13后级和最终残差</td>
+<td>一致</td>
+</tr>
+<tr>
+<td>−I、−J和两个按头匹配I范数的随机参照</td>
+<td>两背景各五格，N另有影子格；种子按方案输入ID派生；两背景共享单位方向</td>
+<td>一致；两个方向仍不构成随机总体零分布</td>
+</tr>
+<tr>
+<td>端点与干预验收</td>
+<td>24个正式M/N端点logits哈希与原bridge匹配；原记录中的s_new及补丁前core哈希在各格一致，内核命中一次</td>
+<td>Git可用证据通过；原张量未独立复验</td>
+</tr>
+</tbody>
+</table>
+<p>审阅调用链包括 <code>local_readout.py → combo.load_old → bridge.score/Recorder</code>、<code>lr_core.py</code>四格与补丁算术、<code>lr_analysis.py</code>分档及汇总。没有发现将所需干预对象换成别的对象的实现错误。</p>
+<h3 id="r2r3">r2到r3的实际变化</h3>
+<ol>
+<li>增加冻结的5%中位比例及5/6情景分档。这是描述规则，不是统计检验；不改变干预，但会压缩结果差异，必须同时看逐情景值。</li>
+<li>补丁减法/加回改为FP64后一次转回BF16；随机方向仍在CPU FP32抽样、改用FP64按头归一化。删除对象不变，实际误差记录仍需核查。</li>
+<li>每worker增加一次单token模板前向，获得缓存对象后覆盖全部缓存内容；单列成本。它不形成研究前缀，但不是“完全没有其他模型调用”。</li>
+<li>N的“关闭记录器参考”仍保留必需的入口钩子；否则就不能重放原生后半段。这一处理与检验目的相符。</li>
+<li>新增局部三分量范数/余弦，来自已有四格，不新增评分；冻结前已见的M余弦明确登记。</li>
+</ol>
+<p>授权文件记录另一会话的用户运行指令；本次不据此启动任何后续实验。</p>
+<h2 id="3">3. 完成状态与独立复算范围</h2>
+<ul>
+<li>正式运行核验时间：<strong>北京时间2026-11-01 12:16:07</strong>。两worker各6输入，退出码0、收据completed。</li>
+<li>预检32评分、正式132评分；前缀形成均0。模板前向预检1次、正式2次，总计<strong>164评分+3模板前向</strong>。正式两个worker各约43秒，不能将墙钟直接当作合计GPU时间。</li>
+<li>冻结清单122文件均与本次取到的Git文件sha256一致；freeze自身sha为 <code>099f1e4e42538397a77dadb590063578d50c08e45066e52b5e37ae4fb817cebf</code>。</li>
+<li>两个阶段共14份原始记录的sha、授权哈希及其前置证据哈希核对通过；正式全部12输入/132格存在，没有选择性丢弃。</li>
+<li>正式24个参考logits哈希与bridge记录匹配。原运行还断言了驱动/残差逐位重放；此项本次审阅实现与成功记录，没有重新加载服务器张量。</li>
+<li>从逐输入JSON独立重算差值、情景均值、赢家变化、EOS变化；再用原<code>lr_analysis.analyse</code>重算，产物与发布的汇总JSON完全一致。后者是分析复算，不是模型复现。</li>
+<li>正式实际删除相对L2误差：M约0.250%–1.077%，N约0.202%–2.618%，均低于预定5%。原报告“0.25%–2%”不是完整范围，但不改变通过结论。按头最大误差比整体误差大，合同验收的是整体L2，不冒称每头都低于5%。</li>
+</ul>
+<h2 id="4">4. 结果具体说明什么</h2>
+<p>δ=D(参考)−D(删除后)；正值表示删除操作降低停止词相对最强非停止词的优势。下表为每情景两事实的均值范围。</p>
+<table>
+<thead>
+<tr>
+<th>背景/操作</th>
+<th style="text-align: right;">情景δ范围（logit）</th>
+<th style="text-align: right;">相对针效应的绝对比例中位数</th>
+<th>其他事实</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>M：删I</td>
+<td style="text-align: right;">0.15625–0.59375</td>
+<td style="text-align: right;">2.49%</td>
+<td>6/6同向；只在2/6超过本输入配对的两个随机参照；原生性/方向特异性不可由此建立</td>
+</tr>
+<tr>
+<td>N：删I</td>
+<td style="text-align: right;">−0.03125–0.03125</td>
+<td style="text-align: right;">0.163%</td>
+<td>正2/6、负4/6；原生针D差约17.53–19.97；8个首步停止均未翻转</td>
+</tr>
+<tr>
+<td>M：删J</td>
+<td style="text-align: right;">0.09375–1.5625</td>
+<td style="text-align: right;">4.05%</td>
+<td>中位数被归为弱，但VRD03约9.24%、VAR04约7.33%，不能说每情景都很小</td>
+</tr>
+<tr>
+<td>N：删J</td>
+<td style="text-align: right;">−0.125–0.1875</td>
+<td style="text-align: right;">0.436%</td>
+<td>8个首步停止仍未翻转；没有匹配J的随机总体参照</td>
+</tr>
+</tbody>
+</table>
+<p>逐输入N删I只有−0.0625、0、+0.0625三个主读数，落在该路线输出量化的台阶尺度。准确结论是“在本数值路线、输入及其他历史固定条件下，删除该项只观察到极小作用”，而不是数学上证明真实作用为零。</p>
+<p><strong>新增加的一段认识：</strong> 第13层有可测的内部交互，不代表它在这一评分步上能单独推动大的原生停止分数变化。此前“找到一个内部交互”到“它解释大行为变化”的跃迁没有得到本轮支持。</p>
+<p>这也没有推翻既有深层缓存/SF联合移植结果：那些操作更改多层历史；本轮只是一个层、一个评分时刻的输出边删除，并保留该层新状态与其他有针历史。二者的估计对象不同。</p>
+<h3 id="41">4.1 对精度措辞的补充检查（事后、无新模型调用）</h3>
+<p>原记录已保存部分token的FP64输出端重投影值。本次对同一固定词对复算，N删I逐输入变化约−0.03486至+0.04433 logit，情景均值约−0.01901至+0.03003。量级仍很小，支持上述弱作用判断；但不能再笼统写成“任何更细读数都不可分辨”。</p>
+<p>这不是FP64重跑整台模型，也不是全词表动态D：它沿用已产生的最终残差，对固定词对使用已有FP64读数。不得替换冻结主读数或据此重新选择分档。</p>
+<h2 id="5">5. 报告中需要更正的地方</h2>
+<h3 id="51">5.1 明确事实错误：零符号分歧不等于零赢家切换</h3>
+<p><code>lr_analysis.py</code>计算的是 <code>(δD)*(δL)&lt;0</code> 是否成立，名称是 <code>D_L_sign_disagree</code>，不是赢家身份切换数。原报告§3将“全部同号”进一步写成“0处竞争者切换”，这一步不成立。</p>
+<p>实际M背景最强非停止词变化有<strong>9格</strong>：删I 2格、删J 5格、Q0 2格；N背景为0格。M删I的两格为VRD03-f0/f1，非停止赢家从248068变为95872。删J还涉及VAR03-f0/f1、VRL04-f0。停止赢家没有变化。</p>
+<p>这说明动态D和固定词对L方向可一致，但增量大小仍受其他词成为赢家影响。M的VRD03删J就是例子：动态D的情景变化1.5625，不应当作同一固定竞争词被压低同样多。原分档汇总计算没有因此算错，错误位于报告对汇总指标的文字解释。</p>
+<h3 id="52">5.2 结论范围</h3>
+<ul>
+<li>“第13层不是承载点”改为：<strong>指定评分步、第13层该输出项的单独删除，在其他历史保持有针状态时，对原生停止竞争作用很小。</strong> 不排除该层此前的形成作用、其他计算、冗余或不同背景。</li>
+<li>“假设被否证”只能针对“此删除操作应显著改变原生停止竞争”的加强版本；原合同没有定量效应预测，不能由5%描述线宣告整个机制被否证。</li>
+<li>“与随机不可区分”改为：<strong>没有满足超过这两个随机参照的预定规则</strong>。两个抽样不足以作总体等效/不可区分检验；M本身12输入删I均同向，这个事实应保留。</li>
+<li>“不作背景依赖结论”是r3分档规则的输出，不是证明两个背景相同。M/N读数确有描述性差别，但I本身与后续背景同时变化，且未达到预定强作用标准，不能独立归因浅层放大。</li>
+<li>cos(I,A_S+A_F)仅描述这两个向量的夹角。正余弦不能排除A_S与A_F内部抵消、子空间抵消或后续非线性。原报告的“无core内抵消”应限定为“没有观察到I与A_S+A_F总向量反向”。</li>
+</ul>
+<h3 id="53">5.3 分档概率的边界</h3>
+<p>r3用二项尾概率13/729≈0.0178说明5/6的直觉，除了每情景三方向可交换，还需要情景事件满足相应独立/联合分布条件。这里I不是随机抽样，六情景也共享模型及构造来源，未建立这些统计前提。因此该数不是有效实验p值；原文“不写显著”的限制必须遵守。该问题不改变本轮按既定描述规则均为弱的算术结果。</p>
+<h2 id="6">6. 接下来建议</h2>
+<p>先从这一轮已经保存的layer13 gated-norm、out_proj、decoder出口和最终残差，描述删除量在模块输出前是否已变小，还是后续计算之后才对目标词竞争影响小。此检查优先复用旧张量，不需要重新形成或先加GPU；范数/轨迹只能提供线索，不能单独命名因果抵消。</p>
+<p>之后才决定是否值得写联合多层或其他计算项的干预方案。若做多层，必须明确原轨迹预计算扣除与干预后重算扣除的区别，并提出可失败的预测；当前负结果没有自动指定答案。也不宜现在把单层小效应复制到十根针上。</p>
+<h2 id="7-1111">7. 统计与方法谬误检查（11/11）</h2>
+<table>
+<thead>
+<tr>
+<th>检查</th>
+<th>本次处理</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>分组反转</td>
+<td>M/N、六情景、12输入分别保留，不用合并平均掩盖N异号</td>
+</tr>
+<tr>
+<td>生态推断</td>
+<td>情景均值与逐输入范围分列；不能由中位弱宣称每条都弱</td>
+</tr>
+<tr>
+<td>选择偏差</td>
+<td>原六情景与第13层均已参与选点，明确探索身份</td>
+</tr>
+<tr>
+<td>条件化/混合背景</td>
+<td>M与N有明示操作语义，不视作控制了所有混杂的自然路径</td>
+</tr>
+<tr>
+<td>基率忽略</td>
+<td>不作停止总体发生率或诊断率推断</td>
+</tr>
+<tr>
+<td>回归均值</td>
+<td>不以选出的异常点和再测改善作泛化主张</td>
+</tr>
+<tr>
+<td>幸存者偏差</td>
+<td>正式12输入完整，数值不可判格为0；未筛掉负向结果</td>
+</tr>
+<tr>
+<td>多重寻找</td>
+<td>本轮不按结果扩层/换针；0.0178不作为显著性证据</td>
+</tr>
+<tr>
+<td>分析自由度</td>
+<td>r3与冻结时间先于运行；事后FP64检查单列，不替换主判据</td>
+</tr>
+<tr>
+<td>相关到因果</td>
+<td>删除操作有效不等于全部自然承载机制；局部余弦不解释终点因果</td>
+</tr>
+<tr>
+<td>反向因果</td>
+<td>操作先于输出；不能反推入口最初怎样形成所有状态变化</td>
+</tr>
+</tbody>
+</table>
+<p>本次复核不新增实验计划，不修改冻结合同/代码/原始结果；结论为<strong>操作一致性与Git记录数值复核通过，报告有明确文字错误和过强解释需要纠正</strong>。</p></main></html>

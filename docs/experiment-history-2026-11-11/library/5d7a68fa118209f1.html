@@ -1,0 +1,149 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>WSP-VLM 自主诊断与修补：方案—代码能力核对</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="wsp-vlm">WSP-VLM 自主诊断与修补：方案—代码能力核对</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>docs/wsp-vlm-ai-tools-audit-2026-11-05.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/docs/wsp-vlm-ai-tools-audit-2026-11-05.zh-CN.md">固定提交原件</a>；SHA-256：<code>5d7a68fa118209f112821469095d17c63ee298e1a77587f0920afbeccd4ded90</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="wsp-vlm_1">WSP-VLM 自主诊断与修补：方案—代码能力核对</h1>
+<h2 id="material-passport">Material Passport</h2>
+<ul>
+<li>日期：2026-11-05；身份：静态代码/准备度核对，不是实验结果或新执行授权。</li>
+<li>目标：按原作者“人定目标和边界，AI提出诊断、写分析/编辑代码，工具执行并返回反馈”的分工，检查当前VLM能否闭环。</li>
+<li>当前方案：<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/docs/wsp-vlm-ai-repair-plan-v2-2026-11-05.zh-CN.md">总方案v2</a>。本次不改其任务、数据、指标、预算或方法边界。</li>
+<li>核对方式：读取方案、源码、既有回执；用标准库计算文件哈希；未导入模型代码，未加载权重/处理器，未调用研究者模型或目标模型，未启动旧服务和远程任务。</li>
+<li>来源快照：<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/docs/wsp-vlm-ai-tools-audit-2026-11-05.sources.json">文件哈希与范围</a>。关键五份方案/代码与GitHub <code>e8ad1fbf8dcd54ae1c1e9d714a4598814958806d</code> 的blob逐一相符；v5六份代码与既有source_hashes全部相符。没有重新审计整仓库或当前服务器状态。</li>
+</ul>
+<h2 id="1">1. 结论</h2>
+<p><strong>方案允许，当前VLM代码尚不能完成这个闭环。仓库已有可复用的开放式数学研究控制器，不需要从零重写；但它还没有接上Qwen3-VL的图像输入、内部测量和补丁执行。</strong></p>
+<p>当前VLM原版运行链是：固定P0/D/H队列 → 固定原版模型 → 保存回答 → B/C评分。诊断登记只验证一段描述与D文件hash；不会自动调用AI诊断，更不会据此选神经元或修改权重。v5没有“两层”白名单，原因是它没有编辑功能，而不是已经支持任意编辑。</p>
+<p>“会自主选点”的关键不是再写一个更复杂的固定排名算法，而是让AI能够读取证据、自己写排名/选择/修改代码，并让下一轮决策依赖真实反馈。</p>
+<h2 id="2">2. 四套容易混淆的现成资产</h2>
+<table>
+<thead>
+<tr>
+<th>资产</th>
+<th>代码实际做什么</th>
+<th>能否作为本项目自主修补入口</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VLM v5筛查运行器</td>
+<td>固定原版Qwen3-VL、图文处理、生成、输出记录与预算；只接受P0/D/H</td>
+<td><strong>不能直接用</strong>。适合复用正确输入、生成、环境校验和记录部件</td>
+</tr>
+<tr>
+<td>数学 <code>engineering-r2/controller.py</code> ＋ broker/kernel</td>
+<td>AI返回自己写的 <code>python</code> 或 <code>forward</code> 请求；执行结果作为下一轮输入，有会话与原始记录</td>
+<td><strong>最接近所需分工，可适配</strong>；当前路径、模型、工具和停止逻辑仍是旧数学任务</td>
+</tr>
+<tr>
+<td><code>author_actions.py</code> 作者轨迹重放器</td>
+<td>按公开日志的固定行取代码/请求并执行，禁止改科学代码</td>
+<td><strong>不能作为自主搜索入口</strong>。它是重放现成研究路线，不会因新反馈重新想方法</td>
+</tr>
+<tr>
+<td>编程WCP的editor/protocol/model_interface</td>
+<td>AI只给错误打标签；脚本固定排名、选两层和8/32通道，再做列增益</td>
+<td><strong>不能原样移植</strong>。会重新引入用户明确反对的固定配方；只能择取通用记录/评分思路</td>
+</tr>
+</tbody>
+</table>
+<p>直接证据：</p>
+<ul>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-channel-prep-v5-2026-11-05/runner.py">v5 runner</a>：L21–29固定队列，L142–143固定原版加载，L154–181仅生成回调；L217–226只检查诊断登记。L195禁止同任务/阶段重复尝试，适合一次筛查，不是迭代候选调度器。</li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-process-reproduction-v1-2026-11-03/engineering-r2/controller.py">开放数学controller</a>：L19–34解析AI代码/前向请求，L192–240把结果交回AI继续；L226–233仍要求50次成功前向才能正常结束，不能直接继承到新方案。</li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-process-reproduction-v1-2026-11-03/author-code-reuse-r1/adapter/author_actions.py">轨迹重放器</a>：L61–94从固定日志行派发请求，与重新搜索不同。</li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-coding-painpoint-v1-2026-11-03/orchestration/editor.py">WCP editor</a>：L53–62明确要求只标注、不得推断神经元/编辑权重；<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-coding-painpoint-v1-2026-11-03/orchestration/protocol.py">protocol</a>L40–55固定激活差排名、前两层和8/32通道；<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-coding-painpoint-v1-2026-11-03/model_interface.py">model_interface</a>L16–44限制通道数、增益[-1,1]及MLP down_proj。</li>
+</ul>
+<h2 id="3-ai">3. 按AI实际需要的动作列缺口</h2>
+<p>下表的接口名是能力说明，不代表这些VLM接口已经实现。可合并实现，不要求每行单建一套服务。</p>
+<table>
+<thead>
+<tr>
+<th>AI要做的动作</th>
+<th>已有可复用部分</th>
+<th>VLM还缺什么</th>
+<th>准备完成应能证明什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>看失败、成功和原图</strong></td>
+<td>v3图文队列与标签；v5保存完整回答、token、停止原因；B/C评分器</td>
+<td>开发资料导出/查询：按来源组关联输入图、处理器预览、原回答、正确标签和各提示结果；受控图像查看或多模态反馈入口；新失败分类自由文本</td>
+<td>AI能检查成功与失败对照、提出新分类；不只拿到总分或人选的少数例子；目标VLM输入仍不包含金标准</td>
+</tr>
+<tr>
+<td><strong>持续提出下一步操作</strong></td>
+<td>数学controller有持久会话、代码块解析、反馈和重连记录；旧工程回执记4轮、1次前向集成通过</td>
+<td>新VLM会话配置和任务说明；接入图像/Unicode反馈；把旧50-pass与轮次提醒改为已冻结资源/结束规则；选择当前研究者模型和锁定版本</td>
+<td>同一个研究者会话能根据上一步结果改变操作；没有预排的候选清单、固定轮数救分或强制跑满50次</td>
+</tr>
+<tr>
+<td><strong>看架构、权重并自己挑点</strong></td>
+<td>数学CPU kernel提供NAMES/load/load_original及持久Python，允许AI写任意分析代码</td>
+<td>Qwen3-VL分片safetensors索引、模块—参数目录、shape/dtype/绑定关系；保留中文；按需读取与数据权限适配</td>
+<td>AI能自己计算分数、排序、选标量/列/头/模块；不要求系统提供一个固定“选神经元”算法</td>
+</tr>
+<tr>
+<td><strong>测内部计算、验证解释</strong></td>
+<td>旧数学forward有teacher-forced、hidden_states、MLP输入、注意力读数</td>
+<td>VLM多模态teacher-forced/输出评分及按需测量：视觉编码、融合、解码层；图像patch/token、文本token、生成位置对齐；临时干预清理和记录</td>
+<td>返回的张量能对应准确模块/输入位置；不默默把所有测量映射到最后提示token或仅文本MLP。临时激活干预与静态补丁分开</td>
+</tr>
+<tr>
+<td><strong>自己计算并提交修改</strong></td>
+<td>kernel的save_edit/drop_edit与观察者snapshot：形状/有限数/实际dtype变化/hash校验</td>
+<td>分片权重读写；通用参数修改；绑定权重一致性；候选父ID、相对W0有效变化、临时/最终标量上限；原版只读；按新合同更新旧禁改列表</td>
+<td>同预算下可修改不同层和模块，计算公式由AI代码产生；越界/非法值拒绝，不把不熟悉的算子拒绝为“非既定配方”</td>
+</tr>
+<tr>
+<td><strong>测新补丁是否真的更好</strong></td>
+<td>v5真实图文生成路径；B/C逐题评分；旧数学有原版/编辑版配对比较</td>
+<td><code>evaluate(candidate_id, allowed_items, mode)</code> 接口；原版/父候选/新候选对齐；跨候选修对/改错及保护项；正式开发全包与局部诊断分开</td>
+<td>回传实际回答和成对变化，不只总分；输入/模板/评分保持匹配；局部挑题收益不能直接更新最佳候选</td>
+</tr>
+<tr>
+<td><strong>保留、回退、换解释、继续</strong></td>
+<td>旧kernel可撤销单张量；broker有动作ID、持久日志和不确定请求核账</td>
+<td>完整候选快照/父关系及原版重建；清理全部hook/cache；当前试验与最佳候选分离；统一动作计账</td>
+<td>失败后真正回到指定hash；重复请求不重复执行；下一轮可以改支持或方法，不能仅遍历预写增益</td>
+</tr>
+<tr>
+<td><strong>冻结并独立确认</strong></td>
+<td>旧snapshot有数值/hash记录；已有D/H身份意识与独立来源分组</td>
+<td>新确认集及只对观察者开放的执行入口；冻结所有比较配置；补丁重载与无hook普通推理；搜索费用/测试预算和保护界限</td>
+<td>AI不能读取封存题/答案或终验反馈再选补丁；冻结产物独立可重建，不依赖研究者会话</td>
+</tr>
+</tbody>
+</table>
+<p>其中内部求导/归因属于方案允许但当前未提供的可选诊断能力：旧kernel与Reader默认关闭梯度。实现时应明确区分“请求一次受计账诊断求导”和“训练更新目标权重”，不能因不支持求导就声称这类诊断已开放，也不必把所有高级诊断实现完才接通基本闭环。</p>
+<h2 id="4">4. 不能直接复用的具体假设</h2>
+<ol>
+<li><strong>权重文件格式不匹配。</strong> <a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-process-reproduction-v1-2026-11-03/author-code-reuse-r1/adapter/sandbox_kernel.py">旧kernel</a>L24/33和<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-process-reproduction-v1-2026-11-03/snapshot_edits.py">快照器</a>L33写死单个<code>model.safetensors</code>；当前VLM runner L134读取<code>model.safetensors.index.json</code>。必须支持分片映射，不是改一下模型名称就好。</li>
+<li><strong>模型与测量结构不匹配。</strong> <a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-process-reproduction-v1-2026-11-03/engineering-r2/forward_service.py">旧forward Reader</a>L245–287用纯文本AutoModelForCausalLM和Qwen3.5全注意力/GDN约定；当前Qwen3-VL输入带图像像素及网格信息。视觉、融合及其进入解码计算的具体位置须按固定版本源码映射，不能沿用旧文本层编号猜测；本次未据模型实例完成该模块映射。</li>
+<li><strong>原作者历史限制不等于当前合同。</strong> 旧kernel/snapshot固定排除最终norm、embedding/head，并禁止整张量常数缩放；新方案允许有依据的其他参数编辑。迁移须按当前合同处理：统一缩放整个网络/只改温度仍不算局部修复，但不能用旧过滤器悄悄缩窄已允许范围。实际稀疏总量上限在旧snapshot中只有计数，没有当前方案所需的强制上限。</li>
+<li><strong>研究者看不到图像。</strong> 数学controller L46–48禁用原生view_image等工具，editor_turn只通过文本stdin送提示；CPU kernel也只返回文本，L104还将非ASCII替换。不能以“目标VLM能看图”代替“研究者能看开发证据”。需要带权限和费用记录的开发图像入口，不开放整仓库/封存图像。</li>
+<li><strong>双卡及预算规则不匹配。</strong> <a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-process-reproduction-v1-2026-11-03/author-code-reuse-r1/adapter/broker.py">旧broker</a>L125–145为<code>both</code>寻找两张卡；当前单卡串行安排不能照搬。比较可串行或复用严格同协议的已保存基线，但缓存身份必须绑定输入、模型、处理器和生成配置。搜索还需累计样本、实际文本/视觉token、失败、重载、CPU和研究者成本；原筛查12小时不包含这批搜索。</li>
+<li><strong>数据隔离尚未接入AI工具。</strong> 当前D/H文件和标签都在研究目录；runner的H登记门只控制运行顺序，不是研究者文件权限。将来kernel/图像接口只能看到允许的开发资料；新确认集及答案由观察者持有，不能把整个仓库挂进去。</li>
+<li><strong>旧暂停记录必须保留。</strong> <code>author-code-reuse-r1/PAUSED_BY_USER.json</code>仍写明数学含验收挂起、编程退出队列。复用源码不意味着重启旧任务；本次也没有清除暂停文件或调用其服务。</li>
+</ol>
+<h2 id="5">5. 最小补齐路径与验收要求</h2>
+<p>这是待办顺序，不是本次实施或运行指令。沿用一个新版本VLM工作目录；不修改历史数学/编程运行、也不破坏v5已验收筛查入口。</p>
+<ol>
+<li><strong>先把开发证据与动作接口接起来。</strong> 复用controller/broker的会话、动作ID和原始记录；增加允许开发组的图文访问，返回未经筛选的逐题反馈。受计账的“分析代码＋测量/评价请求”足够，不先造一个固定算法菜单。</li>
+<li><strong>接通权重工作区和VLM测量/评价。</strong> 适配分片、实际模块和图像/文本位置；接收AI计算的候选；复用v5处理器/生成与B/C评分，但候选运行使用新身份和新预算，不能绕过v5的“阶段不可重跑”保护。</li>
+<li><strong>补齐事务与隔离。</strong> 候选验证、提交/回滚、基线重建、实际BF16改动计数、计账、受控确认集权限。旧单矩阵保存只是部件，不是整个候选的原子提交。</li>
+<li><strong>先做无真实模型的协议验收，再分别安排真实工程验收与研究。</strong> 合成工具结果应驱动测试会话走两条不同动作路径；证明接口可接受不同模块、任意合法代码而不是固定排名。拒绝未知/越界参数、超预算、终验数据访问；验证回滚、hash、重复动作不重放、错误不当答错。此类模拟证明接线，不证明AI研究能力。真实小规模VLM前向/编辑/回滚/重载及真实研究者工具往返必须之后明确安排，不能用模拟代替。</li>
+</ol>
+<p>不需要现在先实现全网穷举、固定两层定位器或所有探针算法。要补的是“让AI提出的方法能被执行、测量并可靠反馈”的能力。高级测量可按真实诊断需要增加，未支持范围明列，不能把工具缺口当方法失败。</p>
+<p>S0原版64条P0仍是筛查的工程缺口，<strong>不是修补闭环的全部缺口</strong>。即使P0及B/C筛查全部通过，也只拿到了开发行为；不会自动获得修改/测试能力。修补前另缺研究者版本、搜索数值预算、保护界限、新确认数据及比较方法配置。当前无法根据静态文件保证这些工作的GPU耗时或搜索成功率，不报虚假的“完成百分比”。</p>
+<h2 id="6">6. 本次自查与结论边界</h2>
+<ul>
+<li>跟踪了实际调用链，不用文件名“editor/diagnosis”推断自主能力；特别区分开放数学controller、固定WCP标注器与作者重放器。</li>
+<li>检查了原版加载、候选接口、分片、测量范围、图像反馈、Unicode、停止/预算及数据权限，避免只移除“两层”文字就宣布完成。</li>
+<li>旧4轮/1前向工程回执只证明旧链路历史集成；v5已有6项合成测试只证明进程/记账，不是VLM编辑验收。没有重新执行这些测试或据此声明实时可用。</li>
+<li>当前方案已经允许自由诊断和选点，本次不重新改任务或阈值；清单中的接口与验收是实现缺口，不提供人类预定的科学配方。</li>
+<li>本轮没有新增实验设计，沿用v2的C01–C14自查；复核与本次最相关的C03资产、C05操作、C11工程/科学失败、C12成本、C13身份，均按“静态能力／历史回执／待实现／待运行”分开报告。</li>
+<li>审计只新增本文、来源哈希和目录入口。没有修改研究代码、数据、权重、环境、暂停状态或任何运行配置。</li>
+</ul>
+<p><strong>最终判断：已有支撑部件，尚无可运行的VLM自主修补闭环。优先复用开放数学控制器与VLM原版后端，补齐图文证据、内部测量、通用编辑及候选评价之间的连接；不要移植WCP固定选点配方。</strong></p></main></html>

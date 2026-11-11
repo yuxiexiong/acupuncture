@@ -1,0 +1,100 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>v3 设计与实现自查</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="v3">v3 设计与实现自查</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/wsp-vlm-screen-ready-v3-2026-11-05/SELF_CHECK.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-screen-ready-v3-2026-11-05/SELF_CHECK.zh-CN.md">固定提交原件</a>；SHA-256：<code>665aff083daed0cfb0421424d0e2ff4d02fc8ff4d71abf5463e1005102133cc1</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="v3_1">v3 设计与实现自查</h1>
+<p>日期2026-11-05；依据<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/docs/experiment-design-self-check.zh-CN.md">仓库自查规范</a>v1。设计者本人审查，非独立审查。范围：B改写、输入包、评分统计及B/C运行器准备；无模型/processor加载和推理。</p>
+<h2 id="_1">设计卡与版本变化</h2>
+<ul>
+<li>主线：研究者AI依据反馈定位并以稀疏权重修补VLM具体失败。此轮补齐行为筛查的输入和测量工程，不替换为一个低分排行榜。</li>
+<li>新增认识/产物：292条预冻结等义改写、1,168条B请求及gold、按来源组的B统计和带阶段记录的B/C运行代码。无新增模型能力结论。</li>
+<li>资产：v2固定B146及其哈希/D58H88；v1固定C160及模板、评分；v2配对统计函数；官方固定processor配置与transformers5.20.2源码。</li>
+<li>依据/反例：空间限定改变目标集合，非纯组合因果操作；42组答案相同、56组子集为0；C共享对象；目视标签和改写审查均非独立人审；所有真实模型测量仍缺失。</li>
+<li>操作：本次只写文本/代码、生成独立P0图、CPU检验。未来目标、revision、BF16、greedy128、像素预算均保持；补充固定SDPA、batch1、服务器已登记的软件目标版本，尚未验收其真实可用性。没有激活/hook/权重操作。</li>
+<li>估计对象：B全部计数正确率减子集计数正确率；C原图通常减反事实图通常。主统计使用来源组，不使用请求条数；B n=88，C n=96。</li>
+<li>判读/退出：沿用15pp/20%/70%、Holm固定三项、工程5%等规则；阳性只进入诊断候选，阴性/未决可以结束，不扩大样本救假设。</li>
+<li>成本：本次GPU与目标模型调用0；未来B/C共7,568正式、64工程、256基础设施恢复预留、12GPU小时总界。运行器不能替代调度器硬超时。已有数据准备复用，不自动下载模型。</li>
+</ul>
+<p>对比v2：未改变146组、分层/划分、答案、C文本、效果门槛和WSP定位自由度。新增加B的T1、B统计、独立工程样例与运行路径；P0图不进入B/C科学数据，也不当作A已准备。等义改写采用语法重写和显式视角保留，不添加目标区域/答案或强提示中的额外策略。所有文本在目标输出前固定。</p>
+<h2 id="c01c14">C01–C14</h2>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>判定、依据与边界</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C01 主线</td>
+<td>通过。README末段明确行为筛查→AI诊断→稀疏权重修补；本轮不替换总目标。</td>
+</tr>
+<tr>
+<td>C02 增量</td>
+<td>通过。补齐上一轮明确缺失的292改写、输入、B统计及运行器；不是重复验证来源组数量。</td>
+</tr>
+<tr>
+<td>C03 资产</td>
+<td>通过。复用v1/v2；源码/processor官方链接见README；固定模型缓存仍缺，未冒充现成模型环境。</td>
+</tr>
+<tr>
+<td>C04 假设</td>
+<td>通过。保留数值分布、共享对象、模板有限和非独立审核边界；不从假数据阳性推真实模型失效。</td>
+</tr>
+<tr>
+<td>C05 操作</td>
+<td>通过。仅外部输入变体；真实运行阶段写明固定模型、像素、会话、长度。无内部修补，层/剂量不适用。</td>
+</tr>
+<tr>
+<td>C06 路径</td>
+<td>通过。图像/类别固定但空间条件改变目标集合；B差异可能混合数值难度，明确非纯组合因果效应。</td>
+</tr>
+<tr>
+<td>C07 耦合</td>
+<td>不适用内部共享变量拼换；同来源全部模板/条件/顺序保持同集合，不拆来源组增n。</td>
+</tr>
+<tr>
+<td>C08 归因</td>
+<td>通过。错误模式仅作为行为线索；没有命名空间神经元、权重载体或信息丢失机制。</td>
+</tr>
+<tr>
+<td>C09 区分</td>
+<td>通过。合成全对判不优先、稳定差异判优先、T1无差异判未决、格式问题判工程失败；流程可失败。</td>
+</tr>
+<tr>
+<td>C10 指标</td>
+<td>通过。整体整数解析、截断计错、联合正确率、实际88分母；同答案42组不贡献特定忽略条件计数。</td>
+</tr>
+<tr>
+<td>C11 失败</td>
+<td>通过。基础设施失败停止并保留原文/异常；缺失不改分母；模型错答不自动重试。真实框架待验收明确分列。</td>
+</tr>
+<tr>
+<td>C12 成本</td>
+<td>通过。离线检查不import torch/transformers/HF hub；无模型下载/运行；未来程序累计计账并保留硬超时待办。</td>
+</tr>
+<tr>
+<td>C13 可信度</td>
+<td>通过且有限。改写/输入/选择/图像均有记录与hash；D/H阶段分离。审核看过H材料但未看模型输出，不声称所有材料未见。</td>
+</tr>
+<tr>
+<td>C14 累积</td>
+<td>通过。准备完才能获得有效行为反馈，反馈决定后续WSP诊断；不预先承诺补丁成功，不自动进入模型阶段。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_2">相关历史错误</h2>
+<p>E02：不把数学补丁的两层移植为VLM固定位置。E10：格式有效、答对与联合正确分开。E11：无探针硬淘汰，也不从读出高分推出稀疏可修。E16：工程失败与科学阴性分开。E21：本次未做新颖性查重，不声称新算法或领域首次。E22：来源组作样本，模板/顺序只作相关测量；C对象重合边界保留。E23：同助手审核、离线验收、真实模型验收和授权分开。E25：复用旧统计，不额外扩大科学对照；P0仅工程请求。其余关于缓存形成、补偿与中介拼接的条目不适用本次无内部干预准备，不能借此对缓存机制作结论。</p>
+<h2 id="_3">反方检查及处理</h2>
+<ol>
+<li><strong>改写无意改变左右/远近参照。</strong> 对全部292条复核；对象自身视角不替换为画面视角。<code>B-573506</code>保留到长颈鹿的距离比较；<code>B-1385</code>保留更远栏杆限定；代词先行词不清的草稿改回先说明视角再询问。逐条审核身份及特殊说明已保留。有限模板仍不能代表任意措辞。</li>
+<li><strong>同答案/零答案题使模式计数虚高。</strong> 不删样本追求差异；总分146组，模式仅104个不同答案组；按总数、子集数、差值、零/同答案分层。测试确认分母而非模板数。</li>
+<li><strong>只用会成功的假数据验收。</strong> 增加全对、变体无差异、格式错误、截断、基础设施异常、缺失/重复样例；失败分支必须与预期一致。合成输出不作为研究结果。</li>
+<li><strong>默认运行命令会意外加载模型。</strong> 默认只读冻结数据并验证图像，不导入模型框架；真实加载在显式执行函数内。离线测试断言相关模块未加载。运行器存在不等于当前获得执行授权。</li>
+<li><strong>跨题历史、元数据或gold泄漏。</strong> 每次创建单user消息，只含text/image；request_id不写入chat；gold独立；没有缓存前轮对话。未测真实chat template边界仍列模型端待办。</li>
+<li><strong>第128个token恰好EOS被误判截断，或时间中止被当正常短答案。</strong> 明确以EOS判断结束；到上限无EOS才是length；短序列无EOS为基础设施中止，测试覆盖边界。</li>
+<li><strong>P0通过就宣布真实推理可信。</strong> 64条只支持工程验收，要求另外保存缩放图审核、格式/截断、数值合理性和吞吐依据；假后端/CPU测试不能覆盖CUDA/processor真实行为。当前没有创建任何伪造验收通过文件。</li>
+<li><strong>H早于D诊断，或用新目录绕过预算。</strong> 运行器检查B/C两D完成、登记绑定D输出，阶段输出不覆盖，单run_root计账。真实操作仍须使用同一目录并保留时间记录，不能把文件字段当独立认证；硬件卡死的硬超时仍需部署层实现。</li>
+<li><strong>助手自查等于独立审核。</strong> 所有审查记录准确标同一助手，独立复核不冒领；用户本次授权的数据/代码准备不因此增加新的审批步骤。</li>
+</ol>
+<p>结论：本轮设计与数据/统计控制逻辑通过；12项新增离线测试及合成统计验收通过。真实processor/模型/设备工程尚未验收；无目标模型运行授权。再次检查C01/C02/C08/C14后，总目标和本轮实际产物一致，未通过降低主张至“输出会变化”绕过研究目的。</p></main></html>

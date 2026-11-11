@@ -1,0 +1,374 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DWB-01 合同 r01：缓冲供体效应能否由 t1 的一次局部写入承接</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="dwb-01-r01-t1">DWB-01 合同 r01：缓冲供体效应能否由 t1 的一次局部写入承接</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-donor-write-bridge-v1-2026-11-06/CONTRACT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-donor-write-bridge-v1-2026-11-06/CONTRACT.zh-CN.md">固定提交原件</a>；SHA-256：<code>0de5ee7ac868a32205d233f6c743b51c18b1f057b608a4cdd4cf819d1e0cf374</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="dwb-01-r01-t1_1">DWB-01 合同 r01：缓冲供体效应能否由 t1 的一次局部写入承接</h1>
+<p><strong>状态：已冻结（<code>freeze-r01.json</code>），未获运行授权、未运行；全部内容零 GPU，没有任何模型输出。</strong> 草案于 2026-11-06 撰写（<code>9d4ced3</code>）；用户"推进吧，同意"之后完成运行器、CPU 测试（6 项）、就绪检查与冻结。冻结时除本状态行外合同正文未改。上卡以用户"开始"为准。冻结后不改本文件；偏离记入 <code>DEVIATIONS.zh-CN.md</code>。同一助手撰写与实现，不是独立审查。规划见<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/experiment-plan-spf-stage-b-2026-11-06.zh-CN.md">阶段 B 规划 r02</a>；设计自查见 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-donor-write-bridge-v1-2026-11-06/DESIGN.zh-CN.md">DESIGN.zh-CN.md</a>。</p>
+<h2 id="1">1. 问题</h2>
+<p>两块已有证据还没有接上：</p>
+<ul>
+<li><strong>SPF-01</strong>：受针运行里换入供体的缓冲 V（q/k 用本输入干净运行的），完整回答跟随供体，净转移 0.896（N4146）、0.490（N1210）。</li>
+<li><strong>LVK-01 / SRU-01</strong>：受针运行上，只在 t1 把写入项的 v 换成"本输入干净 V 历史下的当步 v"并对 k 去偏移，完整回答大量恢复；由此产生的状态差经 t2 直接读取改变回答。</li>
+</ul>
+<p>本卡问三件事：</p>
+<ol>
+<li><strong>不持续保留整块供体缓冲，只让供体影响 t1 这一次写入，之后的完整回答是否仍然跟随供体。</strong></li>
+<li><strong>反过来，保留整块供体缓冲，但把 t1 这一次写入换回本输入的，跟随是否消失。</strong></li>
+<li><strong>把供体的受针形成的递推状态放进干净接收者，答案跟谁。</strong></li>
+</ol>
+<p>第 1、2 件把缓冲供体效应接到（或接不到）论文主链的写入端点。第 3 件区分"受针状态里选择还在而读不出"与"干净运行里答哪一条可以不靠深层递推状态"。</p>
+<p><strong>承诺范围。</strong> 只承诺"在这块开发面板、这些方向与这些操作下，供体跟随是否由 t1 的一次写入承接"。不承诺经 t2 直接读取传递（下一张卡）；不承诺这是自然路径；不解释原生停嘴；不承诺开发外、别的任务或别的模型成立。</p>
+<h2 id="2">2. 固定条件</h2>
+<p>与 SPF-01 相同：Qwen3.5-4B revision <code>851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a</code>，BF16/eager/batch 1/torch 原核，L0 形成干预、NA 布局、B1 窗口、−1 强度、冻结校准、解析器与停止 ID。面板：LVK 新面板 48 条、6 场景。方向：N4146 主要，N1210 第二方向，跑同样的臂，分别判读，不互相替代。G = 14 个深层 GDN 层。供体：同场景的其余全部输入（每个接收者 8 个或 5 个）。</p>
+<h2 id="3">3. 操作</h2>
+<p>每个场景内各形成一次干净缓存 C 与两个方向的受针缓存 T。除注明带钩子的臂外，全部是边界处的缓存替换。带钩子的臂只在 t1 这一步挂 LVK-01 的钩子，t2 起卸载，之后全部自然续写到停止或共 32 token。</p>
+<p><strong>t1 局部写入操作（原样复用 LVK-01 的 <code>LHook</code>）。</strong> 在 14 个 G 层，写入项 β·k·vᵀ 里的 v 换成"影子 v"：用本分支当步的输入、本分支缓冲的 q/k 通道、<strong>指定来源缓冲的 V 通道</strong>重算卷积得到。擦除项不动。k 可选去偏移（LVK 的 k1）。影子量从不写回缓冲。</p>
+<table>
+<thead>
+<tr>
+<th>臂</th>
+<th>接收缓存</th>
+<th>t1 写入项</th>
+<th>之后留在缓冲里的 V</th>
+<th>桥接 / 用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C0</td>
+<td>干净运行</td>
+<td>原生</td>
+<td>—</td>
+<td>前提；对 LVK-01 干净记录</td>
+</tr>
+<tr>
+<td>L00</td>
+<td>T</td>
+<td>原生</td>
+<td>受针</td>
+<td>前提；对 LVK-01 的 L00</td>
+</tr>
+<tr>
+<td>L11o</td>
+<td>T</td>
+<td>v 来自<strong>本输入</strong>干净 V 历史，k 去偏移</td>
+<td>受针</td>
+<td>前提；对 LVK-01 的 L11</td>
+</tr>
+<tr>
+<td><strong>L11d</strong></td>
+<td>T</td>
+<td>v 来自<strong>供体</strong>干净 V 历史，k 去偏移</td>
+<td>受针</td>
+<td><strong>纯局部形式</strong></td>
+</tr>
+<tr>
+<td>OO</td>
+<td>T + 本输入干净缓冲</td>
+<td>原生</td>
+<td>本输入</td>
+<td>参照；对 LVK-01 的 F</td>
+</tr>
+<tr>
+<td>DD</td>
+<td>T + 供体 V + 本输入干净 q/k</td>
+<td>原生</td>
+<td>供体</td>
+<td>参照；对 SPF-01 的同一臂</td>
+</tr>
+<tr>
+<td><strong>DO</strong></td>
+<td>同 OO</td>
+<td>v 来自供体干净 V 历史</td>
+<td>本输入</td>
+<td><strong>只让供体影响 t1 这一次写入</strong></td>
+</tr>
+<tr>
+<td><strong>OD</strong></td>
+<td>同 DD</td>
+<td>v 来自本输入干净 V 历史</td>
+<td>供体</td>
+<td><strong>保留供体缓冲，拿掉供体的 t1 写入</strong></td>
+</tr>
+<tr>
+<td><strong>CSTd</strong></td>
+<td>干净运行，深层递推状态 ← <strong>供体的受针运行</strong></td>
+<td>原生</td>
+<td>—</td>
+<td><strong>区分臂</strong>（缓存级，无钩子）</td>
+</tr>
+</tbody>
+</table>
+<p>2×2（q/k 都是本输入干净运行的）：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>之后留存的 V：本输入</th>
+<th>之后留存的 V：供体</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>t1 写入的 v：本输入</strong></td>
+<td>OO</td>
+<td>OD</td>
+</tr>
+<tr>
+<td><strong>t1 写入的 v：供体</strong></td>
+<td>DO</td>
+<td>DD</td>
+</tr>
+</tbody>
+</table>
+<p>同一行的两格在 t1 当步的全部计算按构造逐位相同（LVK-01 已核：卷积 V 通道的输出只进入递推内核）。这是工程闸门，不是发现。两格的差别只在 t1 之后 G 层卷积缓冲里留着谁的 V。</p>
+<h2 id="4">4. 读数</h2>
+<p>沿用 SPF-01 冻结的统计量与界值（<code>spf_core.py</code>，原样导入）：</p>
+<ul>
+<li>输出按自然完整回答分类为接收者列表的行号 0/1/2、"停止"或"其他"。</li>
+<li><strong>D_tr</strong>：对齐供体上，输出落在供体目标行的比例，减去同一行在不预测它的供体下的出现率。任何与供体无关的输出下恰为 0。</li>
+<li>区间：6 个场景重抽 10000 次的 95% 区间；配对差另报场景置换 p。</li>
+<li>界值 M = 0.25，三档：下界 ≥ M"成立"，上界 ≤ M"低于界值"，其余"不可判"。</li>
+<li>界值校核：各供体臂的构造零分布（接收者内打乱供体—输出对应，2000 次）97.5% 分位若达到 M，所有"成立"降为"不可判"。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>读数</th>
+<th>定义</th>
+<th>回答什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>REF</td>
+<td>D_tr(DD)</td>
+<td>要桥接的效应在本次运行里存在</td>
+</tr>
+<tr>
+<td><strong>SUF</strong></td>
+<td>D_tr(DO)</td>
+<td>一次供体写入是否足够</td>
+</tr>
+<tr>
+<td><strong>RET</strong></td>
+<td>D_tr(OD)</td>
+<td>没有供体的 t1 写入、只留供体缓冲是否足够</td>
+</tr>
+<tr>
+<td>NEC</td>
+<td>D_tr(DD) − D_tr(OD)，配对</td>
+<td>拿掉供体的 t1 写入是否去掉效应</td>
+</tr>
+<tr>
+<td><strong>LOC</strong></td>
+<td>D_tr(L11d)</td>
+<td>LVK 的 L11 端点换成供体的 v 是否让回答跟随供体</td>
+</tr>
+<tr>
+<td><strong>SRC</strong></td>
+<td>D_tr(CSTd)</td>
+<td>受针形成的状态是否仍带着可转移的选择</td>
+</tr>
+</tbody>
+</table>
+<p>另报不设门槛的比值 D_tr(DO)/D_tr(DD)、D_tr(L11d)/D_tr(DD)，各臂的开口率、答自己的比例与错答类型。</p>
+<h2 id="5-dwb_corepy-analysisrehearsal_outputtxt">5. 冻结判读（看任何新输出前写定；实现在 <code>dwb_core.py</code>；每个结局在合成数据上出现过也缺席过，见 <code>analysis/rehearsal_output.txt</code>）</h2>
+<p>每个方向分别判读。三个读法互相独立，一个不成立不影响另外两个。</p>
+<p><strong>前提。</strong> Y(C0) ≥ 0.90；Y(L00) ≤ 0.25；Y(OO) ≥ 0.75。纯局部形式另需 Y(L11o) ≥ 0.50。</p>
+<p><strong>读法一：2×2（取第一个满足的）</strong></p>
+<table>
+<thead>
+<tr>
+<th>结局</th>
+<th>条件</th>
+<th>允许写的句子（都带效应量、区间与比值）</th>
+<th>不允许写的句子</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>前提不成立</td>
+<td>前提任一不成立</td>
+<td>这次执行或这块面板不适用</td>
+<td>任何结论</td>
+</tr>
+<tr>
+<td>参照缺失</td>
+<td>REF 低于界值</td>
+<td>SPF-01 的供体 V 效应在本次运行里没有以这个量级出现</td>
+<td>效应不存在</td>
+</tr>
+<tr>
+<td>不可判</td>
+<td>REF 不可判，或其余组合</td>
+<td>报告数值</td>
+<td>"有趋势"</td>
+</tr>
+<tr>
+<td><strong>写入承担</strong></td>
+<td>SUF 成立、RET 低于界值、NEC 成立</td>
+<td>在这些条件下，供体跟随由 t1 的一次写入承接：只换这一次写入就出现，拿掉它就消失</td>
+<td>已接到 t2 直接读取；自然路径；全部效应</td>
+</tr>
+<tr>
+<td>两条路都通</td>
+<td>SUF 成立、RET 成立</td>
+<td>一次供体写入足够；只留供体缓冲、不要这次写入也足够</td>
+<td>效应由写入承担</td>
+</tr>
+<tr>
+<td>留存缓冲承担</td>
+<td>SUF 低于界值、RET 成立</td>
+<td>一次供体写入不够，效应来自之后留在缓冲里的供体 V。"一次指定写入足够"被否</td>
+<td>写入无关</td>
+</tr>
+<tr>
+<td>单独都不够</td>
+<td>SUF、RET 都低于界值</td>
+<td>写入与留存缓冲都要</td>
+<td>给机制命名</td>
+</tr>
+</tbody>
+</table>
+<p><strong>读法二：纯局部形式</strong></p>
+<table>
+<thead>
+<tr>
+<th>结局</th>
+<th>条件</th>
+<th>允许写</th>
+<th>不允许写</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>不可判（前提）</td>
+<td>基本前提或 Y(L11o) 不成立</td>
+<td>这个端点在本面板上不够好用</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>局部写入改答案</strong></td>
+<td>LOC 成立</td>
+<td>在原生受针运行上，不换任何缓冲，只把 t1 写入项的 v 换成供体 V 历史下的当步 v 并对 k 去偏移，完整回答跟随供体</td>
+<td>这是原生失败的路径；k 是地址</td>
+</tr>
+<tr>
+<td>局部写入不改答案</td>
+<td>LOC 低于界值</td>
+<td>这个端点带不动供体选择</td>
+<td>写入无关（读法一另判）</td>
+</tr>
+<tr>
+<td>不可判</td>
+<td>其余</td>
+<td>报告数值</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p><strong>读法三：区分臂</strong></p>
+<table>
+<thead>
+<tr>
+<th>结局</th>
+<th>条件</th>
+<th>允许写</th>
+<th>不允许写</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>受针状态仍带选择</strong></td>
+<td>SRC 成立</td>
+<td>供体的受针形成的递推状态放进干净运行，答案跟随供体：受针状态里仍带着可被干净运行读出的选择</td>
+<td>干预没有改变状态；受针运行里读不出的原因</td>
+</tr>
+<tr>
+<td><strong>不靠本输入的状态也答自己的</strong></td>
+<td>SRC 低于界值且答自己的比例 ≥ 0.75</td>
+<td>深层递推状态换成别的输入的受针状态后，干净运行仍答自己的：答哪一条可以不靠深层递推状态</td>
+<td>存在"第二个来源"在某处；受针状态里没有信息</td>
+</tr>
+<tr>
+<td>退化</td>
+<td>SRC 低于界值且答自己的比例 &lt; 0.75</td>
+<td>这种状态替换破坏了回答</td>
+<td>关于来源的结论</td>
+</tr>
+<tr>
+<td>不可判</td>
+<td>其余</td>
+<td>报告数值</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p>失败类型：读法里"低于界值"的预测落空属科学失败；"不可判"属没拿到结果；前提不成立若出自实现属合同执行失败。</p>
+<p><strong>看数据前登记的预期。</strong></p>
+<table>
+<thead>
+<tr>
+<th>预期</th>
+<th>档位</th>
+<th>依据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>REF 成立（两个方向）</td>
+<td>已有结果的重现</td>
+<td>SPF-01：0.896、0.490</td>
+</tr>
+<tr>
+<td>SUF 成立，比值 ≥ 0.75</td>
+<td>类比</td>
+<td>LVK-01：本输入的局部 v 复现整体 V 恢复效应的 87%–97%；供体的没测过</td>
+</tr>
+<tr>
+<td>RET 低于界值，NEC 成立</td>
+<td>类比，把握中等</td>
+<td>LVK-01：保留恢复过的 V 历史只有小幅调节</td>
+</tr>
+<tr>
+<td>LOC 成立，但低于 SUF</td>
+<td>类比，把握中等</td>
+<td>L11 本身在这块面板上不是满的（N4146 约 39/48）</td>
+</tr>
+<tr>
+<td>SRC</td>
+<td><strong>没有把握，略倾向"仍答自己的"</strong></td>
+<td>SPF-01 里本输入的受针状态放进干净运行仍答自己的；4B 冗余多（近邻：移除关键块后仍 0.94）</td>
+</tr>
+</tbody>
+</table>
+<h2 id="6">6. 之后与退出</h2>
+<ul>
+<li>本卡只有一个阶段，结束后回来判断，不自动续跑。</li>
+<li>读法一为"写入承担"或"两条路都通"，或读法二为"局部写入改答案"：下一张卡把供体写入端点接进 SRU 的 t2 直接读取，并按层限制（第 16–18 层对其余深层）。</li>
+<li>读法一为"留存缓冲承担""单独都不够"且读法二不成立：不写读取那张卡，"一次指定写入足够"这条简化解释到此为止，不扩大搜索范围。</li>
+<li>任何结局都不改界值、不加臂重跑。N1210 同口径报告，不替代主要方向。</li>
+</ul>
+<h2 id="7">7. 工程闸门（任一失败即停，记为合同执行失败，不是科学阴性）</h2>
+<ol>
+<li>面板与分词账本哈希；形成哈希与 LVK-01 一致。</li>
+<li>桥接（逐位：t1 的 bf16 logits、首 token、自然 token 序列、终止方式）：C0、L00、L11o、OO 分别对 LVK-01 的干净、L00、L11、F 记录，每个方向每个接收者各一次。DD 对 SPF-01 同一（接收者，供体）对的记录（首 token、自然 token 序列、终止方式；SPF-01 没存 logits）。</li>
+<li>结构恒等：DO 与 DD、OD 与 OO 的 t1 logits 逐位相同；t1 之后两者的缓存只允许 G 层卷积 V 通道的旧槽不同。</li>
+<li>钩子：只在 t1 挂；每个 G 层的卷积与内核各被调用一次；自定义更新对 FP64 公式的相对误差 ≤ 1e−5；影子量不写回；t2 起无钩子，核函数复原。</li>
+<li>缓存级的臂（OO、DD、CSTd）：与背景缓存相比只有声明的部件不同，被换入的切片逐位等于来源。</li>
+<li>CSTd 换入的递推状态确实被用到：其 t1 logits 与 C0 不同。</li>
+<li>源缓存哈希在全部臂跑完后不变。</li>
+<li>预检：NQ02 整场景、主要方向全部臂（174 条轨迹）。失败即停，允许一次有记录的修复重试。</li>
+<li>闸门只写对被检对象本身成立的关系。</li>
+</ol>
+<h2 id="8">8. 预算</h2>
+<p>3816 条自然轨迹，其中 2184 条在 t1 带钩子（<code>analysis/rehearsal_output.txt</code>）。SPF-01 实测 0.75–0.84 秒每条（无钩子）；带钩子的每条在每个 G 层多一到两次影子卷积，会慢一些，这里不外推。<strong>以本卡预检的实测单价为准：正式运行外推超过 2.5 小时即停下上报，不自行放宽。</strong> 单进程。只存记录，不存张量，存储 ≤ 2 GiB。</p>
+<h2 id="9">9. 本卡不回答的</h2>
+<ul>
+<li>供体写入之后，效应是否经 t2 的直接读取传递（下一张卡）。</li>
+<li>跟随的是位置、实体还是答案编号（留给新面板）。</li>
+<li>受针运行里为什么读不出状态里的选择，或另一条路在哪里。</li>
+<li>原生停嘴如何形成；别的任务、模型、施针层位。</li>
+<li>谁会因此改做法。</li>
+</ul></main></html>

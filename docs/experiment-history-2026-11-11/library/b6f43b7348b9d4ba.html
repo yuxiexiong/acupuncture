@@ -1,0 +1,56 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>reviewer-3：ICML 2026 主会完整模拟审稿</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="reviewer-3icml-2026">reviewer-3：ICML 2026 主会完整模拟审稿</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>docs/reviews/icml-v1.7-2026-11-08/reviewer-3/review.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/reviews/icml-v1.7-2026-11-08/reviewer-3/review.zh-CN.md">固定提交原件</a>；SHA-256：<code>b6f43b7348b9d4ba1ddc7aef8f2e66a4b683853d9a9fa33cfc105bf8bef6e3a8</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="reviewer-3icml-2026_1">reviewer-3：ICML 2026 主会完整模拟审稿</h1>
+<p><strong>作者侧 AI 模拟；不是正式会议审稿、真人专家意见或录用概率。</strong> 对象是当前 v1.7 中文研究工作稿，输入提交 <code>f5f5e683fb876cb00e5f8a6dcb2c641d47392dfc</code>，正文 SHA256 <code>d98209e028be18a5f6cdfb701155258b6a94851763c43a8e118c0a3353e21efa</code>。</p>
+<p>本评分仅映射已经锁定的 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/reviews/icml-v1.7-2026-11-08/reviewer-3/qualitative.zh-CN.md">阶段一定性报告</a>，其 SHA256 为 <code>6bf5ba39179fd50fc47cf53b020238ddd6ecc36ffaa2056e56b540cbdda6e1b6</code>。未修改该报告、未读取其他审稿人意见或分数。口径为共同输入保存的 <a href="https://icml.cc/Conferences/2026/ReviewerInstructions">ICML 2026 主会官方表单</a>，不使用 position paper 锚点。</p>
+<h2 id="summary">Summary</h2>
+<p>本文研究稀疏激活干预之后，历史来源、局部写入和状态读取怎样影响完整回答。作者先以已有多模型单针观察和跨规模能力损伤说明现象，再在 Qwen3.5-4B 的编号检索任务中区分停止、默认首列选择与供体定向选择。供体实验将不同 V 历史来源接到最后提示步的指定写入，并在下一生成步用 D/E 状态用途替换检验获得和撤回。DWC在六固定结构族的96个新基础情境上确认主方向的双向关注量级及自身恢复；第二方向同向但获得低于预设量级。随机扰动、反向状态移植和绑定重排给出特异性、信息删除与位置解释的边界。</p>
+<h2 id="strengths-and-weaknesses">Strengths and Weaknesses</h2>
+<h3 id="strengths">Strengths</h3>
+<ol>
+<li><strong>同端点的构造性因果联系具有实质内容。</strong> DWB→DWR→DWC把指定写入形成的差异接到后续用途，而不是用不同端点的两次阳性拼接因果链。完整回答与自身恢复护栏排除了仅通过停止使供体转移下降的重要替代解释。表6的 N4146 获得0.311、撤回0.473、自身恢复0.394是有意义的定向行为证据。</li>
+<li><strong>确认与反例处理认真。</strong> 新材料、主方向、统计单位和量级门槛预先固定；第二方向量级失败、E异号和NWC随机反例都进入结论。96个情境而非81648条轨迹作为主独立单位，是合理的统计处理。</li>
+<li><strong>作者侧可追溯性较强。</strong> 实验身份、哈希、回执和失败恢复记录完整。我核对的机器汇总均值及自身恢复分子分母与正文一致。工程可追溯性不是独立复现，但有助于后续审计。</li>
+</ol>
+<h3 id="weaknesses">Weaknesses</h3>
+<ol>
+<li><strong>最强实验证明的对象与研究总问题仍有距离。</strong> DWC的O/F已经使用干净来源的影子v和k修正，读取发生在可生成的端点；原生主方向却有861/864条停止。结果直接支持修复背景下的选择构造与撤回，还没有充分说明原生稀疏干预大效应的哪一部分由相同关系产生。作者准确披露这一点，故不是隐瞒或简单的技术错误；但它降低了当前结果对于总问题的解释力度。</li>
+<li><strong>相对直接近邻的新认识还未充分凝练。</strong> <a href="https://arxiv.org/html/2609.33093v1">How Linear Attention Remembers</a>相关章节已有供体写入、状态与查询输出的获得/恢复实验；<a href="https://arxiv.org/html/2611.01909v1">Who Asks, Who Answers</a>相关章节已有混合模型的状态/块输出指定检索目标。本文操作不同，不能视为完全重复，但仅强调“受扰背景”“同端点链”尚不足以清楚说明新增的计算认识。D/E的行为差异也需与两算子的代数及几何差异分开。</li>
+<li><strong>确认范围与异质性限制意义。</strong> 同六结构族的新情境确认是扎实的分布内证据，不是新的任务、结构或模型验证。逐族获得的跨度大，CGV又有很弱的完整回答变化。现稿尚未给出可预测哪些条件有效的解释。表A/B的跨模型损伤不能代替这项机制关系的跨模型证据。</li>
+</ol>
+<p>表达方面，主线被大量实验代号、历史合同和修订账本分散；最强结果在§4.10，而图1/2仍主要呈现旧链。关键输入例子、针的实际剂量/窗口及D_tr公式应在主文自足给出。问题不是当前没有英文PDF，而是读者需要跨多份材料才能重建核心实验。上述不足分别支持下面 Presentation、Significance 和 Originality 的评价，并非对限制披露本身扣分。</p>
+<h2 id="soundness">Soundness</h2>
+<p><strong>3 / 4 — good。</strong> 条件性核心结论有合适的双向干预、完整回答护栏和新材料确认。统计单位处理合理，核对的数字一致，作者没有把工程验收当机制证明。未给最高档，是因为原生失效与修复端点的解释连接未充分建立，且本次未独立验证全部运行器和原始输出；不把领域影响的不足混作技术错误。</p>
+<h2 id="presentation">Presentation</h2>
+<p><strong>2 / 4 — fair。</strong> 能理解核心主张，但当前稿仍是研究账本形式，缩写与历史说明显著增加阅读成本，正文的关键方法定义依赖外链，新结果与旧图的重心不一致。需要实质重组以成为可独立理解的研究论文；不因语言或没有排版PDF本身降档。</p>
+<h2 id="significance">Significance</h2>
+<p><strong>2 / 4 — fair。</strong> 问题重要，条件性定向操作及反例有专业研究价值。然而原生干预后果的解释增量尚有限，固定六族之外的预测力及当前结果对已有检索认识的改变没有充分展示。未要求实际应用收益、全模型普适或新SOTA；目前的限制在于具体科学洞见的影响范围和可使用方式仍不清楚。</p>
+<h2 id="originality">Originality</h2>
+<p><strong>2 / 4 — fair。</strong> 本文不是已有论文的直接重复：受扰背景的历史来源、指定写入及D/E用途连接具有新的实验组合和证据。不过写入—读取干预、状态指定目标、存储与读取分离等核心思想已有直接近邻，当前稿尚未清晰建立一个足够强的新计算认识。此评价基于针对性原文比较，不宣称完成穷尽优先权核查。</p>
+<h2 id="key-questions-for-authors">Key Questions for Authors</h2>
+<ol>
+<li><strong>原生稀疏干预后果与构造链的连接是什么？</strong> 请指出现有哪个可比比较把干预造成的变化接到了后续选择关系，而非仅证明干净来源可重新编程受扰接收者。若已有证据在可达性和来源条件可比时支持这种预测，会提升机制解释评价；若只证明构造性关系，应明确它本身的新洞见。无需证明唯一完整中介或把研究转为EOS修复。</li>
+<li><strong>不能直接由近邻替代的计算认识是什么？</strong> 请将本文和两篇直接近邻在背景、改动对象、读取时刻、终点与排除解释上对应，并区分D/E已知代数差异与新的经验事实。清晰的、有现有证据支撑的新增判断会提高原创性与意义；仅重复增加实验数量不会。</li>
+<li><strong>异质性是否有可解释的条件？</strong> DWC的族间获得差异以及CGV弱行为效应，能否由端点余量、来源可达性或其他已测条件解释？先整理现有结果即可。若存在冻结预测并在一个可比新条件成立，会加强范围判断；无需所有族达到同一阈值或开展全面模型扫描。</li>
+</ol>
+<h2 id="limitations">Limitations</h2>
+<p><strong>总体是。</strong> 单模型机制范围、固定模板族、14层联合操作、32-token预算、条件性总效果及负结果均得到明确披露。正式稿仍宜补充简短的双重用途讨论和作者责任/利益冲突等最终声明。诚实报告第二方向失败与随机反例是优点，评价限制对结论的实际影响不等于惩罚披露。</p>
+<h2 id="overall-recommendation">Overall Recommendation</h2>
+<p><strong>3 / 6 — Weak Reject。</strong> 当前稿有清楚优点，核心条件性实验证据可信，但其解释增量、相对近邻的定位与自足表达仍需要实质修订，才能让读者明确以何种新认识为基础继续工作。依据是官方“有明确优点但弱点总体仍超过优点，需要修订后才能有意义地被继续利用”的锚点。不是因为缺少新SOTA、英文PDF或完整唯一机制。</p>
+<h2 id="confidence">Confidence</h2>
+<p><strong>3 / 5。</strong> 我完整阅读固定正文，针对性核读核心合同/报告、数值摘要和第一手近邻，理解主要端点与统计对象；但没有完整核验全部底层代码、原始运行、bootstrap实现或近邻所有附录，因此仍可能遗漏技术或相关工作细节。此分数也不把有限CPU检查冒充独立复现。</p>
+<h2 id="ethical-concerns">Ethical Concerns</h2>
+<p><strong>不标记伦理审查。</strong> 当前证据未显示具体隐私、违法或科研诚信问题。激活干预可能被滥用，建议正式稿说明受控分析定位。尚未完成的有害行为盲评不能被能力损伤结果替代。本判断不表示已经审核所有数据或代码发布合规。</p>
+<p>伦理审查领域：不适用。具体伦理指控：无。</p>
+<h2 id="compliance-with-llm-reviewing-policy">Compliance with LLM Reviewing Policy</h2>
+<p><strong>不适用：作者侧 AI 模拟。</strong> 不声称遵守正式审稿人分配的LLM政策，也不代替真实会议评审。正式审稿人的评判不得委托给LLM；本任务是作者主动要求的模拟。</p>
+<h2 id="code-of-conduct-acknowledgement">Code of Conduct Acknowledgement</h2>
+<p><strong>不适用：作者侧 AI 模拟。</strong> 报告遵循尊重、具体、可回应的反馈原则，但不冒称正式ICML审稿人身份或作正式履职确认。</p>
+<h2 id="final-justification-rebuttal">Final Justification — 初评依据，没有 rebuttal</h2>
+<p>没有作者rebuttal，本节不虚构作者回复或回复后的判断变化。最强支持理由是：同一写入端点在新材料上的直接读取获得与撤回，以及撤回后的自身恢复，构成可复核的、超出一般扰动的定向事实。严格保存负结果和材料确认也使该研究值得认真对待。</p>
+<p>当前不作更高推荐，是因为这些事实尚未充分转化为关于稀疏干预失效的新计算解释，近邻已覆盖一般的写入—读取和状态目标选择思路，现稿对何时适用的说明也不足。表述重组是必要但非充分条件；决定性补证或回应应针对三个关键问题，不是再增加同六族重复轨迹或降低第二方向门槛。</p>
+<p>与 <strong>Strong Accept</strong> 的实质差距，不是再多一个阳性表格。官方最高档要求技术极强且有异常突出的影响、评估和复现资源。当前需要首先形成明确、不可被近邻直接替代的解释，并用适当证据表明它能预测受扰模型在有意义条件下的行为；还需将自足方法、图和可复核材料组织成成熟论文。没有要求完成整个模型的唯一机制，也不预设必须增加某个特定模型。</p>
+<h2 id="_1">核查边界与锁定</h2>
+<p>详细逐节覆盖、已读文件及CPU核查见锁定定性报告。本阶段未增加新的科学证据或改动阶段一意见。阶段一曾因SVG通配误读一个不在allowlist的 <code>fig7-confirmation.svg</code> 文字标签；该偏离已报告且没有作为论据，但无法消除已见信息影响。没有读取他人审稿或作者未来方案。该边界说明随评分保留，不将此轮包装为无偏离盲评。</p></main></html>

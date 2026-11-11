@@ -1,0 +1,141 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>WSP-AP01设计自查</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="wsp-ap01">WSP-AP01设计自查</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/wsp-process-reproduction-v1-2026-11-03/autonomous-process-r1/SELF-CHECK.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-process-reproduction-v1-2026-11-03/autonomous-process-r1/SELF-CHECK.zh-CN.md">固定提交原件</a>；SHA-256：<code>5b74a52039bfa43353c0a554ecde95ea927635b2c8e446336e397b9a39db3bde</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="wsp-ap01_1">WSP-AP01设计自查</h1>
+<h2 id="material-passport">Material Passport</h2>
+<ul>
+<li>Origin Skill: academic-research-suite / experiment-agent</li>
+<li>Origin Mode: plan</li>
+<li>Origin Date: 2026-11-05</li>
+<li>Verification Status: SELF_REVIEWED_DESIGN_ONLY</li>
+<li>Version Label: autonomous-process-r1</li>
+<li>规范：docs/experiment-design-self-check.zh-CN.md v1。审查者为同一助手；没有独立评审或新增模型调用。</li>
+</ul>
+<h2 id="_1">设计卡</h2>
+<ol>
+<li>主线：复现AI通过内部测量和直接权重修改提高数学表现的研究过程。本轮问题：原公开协议与可验收工具条件下，一个新Astra会话能否依据新反馈找到对独立数学测试有效的编辑。</li>
+<li>增量：增加一次真正自主的完整轨迹与冻结后的泛化证据，不再把已知路径重算当发现能力。</li>
+<li>依据：作者p50c初始协议/实际设置/公开工具、项目已有资产和旧失败。最不利证据：旧自主搜索中多种代理改善未带来可靠能力收益，4B历史阴性；新工程仍有数值/网络缺口。作者单次成功不保证本轮成功。</li>
+<li>操作：只静态权重编辑；新初始原版Qwen0.8B，固定模板/采样/工具边界；候选部位/方向/剂量由AI未来决定，是预先规定的自适应策略空间，不是遗漏实验定义。全部动作及实际应用快照记录。</li>
+<li>估计对象：最终冻结提交相对原版的MATH-500及GSM8K test按题平均准确率差；加研究轨迹证据。不是独立多次自主搜索成功率或唯一机制归因。</li>
+<li>判读：两项支持/部分支持/证据不足/负向分别报告；工程失败单列。不得追作者分数，不能从少重复推出能力改善。</li>
+<li>范围成本：只一轮0.8B，A接口验收、B50成功pass搜索、C两数学终验分别核算。现有预算仅情景，启动额度须另行冻结；无当前运行授权。</li>
+<li>退出：不增加第二轮追结果；50pass后冻结；原科学限制或工程资源不足记录停止原因与账本，不伪造完成。未知动作先对账再续。</li>
+</ol>
+<h2 id="c01c14">C01–C14</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>判定与理由</th>
+<th>计划位置</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C01</td>
+<td>通过：恢复“AI依据新结果自主发现”的原问题，不再替换成成功路径或加载补丁</td>
+<td>§1、2</td>
+</tr>
+<tr>
+<td>C02</td>
+<td>通过：新独立会话及真实轨迹能提供发现过程/最终泛化的新证据；单轮不估可靠成功率</td>
+<td>§1、4B/C</td>
+</tr>
+<tr>
+<td>C03</td>
+<td>通过：复用现有模型、题池、controller、sandbox、原评分builder；作者私有源码缺口明确</td>
+<td>§2、3、5、8</td>
+</tr>
+<tr>
+<td>C04</td>
+<td>通过：保留旧搜索无效和工程不齐的反例；作者一次成功不是必然性前提</td>
+<td>§1、4C、5</td>
+</tr>
+<tr>
+<td>C05</td>
+<td>通过：静态权重是操作对象，模型执行/所有下游正常变化；选择规则是原约束下AI自适应，不预填作者针</td>
+<td>§2、4B</td>
+</tr>
+<tr>
+<td>C06</td>
+<td>通过：固定接口/输入/预算，开放策略；不加载旧针/补丁，不改请求，不向AI馈入作者路径或终验</td>
+<td>§2、3</td>
+</tr>
+<tr>
+<td>C07</td>
+<td>通过：两臂同题配对、种子映射冻结披露；未知私有映射不称同随机序列，后续生成自然响应</td>
+<td>§4C、5</td>
+</tr>
+<tr>
+<td>C08</td>
+<td>通过：目标为最终总效果及过程复现；不把选中的方向直接命名唯一原因，不称从未见过公开研究</td>
+<td>§3、4C</td>
+</tr>
+<tr>
+<td>C09</td>
+<td>通过：正向/部分/不确定/负向皆可，方法同但候选不同仍合法；不按最终像不像作者判断</td>
+<td>§1、4C</td>
+</tr>
+<tr>
+<td>C10</td>
+<td>通过：主要终点是独立测试正确率；内部投影/截断/重复为辅助诊断</td>
+<td>§4C</td>
+</tr>
+<tr>
+<td>C11</td>
+<td>通过：网络/工具/预算中断不能写阴性；新科学错误交给AI真实处理，未确认动作不重放</td>
+<td>§4A/B</td>
+</tr>
+<tr>
+<td>C12</td>
+<td>通过：已有收据优先，不重建平台，不因规划追加试跑；验收/搜索/终验分别计费，不以旧额度默认授权</td>
+<td>§4A、6、7</td>
+</tr>
+<tr>
+<td>C13</td>
+<td>通过：新会话/目录/账本、可见材料白名单、数据分离、最终hash；按题统计，历史面板不当独立新证据</td>
+<td>§3、4C</td>
+</tr>
+<tr>
+<td>C14</td>
+<td>通过：成功支持本次自主过程，失败限制其一次可复现性；都不自动扩大实验</td>
+<td>§4B/C、7</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_2">历史错误处理</h2>
+<ul>
+<li>E01：不再把自主发现换成固定代码重放；旧方案保留但不作为当前启动方案。</li>
+<li>E02/E03/E04：不给特定层先验，不把改少等于扰动小，不把验证代数公式当研究成功。</li>
+<li>E05/E06/E07/E08：这些主要针对cache机制分解；本轮不做缓存变量拼换或形成期因果拆分，不能借无关控制扩大设计；仍报告权重操作的完整后果与边界。</li>
+<li>E09/E10/E11/E12：内部变化、停止、语义、准确率分开；配对不自动消除全部非线性或采样影响。</li>
+<li>E13/E14/E15/E17/E18/E20/E26：不作供体记忆移植、唯一形成来源或穷尽路径主张；相关反事实不是本轮承诺。若AI提出类似解释，观察者按它实际证据审查，不能替它补证明。</li>
+<li>E16：不因新阴性认定工具错，不改接口/seed/模型追阳性。</li>
+<li>E19：工程恒等和数值通过只证明工具，不证明数学改善。</li>
+<li>E21：本轮是复现，不主张方法创新或“首次”；作者与我们已有资料明确分开。</li>
+<li>E22：按题为单位，确认题不得参与该会话选针，旧轨迹/作者数据不当本轮观测。</li>
+<li>E23：自查不是独立评审；方案/验收/授权/结果四层分开。</li>
+<li>E24：不要求每次自主搜索识别完整机制才有价值。</li>
+<li>E25：只0.8B单次自主及两数学终验；不自动添加完整扩展benchmarks、多次搜索或其他模型。</li>
+</ul>
+<h2 id="_3">与前版的实质比较</h2>
+<p>保持：原模型、练习、提示和采样、原评分/构建工具、诚实测量、隔离、日志和暂停。
+改变：author_actions固定路线→新Astra自主循环；固定50条请求/75段Python→50成功调用/300Python能力上限；作者既定诊断代码→本轮AI生成的代码；没有给终验完整预算→明确列为独立工作包；Mac桥接→拟服务器本地持久控制器。
+没有改变：未公开数值后端仍需验收和差异披露；当前不运行；编程/4B不进入范围。
+明确废弃的判断：AI自行选择不同候选/公式就是不忠实。必须回到原协议判断，而不是照作者已知答案评分。</p>
+<h2 id="_4">实质反方检查与修订</h2>
+<ol>
+<li>若所有结果变好，是否只是读了作者答案？把作者轨迹和当前聊天隔离；不提供作者算法函数/最终针，不预设重复为唯一故障。原prompt中已有重复示例保留。无法排除预训练污染，限制为本轮未主动泄漏。</li>
+<li>若模型没有变好，能否区分工具错和研究失败？验收先于正式，覆盖自由工具而非只固定50请求；工程缺陷仍未通过则不作科学结论。新研究中的合法错误不由观察者偷偷改公式。</li>
+<li>“复用作者方法”会不会又变成“所有东西自己写”？已公开评分/profile/builder/eval优先直接复用；初始任务逐字用；私有服务只能按契约重建，身份透明，不能承诺逐位相同。</li>
+<li>为什么不把作者成功的排名函数做成菜单让AI自由选？这会提供作者实验开始时没有的发现知识；属于另一个有指导的设计，本轮不混入。通用线代库仍正常可用。</li>
+<li>新路线的作者式自主不恰好50成功怎么办？工程限额不能充当成功终点；保存未完成，不用复用旧pass/删失败凑50。因原科学上限无法完成则真实报告。</li>
+<li>终验只看MATH-500是否够？修订为原始任务两项MATH-500+GSM8K，各自报告；不自动扩到所有通用能力，且不能隐瞒这块成本。</li>
+<li>旧9–12h是否可沿用？否；新决策未定，以历史负载情景解释，终验另计；不借“预算够”自动继承历史48h。</li>
+<li>用户没有其他机器，是否方案仍假定Mac在线？否；现有服务器到Astra连接是显式硬阻塞，tmux不能替代网络。不能用固定重放来“绕过”这个科学前提。</li>
+<li>观察者看过终验/作者结果会否污染？run前冻结终点/代码/评分和报告规则，不反馈结果调针；旧结果不进入编辑器。不要宣称观察者/预训练完全盲法。</li>
+</ol>
+<h2 id="_5">结论</h2>
+<p><strong>逻辑设计自查通过；工程、网络、资源预算尚未完成，当前不可启动。</strong> 这不是独立评审。已知硬伤（自主/重放混同、把候选不同等同协议错、遗漏终验成本、拿固定请求验收覆盖自由工具）已在计划中修正；剩余是具体实现与可用性待办，不靠免责声明声称已解决。</p></main></html>

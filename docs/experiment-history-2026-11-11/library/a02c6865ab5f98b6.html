@@ -1,0 +1,59 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>四项全量能力损伤对照</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="_1">四项全量能力损伤对照</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/capability-damage-v2-2026-10-26/PROTOCOL.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/capability-damage-v2-2026-10-26/PROTOCOL.zh-CN.md">固定提交原件</a>；SHA-256：<code>a02c6865ab5f98b6b50abd8e67ef58b1bdeafa5262ca5f5dc9e6a1619e49dfb3</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="_2">四项全量能力损伤对照</h1>
+<p>本次运行依据 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/damage-evaluation-plan-v2.zh-CN.md">精简方案 v2</a>。用户已明确授权原版 Qwen3.5-4B 与 EVO 完成四项 benchmark，并报告各项原版分数、调整后分数和下降幅度。</p>
+<h2 id="_3">比较对象与口径</h2>
+<p>原模型固定为 <code>Qwen/Qwen3.5-4B@851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a</code>。EVO 沿用动态激活干预：零起始 L14/N8949 +1、L13/N7956 −1，在各层 <code>down_proj</code> 输入加偏移，覆盖提示与生成。每题以原版公共提示的残差范数中位数校准，排除首 token、padding、候选续写及目标答案。权重不改写；关闭钩子后必须恢复原版行为。</p>
+<table>
+<thead>
+<tr>
+<th>基准</th>
+<th style="text-align: right;">全量题数</th>
+<th>设置</th>
+<th>主分数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MMLU</td>
+<td style="text-align: right;">14,042</td>
+<td>5-shot，字母续写似然</td>
+<td>acc，按学科题数加权</td>
+</tr>
+<tr>
+<td>ARC-Challenge</td>
+<td style="text-align: right;">1,172</td>
+<td>25-shot，完整选项似然</td>
+<td>acc_norm，按选项字符数归一化</td>
+</tr>
+<tr>
+<td>GSM8K</td>
+<td style="text-align: right;">1,319</td>
+<td>5-shot，greedy，最多 2,048 新 token</td>
+<td>strict-match</td>
+</tr>
+<tr>
+<td>HumanEval</td>
+<td style="text-align: right;">164</td>
+<td>原始函数补全，0-shot，greedy，最多 1,024 新 token</td>
+<td>pass@1，官方测试每份 3 秒</td>
+</tr>
+</tbody>
+</table>
+<p>均采用上游标准文本补全提示，不套聊天模板；两版同题、同提示、同精度、同后端、同批处理策略、同预算与停止条件。原版和 EVO 在同一不可变模型实例上依次执行，每次调用新建状态。任务批次固定按提示 token 长度排序，两版执行顺序按批次交替。</p>
+<p><code>D = 原版分数 − EVO 分数</code>，单位为百分点；负值保留为改善。各项单独报告，不计算总能力分。95% 配对 bootstrap 固定种子 20261026、10,000 次；MMLU 保留学科权重。GSM8K 同时报告固定的上游 flexible-extract，但不能替代主分数；历史已暴露 100 题单独标记，另列未暴露 1,219 题。</p>
+<h2 id="_4">验收、执行与证据</h2>
+<p>正式推理前，冻结 <code>task_manifest.json</code> 的题目、提示、数据 revision、上游任务配置和哈希；<code>protocol.json</code> 冻结实际批处理大小、代码哈希及通过的验收收据。验收覆盖模型资产、零剂量、撤销恢复、单题与批量、候选共用尺度、似然位置、停止条件与评分器。只用非测试材料开发实现和测吞吐。</p>
+<p>HumanEval 代码在禁网、非 root 的独立命名空间中执行，隐藏服务器工作区与凭据，限制 CPU、内存、文件和墙钟时间。正确代码、错误代码、语法错误、超时和隔离控制必须先通过，才执行原始模型 completion；不修复代码，不抽取“较好”的代码块。</p>
+<p>正常答案全部进入分母，包括无答案、解析失败、截断和答错。基础设施失败保留为未完成，不能当成答错。每批保存两版原文或选项似然、校准量、token、停止原因与耗时；失败尝试保留，已完成回答不覆盖。评分复算检查所有 16,697 对、33,394 个题目—条件单元及对应身份和哈希。</p>
+<p>此前三项各 100 题的快速测试使用不同提示与预算，不能复用其原版成绩作为本轮对照。本次没有授权或执行静态权重修改、位置/剂量搜索、历史 Q25–Q40 续跑或机制实验。</p>
+<h2 id="_5">准备过程记录</h2>
+<ul>
+<li>远端直连 GitHub TLS 失败，改为在本地取得固定 commit 后传输并核验 Git 身份；运行环境独立安装在 <code>/workspace/acupuncture/.venv-bench</code>，复用已有模型和 PyTorch。</li>
+<li>远端直连 Hugging Face 不可达，首轮数据准备退出 143；使用镜像重新取得相同固定 revision，并与官方仓库文件哈希核验。下载线路不改变任务定义。</li>
+<li>第一次 batch=64 合成验收未通过单题/批量一致性，不能作为正式评测实现。失败记录保留，修复与复验另存，正式运行仅接受通过的版本。</li>
+<li>HumanEval 沙箱 r01–r03 的配置排查与 r04–r05 的成功控制均保留在 <code>validation/humaneval-sandbox/</code>。这些是技术验收，不是模型成绩。</li>
+</ul>
+<p>运行与得分状态以最终运行收据和结果报告为准；本文不把准备或验收计为完成四项评测。</p></main></html>

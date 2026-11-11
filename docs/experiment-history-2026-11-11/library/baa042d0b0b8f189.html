@@ -1,0 +1,88 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CFM-S2 实现说明与决策日志</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="cfm-s2">CFM-S2 实现说明与决策日志</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-intervention-chain-analysis-v1-2026-10-31/source/experiments/cache-formation-mechanism-s2-formation-test-v3-2026-10-31/IMPLEMENTATION.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-intervention-chain-analysis-v1-2026-10-31/source/experiments/cache-formation-mechanism-s2-formation-test-v3-2026-10-31/IMPLEMENTATION.zh-CN.md">固定提交原件</a>；SHA-256：<code>baa042d0b0b8f189612f542437d983a332db5041547933e72876f2d2853a1cfb</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="cfm-s2_1">CFM-S2 实现说明与决策日志</h1>
+<p>日期：2026-10-31。计划 <code>CFM-S2-v3-20261031</code>；合同 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-intervention-chain-analysis-v1-2026-10-31/source/experiments/cache-formation-mechanism-s2-formation-test-v3-2026-10-31/CONTRACT.zh-CN.md">CONTRACT.zh-CN.md</a> r01。</p>
+<h2 id="_1">文件</h2>
+<table>
+<thead>
+<tr>
+<th>文件</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>s2_trace.py</code></td>
+<td>臂与掩码、单条轨迹（S1 记录器 + 掩码注入）、完整 Mτ 保存与往返校验、S1 重复路径比对、同起点认证、冻结 / 授权 / worker / 控制器 / 核验</td>
+</tr>
+<tr>
+<td><code>formation.py</code></td>
+<td>先验误差界与界的有效性、配对逐步过程（第一步、H/N、u_B/u_H/u_N、D/W/R 三背景两起点、读出拆分）、§6 判决、§7 次要预测；<code>selftest</code> 为合成预演</td>
+</tr>
+<tr>
+<td><code>test_s2.py</code></td>
+<td>小号随机 Qwen3.5 上的 CPU 测试</td>
+</tr>
+</tbody>
+</table>
+<p>代码来源：直接 import S1 冻结代码 <code>cfm_trace.py</code>（记录器、内核身份、复现检查、惰性门、捕获一致性）与 <code>account.py</code>（驱动量预处理、A/B、重建门），阶段一 <code>localize.py</code> 的 <code>masked_injection</code> / <code>_build_T(mask=…)</code>（阶段一 preflight 门 6 已在真实数据上验证它与 <code>_control_hooks</code> 等价），阶段二 <code>stage2.py</code> 的缓存清单与管理状态指纹。</p>
+<h2 id="_2">决策日志</h2>
+<ol>
+<li><strong>11 也走掩码路径</strong>（全真掩码），而不是 S1 的 <code>_control_hooks</code>。这样 G2 对 II-B 的逐值复现同时成为掩码注入在真实数据上的等价性检验；CPU 测试也核对了两条路径逐字节相同。</li>
+<li><strong>同起点认证用逐位相同的驱动量</strong>：b 处状态内核不暴露，所以认证对象是位置 0..b 的全部捕获量与边界残差；逐位相同则离线 S_b 完全相同。CPU 小模型上 01/00 与 11/10 均逐位相同，10/00 不同（测试已覆盖）。若 GPU 上因某种逐行不独立的内核导致不逐位相同，按合同停止，不放宽为容差。</li>
+<li><strong>误差界</strong>：计划要求"分项同单位误差界"，没有给公式。合同 §5 的界由我按 fp32 舍入累积写出（c = 16 的安全系数），并加了一道"界必须罩住所有暴露点的实测误差"的有效性闸门，避免界本身失效。这个界偏保守：会让小的真实差异记成"未分辨"，不会把舍入当成差异。</li>
+<li><strong>H/N 的误差</strong>：H 只继承 S_b 的误差（之后在精确算子下收缩），N = S − H 取两者之和；这是保守上界。</li>
+<li><strong>10v00 也计算了 H/N</strong>（从 b 起），但 E1、E2 只用于同起点配对；10v00 的 ΔH 不解读为处理变化（计划 §5）。</li>
+<li><strong>次要预测用内核暴露的 t_L 状态</strong>而不是离线重建状态，避免把重建误差带进比值。</li>
+<li><strong>S1 报告勘误</strong>（S1 结果复核指出）：S1 报告写"读出恒等式残差 ≤ 1.7×10⁻¹⁵"，实际最大值为 6.0×10⁻¹⁵（三项和与 Z 和的最大值才是 1.7×10⁻¹⁵）。不影响验收；已在 S1 报告加勘误。</li>
+</ol>
+<h2 id="_3">测试与预演</h2>
+<p>见 <code>readiness/cpu-receipt-r03.json</code>（r01 为首轮，r02 为补测试后的失败记录）。</p>
+<h2 id="_4">运行记录与偏离</h2>
+<table>
+<thead>
+<tr>
+<th>运行</th>
+<th>时间（UTC）</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>preflight-r01（freeze-r01）</td>
+<td>2026-10-31 ~03:20</td>
+<td><strong>合同执行失败</strong>：worker 在 <code>execute</code> 收尾的规模检查处 KeyError（遍历了计数字典里不受限的 <code>records</code> 键）。三条记录本身的闸门全部通过（II-B 复现、S1 逐位重复、惰性、捕获一致、Mτ 往返、重建 ≤ 4.7e−7），但运行未完成，不作为证据。原始目录保留在服务器 <code>runs/preflight-r01/</code>。</td>
+</tr>
+</tbody>
+</table>
+<ol start="8">
+<li><strong>r02（偏离记账）</strong>：修正为只比较受限计数（<code>check_limits</code>），并补测试覆盖 <code>check_limits</code> 与 <code>_certify_ready</code>（同起点认证的落盘与内存释放）；根因与此前教训相同——CPU 测试没覆盖 <code>execute</code> 收尾与跨函数调用点。判据、阈值、设计、规模均不变。新补的测试随即又发现 <code>_certify_ready</code> 把观测层写死为默认值（真实模型上不会出错，但该路径无法在小模型上测试），改为显式参数。CPU 收据 r02 记录了这次测试失败（保留），通过的收据为 r03。新冻结 freeze-r02、新授权 preflight-r02。</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>运行</th>
+<th>时间（UTC）</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>preflight-r02（freeze-r02）</td>
+<td>2026-10-31</td>
+<td>passed；1 worker；33 s</td>
+</tr>
+<tr>
+<td>formal-r01（freeze-r02）</td>
+<td>2026-10-31</td>
+<td>passed；2 worker；84 条，48/48 同起点逐位认证；124 s</td>
+</tr>
+<tr>
+<td>formation r01</td>
+<td>2026-10-31</td>
+<td>analyzed；界有效性全过（实测误差 ≤ 界的 1.25%）、恒等式 ≤ 3.1e−14</td>
+</tr>
+</tbody>
+</table></main></html>

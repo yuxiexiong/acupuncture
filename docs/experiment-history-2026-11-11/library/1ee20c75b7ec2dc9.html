@@ -1,0 +1,264 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>QCD-01（形成期注入覆盖 × 剂量）结果报告</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="qcd-01">QCD-01（形成期注入覆盖 × 剂量）结果报告</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-coverage-dose-v1-2026-11-02/REPORT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-coverage-dose-v1-2026-11-02/REPORT.zh-CN.md">固定提交原件</a>；SHA-256：<code>1ee20c75b7ec2dc966039a5ba4e0ec4f367a6d862a0cc8ab71ebea863292618c</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="qcd-01_1">QCD-01（形成期注入覆盖 × 剂量）结果报告</h1>
+<p>日期：2026-11-02。<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-coverage-dose-v1-2026-11-02/CONTRACT.zh-CN.md">合同 r01（设计 v2）</a>；<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-coverage-dose-v1-2026-11-02/DECISIONS.zh-CN.md">决策 D1–D5</a>；<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-coverage-dose-v1-2026-11-02/DEVIATIONS.zh-CN.md">冻结后偏离 X1–X4</a>。代码 <code>7c10d59</code>，freeze-r01 <code>9ea1ed0a…bba7</code>。QC-01 的 NA/LA 文本已见；新政策与交叉来源条件运行前无输出。同一助手实现、运行与撰写。</p>
+<h2 id="1">1. 结论（不利与限制先说）</h2>
+<ol>
+<li><strong>合同执行偏离（X4）</strong>：阶段 S 的启动器汇总检查失败——形成次数 3132 超过合同预算表的 3024。差额正好是合同 §0 第 4 条要求的每文本 C_b 重算（108 次），是我在预算表里漏算（每文本应为 29 次形成而不是 28）。两个 worker 都正常完成、各自通过冻结的 verify_worker；GPU 2.47 设备小时（上限 5）；其余计数都在冻结上限内。我没有重跑（确定性运行会得到逐位相同的结果），而是用 <code>analysis/verify_addendum_r01.py</code> 在更正形成上限后重做汇总验收，原 controller 失败记录保留。</li>
+<li><strong>预注册的主位置判据未达到（两模板都不是“跨方向模式”）</strong>：E1（20 位、覆盖问题与指令前部）对 N1（20 位、只覆盖尾部），同长度、同单步幅度、A/Q 相对差 ≤0.09%。可判方向中，LA 的 N4146、N1210 都是“N1 稳定更好”（54 对 20、54 对 29）；NA 只有 R0 可判且无差别（54 对 53）；其余 5 个模板×方向组合因损伤迁移门未过而不可判（共 8 个：2 个支持 N1 更好、1 个可判但无稳定差别、5 个不可判）。≥3/4 方向的标准两模板都没达到——这是“未达到/大量不可判”，不是“位置无效”。</li>
+<li><strong>很多比较不可判</strong>：缩窄窗口、降剂量或 E1 后，未恢复的 T_nat 常常自己答对（例如 NA 的 N1 在 N4146 有 18/54，B-A 在 N1210、R0、C1343 有 36、34、54/54），损伤迁移门不过。按规则这些方向只描述、不判。</li>
+<li><strong>“剂量优先”解释在所有可检验方向都不成立</strong>（NA 的 N1210、R0；LA 的 N4146、N1210 均为“非剂量解释”；其余 4 方向因 B1/N1 不稳定或不可判而不适用）。</li>
+<li><strong>把窄窗口剂量提高到与宽窗口相同的范数和（N-A）或平方和（N-Q），只恢复 V 仍几乎全对</strong>：NA 四方向都是 54/54，LA 的 N4146、C1343 54/54、N1210 47/49、R0 46/44；而宽窗口 B1 只有 18/31/40（NA）、17/22/25（LA）。NA 中 B1 对 N-A、B1 对 N-Q 都在 3/4 方向“窄优”（跨方向模式成立），LA 为 2/4。也就是说，<strong>宽窗口的失败不能由“总注入量更大”（按范数和或平方和）单独解释</strong>；N-A 的单步幅度比 B1 高约 33% 仍能恢复。但这不说明剂量或单步幅度无关：降低宽窗口幅度后损伤本身往往消失（见第 6 条），幅度仍然重要。（更正：初稿写“所以也不是单步强度”，过强。）</li>
+<li><strong>反方向的配平部分不可判</strong>：把宽窗口剂量降到与 N1 相同的范数和（B-A），损伤本身大多消失（不可判）；按平方和降（B-Q），只恢复 V 仍不如 N1（NA N1210 44 对 54；LA N4146 36 对 54、N1210 38 对 54），R0 无差别。</li>
+<li><strong>新的失败形态（描述）</strong>：E1 覆盖问题时，N4146 方向只恢复 V 后大多输出<strong>多个编号</strong>（NA 47/54、LA 34/54），而不是宽窗口 B1 的“首列编号”。覆盖问题区域的不同方式会留下不同类型的错误。</li>
+<li>阶段 G 闸门通过：五种来源/切分组合下 B 对 N 的稳定类别完全一致（N4146、N1210、R0 窄优，C1343 无差别）；逐对翻转 0–2 格，|ΔM| ≤0.38。工程全部通过：QC 重放在 108 文本上逐位相同（审计 hook 装着），阶段 S 重算的 base_b、C_b 与重新形成的 B1、N1 哈希都等于阶段 G。</li>
+</ol>
+<h2 id="2-v-54-y_nat-y_v">2. 只恢复 V 的交付（54 格；各政策 Y_nat / Y_V；“—”为损伤未迁移）</h2>
+<table>
+<thead>
+<tr>
+<th>模板</th>
+<th>方向</th>
+<th>B1</th>
+<th>N1</th>
+<th>E1</th>
+<th>N-A</th>
+<th>N-Q</th>
+<th>B-A</th>
+<th>B-Q</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NA</td>
+<td>N4146</td>
+<td>0/18</td>
+<td>18/54—</td>
+<td>6/6</td>
+<td>11/54</td>
+<td>12/54</td>
+<td>12/54</td>
+<td>0/36</td>
+</tr>
+<tr>
+<td>NA</td>
+<td>N1210</td>
+<td>0/31</td>
+<td>0/54</td>
+<td>23/52—</td>
+<td>0/54</td>
+<td>0/54</td>
+<td>36/54—</td>
+<td>0/44</td>
+</tr>
+<tr>
+<td>NA</td>
+<td>R0</td>
+<td>1/40</td>
+<td>8/54</td>
+<td>18/53</td>
+<td>9/54</td>
+<td>1/54</td>
+<td>34/54—</td>
+<td>1/52</td>
+</tr>
+<tr>
+<td>NA</td>
+<td>C1343</td>
+<td>0/54</td>
+<td>14/54</td>
+<td>39/54—</td>
+<td>0/54</td>
+<td>0/54</td>
+<td>54/54—</td>
+<td>10/54</td>
+</tr>
+<tr>
+<td>LA</td>
+<td>N4146</td>
+<td>0/17</td>
+<td>15/54</td>
+<td>9/20</td>
+<td>10/54</td>
+<td>16/54—</td>
+<td>14/53</td>
+<td>2/36</td>
+</tr>
+<tr>
+<td>LA</td>
+<td>N1210</td>
+<td>9/22</td>
+<td>1/54</td>
+<td>7/29</td>
+<td>0/47</td>
+<td>0/49</td>
+<td>28/54—</td>
+<td>6/38</td>
+</tr>
+<tr>
+<td>LA</td>
+<td>R0</td>
+<td>2/25</td>
+<td>37/48—</td>
+<td>18/38—</td>
+<td>25/46—</td>
+<td>18/44</td>
+<td>48/54—</td>
+<td>2/44</td>
+</tr>
+<tr>
+<td>LA</td>
+<td>C1343</td>
+<td>0/53</td>
+<td>18/54</td>
+<td>33/45—</td>
+<td>0/54</td>
+<td>1/54</td>
+<td>37/50—</td>
+<td>10/53</td>
+</tr>
+</tbody>
+</table>
+<p>C_b：NA 54/54、LA 53/54，面板合格。实际剂量（NA N4146 均值）：A = B1 69.9、N1/E1 52.5、N-A 69.9、N-Q 60.5、B-A 52.5、B-Q 60.5；Q = B1 183.5、N1/E1 137.9、N-A 244.2、N-Q 183.3、B-A 103.8、B-Q 137.7；P = 2.63（B1/N1/E1）、3.50（N-A）、3.03（N-Q）、1.98（B-A）、2.28（B-Q）。配平量相对差全部 ≤0.9%；E1/N1 逐步向量差 ≤0.5%。</p>
+<h2 id="3">3. 预定比较的判读（稳定类别；“窄优”=右侧更好）</h2>
+<table>
+<thead>
+<tr>
+<th>比较</th>
+<th>NA：N4146 / N1210 / R0 / C1343</th>
+<th>跨方向</th>
+<th>LA：N4146 / N1210 / R0 / C1343</th>
+<th>跨方向</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>B1 / N1</td>
+<td>不可判 / 窄优 / 窄优 / 无</td>
+<td>无</td>
+<td>窄优 / 窄优 / 不可判 / 无</td>
+<td>无</td>
+</tr>
+<tr>
+<td><strong>E1 / N1（主）</strong></td>
+<td>不可判 / 不可判 / 无 / 不可判</td>
+<td>无</td>
+<td><strong>N1 优 / N1 优</strong> / 不可判 / 不可判</td>
+<td>无</td>
+</tr>
+<tr>
+<td>B1 / N-A</td>
+<td>窄优 / 窄优 / 窄优 / 无</td>
+<td><strong>窄优</strong></td>
+<td>窄优 / 窄优 / 不可判 / 无</td>
+<td>无</td>
+</tr>
+<tr>
+<td>B1 / N-Q</td>
+<td>窄优 / 窄优 / 窄优 / 无</td>
+<td><strong>窄优</strong></td>
+<td>不可判 / 窄优 / 窄优 / 无</td>
+<td>无</td>
+</tr>
+<tr>
+<td>B-A / N1</td>
+<td>全部不可判</td>
+<td>无</td>
+<td>无 / 不可判 / 不可判 / 不可判</td>
+<td>无</td>
+</tr>
+<tr>
+<td>B-Q / N1</td>
+<td>不可判 / N1 优 / 无 / 无</td>
+<td>无</td>
+<td>N1 优 / N1 优 / 不可判 / 无</td>
+<td>无</td>
+</tr>
+</tbody>
+</table>
+<p>注：B1/N1 在 NA N4146 因 N1 的 T_nat 有 18/54 自然答对而判“损伤未迁移”；阶段 G 的同一对比（K5）不看 N1 的损伤门，结果为窄优。两处口径不同，以本表为阶段 S 判读。</p>
+<h2 id="4-v1-63">4. 解读（按计划 v1 §6.3）</h2>
+<ul>
+<li><strong>否定的部分最清楚</strong>：简单的“总注入量”解释（范数和或平方和）不成立——窄窗口把总量提高到宽窗口水平后，只恢复 V 仍能完整恢复；剂量优先判据在所有可检验方向都不成立。</li>
+<li><strong>位置的部分只得到部分支持</strong>：在 LA 的两个可判方向，同长度、同剂量下覆盖问题与指令前部（E1）明显比只覆盖尾部（N1）更难被 V 恢复；NA 可判的唯一方向（R0）无差别，NA N4146 描述上差距很大（6 对 54）但 N1 不过损伤门。主位置判据未达到跨方向标准，结论属于“位置与幅度共同影响/条件依赖”一档。</li>
+<li>降剂量的宽窗口（B-A）几乎不再造成损伤，说明损伤本身对单步幅度非常敏感（20/L 倍时 P 1.98 对 2.63）；这让“宽窗口降到同总量”这一侧大多无法判读。</li>
+<li>仍未分离：E1 与 N1 除覆盖内容外，还在注入时刻、窗口后无针更新次数上不同；不能写成“问题 token 被写坏”。</li>
+</ul>
+<h2 id="5">5. 执行</h2>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th style="text-align: right;">形成</th>
+<th style="text-align: right;">自然轨迹</th>
+<th style="text-align: right;">实际解码前向</th>
+<th style="text-align: right;">诊断</th>
+<th style="text-align: right;">审计位置</th>
+<th style="text-align: right;">墙钟（每 worker）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>预检</td>
+<td style="text-align: right;">70</td>
+<td style="text-align: right;">166</td>
+<td style="text-align: right;">1188</td>
+<td style="text-align: right;">166</td>
+<td style="text-align: right;">1475</td>
+<td style="text-align: right;">253 s</td>
+</tr>
+<tr>
+<td>G 正式</td>
+<td style="text-align: right;">1512</td>
+<td style="text-align: right;">4536</td>
+<td style="text-align: right;">21990</td>
+<td style="text-align: right;">4536</td>
+<td style="text-align: right;">28860</td>
+<td style="text-align: right;">2379 / 2603 s</td>
+</tr>
+<tr>
+<td>S 正式</td>
+<td style="text-align: right;">3132</td>
+<td style="text-align: right;">4320</td>
+<td style="text-align: right;">39097</td>
+<td style="text-align: right;">4320</td>
+<td style="text-align: right;">69300</td>
+<td style="text-align: right;">4359 / 4547 s</td>
+</tr>
+</tbody>
+</table>
+<p>合计约 3.9 GPU 设备小时（G 1.38，S 2.47；上限 G 3、S 5）。张量（含 R0 实际注入向量）在服务器，每 worker G 约 3.2 GB、S 约 3.1 GB，哈希在 receipt。</p>
+<h2 id="6">6. 可以说 / 不可以说</h2>
+<table>
+<thead>
+<tr>
+<th>可以说</th>
+<th>不可以说</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>窄窗口提高到宽窗口的范数和或平方和后，只恢复 V 仍几乎全对；宽窗口失败不能由总量单独解释（NA 3/4 方向，LA 2/4）</td>
+<td>剂量或单步幅度无关（降幅后损伤本身消失）</td>
+</tr>
+<tr>
+<td>LA 两个可判方向中，同长度同剂量的 E1 比 N1 更难被 V 恢复；预注册的跨方向位置判据未达到</td>
+<td>位置效应已确立；问题 token 被写坏</td>
+</tr>
+<tr>
+<td>覆盖问题区域可留下“多编号”这种不同于“首列”的错误</td>
+<td>E1 与 N1 只差覆盖内容（时刻与窗口后更新也不同）</td>
+</tr>
+<tr>
+<td>阶段 G：换干净来源或切分不改变结论</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h2 id="7-gpu-2026-11-02">7. 附：零 GPU 补充观察（2026-11-02，事后描述）</h2>
+<ul>
+<li>E1 下的“多编号”输出全部按记录顺序把三条都列出来（NA N4146 47/47、LA N4146 34/34、LA N1210 25/25），形如“U17 铁锚、U43 竹篮、U86 陶罐…”，即复述记录而不是回答被问条目。</li>
+<li>恢复 V 会把一部分原本自然答对的格改错：LA B1 N1210 7 格、LA E1 C1343 7 格、NA E1 N4146 6 格、LA N1 与 N-A 的 R0 各 5 格，其余 0–3 格。所以“只恢复 V”的效果不是单调修复。</li>
+</ul></main></html>

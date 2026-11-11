@@ -1,0 +1,58 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>追加诊断准备记录</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="_1">追加诊断准备记录</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/judgment-report-toy-v1-2026-10-26/EXECUTION.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/judgment-report-toy-v1-2026-10-26/EXECUTION.zh-CN.md">固定提交原件</a>；SHA-256：<code>b5b93ce3ed77302b8022223f43d97ed21fcc4c6e088112fef0cc5926292dd870</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="_2">追加诊断准备记录</h1>
+<p>2026-10-26，北京时间17:17前后。<strong>代码、合同与CPU验收已完成，停在正式实验开跑前。</strong> 没有加载Qwen模型，没有模型预检、正式逐题记录或GPU计时结果。</p>
+<h2 id="_3">原来走到哪一步</h2>
+<p>原根因合同分四步：1拆针、2内部筛选、3十候选真实修复/重现、4具体功能解释及新题确认。前三步均已完成，第四步尚未开始。首轮执行完整性通过，但没有候选的正确率同时通过四项双向比较；连续分数的线索不能替代任务正确率，更不能直接命名功能区。原合同允许零解释及停止。</p>
+<p>本轮是用户批准的有限追加诊断，单独版本，不改原判据、不改旧收据，也不把它冒充原第四步。依据是修复与重现不一致，以及答案标签偏置线索。</p>
+<h2 id="_4">准备了什么</h2>
+<ul>
+<li>固定C05/L19 attention及比较候选C01/L23 attention，均只替换提示最后位置的贡献；复用首轮模型、两针、原评分与匹配对照。</li>
+<li>32道MMLU各四次选项轮换；16组比较题各含需判断/已给答案两个版本及四次轮换。共48个基础单位、256变体，每候选六条件。</li>
+<li>每基础题固定参考尺度；保存原始选项分数、内容与标签身份、修复/重现逐题变化及完整干预审计。</li>
+<li>代码具有新授权拦截、冻结校验、失败保全和禁止原地续跑；支持以后获准时每卡一个候选。没有后台队列或自动开跑。</li>
+</ul>
+<p>完整设计见<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/judgment-report-toy-v1-2026-10-26/CONTRACT.zh-CN.md">合同</a>，之后的运行方式见<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/judgment-report-toy-v1-2026-10-26/RUNBOOK.zh-CN.md">RUNBOOK</a>。</p>
+<h2 id="_5">实际验收</h2>
+<table>
+<thead>
+<tr>
+<th>检查</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>服务器CPU测试</td>
+<td>15/15通过，零跳过；包括微型合成网络上的真实钩子、针保持开启、位置与范数、异常清理、记录保全与授权拦截</td>
+</tr>
+<tr>
+<td>前序证据</td>
+<td>原<code>validate-parallel</code>及依赖通过原核验器检查，未改写任何旧证据</td>
+</tr>
+<tr>
+<td>数据</td>
+<td>48基础单位、256变体，来源与轮换规则核验通过</td>
+</tr>
+<tr>
+<td>CPU分词</td>
+<td>全256输入的四个标签均为不同单token、共用同前缀；前缀80—1649 token，中位184</td>
+</tr>
+<tr>
+<td>本地/远端冻结</td>
+<td>两端通过，SHA-256 <code>985788b3a1a72762093e7c4bf07d7f08ebc8960818c6c968cb3b86d28f40ca0c</code></td>
+</tr>
+<tr>
+<td>成品模型验证</td>
+<td>未运行；CPU测试不替代真实模型检查</td>
+</tr>
+</tbody>
+</table>
+<p>证据：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/judgment-report-toy-v1-2026-10-26/readiness/prepare-receipt.json">准备收据</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/judgment-report-toy-v1-2026-10-26/readiness/remote-cpu-tests.log">服务器CPU测试</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/judgment-report-toy-v1-2026-10-26/readiness/remote-freeze-tokenizer-check.log">远端冻结及分词检查</a>。</p>
+<h2 id="_6">资源与停止点</h2>
+<p>只读快照中，两张H20均被其他进程占用：GPU0进程1579923，GPU1进程1579924，各约15.9 GiB显存。未干预这些进程，未预留GPU。因此目前是<strong>部署及CPU准备完成</strong>，不能称两张卡空闲或成品模型已验收。</p>
+<p>可用空间：工作盘135.03 GiB；模型盘和<code>/tmp</code>所在文件系统43.65 GiB；本地归档盘877.38 GiB。本轮准备文件约1 MiB，无模型下载和长生成需求，当前准备空间充足；正式运行前按当时剩余量重查。</p>
+<p>正式计划两候选共20,602次前向（含校准与起步检查），实际模型耗时尚未测量。不开模型测速，不把CPU时间报成正式ETA。获新授权且指定GPU空闲后，才做起步模型检查并据真实进度估时。</p>
+<p>用户本轮只批准“写合同代码去推进，停在正式实验开跑前”。<code>authorization.prepare.json</code>明确禁止模型执行，正式运行须另有绑定本轮freeze的新授权。当前不存在正式输出目录，也没有启动或恢复半小时监控。</p></main></html>

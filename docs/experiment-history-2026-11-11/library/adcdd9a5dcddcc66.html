@@ -1,0 +1,54 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CFM-B2（V 子集 × Q 依赖）实验合同 r01</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="cfm-b2v-q-r01">CFM-B2（V 子集 × Q 依赖）实验合同 r01</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-b2-v-subset-q-dependence-v1-2026-11-01/CONTRACT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-b2-v-subset-q-dependence-v1-2026-11-01/CONTRACT.zh-CN.md">固定提交原件</a>；SHA-256：<code>adcdd9a5dcddcc66f30c8e9debbca04f2b9507068ee372652fca64a4481c7bcd</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="cfm-b2v-q-r01_1">CFM-B2（V 子集 × Q 依赖）实验合同 r01</h1>
+<p>日期：2026-11-01。设计：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-b2-v-subset-q-dependence-plan-v1-2026-11-01.zh-CN.md">正式方案</a>（a70b235），冻结选头名单 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-b2-v-subset-q-dependence-design-v1-2026-11-01/head-selection-r01.json">head-selection-r01.json</a>（sha256 33f06608…）。合同与方案冲突以方案为准，偏离记入 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-b2-v-subset-q-dependence-v1-2026-11-01/DECISIONS.zh-CN.md">DECISIONS</a>。授权：用户 2026-11-01“直接写合同代码，测试后上卡跑实验”。</p>
+<h2 id="1">1. 对象与操作</h2>
+<p>Qwen3.5-4B 851bf6e8，BF16、eager；12 输入（6 已见情景 × 2 事实）；只做 N 背景：第13层入口替换为归档 T_native 的 x_T，深层 S=T、全注意力 KV=T，浅层 C。格 (q, h, r)：14 个 G 层 conv 的 q/k 通道（0:4096）取 q 供体；V 头 j（通道 4096+128j 起 128 个）若在 H 取 h 供体、在 R 取 r 供体；四个槽全复制。每格独立重建缓存，单步评分，0 前缀形成。预检（VAR03-f0、VRL04-f0）另加独立重建的 000、111 无操作重放。</p>
+<h2 id="2-limits">2. 预算（代码 <code>LIMITS</code> 强制）</h2>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th style="text-align: right;">评分</th>
+<th style="text-align: right;">模板前向</th>
+<th style="text-align: right;">前缀形成</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>预检</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>正式</td>
+<td style="text-align: right;">96</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>上限</td>
+<td style="text-align: right;">116</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+<p>GPU ≤ 0.5 GPU 小时；存储 ≤ 4 GiB。</p>
+<h2 id="3">3. 工程闸门</h2>
+<ol>
+<li>来源：选头文件与其来源结果 sha256；BRIDGE、CONV-FACTOR 记录/张量 sha256；提示 token 哈希三方一致。</li>
+<li>静态：每输入 H 为 45 个互异 G 层值头，R 为 403 个补集；端点格（000/100/011/111）的 conv 在每个 G 层等于 CONV 的 q/k|V 整段组装。</li>
+<li>重放：000/100/011/111 logits 逐位等于 CONV N:CC/N:TC/N:CT/N:TT，14 层驱动逐位一致。</li>
+<li>逐头布局：第13层（各格入口相同）每格每个值头的 v 逐位等于其供体端点的 v。</li>
+<li>命中：每格 14 个 G 层 recurrent 内核各 1 次、chunk 0 次、入口钩子 1 次、第13层入口 = x_T。</li>
+<li>预检：两个无操作重放逐位等于端点。</li>
+<li>冻结一致。</li>
+</ol>
+<h2 id="4-45">4. 估计量与判据（方案 §4–5 原样）</h2>
+<p>Z ∈ {cz_s46（主）, cz_a}。E(h,r)=Z(1,h,r)−Z(0,h,r)；L=E(0,0)−E(1,1)；B_H(r)=E(0,r)−E(1,r)；B_R(h)=E(h,0)−E(h,1)；A_H、A_R 全部报告；J 三因素差。情景先平均两事实原始差。分类：正向（均值 ≥0.2 且两事实 &gt;0）、反向（≤−0.2 且两事实 &lt;0）、小（|均值| ≤0.1 且两事实 |·| ≤0.2）、其余中间。<strong>主判断：停止侧 B_H(1)</strong>，≥5/6 正向 → 支持；≥5/6 反向 → 反驳并记录反向；≥5/6 小 → 无稳定实质作用；否则不稳定/部分。次要（B_H(0)、B_R(0/1)、答案侧）同规则全部报告，不能挽救主判断。比值仅附表：分母情景均值 |·| ≥1 且两事实同号才显示，否则 NA，不删情景。不得宣称排除一般饱和、H 特殊语义或自然路径比例。</p>
+<h2 id="5">5. 停止</h2>
+<p>任一闸门失败 → 停止，记工程失败；不放宽、不换头、不加剂量或扫层。结果弱/异质 → 结束 H 候选。</p></main></html>

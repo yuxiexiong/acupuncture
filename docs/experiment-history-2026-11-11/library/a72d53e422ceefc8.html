@@ -1,0 +1,55 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>首个数学pass性能核对</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="pass">首个数学pass性能核对</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/wsp-process-reproduction-v1-2026-11-03/fleet-v1/runs/fleet-r1/PERFORMANCE.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-process-reproduction-v1-2026-11-03/fleet-v1/runs/fleet-r1/PERFORMANCE.zh-CN.md">固定提交原件</a>；SHA-256：<code>a72d53e422ceefc8f6bf3d083a9df8d7121084757d3e305ca0c3c6bcc08257ed</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="pass_1">首个数学pass性能核对</h1>
+<p>2026-11-04，北京时间00:33–00:39只读检查。未停止运行、修改模型/采样/批次，未新建GPU测试。第一pass已成功结束；原始证据仍在服务器math-0p8b/actions/turn-002，摘要见performance-pass1.json。</p>
+<table>
+<thead>
+<tr>
+<th>实测</th>
+<th style="text-align: right;">结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>回答数</td>
+<td style="text-align: right;">128</td>
+</tr>
+<tr>
+<td>输出token</td>
+<td style="text-align: right;">3,850,327</td>
+</tr>
+<tr>
+<td>生成墙钟</td>
+<td style="text-align: right;">885.415秒（14.76分钟）</td>
+</tr>
+<tr>
+<td>生成吞吐</td>
+<td style="text-align: right;">4,348.6 token/秒</td>
+</tr>
+<tr>
+<td>整个pass预留设备时间</td>
+<td style="text-align: right;">1,019.322秒（16.99分钟）</td>
+</tr>
+<tr>
+<td>非生成部分合计</td>
+<td style="text-align: right;">133.907秒，13.14%</td>
+</tr>
+<tr>
+<td>平均/中位回答长度</td>
+<td style="text-align: right;">30,080.68 / 32,768 tokens</td>
+</tr>
+<tr>
+<td>达到长度上限</td>
+<td style="text-align: right;">116/128（90.625%）</td>
+</tr>
+</tbody>
+</table>
+<p>主要耗时已定位到长序列生成阶段，尚未做kernel级归因。达到长度上限不能单独证明重复推理；该语义诊断交由研究编辑器按原流程进行，观察者不向它注入结论。GPU采样时P0、100%忙碌、约431W/1980MHz/59℃；CPU所在user.slice没有quota或throttle记录。GPU忙碌不等于达到硬件最优效率。</p>
+<p>模型加载约2.6秒；引擎初始化42.66秒，其中编译14.48秒。当前启用torch.compile、CUDA graphs和FlashAttention，没有发现误用eager生成或CPU模型推理。生成后HF激活重放提示缺少causal_conv1d和flash-linear-attention优化kernel，使用参考实现；这是真实的次要效率问题，但不能拿它解释前面14.76分钟的vLLM生成。即便消除全部非生成开销，本pass也仅约1.15倍提速。</p>
+<p>作者归档50次成功调用中34次generate、16次teacher_forced。34次生成调用耗时中位16.23分钟，范围5.87–32.24分钟；首个96回答调用约5.87分钟。作者设备型号/卡数未充分公开，本次128回答和硬件不同，不能用这些数值判定严格性能等价。50个pass并非50次同规模生成，不能直接乘本pass耗时。</p>
+<p>此前4k短输出14,045 token/s外推明显偏乐观：本批实测仅其31.0%。若机械假定未来输出工作量与作者约145.47M token相同、每设备吞吐维持本批水平，仅解码约9.29 GPU小时，未含加载/重放。这是情景计算，不是ETA；当前8 GPU小时计划存在不足风险，未因此自动扩预算，后续编辑器负载及干预后长度均未知。</p>
+<p>提速判断：保留编译缓存和现有原版/编辑版双卡并行已在实现中；重建常驻服务只能节省次要开销，不在运行中扩建。CPU线程数8的警告存在，但无CPU限流证据，不认定它是主因。补齐HF优化kernel、将单模型批次分到两卡可能加速，均需在独立环境验证数值与轨迹影响，不能在现有搜索中静默更换。vLLM默认不保证不同批次/调度下结果一致，见<a href="https://docs.vllm.ai/en/v0.32.0/usage/reproducibility/">官方复现说明</a>。当前不以减少题数、缩短32k、改采样/精度或关闭thinking换速度。</p>
+<p>观测缺口：LLM默认disable_log_stats=True且当前use_tqdm=False，所以生成中无实时token进度；这是应在后续版本补齐的观察功能，不是本身能加速的修复。官方<a href="https://github.com/vllm-project/vllm/blob/main/docs/design/metrics.md">metrics说明</a>提供吞吐/运行请求日志。当前pass已完成，采用实际done收据核算，避免为了补日志中断或重复它。</p>
+<p>结论：此pass在原始长输出负载下耗时可解释，但未证明引擎已最优；当前未找到经过验证、可在不改变实验条件下立即获得数倍提速的开关。继续现有车队，用已发生的正式调用更新吞吐与预算风险，不再为此追加大规模准备。</p></main></html>

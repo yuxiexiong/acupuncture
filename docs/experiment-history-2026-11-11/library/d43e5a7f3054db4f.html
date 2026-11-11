@@ -1,0 +1,142 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>缓存形成机制｜CFM-S3 v3｜实验合同 r01（缓存写入变量的介入式拆解）</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="cfm-s3-v3-r01">缓存形成机制｜CFM-S3 v3｜实验合同 r01（缓存写入变量的介入式拆解）</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-intervention-chain-analysis-v1-2026-10-31/source/experiments/cache-formation-mechanism-s3-route-intervention-v3-2026-10-31/CONTRACT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-intervention-chain-analysis-v1-2026-10-31/source/experiments/cache-formation-mechanism-s3-route-intervention-v3-2026-10-31/CONTRACT.zh-CN.md">固定提交原件</a>；SHA-256：<code>d43e5a7f3054db4fa92a7fb7bb66cba3025a9ca88b0c84111e8b8138712cef60</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="cfm-s3-v3-r01_1">缓存形成机制｜CFM-S3 v3｜实验合同 r01（缓存写入变量的介入式拆解）</h1>
+<ul>
+<li>设计：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-intervention-chain-analysis-v1-2026-10-31/source/docs/cache-formation-mechanism-s3-route-intervention-design-v3-2026-10-31.zh-CN.md"><code>docs/cache-formation-mechanism-s3-route-intervention-design-v3-2026-10-31.zh-CN.md</code></a> 草案 r3（main edad525），经两轮审查。编号 <code>CFM-S3-v3-20261031</code>。</li>
+<li>依赖：S2 冻结代码与 formal-r01 记录（84 条，收据哈希逐条核验）；S1、阶段一、阶段二的原语。</li>
+<li>授权：用户 2026-10-31 "现在写代码合同测试然后上卡开跑"。阶段一、二的规则同样适用。</li>
+</ul>
+<h2 id="1-0">1. 本轮主张的范围（设计 §0）</h2>
+<p>只主张<strong>在本合同写明的替换条件下</strong>，把哪些模型变量及其组合换成参照值，会削弱、保留或不影响停嘴（D、首步 EOS）与事实使用（S_fact）。<strong>不主张</strong>原生运行的完整作用路径、补偿已被排除、直接与间接作用已分开；做完本轮也不宣布核心问题已完整回答。</p>
+<h2 id="2">2. 对象</h2>
+<p>模型、校准、输入 token、针、内核与 S1、S2 相同。两锚点 × 12 输入。被介入运行恒为 11（E、L 都开针）。介入层：针所在层之后的全部层。</p>
+<table>
+<thead>
+<tr>
+<th>窗口</th>
+<th>位置</th>
+<th>供体</th>
+<th>完备时应逐位等于</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>E</td>
+<td>0..b</td>
+<td>00</td>
+<td>01</td>
+</tr>
+<tr>
+<td>L</td>
+<td>b+1..n−2</td>
+<td>10</td>
+<td>10</td>
+</tr>
+</tbody>
+</table>
+<p>首受影响层组：L0 → L1–L3；L12 → L13–L15。</p>
+<h2 id="3-130">3. 变量组与格（每个锚点 × 输入 130 格）</h2>
+<p>组：V = <code>in_proj_qkv</code> v 通道；R = <code>in_proj_a</code>；K = <code>in_proj_qkv</code> k 通道 + <code>in_proj_b</code>；Qc = <code>in_proj_qkv</code> q 通道；KV = 全注意力 <code>k_proj</code>、<code>v_proj</code>。替换都在投影输出上进行，值取自同一 worker 内重新计算、并已逐值复现 S2 记录的原生参照运行。</p>
+<p>每个窗口（56 格）：</p>
+<table>
+<thead>
+<tr>
+<th>类</th>
+<th>格</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>完备</td>
+<td>五组全为供体（闸门）</td>
+</tr>
+<tr>
+<td>撤除</td>
+<td>单组 5；组合 {R,K}、{V,R,K}、{V,K}</td>
+</tr>
+<tr>
+<td>只留</td>
+<td>单组 5；同上组合 3（被留组钉在 11 原运行值，其余为供体）</td>
+</tr>
+<tr>
+<td>随机零对照</td>
+<td>上述 16 个撤除/只留格各 2 次（撤除：在原运行值上加同幅随机方向；只留：在供体值上加同幅随机方向；幅度 = 该处 ‖供体 − 11 值‖，逐位置、逐层、逐组）</td>
+</tr>
+<tr>
+<td>位置打乱零对照</td>
+<td>单组撤除 5 格各 1 次（供体值在窗口内按错位排列插入）</td>
+</tr>
+<tr>
+<td>层范围</td>
+<td>五组全为供体，只在首组 / 只在其后各层；各配 2 次随机零对照（五组全部加同幅随机）</td>
+</tr>
+</tbody>
+</table>
+<p>撤针后族（11 与 10 各 5 格）：从该运行自身 Mτ 出发，撤针后各位置在递推函数实参（q、k、v、g、β）、<code>in_proj_z</code>、全注意力 <code>q_proj</code>、<code>k_proj</code>、<code>v_proj</code> 上替换为 00 的值。写更新 Wr = 线性层 k、v、g、β 与注意力 k、v；读取 Rd = 线性层 q、z 与注意力 q_proj（查询与门）。格：Wr、Rd、两者都换，以及"两者都换"的 2 次随机零对照。</p>
+<p>规模：每单元 4 条参照 + 1 条惰性检查 + 130 格 = 135 条短运行；24 单元 = 3,240 条。每条为一次前缀（撤针后族不重算前缀）、末提示 token 与两条候选的 teacher forcing，没有自由生成。formal 用 8 个 worker（每卡 4 个；batch 1 独立进程，数值与单进程相同，见阶段二 speed-trial）。</p>
+<h2 id="4-worker">4. 硬闸门（任一不过即停该 worker 并整轮停止；不重试、不改阈值）</h2>
+<ol>
+<li><strong>参照复现</strong>：每单元的 00、10、01、11 参照对 S2 formal-r01 记录逐值相同（64 张量清单、首步 logits 哈希 / top5 / 停止优势、候选逐 token 对数概率）；校准对 II-B 逐值相同。</li>
+<li><strong>钩子惰性</strong>：钩子全部安装、无任何替换时，11 的清单与首步 logits 逐位不变。</li>
+<li><strong>完备性</strong>：每单元 E、L 的完备格逐位等于 01 / 10（清单、首步 logits、候选）。</li>
+<li>每个形成格至少执行了一次替换；撤针后格不改变 Mτ。</li>
+<li>内核身份、钩子移除、权重哈希不变（同 S1）。</li>
+<li>preflight（VAR01-f0 × 两锚点，11 个固定格）全部通过才进 formal。</li>
+</ol>
+<h2 id="5-r3-8s3_analysispy">5. 读数与四步判断（设计 r3 §8；<code>s3_analysis.py</code> 常量）</h2>
+<p>读数在情景（base）层面：D = 两事实首步停止优势均值；S_fact = 两事实候选对数似然差之差；另报首步 EOS 数。Y_T = 11，Y_ref = 窗口参照（撤针后族为 00），Δ = Y_ref − Y_T。</p>
+<ul>
+<li>撤除、层范围、撤针后：恢复量 N = (Y_格 − Y_T)/Δ；只留：保留量 S = (Y_ref − Y_格)/Δ。</li>
+<li><strong>分母</strong>：|Δ| 不超过该格随机零对照绝对变化的 95% 分位时，不报比例，记"分母不可分辨"。
+1. <strong>有方向效应</strong>：值 &gt; 同条件零对照同方向值的 95% 分位（同锚点、窗口、读数、格，6 情景 × 抽取次数合并，线性插值）。撤除单组另用位置打乱零对照，两种零对照结论相反时该格只作描述。
+2. <strong>量</strong>：逐情景点值。
+3. <strong>区间</strong>：≥ 0.8 接近完整；0.2–0.8 部分；≤ 0.2 很少。
+4. <strong>判决</strong>：分辨率 r = 零对照同方向 95% 分位（截到 ≥ 0）。</li>
+<li>单组"必经且足够"：N、S 都有方向且都接近完整 → 支持；N 或 S 为很少且其 r ≤ 0.5 → 反驳；否则证据不足。</li>
+<li>联合（V 对 {R,K}、V × K）：单独撤除两方都只部分或很少、合并撤除接近完整且有方向；或单独只留两方都很少、合并只留接近完整且有方向 → 支持。一方单独接近完整且有方向、另一方很少且 r ≤ 0.5 → 反驳。否则证据不足。交互 I = 合并 − 单方之和，逐情景报告。</li>
+<li>层范围"接近完整"：同"必经且足够"的单侧版本。</li>
+<li>撤针后"效应在干净后续条件下仍存在"：保留量 1 − N_both ≥ 0.2 → 支持；N_both 接近完整、有方向且 r ≤ 0.5 → 反驳；否则证据不足。Wr × Rd 交互 |I| ≤ 0.2 才陈述主效应。</li>
+<li>所有判决逐情景报告；不设"多数情景成立"的总判决。</li>
+<li>诊断（不作判决）：替换位移与 ‖G_供体 − G_T‖ 之比；撤针时各层缓存到参照、到 11 的距离；答案位置最终隐状态在停止方向（lm_head 中第一个停止 token 行减去 00 的最高非停止 token 行）上的投影。</li>
+</ul>
+<h2 id="6">6. 事先登记的预测（推测档；结果出来前冻结）</h2>
+<p>设计 r3 删去了 r1 的预测表，P0 也没有做离线局部分析（见实现说明第 4 条），所以下列都是推测，没有定量理论预测：</p>
+<table>
+<thead>
+<tr>
+<th>编号</th>
+<th>预测</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P1</td>
+<td>停嘴（D）的原效应主要在 L 窗口：L0 的 L 窗口 Δ 可分辨，E 窗口 Δ 不可分辨或很小（依据：S2 中 L0 的 01 首步 EOS 10/12，10 为 0/12）</td>
+</tr>
+<tr>
+<td>P2</td>
+<td>L0 的事实使用（S_fact）在 E 窗口有可分辨的 Δ（依据：S2 中 L0-10 的 S_fact 降到 ≤ 5.3）</td>
+</tr>
+<tr>
+<td>P3</td>
+<td>两锚点、两读数中，任何单组都不"必经且足够"；联合（V 对 {R,K} 或 V × K）至少在一个读数上被支持</td>
+</tr>
+<tr>
+<td>P4</td>
+<td>L0 撤针后（post11）停嘴在干净后续条件下不能维持（"仍存在"被反驳）</td>
+</tr>
+<tr>
+<td>P5</td>
+<td>L0 E 窗口 S_fact 的层范围"首组接近完整"被支持</td>
+</tr>
+</tbody>
+</table>
+<h2 id="7">7. 失败类型与停止</h2>
+<ul>
+<li>闸门失败：合同执行失败，信息量为零。</li>
+<li>判决"证据不足"：没拿到结果，不是负面证据。</li>
+<li>预测不符：照实报告。</li>
+<li>停止：preflight 不过不进 formal；formal 任一单元闸门失败即整轮停止；规模不得超出 §3。</li>
+</ul></main></html>

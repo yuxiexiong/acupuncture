@@ -1,0 +1,94 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CFM-LOCAL-READOUT v1 实验合同 r01</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="cfm-local-readout-v1-r01">CFM-LOCAL-READOUT v1 实验合同 r01</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-local-readout-causal-v1-2026-11-01/CONTRACT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-local-readout-causal-v1-2026-11-01/CONTRACT.zh-CN.md">固定提交原件</a>；SHA-256：<code>f78be91d1c845dfb21a2843e0f306e8a9d153815a3f30474299d1c828fa8e8b8</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="cfm-local-readout-v1-r01_1">CFM-LOCAL-READOUT v1 实验合同 r01</h1>
+<p>日期：2026-11-01。设计依据：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-local-readout-causal-plan-v1-2026-11-01.zh-CN.md">方案 r3</a>。合同与方案冲突时以方案 r3 为准，偏离记入 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-local-readout-causal-v1-2026-11-01/DECISIONS.zh-CN.md">DECISIONS</a>。运行授权：用户 2026-11-01 指令“把方案改了吧，然后写合同代码，做测试上卡跑实验”。</p>
+<h2 id="1">1. 问题与对象</h2>
+<p>第13层（首个深层 GDN 层）评分步内核输出边上，旧状态×有效读系数交互 I_b=(S_T−S_C)ᵀ[w(F_T;x_b)−w(F_C;x_b)] 被减去后，最终停止竞争 D 怎样变化。Qwen3.5-4B 851bf6e8，BF16，原 bridge 合同的输入、针 L0/N4146/−1（仅历史形成期）、停止集 {248044, 248046}。12 输入 = 6 已见情景 × 2 事实；第13层为看过数据后选定，属数据知情的机制探索。</p>
+<h2 id="2">2. 来源（只读）</h2>
+<ul>
+<li>bridge formal-r01 记录与张量（<code>cache-formation-readout-bridge-v1-2026-10-31/runs/formal-r01</code>），按其收据 sha256 校验后读取：C/T 深层 τ 缓存、C 浅层缓存、C/Y_T/T_native 评分驱动、T_native 第13–31层残差入口、评分 logits 哈希。</li>
+<li>代码沿用冻结的 combo/bridge/form_ab 链（只 import，不修改）。</li>
+</ul>
+<h2 id="3">3. 操作矩阵（每输入）</h2>
+<table>
+<thead>
+<tr>
+<th>背景</th>
+<th>缓存</th>
+<th>第13层入口</th>
+<th>格</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>M</td>
+<td>C 浅层 + T 深层（= bridge Y_T）</td>
+<td>浅层自然计算 x_C</td>
+<td>R、−I_M、−J_M、Q0、Q1</td>
+</tr>
+<tr>
+<td>N</td>
+<td>同上</td>
+<td>前钩子替换为归档 T_native 的 x_T</td>
+<td>R、影子（第13层 conv_states 换 F_C）、−I_N、−J_N、Q0、Q1</td>
+</tr>
+</tbody>
+</table>
+<p>I_M、J_M 由归档驱动在 CPU FP64 算出；I_N、J_N 由 N:R 与影子格实测驱动算出。Q_k = 单位方向（SHA256(<code>CFM-LOCAL-READOUT-v1|item|k</code>) 前16位十六进制为种子，CPU FP32 标准正态，FP64 逐头归一化）× I_b 的逐头范数。减法在 FP64，一次转回 BF16；s_new 原样返回；只单步评分，不生成。</p>
+<p>预检（VAR03-f0、VRL04-f0；原生前者 D=+0.0625 停止、后者 −0.8125 不停止）每输入加：M/N 零补丁、M/N 减后加回、N 记录器关闭参考。</p>
+<h2 id="4-limits">4. 预算（硬上限，代码 <code>LIMITS</code> 强制）</h2>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th style="text-align: right;">前缀形成</th>
+<th style="text-align: right;">单步评分</th>
+<th style="text-align: right;">模板前向</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>预检</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">32</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td>正式</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">132</td>
+<td style="text-align: right;">2（每 worker 1）</td>
+</tr>
+</tbody>
+</table>
+<p>模板前向 = 1 个 token 在位置0的前向，仅提供缓存对象结构，全部张量随后被归档覆盖并逐字段核对 manifest（见 DECISIONS D1）。失败调用计入上限；修实现重跑须另列已消耗与修订预算。</p>
+<h2 id="5-worker">5. 工程闸门（任一不过 → 该 worker 中止，记为合同执行失败，不是科学负结果）</h2>
+<ol>
+<li>缓存：Y 与影子缓存的每个字段哈希等于 bridge 记录中 C 浅层/T 深层（影子 13:conv_states 等于 C）。</li>
+<li>重放：M:R logits 逐位等于 bridge Y_T；N:R 逐位等于 bridge T_native；两者 14 个 G 层驱动（q/k/v/g/β/core/z）逐位等于归档；N:R 第13–31层残差入口逐位等于归档；影子与 N:R 共享 x_T、g、β。</li>
+<li>代数：四格恒等式 ‖I−ΔSᵀΔw‖ ≤ 1e−10·‖ΔSᵀΔw‖；CPU 重构 core 相对误差 ≤ 0.005（M：o11 对 Y_T、o00 对 C；N：o11 对 N:R、o10 对影子）。</li>
+<li>补丁：每格第13层内核恰好命中1次；s_new 哈希等于本背景 R；补丁前 core 与第13层入口等于 R；随机方向逐头范数等于 I（rtol 1e−12）。</li>
+<li>预检：零补丁与减后加回 logits 逐位等于 R；记录器关闭的 N 参考逐位等于 T_native。</li>
+<li>冻结：freeze-r01 中全部文件哈希在授权、运行、验证时一致。</li>
+</ol>
+<p>实际删除量相对 L2 误差 &gt; 0.05 的格记为<strong>数值不可判</strong>（逐格记录，不中止）；该背景 I 档改记 <code>numerically_undecidable</code>。</p>
+<h2 id="6-781">6. 读数与判据（冻结，见方案 §7、§8.1）</h2>
+<p>δX_b = D(R_b) − D(X_b)，X∈{−I,−J,Q0,Q1}；同时报告锁定词对 L、固定分母 L、EOS 翻转。单位为情景（两事实均值）；G_s = D(R_b) − D(C)，|G_s|&lt;1 的情景不进比值。</p>
+<ul>
+<li>I 档：<strong>明显推动</strong>（δI&gt;0 ≥5/6、超出两随机参照 ≥5/6、ρ 中位数 ≥0.05）/ <strong>明显抑制</strong>（对称）/ <strong>弱</strong>（|ρ| 中位数 &lt;0.05）/ <strong>有作用但不特异或不稳定</strong>。e≥5/6 在可交换零假设下概率 13/729≈0.018（推导档）。</li>
+<li>J 档：幅度明显（未标零分布）/ 弱 / 不稳定；不作 I 的门槛。</li>
+<li>背景比较：only_M / only_N / both_clear / no_background_claim。</li>
+<li>局部分量（描述）：cos(I, A_S+A_F)、各项范数。冻结前 CPU 预演已见 M 背景该余弦为 −0.47 至 −0.56（12/12），登记为已知描述，不作判据。</li>
+</ul>
+<p><strong>无定量预测登记</strong>：现有理论不给出 δI 的数值预测；本轮不事后补登。</p>
+<h2 id="7">7. 停止条件</h2>
+<ul>
+<li>预检任一闸门失败 → 不进入正式，定位后按 DECISIONS 记账，修订预算后才能重跑。</li>
+<li>N:R 重放失败 → 本预算作废并停止（方案 §9.2），不重建前缀。</li>
+<li>正式运行中任一 worker 失败 → 另一 worker 终止，保留部分证据，不补跑救结果。</li>
+<li>结果不利不调参、不加剂量、不扫层、不加种子。</li>
+</ul>
+<h2 id="8">8. 输出</h2>
+<p><code>runs/preflight-r01/</code>、<code>runs/formal-r01/</code>（记录 JSON 进 git；张量留服务器）；<code>analysis/readouts-r01.json</code>（<code>lr_analysis.py</code>）；<code>readiness/</code>（CPU 测试收据、真实数据预演、授权）；冻结后的提交哈希记入授权文件 <code>code_commit</code>。</p></main></html>

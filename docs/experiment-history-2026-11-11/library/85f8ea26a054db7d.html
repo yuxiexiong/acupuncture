@@ -1,0 +1,192 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>失序与层、通道及图上位置的关系</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="_1">失序与层、通道及图上位置的关系</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/layer-trace-extension-v1-2026-10-28/analysis-early-r01/POSITION.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/analysis-early-r01/POSITION.zh-CN.md">固定提交原件</a>；SHA-256：<code>85f8ea26a054db7db856005ed474f3edcd330df2e07fbffe9f65ad54650a8f75</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="_2">失序与层、通道及图上位置的关系</h1>
+<p>2026-10-28；ANALYZED。仅分析本地既有结果，无新推理。本轮沿用早层统计，并从 A/B 冻结 sources.jsonl 取 4B 全32层的十点 +1 正式输出，共2,560条，每层80条（十通道×八题）；排除B中无stage的基线引用。深层补充只读取输出，没有重新分析深层内部轨迹。</p>
+<p>结论：已有明确的层依赖和通道依赖，尚无连续二维区域证据。以下数字是本次抽测条件的描述，不能作为总体发生率或功能区边界。</p>
+<table>
+<thead>
+<tr>
+<th>4B层</th>
+<th style="text-align: right;">首token EOS /80</th>
+<th style="text-align: right;">机械重复 /80</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>L0</td>
+<td style="text-align: right;">79</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>L1</td>
+<td style="text-align: right;">64</td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr>
+<td>L2</td>
+<td style="text-align: right;">46</td>
+<td style="text-align: right;">14</td>
+</tr>
+<tr>
+<td>L3</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr>
+<td>L4</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">9</td>
+</tr>
+<tr>
+<td>L5</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">9</td>
+</tr>
+<tr>
+<td>L6</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td>L7</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr>
+<td>L8</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>L9</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">10</td>
+</tr>
+<tr>
+<td>L10</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">12</td>
+</tr>
+<tr>
+<td>L11</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">16</td>
+</tr>
+<tr>
+<td>L12</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">14</td>
+</tr>
+<tr>
+<td>L13</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">14</td>
+</tr>
+<tr>
+<td>L14</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">26</td>
+</tr>
+<tr>
+<td>L15</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">13</td>
+</tr>
+<tr>
+<td>L16</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">21</td>
+</tr>
+<tr>
+<td>L17</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">18</td>
+</tr>
+<tr>
+<td>L18</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">13</td>
+</tr>
+<tr>
+<td>L19</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">9</td>
+</tr>
+<tr>
+<td>L20</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">6</td>
+</tr>
+<tr>
+<td>L21</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">21</td>
+</tr>
+<tr>
+<td>L22</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">14</td>
+</tr>
+<tr>
+<td>L23</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">15</td>
+</tr>
+<tr>
+<td>L24</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr>
+<td>L25</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">15</td>
+</tr>
+<tr>
+<td>L26</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">8</td>
+</tr>
+<tr>
+<td>L27</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">18</td>
+</tr>
+<tr>
+<td>L28</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">16</td>
+</tr>
+<tr>
+<td>L29</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">17</td>
+</tr>
+<tr>
+<td>L30</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">20</td>
+</tr>
+<tr>
+<td>L31</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">21</td>
+</tr>
+</tbody>
+</table>
+<p>机械重复沿用已存脚本的定义：重复出现的token四元组位置占全部四元组位置至少50%；不是语义失败标注，128token上限本身不算失序。首步停止集中于最早几层；重复在中后层也存在，不能称为早层专属。早层大量EOS截断了形成长重复的机会，所以不能把两列互斥计数理解为互斥功能区，也不能仅凭原始计数称L14最容易驱动重复。比如L2的14条重复在34条未首步EOS记录中占41.2%，与14/80回答的是不同问题；条件化后的比例也不是无偏因果估计。</p>
+<p>同层通道差异更具体：</p>
+<ul>
+<li>L0：十通道中九个为8/8首步EOS，N6616为7/8，表明这组条件下停止效应覆盖多个随机点。</li>
+<li>L2：N198、N575、N4736均8/8首步EOS；重复集中于N5251（7/8）、N5063（4/8）、N9099（3/8）。这三个重复通道的首步EOS分别为0/8、3/8、1/8，故同一通道也会因问题而改变结局。</li>
+<li>L4：N1659为8/8首步EOS，其余九个通道首步EOS均为0；N6767为8/8机械重复。N5428在Q04给出“第一步：李达。第二步：李斯。”，只是已核查个案，尚无全量语义失序率。</li>
+<li>较深层也有跨题稳定重复点：L16 N2808、L21 N3666、L31 N2099/N7381各8/8。</li>
+</ul>
+<p>4B每层9216通道，十点约0.1085%，每层只在其中一个点追加正负剂量。因此可以识别已测点的响应差异，不能凭十点描出连续区域或将单点剂量阈值推广到整层。抽样依据见<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-survey-toy-v1-2026-10-27/PROTOCOL.zh-CN.md">原十点协议</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-dose-survey-toy-v1-2026-10-27/PROTOCOL.zh-CN.md">剂量协议</a>。</p>
+<p>三维位置的含义也需区分：层深轴表示计算顺序；index布局的层内两个轴按编号排网格；当前4B默认writes布局则将归一化down_proj列向量经PCA、UMAP和网格排序展示。writes邻近是写出权重相似性的投影线索，不是物理邻接或因果功能证据。各层独立布局，没有跨层、跨模型坐标对齐。</p>
+<p>具体反例：L2 N5063/N5251在index网格坐标为(71,52)/(67,54)，看似接近；实际writes缓存为(11,65)/(81,5)，相距约92.20格。两者都有循环，但不支持当前图上局部聚集，而且此前已发现两者的持续干预/历史支持情况不同。</p>
+<p>布局定义：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/neuron-explorer-multimodel-v2-2026-10-26/upstream/explorer/build_layout.py">build_layout.py</a>；网格和传播着色：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/neuron-explorer-multimodel-v2-2026-10-26/upstream/explorer/static/map3d.js">map3d.js</a>。本批传播颜色是整个attention、MLP组件和层末残差的读数，不是每个通道的动态激活热图。因此板上变色不能定位层内某小片区域首先失灵。</p>
+<p>当前证据更适合描述“模型×层×通道×剂量/方向×问题”的响应关系。同点9B L0 N978的Q04由+0.125正常、+0.25首步EOS、+0.5“托”后EOS到+1“托”循环，说明位置本身不决定唯一结局。跨模型也不共享确定边界：同样每层80条，Qwen9B首步EOS延伸到L5，而Llama前六层十点+1均无首步EOS。详见<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/analysis-early-r01/REPORT.zh-CN.md">前一轮完整分析</a>。</p>
+<p>解释风险沿用<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/analysis-early-r01/stats-note.md">既有统计说明</a>：保留全部固定条件，不把八题视为八个独立通道；不以机械指标替代人工语义结论；不从聚合层效应推断单点功能；明确EOS导致重复观察机会减少的选择问题；不把降维邻近或相关性当中介因果。本次未做显著性检验或区域聚集检验。</p></main></html>

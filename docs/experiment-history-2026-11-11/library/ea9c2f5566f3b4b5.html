@@ -1,0 +1,16 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>NWC-01 偏离与修复记录</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="nwc-01">NWC-01 偏离与修复记录</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-native-write-confirm-v1-2026-11-05/DEVIATIONS.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-native-write-confirm-v1-2026-11-05/DEVIATIONS.zh-CN.md">固定提交原件</a>；SHA-256：<code>ea9c2f5566f3b4b5e6b597893ede656449e36da0973fc2296513bb4a67304a61</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="nwc-01_1">NWC-01 偏离与修复记录</h1>
+<h2 id="d12026-11-06-r01-6-7">D1（2026-11-06）：预检 r01 失败——恒等式闸门写错，按合同 §6 第 7 条做一次有记录的修复</h2>
+<p><strong>发生了什么。</strong> 预检 <code>runs/preflight-r01</code> 在第三个单元（新输入 NWC-NQ01-S1-a，层 N）的工程闸门上停止：<code>DV + D10 != D00 patch</code>，相对误差 0.054。此前两个旧输入单元全部闸门通过，其中 12 臂与 NWR-01 记录逐位一致。失败单元没有写出记录或张量。<strong>没有任何新面板输出产生或被看到。</strong> 失败的运行目录原样保留。按 6.7 分类：合同执行失败，信息量为零，不是科学阴性。</p>
+<p><strong>根因。</strong> 合同 §3 写"DV 与 D10 的补丁相加等于 D00 的补丁"，§6 第 3 条据此设闸。这句话只在第一个递推层成立。补丁在 14 个递推层里逐层施加，更高层的 q 由接收者当前计算得到，会响应本臂在下层已经打的补丁；三个臂的下层补丁不同，所以更高层各自的 q 不同，补丁不再相加相等。相加相等的是<strong>状态差</strong>（在所有层），不是各臂实际注入的补丁。CPU 测试只覆盖单层核，所以没有暴露。这与 r01 设计被指出的问题同源：更高层的量会随下层操作改变。实现本身没有错：补丁算术对 FP64 的误差 1.2e−7，旧输入逐位桥接通过。</p>
+<p><strong>修复（代码 <code>nwc_run.py</code>，计划号 <code>…r03-fix1</code>；重新冻结为 <code>freeze-r03.json</code>）。</strong>
+1. §6 第 3 条的恒等式闸门改为两条：状态差 (L00−L10)+(L10−L11) 等于 (L00−L11)，在全部 14 层验，相对误差 ≤ 1e−4；补丁 DV＋D10 等于 D00 只在第一个递推层验，相对误差 ≤ 1e−4。其余 13 层的补丁相加误差逐层记录，不设闸。
+2. 半幅度闸门同理：半幅度补丁范数等于全幅度的一半，只在第一个递推层验（≤ 1e−5）；其余层记录。
+3. 两条旧输入（桥接单元）也跑构造供体的五个臂（DV、DX、三个半幅度臂），DX 的"另一输入"取它自己。目的只有一个：让上述闸门先在已见过的输入上演示通过，再碰新输入。这些臂在旧输入上的输出不进入任何判读。
+4. 预检重跑写入 <code>runs/preflight-r02</code>。</p>
+<p><strong>对合同文本的更正（冻结的合同不改，以本条为准）。</strong> §3"DV 与 D10 的补丁相加等于 D00 的补丁"应读作："DV 与 D10 的状态差相加等于 D00 的状态差；三者实际注入的补丁只在第一个递推层相加相等，更高层各臂的 q 随本臂的下层补丁而变"。这不改变任何臂的操作定义。</p>
+<p><strong>影响哪些结论。</strong> 不改变 §5 的任何预测、门槛或允许写的句子。它加强了 P3 那一行已有的限制："原生补丁的效应可按分量相加"不允许写，现在连补丁本身也不可加。范数比 ‖DV‖/‖D10‖（P3 的不可判条件）按各臂实际注入的补丁计算，定义不变，但读者应知道它是在各自上游条件下的范数。</p>
+<p><strong>修复额度。</strong> 合同允许的一次修复已用掉。预检 r02 若再失败，停止并上报，不再修。</p></main></html>

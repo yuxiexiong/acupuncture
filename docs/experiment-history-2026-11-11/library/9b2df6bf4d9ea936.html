@@ -1,0 +1,140 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CFM-B2（V 子集 × Q 依赖）结果报告</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="cfm-b2v-q">CFM-B2（V 子集 × Q 依赖）结果报告</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-b2-v-subset-q-dependence-v1-2026-11-01/REPORT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-b2-v-subset-q-dependence-v1-2026-11-01/REPORT.zh-CN.md">固定提交原件</a>；SHA-256：<code>9b2df6bf4d9ea936172192e552b21a88cf3b5444bb526f4aea0ccbff01ebdaf0</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="cfm-b2v-q_1">CFM-B2（V 子集 × Q 依赖）结果报告</h1>
+<p>日期：2026-11-01。<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-b2-v-subset-q-dependence-plan-v1-2026-11-01.zh-CN.md">正式方案</a>（a70b235）；<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-b2-v-subset-q-dependence-v1-2026-11-01/CONTRACT.zh-CN.md">合同 r01</a>；<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-b2-v-subset-q-dependence-v1-2026-11-01/DECISIONS.zh-CN.md">决策 D1–D3</a>。代码 de5ce68，freeze-r01 <code>27820148…3378</code>。同一助手实现、运行与撰写，不是独立复核。</p>
+<h2 id="1">1. 结论（限制先说）</h2>
+<p><strong>两条不能省略的限制：</strong>（1）H 自身的 V 效应比 R 大（停止侧 A_H(0,0) = 3.4–5.2 logit，A_R(0,0) = 1.1–2.6），“V 效应越大、Q 作用被饱和得越多”的一般饱和解释与全部结果相容（方案 §6），不能宣称 H 是特殊材料；（2）H 按停止侧 |c_s46| 选出，天然偏向停止相关头，下文停止侧/答案侧的分离可能部分来自选头方式。</p>
+<p><strong>预定主判断（停止侧 B_H(1)）：稳定正向（5/6 正向，1/6 中间）。</strong> 在其余 403 个头的 V 保持有针时，把 H 的 V 换回干净，Q 对停止词的作用恢复 0.12–0.79 logit（全 V 有针时 Q 作用仅 0.01–0.23）。这支持“该冻结 H 在 R 有针条件下稳定改变 Q 的停止侧输出作用”。</p>
+<p><strong>完整条件结构（停止侧）：</strong></p>
+<table>
+<thead>
+<tr>
+<th>估计量</th>
+<th>含义</th>
+<th>情景范围</th>
+<th>判定</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>E(0,0)</td>
+<td>V 全干净时 Q 作用</td>
+<td>0.80–1.87</td>
+<td>—</td>
+</tr>
+<tr>
+<td>E(1,0)</td>
+<td>仅 H 有针时 Q 作用</td>
+<td>0.15–0.44</td>
+<td>—</td>
+</tr>
+<tr>
+<td>E(0,1)</td>
+<td>仅 R 有针时 Q 作用</td>
+<td>0.16–0.90</td>
+<td>—</td>
+</tr>
+<tr>
+<td>E(1,1)</td>
+<td>V 全有针时 Q 作用</td>
+<td>0.01–0.23</td>
+<td>—</td>
+</tr>
+<tr>
+<td>B_H(0)</td>
+<td>只加入 H 压低 Q 作用</td>
+<td>0.45–1.61</td>
+<td>6/6 正向</td>
+</tr>
+<tr>
+<td>B_R(0)</td>
+<td>只加入 R 压低 Q 作用</td>
+<td>0.44–1.33</td>
+<td>6/6 正向</td>
+</tr>
+<tr>
+<td><strong>B_H(1)</strong></td>
+<td>R 有针时去掉 H，Q 作用恢复</td>
+<td><strong>0.12–0.79</strong></td>
+<td><strong>5/6 正向（主判断）</strong></td>
+</tr>
+<tr>
+<td>B_R(1)</td>
+<td>H 有针时去掉 R，Q 作用恢复</td>
+<td>0.12–0.29</td>
+<td>4/6，不稳定/部分</td>
+</tr>
+</tbody>
+</table>
+<p>即：只让 H 有针就几乎消掉 Q 的停止侧作用（B_H(0)/L = 0.82–0.91，L ≥1 的 5 情景）；只让 R 有针只消掉一部分（0.52–0.91）；H 在场时再加 R 增量很小，R 在场时去掉 H 能恢复一部分。按方案措辞：H 在 R 有针与 R 干净两种条件下都稳定改变 Q 的停止侧作用；R 只在 H 干净时稳定改变它。</p>
+<p><strong>答案侧（次要，同规则）：</strong> Q 原本压低答案词（E(0,0) = −0.76 至 −1.28）。R 有针时这一压低作用变弱，B_R(0)、B_R(1) 均 6/6 稳定（负号表示 Q 的负向作用缩小）；H 有针时没有稳定变化（B_H(0)、B_H(1) 不稳定）。即停止侧的 Q 依赖主要随 H，答案侧随 R——受限制（2）约束。</p>
+<p><strong>行为（辅助）：</strong> 首步停止数：011/111（全 V 有针）8/12，110（仅 H 有针、Q 有针）5/12，010 1/12，R 单独有针的两格 0/12。</p>
+<h2 id="2">2. 执行</h2>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th style="text-align: right;">评分</th>
+<th style="text-align: right;">模板</th>
+<th style="text-align: right;">墙钟</th>
+<th>闸门</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>预检 r01（VAR03-f0、VRL04-f0）</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">30 s</td>
+<td>全过</td>
+</tr>
+<tr>
+<td>正式 r01（12 输入，2 worker）</td>
+<td style="text-align: right;">96</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">各 49 s</td>
+<td>全过</td>
+</tr>
+<tr>
+<td>合计 / 上限</td>
+<td style="text-align: right;">116 / 116</td>
+<td style="text-align: right;">3 / 3</td>
+<td style="text-align: right;"></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>闸门：选头文件与来源哈希；端点 000/100/011/111 与 CONV N:CC/N:TC/N:CT/N:TT logits 及 14 层驱动逐位一致；第13层每格每个值头的 v 逐位等于其供体端点（逐头布局，D2）；每格 14 个 G 层内核各 1 次、chunk 0 次、入口 1 次；预检无操作重放逐位一致。无偏离、无失败尝试。</p>
+<h2 id="3-1">3. 比值附表（只描述，不是成功标准；分母 |均值| ≥1 且同号才显示）</h2>
+<p>停止侧：B_H(1)/L 0.09–0.48（VAR03 NA），B_H(0)/L 0.82–0.91，B_R(0)/L 0.52–0.91，B_R(1)/L 0.09–0.18；B_H(0)/A_H(0,0) 0.12–0.37，B_R(0)/A_R(0,0) 0.35–0.63。比值不能区分材料关系与一般饱和（方案 §6 反例）。全部逐输入数值见 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-b2-v-subset-q-dependence-v1-2026-11-01/analysis/readouts-r01.json">readouts-r01.json</a>。</p>
+<h2 id="4">4. 可以说 / 不可以说</h2>
+<table>
+<thead>
+<tr>
+<th>可以说</th>
+<th>不可以说</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>冻结的 45 头 V 子集，在 R 有针和干净两种条件下都稳定改变 Q 的停止侧作用；只让它有针就几乎消掉该作用</td>
+<td>H 是特殊材料、语义载体或 Q 依赖的唯一来源；已排除一般饱和</td>
+</tr>
+<tr>
+<td>这 45 头的 V 主效应在停止侧大于其余 403 头</td>
+<td>每头效率更高（H、R 未匹配，不比较效率）</td>
+</tr>
+<tr>
+<td>答案侧 Q 依赖随 R 而非 H 稳定变化</td>
+<td>停止与答案由不同机制产生（选头偏向停止侧）</td>
+</tr>
+<tr>
+<td>得到一个可交给计算解释的条件关系</td>
+<td>已找到计算机制；阶段 B 完成</td>
+</tr>
+</tbody>
+</table>
+<h2 id="5-8">5. 下一步（方案 §8，不是运行授权）</h2>
+<p>阳性只把“H 的有针 V 让 Q 的停止侧作用饱和”这一条件关系交给后续计算解释。下一个问题应针对它提出可区分预测：例如 H 的 V 与 Q 是否在同一批头、同一层的写入/读取上相遇，还是经由后续层的共同读出饱和——后者与一般饱和更接近。答案侧随 R 的依赖需用不按停止侧选出的子集另行检验，才能判断分离是否来自选头。</p></main></html>

@@ -1,0 +1,95 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>v4 准备工作自查</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="v4">v4 准备工作自查</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/wsp-vlm-processor-prep-v4-2026-11-05/SELF_CHECK.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-processor-prep-v4-2026-11-05/SELF_CHECK.zh-CN.md">固定提交原件</a>；SHA-256：<code>17612ec2e2f237d21c64203aa0ce13d3aa54351dd3fbc460b111a8db8c4f9066</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="v4_1">v4 准备工作自查</h1>
+<p>使用 <code>docs/experiment-design-self-check.zh-CN.md</code> v1。同一助手自查，非独立审查。本轮是已批准方案的工程准备，不新增科学设计。</p>
+<h2 id="_1">设计卡与版本差异</h2>
+<ul>
+<li>主线：研究者 AI 依据目标 VLM 的具体失效反馈，定位并搜索稀疏权重修补；先确认 B/C 行为失效。</li>
+<li>本轮：固定模型资产是否完整，实际处理器是否保留可审核的视觉输入，P0 还有何工程阻碍。</li>
+<li>增量：v3 只有离线输入包/运行器；v4 增加真实固定处理器 CPU 结果、474 张缩放图审核、64 条真实序列化以及资产哈希验收。没有新增模型行为认识。</li>
+<li>依据：v3 冻结运行器/队列、v2 通过组、官方固定模型元数据、实际文件与 CPU 日志；不以截图或旧“已准备”口头描述替代当前回执。</li>
+<li>操作：下载固定 revision 文件；仅实例化 processor/tokenizer，调用 CPU resize/图像处理与 chat template。无模型、层、hook、剂量或权重编辑。</li>
+<li>估计对象：文件完整性、图像处理一致性、源图到缩放图的可辨认性变化；不估计准确率或因果机制。</li>
+<li>判读：哈希或网格失败则工程失败；缩放导致关键对象/关系不可辨认则标记并停止该输入使用，不凑组；本次未观察到该失败。源数据原有质量限制继续记录。</li>
+<li>成本/退出：12 文件约 8.89 GB 下载、CPU 处理和本地视觉审核；0 次模型调用、0 GPU 计算。完成回执即止，不自动进入 P0。</li>
+</ul>
+<h2 id="c01c14">C01–C14</h2>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th>判定及理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C01</td>
+<td>通过：WSP 问题和 B/C 任务未更换；准备只服务后续行为筛查。</td>
+</tr>
+<tr>
+<td>C02</td>
+<td>通过（工程）：消除真实处理器与模拟输入不一致风险；不包装为科学发现。</td>
+</tr>
+<tr>
+<td>C03</td>
+<td>通过：复用 v3 处理器路径，官方固定元数据与逐文件校验，来源见 README。</td>
+</tr>
+<tr>
+<td>C04</td>
+<td>通过：面对暗图、遮挡、水印、源裁切等反例；可辨认不推出模型会答对。</td>
+</tr>
+<tr>
+<td>C05</td>
+<td>通过：只处理输入图片/文本，禁止权重加载入口；没有干预模型内部。</td>
+</tr>
+<tr>
+<td>C06</td>
+<td>通过：模型 revision、像素预算、队列/划分均不改；处理器实际尺寸取整如实记录。</td>
+</tr>
+<tr>
+<td>C07</td>
+<td>不适用：未构造模型内部混合反事实或共享状态操作。</td>
+</tr>
+<tr>
+<td>C08</td>
+<td>通过：不由图像/哈希成功推断信息存量、因果位置或稀疏可修复性。</td>
+</tr>
+<tr>
+<td>C09</td>
+<td>不适用科学假设比较：这是输入验收，不用工程成功选择 WSP 机制。</td>
+</tr>
+<tr>
+<td>C10</td>
+<td>通过：64 条“输入序列化通过”和“推理预检通过”严格区分，后者仍未运行。</td>
+</tr>
+<tr>
+<td>C11</td>
+<td>通过：网络、目录、GPU 环境问题归工程；不会算成任务失败或 WSP 阴性。</td>
+</tr>
+<tr>
+<td>C12</td>
+<td>通过：CPU 与文件流式校验足够，未新增 GPU 测量。</td>
+</tr>
+<tr>
+<td>C13</td>
+<td>通过：474 图清单/79 页索引/逐图记录/最终回执绑定哈希；同一助手审核；数据未重新抽样。</td>
+</tr>
+<tr>
+<td>C14</td>
+<td>通过：资产与可辨认性准备完成，但 GPU 软件兼容与硬超时缺口决定下一步工程工作；不跳入修补。</td>
+</tr>
+</tbody>
+</table>
+<p>相关历史错误：E02（不预选两层）；E10/E11（输入正确不等于回答正确/信息已被使用）；E16（工程失败不冒充科学阴性）；E22（474 图不称 474 个独立科学组；B146/C160 保持）；E23（自查不称独立，下载不称加载）；E25（不加额外模型实验）。其他内部缓存干预错误不适用于本轮无模型准备。</p>
+<h2 id="_2">反方检查与修正</h2>
+<ol>
+<li><strong>拼图看起来清楚，真实模型看到的未必相同。</strong> 预览使用 v3 真处理器 resize，另做图像处理核对网格；64 条输入还核对了真实 image token 数；另对全部 474 张预览重新进行真实归一化/分块，得到与原图处理结果完全相同的像素张量。此证据不保证视觉编码器提取成功，不把预览作为推理结果。</li>
+<li><strong>源图本来模糊，审核全部通过会掩盖问题。</strong> 回执的通过只表示未观察到缩放新增的任务相关可辨认性损伤。保留原图质量限制，不重写前轮标签审查为“完美”。</li>
+<li><strong>镜像提供了错误版本。</strong> 使用独立从官方站获取的固定 revision 元数据，逐文件检查 Git blob/LFS 哈希与大小；同名/同 revision 字符串本身不够。仅校验字节，不读取权重张量。</li>
+<li><strong>处理器能运行就称 GPU 环境好了。</strong> 已修正为 CPU 通过；CUDA13/535 组合列为明确待解决兼容问题，未通过 CUDA 实测，也未宣称实测报错。</li>
+<li><strong>新环境可能改变预览，旧回执仍会被复用。</strong> README 要求软件栈变化后复核处理器输出/哈希；v3 执行器已有 processor SHA 比较，不能跳过。</li>
+<li><strong>max_time 会卡在一次 forward，预算不是硬限制。</strong> 保留为 P0 前未完成工程项；本轮没有因下载完成而声称可直接开跑。</li>
+</ol>
+<p>结论：准备工作逻辑与 CPU 输入/视觉验收通过；不新增科学设计结论。模型文件完整性以 download_manifest 为证，实际 GPU 运行验收未完成，P0 未授权也未执行。新增材料不足以证明候选痛点存在或 WSP 有效。</p></main></html>

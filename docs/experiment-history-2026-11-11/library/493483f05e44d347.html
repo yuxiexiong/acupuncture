@@ -1,0 +1,354 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>R1独立整篇定性审阅（阶段一）</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="r1">R1独立整篇定性审阅（阶段一）</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>docs/reviews/icml-v1.8-2026-11-08/reviewer-1/qualitative.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/reviews/icml-v1.8-2026-11-08/reviewer-1/qualitative.zh-CN.md">固定提交原件</a>；SHA-256：<code>493483f05e44d34769e54be51045f6b1cebde94080ac14eca54146a7f214e242</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="r1_1">R1独立整篇定性审阅（阶段一）</h1>
+<p>审阅身份：作者侧AI模拟反馈；不是正式ICML审稿、专家身份背书或独立模型复现。agent_id：<code>CLI-R1</code>。本次可用上下文及工具未提供可取得的会话thread id，因此使用指定备用标识。</p>
+<p>独立性声明：开始时自动上下文没有本项目历史或既往评价。此后只读取简报、白名单正文／补充／附件、包内会议规则，并访问正文所引文献的第一手页面；没有读取用户记忆、其他会话、项目仓库、Git历史或其他评审，没有委派评审，没有启动模型、训练、GPU或附件中的模型程序。材料中的作者自评、历史实验判据和自查回执只作为待评价的作者陈述，不作为外部评价。未接触本稿的外部先验评价或第三方评语。白名单预算附件内含历史用户授权引文，属于所附运行来源记录，不是本次指令，也没有被执行。</p>
+<p>本文仅记录定性判断；不填写分数、接受档次或最终推荐。锁定后停止，等待明确的阶段二通知。</p>
+<h2 id="_1">一句话贡献与摘要</h2>
+<p><strong>一句话贡献：</strong> 在一个混合递推语言模型的指定稀疏干预与修复条件下，作者用来源交换、当步局部写入和下一步读取用途交换，建立了能在新材料上预测完整答案选择的条件性因果关系，同时用背景比较和随机扰动反例限制“错误就是信息被删除”的解释。</p>
+<p>论文首先区分能否交付、选择哪条记录以及状态中的信息能否在另一个背景下被利用。SPF在开发材料上发现，干净供体缓冲的选择作用取决于递推状态和其余接收背景的组合。DWB在受针底座、干净q/k历史条件下，将持续供体V历史的作用缩减到最后提示步的写入，并以反向自身写入恢复自身答案。另一个含写入k修正的纯局部端点O/F用于DWR与DWC：在t2直接读取另一端点的状态，可获得或撤回供体选择。96个新基础情境确认主方向的预定量级，第二方向效应同向但获得量级未兑现。旧预测修正E与直接读取D的行为效应不同。本文没有识别全部原生停答机制，也没有在同一局部操作下连接缓存级背景差异与写入／读取差异。</p>
+<h2 id="_2">整篇实质评价</h2>
+<h3 id="_3">问题、动机与意义</h3>
+<p>问题值得研究。恢复“能说出一个编号”与恢复“查询指定的编号”不同；受针状态移入另一背景仍可改变答案，也足以反驳跨条件统一的信息删除解释。这些区分能直接改善混合模型机制实验的解释，而不要求提出新架构或刷新能力基准。</p>
+<p>最有用的结果是可被其他研究者复用的操作关系：指定来源只在t1介入、t2只改变某个状态用途、随后自然生成，并同时检查供体跟随和自身恢复。它比单看状态距离、首步logit或修复准确率提供了更具体的约束。主方向的新材料结果使其不只是一组开发案例。</p>
+<p>价值的主要上限也很明确：主线解释的是人为构造的可作答端点之间的选择变化。DWC原生N4146仅1/864自身正确、861/864归为停止，而O已经735/864自身正确；因此强读取效应不能直接解释最初为什么停答。六个固定模板族、三条记录、有限编号词表、两个开发选定方向、一个剂量及14层联合操作，形成的是专门而具体的认识。跨模型单针记录和跨规模能力损伤提供动机，不能扩大同一机制的适用范围。这种范围本身不使结果失效，但限制了对一般稀疏损伤机制的解释力与直接应用价值。</p>
+<h3 id="_4">原创性与近邻定位</h3>
+<p>正文§2基本承认了真正的重叠。递推更新公式来自既有GDN；混合缓存交换、存储与访问的区分、供体写入和读取的因果连接也已有先例。我查阅的<a href="https://arxiv.org/html/2609.33093v1">How Linear Attention Remembers §2–3</a>包含写入、状态移植、输出补丁与反向恢复，并有开发／确认分离，因而“第一次连接写读”或“第一次独立材料确认”都不能构成本稿的宽泛贡献。<a href="https://arxiv.org/html/2611.01909v1">Who Asks, Who Answers §5.1–5.2</a>研究递推状态如何决定全注意力检索目标；它与本稿GDN内部D/E用途的对象不同，但说明“递推状态参与选择”也不是足够的新颖性表述。</p>
+<p>本稿的实际增量在于：特定稀疏干预后的背景依赖、V历史到最后提示步写入的桥接、同一O/F端点上的双向读取及完整答案恢复，以及保留失败边界的确认组合。这个组合有实证内容，不能因使用旧公式而抹去。不过，其最吸引人的解释问题是“干预到底改变了什么计算依赖”，而最能将这些结果组织为新认识的跨背景局部比较尚缺。因此，目前的原创性主要体现在条件性经验约束，尚不足以理解为一个新的、已经闭合的失效机制。正文§6关于当前结果足以支撑论文的自我判断，不代替对增量价值的独立评估。</p>
+<p><a href="https://arxiv.org/html/2609.04434v1">What Attention Recalls and Recurrence Controls §3–4</a>采用缓存拆分与交叉来源交换；本稿将补充KVC的供体跟随限定为旁证是合适的。<a href="https://arxiv.org/html/2404.15255v1">激活补丁方法论§3</a>已有背景、任务分布与非最小性解释边界；本稿的贡献应落在新数据上，而不是这些一般性警告本身。以上为所读方法的比较，不是穷尽优先权裁决，也没有将文献的不同实验结果视为对本稿的直接否定。</p>
+<h3 id="_5">技术、统计与主张—证据匹配</h3>
+<p>递推式及D/E/W展开在给定单头驱动的条件下正确：将更新后的状态转置乘q，可得到正文三项；E的负号及q维度缩放与所抽查读取代码一致。原始<a href="https://arxiv.org/html/2412.06464v3">Gated Delta Networks §3.1</a>采用相反的状态矩阵方向，转置后与正文约定相容。没有发现这里的代数错误。该等式不提供整模型行为的可加分解，稿件也明确没有这样使用。</p>
+<p><code>lvk_run.py</code>的影子卷积使用当前分支输入及替换的历史，并将影子量用于更新；<code>sru_run.py</code>的<code>read_use</code>先更新接收状态，再在输出加入D/E补丁，返回的状态不直接换成供体。该实现与正文操作语义相符。14层的顺序响应仍构成一个联合干预，获得与撤回所处驱动也不同；效应不能理解为固定自然轨迹上的单一中介份额，更不能由DO/DD或G/F比例解释“完成了多少机制”。对这一点，正文表述较为准确。</p>
+<p>DWB的DO有效、OD恢复自身且仍交付完整编号，比仅有供体臂阳性更有说服力；DWC撤回的自身恢复又排除了用一般输出退化降低供体命中的主要替代解释。受针N1210状态移入干净接收者仍强转移，反驳统一删除解释，但不证明原生失败时这些信息已被正常读取。NWC随机扰动可以造成首列错误，则意味着错号图样不是内容身份的可靠诊断；不能把这个反例误读成全部供体实验无效。</p>
+<p>统计处理的优点实质而非形式：D_tr去除了供体无关的固定行偏好；输出停止和其他类别进入分母；独立单位是基础情境，未把配对／轨迹当作独立样本；确认阶段按族内情境重抽，与六族等权的估计对象相符。我的CPU核算得到与主表一致的点估计，并在独立重抽中保持主方向量级结论及第二方向的量级失败。主确认要求多项条件同时满足，可理解为合取判据；不能仅因有多个必要端点就断言其必然存在多重检验错误。E、逐族和绑定诊断仍应与主确认分开理解。</p>
+<p>不确定性的范围须继续保持：开发阶段只有六个场景，零宽度区间只是所测样本及重抽方法的结果；DWC区间不覆盖随机模板族、随机方向、随机层组或模型总体。主方向被开发选择并不破坏其固定操作在新材料上的确认，但不能用它估计随机稀疏干预的普遍性。N1210的G上界低于预设M是量级预测失败，而不是零作用。用途异号是可重复的操作结果；尚不能据此给D/E分配与尺度、投影无关的天然功能。</p>
+<h3 id="_6">表达、组织与可复核性</h3>
+<p>正文方法已经给出足以理解操作的重要细节：剂量不是激活减一，t1/t2与窗口有明确token定义，完整提示示例未筛选阳性，DWB和DWR/DWC的k处理也被分开。把科学内容与英文版、PDF排版准备度分开后，科学结果是可理解的。</p>
+<p>叙述仍承担了过多项目沿革。正文§5–7反复解释同一缺口；补充大量缩写、旧编号和未提供的内部链接增加首次读者的重建成本。S3仍引用“§8”“§11”等旧组织，正文与历史SVG又各有“图1／图2”，应统一现行编号并增加端点简表。只读现在的论文时，研究问题、当前证据和下一阶段工程建议应更清楚地区分。</p>
+<p>两项具体的小修正：正文§3.5“另24情境”容易使读者理解为96之外新增24个基础情境；<code>materials-r01.json</code>实际是96个正式情境中的24个带绑定诊断标记，应说明子集关系及432个额外供体。补充S2的DWR“5112轨迹”与正式验收回执<code>model_calls.trajectories=5025</code>使用了不同计数，需解释计划臂实例、自然停答／no-op与实际轨迹计数的关系；目前不能由这项差异断言遗漏了科学样本。</p>
+<p>附件提供了有价值的分析汇总、材料与token账本、选择的实现及回执。当前包不是自包含的逐回答重算包：DWC分析依赖的<code>dwc_core.py</code>、<code>materials.py</code>以及输出解析器的下游依赖未在白名单内，核心原始逐臂输出也没有整体提供。因此本次能核验汇总计算与部分实现，不能核验每条原文的解析或冻结时间线。<strong>这只是本次可核查范围，不是作者没有保存这些证据的判断。</strong> 哈希相符、作者验收通过和作者重新计算一致，各自有用，但均不等于独立模型复现。</p>
+<h2 id="_7">三项主要优点</h2>
+<ul>
+<li><strong>因果比较兼顾获得、撤回和自身恢复。</strong> DWB将t1写入与后续V缓冲留存分开，DWC撤回后自身答案增加且交付保持，使选择作用具有方向性，而非只有准确率变化。</li>
+<li><strong>确认设计与统计单位较为清楚。</strong> 新材料沿用固定操作，按情境配对、族内重抽，保留N1210量级失败和不可达结果；这提供了超出开发案例的预测证据。</li>
+<li><strong>替代解释受到真实数据约束。</strong> 随机首列反例、受针状态可转移、缓存四格以及跨结构弱效应，各自限制不同推断；这些结果使论文比一条只串联阳性的机制故事更可靠。</li>
+</ul>
+<h2 id="_8">恰好三个关键疑问／保留意见（按重要性排列）</h2>
+<ol>
+<li>
+<p><strong>怎样把最有价值的“干预改变依赖”问题与当前已经识别的操作关系接上？</strong> 依据：正文§2、§3.3、表1–3、§5–6。SPF比较的是缓存级背景；DWB局部桥接集中在T及干净q/k条件；DWC又含写入k修正。因此，已有阳性不区分“受针创造／增强了某项写入依赖”与“一个在这些构造端点也能工作的通常供体写读通路”。我认可较窄结果本身，并不要求解释全部停答或跨所有模型。会改变判断的回答是：明确给出相对于近邻方法不可由一般供体移植直接预期的新增预测，并说明现有哪项比较已经区分它；若要主张干预特异的依赖改变，则需要真正可比的跨背景局部操作新测量。仅重复局限或增加同类主方向阳性不会扩大解释力。这主要影响原创性与意义，而不是推翻表3的条件效应。</p>
+</li>
+<li>
+<p><strong>D/E分叉究竟贡献了什么超出操作尺度与投影差异的计算解释？</strong> 依据：正文§3.4、§4.5；补充S1 §4.2、§4.6、§4.9–4.10；<code>sru_run.py:read_use</code>与<code>source-audit.json</code>。E包含额外的β、k与q内积和负号，D与E的补丁幅度及方向天然不同；14层干预还会改变高层驱动。现有数据有力支持所测用途的行为差异，但不能区分它源于对同一选择信息的不同使用，还是主要由投影／尺度及接收分支响应造成。NWC的同范数随机对照属于旧端点，不能直接填补DWC的几何缺口。若作者只保留“固定操作下的经验分叉”，现有证据与主张匹配，但机制解释收益有限；若能提供同端点、同轨迹已有几何记录及与行为相对应的分析，或将来的可区分控制，才会增强用途解释。当前归档明确没有相应持久记录，不能从哈希、旧端点摘要或负号本身补出结论；若记录确未保存，补测属于新测量，不能写作澄清完成。</p>
+</li>
+<li>
+<p><strong>读者怎样从固定输入和逐臂回答独立重建核心确认，而不依赖作者的汇总判读？</strong> 依据：正文§3.5、数据／复现说明；补充S2–S4；DWC分析代码、材料账本与恢复验收。目前我能从逐情境汇总重算F/G/W/R和区间，但不能在包内从原始回答重做解析、核对全部不可达分母、确认k偏移与材料冻结的完整来源。请将核心主张所需的最小证据链整理成自包含入口：冻结操作／主要假设／材料划分、逐臂输出与类别、实际解析与重抽依赖，以及回执的计数定义，并澄清24个诊断情境的子集关系。此项首先是<strong>已有证据整理与写作澄清</strong>，不是要求重跑实验。若这些已有材料能重建当前数字，我对可复核性和确认身份的保留会明显减少；若只能得到作者汇总标签，则数字来源的不确定性仍在。我不将本包未附材料推断为作者未保存，也不要求访问被禁止的仓库来消除这一限制。</p>
+</li>
+</ol>
+<h2 id="_9">最强支持理由、价值限制与改变判断的条件</h2>
+<p>最强支持理由是，同一纯局部O/F端点的直接读取关系在固定新材料上同时表现为供体选择获得、供体选择撤回和自身答案恢复，而非以输出无效换取转移下降。这是一项具体、可量化、能被后续工作检验的机制片段。</p>
+<p>限制价值的核心因素是，最强确认发生在经过局部修复的有限编号任务上；缓存背景交互与该局部关系尚未以相同操作联接，D/E差异的计算原因亦未区分。已有方法本身已经能支持一般写读／访问关系，因此本稿的增量需要由这些特定条件下新增的可区分认识承担，不能靠实验目录数量或谨慎措辞累加。</p>
+<p>能改变判断的是上述三个问题对应的证据或清楚的范围界定：同操作背景比较改变机制解释，匹配端点的几何／控制改变用途解释，自包含来源链改变复核把握。新SOTA、全模型普适性或最小唯一回路不是本次评价的前提。</p>
+<h2 id="_10">局限、伦理与建议类型</h2>
+<p>科学局限总体披露充分：单模型机制主线、开发选择的方向与层组、强度和窗口固定、有限模板、原生停答与修复端点差别、用途几何缺失及第二方向量级失败均被写出。我评价这些限制的实际影响，不把诚实披露本身当缺点。</p>
+<p>稿件涉及能力损伤与模型行为操控，已有责任说明适当否认安全收益与“道德神经元”解释。当前提供的合成记录任务没有显示人体研究或个人敏感信息问题；没有看到支持专项伦理指控的证据。作者身份、资助、利益冲突、模型／数据使用责任和最终伦理说明仍需真实作者完成，AI模拟反馈不能代签。正式会议LLM政策履职确认与Code of Conduct确认均为“不适用：作者侧AI模拟”；包内政策B也不能被当作正式审稿人委派整篇判断的授权。</p>
+<p>建议分为三类：</p>
+<ul>
+<li><strong>已有证据整理：</strong> 提供核心逐臂输出到统计的最小来源链；将当前完整交付表、族间结果和绑定诊断与主表对应；解释恢复验收及计数口径，不用作者自查替代独立复核。</li>
+<li><strong>写作澄清：</strong> 用一张端点表固定哪些S、卷积历史、k修正、KV与驱动被保留；统一缩写、图号和补充引用；明确固定六族目标总体及24情境子集；将未来计划从当前结果中移开，压缩重复的免责声明。</li>
+<li><strong>真正需要新测量：</strong> 如果追求干预特异的依赖改变或D/E计算原因，则分别需要可比较的局部背景干预，以及同端点的几何／可区分控制。这里仅指出待识别问题，不给出未经设计的实验矩阵、预算或阳性预期；本次没有开展这些测量。</li>
+</ul>
+<h2 id="_11">阅读覆盖与核查记录</h2>
+<h3 id="_12">正文逐节覆盖</h3>
+<table>
+<thead>
+<tr>
+<th>已完整阅读的部分</th>
+<th>实际评价内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>标题、摘要、§1</td>
+<td>问题、三层行为区分、贡献范围与两层证据关系</td>
+</tr>
+<tr>
+<td>§2</td>
+<td>更新式、负号约定、全部六行近邻表与新颖性声明</td>
+</tr>
+<tr>
+<td>§3.1</td>
+<td>模型revision、剂量校准、B1／τ／t1／t2、14层联合干预</td>
+</tr>
+<tr>
+<td>§3.2</td>
+<td>完整接收者／供体提示及未筛选的失败示例</td>
+</tr>
+<tr>
+<td>§3.3</td>
+<td>DWB四格与DWR/DWC纯局部O/F的背景差别</td>
+</tr>
+<tr>
+<td>§3.4</td>
+<td>输出用途补丁、持久状态、自然首token与不可达处理</td>
+</tr>
+<tr>
+<td>§3.5</td>
+<td>D_tr、G/W/R、供体对照、独立单位、门槛与护栏</td>
+</tr>
+<tr>
+<td>§4.1</td>
+<td>多模型观察、能力损伤、交付／选择及随机反例</td>
+</tr>
+<tr>
+<td>§4.2</td>
+<td>缓存背景四格、q/k与V来源区别、第二方向不可判</td>
+</tr>
+<tr>
+<td>§4.3</td>
+<td>DO/OD桥接、自身恢复、纯局部端点、受针状态移植</td>
+</tr>
+<tr>
+<td>§4.4</td>
+<td>DWR到DWC、主表、量级失败、原生停止与修复对象</td>
+</tr>
+<tr>
+<td>§4.5</td>
+<td>D/E差、逐族表、几何缺口、绑定预测与CGV</td>
+</tr>
+<tr>
+<td>§5</td>
+<td>三条解释及不能闭合的背景接口</td>
+</tr>
+<tr>
+<td>§6</td>
+<td>每项主张的已测／未测比较及作者未来建议</td>
+</tr>
+<tr>
+<td>§7、数据／复现／责任说明</td>
+<td>范围、原始归档声明、恢复验收、AI辅助与作者责任</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_13">补充逐节覆盖</h3>
+<table>
+<thead>
+<tr>
+<th>已完整阅读的部分</th>
+<th>实际评价内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S1开篇、表A/B</td>
+<td>回答／轨迹计数、八项成绩、随机小面板、截断与解析</td>
+</tr>
+<tr>
+<td>S1 §4.1</td>
+<td>FC/SP/FX/NFC、t1结构验收、恢复与反向污染</td>
+</tr>
+<tr>
+<td>S1 §4.2、表3</td>
+<td>LVK/SRU/NWR端点、错答类别、随机对照及开发判据</td>
+</tr>
+<tr>
+<td>S1 §4.3</td>
+<td>NVB/NBR/SIT/NMT条件限制、CGV不利结果</td>
+</tr>
+<tr>
+<td>S1 §4.4</td>
+<td>WIN窗口、新条件、任务协议与预算混杂、未运行设计</td>
+</tr>
+<tr>
+<td>S1 §4.5</td>
+<td>KVC供体事实方向性及与原写读链未接通</td>
+</tr>
+<tr>
+<td>S1 §4.6</td>
+<td>NWC新输入、随机反例、未覆盖的获得侧</td>
+</tr>
+<tr>
+<td>S1 §4.7</td>
+<td>FBR通用缓冲、SPF背景比较及状态／位置解释</td>
+</tr>
+<tr>
+<td>S1 §4.8、表4</td>
+<td>DWB操作、净转移、自身恢复与移植边界</td>
+</tr>
+<tr>
+<td>S1 §4.9、表5</td>
+<td>DWR D/E/DE、获得／撤回／恢复及量级未确认</td>
+</tr>
+<tr>
+<td>S1 §4.10、表6</td>
+<td>DWC确认、完整交付、方向差与三路绑定诊断</td>
+</tr>
+<tr>
+<td>S2</td>
+<td>全部覆盖账本行及不可借用的覆盖</td>
+</tr>
+<tr>
+<td>S3</td>
+<td>六图说明、全部图表资产分工与历史／现行身份</td>
+</tr>
+<tr>
+<td>S4</td>
+<td>冻结文件、轨迹、钩子、误差、预算、原失败与恢复、自查身份</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_14">实际查阅附件及阅读深度</h3>
+<p>下列路径均以本包根目录为基准。只按<code>inputs.json</code>给出的路径读取，没有跟随其中的项目内链接。对清单31个文件全部作了字节哈希检查，均与清单相符；<strong>哈希读取不等于逐条内容审计</strong>，实质阅读深度如下。</p>
+<table>
+<thead>
+<tr>
+<th>附件路径</th>
+<th>阅读／核查深度</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>attachments/docs/paper-revision-v1.8-2026-11-08/source-audit.json</code></td>
+<td>全文；四组记录schema、固定例子、DWC主表与逐族值、几何字段及来源范围；未访问其列出的未白名单文件</td>
+</tr>
+<tr>
+<td><code>attachments/experiments/cache-cross-channel-validation-v1-2026-10-31/xchan.py</code></td>
+<td>定位函数并细读<code>write_audit</code>；未通读整个执行器</td>
+</tr>
+<tr>
+<td><code>attachments/experiments/cache-local-v-k-v1-2026-11-03/lvk_run.py</code></td>
+<td>定位更新／验收接口并细读<code>LHook</code>影子卷积和调用；其外部<code>custom_update</code>依赖未查</td>
+</tr>
+<tr>
+<td><code>attachments/experiments/cache-state-read-use-v1-2026-11-03/sru_run.py</code></td>
+<td>细读<code>read_use</code>和<code>RHook</code>；未审计完整模型运行控制器</td>
+</tr>
+<tr>
+<td><code>attachments/experiments/cache-selection-precedence-v1-2026-11-06/spf_core.py</code></td>
+<td>阅读臂定义、供体规则、D_tr、重抽、阈值与判读逻辑</td>
+</tr>
+<tr>
+<td><code>attachments/experiments/cache-selection-precedence-v1-2026-11-06/spf_analysis.py</code></td>
+<td>阅读行号解析入口及聚合；下游解析器不在包内，未核验实际正则／分类细节</td>
+</tr>
+<tr>
+<td><code>attachments/experiments/cache-donor-write-bridge-v2-2026-11-07/dwb_core.py</code></td>
+<td>全文操作定义与判读逻辑</td>
+</tr>
+<tr>
+<td><code>attachments/experiments/cache-donor-write-bridge-v2-2026-11-07/analysis/dwb-readouts-formal-r02.json</code></td>
+<td>两方向关键臂D_tr、区间、冲突自身率及交付字段抽取对照</td>
+</tr>
+<tr>
+<td><code>attachments/experiments/cache-donor-write-readout-v1-2026-11-07/analysis/dwr-readouts-formal-r02.json</code></td>
+<td>两方向全部D/E/DE的G/W/R、量级标签及有效交付汇总；未逐一审计所有嵌套配对</td>
+</tr>
+<tr>
+<td><code>attachments/experiments/cache-write-read-confirm-v1-2026-11-07/dwc_analysis.py</code></td>
+<td>全文；情境聚合、分母、冲突恢复、护栏、绑定诊断、首token一致性</td>
+</tr>
+<tr>
+<td><code>attachments/experiments/cache-write-read-confirm-v1-2026-11-07/analysis/dwc-readouts-formal-r01.json</code></td>
+<td>读取全部对象，实质核算两方向主D端点逐情境值，查看各臂类别、对齐及E和逐族汇总；未从原始回答重建</td>
+</tr>
+<tr>
+<td><code>attachments/experiments/cache-write-read-confirm-v1-2026-11-07/data/materials-r01.json</code></td>
+<td>schema、种子、词表、重叠审计、正式／预检与诊断标记、所有正式接收者及供体元数据；阅读固定提示实例，未逐句人工阅读1458个条目</td>
+</tr>
+<tr>
+<td><code>attachments/experiments/cache-write-read-confirm-v1-2026-11-07/data/token-ledger-r01.json</code></td>
+<td>revision、范围、失败列表、固定实例及全部864正式接收者窗口算术；未重新分词</td>
+</tr>
+<tr>
+<td><code>attachments/experiments/cache-donor-write-bridge-v2-2026-11-07/runs/formal-r02/verification.json</code>；<code>attachments/experiments/cache-donor-write-readout-v1-2026-11-07/runs/formal-r02/verification.json</code>；<code>attachments/experiments/cache-native-write-readout-v1-2026-11-05/runs/formal-r01/verification.json</code></td>
+<td>全文回执；只验证其陈述和文件身份，未执行验收器</td>
+</tr>
+<tr>
+<td><code>attachments/experiments/cache-write-read-confirm-v1-2026-11-07/runs/formal-r01/verification.json</code>；同目录体系的<code>analysis/delivery-audit.json</code>、<code>readiness/budget-extension-authorization-r01.json</code></td>
+<td>全文；冻结hash、恢复状态、计数、自身恢复、预算和自查身份；未跟随恢复回执路径</td>
+</tr>
+<tr>
+<td><code>attachments/experiments/layer-trace-extension-v1-2026-10-28/archive-r01/combined-verification.json</code>；<code>attachments/experiments/neuron-explorer-multimodel-v2-2026-10-26/analysis-view-r01/data-acceptance.json</code></td>
+<td>全文；表A计数与检查范围；未访问附件内本地API</td>
+</tr>
+<tr>
+<td><code>attachments/experiments/transfer-toy-v1-2026-10-26/delivery-r01/benchmark-comparison.json</code></td>
+<td>两模型四项任务汇总、加权MMLU、区间、截断及解析字段，与表B核对；未审计逐题评分</td>
+</tr>
+<tr>
+<td><code>attachments/experiments/window-protocol-audit-v1-2026-11-05/audit.json</code></td>
+<td><code>stats</code>、<code>method</code>、分组和幅度字段抽查；未人工复判384条原始回答</td>
+</tr>
+<tr>
+<td><code>attachments/docs/figures/mechanism-paper-2026-11-05/fig1-chain-overview.svg</code>、<code>fig2-write-read.svg</code>、<code>fig3-native-recovery-pollution.svg</code>、<code>fig4-boundaries.svg</code>、<code>fig5-window-kv.svg</code>、<code>fig6-kv-donor-transfer.svg</code></td>
+<td>提取并阅读六图全部文字／数值，与补充说明比较；未进行图像渲染或会议版式验收</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_15">第一手外部来源与深度</h3>
+<p>访问只围绕正文所引文献；未搜索本稿标题、项目或第三方评价。</p>
+<table>
+<thead>
+<tr>
+<th>URL</th>
+<th>实际阅读深度与用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>https://arxiv.org/html/2412.06464v3</td>
+<td>摘要、递推基础与§3.1公式；核对矩阵方向及门控delta更新，不是全文复审</td>
+</tr>
+<tr>
+<td>https://arxiv.org/html/2609.04434v1</td>
+<td>摘要、§3–4，并读取返回的§5及局限相关段落；核对缓存交换与功能解释边界</td>
+</tr>
+<tr>
+<td>https://arxiv.org/html/2609.33093v1</td>
+<td>摘要、§2–3及§4开头；细读供体写入、状态／输出交换和反向恢复；未核验其数据代码</td>
+</tr>
+<tr>
+<td>https://arxiv.org/html/2611.01909v1</td>
+<td>摘要、§4.3及§5.1–5.2、§6开头；区分递推状态构造全注意力查询与本稿D/E；未据其层号指定本稿回路</td>
+</tr>
+<tr>
+<td>https://arxiv.org/html/2404.15255v1</td>
+<td>摘要、§3.1–3.2及§4部分；核对背景、范围、非最小性及负向组件的解释</td>
+</tr>
+</tbody>
+</table>
+<p>正文另引的<code>2409.05448v3</code>和<code>2510.06182v2</code>没有独立外部核验；没有据此臆测真假或优先权。会议标准直接读取包内<code>official/reviewer-2026.txt</code>与<code>official/llm-policy-2026.txt</code>，未将本次模拟冒充实际会议流程。</p>
+<h3 id="cpu">本次CPU数字核算及边界</h3>
+<p>使用自写、仅含Python标准库的临时代码读取白名单JSON，没有导入／执行附件程序。核算包括：31个清单文件SHA-256；96正式情境、每族16个、864个接收者、每接收者8供体且AL/BD/KS/RS各2；全部固定输出行／停止／其他情况下D_tr为零；正式接收者B1窗口端点与长度算术；F/G/W逐情境关系、六族等权均值及恢复计数。864份主接收者提示互异；96情境中24个带诊断标记。旧材料重叠为零的声明仅查看作者账本，没有访问旧来源独立重算。</p>
+<p>从附件已有<code>per_scene</code>值进行独立的族内整情境有放回配对重抽，20000次，自设种子2026110801；取排序样本的第500与19499零基索引作为近似95%百分位端点。两方向各使用相同抽样索引计算F/G/W/R。所得区间为：</p>
+<table>
+<thead>
+<tr>
+<th>方向</th>
+<th>F</th>
+<th>G_D</th>
+<th>W_D</th>
+<th>R_D</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>N4146</td>
+<td>[0.565008, 0.611111]</td>
+<td>[0.290702, 0.331404]</td>
+<td>[0.451775, 0.495370]</td>
+<td>[0.374421, 0.414063]</td>
+</tr>
+<tr>
+<td>N1210</td>
+<td>[0.285301, 0.331790]</td>
+<td>[0.191551, 0.233218]</td>
+<td>[0.269869, 0.318480]</td>
+<td>[0.299190, 0.344618]</td>
+</tr>
+</tbody>
+</table>
+<p>这不是作者冻结分析的逐位复现，也不是新模型实验；不同种子下区间与稿件接近，且关键门槛结论保持。恢复差直接计算为(2182−820)/3456=0.394097、(3133−2021)/3456=0.321759，与表3一致。上述哈希、材料和重抽联合核算的本次脚本墙钟约1.85秒，不是作者GPU时间。未独立复算E和诊断的全部区间、全部旧实验、原始回答解析、真实补丁向量或模型输出。</p>
+<p>锁定边界：此报告基于当前白名单材料与明确列出的外部方法阅读；没有作者回复、其他审稿意见或独立模型复现。下一步仅由明确的阶段二通知触发评分。</p></main></html>

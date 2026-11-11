@@ -1,0 +1,134 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>FX-01（固定 45 头卷积 V 的完整回答恢复）结果报告</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="fx-01-45-v">FX-01（固定 45 头卷积 V 的完整回答恢复）结果报告</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-fixed-v-delivery-v1-2026-11-02/REPORT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-fixed-v-delivery-v1-2026-11-02/REPORT.zh-CN.md">固定提交原件</a>；SHA-256：<code>f5c845c43e8fa0132ba0159909568e2641f12dd3b8a2ce8fb807a86290a018ed</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="fx-01-45-v_1">FX-01（固定 45 头卷积 V 的完整回答恢复）结果报告</h1>
+<p>日期：2026-11-02。<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-fixed-v-delivery-v1-2026-11-02/CONTRACT.zh-CN.md">合同 r01</a>；<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-fixed-v-delivery-v1-2026-11-02/DECISIONS.zh-CN.md">决策 D1–D4</a>；<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-fixed-v-delivery-plan-v1-2026-11-02.zh-CN.md">计划 v1</a>（评审撰写）。代码 <code>123f51d</code>，freeze-r01 <code>3181c65a…e949</code>。P 面板已见，本操作的续写结果未见。同一助手实现、运行与撰写。</p>
+<h2 id="1">1. 结论（不利的先说）</h2>
+<ol>
+<li><strong>P_FIX 不成立（0/4）：只恢复固定 45 头的卷积 V，不能恢复完整交付。</strong> T_FIXV：N4146 0/12、R0 0/12、N1210 3/12、C1343 4/12（Y_strict 全部为 0，其余多为首步停止）。按计划出口：<strong>停止侧材料规则没有接通完整回答恢复，固定名单这一分支到此结束，不重筛名单。</strong></li>
+<li><strong>P_V 成立（4/4）：恢复全部头的卷积 V（q/k 卷积保持干预值），完整交付 48/48、严格只给编号。</strong> 所以在旧 P 面板上，恢复 q/k 卷积不是获得这次恢复效果所必需的操作（不等于 q/k 计算本身不重要）。</li>
+<li><strong>其余 403 头的 V 单独也不够</strong>：T_RESTV 0/48（全部首步停止）。随机 45 头 T_U 0/48。在所测的三个子集（FIX、REST、U）中，没有一个单独能恢复交付，只有它们的并集（全部 V）可以。<strong>这不排除另有较小的子集足以恢复</strong>，只测了三个。行为端点是离散的，“单独失败、联合成功”也可能只是两组各自改善了连续分数、但单独都没跨过回答阈值，因此<strong>不能据此称内部计算非加和或协同</strong>；这需要在固定候选的连续差上另看（第一次运行只保存了首步 logits 的哈希，没有保存数值）。被恢复的 V 差异范数（REST 约 436–464，FIX 约 147–156）只是恢复量的协变量，不是机制承载比例。</li>
+<li><strong>FIX 对这一 U 的优势</strong>：只有 C1343 达到“≥2 胜、无负”（2 胜 4 平）；N1210 1 胜，N4146、R0 都是 6 平（双方都是 0）。跨方向 1/4，不能说固定名单比随机名单特殊。补充的范数协变量显示，FIX 与 U 被恢复的 V 差异范数几乎相同（约 147–156 对 147–155），所以 C1343 上的差别不是来自恢复量更大。</li>
+<li>重放全部通过：C_nat、T_nat、T_F 与 FC-01 逐 token 相同，第一步 logits 与 NR 逐位相同；T_F 仍为 48/48。</li>
+</ol>
+<h2 id="2-y_delivery-y_strict-12">2. 主要读数（Y_delivery / Y_strict，每方向 12）</h2>
+<table>
+<thead>
+<tr>
+<th>方向</th>
+<th>T_nat</th>
+<th>T_F</th>
+<th>T_V</th>
+<th>T_FIXV</th>
+<th>T_RESTV</th>
+<th>T_U</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>N4146</td>
+<td>0/0</td>
+<td>12/12</td>
+<td>12/12</td>
+<td>0/0</td>
+<td>0/0</td>
+<td>0/0</td>
+</tr>
+<tr>
+<td>N1210</td>
+<td>0/0</td>
+<td>12/12</td>
+<td>12/12</td>
+<td>3/0</td>
+<td>0/0</td>
+<td>0/0</td>
+</tr>
+<tr>
+<td>R0</td>
+<td>0/0</td>
+<td>12/12</td>
+<td>12/12</td>
+<td>0/0</td>
+<td>0/0</td>
+<td>0/0</td>
+</tr>
+<tr>
+<td>C1343</td>
+<td>0/0</td>
+<td>12/12</td>
+<td>12/12</td>
+<td>4/0</td>
+<td>0/0</td>
+<td>0/0</td>
+</tr>
+</tbody>
+</table>
+<p>被恢复的卷积 V 差异范数（12 输入均值）：T_V 460–489，T_RESTV 436–464，T_FIXV 147–156，T_U 147–155。U 与 FIX 的重叠为每输入 4–10 头。C_nat 12/12。</p>
+<h2 id="3">3. 执行</h2>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th style="text-align: right;">形成</th>
+<th style="text-align: right;">轨迹</th>
+<th style="text-align: right;">实际解码前向</th>
+<th style="text-align: right;">校准</th>
+<th style="text-align: right;">墙钟</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>预检 r01</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">52</td>
+<td style="text-align: right;">185</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">61 s</td>
+</tr>
+<tr>
+<td>正式 r01（2 worker）</td>
+<td style="text-align: right;">60</td>
+<td style="text-align: right;">300</td>
+<td style="text-align: right;">1208</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">136 / 137 s</td>
+</tr>
+</tbody>
+</table>
+<p>全部闸门通过：名单哈希；FIX + REST = 448、U 逐层配平；校准与 GPU 分配等于 B3；第一步 logits 与 NR 逐位相同；C_nat、T_nat、T_F 与 FC-01 逐 token 相同；V 臂的 q/k 卷积 = T、列出头的 V 槽 = C、其余 = T（逐通道），S/KV/浅层 = T；供体不变；重建一致。</p>
+<h2 id="4">4. 解读与出口</h2>
+<ul>
+<li>按计划出口“FIX 失败但 V 成功”：<strong>结束固定名单分支</strong>。固定 45 头在 N 背景里承载停止侧效应（B3、C2），但在原生背景里，单独恢复它们的 V 历史不足以恢复回答；其余头单独也不行。所测子集中只有全部 V 有效；是否存在更小的足够子集未测。</li>
+<li>不能说“固定 45 头无关”：它们单独不足，但这里没有测必要性；也不能说“V 是唯一承载者”：这里只测了“从 T 起点恢复”的充分性。</li>
+<li><strong>不能与 SP-01 直接拼接</strong>：SP-01 在共享首字母面板上成功的是完整 q/k/v 卷积恢复，全部 V 的 48/48 只来自旧 P 面板（首字母唯一定位目标）。“恢复 V 即恢复目标选择”尚未测；这是下一步应先补的缺口，而不是按层拆 V。</li>
+</ul>
+<h2 id="5">5. 可以说 / 不可以说</h2>
+<table>
+<thead>
+<tr>
+<th>可以说</th>
+<th>不可以说</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>在旧 P 面板上，只恢复全部头的卷积 V（q/k 保持干预值）即可 48/48 完整交付</td>
+<td>V 是唯一或自然的承载者；全部 V 是必需的；三组之间存在内部协同；V 恢复了共享首字母面板上的目标选择</td>
+</tr>
+<tr>
+<td>只恢复固定 45 头的 V：7/48 交付、0/48 严格；只恢复其余头的 V：0/48</td>
+<td>固定 45 头无关</td>
+</tr>
+<tr>
+<td>固定名单对这一随机名单的优势只在 1/4 方向，且两者恢复范数相同</td>
+<td>固定名单比随机名单特殊</td>
+</tr>
+<tr>
+<td>停止侧材料规则没有接通完整回答恢复</td>
+<td>需要重新筛一批头来恢复回答</td>
+</tr>
+</tbody>
+</table>
+<h2 id="6-2026-11-02">6. 更正（2026-11-02，评审指出后）</h2>
+<p>初稿第 1.3、4 节写了“任何一部分单独都不行”“回答恢复需要全部头的 V”“强烈的非加和”“REST 承载约 95%”，并把 SP-01 的完整卷积恢复与本轮的全部 V 恢复合并为“完整 V 被恢复时目标读出也恢复”。这些都超出了实验范围：只测了三个子集；离散端点不能区分跨阈值与内部交互；范数不是承载比例；SP-01 没有测全部 V。正文已按上面改写，数据与冻结判读不变。</p></main></html>

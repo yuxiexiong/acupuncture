@@ -1,0 +1,287 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>082．CT：停止之外的竞争者是否变了</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="082ct">082．CT：停止之外的竞争者是否变了</h1>
+<p><a href="../README.zh-CN.html">返回总时间线</a></p>
+<p><strong>时间定位</strong>：版本/记录日期 2026-11-02；未从所选收据确定完整运行起止，不据目录名补写时刻。</p>
+<p><strong>当时的目的与设计</strong></p>
+<p>读旧首步logits，除了EOS与正确词，也查看受针后出现的其他非停止竞争词。</p>
+<p><strong>实际过程、结果与后来更正</strong></p>
+<p>正确首词原生排名约55–104；停止对正确词差约19，对新非停止竞争词仅0.1–6.3。恢复卷积后正确词48/48第一，恢复历史38/48，入口0/48。原完整token排名保留。</p>
+<p><strong>来源身份</strong>：<code>cache-competitor-turnover-v1-2026-11-02</code>；本章主体来源提交 <code>7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8</code>。下方原文中的状态是各文件写作时的状态，不能把早期“尚未运行”覆盖后期正式收据，也不能将后期结果倒填进早期设计。</p>
+<h2 id="_1">原设计、执行过程、结果与更正全文</h2>
+<p>以下按“设计与题目 → 工程/执行记录 → 结果/更正 → 其他历史说明”组织；同类内没有可靠时间时保留路径顺序，不冒充严格先后。正文未删段；仅为本章节重排标题层级、把相对链接指向固定提交。原始字节另外完整保存。</p>
+<h3 id="1ct-01-nr-01-logits-gpu-v1">原件 1：CT-01：首步竞争者更替（复用 NR-01 八格 logits，零 GPU）——计划 v1</h3>
+<p>原路径：<code>docs/cache-competitor-turnover-plan-v1-2026-11-02.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-competitor-turnover-plan-v1-2026-11-02.zh-CN.md">固定提交原文</a> · <a href="../library/7a79f57db24770ed.html">单独阅读副本</a>；SHA-256：<code>7a79f57db24770ed16498299e745c35c965b5c5c97406a6fe1109bbbc2e0cc46</code>。</p>
+<hr />
+<h4 id="ct-01-nr-01-logits-gpu-v1">CT-01：首步竞争者更替（复用 NR-01 八格 logits，零 GPU）——计划 v1</h4>
+<ul>
+<li>2026-11-02。依据：NR-01（c19cb45）；对“竞争者更替”方向的提议与评审意见（三处修订均已采纳）。授权：用户 2026-11-02「如果同意就直接推进」。<strong>已见数据上的分析前冻结探索检验</strong>，不是未见数据的独立确认。</li>
+</ul>
+<h5 id="1">1. 问题</h5>
+<p>NR-01 显示，固定候选读数（停止词 vs 干净首词 q0）与实际竞争差 D（停止 vs 最强非停止词）对状态恢复的反应很不一样。本轮问：D 与 Q 之间的交互差异，有多少来自停止赢家变化、有多少来自非停止竞争者变化？原生 T 与各恢复格里的最强非停止词是什么、属于哪一类、q0 排第几？</p>
+<h5 id="2-1">2. 主分析：统一参考候选的交互分解（评审修订 1）</h5>
+<p>所有格共用 C_native 的停止赢家 s0 与非停止赢家 q0：D = Q + A − B，Q = z(s0) − z(q0)，A = max_stop − z(s0)，B = max_nonstop − z(q0)。对 NR-01 的每个恢复效应与二阶、三阶交互，分别计算 I_D、I_Q、I_A、I_B，恒有 I_D = I_Q + I_A − I_B。由此精确回答：I_D 与 I_Q 的差（= I_A − I_B）中，停止赢家变化（A）与非停止竞争者变化（B）各占多少。</p>
+<h5 id="3-2">3. 辅助：候选身份、排名与新旧赢家追踪（评审修订 2）</h5>
+<p>逐格记录前五名非停止候选（ID、解码文本、类别、相对 s0 的 logit）与 q0 的非停止名次。从 T（000）到各恢复格：若最强非停止词换人，报告“新赢家相对旧赢家的优势” g = z_v(n_v) − z_v(n_u)，并分别报告新、旧赢家相对 s0 的变化。措辞只写“相对旧赢家取得优势”，不写“新词上升/被增强”。</p>
+<h5 id="4-3">4. 类别（描述，评审修订 3）</h5>
+<p>按真实分词器逐 token 解码，冻结优先级：特殊 token &gt; q0 本身 &gt; 干净答案 token 重合 &gt; 干扰编号 token 重合 &gt; 空白/标点（含控制字符） &gt; 词汇（含字母、数字、汉字） &gt; 不确定（含 U+FFFD 等无法解码的片段）。“干净答案 token 重合”指 token 出现在目标编号（由固定正则从记录中抽取）的分词结果里，只能叫重合，不等于答案相关。原生 T 的赢家与恢复格的新赢家分别汇总。</p>
+<h5 id="5">5. 预测（推测档）</h5>
+<p>P_T：原生 T 的最强非停止词属于“空白/标点”或“特殊 token”，在两事实都满足、≥5/6 情景成立；跨方向报告 k/4。依据只是 NR-01 中 Q 与 D 的差别。</p>
+<h5 id="6">6. 出口</h5>
+<p>若新赢家稳定落在某一类，则形成“干预抬高停止、压低 q0、某类 token 成为次优竞争者”的具体叙述，再考虑有限的生成验证；若分散，如实报告首步竞争细节不足以解释回答变化。仅凭某个格式 token 排名靠前，不断言模型进入“格式通道”。</p>
+<h5 id="7">7. 资源</h5>
+<p>零模型调用；CPU 分钟级；读取 NR-01 正式张量（约 0.4 GB）并按 receipt 核对哈希。</p>
+<hr />
+<h3 id="2ct-01-r01">原件 2：CT-01（首步竞争者更替）合同 r01</h3>
+<p>原路径：<code>experiments/cache-competitor-turnover-v1-2026-11-02/CONTRACT.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-competitor-turnover-v1-2026-11-02/CONTRACT.zh-CN.md">固定提交原文</a> · <a href="../library/ad16cb42d6886237.html">单独阅读副本</a>；SHA-256：<code>ad16cb42d688623768f5d0cd22078b6353dae6c813349123c1d2b8c61b743378</code>。</p>
+<hr />
+<h4 id="ct-01-r01">CT-01（首步竞争者更替）合同 r01</h4>
+<p>日期：2026-11-02。设计：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-competitor-turnover-plan-v1-2026-11-02.zh-CN.md">计划 v1</a>。数据：NR-01 正式运行（c19cb45）的记录与全词表 logits。授权：用户 2026-11-02「如果同意就直接推进」。零模型调用。已见数据上的分析前冻结探索检验。</p>
+<h5 id="1_1">1. 闸门（工程，任一不过即停止）</h5>
+<p>NR-01 verification 通过；记录与张量哈希与 receipt 一致；q0 = 记录的 a_token；由全词表 logits 重算的 D 与记录一致（≤1e-6）；每个输入 × 方向上 I_D = I_Q + I_A − I_B（≤1e-9）；目标编号正则在 12 条输入上都能匹配。</p>
+<h5 id="2">2. 读数</h5>
+<ul>
+<li>主：各恢复效应 r_X/r_F/r_H 与交互 i_XF/i_XH/i_FH/i_XFH 在 D、Q、A、B 上的值（共享 s0、q0）。</li>
+<li>辅：每格前五名非停止候选（ID、文本、类别、z − z(s0)）、q0 的非停止名次、最强非停止词身份；T → 各恢复格是否换人，新赢家相对旧赢家的优势 g，新、旧赢家相对 s0 的变化；C_native → T 同样记录。</li>
+<li>类别：计划 §4 的冻结优先级。</li>
+</ul>
+<h5 id="3">3. 预测（推测档）</h5>
+<p>P_T：原生 T 的最强非停止词属于空白/标点或特殊 token，两事实都满足、≥5/6 情景；跨方向报告 k/4。</p>
+<h5 id="4">4. 措辞</h5>
+<p>“新赢家相对旧赢家取得优势”不写成“新词上升/被增强”；“干净答案 token 重合”不写成“答案相关”；首 token 不推出完整回答；不断言“格式通道”。</p>
+<h5 id="5_1">5. 交付</h5>
+<p><code>analysis/ct-readouts-r01.json</code>、<code>REPORT.zh-CN.md</code>、freeze 与测试回执。</p>
+<hr />
+<h3 id="3ct-01">原件 3：CT-01（首步竞争者更替）结果报告</h3>
+<p>原路径：<code>experiments/cache-competitor-turnover-v1-2026-11-02/REPORT.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-competitor-turnover-v1-2026-11-02/REPORT.zh-CN.md">固定提交原文</a> · <a href="../library/2b2f9882fb95b5b3.html">单独阅读副本</a>；SHA-256：<code>2b2f9882fb95b5b3831c073c45b46cc9b3358e5d8187b28b40d670005ab26afb</code>。</p>
+<hr />
+<h4 id="ct-01">CT-01（首步竞争者更替）结果报告</h4>
+<p>日期：2026-11-02。<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-competitor-turnover-v1-2026-11-02/CONTRACT.zh-CN.md">合同 r01</a>；<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-competitor-turnover-v1-2026-11-02/DECISIONS.zh-CN.md">决策 D1–D4</a>；<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-competitor-turnover-plan-v1-2026-11-02.zh-CN.md">计划 v1</a>。代码 <code>2cace81</code>，freeze-r01 <code>d913b32b…153d</code>。零模型调用（CPU 7 秒），读取 NR-01 正式记录与全词表 logits。已见数据上的分析前冻结探索检验。同一助手实现、运行与撰写。</p>
+<h5 id="1_2">1. 结论（不利的先说）</h5>
+<ol>
+<li><strong>预测 P_T 只有 1/4 成立。</strong> 原生 T 的最强非停止词只在 N1210 上全部是特殊 token <code>&lt;think&gt;</code>（12/12）。在 N4146、R0、C1343 上，它多半是汉字 token <strong>“请”</strong>（按冻结规则归为“词汇”类）：N4146 10/12、R0 12/12、C1343 6/12，其余是 <code>&lt;think&gt;</code>。“请”正是提示中问题那一行的第一个字（“请根据上面的记录……”）；这里只陈述这一事实，不解释成“模型在复述问题”。</li>
+<li><strong>停止赢家从不改变</strong>（所有格的停止赢家都是 248046，A ≡ 0）。所以 D 与固定候选 Q 之间的差异全部来自非停止竞争者：每个交互项都有 I_D − I_Q = −I_B，闭合误差为 0。</li>
+<li><strong>原生干预对竞争的主要作用是把干净首词 q0 压下去，而不是把停止词抬到所有候选之上。</strong> 从 C_native 到 T：停止词相对 q0 的差距变化 19.0–19.9 logit；停止词相对新的最强非停止词（“请”或 <code>&lt;think&gt;</code>）的差距只变化 0.1–6.3（R0 0.08，N4146 2.78，C1343 4.41，N1210 6.28）。q0 在非停止词中的名次从第 1 跌到平均第 55–104。也就是说，以同一个候选在 C、T 两边的差距计算（辅助量 [z_T(s0) − z_T(n_T)] − [z_C(s0) − z_C(n_T)]，n_T 两边相同），干净运行里这个通用候选高出停止词约 0.3（R0）、1.8（N4146）、3.2（C1343）、5.4（N1210 的 <code>&lt;think&gt;</code>），而 q0 高出停止词约 12.9，即它们远低于 q0、相对靠近停止词（<strong>更正</strong>：初稿写“相近的水平”，对 N1210 的 5.4 logit 说过头）；干预让 q0 跌到它们之下以后，首步由“停止词 vs 这些通用候选”的细小差距决定。这解释了为什么原生 D 只比门槛高约 1 logit，也解释了 R0 为什么多数不停止（“请”略高于停止词）。以上都是相对差距的描述（对词表平移不敏感），不是绝对 logit 的升降。</li>
+<li><strong>哪类状态的恢复能让 q0 回到非停止第一：</strong> 只恢复深层卷积（010）后，q0 在 48/48 个单元重新成为最强非停止词；只恢复深层历史（001）后 38/48；只恢复入口（100）后 0/48（q0 名次回到平均第 5–11，但最强非停止词仍是“请”或 <code>&lt;think&gt;</code>）。凡是包含 F 或同时包含 X 与 H 的组合，都是 48/48。</li>
+<li><strong>NR-01 里 D 的交互形状，主要来自竞争者从“请”或 <code>&lt;think&gt;</code> 换回 q0 的那一步。</strong> 例如 N4146：i_FH 在 D 上为 +2.78，在 Q 上为 −2.86，差额 5.64 全部来自 B（非停止竞争者项）；i_XFH 在 D 上为 −4.70，在 Q 上为 −1.90，差额 −2.81 同样来自 B。在固定候选 Q 上，三类恢复多为次加和（彼此冗余）。</li>
+</ol>
+<h5 id="2_1">2. 主要读数</h5>
+<p><strong>原生 T 的最强非停止词</strong>（12 个输入）：</p>
+<table>
+<thead>
+<tr>
+<th>方向</th>
+<th style="text-align: right;">“请”</th>
+<th style="text-align: right;"><code>&lt;think&gt;</code></th>
+<th style="text-align: right;">q0 在非停止中的平均名次</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>N4146</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">104</td>
+</tr>
+<tr>
+<td>N1210</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">55</td>
+</tr>
+<tr>
+<td>R0</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">104</td>
+</tr>
+<tr>
+<td>C1343</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">84</td>
+</tr>
+</tbody>
+</table>
+<p><strong>各恢复格中 q0 重新成为最强非停止词的单元数</strong>（每方向 12）：</p>
+<table>
+<thead>
+<tr>
+<th>方向</th>
+<th style="text-align: right;">100 (X)</th>
+<th style="text-align: right;">010 (F)</th>
+<th style="text-align: right;">001 (H)</th>
+<th style="text-align: right;">110</th>
+<th style="text-align: right;">101</th>
+<th style="text-align: right;">011</th>
+<th style="text-align: right;">111</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>N4146</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">12</td>
+</tr>
+<tr>
+<td>N1210</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">12</td>
+</tr>
+<tr>
+<td>R0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">12</td>
+</tr>
+<tr>
+<td>C1343</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">12</td>
+</tr>
+</tbody>
+</table>
+<p><strong>交互在 D / Q / B 上的分解</strong>（N4146 均值；A 恒为 0）：</p>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th style="text-align: right;">D</th>
+<th style="text-align: right;">Q</th>
+<th style="text-align: right;">B</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>r_X</td>
+<td style="text-align: right;">1.92</td>
+<td style="text-align: right;">4.76</td>
+<td style="text-align: right;">2.84</td>
+</tr>
+<tr>
+<td>r_F</td>
+<td style="text-align: right;">6.32</td>
+<td style="text-align: right;">11.99</td>
+<td style="text-align: right;">5.67</td>
+</tr>
+<tr>
+<td>r_H</td>
+<td style="text-align: right;">4.03</td>
+<td style="text-align: right;">9.67</td>
+<td style="text-align: right;">5.64</td>
+</tr>
+<tr>
+<td>i_XF</td>
+<td style="text-align: right;">0.35</td>
+<td style="text-align: right;">−2.49</td>
+<td style="text-align: right;">−2.84</td>
+</tr>
+<tr>
+<td>i_XH</td>
+<td style="text-align: right;">3.54</td>
+<td style="text-align: right;">0.73</td>
+<td style="text-align: right;">−2.81</td>
+</tr>
+<tr>
+<td>i_FH</td>
+<td style="text-align: right;">2.78</td>
+<td style="text-align: right;">−2.86</td>
+<td style="text-align: right;">−5.64</td>
+</tr>
+<tr>
+<td>i_XFH</td>
+<td style="text-align: right;">−4.70</td>
+<td style="text-align: right;">−1.90</td>
+<td style="text-align: right;">2.81</td>
+</tr>
+</tbody>
+</table>
+<p>其他方向形状相同（见 analysis JSON）。恢复格中的最强非停止词（7 格 × 12 输入）：q0 占 68–70，其余为“请”、<code>&lt;think&gt;</code> 等；只有 1 例是干扰编号的 token 重合。干净运行的 q0 在 12 个输入上都是目标编号的首字母（如 B26 的 “B”）。</p>
+<h5 id="3_1">3. 执行</h5>
+<p>闸门全部通过：NR-01 记录与张量哈希一致；全词表重算的 D 与记录一致（误差 0）；I_D = I_Q + I_A − I_B 闭合误差 0；12 条输入的目标编号都能匹配。</p>
+<h5 id="4_1">4. 含义与出口</h5>
+<ul>
+<li>回到核心问题“稀疏干预为什么造成回答改变”：在这组输入上，首步的改变主要不是“停止被大幅推高”，而是<strong>答案的首字母被大幅压低</strong>（相对停止词约 19–20 logit），之后停止词与“请”、<code>&lt;think&gt;</code> 这类通用候选之间的细小差距决定首步选择。所以“停嘴”在这里更像“答案消失后，在通用备选里落到了停止”。这与 B4、NFC、NR-01 里“答案侧变化更大”的观察一致，并把它落到了具体的候选上。</li>
+<li>对状态类别的含义：要让答案首字母重新成为第一候选，恢复深层卷积单独就够（48/48），恢复深层历史多数够（38/48），恢复入口不够（0/48）。这与 D 上“需要组合”的印象不同，差别就在通用候选那一侧。</li>
+<li>出口：已形成一条具体叙述：干预压低答案首 token，停止词与通用候选（“请”、<code>&lt;think&gt;</code>）竞争首步。下一步若要继续，主要读数应改为“q0 相对通用候选的差距”和“q0 的名次”，并且需要有限的生成验证：在阻止停止或强制不停止时，模型接下来输出什么（例如是否以“请”开头复述，或者进入 <code>&lt;think&gt;</code>，或者仍能给出编号）。这需要 GPU，要另立合同。</li>
+</ul>
+<h5 id="5_2">5. 可以说 / 不可以说</h5>
+<table>
+<thead>
+<tr>
+<th>可以说</th>
+<th>不可以说</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>停止赢家从不改变；D 与 Q 的差异全部来自非停止竞争者</td>
+<td>停止词被“主动增强”</td>
+</tr>
+<tr>
+<td>干预使 q0 相对停止词下降 19–20 logit，而停止词相对新竞争者只变化 0.1–6.3</td>
+<td>绝对意义上停止词没有上升（这里只有相对差距）</td>
+</tr>
+<tr>
+<td>原生 T 的最强非停止词是“请”或 <code>&lt;think&gt;</code>，“请”与问题行首字相同</td>
+<td>模型在复述问题或准备思考（首 token 不足以判断）</td>
+</tr>
+<tr>
+<td>只恢复深层卷积就让 q0 在 48/48 中回到非停止第一</td>
+<td>恢复后模型能正确回答（只看了首 token）</td>
+</tr>
+<tr>
+<td>P_T 1/4</td>
+<td>“格式通道”</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="4ct-01">原件 4：CT-01 决策日志</h3>
+<p>原路径：<code>experiments/cache-competitor-turnover-v1-2026-11-02/DECISIONS.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-competitor-turnover-v1-2026-11-02/DECISIONS.zh-CN.md">固定提交原文</a> · <a href="../library/d027663cdf08cb54.html">单独阅读副本</a>；SHA-256：<code>d027663cdf08cb544442675a021ed6c4047a6320561b57bc6f0ed78b1b69c65c</code>。</p>
+<hr />
+<h4 id="ct-01_1">CT-01 决策日志</h4>
+<ul>
+<li><strong>D1 三处评审修订</strong>（冻结前）：主分析用共享 s0/q0 的 D = Q + A − B 交互分解；逐对换人增益只作辅助并同时追踪新旧赢家相对 s0 的变化；类别优先级与“不确定”类冻结，答案重合不称答案相关。</li>
+<li><strong>D2 目标编号</strong>：正则 <code>目标条目\S*?编号为([A-Za-z0-9]+)</code>，在冻结前已对 12 条输入文本核对（只看输入，不看任何模型输出）；干扰编号为记录中其他“编号为”后的编号。</li>
+<li><strong>D3 编号 token 集</strong>：目标编号与“空格+编号”两种写法的分词结果之并集；干扰编号同法，扣除与目标重合的部分。</li>
+<li><strong>D4 已见情况</strong>：NR-01 的 D、Q 汇总已见；最强非停止词的身份与类别在冻结前未看过。</li>
+</ul>
+<hr />
+<h2 id="_2">时间、运行与停止收据索引</h2>
+<p>下面是所收集JSON的原有时间字段与状态，不把预计结束时间当实际完成时间。未列时间的文件仍有原件链接。完整JSON全部保存在原文归档，不能以此索引中的标量代替完整嵌套内容。</p>
+<table>
+<thead>
+<tr>
+<th>原件</th>
+<th>原记录状态/阶段</th>
+<th>原时间字段（原时区）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-competitor-turnover-v1-2026-11-02/readiness/cpu-receipt-r01.json">readiness/cpu-receipt-r01.json</a></td>
+<td>{"status": "passed"}</td>
+<td>{}</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_3">全部原始资产入口</h2>
+<p>本目录在固定提交下共有10个跟踪文件，包含代码、原回答、失败、收据和压缩证据；文件数不是样本数。<a href="../assets/082-cache-competitor-turnover-v1-2026-11-02.tsv">逐文件完整账本</a> · <a href="https://github.com/yuxiexiong/acupuncture/tree/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-competitor-turnover-v1-2026-11-02">原目录</a>。未复制模型权重、环境或凭据。</p></main></html>

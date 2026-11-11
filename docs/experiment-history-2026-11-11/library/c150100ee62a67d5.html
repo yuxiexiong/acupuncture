@@ -1,0 +1,154 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>QKD-01（共同 k 偏移改变了哪种计算）结果报告</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="qkd-01-k">QKD-01（共同 k 偏移改变了哪种计算）结果报告</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-k-computation-diagnostic-v1-2026-11-03/REPORT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-k-computation-diagnostic-v1-2026-11-03/REPORT.zh-CN.md">固定提交原件</a>；SHA-256：<code>c150100ee62a67d51930ef0369df7e44654e500d1b099c84da1f79857f156d49</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="qkd-01-k_1">QKD-01（共同 k 偏移改变了哪种计算）结果报告</h1>
+<p>日期：2026-11-03。<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-k-computation-diagnostic-v1-2026-11-03/CONTRACT.zh-CN.md">合同 r01</a>；<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-k-computation-diagnostic-v1-2026-11-03/DECISIONS.zh-CN.md">决策 D1–D6</a>；计划 v1（21981fe7，评审撰写）。代码 <code>a06ea4f</code>，freeze-r02 <code>d634dd86…1a13</code>。本轮是计算诊断，无中间项干预。同一助手实现、运行与撰写。</p>
+<h2 id="1">1. 结论（不利与限制先说）</h2>
+<ol>
+<li><strong>执行偏离</strong>：预检 r01 的科学闸门全部通过，但启动器的验收函数残留一行从 QKF 照搬、引用不存在字段的检查而报错；按合同用掉唯一一次预检重试，修复后以 r02 重新冻结、重跑预检与正式（D6）。r01 记录保留、不作证据。</li>
+<li><strong>允许失败的工作预测不成立</strong>：在主步（强制前缀 t2），共同偏移的 μ_k 配对（Rk 对 V、Ak 对 F）的局部份额 s_H 只有 0.44–0.55、s_J 0.44–0.56，四个方向都标“都不主导”。共同 k 偏移的局部作用是 q·k 系数项（J）与旧状态预测项（H）大致各半，而不是“主要经由旧预测”。</li>
+<li><strong>只换 k 的局部反事实只解释实际输出差的一小部分</strong>：残差占实际差的比例在 t2 为 0.91–0.98，在 t1 为 0.57–0.79。t2 的实际差主要落在 D 项（衰减后旧状态的读出，份额 0.78–0.86），即到了竞争那一步，差别主要由<strong>此前写入的状态</strong>承载，而不是该步的 k 本身。按计划 §6 的出口，这属于“局部 k 作用不足、真实 ΔD 或残差大”：报告其余状态 / 上游响应的条件依赖，不凭残差定位来源。</li>
+<li><strong>C1343 的局部模式与另三个方向几乎相同（μ_k 配对 s_H 约 0.36，标“都不”），但它的新编辑臂没有造成行为损伤</strong>（Rk、Ak、Rrk 48/48，Ark 47/48）。按计划，这否定“这种局部变化单独足以解释致错”。</li>
+<li><strong>描述性差异</strong>：随机 k（r_post）配对是“局部 J 主导”（t1、t2 的 s_J 约 0.76–0.84，前三方向），共同偏移 μ_k 的 H 份额明显更高（0.44–0.55 对 0.16–0.37）。也就是说，同样首读强度下，随机扰动主要改变 q·k 系数，共同偏移更多地改变了 S_prevᵀk 这一旧预测。这是相关描述，不是因果结论。</li>
+<li><strong>与修复的关系</strong>：在“修复 / 未修复 / 保持”各组之间，s_H 几乎没有差别（如 N4146：0.54 / 0.54 / 0.52），所以局部份额本身不区分哪道题被修好。强制前缀 t2 的分差 M：Rk 相对 V 上升 1.7–2.8，Ak 相对 F 下降 2.1–3.8，随机臂变化小。</li>
+<li>工程：C/T 哈希 = QCD G；前三方向 N 路线 token 与 t1 logits/缓存哈希 = QKF；C1343 的 V/F 完整回答 = QCO；捕获覆盖 14 层、接线逐位；预检有/无观察器逐位相同；重建误差预检 e_max 0.0035、正式 0.0037（阈值 0.0071）。</li>
+</ol>
+<h2 id="2-c1-t1c2-t2">2. 主读数（场景等权；C1 = t1，C2 = 强制前缀 t2）</h2>
+<table>
+<thead>
+<tr>
+<th>方向</th>
+<th>配对</th>
+<th>C1：s_J / s_H</th>
+<th>C1 实际 D/W 份额</th>
+<th style="text-align: right;">C1 残差比</th>
+<th>C2：s_J / s_H</th>
+<th>C2 实际 D/W 份额</th>
+<th style="text-align: right;">C2 残差比</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>N4146</td>
+<td>Rk 对 V</td>
+<td>0.59 / 0.41</td>
+<td>0.28 / 0.55</td>
+<td style="text-align: right;">0.70</td>
+<td>0.47 / 0.53</td>
+<td>0.81 / 0.32</td>
+<td style="text-align: right;">0.96</td>
+</tr>
+<tr>
+<td>N4146</td>
+<td>Rrk 对 V</td>
+<td>0.76 / 0.24</td>
+<td>0.17 / 0.68</td>
+<td style="text-align: right;">0.64</td>
+<td>0.79 / 0.21</td>
+<td>0.76 / 0.34</td>
+<td style="text-align: right;">0.92</td>
+</tr>
+<tr>
+<td>N1210</td>
+<td>Rk 对 V</td>
+<td>0.66 / 0.34</td>
+<td>0.30 / 0.66</td>
+<td style="text-align: right;">0.76</td>
+<td>0.56 / 0.44</td>
+<td>0.78 / 0.36</td>
+<td style="text-align: right;">0.98</td>
+</tr>
+<tr>
+<td>R0</td>
+<td>Rk 对 V</td>
+<td>0.69 / 0.31</td>
+<td>0.23 / 0.75</td>
+<td style="text-align: right;">0.69</td>
+<td>0.53 / 0.47</td>
+<td>0.78 / 0.39</td>
+<td style="text-align: right;">0.96</td>
+</tr>
+<tr>
+<td>C1343</td>
+<td>Rk 对 V</td>
+<td>0.60 / 0.39</td>
+<td>0.26 / 0.67</td>
+<td style="text-align: right;">0.70</td>
+<td>0.64 / 0.36</td>
+<td>0.79 / 0.36</td>
+<td style="text-align: right;">0.97</td>
+</tr>
+</tbody>
+</table>
+<p>（Ak 对 F 与 Rk 对 V 的数值相近；E 项份额在各处为 −0.11 到 +0.04。完整表见 <code>analysis/qkd-readouts-r02.json</code>。）</p>
+<p>完整交付（48）：C1343 新增四臂 Rk 48、Ak 48、Rrk 48、Ark 47；前三方向沿用 QKF。</p>
+<h2 id="3">3. 执行</h2>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th style="text-align: right;">形成</th>
+<th style="text-align: right;">生成轨迹</th>
+<th style="text-align: right;">解码/条件前向（实际）</th>
+<th style="text-align: right;">墙钟（每 worker）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>预检 r01（失败，保留）</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">432</td>
+<td style="text-align: right;">103 s</td>
+</tr>
+<tr>
+<td>预检 r02</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">432</td>
+<td style="text-align: right;">98 s</td>
+</tr>
+<tr>
+<td>正式 r02</td>
+<td style="text-align: right;">240</td>
+<td style="text-align: right;">288</td>
+<td style="text-align: right;">6909</td>
+<td style="text-align: right;">910 / 718 s</td>
+</tr>
+</tbody>
+</table>
+<p>合计约 0.51 GPU 设备小时（上限 1.5）。逐头张量在服务器 <code>runs/formal-r02/worker-*/tensors/</code>，哈希在 receipt。</p>
+<h2 id="4">4. 对下一步的含义</h2>
+<ul>
+<li>共同 k 偏移在读出那一步的“瞬时”作用（换 k 本身）只占竞争步实际差的一小部分；竞争步的差主要来自 D 项，即 t1（以及编辑槽影响的后两步）写入状态后被读出。这把候选从“读出时的 k 计算”移向“k 改变了写入状态的内容”。</li>
+<li>计划 §6 的后续二选一中，这更支持方案 ②（改 S 更新中的项，让更新后的状态自然读出），而不是方案 ①（只改当步核输出贡献）。具体替换哪一项、在哪一步，需要单独的预测卡与授权；本轮按合同结束。</li>
+<li>C1343 提醒：同样的局部计算变化可以不造成损伤，因此后续解释必须同时说明为什么 C1343 不坏。</li>
+</ul>
+<h2 id="5">5. 可以说 / 不可以说</h2>
+<table>
+<thead>
+<tr>
+<th>可以说</th>
+<th>不可以说</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>共同 k 偏移在 t1/t2 的局部作用中，q·k 系数项与旧预测项大致各半；预测的“H 主导”不成立</td>
+<td>k 修复靠擦除旧预测</td>
+</tr>
+<tr>
+<td>竞争步的实际输出差约九成以上不能由“只换该步 k”解释，主要落在旧状态读出项 D</td>
+<td>残差来自某个具体模块</td>
+</tr>
+<tr>
+<td>同首读强度的随机 k 扰动以 q·k 系数项为主，共同偏移的旧预测项份额更高</td>
+<td>这一份额差是致错原因</td>
+</tr>
+<tr>
+<td>C1343 局部模式相近但无损伤，局部变化不单独足以致错</td>
+<td>局部模式与致错无关</td>
+</tr>
+</tbody>
+</table></main></html>

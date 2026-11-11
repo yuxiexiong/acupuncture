@@ -1,0 +1,15 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>NVB-01 决策日志（冻结前）</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="nvb-01">NVB-01 决策日志（冻结前）</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-native-bridge-v1-2026-11-03/DECISIONS.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-native-bridge-v1-2026-11-03/DECISIONS.zh-CN.md">固定提交原件</a>；SHA-256：<code>8c931fabc1626263d678eef2240f34241c27c691b4cef1f4fd2656ac26576558</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="nvb-01_1">NVB-01 决策日志（冻结前）</h1>
+<ul>
+<li>N1 主比较按两轮讨论移到原生一侧（B010/B011 对 B000/B001），恢复侧与输出侧比较保留；不称“内容×读取语境”析因（c 也改深层写入输入）。</li>
+<li>N2 随机族只在 c=0、只跑 C 路线：主问题是“原生输出下只改留存”；c=0 自然轨迹 t1 停止是结构必然（LVK L00 166/192），自然路线无信息。</li>
+<li>N3 K=19：单侧最小可得 p=1/20；K=9 只到 0.1。增量约 1.46 万次前向（估约 0.32 设备小时，未实测），总上限仍 1.5 GPUh。</li>
+<li>N4 ρ 用 FP32 加到 v0 上（v_r 不经 BF16 舍入），以保证每头范数精确匹配；v1 本身是 BF16 卷积输出。差异在 BF16 舍入量级，记为可接受边界。</li>
+<li>N5 每个随机格独立前向（不在缓存里直接替换 S），让“只有 S 不同”在真实前向上实测，而不是构造假定。</li>
+<li>N6 对角四格除与 LVK 记录比对外，再用参考实现重建完整缓存（000 对原生 t1；001/110/111 对 LVK LHook），共 768 次参照 t1。</li>
+<li>N7 t2 q/k 只读捕获沿用 SRU 的 RHook('capture')（调用原核，不改输出）；对 000 的 C 路线输出另与 LVK 逐位比对，可检出捕获是否扰动。</li>
+<li>N8 CPU 就绪检查实测：LVK 新面板 L00 t1 停止 166/192、L01 174/192、L10/L11 0。</li>
+</ul></main></html>

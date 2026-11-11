@@ -1,0 +1,17 @@
+# D1：首次预检形成哈希字段范围错误
+
+历史原件；不是本次提出的假设、论证或运行要求。
+
+原路径：`experiments/cache-donor-write-readout-v1-2026-11-07/deviations/D1-preflight-schema.zh-CN.md`。来源：[固定提交原件](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-donor-write-readout-v1-2026-11-07/deviations/D1-preflight-schema.zh-CN.md)；SHA-256：`fd6d4acfb4d7ee67e7a5db31f648eeaf9312d9a15d650d79e183da1cd006d19a`。精确字节见原文归档。
+
+---
+
+# D1：首次预检形成哈希字段范围错误
+
+首次模型预检r01在第一个场景形成第一个输入后退出，未生成读取实验结果。源版本Git `c16d60925`、freeze `c369315d3bb41f1a74701a1c0ac65600cda018330b6f1623b788b4ff46e32f70`；原始运行及失败日志保留在`runs/preflight-r01/`。
+
+根因是DWR使用两方向，旧LVK形成哈希记录还包含R0/C1343另外两方向；新代码误用整个字典相等，而DWB已有实现是逐当前字段核对。不能由此次异常推断张量实际不同，也不能忽略数值身份校验。
+
+修正：先要求本卡字段恰为base_b、C_b、两个已登记T方向，再要求每一个值等于旧参考。增加CPU回归测试：允许旧参考附加方向，每个当前字段改变或缺失都必须失败。保持每个摘要的精确比较；未放宽容差或删掉当前方向。更新PLAN_ID为r02，重新CPU验收和冻结；唯一工程重试为preflight-r02。科学端点、臂、统计、生成与时间预算均不变。
+
+本偏离为工程错误，不是阴性科学结果。第一次模型载入和失败时间计入总预算；若重试仍未验收通过，本卡停止，不自动第三次上卡。

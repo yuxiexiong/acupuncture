@@ -1,0 +1,92 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Gemma四组巡检：2026-11-06 09:40–09:43</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="gemma2026-11-06-09400943">Gemma四组巡检：2026-11-06 09:40–09:43</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/wsp-vlm-gemma3-shared-gpu-2026-11-06/heartbeat-0940/REPORT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-gemma3-shared-gpu-2026-11-06/heartbeat-0940/REPORT.zh-CN.md">固定提交原件</a>；SHA-256：<code>a3ad0b37790762ce7b531dbbf8538e05d7f80237cfeee97f0aa367b7a9f4e077</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="gemma2026-11-06-09400943_1">Gemma四组巡检：2026-11-06 09:40–09:43</h1>
+<p>同卡并行健康，无新工程失败。本次保持运行条件和进程，未重启或重放任何实验动作。</p>
+<table>
+<thead>
+<tr>
+<th>组别</th>
+<th style="text-align: right;">完整候选</th>
+<th style="text-align: right;">较09:10</th>
+<th style="text-align: right;">较09:23</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>v8 B</td>
+<td style="text-align: right;">28/30</td>
+<td style="text-align: right;">+4</td>
+<td style="text-align: right;">+3</td>
+<td>第29候选已提交、正在完整评价</td>
+</tr>
+<tr>
+<td>v8 C</td>
+<td style="text-align: right;">14/30</td>
+<td style="text-align: right;">+3</td>
+<td style="text-align: right;">+2</td>
+<td>第15候选已提交、正在完整评价</td>
+</tr>
+<tr>
+<td>v9 B</td>
+<td style="text-align: right;">0/30</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td>等待两组v8科学评价完成</td>
+</tr>
+<tr>
+<td>v9 C</td>
+<td style="text-align: right;">0/30</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td>等待两组v8科学评价完成</td>
+</tr>
+</tbody>
+</table>
+<p>计数以remote.json的完整评分快照和state为准；进行中的29/15不计完成。B的29份、C的15份评价缓存（各含W0）逐SHA核对通过。v8/v9各24个清单文件无哈希漂移；原工程验收通过，执行batch32。原始验收和本次复核见engineering-verification.json。</p>
+<p>B所选仍R24：主分数21.5517% vs W0 16.3793%（+5.1724个百分点），全体46.3362% vs43.5345%，修对20、改错7。新增候选未替代当前选择。C仍选W0：主分数33.9844%、全体79.1406%，所选相对W0修对/改错0/0。C早段post-attention norm gain1.05曾提高普通joint但未过三个保护条件；其余深度段未形成通过保护的改善，现在评价早段1.025半步。B继续数字0输出/embedding与视觉桥剂量敏感性比较。measure累计B5/C3，本窗无新增measure；这些调用不等于细致MLP机制成立。两组均未冻结、未完成最终报告；v9尚无正式研究者或模型调用。所有分数都是开发集结果，不是独立泛化。</p>
+<h2 id="_1">资源和实际耗时</h2>
+<p>真实远端B2191786/C2171236，同驻GPU0；本地B85511/C80319存活。v9远端2125523/2125524、本地57718/57720继续正常等待。GPU0采样100%，总用30,612 MiB（29.9 GiB）、剩66,895 MiB（65.3 GiB）。GPU1其他任务PID已变为2200956、采样100%、约83.3 GiB，不属于本实验，本次未干预。显存余量充足，无OOM；一次100%采样不代表全程满载。</p>
+<p>工作盘剩133.188 GiB，比09:23快照131.399 GiB增加1.789 GiB，属于全盘净变化，不能称本实验回收。B目录3.080 GiB（约+0.048），C3.495 GiB（约+0.152）；满足每组12 GiB及全盘至少20 GiB预算，无清理。</p>
+<table>
+<thead>
+<tr>
+<th>搜索累计计账</th>
+<th style="text-align: right;">B</th>
+<th style="text-align: right;">C</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>目标样本/前向</td>
+<td style="text-align: right;">13,531</td>
+<td style="text-align: right;">39,267</td>
+</tr>
+<tr>
+<td>目标token</td>
+<td style="text-align: right;">4,168,878</td>
+<td style="text-align: right;">10,354,628</td>
+</tr>
+<tr>
+<td>CPU Python秒</td>
+<td style="text-align: right;">242.136</td>
+<td style="text-align: right;">48.953</td>
+</tr>
+<tr>
+<td>最近成功研究者turn</td>
+<td style="text-align: right;">129</td>
+<td style="text-align: right;">78</td>
+</tr>
+<tr>
+<td>研究者累计token（含缓存输入）</td>
+<td style="text-align: right;">19,476,360</td>
+<td style="text-align: right;">9,468,159</td>
+</tr>
+</tbody>
+</table>
+<p>C本次目标样本包含正在评价中的部分样本，不能按样本数反推完整轮数。工程另计各2212生成、2218前向，其中2080校准，不混入30轮。401失败110/64没有单次usage收据，恢复后的线程累计持续对账，但失败单次成本不能单独分离；不填0，不把tokens当已知账单金额。</p>
+<p>已完成动作窗口B118–128：Astra整回合合计435.1秒（该统计包含已完成研究者129，工具动作129仍进行中），评价373.3秒、Python129.8秒、提交99.1秒、工具等待45.7秒。C68–78：Astra611.8秒、完整评价554.8秒、Python4.0秒、提交0.08秒、工具等待44.5秒；正在执行的评价78未计入完整评价耗时。Astra耗时包含API排队、上下文处理、输出，不称纯思考；工具等待由同Mac请求/响应mtime差减远端执行时间计算。窗口不严格同长，不能把这些列比较成速度排行榜。原始timing.json列明边界。</p>
+<p>最近同卡B完整评价约84–159秒；C约231–285秒，长于此前约217秒。存在共享计算竞争的可能，但未经配对性能试验，不能唯一归因于同卡。查看最近4–8候选循环时保留原间隔并排除显式认证/GPU等待段（B约3199秒、C约2857秒），不把它们算计算速度：恢复后B循环约3.3–5.9分钟，C约7.3–9.8分钟，样本仍少。预计B剩余科学评价约5–15分钟，C约2–3小时；最终报告耗时另计、不承诺。v9仍有依赖等待及自身工程验收，暂不给四组总完工时间。</p>
+<p>B先完成30后应正常冻结/退出并释放服务；若仅收尾失败，保存结果和停止回执后释放GPU，不让收尾卡住后续。C尚未完成30，v9等待它是科学依赖，并非收尾阻塞。保持每30分钟巡检及工程故障及时处理。</p></main></html>

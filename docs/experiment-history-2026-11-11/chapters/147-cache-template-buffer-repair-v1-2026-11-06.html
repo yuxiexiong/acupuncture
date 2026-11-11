@@ -1,0 +1,873 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>147．FBR：不用本题答案的平均模板缓冲修复</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="147fbr">147．FBR：不用本题答案的平均模板缓冲修复</h1>
+<p><a href="../README.zh-CN.html">返回总时间线</a></p>
+<p><strong>时间定位</strong>：已提取运行收据的最早时间锚点（可含预检） 2026-11-06T17:49:10.313375+08:00；不能当作全部子运行起止。</p>
+<p><strong>当时的目的与设计</strong></p>
+<p>用其他场景的平均干净缓冲、同/异场景单供体、清零、受针平均和20随机改动，比较本输入自己的干净缓冲恢复上限。</p>
+<p><strong>实际过程、结果与后来更正</strong></p>
+<p>48题×4方向×28臂。平均主臂正确17/35/41/48，上限均48；90%上限门槛为44，前三方向未过，两个主要方向PA失败，不进B阶段。原先“差的这一点决定选哪条”等推测后来收窄，均保留。正式首启显存检查失败也单列。</p>
+<p><strong>来源身份</strong>：<code>cache-template-buffer-repair-v1-2026-11-06</code>；本章主体来源提交 <code>7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8</code>。下方原文中的状态是各文件写作时的状态，不能把早期“尚未运行”覆盖后期正式收据，也不能将后期结果倒填进早期设计。</p>
+<h2 id="_1">原设计、执行过程、结果与更正全文</h2>
+<p>以下按“设计与题目 → 工程/执行记录 → 结果/更正 → 其他历史说明”组织；同类内没有可靠时间时保留路径顺序，不冒充严格先后。正文未删段；仅为本章节重排标题层级、把相对链接指向固定提交。原始字节另外完整保存。</p>
+<h3 id="1fbr">原件 1：下一步实验规划：不看答案的缓冲修复（FBR 线）</h3>
+<p>原路径：<code>docs/experiment-plan-template-buffer-repair-2026-11-06.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/experiment-plan-template-buffer-repair-2026-11-06.zh-CN.md">固定提交原文</a> · <a href="../library/d84ca1fba3ab2df6.html">单独阅读副本</a>；SHA-256：<code>d84ca1fba3ab2df62fce04e55b0c597a91901528ed27dec6b32789177042c6b3</code>。</p>
+<hr />
+<h4 id="fbr">下一步实验规划：不看答案的缓冲修复（FBR 线）</h4>
+<p>2026-11-06。<strong>规划稿，不是合同，未冻结、未授权、未运行。</strong> 分工：实验由本会话负责，稿件由用户整理。原则：不做证伪论文，每张卡的主臂是一个造出来的东西，对照只用来给它划边界。引用规范 <code>docs/experiment-design-self-check.zh-CN.md</code> v1；同一助手撰写，不是独立审查。</p>
+<h5 id="0">0. 为什么是这条线</h5>
+<p>坏消息先说：到 NWC-01 为止，本项目站住的是"一段限定范围内确认过的操作关系"，被否掉的是"原生状态方向特殊"。没有任何造出来的东西，痛点仍是推测档。继续补确认范围或继续定位，都不改变这一点。</p>
+<p>现成的事实（零 GPU，按 NWR-01 冻结的分类规则重读 LVK-01 正式记录，新面板 48 条）：</p>
+<table>
+<thead>
+<tr>
+<th>只在 t1 前把 14 个递推层的卷积缓冲换成本输入的干净值，其余全是原生受针状态</th>
+<th style="text-align: right;">N4146</th>
+<th style="text-align: right;">N1210</th>
+<th style="text-align: right;">R0</th>
+<th style="text-align: right;">C1343</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>原生运行，正确数</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>换 q/k 与 V 全部通道（LVK 的 F 臂）</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">48</td>
+</tr>
+<tr>
+<td>只换 V 通道（V 臂）</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">35</td>
+<td style="text-align: right;">48</td>
+</tr>
+</tbody>
+</table>
+<p>缓冲很小：每层 3 个槽。递推状态与 KV 一个字节没动，回答就全修回来了。这是一个现成的修复上限。它目前不能叫修复，原因只有一个：用的是这条输入自己的干净运行。</p>
+<p><strong>所以下一步的问题是：干净缓冲能不能从别的输入拿。</strong> 缓冲对应提示末尾的最后几个 token，在本面板里是同一句指令尾巴。已有的旁证：QST-01 测到不同查询的干净 q/k 在模板位上几乎相同；NWC-01 测到损伤补丁的跨输入余弦 0.91 到 0.96。V 通道没有直接数据。"别的输入的干净缓冲够用"属于<strong>推测档</strong>。</p>
+<h5 id="1-fbr-01">1. 第一张卡 FBR-01：模板缓冲修复</h5>
+<p><strong>问题。</strong> 不运行本输入的干净版本，只用其他输入的干净卷积缓冲，能把原生受针运行修回多少。</p>
+<p><strong>操作。</strong> 全部在 t1 之前、只改 14 个递推层的卷积缓冲（3 个槽），之后完全自然生成。不用任何 t1 或 t2 钩子。</p>
+<table>
+<thead>
+<tr>
+<th>臂</th>
+<th>缓冲来源</th>
+<th>身份</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T</td>
+<td>原生受针</td>
+<td>下限</td>
+</tr>
+<tr>
+<td>F_own</td>
+<td>本输入干净运行</td>
+<td>上限（看答案）；旧面板上须与 LVK 的 F 臂逐位一致</td>
+</tr>
+<tr>
+<td><strong>F_mean</strong></td>
+<td>其他五个结构族全部输入的干净缓冲的平均</td>
+<td><strong>主臂：不看答案</strong></td>
+</tr>
+<tr>
+<td>F_one</td>
+<td>另一条输入的干净缓冲（同族一条、异族一条）</td>
+<td>一条参照输入够不够</td>
+</tr>
+<tr>
+<td>V_mean＋μ_k</td>
+<td>V 通道取平均干净值，k 通道减去已冻结的共同偏移</td>
+<td>与写入—读取链对接的两向量版本</td>
+</tr>
+<tr>
+<td>F_rand ×20</td>
+<td>原生缓冲加随机扰动，范数等于 F_mean 与原生缓冲之差，逐层匹配</td>
+<td>同幅度的任意改动够不够（NWC 的教训：必须有）</td>
+</tr>
+<tr>
+<td>F_zero</td>
+<td>缓冲清零</td>
+<td>是否只要抹掉受损缓冲就行</td>
+</tr>
+</tbody>
+</table>
+<p><strong>读数。</strong> 主终点是自然完整回答正确数；另记明确错号、停止、首步是否开口。描述量：干净缓冲的跨输入余弦（分 q/k 与 V、分层）、受损与干净之差的跨输入余弦。</p>
+<p><strong>拟登记的预测（数值在合同里定，并先在合成数据上演示每个标签）。</strong>
+- P_A：F_mean 的正确率达到 F_own 的大部分，且相对原生的增益下界为正。
+- P_B：20 个同范数随机改动里，达到修复增益一半的至多 1 个。
+- P_C：清零不修复。
+- P_D：F_one 与 F_mean 相近。
+- 每条只对它测的量下结论。P_A 成立只说明"这些输入上别的输入的缓冲够用"，不说明缓冲是唯一受损处，也不说明递推状态与 KV 没受损。</p>
+<p><strong>两阶段。</strong>
+- A 开发：LVK 新面板 48 条（用于与旧记录逐位桥接）加 NWC 面板 72 条。四个方向。操作没有可调参数，A 的作用是暴露工程问题和定门槛。
+- B 确认：按 <code>make_panel.py</code> 的同一规则新生成 72 条从未进过模型的输入，A 结束后冻结再跑。N4146、N1210 为主，R0 与 C1343 诊断。</p>
+<p><strong>成本。</strong> 每条输入约十几个自然轨迹加形成，按 NWR/NWC 实测外推每阶段 0.3 到 0.5 GPUh。平均缓冲需要先算完全部输入的干净运行，再跑各臂，两遍。</p>
+<p><strong>各种结局改变什么。</strong>
+- P_A、P_B 都成立：得到一个不看答案、与干预无关、只动每层 3 个槽的修复。进入 FBR-02。
+- P_A 成立而 P_B 不成立：任何同幅度改动都能修，说明受损缓冲本身是障碍；修复仍在，但"恢复干净内容"的解释不写。
+- P_A 不成立而 F_own 成立：干净缓冲带输入特有信息。记录 F_one 同族与异族的差别作为边界，不自动追加定位。
+- F_own 在新面板上也不成立：上限本身不迁移，本线停止，回到整稿时的取舍。</p>
+<h5 id="2">2. 之后两张卡（只有前一张成立才展开，现在不设计细节）</h5>
+<ul>
+<li><strong>FBR-02 修复的适用边界。</strong> 把"要校准什么"测出来：换一句指令尾巴时旧模板的缓冲还管不管用；其他施针层位与方向（L12/C3621、WIN 用过的 L1 到 L5）；事实任务，那里已知全前缀受针要补递推状态和 KV，缓冲修复多半不够。产出是方法的适用条件，不是另一条机制线。</li>
+<li><strong>FBR-03 转向残留。</strong> 用公开转向代码在提示期施加转向向量，撤掉之后看残留副作用，再看模板缓冲修复能否消掉。这是痛点从推测档升档所需的证据，也是把单坐标干预到转向的类比变成实测的地方。</li>
+</ul>
+<h5 id="3">3. 顺带的小测量（不设门槛）</h5>
+<p>补丁范数相对被它扰动的 t2 读取输出有多大。稿件里"读取脆弱"这句话写多重取决于这个比值，现在不知道。用 NWC 面板在 FBR-01 的 A 阶段顺带量，几分钟。</p>
+<h5 id="4-fbr-01">4. 设计卡与自查（FBR-01，规划层）</h5>
+<ol>
+<li>主线与本轮：主线不变。本轮把已有的修复上限变成不看答案的修复。</li>
+<li>新增认识：干净缓冲是否跨输入可替代；修复是否超过同幅度任意改动。</li>
+<li>依据与反例：依据见 §0。最不利：只换 V 通道时大量首列错号，说明缓冲各通道作用不同；V 通道跨输入相似性无数据；NWC 显示同范数随机扰动在读取处经常有效，缓冲处可能同样如此。</li>
+<li>操作：见 §1 表。</li>
+<li>估计对象：同一原生受针运行在不同缓冲来源下完整回答的差，属于操作总效果。</li>
+<li>判读：见 §1。</li>
+<li>范围与成本：见 §1。统计单位沿用基础情境。</li>
+<li>退出：见 §1 结局表；不因阴性追加层、头或通道定位。</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>判定</th>
+<th>理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C01 主线</td>
+<td>通过</td>
+<td>仍是干预后状态如何造成回答变化；本轮从修复一侧推进</td>
+</tr>
+<tr>
+<td>C02 增量</td>
+<td>通过</td>
+<td>现有数据答不了"别的输入的缓冲够不够"</td>
+</tr>
+<tr>
+<td>C03 资产</td>
+<td>通过</td>
+<td>缓存编辑、形成、分类器、面板生成全部复用</td>
+</tr>
+<tr>
+<td>C04 假设</td>
+<td>通过</td>
+<td>列了三条最不利证据；主预测标为推测档</td>
+</tr>
+<tr>
+<td>C05 操作</td>
+<td>通过</td>
+<td>只改 t1 前的缓冲，来源逐臂写明</td>
+</tr>
+<tr>
+<td>C06 路径</td>
+<td>通过</td>
+<td>缓冲之后一切自然响应；不声称其余状态未受损</td>
+</tr>
+<tr>
+<td>C07 耦合</td>
+<td>通过</td>
+<td>平均缓冲是反事实输入，不对应任何单次自然运行，写明</td>
+</tr>
+<tr>
+<td>C08 归因</td>
+<td>通过</td>
+<td>只用"足以修复""可替代"；不写唯一受损处、自然路径</td>
+</tr>
+<tr>
+<td>C09 区分</td>
+<td>通过</td>
+<td>随机与清零两臂分别区分"任意改动"和"抹掉即可"</td>
+</tr>
+<tr>
+<td>C10 指标</td>
+<td>通过</td>
+<td>主终点是完整回答；开口与正确分开</td>
+</tr>
+<tr>
+<td>C11 失败</td>
+<td>通过</td>
+<td>旧面板逐位桥接是工程闸门，与科学判读分开</td>
+</tr>
+<tr>
+<td>C12 成本</td>
+<td>通过</td>
+<td>每阶段不足 0.5 GPUh；无定位矩阵</td>
+</tr>
+<tr>
+<td>C13 可信度</td>
+<td>通过</td>
+<td>A 用已见面板并如实标注；B 用新生成面板</td>
+</tr>
+<tr>
+<td>C14 累积</td>
+<td>通过</td>
+<td>四种结局都有稳定结论，只有第一种导向下一张卡</td>
+</tr>
+</tbody>
+</table>
+<p>相关历史错误：E07 与 E14（修复充分不等于自然路径或唯一载体，用词已限定）；E12（随机对照按实际改动幅度逐层匹配，不用反射方向）；E22（基础情境为单位，已见面板不称留出）；NWC 偏离 D1（跨层的量会随下层改动变化，闸门只写对所测对象成立的恒等式）。</p>
+<p><strong>反方最强反例。</strong> 平均缓冲之所以够用，可能只是因为本面板所有输入共用一句指令尾巴；换一句就不行。这不否定 FBR-01，它正是 FBR-02 第一项要测的边界，届时修复的说法要写成"每个模板一份参照缓冲"。</p>
+<p>设计结论：规划层通过。合同、判读预演、工程验收、运行授权均未做。</p>
+<hr />
+<h3 id="2fbr-01-r01">原件 2：FBR-01 合同 r01：不看答案的模板缓冲修复</h3>
+<p>原路径：<code>experiments/cache-template-buffer-repair-v1-2026-11-06/CONTRACT.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-template-buffer-repair-v1-2026-11-06/CONTRACT.zh-CN.md">固定提交原文</a> · <a href="../library/4802502f11a37f57.html">单独阅读副本</a>；SHA-256：<code>4802502f11a37f57bd0df551a79ba9a50c8c03f895300feb7e690c65a67c39ce</code>。</p>
+<hr />
+<h4 id="fbr-01-r01">FBR-01 合同 r01：不看答案的模板缓冲修复</h4>
+<p><strong>状态：阶段 A 已冻结（<code>freeze-A-r01.json</code>），未获运行授权、未运行。</strong> 2026-11-06，用户"推进吧"之后完成运行器、CPU 测试、就绪检查与冻结，全部零 GPU，没有任何模型输出。上卡以用户"开始"为准。阶段 B 的面板与参照文件在阶段 A 之后生成并另行冻结。规划与设计自查见<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/experiment-plan-template-buffer-repair-2026-11-06.zh-CN.md">规划文档</a>与 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-template-buffer-repair-v1-2026-11-06/DESIGN.zh-CN.md">DESIGN.zh-CN.md</a>。冻结后不改本文件；偏离记入 <code>DEVIATIONS.zh-CN.md</code>。同一助手撰写与实现，不是独立审查。</p>
+<h5 id="1">1. 问题</h5>
+<p>LVK-01 的 F 臂已显示：只在 t1 之前把 14 个递推层的卷积缓冲换成本输入干净运行的值，原生受针运行在 48 条新输入、四个方向上都是 48/48 答对（原生 0 到 1），递推状态与 KV 不动。本合同问：<strong>不运行本输入的干净版本，只用其他输入的干净卷积缓冲，原生受针运行能修回多少；这种修复是否超过同幅度的任意改动。</strong></p>
+<p>承诺的只是"在这些输入上，这种缓冲替换足以修复完整回答"。不承诺缓冲是唯一受损处，不承诺递推状态与 KV 未受损，不承诺这是模型自然的失败路径。</p>
+<h5 id="2_1">2. 固定条件</h5>
+<p>Qwen3.5-4B revision <code>851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a</code>，BF16/eager/batch 1/torch 原核。L0 形成干预、NA 布局、B1 窗口、−1 强度、冻结校准、G={13,14,16,17,18,20,21,22,24,25,26,28,29,30}、解析器与停止 ID 全部继承 LVK/NWR。方向：N4146、N1210 为主要；R0（随机施针）与 C1343 为诊断。</p>
+<h5 id="3_1">3. 操作</h5>
+<p>每输入重建干净缓存 C 与各方向的原生受针缓存 T（边界在最后一个提示 token 之前）。<strong>只改 T 在 14 个 G 层的卷积缓冲状态（<code>conv_states</code>，q/k 通道 0–4095、V 通道 4096 起，全部槽），其余张量逐字节不动。</strong> 之后做 t1 前向与贪心续写到停止或共 32 token。全程不挂任何钩子。</p>
+<table>
+<thead>
+<tr>
+<th>臂</th>
+<th>G 层卷积缓冲的来源</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T</td>
+<td>原生受针，不改</td>
+<td>下限</td>
+</tr>
+<tr>
+<td>F_own</td>
+<td>本输入的 C</td>
+<td>上限，看答案；阶段 A 须与 LVK 的 F 臂逐位一致</td>
+</tr>
+<tr>
+<td><strong>F_mean</strong></td>
+<td>参照集里其他结构族全部输入的 C 缓冲，逐层逐元素取平均（FP32 平均后转回缓存精度）</td>
+<td><strong>主臂</strong></td>
+</tr>
+<tr>
+<td>F_one_s / F_one_o</td>
+<td>一条参照输入的 C 缓冲：同族下一条 / 下一个结构族的第一条</td>
+<td>单条参照够不够</td>
+</tr>
+<tr>
+<td>VmK</td>
+<td>V 通道取 F_mean 的 V 通道；q/k 通道取原生值并按已冻结的共同 k 偏移向量做去偏移（QCO 的编辑，向量来自其他五个场景）</td>
+<td>两向量版本，与写入—读取链对接</td>
+</tr>
+<tr>
+<td>F_dmean</td>
+<td>参照集里其他结构族全部输入的<strong>原生受针</strong>缓冲的平均（同方向）</td>
+<td>对照："平均"本身是否足够</td>
+</tr>
+<tr>
+<td>F_zero</td>
+<td>全零</td>
+<td>对照：抹掉受损缓冲是否足够</td>
+</tr>
+<tr>
+<td>R1…R20</td>
+<td>原生缓冲加随机改动：逐层，改动的 Frobenius 范数等于该层（F_mean − 原生）的范数，方向为（种子，层）固定的随机张量；种子 202611201…220</td>
+<td>对照：同幅度的任意改动是否足够</td>
+</tr>
+</tbody>
+</table>
+<p><strong>参照集。</strong>
+- 阶段 A：LVK 新面板自身，留场景法。先跑一个<strong>标定阶段</strong>：对 48 条输入各形成一次 C 与四个方向的 T，只读出 G 层卷积缓冲并存档，不做任何生成；再由 CPU 把它们汇成一份参照文件（哈希写入后续授权）。某输入的 F_mean、F_dmean 取其他五个场景全部输入的平均（场景大小 6 到 9 条不等，所以参照集是 39 到 42 条），不含它所在场景的任何输入。F_one_s 取同场景账本顺序的下一条，F_one_o 取下一个场景的第一条。
+- 阶段 B：<strong>阶段 A 结束后把 LVK 新面板 48 条的干净缓冲按"留出目标输入所在结构族"算好六份平均，写成固定文件并冻结哈希。</strong> 阶段 B 的新输入只读这份文件，不用新面板自己的任何干净运行来构造 F_mean、F_one、F_dmean。F_own 仍用新输入自己的 C，只作上限。</p>
+<h5 id="4">4. 面板与阶段</h5>
+<ul>
+<li><strong>阶段 A，开发。</strong> LVK 新面板 48 条、6 场景，四个方向。全部是已见数据。目的：工程桥接、暴露实现问题、看门槛是否合理。操作没有可调参数。</li>
+<li><strong>阶段 B，确认。</strong> 按 <code>make_panel.py</code> 的规则新生成 72 条（6 族 × 4 基础情境 × 3 版本，目标在首、二、三位各 24 条），实体名与编号不与前三块面板重复；分词验收通过后冻结。四个方向。<strong>阶段 B 只在阶段 A 的两个主要方向结局都是"修复成立"（§5 的前两种结局之一）时进行。</strong></li>
+<li>两阶段各自冻结、各自预检。阶段 A 之后允许修订本合同一次并重新冻结，修订内容限于工程闸门与实现；§5 的预测、门槛与允许的句子在阶段 A 冻结时即定，阶段 B 不改。</li>
+</ul>
+<h5 id="5-fbr_corepy-analysisrehearsal_outputtxt">5. 冻结判读（看任何新输出前写定；实现在 <code>fbr_core.py</code>；每个标签与结局已在合成数据上出现过，见 <code>analysis/rehearsal_output.txt</code>）</h5>
+<p>主终点 Y：自然完整回答正确（FC-01 分类器原规则）。比率按族等权；阶段 A 只有一个族，比率即 48 条输入的合并比例。区间：族内对聚类单位有放回重抽 10000 次，种子 20261106，取 95% 百分位下界。阶段 A 的聚类单位是场景（6 个），阶段 B 是基础情境（24 个）。每个方向分别判读。记 g_X = Y(X) − Y(T)。</p>
+<table>
+<thead>
+<tr>
+<th>标签</th>
+<th>成立的条件</th>
+<th>不可判</th>
+<th>成立时允许写的句子</th>
+<th>不允许写的句子</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DMG</td>
+<td>Y(T) ≤ 0.25</td>
+<td>—</td>
+<td>这块面板上原生受针运行确实坏了</td>
+<td>—</td>
+</tr>
+<tr>
+<td>UP</td>
+<td>Y(F_own) ≥ 0.75</td>
+<td>DMG 不成立</td>
+<td>换回本输入自己的干净缓冲足以修复</td>
+<td>缓冲是唯一受损处；其余状态未受损</td>
+</tr>
+<tr>
+<td><strong>PA</strong></td>
+<td>Y(F_mean) ≥ 0.90·Y(F_own)，且 g_mean 的下界 ≥ 0.50</td>
+<td>DMG 或 UP 不成立</td>
+<td>不运行本输入的干净版本，用其他结构族输入的平均干净缓冲，即可把原生受针运行修回到接近上限</td>
+<td>对任何提示模板都成立；对任何干预都成立；这是自然失败路径</td>
+</tr>
+<tr>
+<td><strong>PB</strong></td>
+<td>20 个同范数随机改动里，g ≥ 0.5·g_mean 的至多 1 个</td>
+<td>g_mean &lt; 0.25</td>
+<td>抽到的 20 个同幅度随机改动里至多 c 个达到修复增益的一半，总体比例 95% 上界为 x</td>
+<td>任何同幅度改动都无效；修复依赖特定方向已被证明</td>
+</tr>
+<tr>
+<td>PC</td>
+<td>g_zero &lt; 0.5·g_mean</td>
+<td>g_mean &lt; 0.25</td>
+<td>把缓冲清零达不到修复增益的一半</td>
+<td>—</td>
+</tr>
+<tr>
+<td>PD_s、PD_o</td>
+<td>Y(F_one) ≥ 0.90·Y(F_mean)</td>
+<td>Y(F_mean) &lt; 0.25</td>
+<td>一条同族（或异族）参照输入的干净缓冲与平均缓冲效果相近</td>
+<td>任意一条输入都可作参照</td>
+</tr>
+<tr>
+<td>PE</td>
+<td>Y(VmK) ≥ 0.75·Y(F_own)</td>
+<td>DMG 或 UP 不成立</td>
+<td>只换 V 通道的平均值并减去共同 k 偏移，可达到上限的大部分</td>
+<td>q 通道无关；修复可分解为两个独立向量的贡献</td>
+</tr>
+<tr>
+<td>PF</td>
+<td>g_dmean &lt; 0.5·g_mean</td>
+<td>g_mean &lt; 0.25</td>
+<td>用其他输入的受针缓冲的平均达不到修复增益的一半</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p>计数的总体上界（两侧 95% Clopper–Pearson）：0/20 为 16.8%，1/20 为 24.9%，2/20 为 31.7%。PB 是有限样本的操作门槛。</p>
+<p><strong>每个方向的结局（取第一个满足的）。</strong>
+1. <strong>无损伤可修</strong>：DMG 不成立。全部不可判。
+2. <strong>上限不迁移</strong>：UP 不成立。本线在该方向停止。
+3. <strong>修复成立且超过随机改动</strong>：PA、PB 都成立。
+4. <strong>修复成立但不超过随机改动</strong>：PA 成立，PB 不成立或不可判。修复仍可写，"恢复了干净内容"不写。
+5. <strong>缓冲带输入特有信息</strong>：UP 成立而 PA 不成立。报告 F_one 同族与异族的差别，不追加定位。</p>
+<p><strong>总读法。</strong> 阶段 B 上 N4146 与 N1210 的结局都是 3 或 4：修复在既有结构族内、同一指令尾巴的新输入上得到确认。只有一个方向如此：写该方向的局部结论。R0 与 C1343 同口径报告，不替代主要方向。</p>
+<p><strong>看数据前登记的预期（推测档）。</strong> UP 在四个方向都成立（LVK 已见 48/48）。PA 多半成立：旁证是干净 q/k 在模板位上几乎相同（QST-01）和损伤补丁跨输入余弦 0.91 到 0.96（NWC-01）；V 通道没有直接数据，这是主要风险。PB 没有把握：NWC 显示读取处同幅度随机扰动经常有效，缓冲处是否如此未知。PF 多半成立。PE 在 C1343 上应成立，其余方向没有把握。</p>
+<p><strong>只作描述、不设门槛。</strong> 各臂的错答类型与首步是否开口；干净缓冲与"受针减干净"之差的跨输入余弦（分 q/k 与 V、分层）；阶段 B 按目标位置分层的各臂正确数。</p>
+<p><strong>退出。</strong> 阶段 A 任一主要方向的结局是 1、2 或 5：不进阶段 B，回到规划文档的取舍。阶段 B 结束即结束本卡，任何结局都不追加层、头、通道定位。结局 3 或 4 才展开下一张卡（适用边界）。</p>
+<h5 id="6">6. 工程闸门（任一失败即停，记为合同执行失败，不是科学阴性）</h5>
+<ol>
+<li>面板：输入文件与分词账本哈希；运行中 token 等于账本。</li>
+<li>桥接（阶段 A）：T 与 F_own 的 t1 bf16 logits、首 token、自然 token 序列分别与 LVK 记录的 L00 与 F 臂逐位一致。</li>
+<li>编辑范围：每个臂的缓存与 T 相比，只有 14 个 G 层的卷积缓冲不同，其余全部张量逐字节相同；F_own 的缓冲逐位等于 C 的；VmK 的 q/k 通道槽 0 不变。</li>
+<li>参照缓冲：正式运行里重新形成的 C 与 T 缓冲逐位等于标定阶段存档的同一输入的缓冲；单条缓冲的平均等于它自己；参照集不含目标输入所在场景（断言，CPU 测试在真实账本上验过）。</li>
+<li>随机改动：逐层范数相对误差 ≤ 1e−5；目标范数为 0 的层不改；种子与层固定方向，跨输入不变。</li>
+<li>全程无钩子；核函数未被替换；源缓存哈希不变。</li>
+<li>阶段 B 的参照文件：哈希等于冻结值；构造时不读任何阶段 B 输入。</li>
+<li>预检：阶段 A 取 NQ01-ABC-A 与 NQ02-ABC-B 两条、全方向全臂；阶段 B 取两条新输入。失败即停，每阶段允许一次有记录的修复重试。阶段 B 的预检输出在预检时即被看到，如实登记。</li>
+<li>闸门只写对被检对象本身成立的关系。本卡的全部操作都在 t1 之前的缓存上，不涉及跨层前向依赖；这是 NWC-01 偏离 D1 的教训。</li>
+</ol>
+<h5 id="7-nwrnwc-014">7. 预算（按 NWR/NWC 实测每次前向约 0.14 秒外推；未修复的臂多在首步停止，只算一次前向）</h5>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th style="text-align: right;">阶段 A：48 条 × 4 方向</th>
+<th style="text-align: right;">阶段 B：72 条 × 4 方向</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>自然轨迹上限</td>
+<td style="text-align: right;">5376（每格 28）</td>
+<td style="text-align: right;">8064（每格 28）</td>
+</tr>
+<tr>
+<td>设备小时估算 / 上限</td>
+<td style="text-align: right;">0.45 / 0.8</td>
+<td style="text-align: right;">0.65 / 1.0</td>
+</tr>
+<tr>
+<td>阶段 A 另有标定 0.1、预检 0.1；阶段 B 预检 0.1。总硬上限 2.0 GPUh。存储每阶段 ≤ 8 GiB。</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+</tr>
+</tbody>
+</table>
+<h5 id="8-s1">8. 顺带测量 S1（不设门槛，不进任何判读）</h5>
+<p>在 NWC 面板目标非首列的 48 条上，对接收者 L11 的 t2 前向记录各 G 层直接读取输出的范数，与 NWC-01 已存的原生来源补丁范数相除。用途：稿件里"读取对扰动脆弱"这句话写多重取决于这个比值。实现为 <code>s1_read_scale.py</code>：三个方向各一次 t2 前向，不注入任何东西；接收者的 t1 须与 NWC-01 记录逐位一致。随阶段 A 一起跑，约 5 分钟，单卡。</p>
+<h5 id="9">9. 产物</h5>
+<p><code>data/</code>（阶段 B 面板、账本、参照缓冲文件）、<code>runs/A-preflight-r01/</code>、<code>runs/A-formal-r01/</code>、<code>runs/B-*</code>、<code>analysis/fbr-readouts-A-r01.json</code>、<code>analysis/fbr-readouts-B-r01.json</code>、<code>REPORT.zh-CN.md</code>。</p>
+<h5 id="10">10. 相对规划文档的差别</h5>
+<ul>
+<li>规划写"每层 3 个槽"。卷积缓冲状态每层 4 个槽，其中 3 个参与后续计算；本合同换的是整个状态，与 LVK 的 F 臂相同。</li>
+<li>新增 F_dmean 对照与 DMG 前提。</li>
+<li>阶段 B 的参照缓冲取自阶段 A 的面板并事先冻结，比规划里"其他五个结构族"更严：新面板完全不提供自己的干净运行。</li>
+<li>阶段 A 只用 LVK 新面板；NWC 面板只用于 S1。</li>
+<li>新增标定阶段与参照文件；参照集大小由"恰好 40 条"更正为 39 到 42 条（场景大小不等，CPU 测试在真实账本上发现）。</li>
+</ul>
+<hr />
+<h3 id="3fbr-01">原件 3：FBR-01 偏离记录</h3>
+<p>原路径：<code>experiments/cache-template-buffer-repair-v1-2026-11-06/DEVIATIONS.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-template-buffer-repair-v1-2026-11-06/DEVIATIONS.zh-CN.md">固定提交原文</a> · <a href="../library/621d068ca90852a0.html">单独阅读副本</a>；SHA-256：<code>621d068ca90852a058120afd4d50d2d50ce202f53863cb2bb2c1360ef7cc6c77</code>。</p>
+<hr />
+<h4 id="fbr-01">FBR-01 偏离记录</h4>
+<h5 id="d12026-11-06-a">D1（2026-11-06，阶段 A 上卡之前）：与另一条线并行运行，时间上限按并行放宽</h5>
+<p><strong>偏离了什么。</strong> 合同 §7 的设备时间上限（标定 0.1、预检 0.1、正式 0.8 GPUh）是按独占卡估的。用户 2026-11-06 指示"如果显存空间够，就直接并行吧"。启动前两张卡各有 2 到 3 个其他任务在跑，利用率 98% 到 100%，已用 45.5 GB 与 29.9 GB，剩余显存足够本卡每进程约 10 GB。并行下墙钟时间会变长，原上限很可能在半途触发，造成与科学内容无关的失败。</p>
+<p><strong>改了什么。</strong> 运行器里的墙钟上限乘 3：标定 0.3、预检 0.3、正式 2.4 小时（两个进程的墙钟之和）。计划号改为 <code>…A-r02</code>，重新冻结为 <code>freeze-A-r02.json</code>。合同文本不改；本文件加入冻结清单。</p>
+<p><strong>没改什么。</strong> 操作、臂、种子、面板、判读、门槛、允许写的句子、工程闸门全部不变。此次重新冻结发生在任何 GPU 运行与任何模型输出之前。数值不受并行影响：批大小 1、逐位桥接闸门照常执行。</p>
+<p><strong>影响哪些结论。</strong> 无。合同 §7 的"总硬上限 2.0 GPUh"在共享卡上不再是独占设备时间的度量；报告里如实给出各阶段的墙钟时间，并注明是在共享卡上测得。</p>
+<h5 id="d22026-11-06-r01">D2（2026-11-06）：正式运行 r01 启动失败——第二张卡被占满；两个进程改为都上第一张卡</h5>
+<p><strong>发生了什么。</strong> <code>runs/A-formal-r01</code> 启动时，第二张卡已被另一条线的一个任务占用 86.7 GB，只剩 10.8 GB。第二个进程在加载模型之前的显存检查上退出（要求至少 20 GB 空闲），控制器随即终止第一个进程。两个进程都没有写出任何记录或张量，<strong>没有任何正式输出产生</strong>。失败目录原样保留。按失败类型：合同执行失败，信息量为零。此前的标定与预检 r01 都通过验收。</p>
+<p><strong>根因。</strong> 运行器把进程号与卡号写死（进程 0 用卡 0，进程 1 用卡 1）。并行条件下某一张卡可能被占满，这个假设不成立。</p>
+<p><strong>修复。</strong> 运行器读取授权文件里可选的 <code>gpu_map</code>，把进程钉到指定的卡；不给则仍按原规则。正式运行的授权写明两个进程都用卡 0（启动时剩余约 82 GB）。计划号不变，重新冻结为 <code>freeze-A-r03.json</code>。因为预检的验收须与正式运行同一冻结，预检在 r03 下重跑一次（<code>runs/A-preflight-r02</code>），标定存档与参照文件沿用，其哈希仍写在授权里。</p>
+<p><strong>没改什么。</strong> 操作、臂、种子、面板、判读、门槛、允许写的句子、工程闸门全部不变。卡的选择不影响数值：两张卡同型号，且原生臂与上限臂对旧记录的逐位桥接照常执行。</p>
+<p><strong>修复额度。</strong> 合同给阶段 A 的一次修复重试已用掉。之后若再因实现问题失败，停止并上报。</p>
+<hr />
+<h3 id="4fbr-01-r01-a">原件 4：FBR-01 报告 r01（阶段 A）：不看答案的模板缓冲修复</h3>
+<p>原路径：<code>experiments/cache-template-buffer-repair-v1-2026-11-06/REPORT.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-template-buffer-repair-v1-2026-11-06/REPORT.zh-CN.md">固定提交原文</a> · <a href="../library/f1b5a42eaa5db86a.html">单独阅读副本</a>；SHA-256：<code>f1b5a42eaa5db86a6c2ad298eec0fd9c923197bd4c0004cbb8e07db6ac6994fa</code>。</p>
+<hr />
+<h4 id="fbr-01-r01-a">FBR-01 报告 r01（阶段 A）：不看答案的模板缓冲修复</h4>
+<p>合同 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-template-buffer-repair-v1-2026-11-06/CONTRACT.zh-CN.md">r01</a>，偏离见 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-template-buffer-repair-v1-2026-11-06/DEVIATIONS.zh-CN.md">DEVIATIONS D1、D2</a>；冻结 <code>freeze-A-r03.json</code>（<code>0fce4e90…a734</code>）。正式运行 <code>runs/A-formal-r02</code> verification passed，48 条 × 4 方向 × 28 臂。判读 <code>analysis/fbr-readouts-A-r01.json</code>。张量（约 1.0 GB）与参照缓冲文件（220 MB，<code>eaf73d55…8191</code>）留服务器。授权：2026-11-06 用户"开始吧，如果显存空间够，就直接并行吧"。同一助手实现、运行、判读与撰写，不是独立验收。</p>
+<p><strong>按冻结判读：主预测 PA 在两个主要方向（N4146、N1210）都不成立，R0 也不成立；结局是"缓冲带输入特有信息"。只有 C1343 上修复成立且超过随机改动。按合同退出条款，不进阶段 B。</strong></p>
+<h5 id="0_1">0. 先说坏消息与限制</h5>
+<ol>
+<li><strong>主臂没过主闸。</strong> 用其他场景输入的平均干净缓冲替换受针缓冲，完整回答正确数是 N4146 17/48、N1210 35/48、R0 41/48，上限（换回本输入自己的干净缓冲）都是 48/48。门槛是达到上限的 90%，即 44 条。N4146 的增益下界 0.333，也低于 0.50。</li>
+<li><strong>我在看数据前登记的预期错了。</strong> 合同里写"PA 多半成立"，四个方向里三个不成立。依据的两条旁证（干净 q/k 在模板位上几乎相同、损伤补丁跨输入余弦 0.91 到 0.96）都是关于"缓冲长得像不像"，没有回答"差的那一点带不带答案"。干净缓冲跨输入余弦中位数 0.99，但差的这一点决定选哪一条。</li>
+<li><strong>"不看答案的修复"作为一条通用方法，在这块面板上不成立。</strong> 成立的范围只有 C1343 一个方向。</li>
+<li><strong>阶段 A 是开发面板。</strong> 48 条全部是已见数据、一个结构族、一句指令尾巴、一个模型。本报告的任何正面读数都没有开发外确认。</li>
+<li><strong>正式运行第一次没启动起来，用掉了阶段 A 的一次修复。</strong> 第二张卡被别的线占满，进程在显存检查处退出，没有任何输出。失败类型：合同执行失败，信息量为零。见 D2。</li>
+<li><strong>§4 的事后剖析不在合同里。</strong> 它只能当下一张卡的线索，不是结论。其中异场景单条参照只有 6 个不同的供体，且供体目标只在第一、二位。</li>
+</ol>
+<h5 id="1_1">1. 工程</h5>
+<ul>
+<li>标定、预检 r02、正式 r02 全部闸门通过：</li>
+<li>来源：形成哈希与 LVK 一致；正式运行的缓冲与标定存档一致；干净运行与 LVK 的干净记录一致。</li>
+<li>桥接：T 与 F_own 两臂在每个方向上的 t1 logits、首 token、自然 token 序列与 LVK 的 L00、F 臂逐位一致。</li>
+<li>范围：每个臂与 T 的差别只在 14 个 G 层的卷积缓冲；F_own 的缓冲逐位等于干净缓冲；VmK 的 V 通道等于 F_mean。</li>
+<li>参照：留场景，39 到 42 条参照不含本输入所在场景。</li>
+<li>随机臂：逐层范数等于（F_mean − 原生）的范数，最大相对误差 7.8e−7。</li>
+<li>全程无钩子。</li>
+<li>设备时间（共享卡上的墙钟）：标定 471 秒；预检 114 + 99 秒；正式两个进程 1140 + 988 秒；S1 约 370 秒；失败的 r01 9 秒。合计约 0.89 小时，合同硬上限 2.0。正式运行两个进程都在 0 号卡上，与另一条线的任务共卡。</li>
+<li>标定与预检 r01 在 <code>freeze-A-r02</code> 下完成，正式运行与预检 r02 在 <code>freeze-A-r03</code> 下完成；两次冻结之间只改了进程到卡的映射（D2）。</li>
+</ul>
+<h5 id="2_2">2. 冻结判读</h5>
+<p>完整回答正确数（共 48 条；干净运行 48/48）：</p>
+<table>
+<thead>
+<tr>
+<th>方向</th>
+<th>T 原生</th>
+<th>F_own 上限</th>
+<th><strong>F_mean 主臂</strong></th>
+<th>F_one 同场景</th>
+<th>F_one 异场景</th>
+<th>VmK</th>
+<th>F_zero</th>
+<th>F_dmean</th>
+<th>20 个随机改动</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>N4146（主）</td>
+<td>0</td>
+<td>48</td>
+<td><strong>17</strong></td>
+<td>7</td>
+<td>19</td>
+<td>16</td>
+<td>0</td>
+<td>0</td>
+<td>全 0</td>
+</tr>
+<tr>
+<td>N1210（主）</td>
+<td>1</td>
+<td>48</td>
+<td><strong>35</strong></td>
+<td>29</td>
+<td>32</td>
+<td>30</td>
+<td>2</td>
+<td>1</td>
+<td>0–9，中位 1</td>
+</tr>
+<tr>
+<td>R0</td>
+<td>1</td>
+<td>48</td>
+<td><strong>41</strong></td>
+<td>36</td>
+<td>34</td>
+<td>40</td>
+<td>1</td>
+<td>1</td>
+<td>0–3</td>
+</tr>
+<tr>
+<td>C1343</td>
+<td>0</td>
+<td>48</td>
+<td><strong>48</strong></td>
+<td>47</td>
+<td>48</td>
+<td>48</td>
+<td>0</td>
+<td>0</td>
+<td>0–18，中位 0</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>标签</th>
+<th>N4146</th>
+<th>N1210</th>
+<th>R0</th>
+<th>C1343</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DMG 原生确实坏了</td>
+<td>成立</td>
+<td>成立</td>
+<td>成立</td>
+<td>成立</td>
+</tr>
+<tr>
+<td>UP 自己的干净缓冲足以修复</td>
+<td>成立</td>
+<td>成立</td>
+<td>成立</td>
+<td>成立</td>
+</tr>
+<tr>
+<td><strong>PA 平均缓冲修回到接近上限</strong></td>
+<td><strong>不成立</strong></td>
+<td><strong>不成立</strong></td>
+<td><strong>不成立</strong></td>
+<td>成立</td>
+</tr>
+<tr>
+<td>PB 随机改动达不到一半增益</td>
+<td>成立（0/20）</td>
+<td>成立（0/20）</td>
+<td>成立（0/20）</td>
+<td>成立（0/20）</td>
+</tr>
+<tr>
+<td>PC 清零达不到一半增益</td>
+<td>成立</td>
+<td>成立</td>
+<td>成立</td>
+<td>成立</td>
+</tr>
+<tr>
+<td>PD 单条同场景参照 ≈ 平均</td>
+<td>不成立</td>
+<td>不成立</td>
+<td>不成立</td>
+<td>成立</td>
+</tr>
+<tr>
+<td>PD 单条异场景参照 ≈ 平均</td>
+<td>成立</td>
+<td>成立</td>
+<td>不成立</td>
+<td>成立</td>
+</tr>
+<tr>
+<td>PE V 平均 + 去 k 偏移达上限 75%</td>
+<td>不成立</td>
+<td>不成立</td>
+<td>成立（40/48）</td>
+<td>成立</td>
+</tr>
+<tr>
+<td>PF 受针缓冲的平均达不到一半增益</td>
+<td>成立</td>
+<td>成立</td>
+<td>成立</td>
+<td>成立</td>
+</tr>
+<tr>
+<td><strong>结局</strong></td>
+<td>5 输入特有</td>
+<td>5 输入特有</td>
+<td>5 输入特有</td>
+<td>3 修复成立且超过随机</td>
+</tr>
+</tbody>
+</table>
+<p>F_mean 增益的 95% 下界：0.333、0.569、0.686、1.000。随机改动达到一半增益的比例上界 16.8%（0/20）。</p>
+<p>按合同可以写的句子：
+- 四个方向：换回本输入自己的干净缓冲足以修复。
+- 四个方向：抽到的 20 个同幅度随机改动里没有一个达到修复增益的一半；清零、受针缓冲的平均都达不到一半。
+- C1343：不运行本输入的干净版本，用其他场景输入的平均干净缓冲，即可把原生受针运行修回到接近上限。
+- N4146、N1210、R0：不能写上一句。</p>
+<h5 id="3_2">3. 合同内的描述性读数（不设门槛）</h5>
+<ul>
+<li><strong>首步是否开口。</strong> 四个干净缓冲臂（F_mean、两个 F_one、VmK）在四个方向上全部 48/48 开口。对照：原生 1、8、17、0；清零 0、11、13、0；受针平均 1、6、16、0。</li>
+<li><strong>错答类型。</strong> 四个干净缓冲臂的错答全部是"给出了一个列表里的编号但不是目标"，没有停嘴、没有多编号、没有超预算。清零与受针平均的失败几乎全是停嘴。</li>
+<li><strong>缓冲几何（中位数）。</strong> 干净缓冲跨输入余弦：q/k 0.994，V 0.992。"受针减干净"跨输入余弦 0.96 到 0.98。‖F_mean − 原生‖ ≈ 762 到 787，‖F_mean − 本输入干净‖ ≈ 107。</li>
+<li><strong>F_one 同场景与异场景的差别（合同要求结局 5 时报告）。</strong> N4146 上 7 对 19，N1210 上 29 对 32，R0 上 36 对 34，C1343 上 47 对 48。<strong>这个差别不能读成"族的远近"</strong>：见 §4，单条参照的对错主要由供体目标所在位置是否碰巧等于接收输入的目标位置决定，而两种参照的供体位置构成不同（异场景供体只有 6 条、目标只在第一二位）。</li>
+</ul>
+<h5 id="4-analysisposthoc_py-analysisposthoc_outputtxt">4. 事后剖析（不在合同里，只作线索；脚本 <code>analysis/posthoc_*.py</code>，输出 <code>analysis/posthoc_output.txt</code>）</h5>
+<p><strong>4.1 平均缓冲修回了"开口"，没修回"选哪一条"。</strong> F_mean 的错答全部落在列表第一个编号上。按接收输入的目标位置分：</p>
+<table>
+<thead>
+<tr>
+<th>方向</th>
+<th>目标在第 1 位</th>
+<th>第 2 位</th>
+<th>第 3 位</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>N4146</td>
+<td>16/16</td>
+<td>1/16</td>
+<td>0/16</td>
+</tr>
+<tr>
+<td>N1210</td>
+<td>16/16</td>
+<td>7/16</td>
+<td>12/16</td>
+</tr>
+<tr>
+<td>R0</td>
+<td>16/16</td>
+<td>12/16</td>
+<td>13/16</td>
+</tr>
+<tr>
+<td>C1343</td>
+<td>16/16</td>
+<td>16/16</td>
+<td>16/16</td>
+</tr>
+</tbody>
+</table>
+<p>N4146 上 F_mean 的 48 条输出里 47 条是第一个编号。这与 NWC-01 的读法一致：选择被扰动后答案落到首列默认值。</p>
+<p><strong>4.2 单条供体的缓冲把供体的"目标位置"带了过来。</strong> 只看供体目标位置既不是第一位、也不等于接收输入目标位置的格子（这样"跟随供体"不会与首列默认、也不会与答对混在一起）：</p>
+<table>
+<thead>
+<tr>
+<th>方向</th>
+<th>同场景供体：输出落在供体位置</th>
+<th>异场景供体：输出落在供体位置</th>
+<th>F_mean 正确数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>N4146</td>
+<td>21/24</td>
+<td>8/12</td>
+<td>17</td>
+</tr>
+<tr>
+<td>N1210</td>
+<td>8/24</td>
+<td>1/12</td>
+<td>35</td>
+</tr>
+<tr>
+<td>R0</td>
+<td>4/24</td>
+<td>5/12</td>
+<td>41</td>
+</tr>
+<tr>
+<td>C1343</td>
+<td>1/24</td>
+<td>0/12</td>
+<td>48</td>
+</tr>
+</tbody>
+</table>
+<p>异场景供体的实体与编号都与接收输入不同，所以 N4146 上的 8/12 不能由"带过来一个编号"解释。同场景里供体实体与供体位置指向不同编号的 18 条上，N4146 输出落在供体位置 10 条、供体实体 4 条、其他 4 条：偏向位置，但没有分干净。</p>
+<p><strong>4.3 两张表合起来的图样。</strong> 平均缓冲修得越差的方向，单条供体的缓冲越能决定答案。C1343 上接收输入几乎总是答自己的目标（供体位置与自己不同的格子里 35/36、32/32），换谁的缓冲都一样。</p>
+<p><strong>4.4 读法（推测档，未检验）。</strong> 干净运行在提示末尾几个位置的卷积缓冲里带着一个"选第几条"的信号，它跨输入可搬运。C1343 没有破坏缓冲之外的选择信息，所以任何干净缓冲只需负责开口；N4146 把缓冲之外的选择信息也破坏了，于是缓冲里的那个信号说了算，平均之后信号被抹平，答案落到首列。N1210、R0 居中。</p>
+<p>没分开的替代解释：(a) 带过来的是"问的是第几个实体"而不是"列表第几位"，本面板里两者同一；(b) 异场景供体只有 6 条、目标位置只有两种；(c) 各方向之间的梯度可能只是损伤大小不同，与"选择信息在哪"无关。</p>
+<h5 id="5-s1">5. 顺带测量 S1（不进任何判读）</h5>
+<p>NWC-01 的 N 层输入 48 条、接收者 L11、t2：补丁范数与直接读取项范数之比，中位数 0.186（N4146）、0.186（N1210）、0.182（R0），范围 0.165 到 0.215；分层 0.08 到 0.25。即致错补丁约为直接读取项本身的五分之一大小。</p>
+<h5 id="6_1">6. 失败类型与结论档位</h5>
+<ul>
+<li>PA 在 N4146、N1210、R0 不成立：<strong>科学失败</strong>。实验正确执行，预测被否证，信息量为正。</li>
+<li>正式运行 r01：合同执行失败，信息量为零，已修复重跑。</li>
+<li>C1343 上的修复成立：按冻结判读成立，但只在开发面板上，无开发外确认。</li>
+<li>§3 的"开口 48/48"：合同内描述性读数，没有门槛。</li>
+<li>§4 全部：事后观察，其读法为推测档。</li>
+</ul>
+<h5 id="7">7. 按合同的处置</h5>
+<p>阶段 A 两个主要方向的结局都是 5 → 不进阶段 B，不追加层、头、通道定位，回到规划文档的取舍。本卡到此结束。下一步选项另行提交用户裁决，本报告不启动任何新运行。</p>
+<h5 id="8-2026-11-06-docsfbr-result-and-selection-followup-2026-11-06zh-cnmd">8. 更正（2026-11-06，读过外部评估 <code>docs/fbr-result-and-selection-followup-2026-11-06.zh-CN.md</code> 并回查自己的历史之后；数字与冻结标签不变）</h5>
+<ol>
+<li><strong>§0.2 末句写过头了。</strong> "差的这一点决定选哪一条"是解释，不是测量。本卡直接支持的只有：平均替换达不到本输入替换的效果。差别来自输入特有信息、平均造成的失配还是别的，本卡分不开。"缓冲带输入特有信息"是合同里的操作性标签，不等于已证明缓冲编码了答案选择。</li>
+<li><strong>N4146 的 17/48 不是"选择"的部分恢复。</strong> 17 条里 16 条是目标本来就在首列的输入；目标不在首列的 32 条只对 1 条。N1210（19/32）与 R0（25/32）才有选择上的部分恢复。</li>
+<li><strong>§4.4 没有引用自己的旧结果，读法应收窄。</strong> QST-01（2026-11-02）在同一布局、同一窗口上做过只换 q/k 一半的供体移植：受针背景、本输入的干净 V、另一个查询的干净 q/k，四个方向 84/84 仍答接收者自己的题。与本卡"整块缓冲换成供体的，N4146 上 21/24 跟随供体位置"合起来，推导出：供体跟随若成立，应经由 V 通道（或 V 与 q/k 联合），不经由 q/k 单独。未测的格子是"供体 V + 本输入 q/k"。V 通道正是 t1 写入项的 v，所以这条线索可能就是 LVK/SRU 写入—读取链的另一面，而不是一个新载体。</li>
+<li><strong>§4.4 关于 C1343 的一句也收窄。</strong> C1343 上换谁的缓冲都答对，不证明缓冲之外的选择信息没有受损，只说明所测供体下结果不随供体变。NSR-01 在干净接收者里换入他输入的递推 S，38 条错选里 32 条是供体答案，说明递推状态也能带着选择走；两个来源在不同背景下谁说了算，没有测过。</li>
+<li><strong>§5 的 0.18 只是补丁范数与某一读取项范数之比。</strong> 不是"扰动很小"的证据。</li>
+</ol>
+<hr />
+<h3 id="5fbr-01">原件 5：FBR-01 设计说明</h3>
+<p>原路径：<code>experiments/cache-template-buffer-repair-v1-2026-11-06/DESIGN.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-template-buffer-repair-v1-2026-11-06/DESIGN.zh-CN.md">固定提交原文</a> · <a href="../library/0663a1ec3d97d440.html">单独阅读副本</a>；SHA-256：<code>0663a1ec3d97d4402d4eef5800f9250f36c2f623660ba530f6861a2b47f8fd77</code>。</p>
+<hr />
+<h4 id="fbr-01_1">FBR-01 设计说明</h4>
+<p>2026-11-06。设计卡、C01–C14 与历史错误对照见<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/experiment-plan-template-buffer-repair-2026-11-06.zh-CN.md">规划文档 §4</a>。本文件只记合同层新增的内容与一轮反方复查。同一助手撰写，不是独立审查。合同草案见 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-template-buffer-repair-v1-2026-11-06/CONTRACT.zh-CN.md">CONTRACT.zh-CN.md</a>。</p>
+<h5 id="1_2">1. 合同层新增的四处，及其理由</h5>
+<ol>
+<li><strong>阶段 B 的参照缓冲事先冻结，且完全取自另一块面板。</strong> 规划里的"留族平均"仍要用新面板别的输入的干净运行。合同改成：参照文件在阶段 A 之后算好并冻结，阶段 B 的新输入只读它。这样"不看答案"在操作上成立：对新输入不运行任何干净版本，除了作上限的 F_own。</li>
+<li><strong>新增 F_dmean。</strong> 如果把其他输入的受针缓冲取平均也能修复，那么起作用的是"平均掉了输入特有的部分"，不是"换成了干净内容"。这一臂把两种读法分开。</li>
+<li><strong>新增 DMG 前提。</strong> 预演发现：原生运行本来就大多答对时，原规则会把"没有损伤可修"误判成"缓冲带输入特有信息"。</li>
+<li><strong>PB 写成计数并附上界。</strong> 沿用 NWC-01 的做法；20 个方向里 0 个达标，总体比例上界也有 16.8%。</li>
+</ol>
+<h5 id="2_3">2. 判据与结论的对应（逐条自问：成立时允许写的那句话，判据撑得住吗）</h5>
+<ul>
+<li>PA 测的是完整回答正确率相对上限的比例与相对原生的增益。它撑得住"用别的输入的平均干净缓冲可修回到接近上限"。撑不住"对别的模板成立"，那是下一张卡。</li>
+<li>PB 测的是 20 个随机改动的完整回答。它撑得住一个计数加上界。撑不住"方向特殊"。</li>
+<li>PD 两条只比较了各一条固定参照输入。撑不住"任意一条都行"。</li>
+<li>PE 的两向量版本里，q 通道保持受针值、k 通道减去共同偏移、V 通道取平均。它撑得住"这种组合达到上限的大部分"。撑不住"可加分解"，NWC 偏离 D1 已经说明这类量不可加。</li>
+<li>UP 是对 LVK 已见结果在新面板上的复现，本身不是新贡献；它是 PA 可判的前提。</li>
+</ul>
+<h5 id="3_3">3. 反方复查</h5>
+<ul>
+<li><strong>全成立仍可能平凡：</strong> 本面板所有输入共用同一句指令尾巴，缓冲对应的正是这几个位置。平均缓冲够用可能只说明"同一句尾巴的干净缓冲几乎相同"。接受：这正是它能成为修复的原因，也是下一张卡第一项要测的边界。合同 PA 的不允许句子里已写明。</li>
+<li><strong>F_own 是 48/48，会不会任何"像样的缓冲"都行：</strong> F_zero、F_dmean、20 个随机改动三类对照分别回答"抹掉""平均""任意同幅度改动"。若三类都修复，结局 4 仍保留修复，但稿件不能写内容恢复。</li>
+<li><strong>修复后答对，是否只是让模型开口，然后递推状态与 KV 里完好的信息自己把答案选对：</strong> 很可能是，而且这不削弱修复，反而是它廉价的原因。合同不把它写成机制结论；只换 V 通道时大量首列错号的旧结果提醒，缓冲并不只管开口。</li>
+<li><strong>随机对照按 F_mean 与原生之差匹配范数，会不会像 NWC 那样对随机偏宽：</strong> 这里匹配的就是主臂自己的改动幅度，没有另一份"起作用的分量"；NWC 的那个问题在本卡不出现。</li>
+<li><strong>阶段 A 用已见面板定不了什么：</strong> 对。A 不产生确认证据，只负责桥接与发现实现问题；合同规定 §5 的门槛在 A 冻结时即定，不因 A 的结果调整。</li>
+<li><strong>完全相反时是否撤回：</strong> 结局 1、2、5 都停止本线，不追加定位。</li>
+</ul>
+<h5 id="4_1">4. 结论</h5>
+<p>逻辑设计：通过（同一助手自查）。阶段 A 的运行器、CPU 测试（5 项）、就绪检查与冻结已完成，全部零 GPU。CPU 测试在真实账本上抓到两处实现错误并已改：参照集大小不是恰好 40 条；运行器与判读模块里臂的顺序不一致。尚未完成：标定、预检、正式运行、阶段 B 面板生成与分词验收、运行授权。</p>
+<hr />
+<h2 id="_2">时间、运行与停止收据索引</h2>
+<p>下面是所收集JSON的原有时间字段与状态，不把预计结束时间当实际完成时间。未列时间的文件仍有原件链接。完整JSON全部保存在原文归档，不能以此索引中的标量代替完整嵌套内容。</p>
+<table>
+<thead>
+<tr>
+<th>原件</th>
+<th>原记录状态/阶段</th>
+<th>原时间字段（原时区）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-template-buffer-repair-v1-2026-11-06/readiness/cpu-receipt-A-r01.json">readiness/cpu-receipt-A-r01.json</a></td>
+<td>{"status": "passed"}</td>
+<td>{}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-template-buffer-repair-v1-2026-11-06/readiness/cpu-receipt-A-r02.json">readiness/cpu-receipt-A-r02.json</a></td>
+<td>{"status": "passed"}</td>
+<td>{}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-template-buffer-repair-v1-2026-11-06/readiness/cpu-receipt-A-r03.json">readiness/cpu-receipt-A-r03.json</a></td>
+<td>{"status": "passed"}</td>
+<td>{}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-template-buffer-repair-v1-2026-11-06/runs/A-calib-r01/controller.json">runs/A-calib-r01/controller.json</a></td>
+<td>{"status": "completed", "stage": "calib"}</td>
+<td>{"started_at": "2026-11-06T09:49:10.313375+00:00", "finished_at": "2026-11-06T09:57:01.620973+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-template-buffer-repair-v1-2026-11-06/runs/A-calib-r01/verification.json">runs/A-calib-r01/verification.json</a></td>
+<td>{"status": "passed", "stage": "calib"}</td>
+<td>{"verified_at": "2026-11-06T09:57:01.620779+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-template-buffer-repair-v1-2026-11-06/runs/A-calib-r01/worker-0/receipt.json">runs/A-calib-r01/worker-0/receipt.json</a></td>
+<td>{"status": "completed", "stage": "calib"}</td>
+<td>{"started_at": "2026-11-06T09:49:14.501229+00:00", "last_record_at": "2026-11-06T09:56:56.287931+00:00", "finished_at": "2026-11-06T09:56:59.130939+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-template-buffer-repair-v1-2026-11-06/runs/A-formal-r01/controller.json">runs/A-formal-r01/controller.json</a></td>
+<td>{"status": "failed", "stage": "formal"}</td>
+<td>{"started_at": "2026-11-06T10:00:38.765469+00:00", "finished_at": "2026-11-06T10:00:47.769042+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-template-buffer-repair-v1-2026-11-06/runs/A-formal-r01/worker-0/receipt.json">runs/A-formal-r01/worker-0/receipt.json</a></td>
+<td>{"status": "running", "stage": "formal"}</td>
+<td>{"started_at": "2026-11-06T10:00:43.196143+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-template-buffer-repair-v1-2026-11-06/runs/A-formal-r02/controller.json">runs/A-formal-r02/controller.json</a></td>
+<td>{"status": "completed", "stage": "formal"}</td>
+<td>{"started_at": "2026-11-06T10:09:08.487162+00:00", "finished_at": "2026-11-06T10:28:15.645509+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-template-buffer-repair-v1-2026-11-06/runs/A-formal-r02/verification.json">runs/A-formal-r02/verification.json</a></td>
+<td>{"status": "passed", "stage": "formal"}</td>
+<td>{"verified_at": "2026-11-06T10:28:15.645287+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-template-buffer-repair-v1-2026-11-06/runs/A-formal-r02/worker-0/receipt.json">runs/A-formal-r02/worker-0/receipt.json</a></td>
+<td>{"status": "completed", "stage": "formal"}</td>
+<td>{"started_at": "2026-11-06T10:09:12.918625+00:00", "last_record_at": "2026-11-06T10:28:09.661211+00:00", "finished_at": "2026-11-06T10:28:12.729203+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-template-buffer-repair-v1-2026-11-06/runs/A-formal-r02/worker-1/receipt.json">runs/A-formal-r02/worker-1/receipt.json</a></td>
+<td>{"status": "completed", "stage": "formal"}</td>
+<td>{"started_at": "2026-11-06T10:09:12.915736+00:00", "last_record_at": "2026-11-06T10:25:38.757983+00:00", "finished_at": "2026-11-06T10:25:40.762286+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-template-buffer-repair-v1-2026-11-06/runs/A-preflight-r01/controller.json">runs/A-preflight-r01/controller.json</a></td>
+<td>{"status": "completed", "stage": "preflight"}</td>
+<td>{"started_at": "2026-11-06T09:57:46.354727+00:00", "finished_at": "2026-11-06T09:59:40.420310+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-template-buffer-repair-v1-2026-11-06/runs/A-preflight-r01/verification.json">runs/A-preflight-r01/verification.json</a></td>
+<td>{"status": "passed", "stage": "preflight"}</td>
+<td>{"verified_at": "2026-11-06T09:59:40.420154+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-template-buffer-repair-v1-2026-11-06/runs/A-preflight-r01/worker-0/receipt.json">runs/A-preflight-r01/worker-0/receipt.json</a></td>
+<td>{"status": "completed", "stage": "preflight"}</td>
+<td>{"started_at": "2026-11-06T09:57:50.751473+00:00", "last_record_at": "2026-11-06T09:59:35.575038+00:00", "finished_at": "2026-11-06T09:59:37.953585+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-template-buffer-repair-v1-2026-11-06/runs/A-preflight-r02/controller.json">runs/A-preflight-r02/controller.json</a></td>
+<td>{"status": "completed", "stage": "preflight"}</td>
+<td>{"started_at": "2026-11-06T10:07:23.891733+00:00", "finished_at": "2026-11-06T10:09:02.957227+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-template-buffer-repair-v1-2026-11-06/runs/A-preflight-r02/verification.json">runs/A-preflight-r02/verification.json</a></td>
+<td>{"status": "passed", "stage": "preflight"}</td>
+<td>{"verified_at": "2026-11-06T10:09:02.956995+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-template-buffer-repair-v1-2026-11-06/runs/A-preflight-r02/worker-0/receipt.json">runs/A-preflight-r02/worker-0/receipt.json</a></td>
+<td>{"status": "completed", "stage": "preflight"}</td>
+<td>{"started_at": "2026-11-06T10:07:28.208808+00:00", "last_record_at": "2026-11-06T10:08:56.475256+00:00", "finished_at": "2026-11-06T10:08:59.355211+00:00"}</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_3">全部原始资产入口</h2>
+<p>本目录在固定提交下共有207个跟踪文件，包含代码、原回答、失败、收据和压缩证据；文件数不是样本数。<a href="../assets/147-cache-template-buffer-repair-v1-2026-11-06.tsv">逐文件完整账本</a> · <a href="https://github.com/yuxiexiong/acupuncture/tree/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-template-buffer-repair-v1-2026-11-06">原目录</a>。未复制模型权重、环境或凭据。</p></main></html>

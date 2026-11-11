@@ -1,0 +1,277 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>QCD-01：形成期注入位置与剂量——先验收干净 V 的交叉恢复来源</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="qcd-01-v">QCD-01：形成期注入位置与剂量——先验收干净 V 的交叉恢复来源</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>docs/cache-coverage-dose-plan-v1-2026-11-02.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-coverage-dose-plan-v1-2026-11-02.zh-CN.md">固定提交原件</a>；SHA-256：<code>c95039379f127807d938c4fd3e6c3e8f0515f3ece8f6138ef90fc1f6084f1725</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="qcd-01-v_1">QCD-01：形成期注入位置与剂量——先验收干净 V 的交叉恢复来源</h1>
+<h2 id="material-passport">Material Passport</h2>
+<ul>
+<li>日期：2026-11-02；版本：v1；工作流：academic-research-suite / experiment-agent / plan。</li>
+<li>状态：<strong>逻辑设计自查通过；代码、模型数值及资源验收未完成；未获本轮模型/GPU运行授权。</strong> 本次只查阅并复算已有 JSON、撰写计划与自查、提交文档。</li>
+<li>直接依据：远端 <code>50bbdc51</code> 的 QC-01 更正报告、冻结合同和正式回执；用户本轮纠正及两张 16:49 截图。截图中的历史“测试上卡”不是本轮授权。</li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-coverage-dose-self-check-v1-2026-11-02.zh-CN.md">完整自查</a>；<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-coverage-dose-design-v1-2026-11-02/source-audit-and-budget-r01.json">来源与预算核对</a>。自查与 CPU 重算均由同一助手完成，不是独立复现。</li>
+</ul>
+<h2 id="1">1. 设计卡：目的、现状及增量</h2>
+<p><strong>主问题保持不变：稀疏激活干预怎样改变形成期写入、旧状态处理及后续读取，最终造成目标选择与完整回答的显著变化？</strong> 本轮测量形成条件对 V 恢复效果的影响：为什么相同恢复操作有时恢复正确交付，有时只恢复开口、仍选错目标。它补齐“什么形成条件会留下 V-only 无法补回的行为差异”，不承诺识别唯一的内部计算路径。</p>
+<p>本次已用 QC 的原分析器复算全部六条件汇总，与归档 readouts 一致，并逐份核对 276 份正式 JSON 的回执 SHA256。未加载模型、未读取服务器完整缓存、未重现模型输出。直接证据见 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-query-layout-coverage-v1-2026-11-02/REPORT.zh-CN.md">QC 报告</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-query-layout-coverage-v1-2026-11-02/CONTRACT.zh-CN.md">QC 合同</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-query-layout-coverage-v1-2026-11-02/runs/formal-r01/verification.json">正式验收</a>。</p>
+<table>
+<thead>
+<tr>
+<th>现有观察</th>
+<th>支持什么、仍缺什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NA 的 T_V：宽窗口四方向分别 18/31/40/54，窄窗口均 54/54；LA 分别 17/22/25/53 → 54/53/48/54</td>
+<td>V 恢复效果依赖形成条件；宽窄同时改变覆盖范围和总剂量，尚不能区分</td>
+</tr>
+<tr>
+<td>NA/N4146 目标非首位的 36 格：宽窗口全部选首位，窄窗口全部选目标</td>
+<td>错选不能只归因于标签式指定；不证明原生选择或记忆完整</td>
+</tr>
+<tr>
+<td>N1210 的 NA 两窗口 T_nat 都 0/54，而 T_V 为 31→54</td>
+<td>零正确率可能掩盖连续损伤差异，不能据此排除剂量解释</td>
+</tr>
+<tr>
+<td>LB 干净仅 48/54；LA-tail/R0 原生已 37/54 正确，损伤迁移门未过</td>
+<td>指定方式比较缺一角；恢复增量存在天花板，不能只保留支持方向</td>
+</tr>
+<tr>
+<td>两对干净输出均逐 token 相同（各 54/54）；本次重算最大入口分差差异 NA=0.3125、LA=0.375，目标相对竞争者分差差异 NA=0.25、LA=0.375 logit</td>
+<td>只核验了 C。受干预后 V-only 可能近决策边界，交叉供体稳定性仍未知</td>
+</tr>
+</tbody>
+</table>
+<p>架构与公式依据按<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-mechanism-known-basics-audit-2026-10-31.zh-CN.md">先验知识审计</a>分类：窗口变短可改变总注入量，逐 token 计算和整段预填可能有数值差异；旧状态会在随后计算中正常响应。它们是操作事实或条件推导。<strong>哪种改变实际影响正确交付</strong>才是新增测量。现有日志没有交叉供体生成，也没有新窗口/剂量的输出，不能由 CPU 分数推导。不上升为新缓存原理或领域首次发现。</p>
+<p>本轮估计对象是指定形成政策下、一次深层卷积 V 恢复后的自然交付差异及恢复增量；允许下游全部正常响应。这是受控操作的总效果，不是纯问题语义效应、形成中介比例或原生路径份额。</p>
+<h2 id="2">2. 固定资产、面板与操作</h2>
+<ul>
+<li>使用 QC 的 NA、LA 两类<strong>精确原文本</strong>：每类 6 场景 × 3 循环排列 ABC/BCA/CAB × 查询 A/B/C = 54 条，共 108 个文本。每类内所有窗口/剂量政策逐 token 同文；跨 NA/LA 的文本本来不同。直接引用 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-query-layout-coverage-v1-2026-11-02/data/inputs-r01.json">inputs</a> 和 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-query-layout-coverage-v1-2026-11-02/data/tokens-r01.json">tokens</a>，不重新措辞，不补 LB/NB，不选有利子集。</li>
+<li>固定四方向顺序 N4146、N1210、R0、C1343；均在 L0；基础剂量 −1。R0 使用既有向量及哈希，不重抽随机方向。六份 NQ 场景校准原值直接复用，不新校准；各场景九提示、两模板与各政策共享其场景尺度。</li>
+<li>模型 Qwen3.5-4B，revision <code>851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a</code>。继承 QC 回执的 PyTorch 2.6.0+cu124、Transformers 5.20.2、BF16、eager、batch=1、确定性设置、有效 kernel、tokenizer/chat template 与权重 manifest；实际环境逐项核对，不能只核版本字符串。</li>
+<li>恢复深层 G={13,14,16,17,18,20,21,22,24,25,26,28,29,30} 的卷积缓冲 V 通道 <code>[4096,8192)</code>，全部 32 value heads。它是卷积历史缓冲，不是整个历史 V、递推 S 或 attention KV。T_V 其余 q/k、S、KV、浅层均取<strong>同一接收者 T</strong>。T_F 仅作原基线参照，恢复 G 的整个卷积 <code>[0,8192)</code>，不是理论上限。</li>
+<li>首次读出前一次恢复，末个提示 token 不注入；之后更新、查询与输出全部正常响应，无持续钳位。自然生成 greedy，停止集合 <code>{248044,248046}</code>，最多 32 新 token；不屏蔽 EOS、不强制首字母。诊断分叉独立输入原共同首 token，只作一次评分，不混入自然输出。</li>
+<li>所有文本/场景均已见；本轮是已见面板上新操作的检验。统计汇总单位为六个场景，不把 54 条、四方向或重复重放当独立样本。</li>
+</ul>
+<h2 id="3-g">3. 阶段 G：交叉恢复与计算切分桥接，必须先通过</h2>
+<h3 id="31">3.1 固定接收者，真正只换干净来源</h3>
+<p>每个文本构造历史两种切分：</p>
+<ul>
+<li><code>C_b</code>：QC 宽切分（记录结束处预填，随后逐 token 到读出前）。</li>
+<li><code>C_s</code>：QC 窄切分（问题也在整段预填内，随后逐 token 走 20-token 尾部）。</li>
+<li><code>T_b,d</code>、<code>T_s,d</code>：分别按对应历史切分和原 −1 剂量形成的宽/窄受干预缓存。</li>
+</ul>
+<p><strong>每个 T 只形成一次，深复制后分别换入 C_b.V 与 C_s.V</strong>。同一组两个恢复臂的接收者完整缓存、位置计数、mask、末提示 token、恢复层/块与生成路径必须一致，恢复前后逐组件哈希证明只替换指定 V。不能各自重建一份 T 后称“固定 T”。两供体必须来自同一精确文本，禁止跨模板或跨查询供体。</p>
+<p>对 108 文本 × 2 接收者窗口 × 4 方向都检查；共 864 个固定 T 的供体配对。不只抽干净大分差格或 N4146 阳性格。重建历史同源臂与 QC 的 tokens、首次 logits 哈希、缓存哈希、诊断逐位重放；同源重放不过先停止，不能把环境漂移算作供体敏感性。</p>
+<h3 id="32">3.2 后续统一切分，另做最小桥接</h3>
+<p>科学比较全部固定在<strong>宽切分</strong>：对同一文本共享记录结束处的干净 base，记录后 L 个位置始终逐 token 计算，仅注入 mask/幅度改变；所有恢复共用 C_b。读出前的位置与更新次数相同，不能随窗口起点改 prefill 边界。</p>
+<p>为免统一切分悄悄改变窄条件，阶段 G 另形成 <code>T_u,d</code>：宽切分但只在最后 20 位注入，前 6–7 位无针逐 token 更新。每个 T_u 同样跑 nat、V←C_b、V←C_s，并与 T_s 在<strong>相同供体</strong>下配对比较。T_b 已是统一路径宽基线，后续不再重建。统一切分不是更“正确”的数值真值，只是固定研究操作；桥接不过则暂停，不能替换掉旧结果继续讲覆盖机制。</p>
+<h3 id="33">3.3 固定验收与停线规则</h3>
+<p>每对均保存完整 token/文本/停止原因，同时比较：Y_delivery、Y_strict、唯一编号、首列选择、无编号/多编号/截断类别、首步是否停止，以及 §6 的入口分差 E 和目标竞争分差 M。报告所有翻转格及其两边分差；不能以平均差小掩盖边界格。</p>
+<p>阶段 G 通过须同时满足：</p>
+<ol>
+<li>同源历史重放逐位一致；缓存来源与隔离验收通过。</li>
+<li><strong>全部交叉供体对及切分桥接对</strong>的上述行为判读一致，M 的符号（含零）与三个候选的最大值集合一致；原 P_cov 的支持/不可判标签不改变。完整输出只要 token 不同仍逐条公开：任务类别一致只称“任务判读稳定”，不称输出逐位相同。</li>
+<li>连续读数也检查：每对 <code>|ΔE|≤0.5</code> 且 <code>|ΔM|≤0.5</code> logit。0.5 是事前保守的工程筛查上限，<strong>不是安全影响界、统计阈值或“不会翻转”的证明</strong>；行为/M符号翻转即使仅 0.01 也失败。另对历史宽窄 V 差值，枚举两边分别选 b/s 供体的四种组合：每模板×方向的平均 M 差方向及行为结论必须一致，否则失败。</li>
+</ol>
+<p>任何一项失败：<strong>停止后续位置和剂量科学比较</strong>，保留原文与失败记录，仅交付数值敏感性报告。不得换用有利供体、提高容差或删除失败样本后继续。本计划不自动包含 FP32 重跑、换 kernel 或全路径重建补救。</p>
+<p>通过只排除本面板、基础剂量、已测试两切分导致的结论改变，不排除其他数值路径影响；新增剂量下的供体稳定性不由此推出。阶段 S 固定单一供体后的结论也明确条件于该数值实现。E/M 在 G 中的差异分布作为参考附录，不当新政策的误差上界。</p>
+<h2 id="4-s">4. 阶段 S：先位置，后剂量；七项形成政策</h2>
+<p>零基 token 索引：提示长度 n，宽窗口起点 p=<code>b_b+1</code>，末端 e=<code>n−2</code>，L=<code>e−p+1</code>。档案核对：108 文本中 87 条 L=27、21 条 L=26；末尾窗口长 20。定义 B=<code>[p,e]</code>，N=<code>[e−19,e]</code>，E20=<code>[p,p+19]</code>。E20 含问题与后续指令前部，N 只含尾部指令与模板；两窗口重叠 13/14 位。E20 结束后还有 L−20=6/7 次无针形成更新，N 则无，随后二者都处理末提示 token 读出。</p>
+<table>
+<thead>
+<tr>
+<th>政策</th>
+<th>注入窗口</th>
+<th style="text-align: right;">基础幅度的正倍率 a（实际 signed dose=−a）</th>
+<th>比较用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>B1</td>
+<td>B，26/27 位</td>
+<td style="text-align: right;">1</td>
+<td>统一路径的原宽基线，来自 G</td>
+</tr>
+<tr>
+<td>N1</td>
+<td>N，20 位</td>
+<td style="text-align: right;">1</td>
+<td>统一路径的原窄基线，来自 G</td>
+</tr>
+<tr>
+<td>E1</td>
+<td>E20，20 位</td>
+<td style="text-align: right;">1</td>
+<td><strong>主比较 E1 vs N1</strong>：等长、同逐步幅度、不同位置</td>
+</tr>
+<tr>
+<td>N-A</td>
+<td>N</td>
+<td style="text-align: right;">L/20（1.30 或 1.35）</td>
+<td>范数和配平 B1</td>
+</tr>
+<tr>
+<td>N-Q</td>
+<td>N</td>
+<td style="text-align: right;">√(L/20)（约1.140或1.162）</td>
+<td>平方范数和配平 B1</td>
+</tr>
+<tr>
+<td>B-A</td>
+<td>B</td>
+<td style="text-align: right;">20/L（约0.769或0.741）</td>
+<td>范数和配平 N1</td>
+</tr>
+<tr>
+<td>B-Q</td>
+<td>B</td>
+<td style="text-align: right;">√(20/L)（约0.877或0.861）</td>
+<td>平方范数和配平 N1</td>
+</tr>
+</tbody>
+</table>
+<p>字母 Q 在政策名里只表示平方和配平，<strong>不是 query/q 张量</strong>。以上倍率由已冻结 L 决定，不由输出调参，实际是否配平按 §5 验收。宽窗口也做两种降幅，避免只在高剂量一侧配平而误判单步强度/非线性。</p>
+<p>每政策、每方向跑 T_nat 与 T_V←C_b。B1、N1 另留 T_F←C_b 参照（阶段 G 内计费），新五政策不全铺 T_F：本轮不比较 F 与 V 的层/头机制，原基线 F 已足以显示参照能力。每政策使用同一文本同一 C_b；不新增干净形成。正式 S 的五项新政策一次收集，不能看完 E1 结果再择优决定跑哪种配平；分析顺序仍为位置主比较→四个剂量匹配比较。本版本冻结为新政策两臂，T_F 仅用于 B1/N1；不在运行时切换为三臂。</p>
+<p>等长移窗在实际向量验收通过后可配平三种所列剂量统计；它直接检验“相同注入预算下，注入哪一段会改变后续 V 恢复效果吗”。仍同时改变内容覆盖、时刻、结束位置及无针后续更新，不能称已隔离问题语义或问题 token 被写坏。剂量补充也各只匹配一种积分量；与主比较联合解释，不把多个控制误写为单一因素完全识别。</p>
+<h2 id="5">5. 实际剂量定义与验收：不能只算倍率</h2>
+<p>统一以<strong>实际注入在模型空间中的向量</strong> u_t 定义 <code>A=Σ||u_t||₂</code>、<code>Q=Σ||u_t||₂²</code>、<code>P=max||u_t||₂</code>，同时保存逐 token 范数/方向，不用有符号向量和 <code>||Σu_t||</code> 替代 A。有限精度只允许说容差内配平。</p>
+<ul>
+<li>原生单通道：在 down_proj 输入 hook 前后取实际 BF16 激活差 <code>δa_t = float(a'_t)−float(a_t)</code>；投影 <code>u_t=W[:,c]δa_t</code>，使用实际加载权重和 FP64 累加范数。不是将请求 amount 当实际 δa。另只读记录同输入 down_proj 未改/已改输出之差，以区分线性投影注入量与 BF16 matmul 舍入；这个局部影子 GEMV 不写回主路径、不算另一次模型运行，计入操作耗时和次数。</li>
+<li>R0：在 MLP 输出加法 hook 前后直接取 <code>u_t=float(y'_t)−float(y_t)</code>，不能只用转成 BF16 的 addition 常量。保留请求向量与实际向量的范数、投影及正交偏差，解释有限精度的操作差异。</li>
+<li>每条形成轨迹保存 hook 层、绝对位置、方向哈希、请求幅度、实际改变量及 u_t（或足以精确复算的标量/权重哈希），确保 inactive 位置严格未修改；生成期 hook 关闭。两个 native 与 C1343 仍在原 hook 注入，R0 仍在其原 hook 注入，不为求精确等式改成另一个干预算法。</li>
+</ul>
+<p><strong>验收固定为相对误差 ≤1%</strong>：匹配比较对应 A 或 Q；E1/N1 同时检查 A、Q、P，且将第 j 个被注入位置对应后的 <code>||u_E,j−u_N,j||/max(||u_E,j||,||u_N,j||)</code> 每步 ≤1%。报告全部误差及最大值。这是容差内近似相同向量/预算，不宣称严格代数相等。L0 位于因果结构最早处不保证浮点实际增量自动相同。</p>
+<p>倍率只生成候选，不授予配平标签。若实际配平失败，标为工程未达目的并暂停相关科学结论；不事后搜索剂量、不改 1% 门限、不把无效配平当阴性。保留阶段 G 与已收集材料；修复需新的版本和预算。投影 u_t 与局部 BF16 输出差若有明显不一致，完整报告，不能声称同时配平了网络下游扰动；本轮配平的定义限定于上述实际 hook 注入量。</p>
+<h2 id="6">6. 读数、配对与固定判读</h2>
+<h3 id="61">6.1 自然交付优先</h3>
+<p>主终点沿用 QC/NQ 冻结解析器的 Y_delivery：生成包含完整目标编号且不含其他不同编号；并列 Y_strict。记录原文、唯一编号、首列编号、其他错误编号、多编号、无编号、首步停止与长度截断。继承规则不将罗列多个编号算正确。自然输出和独立诊断分栏。</p>
+<p>连续辅助量：</p>
+<ul>
+<li><code>E = z₁[共同首 token]−max(z₁[248044],z₁[248046])</code>，描述进入回答相对停止的竞争，不能代表正确目标。</li>
+<li>在首次评分后的独立缓存副本输入共同首 token，<code>M = z₂[目标第二 token]−max(z₂[另两编号第二 token])</code>。报告三个 logits、目标排名、M。共同首 token 非自然输出时明确这是诊断分叉。</li>
+<li>目标非首位 36 格独列目标/首列频数；不能以目标本来在首位的 18 格证明目标选择。</li>
+</ul>
+<p>每政策报告 Y_nat、Y_V、恢复增量 R=<code>mean(Y_V−Y_nat)</code>；并列 C 正确而 nat 错误后被 V 修复的计数。每比较给配对四格（仅左对、仅右对、都对、都错）、逐场景 ΔY_V/ΔR/ΔM、分差分布。未恢复两边同为零不称损伤等同。若新政策主要改善 Y_nat，首先报告损伤减轻，不能将 Y_V 改善全归于恢复更有效。</p>
+<h3 id="62">6.2 适用性与比较序列</h3>
+<p>干净门与损伤迁移门沿用 NQ：C ≥5/6 场景各 ≥8/9；每方向 ≥4/6 场景各 ≥6/9 是 C 对而 T_nat 错。所有结果都保留；不合格条件只能作形成政策的描述，不能支持“在同类损伤下恢复更强”。方向/模板分母固定四方向、两模板；不删除 LA-tail/R0。查询跟随等历史标签仍按 ≥8/9、≥5/6 计算，另给连续效应而非只有标签。</p>
+<p>事前比较共六对：B1/N1（原差异）、E1/N1（主位置比较）、B1/N-A、B1/N-Q、B-A/N1、B-Q/N1（四个剂量配平）。同一个场景×排列×查询×方向为配对单位。</p>
+<p>为避免“稳定”由看图决定，定义描述性方向级模式：某方向某模板在 ≥5/6 场景的 ΔY_V 同号且非零、总净差绝对值 ≥6/54，叫“稳定差异”；反向用完全相同规则。预期符号是 N1 优于 E1、窄优于宽。一个模板 ≥3/4 固定方向满足才叫跨方向模式，两模板分别报告。阈值是最小可报告一致模式，<strong>不是显著性、功效保证或等效性界</strong>。未达阈值仍公开全部效应，不写成零效应；有方向适用性不足则注明支持 k/4、不可判 m/4，不缩分母。</p>
+<h3 id="63">6.3 各结果怎样改变理解</h3>
+<table>
+<thead>
+<tr>
+<th>结果模式</th>
+<th>允许结论与出口</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>E1/N1 经实际配平后仍稳定不同</td>
+<td>支持同预算下形成期注入位置影响 V 恢复交付；方向相反也如实接受。时序、覆盖内容及无针更新未分离，不认定问题语义损坏</td>
+</tr>
+<tr>
+<td>四种配平后仍有同方向稳定差异，且主位置比较一致</td>
+<td>简单的范数和或平方和解释不足；形成位置相关解释更有支持，仍不排除幅度×位置与非线性</td>
+</tr>
+<tr>
+<td>差异主要随剂量改变</td>
+<td>“优先剂量解释”须有双向证据：在原 B1/N1 有稳定差异的方向，N 增幅的两档向 B1 靠近、B 降幅的两档向 N1 靠近；四个匹配后的整体交付差绝对值均比原差至少缩小 75%，且主等长比较未达到稳定位置差异；若主比较仍有稳定位置差异，归为位置与幅度共同影响。未达位置阈值不证明位置无效，单凭不显著/未达阈值也不算剂量解释成立。撤回较强覆盖解释，不宣布唯一剂量定律</td>
+</tr>
+<tr>
+<td>配平方式、幅度方向或两模板结论冲突</td>
+<td>报告位置与幅度共同影响/条件依赖或不可判；不只选范数和或平方和中有利的一组；连续分差与交付冲突时并列，不以分差替换交付</td>
+</tr>
+<tr>
+<td>新路径没有重现原差异，基线不足或伤害未迁移</td>
+<td>报告适用边界，不把天花板/地板当机制阴性；不换题或新增剂量救结果</td>
+</tr>
+<tr>
+<td>交叉供体改变结论、或切分桥接失败</td>
+<td>停止科学解释，先报告数值敏感性。本轮不自动追加补救计算</td>
+</tr>
+</tbody>
+</table>
+<p>“主要随剂量”还须同时检查 ΔR 与 Y_nat；若收敛主要由原生自然回答恢复造成，只支持总损伤随剂量变化，不称 V 本身的修复能力改变。M 只解释变化方向与边界，不证明信息存量、完整记忆恢复或原生读取路径。</p>
+<p>无论正向、反向、混合或有效阴性，本轮结束后整理“形成政策→恢复效果”边界，不自动拆层、不重开固定45头、不扩模型或扫描剂量。这是主线的一块可累积证据，不以每轮闭合完整机制为要求。</p>
+<h2 id="7">7. 实现前冻结与验收顺序</h2>
+<ol>
+<li><strong>本轮已完成的 CPU 来源核对</strong>：QC 正式记录哈希及原分析器重算；原 token 审计可提供精确位置和计数。两张截图的建议纳入本计划，截图本身不作为张量或运行授权证据。</li>
+<li><strong>下一实现阶段（尚未做）</strong>：新版本目录中冻结输入 ID、token、B/N/E20 mask、倍率、模型与代码来源、校准、解析器、预算及本计划哈希。只读扩充 hook 审计，主路径数值必须重放旧臂。CPU 合成验收应覆盖两种 L、窗口外无写入、错误供体/缓存别名、边界分差翻转、自然与诊断分离、不可判分母、预算停止和各种判读出口；不得在旧 freeze 下修改 runner。</li>
+<li><strong>获未来明确运行授权后</strong>：G 预检固定 NA-NQ01-ABC-A 与 LA-NQ01-ABC-A，四方向全跑；额外在 LA 同 base 重建一对 C_b/T_b,N4146，检查缓存及自然轨迹逐位一致。预检任何工程失败即停，不自动重试。</li>
+<li>G 正式检查全部 108 文本；完整通过才允许 S 预检。G 中先算交叉供体与桥接判据，再进行仅基线的 T_F 参照；失败可提前停止，预算是完整上界。</li>
+<li>S 预检仍用上述两文本，五新政策×四方向；只按工程及实际剂量门判断，不能按是否支持位置假说选条件。预检另计成本，不将重复生成当独立数据；随后正式一次收集。</li>
+<li>G 留存每文本宽切分 base 与 C_b（及预检对应快照）供 S 复用，逐份哈希；接收者 T 的供体交叉在内存副本完成，阶段内保留完整日志。旧 .pt 保存的主要是 logits，不因为有哈希就假定已有可加载缓存。新快照不可用则停，不暗中重建追加成本。</li>
+<li>原始回答、失败、实际 u_t、读数、source manifest、计数、偏离日志全部保留；大缓存和完整 logits 在服务器保存并登记哈希/大小/恢复说明，代码、合同和结果 JSON 入 Git。提交前核对确切暂存范围。</li>
+</ol>
+<h2 id="8">8. 完整拟运行预算（最小两臂新政策；不是授权）</h2>
+<p>G 每文本：2 个 C＋宽/历史窄/统一窄各4个T＝14次形成；2条 C 自然轨迹＋12个T各 nat/V_b/V_s＝38条，再加统一 B1/N1 各4个 T_F＝<strong>46条</strong>。S 只新增5政策×4方向＝20次形成，每个仅 nat/V_b 两臂＝<strong>40条</strong>；C、B1、N1、两基线 T_F 全复用 G。</p>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th style="text-align: right;">形成</th>
+<th style="text-align: right;">自然轨迹</th>
+<th style="text-align: right;">独立诊断</th>
+<th style="text-align: right;">前缀预填</th>
+<th style="text-align: right;">形成 token 前向</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>G 预检，2文本</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">92</td>
+<td style="text-align: right;">92</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">686</td>
+</tr>
+<tr>
+<td>C_b/T_b 重建，LA 单文本单方向</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0（复用同 base）</td>
+<td style="text-align: right;">54</td>
+</tr>
+<tr>
+<td>G 正式，108文本</td>
+<td style="text-align: right;">1512</td>
+<td style="text-align: right;">4968</td>
+<td style="text-align: right;">4968</td>
+<td style="text-align: right;">216</td>
+<td style="text-align: right;">36855</td>
+</tr>
+<tr>
+<td>S 预检，2文本×5政策×4方向</td>
+<td style="text-align: right;">40</td>
+<td style="text-align: right;">80</td>
+<td style="text-align: right;">80</td>
+<td style="text-align: right;">0（复用快照）</td>
+<td style="text-align: right;">1080</td>
+</tr>
+<tr>
+<td>S 正式，108文本×5政策×4方向</td>
+<td style="text-align: right;">2160</td>
+<td style="text-align: right;">4320</td>
+<td style="text-align: right;">4320</td>
+<td style="text-align: right;">0（复用快照）</td>
+<td style="text-align: right;">57900</td>
+</tr>
+<tr>
+<td><strong>总计</strong></td>
+<td style="text-align: right;"><strong>3742</strong></td>
+<td style="text-align: right;"><strong>9462</strong></td>
+<td style="text-align: right;"><strong>9462</strong></td>
+<td style="text-align: right;"><strong>220</strong></td>
+<td style="text-align: right;"><strong>96575</strong></td>
+</tr>
+</tbody>
+</table>
+<p>自然生成最多 <strong>302784 个 token/解码前向</strong>（每轨迹含首个读出前向，上限32）；另 9462 次诊断；220次整段预填共 <strong>7609 个输入 token</strong>。无新校准。形成“次数”是从共享 base 到读出前的一条历史；仍逐位置记实际计算，不用窗口注入数冒充形成步数。另计实际 u_t 只读影子投影/GEMV、哈希、保存、加载与失败时间；局部影子 GEMV 最多96575次（以全部形成token数作保守上界；实际仅native注入位置需要），不加载第二模型、不做额外全模型前向；receipt 单列这些操作的耗时和次数。</p>
+<p>原 QC 两 worker 正式2008/2088秒，预检113秒，累计约1.17设备小时、3668轨迹；粗按本轮9462轨迹外推约3.0小时，但形成步数、只读剂量审计及持久快照开销增加，<strong>规划范围3–5设备小时，申请硬上限8 GPU设备小时</strong>（G≤3，S≤5，所有worker相加，非墙钟）。这不是实测保证。最多2 worker，预检1 worker；预检根据真实速度/存储估算剩余预算，预计越界则暂停，不加卡、不删臂、不提高上限。截止保存失败/不完整 receipt，不自动重试。G 阻断则不消耗 S 预算。</p>
+<p>产物硬上限 <strong>48 GiB</strong>，包括可复用 base/C_b、完整首步/诊断 logits、实际注入记录和失败材料；不含已有模型。运行前测得快照体积与剩余磁盘才能接受资源门；未测前不声称够用。旧服务器路径仅是来源，本次没有查询或声称实时可用性。若不能在预算内保留必要证据则停，不能用删除原始结果换取验收。</p>
+<h2 id="9">9. 交付边界</h2>
+<p>本次交付计划、自查、既有数据 CPU 核对与预算附件，以及文档/实验入口；<strong>新增模型前向、自然生成、GPU使用均为0</strong>。基础知识审计原文件此前在本地但未入远端，本轮按原字节一并交付，作为自查依据，不改写历史内容。计划不含运行命令；下一合同必须依照本版冻结并获得本轮明确运行授权。工程交叉恢复、实际剂量配平、切分桥接均仍未执行。</p></main></html>

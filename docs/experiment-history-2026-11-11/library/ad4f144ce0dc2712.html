@@ -1,0 +1,177 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>实现说明与决策日志（对应合同 draft-r02）</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="draft-r02">实现说明与决策日志（对应合同 draft-r02）</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/early-state-localization-stage2-v2-2026-10-30/IMPLEMENTATION.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-state-localization-stage2-v2-2026-10-30/IMPLEMENTATION.zh-CN.md">固定提交原件</a>；SHA-256：<code>ad4f144ce0dc27121ac5d0dc6c02251026d6bc6955b2479ea3860435a252253e</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="draft-r02_1">实现说明与决策日志（对应合同 draft-r02）</h1>
+<p>日期：2026-10-30。状态：代码与 CPU 合成测试完成后，用户授权全流程，已冻结（freeze-r01）并跑完；结果见 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-state-localization-stage2-v2-2026-10-30/REPORT.zh-CN.md">REPORT.zh-CN.md</a>。下文“未做”一节是冻结前的历史状态。</p>
+<h2 id="_1">文件</h2>
+<table>
+<thead>
+<tr>
+<th>文件</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>stage2.py</code></td>
+<td>条件与网格、缓存按组/按类拼接、来源审计、工程门槛、授权链、worker / 控制器 / 核验</td>
+</tr>
+<tr>
+<td><code>analyze_stage2.py</code></td>
+<td>G 全层差分图与窗口选择、II-A 组图与候选组选择、II-B 确认检验、干净审核判定、锁定收据；<code>selftest</code> 为合成预演</td>
+</tr>
+<tr>
+<td><code>test_stage2.py</code></td>
+<td>在 8 层随机初始化 Qwen3.5（2 组）上的 CPU 测试，不加载权重</td>
+</tr>
+<tr>
+<td><code>data/validation-r01.json</code></td>
+<td>II-B 新题 12 情景 × 2 事实（<strong>模型起草</strong>，见下文 §新题）</td>
+</tr>
+<tr>
+<td><code>readiness/cpu-receipt-r01.json</code> 等</td>
+<td>CPU 测试与自检日志及源文件哈希</td>
+</tr>
+</tbody>
+</table>
+<p>代码来源：在本仓库阶段一 <code>early-state-localization-v1-2026-10-29/localize.py</code>（提交 34e5d4a）之上扩展，直接 import 其缓存原语（<code>forward</code>/<code>decode</code>/<code>score</code>/<code>audit</code>/<code>compose</code>/<code>randomize</code>/<code>_build_T</code>/<code>_clean_cache</code>/<code>preflight_gates</code>）；注入与校准沿用 <code>early-input-control-v1-2026-10-29/control_engine.py</code>；§10 管理状态审计复用其 <code>state_fingerprint</code>；S、符号翻转复用 <code>early-stop-knowledge-readout-v1-2026-10-29/analyze.py</code>。没有引入外部开源代码（阶段一已核对过 split-prefill 实现，本轮的拼接接口与之相同）。</p>
+<h2 id="_2">执行顺序与授权链</h2>
+<p><code>audit</code>（新题干净审核）→ <code>g_preflight</code> → <code>g_development</code>、<code>g_history</code> → <code>lock-g</code>（G 选择锁定）→ <code>a_preflight</code> → <code>a_scan</code> → <code>lock-a</code>（候选组锁定）→ <code>b_preflight</code> → <code>b_validate</code>。</p>
+<p><code>authorize()</code> 逐级检查：冻结哈希；新题锁（<code>clean_audit: passed</code> 且题文件哈希一致，所有 G 及以后阶段都要）；本阶段预检核验；II-A/II-B 要求 G 锁及 G development 核验（并核对 10,776 条）；II-B 要求 A 锁且授权中的候选与锁一致。锁文件由 <code>analyze_stage2.py lock-g / lock-a</code> 生成，生成时若已存在下一阶段 <code>runs/a_*</code> 或 <code>runs/b_*</code> 输出则拒绝。</p>
+<h2 id="_3">规模（测试中逐项核对）</h2>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th style="text-align: right;">生成</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>audit</td>
+<td style="text-align: right;">24</td>
+<td>新题 CCC</td>
+</tr>
+<tr>
+<td>g_preflight</td>
+<td style="text-align: right;">44</td>
+<td>每卡 1 输入 × (3 条件 × 7 + CCC)；条件 L0/C4146 +1、L13/C248 −1、L31/C8750 +1（结构边界）</td>
+</tr>
+<tr>
+<td>g_development / g_history</td>
+<td style="text-align: right;">10,776 / 10,776</td>
+<td>64 × 7 + 共享 CCC，× 24</td>
+</tr>
+<tr>
+<td>a_preflight</td>
+<td style="text-align: right;">32</td>
+<td>每卡 1 输入 × (TTT、CCC 复用重放 + 第一个入选条件 × 组 0、7 × 7 子集)</td>
+</tr>
+<tr>
+<td>a_scan</td>
+<td style="text-align: right;">≤ 8,064</td>
+<td>唯一条件 × 8 组 × 7 子集 × 24；TTT/CCC 复用 G development</td>
+</tr>
+<tr>
+<td>b_preflight</td>
+<td style="text-align: right;">44</td>
+<td>每卡 1 输入 × (CCC + 1 条件 × 7 码 + 1 候选 × 7 子集 × 2 方向)</td>
+</tr>
+<tr>
+<td>b_validate</td>
+<td style="text-align: right;">≤ 3,048</td>
+<td>去重后的局部臂 + (唯一条件 × 7 + 1) × 24 全局参照</td>
+</tr>
+</tbody>
+</table>
+<p>每次生成附两条候选评分。三阶段预检合计 120 生成 / 240 候选，在合同 384 / 768 之内；另有逐项列明的额外前向（下节门槛内的 1 步解码）。</p>
+<h2 id="_4">工程门槛（预检及正式运行）</h2>
+<ul>
+<li>正式每条记录：逐张量来源审计（与设计不符即停）；组合缓存的管理状态与 C 相同；T、C 在生成/评分后哈希不变。</li>
+<li>每个条件建 T 时：<strong>插针层及其以前的所有缓存必须 T=C</strong>（同层注意力先于 MLP），否则停；逐张量差范数与可受影响层数写入 <code>caches/*.json</code>。</li>
+<li>每个条件建 T 时：除 KV/递推/conv 外的所有缓存字段（实测为 <code>has_previous_state</code>、各初始化标记、<code>conv_kernel_size</code>、<code>number_of_states</code>、<code>record_past</code>，没有其他张量或位置计数）T 与 C 必须相同；不同即停并修订合同（§10）。</li>
+<li>g_preflight：阶段一全部门槛（同路径恒等、可读性、增量路径=引擎路径、掩码 hook 等价、注意力读出无副作用）+ L31 全部张量 T=C。</li>
+<li>所有预检：八码全局替换与阶段一 <code>compose</code> 逐字节及首步 logits 一致；8 组 × 7 子集 × 2 方向来源审计；三类可读性。</li>
+<li>a_preflight：重新生成的 TTT/CCC 与 G development 同 ID 记录的校准哈希、提示 token 哈希、token 序列、首步 logits 哈希和候选分数逐项一致，否则停（§11 复用核对）。</li>
+</ul>
+<h2 id="_5">合同未写死、由实现决定的事项（冻结前请确认）</h2>
+<ol>
+<li><strong>选择标记的零分布</strong>。合同要求“弱、负或无 EOS 也按规则选并标记未显示异常”，未给判据。第一版我用了“未校正 p&lt;0.05 / bootstrap 区间不含 0”，合成预演当场证明它<strong>未校准</strong>：从 8 个纯噪声候选中取最大者，常被标成“有改善”。现改为<strong>最大统计量精确符号翻转</strong>（同一符号模式施于全部候选，保留相关性，4096 种），p≥0.05 标 <code>not_beyond_selection_null</code>；另标 <code>non_positive_mean</code>、停止角色 <code>no_first_step_eos</code>。40 个零世界种子实测误标率：G 12/240、II-A 5/240。标记不影响选择本身。</li>
+<li><strong>结构与管理状态检查设为硬停止</strong>（合同只说预检发现不符先查 hook 时序）。理由：两者在确定性前向下应当严格成立，不成立即来源不符。</li>
+<li><strong>bootstrap</strong>：每个面板规模一张固定索引矩阵（种子 20261030，10,000 次），所有比较共用同一组重采样；区间为逐比较描述区间。</li>
+<li><strong>预检条件与组</strong>：见上表；均为开发面板，不含历史复核题与新题干预。</li>
+<li><strong>II-B 确认族</strong>：每个角色的 KV+R+V 联合清理与反向污染两项，最多 12 项，按实际个数 Holm（α=0.05）。合成预演：12 项全部检出的世界、零世界 0 项检出；零世界 40 种子任一检出 2/40。</li>
+<li><strong>共卡</strong>：用户 2026-10-30 删除“每卡一个 job”规则；本实验每卡多个 worker（见“吞吐与提速”），每个 worker 启动时要求本卡空闲显存 ≥20 GiB 并记录同卡进程；不抢占其他任务（合同 §11）。</li>
+<li><strong>干净审核判定</strong>：自动部分为每情景 clean S&gt;0、预标记 S&lt;2；“24/24 核心正确且无核心矛盾”需要阅读标签文件（<code>analyze_stage2.py audit RUN LABELS OUT</code>），无标签时状态为 <code>awaiting_reading</code>。</li>
+<li><strong>候选组排名</strong>按单一入选条件计算（合同 §7 每角色只有一个条件）；同条件两角色可选不同组，<code>(条件, 组, 子集, 方向)</code> 重复只跑一次。</li>
+</ol>
+<h2 id="ii-b">新题（II-B）</h2>
+<p><code>data/validation-r01.json</code> 由 Claude（claude-opus-5-5）起草，三族各四情景，两事实共用候选、正确项互换；结构与旧 development/confirmation 不同（含否定、条件门禁、多步加减、时间推算、相反状态、方位等），测试核对了与旧 48 条题面无重复。<strong>尚未经人工检查，也未做与条件无关的模型辅助题面审核和干净生成审核</strong>；这是合同 §3 冻结前置项，需要你过目。</p>
+<h2 id="_6">测试</h2>
+<ul>
+<li><code>test_stage2.py</code>：r01 23 项、r02 24 项、r03 25 项全部通过（gqa-h20 <code>.venv-bench</code>，torch 2.6.0+cu124 / transformers 5.20.2，CPU，服务器仓库外的临时副本）。覆盖：真实 32 层布局与合同组表一致、不符即停；8 组×7 子集×2 方向来源审计及错设计被拒；深拷贝无串扰；八码与阶段一 compose 逐字节/logits 一致；同路径恒等；门槛函数在小模型上通过且 hook 清净；末层结构边界、上游差异被拒；管理状态一致且变动可被检出；64 条件；各阶段数量 10,776/8,064/3,048、合并与去重；三个预检预算；选择/候选校验；复用重放能检出任何差异；新题结构。</li>
+<li><code>analyze_stage2.py selftest</code>：符号翻转 4096、Holm、同分规则（层→通道→负号）、交互（加性为 0、纯协同三阶为正）、G 窗口选择命中、零世界全部被标记、II-A 候选组命中、II-B 判据可满足也可不满足、干净审核三种结局、小分母敏感性。</li>
+</ul>
+<h2 id="2026-10-30">吞吐与提速（2026-10-30）</h2>
+<p>用户指示删除“每卡一个 job”规则、试所有提速方案、可行的直接实施，但不得影响精度与效果。<strong>采纳判据在试跑前写死</strong>：与现行单进程 batch=1 路径相比，逐步全词表 logits 哈希、生成 token、候选对数似然全部逐字节相同才采纳，任何差异即否决。试跑负载：开发题 3 条 × 阶段一锚点 N_L00_C4146_D+1 × 八码 = 每轮 24 生成（不涉及任何新 G 条件）。证据：<code>readiness/speed-trial-r01.json</code>、<code>readiness/speedtrial.py</code>。</p>
+<table>
+<thead>
+<tr>
+<th>方案</th>
+<th style="text-align: right;">每卡生成/秒</th>
+<th>与基线逐字节比对</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>基线：每卡 1 个 worker</td>
+<td style="text-align: right;">0.53</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>每卡 3 个 worker</td>
+<td style="text-align: right;">1.52</td>
+<td>3/3 进程 24/24 相同</td>
+<td>可行</td>
+</tr>
+<tr>
+<td>每卡 4 个 worker（另一卡同时 6 个）</td>
+<td style="text-align: right;">1.80</td>
+<td>4/4 相同</td>
+<td><strong>采纳</strong></td>
+</tr>
+<tr>
+<td>每卡 6 个 worker</td>
+<td style="text-align: right;">1.85</td>
+<td>6/6 相同</td>
+<td>可行，增益 &lt;3%，显存翻倍，不选</td>
+</tr>
+<tr>
+<td>同一输入 8 臂批量解码</td>
+<td style="text-align: right;">1.30</td>
+<td>24/24 不同，4 条 token 序列改变，对数似然差至 0.28 nats</td>
+<td>否决</td>
+</tr>
+<tr>
+<td>融合线性注意力 kernel（fla 0.6.0；causal-conv1d 无 nvcc 装不上）</td>
+<td style="text-align: right;">0.27</td>
+<td>24/24 不同，对数似然差至 0.39 nats，且更慢</td>
+<td>否决</td>
+</tr>
+<tr>
+<td>缩小设计</td>
+<td style="text-align: right;">—</td>
+<td>—</td>
+<td>改变实验，按指示不试</td>
+</tr>
+</tbody>
+</table>
+<p>实施：<code>launch</code> 按授权文件 <code>maximum_workers</code>（偶数，≤12）起 worker，worker w 用卡 w % 2；正式阶段按（输入, 条件）单元轮转分配，预检按输入分配（门槛需要同一输入的全部条件）；每个 worker 槽一把锁，不再按卡加锁；每个 worker 启动时仍要求本卡空闲显存 ≥20 GiB。测试证明 2/4/8/12 worker 的划分都是完整计划的无重复划分。建议运行授权写 <code>maximum_workers: 8</code>（每卡 4 个）。</p>
+<p>另：r02 已把每条记录的缓存哈希从约 4 遍降为 1 遍（实测一遍约 46 ms，原来约占 4% 时间；审计结果逐项不变）。</p>
+<p><strong>ETA 更新（推测，以 GPU 预检实测为准）</strong>：阶段一同类实测约 5.2 s/条/卡（含共卡），本次试跑单 worker 1.9 s/条（早层锚点回答短，均 19 token）。按每卡 4 worker 约 3.4 倍：G 两面板约 5–9 h，II-A 约 2–4 h，II-B 约 1–1.5 h，合计约 8–15 h 墙钟（原估 25–50 h）。中后层条件回答更长，实际可能落在区间上沿。</p>
+<h2 id="_7">未做</h2>
+<p>没有冻结、没有授权文件、没有 GPU 预检、没有任何真实模型推理；新题未审核。下一步需要你：① 审阅本说明“由实现决定的事项”与新题；② 给出具体运行授权（含是否共卡）后，按 audit → g_preflight 开始。</p></main></html>

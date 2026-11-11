@@ -1,0 +1,57 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CONV-FACTOR 路径审计：V 与 Q 的作用在哪一步开始重叠（结果）</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="conv-factor-v-q">CONV-FACTOR 路径审计：V 与 Q 的作用在哪一步开始重叠（结果）</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-conv-factor-path-audit-v1-2026-11-01/REPORT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-conv-factor-path-audit-v1-2026-11-01/REPORT.zh-CN.md">固定提交原件</a>；SHA-256：<code>cc1d09b2e6e885b7bc60fd8280700742b187bcc224db389bfb6570544ad0ab5f</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="conv-factor-v-q_1">CONV-FACTOR 路径审计：V 与 Q 的作用在哪一步开始重叠（结果）</h1>
+<p>日期：2026-11-01。身份：对 CFM-CONV-FACTOR v1 formal-r01 已存张量的 CPU 描述性分析；<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-conv-factor-path-audit-v1-2026-11-01/PLAN.zh-CN.md">计划</a> 在运行前提交（9d2c72b）。0 模型调用、0 GPU，4.8 s。12 份张量按收据 sha256 校验后读取；只读取输出嵌入与最终 norm 权重。结果 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-conv-factor-path-audit-v1-2026-11-01/results-r01.json">results-r01.json</a>，代码 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-conv-factor-path-audit-v1-2026-11-01/analyze.py">analyze.py</a>。同一助手分析，不是独立复核。</p>
+<h2 id="1">1. 结论（限制先说）</h2>
+<p><strong>逐层直接路径账目不是因果贡献，本轮也无法把第14层以后的非相加分成“本层新产生”和“继承上游”。</strong> 下面的定位只用来挑选路线图 B 步要干预的计算量。</p>
+<ol>
+<li><strong>非相加在第一个深层的写入项里就已出现。</strong> 第13层四格入口逐位相同，读取项 Sᵀw 的 Q×V 交互严格为 0（推导与实测一致），core 的交互完全来自写入项 βv(kᵀq)。写入项 ‖I‖/‖G‖ 中位数 0.57（M_T、M_C）、0.79（N），且 I 与两个单独作用之和几乎反向（cos 中位数 −0.97、−0.97、−0.91）；core、门控归一化、out_proj 保持反向（cos −0.81 至 −0.97）。即：在这一层，V 改变当前 v、Q 改变 kᵀq，两者同时改变时写入项的变化远小于各自变化之和。</li>
+<li><strong>之后每层入口都带着同量级的非相加。</strong> 第14–30层 G 层入口残差 ‖I‖/‖G‖ 中位数 0.46–0.96；各层写入项与读取项交互也多与单独作用之和反向（cos 多在 −0.5 至 −0.97，第21、25层较弱）。重叠贯穿整个深层，不是末端才产生。</li>
+<li><strong>在停止词方向的直接路径上，交互集中在末端全注意力层。</strong> cz_s46 的 I 前三层占比：M_T 0.71（31、30、27），M_C 0.68（31、30、27），N 0.52（31、27、20）；第31层在 M_T 单独 −2.67（总 I 约 −3.0 至 −4.6）。按模块，全注意力层 attn_out 占 0.13–0.41、其余项（MLP 与舍入）占 0.30–0.69，G 层线性注意力输出占 −0.01–0.38。停止词的 G 本身也集中在第31层（M_T 前三层 0.63）。</li>
+<li><strong>答案词方向没有集中位置。</strong> cz_a 的 I 前三层占比 0.35–0.46（“分散”），各情景总直接交互正负不一（M_T −0.70 至 +2.66），尺度项（实际分母与固定分母之差）与之同量级。答案侧的非相加在直接路径上没有可定位的层。</li>
+<li><strong>S 干净时 R_Q 反号，没有集中位置。</strong> M_C 与 M_T 的 R_Q 逐层差最大处：答案侧 31、23、29，停止侧 27、29、24；每层量都小（多 &lt;0.7 logit）。</li>
+</ol>
+<h2 id="2">2. 核验</h2>
+<ul>
+<li>账目闭合：h_final = x_13 + Σ_l(out_l − in_l) 的最大绝对误差 0（所有格）。</li>
+<li>同一背景四格第13层入口逐位相同；第13层读取项交互最大范数 0。</li>
+<li>读数复算：固定分母重算与实际 logits 的差（尺度+舍入）单列报告，舍入残差最大 0.065 logit。</li>
+</ul>
+<h2 id="3-b">3. 对路线图 B 步的含义（候选，不是运行授权）</h2>
+<p>两条候选可以同时成立（上游产生非相加、末端再转成竞争变化）；下面的干预只能检验写入项交互是否有作用，不能唯一识别根因：</p>
+<ul>
+<li><strong>写入项乘积候选（推测档）：</strong> 非相加来自每个 G 层写入项 βv(kᵀq) 里 v 与 kᵀq 的乘积，并逐层传递。预测：在 TT 格把每个 G 层当步写入项替换为“可加替身” n(CC)+[n(CT)−n(CC)]+[n(TC)−n(CC)]（逐层用干预后重新计算的驱动），Q 与 V 的作用会变得近似可加，R_Q 明显增大。</li>
+<li><strong>末端非线性候选（推测档）：</strong> 上游两份材料的变化近似线性叠加，饱和主要发生在第27–31层全注意力与 MLP 的读出。预测：上面的写入项替身基本不改变 TT 的读数；改为固定末端层（如第31层）注意力/MLP 输入的组合方式才会改变非相加。</li>
+</ul>
+<p>第13层写入项的强反向（cos −0.97）支持先检验第一条。LOCAL-READOUT 删的是 S×读取交互与该层全部局部差 J，不是本轮的 V×Q 写入交互；J 弱不能推出其中单个分量弱（分量可能相互抵消），所以<strong>不能</strong>据此要求全层干预。建议先做定义无歧义的第13层单层版本（四格入口相同，I_VQ 可由已存驱动预先算出）；多层版本须先固定“同一当前输入”的替身定义（每层用干预运行中该层自己的入口配四种 F 材料重算，只扣本层新产生的乘积项）。答案侧没有定位，B 步应以停止词读数为主、答案词为辅，并保留“答案侧需要其他解释”的分支。</p>
+<h2 id="4">4. 可以说 / 不可以说</h2>
+<table>
+<thead>
+<tr>
+<th>可以说</th>
+<th>不可以说</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>第13层 V/Q 的重叠完全在写入项，且与单独作用之和几乎反向（“只能在写入项”来自公式，数据给出的是大小与方向）</td>
+<td>第13层是或不是承载层（该写入交互对输出的作用尚未测；LOCAL 测的是另一个量）</td>
+</tr>
+<tr>
+<td>每个深层入口都带着同量级的非相加</td>
+<td>每层各自产生了重叠</td>
+</tr>
+<tr>
+<td>停止词方向的直接路径交互集中在第27–31层全注意力与其余项</td>
+<td>第31层是停止开关或根因</td>
+</tr>
+<tr>
+<td>答案词方向的交互在直接路径上分散</td>
+<td>答案侧与停止侧同一机制</td>
+</tr>
+</tbody>
+</table>
+<h2 id="5-2026-11-01">5. 复核后的修订（2026-11-01）</h2>
+<p>外部复核（读取 21df82d 报告、代码与结果）指出：两候选可同时成立，一次干预不能二选一；LOCAL 的弱结果针对另一个量，不能否定本轮写入交互，也推不出必须全层干预；多层替身定义不完整。§3、§4 已据此修改，数值未变。</p></main></html>

@@ -1,0 +1,1911 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>023．内部轨迹B：前六层补齐和4B全层</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="023b4b">023．内部轨迹B：前六层补齐和4B全层</h1>
+<p><a href="../README.zh-CN.html">返回总时间线</a></p>
+<p><strong>时间定位</strong>：版本/记录日期 2026-10-28；未从所选收据确定完整运行起止，不据目录名补写时刻。</p>
+<p><strong>当时的目的与设计</strong></p>
+<p>补2B/4B的L4–L5，再补4B的L6–L31；目的是让三个Qwen前六个注入层可比较，并取得4B所有注入层的内部轨迹。</p>
+<p><strong>实际过程、结果与后来更正</strong></p>
+<p>完成4560正式轨迹，不重跑旧来源。后续CPU传播观察使用这批资产；完整范围、逐层结果与归档分别保留。</p>
+<p><strong>来源身份</strong>：<code>layer-trace-extension-v1-2026-10-28</code>；本章主体来源提交 <code>7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8</code>。下方原文中的状态是各文件写作时的状态，不能把早期“尚未运行”覆盖后期正式收据，也不能将后期结果倒填进早期设计。</p>
+<h2 id="_1">原设计、执行过程、结果与更正全文</h2>
+<p>以下按“设计与题目 → 工程/执行记录 → 结果/更正 → 其他历史说明”组织；同类内没有可靠时间时保留路径顺序，不冒充严格先后。正文未删段；仅为本章节重排标题层级、把相对链接指向固定提交。原始字节另外完整保存。</p>
+<h3 id="1-4b">原件 1：前六层统一窗口与 4B 全层轨迹追加合同</h3>
+<p>原路径：<code>experiments/layer-trace-extension-v1-2026-10-28/CONTRACT.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/CONTRACT.zh-CN.md">固定提交原文</a> · <a href="../library/2c26004569512c37.html">单独阅读副本</a>；SHA-256：<code>2c26004569512c3752e44c675683ac22318fdd5f410ef273c683578726c86776</code>。</p>
+<hr />
+<h4 id="4b">前六层统一窗口与 4B 全层轨迹追加合同</h4>
+<p>日期：2026-10-28，北京时间。实验：<code>layer-trace-extension-v1-2026-10-28</code>。本合同追加到 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-layer-mechanism-v1-2026-10-28/CONTRACT.zh-CN.md">原内部采集</a>之后；执行以本批冻结清单、测试和运行收据为准。</p>
+<h5 id="1">1. 已授权范围与顺序</h5>
+<p>用户要求：三模型统一看前六层，补 2B、4B 的 L4、L5；再补 4B 所有其余层。合同和测试通过后直接挂到现有队列后顺序执行，已经采集的内部记录不重跑。</p>
+<p>原队列 <code>early-layer-mechanism-v1-2026-10-28/execution-r01</code> 保持原样，包含 2,152 个唯一来源。追加只使用旧全层十点及正负剂量调查中已存在的通道、剂量、八题和原始回答，不扩展科学条件。</p>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>模型与追加注入层</th>
+<th style="text-align: right;">新增来源记录</th>
+<th style="text-align: right;">新增生成流</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>six-layer</code></td>
+<td>4B L4–L5，然后 2B L4–L5</td>
+<td style="text-align: right;">304 + 304 = 608</td>
+<td style="text-align: right;">1,216</td>
+</tr>
+<tr>
+<td><code>4b-full</code></td>
+<td>4B L6–L31</td>
+<td style="text-align: right;">3,952</td>
+<td style="text-align: right;">7,904</td>
+</tr>
+<tr>
+<td>合计</td>
+<td>30 个模型—层组合</td>
+<td style="text-align: right;"><strong>4,560</strong></td>
+<td style="text-align: right;"><strong>9,120</strong></td>
+</tr>
+</tbody>
+</table>
+<p>每个模型—层仍为十个旧通道各 +1 × 八题，加其中一个旧通道的四档低正剂量及五档负剂量 × 八题，共 19 个通道—剂量条件、152 份回答。不是给十个通道各补十档剂量。</p>
+<p>完成后的唯一覆盖为：2B L0–L5，920 条；4B L0–L31，4,872 条；9B L0–L5，920 条；合计 <strong>6,712 条</strong>。原先每模型八份独立原版回答共 24 条全部复用，不再生成。三个模型前六层可以先比较；4B 全层阶段随后独立完成。</p>
+<h5 id="2">2. 来源与避免重复</h5>
+<p>三份源 JSONL、SHA-256、模型 revision、参数和维度见 <code>contract.json</code>，沿用原项目证据。按 <code>(model_id, layer, channel, dose, question_id)</code> 唯一身份去重；相同身份的 token 或校准冲突必须失败。</p>
+<p>新增 4,560 个身份必须与原队列全部 2,152 个计划身份互斥；两个追加阶段也必须互斥。源记录、原始回答、校准、偏移、历史 shard、原始 record/receipt/metadata 哈希全部保留。执行 shard 与历史 shard 分开：在每个阶段和模型内对条件排序后交替分两卡，同一条件的八题放在一起。</p>
+<p>原来的基线可作为校准和来源引用放入清单，但不得进入新增生成计划或新增结果分母。失败不自动跳过、重试或伪装为完成。已有输出目录不得覆盖；已有记录及当前队列的冻结文件不修改。</p>
+<h5 id="3">3. 同一测量方法</h5>
+<p>直接复用冻结的原 <code>trace_engine.py</code>，不修改生成或观察算法。每条记录使用原 prompt、校准、同一通道/剂量及原始 BF16 偏移；BF16/eager、greedy、batch=1、thinking 关闭、原 EOS、最多 128 新 token 均不变。输出必须与旧来源逐 token 一致，不续写或为语义结果重试。</p>
+<p>注入点仍为 gated MLP 的 <code>down_proj</code> 前坐标，覆盖原 prompt 与实际生成位置。每个实际分支配一个独立 cache 的同前缀无针参照，记录强制 token 选择之前的 logits；无针参照不是原版自由回答。</p>
+<p>观察覆盖各模型全部层的 attention/GatedDeltaNet 输出、MLP 输出和层末残差；保存原方法的逐位置范数、差分、相对变化、余弦、逐步 EOS 竞争、候选词并集交叉评分和前缀身份。不保存全部高维向量，不增加 patch、反向替换、随机方向、训练或静态权重编辑。</p>
+<h5 id="4">4. 验收与继承预检</h5>
+<p>本次改变来源选择和调度，采集引擎及其依赖保持原冻结版本。CPU 测试必须验证新增数目、两阶段顺序、与原队列无交集、基线仅引用、原范围完整、来源冲突拒绝、冻结身份、前驱/GPU占用门禁和失败阻断，且零失败、零错误、零跳过。</p>
+<p>原队列已经完成的三模型六 worker、42 个观察案例/114 条生成流 GPU 预检可继承，但必须验证完成收据、退出码、预检接受凭证及对应冻结哈希。既有预检和基线回答不重复生成；不能仅凭口头“通过”开始追加。</p>
+<p>每次模型加载仍做模型资产、运行环境和目标权重核对，并用原八题 prompt 做清洁校准前向，与旧校准逐项一致；此处没有生成新的基线回答。每条新增记录继续执行原有严格验收：旧 token、prompt/校准、偏移身份、全层三组件和应有位置覆盖、有限数值/明确未定义值、原 prompt 上注入点之前组件不变、hook 撤除。每个 worker 结束必须核验目标权重未改和全部输出哈希。</p>
+<p>任一验收失败即停止本追加批次，保留失败和部分输出。不得放宽阈值、改回答或自动扩大预算。继承预检不等于可以跳过新增记录自身检查。</p>
+<h5 id="5">5. 队列与完成标准</h5>
+<p>后台追加队列先等待原 2,152 条任务成功完成、其进程退出，并确认 GPU 0/1 无其他计算进程；然后运行 <code>six-layer</code>，该阶段全部成功后运行 <code>4b-full</code>。每次仅一个模型、两张 GPU、每卡一个 worker。只清理自身启动的子进程，不停止前驱或其他任务。</p>
+<p>合同、来源和代码另行冻结；授权绑定来源预算、前驱身份、测试收据和输出目录。无需用户再次确认启动。最终新增阶段须有 4,560 个完整唯一身份，与旧采集合计 6,712 条；每份图上记录能够返回原始文本与轨迹证据。排队、各阶段模型加载、生成/参照、核验和保存耗时分别记录；CPU测试通过、排队、运行中和完成分别报告。</p>
+<h5 id="6">6. 解释边界</h5>
+<p>L0–L5 是统一的观察窗口，不预设自然功能边界，也不把 L5 视作经过验证的分界。2B 共24层，4B/9B各32层，保留绝对层号和相对深度；同层号、同通道号或三维邻近不等于同源功能区。</p>
+<p>4B全层追加用于比较不同深度的传播和输出变化。相似轨迹、差分峰值、停止倾向和词汇变化仍是机制线索，不能单独证明因果根因、人脑式功能分区或道德/安全神经元。无相似规律和反例同样保留。</p>
+<hr />
+<h3 id="2_1">原件 2：早层干预怎样传播到输出：现有轨迹分析</h3>
+<p>原路径：<code>experiments/layer-trace-extension-v1-2026-10-28/analysis-early-r01/REPORT.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/analysis-early-r01/REPORT.zh-CN.md">固定提交原文</a> · <a href="../library/0d4eedf335e19074.html">单独阅读副本</a>；SHA-256：<code>0d4eedf335e19074a03ef2a9fdf8c0fd4cc081b05c9b9e00b6f4d021117a77a8</code>。</p>
+<hr />
+<h4 id="_2">早层干预怎样传播到输出：现有轨迹分析</h4>
+<p>2026-10-28；状态：<strong>ANALYZED，描述性分析</strong>。本次仅在本地读取已核验归档、计算统计和查看原三维工具，没有运行模型、新实验或远程计算。结论适用于现有点位、剂量和八个固定问题。</p>
+<p><strong>最明确的发现是：早层写入经下游组件改变下一 token 的竞争关系，随后分成提前停止、持续被干预推动的循环、错误历史支持的循环，以及内容偏离但句式仍在等不同过程。</strong> 当前不能把这些过程合并为一个“完整语句开关”，也不能由颜色最大的一层认定根因层。</p>
+<h5 id="_3">数据和比较方法</h5>
+<p>从已验收的 7,632 条正式记录中，取四模型注入 L0–L5 的全部 <strong>3,680 条</strong>：每模型 920 条，其中 912 干预、8 原版。每层十个通道的 +1 剂量有 80 条；其中一个通道另有正负五档剂量。十点 +1 与单点剂量系列有重叠，不能当作两组独立重复实验相加。4B 更深层这次未纳入结论。</p>
+<p>入口：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/archive-r01/combined-verification.json">归档总验收</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/analysis-early-r01/summary.json">全量早层统计</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/analysis-early-r01/summarize_existing.py">复算脚本</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/analysis-early-r01/fourb-cases.zh-CN.md">4B 个案及原证据链接</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/analysis-early-r01/cross-model-cases.md">跨模型个案及原证据链接</a>。逐条逐步派生数据保存在 <code>features.jsonl.gz</code>；没有改动原始结果。</p>
+<p>三维颜色比较的是<strong>相同输入 token 历史下，干预分支与完整无干预分支的组件输出差异</strong>。后者使用独立 cache，被强制读入干预分支已经生成的 token；以下简称“同前缀无针参照”。它与页面中的“原版自由生成回答”不同，也不是中途拔针继续生成的实验。</p>
+<p>沿深度读图与沿生成时间读图必须分开：固定“提示末位”可追踪首个输出 token 产生前的全层变化；再移动生成位置，才能看到后续 token 如何继续偏离。所有 step 从 0 编号，step 2 是预测第 3 个输出 token。首处预测分叉采用实际 token 的 clean logit 严格低于 clean 最大值，而非 top-k 列表第一个 ID 不同，避免 BF16 并列最大值误判。</p>
+<h5 id="1_1">1. 差异从哪里开始：首先确认观测没有混入错误前缀</h5>
+<p>3,648 条干预在首预测位置的第一处差异全部是<strong>注入层 MLP</strong>。更浅层以及注入层自身的 attention，在所有已观测 prompt/生成输入位置差分都严格为零。32 条原版控制在全部站点、全部位置差分严格为零。</p>
+<p>这符合注入位置与模型的计算顺序，首先是对照和采集一致性的证据，<strong>不是发现了一个 MLP 功能区</strong>。从下一层开始，attention、MLP、残差都可变化；这表示扰动进入了后续计算，但仅凭各站点范数不能分配各分支对最终错误的必要贡献。</p>
+<p>另一个重要校准：本实验的单通道注入经过 down_proj 后，设计上的向量长度约等于 <code>|剂量| × 原版该层残差标定尺度</code>。实测 MLP 差分与该设计值的比值为 <strong>0.9928–1.0077</strong>。因此“只改一个通道”指空间位置稀疏，不意味着幅度很小；±1 已经是整个残差标定尺度量级。MLP 很亮还可能因为原本 MLP 输出范数较小。</p>
+<h5 id="2-4b">2. 4B：三条具体传播链和一个同点反证</h5>
+<p>共同题目 Q04：列出整理书桌的两个步骤，严格两行，以“第一步：”“第二步：”开头。原版为：</p>
+<blockquote>
+<p>第一步：将书桌上的物品分类并归位。<br />
+第二步：清理桌面杂物，只保留当前使用工具。</p>
+</blockquote>
+<h6 id="a-l0-n41461">A. L0 N4146，+1：不是输出乱码，而是第一步就选择结束</h6>
+<p>固定提示末位，在三维图中先看 L0 MLP，再看 L1 两块组件和残差梁。差分范数是两个输出向量距离，不是损伤评分。</p>
+<table>
+<thead>
+<tr>
+<th>观测站点</th>
+<th style="text-align: right;">干预与无针参照的差分范数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>L0 attention（注入之前）</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>L0 MLP（注入位置）</td>
+<td style="text-align: right;">2.837</td>
+</tr>
+<tr>
+<td>L0 层末残差</td>
+<td style="text-align: right;">2.837</td>
+</tr>
+<tr>
+<td>L1 attention</td>
+<td style="text-align: right;">2.504</td>
+</tr>
+<tr>
+<td>L1 MLP</td>
+<td style="text-align: right;">2.662</td>
+</tr>
+<tr>
+<td>L1 层末残差</td>
+<td style="text-align: right;">4.271</td>
+</tr>
+<tr>
+<td>L2 层末残差</td>
+<td style="text-align: right;">4.160</td>
+</tr>
+<tr>
+<td>L31 层末残差</td>
+<td style="text-align: right;">69.965</td>
+</tr>
+</tbody>
+</table>
+<p>这是一条“写入 → 后续两类组件和残差变化 → 最终预测翻转”的观测链。L1 到 L2 已有回落，且原版残差范数也从 L0 的 2.097 增长到 L31 的 53.843，因此不能把 2.837 到 69.965 直接称为病理放大 24.7 倍。</p>
+<p>在最终词表竞争中，EOS 相对最强非 EOS 的 logit 优势从 <strong>−17.688 变成 +3.063</strong>。原本首选“第一步”，现在首选 <code>&lt;|im_end|&gt;</code>，答案为空。这里已经解释了空白的直接输出原因：终止 token 赢了，尚未证明哪一个中间组件是使它获胜的必要中介。</p>
+<p><strong>同点 +0.5 是重要反证。</strong> L31 残差相对差分仍达 0.720，三维图仍会多层变色，但 EOS 优势为 −8.25，答案仍是两条合理整理步骤。+0.25 也正常。大面积变色不能直接等于能力损坏。</p>
+<p>Trace ID：<code>4b-L00-N004146-D+1__Q04</code>，对照 <code>D+0.5</code>、<code>D+0.25</code>。</p>
+<p><img alt="L0干预到首步EOS的原三维工具截图" src="https://github.com/yuxiexiong/acupuncture/raw/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/analysis-early-r01/4b-L0-stop.jpg" /></p>
+<h6 id="b-l2-n50631">B. L2 N5063，+1：持续干预反复把退出方向推回循环</h6>
+<p>首预测位置，L0–L1 和 L2 attention 均为零差分；L2 MLP 差分 3.404，L3 attention 为 8.851、MLP 为 6.943、残差为 7.655，L31 残差为 65.039。输出首选从“第一步”变成 <code>&lt;think&gt;</code>。</p>
+<p>然后出现 <code>〈think〉→双换行→〈think〉→双换行</code>，共 64 个 <code>&lt;think&gt;</code>、128 token，触及长度上限。上限本身不是失败证据，明确的重复原文才是。</p>
+<p>把三维时间轴移动到 step 2，即已经读入 <code>&lt;think&gt;\n\n</code> 后：同前缀无针参照首选 <code>&lt;/think&gt;</code>，实际 <code>&lt;think&gt;</code> 在其下还落后 <strong>5.938 logit</strong>；干预分支却继续选择 <code>&lt;think&gt;</code>。后续 63 次再次产生 <code>&lt;think&gt;</code> 时，无针参照首选全部是 <code>&lt;/think&gt;</code>；包括首步在内，64 次 <code>&lt;think&gt;</code> 都不是其最优选择。</p>
+<p>因此这条轨迹具有反复推向循环 token 的证据。它不仅仅是“第一步走错，后面自然重复”。但分支之间包含完整干预历史与不同内部 cache，不能把这个差异进一步偷换成“本 token 单次注入的独立贡献”。</p>
+<p>Trace ID：<code>4b-L02-N005063-D+1__Q04</code>。</p>
+<p><img alt="L2循环第3个输出token的三维工具截图" src="https://github.com/yuxiexiong/acupuncture/raw/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/analysis-early-r01/4b-L2-think-step2.jpg" /></p>
+<h6 id="c-l4-n54281">C. L4 N5428，+1：句式还在，任务内容偏离</h6>
+<p>这次前两个 token“第一步”“：”仍保持，step 2 才发生严格预测分叉：无针参照偏好“将”，干预选择“李”；“李”的 clean logit 落后最优值 <strong>18.609</strong>。最终完整答案是：</p>
+<blockquote>
+<p>第一步：李达。第二步：李斯。</p>
+</blockquote>
+<p>首预测位置 L4 残差差分 5.396，L31 相对差分 0.928。这个案例说明“保留步骤框架”和“填入与任务有关的内容”可以出现不同结果；它没有证明 L4 就是内容区，也没有说明词语被储存在该单一通道。</p>
+<p>Trace ID：<code>4b-L04-N005428-D+1__Q04</code>。</p>
+<p>还有另一种 4B 循环：<code>4b-L02-N005251-D+1__Q05</code> 会反复输出英文元指令描述；128 步中 112 步的实际 token 在同前缀无针参照下也是最大 logit 候选。同点 +0.5 则给出连贯建议。它与上述 <code>&lt;think&gt;</code> 循环不完全相同，后续错误历史对重复的支持更明显。</p>
+<h5 id="3_1">3. 跨模型共同之处，以及明确的不共同之处</h5>
+<p>下面仍是同一道 Q04、同点剂量对照，属于说明过程的个案，不能当作全模型能力损伤率。</p>
+<table>
+<thead>
+<tr>
+<th>模型与点位</th>
+<th>较低剂量</th>
+<th>较高剂量的现象</th>
+<th>逐步轨迹揭示的联系</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2B L5 N3522</td>
+<td>−0.5：两个连贯步骤</td>
+<td>−1：反复“整理书桌／第一步：第二步”</td>
+<td>首词由“第一步”变成 <code>**</code>；从 step 18–127，无针参照也同选实际重复 token</td>
+</tr>
+<tr>
+<td>9B L0 N978</td>
+<td>+0.125：正常</td>
+<td>+0.25：直接 EOS；+0.5：“托”后 EOS；+1：128 个“托”</td>
+<td>+1 首词偏转；从 step 3–127，无针参照也都选“托”，后半程 KL 中位仅 0.0159</td>
+</tr>
+<tr>
+<td>Llama L5 N1726</td>
+<td>−0.5：两个连贯步骤</td>
+<td>−1：先离题引用法律，后循环“书桌整理的具体步骤是”</td>
+<td>首词由“第一”变“根据”；后半程 64 步中 53 步无针参照也同选实际 token，仍有部分持续分叉</td>
+</tr>
+</tbody>
+</table>
+<p>9B 的 +1 从 L0 MLP/残差差分 7.891，传到 L1 attention 12.271、MLP 13.268、残差 20.044，但后续并不单调增加。同点 −1 的直接注入幅度几乎一样，结果却是立即 EOS。<strong>符号、剂量、下游读出共同影响故障类型，无法用一个幅度阈值或单一开关概括。</strong></p>
+<p>Llama 的同点 +1 则前三个 token“第一”“步”“：”都没变，step 3 才偏离，step 9 EOS 优势从 −14.813 变为 +2.438，留下“第一步：把书桌整理好”就结束。首词未变也不代表后面正常。</p>
+<p>完整早层十点 +1 调查中，<strong>首 token 直接 EOS 的条数</strong>如下。每格分母均为 80（十通道 × 八题），层编号从 0 开始：</p>
+<table>
+<thead>
+<tr>
+<th>模型</th>
+<th style="text-align: right;">L0</th>
+<th style="text-align: right;">L1</th>
+<th style="text-align: right;">L2</th>
+<th style="text-align: right;">L3</th>
+<th style="text-align: right;">L4</th>
+<th style="text-align: right;">L5</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Qwen 2B</td>
+<td style="text-align: right;">49</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">30</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>Qwen 4B</td>
+<td style="text-align: right;">79</td>
+<td style="text-align: right;">64</td>
+<td style="text-align: right;">46</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>Qwen 9B</td>
+<td style="text-align: right;">45</td>
+<td style="text-align: right;">55</td>
+<td style="text-align: right;">53</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">8</td>
+</tr>
+<tr>
+<td>Llama 3.1 8B</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+<p>Llama 连全部 912 条正负剂量干预也没有首步 EOS/空白回答，但有后续提前停止和循环。故“早层易直接停答”在这批 Qwen 数据中明显，却不能称为跨架构统一机制。该表不是语言失败率，零首步 EOS 不意味着健康。模型原版、分词、模板、架构和选中通道均不同，不宜据表直接做模型鲁棒性排名。</p>
+<p>首预测位置的残差绝对差，从注入层到终层完全单调不减的轨迹仅为：2B 1/912、4B <strong>0/912</strong>、9B 41/912、Llama 141/912。图中的传播通常会增强、减弱、改变方向；“针扎一下，误差逐层不可逆爆炸”不符合这批完整数据。</p>
+<h5 id="4_1">4. 当前已经看清什么，根因还差在哪里</h5>
+<p>已经看清三个层次：<strong>差异首次出现在何处；哪些后续组件的输出发生变化；哪一步 token 竞争翻转并形成何种实际回答。</strong> 一些循环在错误前缀上仍受到干预推动，另一些则连无针参照也支持继续重复。这是现有跨模型结果里最具体的共同过程线索。</p>
+<p>这比只看“早层坏、晚层好”更有解释力，也为比较不同模型提供了相同观察尺度：首处表征差异、首处预测分叉、停止竞争、后续重复是否仍被无针参照反对。<strong>这些是可比较的过程，不是已经找到的同源脑区或可直接搬运的通道。</strong></p>
+<p>仍未识别的是：哪个中间组件对最终症状必要或充分、哪个向量方向承载了相关信息、错误历史和持续注入各自贡献多少、模型之间哪些通道功能对应。现有摘要是范数/方向相似度及输出 logits，没有完整表征向量或中介替换证据，不能倒推出语义编码或功能区边界。</p>
+<p>“同前缀无针参照也偏好重复”直接支持错误历史与重复相容，但不证明中途拔针后一定无法恢复。已有干预与基线支持整体操作改变了输出；传播中间量与症状同时出现不等于该中间量已经被证明是根因。</p>
+<h5 id="_4">三维图复查顺序</h5>
+<p>在 <a href="http://127.0.0.1:8794/?model=4b">原三维工具</a> 依次选模型、注入层、通道、剂量、Q04：先看 <strong>L0 N4146 +0.5 → +1</strong>，再看 <strong>L2 N5063 +1</strong>，最后看 <strong>L4 N5428 +1</strong>。前两例的截图已保留；浏览器停在 L2 循环预测第 3 个 token 的位置。</p>
+<p>先点击“提示末位”，沿注入层 MLP、下一层 attention/MLP、层末残差查看读数；然后移动生成时间轴，对齐预测 token 和原始回答。相对差分、方向变化、绝对差分是三种视角，不要只追最亮板块。固定色标会饱和；原版幅度很小时相对比值会大；Llama 的点阵布局也不能解释成解剖空间。图上板块是组件整体变化，并不是本次采集到每个神经元的活动图。</p>
+<p>详细个案文件提供逐步词表候选和原始记录路径；当前页面只直接显示实际 token、EOS 优势和组件读数。没有将页面未展示的 top-k 推断为已经可见。</p>
+<p>方法限制：固定八题、预选通道、重复条件和事后挑选案例；本次不做显著性检验、不把 token 当独立样本、不用长度上限替代语义失败、不把聚合层差异当单通道功能。总体统计保留全部早层记录，案例并列低剂量正常对照及跨模型反例。单 token 解码的 <code>�</code> 可能是字节切分，不以此认定完整回答乱码。更完整的解释风险核对见 <code>stats-note.md</code>。</p>
+<hr />
+<h3 id="34b">原件 3：前六层对齐及4B全层内部轨迹：追加执行记录</h3>
+<p>原路径：<code>experiments/layer-trace-extension-v1-2026-10-28/EXECUTION.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/EXECUTION.zh-CN.md">固定提交原文</a> · <a href="../library/1f53a9b386f18a19.html">单独阅读副本</a>；SHA-256：<code>1f53a9b386f18a1911abc9df7af1062315127e6e5987be17f4b67a66a135385d</code>。</p>
+<hr />
+<h4 id="4b_1">前六层对齐及4B全层内部轨迹：追加执行记录</h4>
+<p>北京时间2026-10-28 02:54快照：<strong>合同与来源冻结、本地10项及服务器34项CPU测试全部通过，原六worker GPU预检收据核验通过。独立追加队列已启动，正在等待原2,152条采集结束；追加模型尚未加载，新增记录0/4,560。</strong></p>
+<h5 id="_5">顺序与覆盖</h5>
+<table>
+<thead>
+<tr>
+<th>顺序</th>
+<th>本次追加范围</th>
+<th style="text-align: right;">新增内部轨迹</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>当前原队列继续完成2B/4B早部及9B前六层</td>
+<td style="text-align: right;">原2,152条，保持原运行</td>
+</tr>
+<tr>
+<td>2</td>
+<td>4B L4–L5，再2B L4–L5</td>
+<td style="text-align: right;">304＋304＝608</td>
+</tr>
+<tr>
+<td>3</td>
+<td>4B L6–L31</td>
+<td style="text-align: right;">3,952</td>
+</tr>
+</tbody>
+</table>
+<p>新增合计4,560条，与原2,152条身份无交集。两批完成后唯一覆盖6,712条：2B前六层920条、4B全32层4,872条、9B前六层920条。每层仍为原十通道各+1，以及其中一个原通道的四档低正与五档负剂量，全部使用原八题；不扩展到十通道各十档。</p>
+<p>每条仍记录全部模型层的attention/GatedDeltaNet输出、MLP输出、残差和逐步logits；无针参照强制相同历史，独立cache。输出、剂量、校准和来源身份逐条精确核验，失败保留并停止自身任务。L0–L5仅为统一观察窗口，4B全层用于寻找其他深度的规律，不先命名功能分区。</p>
+<h5 id="_6">最小实现与测试</h5>
+<ul>
+<li>复用原冻结的 <code>trace_engine.py</code> 和 worker/验收逻辑；新 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/supplement.py">supplement.py</a> 只负责选择缺失来源、调整运行路径与后继队列。未修改任何正在运行的冻结代码。</li>
+<li>原独立清洁回答与已通过GPU预检直接核验复用；不重复生成旧内部记录、旧baseline或旧预检。新包中的16份baseline来源仅供模型加载后的原八题校准前向。</li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/CONTRACT.zh-CN.md">合同</a> / <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/contract.json">机器合同</a> / <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/source-manifest.json">来源清单</a>。新冻结SHA256：<code>9c6f106d112571a06bf71ed5a832819fa433e54f5cf36635d368c0978de74c1d</code>。</li>
+<li>本地新增测试10/10通过：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/readiness/local-cpu-tests-r01.json">收据</a>。服务器原24项＋新增10项，<strong>34/34通过、零失败零错误零跳过</strong>：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/readiness/cpu-tests-r01.json">收据</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/readiness/cpu-tests-r01.log">日志</a>。服务器测试屏蔽CUDA，仅CPU小型mock，不占用现有模型显存。</li>
+<li>原三模型六worker、114条生成流的GPU验收及所有hash已只读核验：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/readiness/inherited-gpu-validation-r01.json">继承GPU验收</a>。新增生成流预算9,120（4,560条各两分支），清洁校准前向另计。</li>
+</ul>
+<h5 id="_7">后台队列</h5>
+<ul>
+<li>服务器 <code>gqa-h20</code>；后台PID <strong>2295050</strong>，实查PPID=1，脱离SSH/Codex会话。</li>
+<li>远端输出：<code>/workspace/acupuncture/experiments/layer-trace-extension-v1-2026-10-28/execution-r01</code>。</li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/readiness/queue-authorization-r01.json">授权</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/readiness/queue-launch-r01.json">启动收据</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/execution-r01/queue-state.json">状态快照</a>。本地快照不自动实时刷新。</li>
+<li>前驱为原内部采集队列PID2285813；02:54实查仍在4B正式采集，447/2,152。原GPU进程2291350/2291351仍运行，追加队列没有新增GPU进程。</li>
+<li>前驱成功完成2,152条、全部worker退出码为0、主进程退出、两GPU无其他计算进程，且原全部记录/预检核验通过后，追加批次才自动启动。补前六层全部完成后才进入4B深层；任一阶段失败阻断后续。</li>
+<li>队列互斥且输出目录不得覆盖；只管理自己创建的子进程。关闭Codex不影响服务器队列运行。</li>
+</ul>
+<h5 id="_8">追加耗时</h5>
+<p>按原记录精确输出长度与本次真实GPU采集计时外推：4B单条成对采集约 <code>0.1980 + 0.13248×输出token数</code> 秒，2B约 <code>0.1277 + 0.09758×输出token数</code> 秒。来源答案必须逐token复现，因此可按已知长度估算，仍需保留吞吐/核验波动。</p>
+<table>
+<thead>
+<tr>
+<th>追加段</th>
+<th style="text-align: right;">输出token总数</th>
+<th style="text-align: right;">双卡采集预计墙钟</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>4B L4–L5</td>
+<td style="text-align: right;">15,661</td>
+<td style="text-align: right;">19.62分钟</td>
+</tr>
+<tr>
+<td>2B L4–L5</td>
+<td style="text-align: right;">23,407</td>
+<td style="text-align: right;">19.90分钟</td>
+</tr>
+<tr>
+<td>4B L6–L31</td>
+<td style="text-align: right;">210,330</td>
+<td style="text-align: right;">243.36分钟</td>
+</tr>
+<tr>
+<td>合计</td>
+<td style="text-align: right;">249,398</td>
+<td style="text-align: right;">约4小时43分</td>
+</tr>
+</tbody>
+</table>
+<p>加模型重载、来源校验、全部结果终验与波动，<strong>追加阶段预留约5–5.5小时</strong>，当前队列剩余时间另加。这是基于实测吞吐的外推，尚不是追加批次实际完成耗时；可视化接图、分析和根因结论不计入计算队列完成时间。</p>
+<hr />
+<h3 id="4_2">原件 4：失序与层、通道及图上位置的关系</h3>
+<p>原路径：<code>experiments/layer-trace-extension-v1-2026-10-28/analysis-early-r01/POSITION.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/analysis-early-r01/POSITION.zh-CN.md">固定提交原文</a> · <a href="../library/85f8ea26a054db7d.html">单独阅读副本</a>；SHA-256：<code>85f8ea26a054db7db856005ed474f3edcd330df2e07fbffe9f65ad54650a8f75</code>。</p>
+<hr />
+<h4 id="_9">失序与层、通道及图上位置的关系</h4>
+<p>2026-10-28；ANALYZED。仅分析本地既有结果，无新推理。本轮沿用早层统计，并从 A/B 冻结 sources.jsonl 取 4B 全32层的十点 +1 正式输出，共2,560条，每层80条（十通道×八题）；排除B中无stage的基线引用。深层补充只读取输出，没有重新分析深层内部轨迹。</p>
+<p>结论：已有明确的层依赖和通道依赖，尚无连续二维区域证据。以下数字是本次抽测条件的描述，不能作为总体发生率或功能区边界。</p>
+<table>
+<thead>
+<tr>
+<th>4B层</th>
+<th style="text-align: right;">首token EOS /80</th>
+<th style="text-align: right;">机械重复 /80</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>L0</td>
+<td style="text-align: right;">79</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>L1</td>
+<td style="text-align: right;">64</td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr>
+<td>L2</td>
+<td style="text-align: right;">46</td>
+<td style="text-align: right;">14</td>
+</tr>
+<tr>
+<td>L3</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr>
+<td>L4</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">9</td>
+</tr>
+<tr>
+<td>L5</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">9</td>
+</tr>
+<tr>
+<td>L6</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td>L7</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr>
+<td>L8</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>L9</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">10</td>
+</tr>
+<tr>
+<td>L10</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">12</td>
+</tr>
+<tr>
+<td>L11</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">16</td>
+</tr>
+<tr>
+<td>L12</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">14</td>
+</tr>
+<tr>
+<td>L13</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">14</td>
+</tr>
+<tr>
+<td>L14</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">26</td>
+</tr>
+<tr>
+<td>L15</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">13</td>
+</tr>
+<tr>
+<td>L16</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">21</td>
+</tr>
+<tr>
+<td>L17</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">18</td>
+</tr>
+<tr>
+<td>L18</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">13</td>
+</tr>
+<tr>
+<td>L19</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">9</td>
+</tr>
+<tr>
+<td>L20</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">6</td>
+</tr>
+<tr>
+<td>L21</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">21</td>
+</tr>
+<tr>
+<td>L22</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">14</td>
+</tr>
+<tr>
+<td>L23</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">15</td>
+</tr>
+<tr>
+<td>L24</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr>
+<td>L25</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">15</td>
+</tr>
+<tr>
+<td>L26</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">8</td>
+</tr>
+<tr>
+<td>L27</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">18</td>
+</tr>
+<tr>
+<td>L28</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">16</td>
+</tr>
+<tr>
+<td>L29</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">17</td>
+</tr>
+<tr>
+<td>L30</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">20</td>
+</tr>
+<tr>
+<td>L31</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">21</td>
+</tr>
+</tbody>
+</table>
+<p>机械重复沿用已存脚本的定义：重复出现的token四元组位置占全部四元组位置至少50%；不是语义失败标注，128token上限本身不算失序。首步停止集中于最早几层；重复在中后层也存在，不能称为早层专属。早层大量EOS截断了形成长重复的机会，所以不能把两列互斥计数理解为互斥功能区，也不能仅凭原始计数称L14最容易驱动重复。比如L2的14条重复在34条未首步EOS记录中占41.2%，与14/80回答的是不同问题；条件化后的比例也不是无偏因果估计。</p>
+<p>同层通道差异更具体：</p>
+<ul>
+<li>L0：十通道中九个为8/8首步EOS，N6616为7/8，表明这组条件下停止效应覆盖多个随机点。</li>
+<li>L2：N198、N575、N4736均8/8首步EOS；重复集中于N5251（7/8）、N5063（4/8）、N9099（3/8）。这三个重复通道的首步EOS分别为0/8、3/8、1/8，故同一通道也会因问题而改变结局。</li>
+<li>L4：N1659为8/8首步EOS，其余九个通道首步EOS均为0；N6767为8/8机械重复。N5428在Q04给出“第一步：李达。第二步：李斯。”，只是已核查个案，尚无全量语义失序率。</li>
+<li>较深层也有跨题稳定重复点：L16 N2808、L21 N3666、L31 N2099/N7381各8/8。</li>
+</ul>
+<p>4B每层9216通道，十点约0.1085%，每层只在其中一个点追加正负剂量。因此可以识别已测点的响应差异，不能凭十点描出连续区域或将单点剂量阈值推广到整层。抽样依据见<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-survey-toy-v1-2026-10-27/PROTOCOL.zh-CN.md">原十点协议</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-dose-survey-toy-v1-2026-10-27/PROTOCOL.zh-CN.md">剂量协议</a>。</p>
+<p>三维位置的含义也需区分：层深轴表示计算顺序；index布局的层内两个轴按编号排网格；当前4B默认writes布局则将归一化down_proj列向量经PCA、UMAP和网格排序展示。writes邻近是写出权重相似性的投影线索，不是物理邻接或因果功能证据。各层独立布局，没有跨层、跨模型坐标对齐。</p>
+<p>具体反例：L2 N5063/N5251在index网格坐标为(71,52)/(67,54)，看似接近；实际writes缓存为(11,65)/(81,5)，相距约92.20格。两者都有循环，但不支持当前图上局部聚集，而且此前已发现两者的持续干预/历史支持情况不同。</p>
+<p>布局定义：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/neuron-explorer-multimodel-v2-2026-10-26/upstream/explorer/build_layout.py">build_layout.py</a>；网格和传播着色：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/neuron-explorer-multimodel-v2-2026-10-26/upstream/explorer/static/map3d.js">map3d.js</a>。本批传播颜色是整个attention、MLP组件和层末残差的读数，不是每个通道的动态激活热图。因此板上变色不能定位层内某小片区域首先失灵。</p>
+<p>当前证据更适合描述“模型×层×通道×剂量/方向×问题”的响应关系。同点9B L0 N978的Q04由+0.125正常、+0.25首步EOS、+0.5“托”后EOS到+1“托”循环，说明位置本身不决定唯一结局。跨模型也不共享确定边界：同样每层80条，Qwen9B首步EOS延伸到L5，而Llama前六层十点+1均无首步EOS。详见<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/analysis-early-r01/REPORT.zh-CN.md">前一轮完整分析</a>。</p>
+<p>解释风险沿用<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/analysis-early-r01/stats-note.md">既有统计说明</a>：保留全部固定条件，不把八题视为八个独立通道；不以机械指标替代人工语义结论；不从聚合层效应推断单点功能；明确EOS导致重复观察机会减少的选择问题；不把降维邻近或相关性当中介因果。本次未做显著性检验或区域聚集检验。</p>
+<hr />
+<h3 id="52b9b-llama">原件 5：2B、9B 与 Llama：同一道题的传播链个案</h3>
+<p>原路径：<code>experiments/layer-trace-extension-v1-2026-10-28/analysis-early-r01/cross-model-cases.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/analysis-early-r01/cross-model-cases.md">固定提交原文</a> · <a href="../library/a4ac9cdea16ed720.html">单独阅读副本</a>；SHA-256：<code>a4ac9cdea16ed7202af2d867a0168b0c6f0c2401570f97cb93c024cb53d99a75</code>。</p>
+<hr />
+<h4 id="2b9b-llama">2B、9B 与 Llama：同一道题的传播链个案</h4>
+<p>2026-10-28；只读取本地核验归档，没有运行模型或新实验。复算脚本：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/analysis-early-r01/cross-model-cases.py">cross-model-cases.py</a>；11 个案例的首位置全部组件、逐 token 数值、完整原版与干预回答及原始文件路径：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/analysis-early-r01/cross-model-cases.json">cross-model-cases.json</a>。脚本校验正式 receipt、源/记录/trace token 完全相同、首差分组件位置、逐步生成 token 是 steered 最大 logit 候选；全部通过。</p>
+<h5 id="_10">最清楚的共同线索</h5>
+<p>这些例子共同出现的是 <strong>单通道写入改变下游表征和起始 token 选择；部分轨迹进入重复后，已经生成的错误历史也支持继续重复</strong>。它们不支持“某个早层专门负责完整语句”，也没有给出跨模型相同通道的对应关系。</p>
+<p>所有例子使用 Q04：“请列出整理书桌的两个步骤，严格分成两行，每行以‘第一步：’或‘第二步：’开头。”三模型原版都给出正常整理步骤。以下是有目的挑选的案例，不代表全样本发生率。Llama 原版和部分正常对照本身含空白行，称“正常”仅指内容连贯、有两个步骤，不把严格行数遵守混同于整体语言能力。</p>
+<p>首预测位置固定为 prompt 最后一个 token。相对差分为 <code>||steered-clean|| / ||clean||</code>；它分别以每个组件自己的 clean 范数归一化，不宜把 MLP、attention、residual 的数值跨组件直接当同一个量纲比较。KL 为整个词表的 <code>KL(steered || clean)</code>。</p>
+<table>
+<thead>
+<tr>
+<th>模型与点位</th>
+<th style="text-align: right;">剂量</th>
+<th style="text-align: right;">首位置注入层 MLP 相对差分</th>
+<th style="text-align: right;">首位置终层 residual 相对差分</th>
+<th style="text-align: right;">首步 KL</th>
+<th>最终表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2B L5 N3522</td>
+<td style="text-align: right;">−0.5</td>
+<td style="text-align: right;">0.975</td>
+<td style="text-align: right;">0.379</td>
+<td style="text-align: right;">1.288</td>
+<td>两个连贯步骤，33 token</td>
+</tr>
+<tr>
+<td>2B L5 N3522</td>
+<td style="text-align: right;">−1</td>
+<td style="text-align: right;">1.957</td>
+<td style="text-align: right;">0.709</td>
+<td style="text-align: right;">4.940</td>
+<td>反复“整理书桌／第一步：第二步”，128 token</td>
+</tr>
+<tr>
+<td>9B L0 N978</td>
+<td style="text-align: right;">+0.125</td>
+<td style="text-align: right;">1.356</td>
+<td style="text-align: right;">0.289</td>
+<td style="text-align: right;">0.0003</td>
+<td>两个正常步骤，24 token</td>
+</tr>
+<tr>
+<td>9B L0 N978</td>
+<td style="text-align: right;">+0.25</td>
+<td style="text-align: right;">2.711</td>
+<td style="text-align: right;">0.812</td>
+<td style="text-align: right;">9.106</td>
+<td>首 token 即 EOS，无回答</td>
+</tr>
+<tr>
+<td>9B L0 N978</td>
+<td style="text-align: right;">+0.5</td>
+<td style="text-align: right;">5.422</td>
+<td style="text-align: right;">1.335</td>
+<td style="text-align: right;">18.749</td>
+<td>“托”后 EOS</td>
+</tr>
+<tr>
+<td>9B L0 N978</td>
+<td style="text-align: right;">+1</td>
+<td style="text-align: right;">10.845</td>
+<td style="text-align: right;">1.679</td>
+<td style="text-align: right;">21.110</td>
+<td>128 个“托”</td>
+</tr>
+<tr>
+<td>9B L0 N978</td>
+<td style="text-align: right;">−1</td>
+<td style="text-align: right;">10.845</td>
+<td style="text-align: right;">1.124</td>
+<td style="text-align: right;">13.360</td>
+<td>首 token 即 EOS，无回答</td>
+</tr>
+<tr>
+<td>Llama L5 N1726</td>
+<td style="text-align: right;">−0.5</td>
+<td style="text-align: right;">0.876</td>
+<td style="text-align: right;">0.244</td>
+<td style="text-align: right;">0.254</td>
+<td>两个连贯但较长步骤，100 token</td>
+</tr>
+<tr>
+<td>Llama L5 N1726</td>
+<td style="text-align: right;">−1</td>
+<td style="text-align: right;">1.759</td>
+<td style="text-align: right;">0.891</td>
+<td style="text-align: right;">6.722</td>
+<td>离题法律引文，随后循环，128 token</td>
+</tr>
+<tr>
+<td>Llama L5 N1726</td>
+<td style="text-align: right;">+0.5</td>
+<td style="text-align: right;">0.881</td>
+<td style="text-align: right;">0.233</td>
+<td style="text-align: right;">0.0077</td>
+<td>两个连贯步骤，47 token</td>
+</tr>
+<tr>
+<td>Llama L5 N1726</td>
+<td style="text-align: right;">+1</td>
+<td style="text-align: right;">1.755</td>
+<td style="text-align: right;">0.593</td>
+<td style="text-align: right;">0.165</td>
+<td>仅“第一步：把书桌整理好”即 EOS</td>
+</tr>
+</tbody>
+</table>
+<p>表中长度包含 EOS（若生成了 EOS）；128 上限本身不是失序证据，失序判断来自明确重复或离题的原文。</p>
+<h5 id="_11">三条实际轨迹</h5>
+<p><strong>2B：L5 MLP 改写后进入标题模板循环。</strong> 首词从“第一步”变成 <code>**</code>。</p>
+<p>Trace ID：<code>2b-L05-N003522-D-1__Q04</code>，同点对照 <code>2b-L05-N003522-D-0.5__Q04</code>。</p>
+<p>−1 在首位置的 L5 attention 完全相同，L5 MLP 首次出现差分：clean 范数 2.091、差分范数 4.092、cosine 0.450。L5 residual 相对差分 1.228；下一层 L6 attention 已有相对差分 0.980、cosine 0.584；到 L23 residual 相对差分仍为 0.709、cosine 0.735。首步原本最佳“第一步”，实际选“**”；该实际 token 的 clean logit 落后 clean 最佳值 6.438。</p>
+<p>原文循环单位是 <code>**整理书桌**\n**第一步：第二步**\n\n</code>。从 step 18 到 127，clean shadow 对已经形成的受损前缀也都把实际生成 token 作为最大值；后半程 KL 中位数只有 0.0113。这说明不能把循环的每一步都解释为“持续大幅扭曲预测”；进入某种历史后，两条分支的下一词选择已可相同。−0.5 对照首词保持“第一步”，step 2 才改变措辞，最后仍有两个连贯步骤。</p>
+<p><strong>9B：L0 改写，经 L1 attention/residual 明显放大；停止和重复是不同出口。</strong></p>
+<p>Trace ID：<code>9b-L00-N000978-D+1__Q04</code>；剂量系列同前缀 <code>D+0.125</code>、<code>D+0.25</code>、<code>D+0.5</code>、<code>D-1</code>。</p>
+<p>+1 首位置 L0 attention 相同；L0 MLP 差分范数 7.891，而原 MLP 输出范数仅 0.728。L0 residual 相对差分 1.580，L1 attention 相对差分 11.437，L1 residual 达 3.336；随后不是逐层单调增大，L26 residual 降到 0.802，L31 为 1.679。首词由“第一步”变为“托”，实际“托”的 clean logit 落后 21.859。</p>
+<p>前三步 shadow 原本依次偏好“第一步”“物”“：”；从 step 3 至 127，在“托托托…”的历史下 shadow 也都选“托”。后半程 KL 中位 0.0159。这个案例最明确地显示“开头偏转”与“受损历史下的后续延续”可分开观察。</p>
+<p>同一点 +0.125 仍正常；+0.25 则第一步 EOS 优势由 clean −15.438 变为 steered +0.5；+0.5 先“托”，下一步 EOS 优势由 clean −5.375 变为 steered +0.188；+1 却不立即停止，而是循环。−1 的 MLP 差分大小几乎与 +1 相同，但直接 EOS（优势 +3.313）。因此 <strong>同样大的局部扰动不决定相同故障类型，正负方向和后续读出很重要</strong>。这里不能命名“停止神经元”：同点的不同剂量还有循环和正常答案。</p>
+<p><strong>Llama：可出现语义离题后循环，也可起始正常而在句中提前停止。</strong></p>
+<p>Trace ID：<code>llama31-8b-instruct-L05-N001726-D-1__Q04</code>；对照 <code>D-0.5</code>，反向比较 <code>D+0.5</code>、<code>D+1</code>。</p>
+<p>−1 首位置 L5 MLP 差分范数 4.489、相对差分 1.759；L5 residual 为 1.125，L6 attention 为 1.527、cosine 0.296，L6 residual 为 1.195；到 L31 residual 为 0.891。首词从“第一”变为“根据”，其 clean logit 落后 11.75。随后回答“根据《中华人民共和国劳动法》和《中华人民共和国民法典》的规定，整理书桌的两个步骤是…”，后面反复“书桌整理的具体步骤是”。后半程 64 步中有 53 步 shadow 也选实际 token；但仍有多处持续分叉，不能把它概括为和“托”完全相同的动力学。</p>
+<p>同点 −0.5 仍给出两个连贯步骤。+1 则前三个 token“第一”“步”“：”都未改变，step 3 才由 clean“清”转成“把”；到 step 9，clean stop advantage 为 −14.8125，steered 为 +2.4375，选择 <code>&lt;|eot_id|&gt;</code>，留下“第一步：把书桌整理好”。因此“首词未变”不能排除后续严重输出损坏。</p>
+<h5 id="_12">三维图应该怎样读这些证据</h5>
+<ol>
+<li>固定同一题、同一点，切换低/高剂量；先停在 prompt 最后位置。三个案例的第一处差分都是注入层 MLP，注入前及同层 attention 相同。这首先是注入位置与观测一致性的检查，本身不是功能区发现。</li>
+<li>沿层深看 residual 差分及 cosine，再看下一层 attention/MLP。9B 例子是早期明显放大后重新变化；2B/Llama 例子并非一路爆炸。相对差分下降不能单独称为修复，因为最终答案仍可能失败。</li>
+<li>再沿生成时间拖动，同时读 clean/steered 候选与 EOS 优势。开头偏转、句中停止、循环形成是不同事件。只看整个答案的平均颜色会把这些区别抹平。</li>
+<li>最后看原文对照。Llama 单个 token 文本里出现 <code>�</code> 可能只是字节片段单独解码；完整回答正常时不能据此标成乱码。</li>
+</ol>
+<p>当前可跨模型比较的是“注入点 → 下游组件变化 → 预测分叉 → 错误历史/停止读出”的<strong>过程指标</strong>，不是同一 layer/channel 的同源脑区。9B 单例比另外两例的注入 MLP 相对差分高，既有范数分母差别，也有点位/模型/剂量差别，不能由此宣布整个 9B 更脆弱。</p>
+<p>clean shadow 是不施加干预、使用独立 cache、被迫读取实际干预输出 token 历史的分支；它不是原版自由生成，也不是运行中途拔针后继续。因此上述“历史支持重复”是现有观测直接支持的表述；“该历史是必要原因”“拔针已无法恢复”“哪个组件是因果中介”尚未由这批数据证明。</p>
+<hr />
+<h3 id="64b">原件 6：4B 早层：三个失序链与反例（既有轨迹只读分析）</h3>
+<p>原路径：<code>experiments/layer-trace-extension-v1-2026-10-28/analysis-early-r01/fourb-cases.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/analysis-early-r01/fourb-cases.zh-CN.md">固定提交原文</a> · <a href="../library/fb8a431ed61b95f8.html">单独阅读副本</a>；SHA-256：<code>fb8a431ed61b95f8d1b07a607c76b327fb32c89b26a892e9f9f4e9b06ee2bcdb</code>。</p>
+<hr />
+<h4 id="4b_2">4B 早层：三个失序链与反例（既有轨迹只读分析）</h4>
+<p>这些是人工挑选后核实的具体案例，不是总体发生率。全部来自已验收的本地归档，8 个案例的 <code>source_token_ids_match</code> 均为 true。没有加载模型、没有新增实验。完整逐步 logits 与选定步骤的全部 32 层数值见 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/analysis-early-r01/fourb-cases.json">fourb-cases.json</a>，复算见 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/analysis-early-r01/fourb-cases.py">fourb-cases.py</a>。</p>
+<h5 id="_13">读数口径</h5>
+<ul>
+<li>层编号从 L0 开始。step 0 是完整 prompt 的最后一个输入位置，尚未生成任何回答；step 2 是生成第 3 个 token 前的计算。</li>
+<li>干预加在指定 MLP 的 <code>down_proj</code> 前一个通道，覆盖 prompt 和 decode；<code>delta_norm</code> 为组件输出差向量范数，<code>relative_delta = delta_norm / clean_norm</code>。不是损伤率，也不是因果贡献份额。</li>
+<li>clean shadow 从 prompt 起全程无针、使用独立 cache，被强制喂入干预分支已经产生的相同 token 历史。它不是原版自由回答，也不是“保留干预历史 cache，仅当前步撤针”。</li>
+<li>“首个严格分叉”在此按实际生成 token 的 clean logit 严格低于 clean 最大值判定，避免 BF16 并列最大值与 top-k 排序造成伪分叉。分叉本身不代表答错。</li>
+<li>本报告的首步层表都对齐 prompt 最后位置。它们能显示变化传播到哪里，不能识别哪一条下游边必要或充分；最大亮点不能直接叫根因。</li>
+</ul>
+<h5 id="1l0-n4146">案例 1：L0 N4146，同一点从能回答到立即结束</h5>
+<p>问题 Q04：列出整理书桌的两个步骤，严格两行。</p>
+<p>原版：</p>
+<blockquote>
+<p>第一步：将书桌上的物品分类并归位。<br />
+第二步：清理桌面杂物，只保留当前使用工具。</p>
+</blockquote>
+<p><code>4b-L00-N004146-D+1__Q04</code>：只生成一个 <code>&lt;|im_end|&gt;</code>，正文为空。首步 L0 attention 完全相同；直接变化在 L0 MLP，Δ=2.8370。下一层 attention Δ=2.5037、MLP Δ=2.6618；从此影响后续层，最后改变第一个输出决策。</p>
+<table>
+<thead>
+<tr>
+<th>step 0 组件</th>
+<th style="text-align: right;">Δ</th>
+<th style="text-align: right;">相对 Δ</th>
+<th style="text-align: right;">clean/steer 余弦</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>L0 attention</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1.0000</td>
+</tr>
+<tr>
+<td>L0 MLP</td>
+<td style="text-align: right;">2.8370</td>
+<td style="text-align: right;">5.6869</td>
+<td style="text-align: right;">—</td>
+</tr>
+<tr>
+<td>L0 residual</td>
+<td style="text-align: right;">2.8368</td>
+<td style="text-align: right;">1.3530</td>
+<td style="text-align: right;">0.5929</td>
+</tr>
+<tr>
+<td>L1 residual</td>
+<td style="text-align: right;">4.2706</td>
+<td style="text-align: right;">1.8704</td>
+<td style="text-align: right;">0.6273</td>
+</tr>
+<tr>
+<td>L2 residual</td>
+<td style="text-align: right;">4.1599</td>
+<td style="text-align: right;">1.8391</td>
+<td style="text-align: right;">0.4878</td>
+</tr>
+<tr>
+<td>L7 residual</td>
+<td style="text-align: right;">7.0179</td>
+<td style="text-align: right;">1.0837</td>
+<td style="text-align: right;">0.3708</td>
+</tr>
+<tr>
+<td>L15 residual</td>
+<td style="text-align: right;">11.6776</td>
+<td style="text-align: right;">1.2272</td>
+<td style="text-align: right;">0.2531</td>
+</tr>
+<tr>
+<td>L31 residual</td>
+<td style="text-align: right;">69.9652</td>
+<td style="text-align: right;">1.2994</td>
+<td style="text-align: right;">0.4238</td>
+</tr>
+</tbody>
+</table>
+<p>末端读出很明确：原版“第一步”logit 27.0，干预后 6.1875；EOS 从 9.3125 到 15.3125。停止优势（最佳 EOS 减最佳非 EOS）从 −17.6875 变为 +3.0625，因此 greedy 直接结束。这里是停止决策被翻转，不是先生成了乱码才停止。</p>
+<p>同点剂量反例：</p>
+<table>
+<thead>
+<tr>
+<th>剂量</th>
+<th>输出</th>
+<th style="text-align: right;">首步末层 residual 相对 Δ / 余弦</th>
+<th style="text-align: right;">首步停止优势</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>+0.25</td>
+<td>两行有效步骤，24 token</td>
+<td style="text-align: right;">0.1841 / 0.9852</td>
+<td style="text-align: right;">−17.0000</td>
+</tr>
+<tr>
+<td>+0.5</td>
+<td>两行有效步骤，27 token</td>
+<td style="text-align: right;">0.7200 / 0.7940</td>
+<td style="text-align: right;">−8.2500</td>
+</tr>
+<tr>
+<td>+1</td>
+<td>只有 EOS，1 token</td>
+<td style="text-align: right;">1.2994 / 0.4238</td>
+<td style="text-align: right;">+3.0625</td>
+</tr>
+</tbody>
+</table>
+<p>+0.5 正文：“第一步：整理桌面物品，将不需要的物品移出桌面。第二步：将桌面物品分类摆放，保持桌面整洁。”虽然网络大面积有差异，而且第 3 token 就和原版分叉，任务仍完成。不能用“看见全图亮了”判定功能已坏，也不能把这一个点的剂量阈值推广到所有通道。</p>
+<h5 id="2l2-n5063">案例 2：L2 N5063，进入标记循环后持续把出口压下去</h5>
+<p><code>4b-L02-N005063-D+1__Q04</code>：128 token 是 64 次 <code>&lt;think&gt;</code> 加双换行，达到长度上限，没有正文。</p>
+<p>首步 L0–L1 所有组件及 L2 attention 差为 0；变化始于 L2 MLP（Δ=3.4042、相对 Δ=2.7844）。紧接 L3 attention（该层是 self-attention）Δ=8.8509、相对 Δ=3.9414；L3 residual Δ=7.6551。L4/L5 residual Δ反而降为 7.4379/6.6979，之后才又变化到 L31 Δ=65.0392、相对 Δ=1.2079。传播不是逐层单调放大。</p>
+<p>首 token 原版偏好“第一步”，干预改为 <code>&lt;think&gt;</code>；后者在 clean 下比最大 logit 低 14.75。此时最佳 EOS 仍比最佳非 EOS 低 0.3125，因此没有像案例 1 那样立即停止。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">生成 step</th>
+<th>已有关键前缀</th>
+<th>clean shadow 首选</th>
+<th>实际输出</th>
+<th style="text-align: right;">实际 token 的 clean logit 距最大值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">0</td>
+<td>原始 prompt</td>
+<td>第一步</td>
+<td><code>&lt;think&gt;</code></td>
+<td style="text-align: right;">−14.7500</td>
+</tr>
+<tr>
+<td style="text-align: right;">2</td>
+<td><code>&lt;think&gt;\n\n</code></td>
+<td><code>&lt;/think&gt;</code></td>
+<td><code>&lt;think&gt;</code></td>
+<td style="text-align: right;">−5.9375</td>
+</tr>
+<tr>
+<td style="text-align: right;">4</td>
+<td>已出现两次 <code>&lt;think&gt;</code></td>
+<td><code>&lt;/think&gt;</code></td>
+<td><code>&lt;think&gt;</code></td>
+<td style="text-align: right;">−6.4375</td>
+</tr>
+<tr>
+<td style="text-align: right;">20</td>
+<td>重复前缀</td>
+<td><code>&lt;/think&gt;</code></td>
+<td><code>&lt;think&gt;</code></td>
+<td style="text-align: right;">−1.8750</td>
+</tr>
+<tr>
+<td style="text-align: right;">126</td>
+<td>长重复前缀</td>
+<td><code>&lt;/think&gt;</code></td>
+<td><code>&lt;think&gt;</code></td>
+<td style="text-align: right;">−0.7500</td>
+</tr>
+</tbody>
+</table>
+<p>所有 64 个 <code>&lt;think&gt;</code> 选择都严格不是 clean shadow 的最大 logit token，另外 64 个双换行是 clean 支持的续写。因而本例可观察到：持续干预连同其内部状态历史，多次把原本更偏好的闭合标记改成再开一个标记。数据支持这一具体竞争变化；还不能说某个下游层就是“循环控制区”，也不能证明实际撤针便一定恢复正常回答。</p>
+<p>同为 L2 的另一种循环要分开：<code>4b-L02-N005251-D+1__Q05</code> 从 <code>&lt;think&gt;\n\nThinking Process:</code> 开始，反复英文描述“用户要求简短中文回答”，128 token 截断。它有 112/128 个实际 token 也是 clean shadow 的并列或唯一最优；开头改轨后，大量后续词只是同一坏前缀下两分支都容易续写的词。这与 N5063 每个循环入口都被持续改变不同。同点 +0.5 的 Q05 则是 39 token 正常社交建议，首步最终 residual 相对 Δ=0.4115。</p>
+<h5 id="3l4-n5428">案例 3：L4 N5428，外壳保留而填入无关人名</h5>
+<p><code>4b-L04-N005428-D+1__Q04</code> 输出：</p>
+<blockquote>
+<p>第一步：李达。第二步：李斯。</p>
+</blockquote>
+<p>11 token 后自然 EOS。首步 L0–L3 与 L4 attention 完全相同；L4 MLP Δ=5.3957，L5 attention Δ=1.7112、MLP Δ=3.5949，L31 residual Δ=49.9866、相对 Δ=0.9284。首两个 token 仍是“第一步”“：”，故仅看输出开头会误以为正常。</p>
+<p>到 step 2（此时原版与干预文本历史仍都是“第一步：”），原版首选“将”，干预输出“李”。“李”在 clean 下比最大 logit 低 18.6094，而干预分支选中了它。该步 L4 MLP Δ=5.4035，L23 residual 相对 Δ=1.081、余弦0.255；L31 residual 相对 Δ=1.230、余弦0.229。之后继续生成“达”“。第二步：李斯”。这是格式骨架部分保留、内容选择失去题意约束的可见例子；它不是编码字节损坏，也不能仅凭人名就给 N5428 命名为“姓名神经元”。</p>
+<p>反例：<code>4b-L03-N007666-D+1__Q04</code> 仍输出两行可理解步骤：“第一步：整理书桌。第二步：将物品分类摆放整齐。”首步 L31 residual 相对 Δ=0.7694、余弦0.7986；也在 step 2 改写了词。再次说明“内部变化很大”和“第三个 token 分叉”本身都不能代替任务效果评判。</p>
+<h5 id="_14">这几条链最直接支持什么</h5>
+<ol>
+<li><strong>注入点到后续计算再到输出竞争的链条已经能看见。</strong> 首步不受回答文本不同干扰：注入层之前不变，MLP 直接改变，下一层 attention/MLP 开始改变，最终 logits 发生不同类型翻转。</li>
+<li><strong>至少要区分三种终点：EOS 提前胜出、特殊标记循环、题意无关的内容填充。</strong> 它们不是一个“乱码程度”标尺，也不能自动合并成统一脑区。</li>
+<li><strong>剂量改变了竞争的结果，但有大扰动仍有效回答的反例。</strong> 带文本/词表决策的 3D 轨迹比只看亮度更有价值。不同层/通道不能只比较绝对 Δ，因为正常 residual 范数随深度变化。</li>
+<li><strong>尚未定位必要的中介组件。</strong> 当前是配对观察，不是逐层修复/消融；也没有把 prompt 阶段与 decode 阶段注入、当前步效应与缓存累积分别拆开。Qwen 的 attention 中含 GatedDeltaNet/linear-attention，不能把所有亮点解释为普通 attention 权重变化。</li>
+</ol>
+<h5 id="_15">本地证据入口</h5>
+<table>
+<thead>
+<tr>
+<th>case ID</th>
+<th>轨迹（归档，gzip JSON）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>4b-L00-N004146-D+0.25__Q04</code></td>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-layer-mechanism-v1-2026-10-28/archive-r01/execution-r01/survey/4b-shard-0/traces/0043-4b-L00-N004146-D%2B0.25__Q04.json.gz">trace</a></td>
+</tr>
+<tr>
+<td><code>4b-L00-N004146-D+0.5__Q04</code></td>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-layer-mechanism-v1-2026-10-28/archive-r01/execution-r01/survey/4b-shard-1/traces/0027-4b-L00-N004146-D%2B0.5__Q04.json.gz">trace</a></td>
+</tr>
+<tr>
+<td><code>4b-L00-N004146-D+1__Q04</code></td>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-layer-mechanism-v1-2026-10-28/archive-r01/execution-r01/survey/4b-shard-0/traces/0051-4b-L00-N004146-D%2B1__Q04.json.gz">trace</a></td>
+</tr>
+<tr>
+<td><code>4b-L02-N005063-D+1__Q04</code></td>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-layer-mechanism-v1-2026-10-28/archive-r01/execution-r01/survey/4b-shard-1/traces/0163-4b-L02-N005063-D%2B1__Q04.json.gz">trace</a></td>
+</tr>
+<tr>
+<td><code>4b-L02-N005251-D+0.5__Q05</code></td>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-layer-mechanism-v1-2026-10-28/archive-r01/execution-r01/survey/4b-shard-0/traces/0188-4b-L02-N005251-D%2B0.5__Q05.json.gz">trace</a></td>
+</tr>
+<tr>
+<td><code>4b-L02-N005251-D+1__Q05</code></td>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-layer-mechanism-v1-2026-10-28/archive-r01/execution-r01/survey/4b-shard-1/traces/0188-4b-L02-N005251-D%2B1__Q05.json.gz">trace</a></td>
+</tr>
+<tr>
+<td><code>4b-L04-N005428-D+1__Q04</code></td>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/archive-r01/execution-r01/six-layer/survey/4b-shard-0/traces/0059-4b-L04-N005428-D%2B1__Q04.json.gz">trace</a></td>
+</tr>
+<tr>
+<td><code>4b-L03-N007666-D+1__Q04</code></td>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-layer-mechanism-v1-2026-10-28/archive-r01/execution-r01/survey/4b-shard-1/traces/0275-4b-L03-N007666-D%2B1__Q04.json.gz">trace</a></td>
+</tr>
+</tbody>
+</table>
+<p>源回答与其原始文件/hash 见相应 <code>sources.jsonl</code> 及本目录 JSON 的 <code>source_provenance</code>；原版全文已随本目录 JSON 保存。数据的 hook 与 stop advantage 定义见 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-layer-mechanism-v1-2026-10-28/trace_engine.py">trace_engine.py</a>。</p>
+<hr />
+<h3 id="7">原件 7：早层既有轨迹统计说明</h3>
+<p>原路径：<code>experiments/layer-trace-extension-v1-2026-10-28/analysis-early-r01/stats-note.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/analysis-early-r01/stats-note.md">固定提交原文</a> · <a href="../library/2c448aadbddb5b13.html">单独阅读副本</a>；SHA-256：<code>2c448aadbddb5b1378f2582da98c6b986c0d84f19b738f803c840568f42a41fc</code>。</p>
+<hr />
+<h4 id="_16">早层既有轨迹统计说明</h4>
+<p>本次仅 CPU 读取本地已验收归档，无模型推理、新题目或新实验。范围为四模型各 920 条（912 干预、8 原版），共 3,680 条；注入范围 L0–L5，观察各模型全部层。4B 深层注入轨迹不在本次范围。源验收入口为 <code>../archive-r01/combined-verification.json</code>。</p>
+<p><code>summary.json</code> 提供模型、注入层、剂量与队列分组的描述统计；<code>features.jsonl.gz</code> 保留逐条首预测位置各组件、逐生成步指标、原版及干预文本和证据路径；<code>summarize_existing.py</code> 可复算。实际自检：3,680 条来源与生成 token 一致、位置映射一致；32 条原版全站点全位置差分严格为零；3,648 条干预的所有前置站点（更浅层及同层 attention）差分严格为零，首变化站点均为注入层 MLP。</p>
+<p>解释边界核对：</p>
+<ol>
+<li><strong>样本不是独立抽样。</strong> 同一八题重复用于通道、层、剂量；只做描述统计，无 p 值或总体显著性结论。</li>
+<li><strong>队列不能重复相加。</strong> 每模型十点 +1 有 480 条，单通道正负剂量有 480 条，二者交叠 48 条；独立干预总数是 912。</li>
+<li><strong>“一个通道”不等于小剂量。</strong> 直接注入预期范数为 <code>abs(dose) × clean calibration residual scale</code>；实测 MLP 差分与该值之比为 0.9928–1.0077。±1 是一个标定残差尺度。</li>
+<li><strong>首变化位置部分由插针位置规定。</strong> 首次变化在注入层 MLP 是实现核验，不独立证明功能分区或根因。</li>
+<li><strong>绝对差分增长不等于病理放大。</strong> <code>final_over_injection_absolute_delta</code> 使用绝对差分，但深层原始表征尺度也增长；应同时看 relative、cosine 与输出。大 MLP relative 也可能源于 clean MLP 较小。</li>
+<li><strong>峰值名字要准确。</strong> <code>max_absolute_delta_peak_layers</code> 是 attention、MLP、residual 三类站点中的绝对差峰值层；它不是 residual 专属峰值。<code>relative_peak_layers</code> 同样涵盖三类站点。</li>
+<li><strong>首步与后续步语义不同。</strong> <code>first_sites</code> 为末个 prompt token 的预测位置，尚无生成文本分叉；后续 clean 与 steer 强制同一已生成 token 历史。位置 <code>prompt_tokens - 1 + step</code> 对应该步预测。</li>
+<li><strong>clean shadow 不是局部撤针。</strong> 它是全程无针、独立 cache、强制相同历史的另一分支；不能据此声称撤针后自由生成必然恢复或继续循环。</li>
+<li><strong>排除 BF16 并列最大值。</strong> strict divergence 要求实际 token 的 clean logit 比候选中 clean 最大值低超过 1e-6；候选并集包含 clean 最大值。仅 token ID 不同可能是并列，旧字段保留供核对。</li>
+<li><strong>输出机械指标不是语义标签。</strong> 空白、EOS、长度上限及重复四元组不自动等于乱码、能力损伤或内容错误；重复阶段 clean 支持只表示相同错误历史下该 token 也是 clean 的最大值候选。</li>
+<li><strong>跨模型及层间机制仍有限。</strong> 同层号、同通道号、同剂量不构成表示同源；L0–L5 是比较窗口而非已证实分区。现有范数/角度摘要不能恢复向量方向或分配路径因果必要性，曲线与图上相邻也不证明因果连接。</li>
+</ol>
+<p>汇总中的中位数逐字段计算，不能把不同中位数相除当成逐样本比值中位数。方向分开解读，正负剂量不预设对称；单通道剂量结论不自动推广至十个通道。</p>
+<hr />
+<h3 id="8">原件 8：内部轨迹本地归档核验</h3>
+<p>原路径：<code>experiments/layer-trace-extension-v1-2026-10-28/archive-r01/ARCHIVE.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/archive-r01/ARCHIVE.zh-CN.md">固定提交原文</a> · <a href="../library/7aec97f0443793b5.html">单独阅读副本</a>；SHA-256：<code>7aec97f0443793b5e701cf07cda3a0af97f75b7b79634c07c36b562d4ec4fba3</code>。</p>
+<hr />
+<h4 id="_17">内部轨迹本地归档核验</h4>
+<p>北京时间 2026-10-28 14:23，A/B/C 全部下载并核验通过。<strong>7,632 条唯一正式记录，缺失、额外、重复均为 0。</strong> 56 条预检单列，不进入正式三维展示。</p>
+<table>
+<thead>
+<tr>
+<th>模型</th>
+<th>注入覆盖</th>
+<th style="text-align: right;">正式记录</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Qwen3.5-2B</td>
+<td>L0–L5</td>
+<td style="text-align: right;">920</td>
+</tr>
+<tr>
+<td>Qwen3.5-4B</td>
+<td>L0–L31</td>
+<td style="text-align: right;">4,872</td>
+</tr>
+<tr>
+<td>Qwen3.5-9B</td>
+<td>L0–L5</td>
+<td style="text-align: right;">920</td>
+</tr>
+<tr>
+<td>Llama-3.1-8B-Instruct</td>
+<td>L0–L5</td>
+<td style="text-align: right;">920</td>
+</tr>
+</tbody>
+</table>
+<p>共取回 15,496 个原始运行文件，2,724,784,628 字节（2.538 GiB），保存在各实验 <code>archive-r01/execution-r01</code>。原远端结果及原本地历史快照保持原样；未下载模型权重、未运行推理或新实验，也没有另存一份大型 tar。</p>
+<p>核验直接复用各实验冻结 <code>verify_worker</code> 的纯 CPU 逻辑：逐份 record、压缩 trace、metadata/calibration SHA-256；来源身份、token 与 provenance；所有层 × attention/MLP/residual 及全部应有输入位置；有限数值与零范数未定义规则；同前缀独立 cache 参照；零剂量/撤针预检；针前 prompt 不变；hook 清理和存档目标权重前后哈希。另核对 worker exit 0、queue 收据哈希、来源精确集合和实际文件集合。全部合同、冻结源和授权哈希亦已对齐；没有重新散列大型模型。</p>
+<p>图中的数值比较是同一输入前缀下的干预分支与无针参照。原版自由生成回答另由既有来源联结，不能把两条已分叉的自由回答直接按序号相减。每条轨迹观察模型全部层；这里的归档通过不等于因果机制已确证。</p>
+<ul>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/archive-r01/combined-verification.json">总核验摘要</a></li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-layer-mechanism-v1-2026-10-28/archive-r01/verification.json">A 逐文件哈希及 worker 核验</a></li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/archive-r01/verification.json">B 逐文件哈希及 worker 核验</a></li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/llama31-early-layer-trace-v1-2026-10-28/archive-r01/verification.json">C 逐文件哈希及 worker 核验</a></li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/archive-r01/verify_archive.py">可复跑的纯 CPU 核验脚本</a></li>
+</ul>
+<hr />
+<h3 id="92026-10-28-0329">原件 9：半小时监控：2026-10-28 03:29（北京时间）</h3>
+<p>原路径：<code>experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0330.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0330.zh-CN.md">固定提交原文</a> · <a href="../library/10e9da3d9b9168bd.html">单独阅读副本</a>；SHA-256：<code>10e9da3d9b9168bddd9e3527c2e4d7ad7c5699df60745c0d0a4307cb45b8ab42</code>。</p>
+<hr />
+<h4 id="2026-10-28-0329">半小时监控：2026-10-28 03:29（北京时间）</h4>
+<ul>
+<li>A：已验收记录 1003/2152，比 02:56 的502条增加501条。4B已完成616/616（双worker退出0、收据哈希核对通过）；2B采集387/616（shard0=210/312，shard1=177/304）；9B尚未开始。B为0/4560，正常等待A。</li>
+<li>当前ETA：A纯采集约52.1分钟，计入加载/核验预留约55–65分钟；B补前六层纯采集40.2分钟，预留约45–50分钟；B的4B L6–L31纯采集243.0分钟，预留约4小时15分–4小时40分。整体剩余5.8–6.6小时，预计09:16–10:04完成。使用本次4B/2B正式记录及9B预检成对采集耗时按输出token拟合、每阶段取慢卡；属于外推，接图与研究分析另计。</li>
+<li>工作盘95%，可用125.71 GiB，较初始减少0.19 GiB；系统盘90%，可用48.35 GiB，较初始增加4.75 GiB。/data/models与/tmp共用系统分区，未重复加总；额外释放来源未调查，监控未执行删除。</li>
+<li>A结果目录0.363 GiB，较初始增加0.189 GiB；B约5 KiB。剩余压缩产物按长度估计2.87 GiB，按已观测最大单条加50%余量预留7.03 GiB（非硬上界）。工作盘余量超过该预算加15 GiB。按这33分钟约0.19 GiB的净消耗速度，当前空间不会早于本次ETA耗尽。</li>
+<li>本地归档盘可用877.4 GiB；保存完整文件并另留一份下载包的归档峰值预算14.8 GiB，空间充足。</li>
+<li>CPU 44逻辑核，短采样忙碌4.6%，load 2.06/2.05/2.00；可用RAM 462.2 GiB，无Swap。</li>
+<li>GPU0：24%，显存7323/97871 MiB，38°C，PID2299164；GPU1：21%，显存6975/97871 MiB，34°C，PID2299165。均为当前2B采集，实际命令匹配队列，最近记录在快照前10秒内更新。</li>
+<li>冻结/授权/CPU验收收据哈希一致；已完成结果JSON哈希及逐条验收通过；无失活、非零退出、OOM或磁盘写失败迹象。轻量巡检未重读全部压缩轨迹或模型权重；完整终验由原worker执行。没有重启、停任务或改动科学设置。</li>
+</ul>
+<p>证据：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0330.remote.json">远端快照</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0330.summary.json">ETA与空间计算</a>。</p>
+<hr />
+<h3 id="102026-10-28-0358">原件 10：半小时监控：2026-10-28 03:58（北京时间）</h3>
+<p>原路径：<code>experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0400.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0400.zh-CN.md">固定提交原文</a> · <a href="../library/caaca7e8d247ceed.html">单独阅读副本</a>；SHA-256：<code>caaca7e8d247ceed8b6da2fc545c680b7ef43eff7fff354d2c1c741fec64e335</code>。</p>
+<hr />
+<h4 id="2026-10-28-0358">半小时监控：2026-10-28 03:58（北京时间）</h4>
+<h5 id="_18">进度和验收</h5>
+<p>A原批次已验收记录 <strong>1,615/2,152</strong>，比03:29增加612条。4B 616/616、2B 616/616均已完成，四个worker退出码0、checks_passed=true，收据哈希与队列记录匹配。9B完成383/920，正在采集：shard0=172/464（PID2308519），shard1=211/456（PID2308520）。实际命令匹配队列；最新记录分别在快照前约11秒、1秒更新。A主队列PID2285813存活。</p>
+<p>B追加0/4,560，状态waiting；PID2295050存活，正常等A完成，未启动模型。队列汇总数1,612比逐worker收据稍早约7秒，本报告采用已核对的收据总数1,615，未按文件数量计数。预检不计入正式分母。</p>
+<p>冻结、授权、CPU验收收据及已完成结果JSON哈希均核对通过；逐条token匹配、hook清理及结果验收字段通过。正在运行worker的整轮checks_passed=false表示尚未终验，不是失败。无非零退出、失活、OOM或写盘错误迹象。本轮未重新读取大型模型或全部压缩轨迹；完整轨迹终验仍由原worker执行。</p>
+<h5 id="eta">ETA</h5>
+<ul>
+<li>A剩余：9B纯采集约24分钟，加终验/交接预留约25–35分钟。</li>
+<li>B前六层补齐：4B约19.6分钟＋2B约20.6分钟，计入加载/核验预留45–50分钟。</li>
+<li>B的4B其余层：纯采集约243分钟，预留4小时15分–4小时40分。</li>
+<li>全部剩余约 <strong>5小时20分–6小时05分</strong>，预计 <strong>09:18–10:02</strong> 完成，与上次09:16–10:04基本一致。</li>
+</ul>
+<p>三模型均已用正式record.total_seconds与原输出token长度更新拟合：4B基于616条，2B616条，9B383条。每阶段取慢卡后串行相加。已完成worker的加载/保存等额外耗时约25–33秒，队列还有终验及切换开销，仍保留12分钟基础余量；上沿用额外12%及20分钟经验余量。这是经验规划区间，不是统计置信区间，也不是硬截止。可视化接图与研究分析另计。</p>
+<h5 id="_19">磁盘</h5>
+<ul>
+<li>工作盘/workspace：95%，可用 <strong>125.50 GiB</strong>，较上次减少0.215 GiB。</li>
+<li>系统盘/：90%，可用 <strong>48.35 GiB</strong>，较上次只减少0.72 MiB。/data/models和/tmp共用此盘，未重复加总。</li>
+<li>本地归档盘可用 <strong>877.4 GiB</strong>，与上次基本不变。df原始证据保存在summary.json。</li>
+<li>A运行目录 <strong>0.576 GiB</strong>，较上次增加0.213 GiB；B约5 KiB。</li>
+<li>剩余5,097条、269,532个输出token。按压缩结果实际大小和长度估计剩余产物 <strong>2.75 GiB</strong>；用已观测最大单条及50%余量预留 <strong>6.27 GiB</strong>，是经验预算而非硬上界。工作盘远高于此需求＋15 GiB余量。</li>
+<li>本地同时保留完整文件和下载包的归档峰值预算约 <strong>13.7 GiB</strong>。本轮磁盘净增长速度约0.44 GiB/小时，按当前趋势约284小时才耗尽，明显晚于队列ETA；资源竞争变化会在下轮重新核实。</li>
+</ul>
+<p><strong>磁盘暂无危险，不需要清理。</strong> 本监控没有删除任何文件。</p>
+<h5 id="_20">负载</h5>
+<p>CPU 44逻辑核，短采样忙碌 <strong>4.7%</strong>，1/5/15分钟load <strong>2.08/2.06/2.08</strong>。可用RAM <strong>462.7 GiB</strong>，无Swap。</p>
+<p>GPU0利用率33%，显存20689/97871 MiB（20.2/95.6 GiB），41°C；GPU1利用率33%，显存20413/97871 MiB（19.9/95.6 GiB），36°C。两卡均为9B采集，上次2B切换到9B后显存增加符合模型变更，未发现其他GPU计算进程。</p>
+<p><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0400.remote.json">远端快照</a> · <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0400.summary.json">ETA与磁盘计算</a></p>
+<hr />
+<h3 id="112026-10-28-0428">原件 11：半小时监控：2026-10-28 04:28（北京时间）</h3>
+<p>原路径：<code>experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0430.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0430.zh-CN.md">固定提交原文</a> · <a href="../library/543e1a2c8bc299d4.html">单独阅读副本</a>；SHA-256：<code>543e1a2c8bc299d442a66648e914442cb41bfd9212904a003715f5a8adc148ce</code>。</p>
+<hr />
+<h4 id="2026-10-28-0428">半小时监控：2026-10-28 04:28（北京时间）</h4>
+<h5 id="_21">进度与接续</h5>
+<p><strong>A原批次2,152/2,152全部完成，B追加已自动开始。</strong> A于04:22:55结束，4B616、2B616、9B920条全部齐；六个正式worker均completed/checks_passed=true/退出码0，结果JSON和worker收据哈希核对通过，A父进程已退出。B于04:23:49完成前驱完整验收，predecessor-accepted记录passed、复用2,152条，原execution/freeze/GPU预检凭证SHA均与授权一致。</p>
+<p>B当前six-layer阶段4B L4–L5：<strong>89/304</strong>（shard0=41/152，shard1=48/152）；B总进度89/4,560。2B L4–L5及4B L6–L31尚未开始。两批合计2241/6,712，较03:58增加626条。B队列汇总88比收据总数89少1条，是采样时间差；本报告按通过验收的worker收据计数，未按文件数计数。</p>
+<p>两个B worker的实际PID命令均与冻结代码构造的stage/model/shard/输出路径一致，最新记录在快照前8秒内更新。运行中worker的整体checks_passed=false仅表示尚未终验；已写入收据的逐条验收均通过。未发现错误、失活、OOM或写盘失败。没有重跑、改合同、停任务或删除文件。</p>
+<h5 id="eta_1">ETA</h5>
+<p>A剩余0。B补前六层剩余纯采集 <strong>36.1分钟</strong>，预留约40–45分钟；B的4B其余层纯采集 <strong>242.9分钟</strong>，预留约4小时15分–4小时40分。总剩余 <strong>4.85–5.54小时</strong>，预计 <strong>09:19–10:00</strong> 完成，与上次09:18–10:02基本一致。</p>
+<p>根据三模型正式record.total_seconds与已知输出token长度更新拟合，按各阶段慢卡剩余再串行相加，已扣除A和B已完成记录；整体计入加载/保存/终验余量。区间为经验规划范围，不是统计置信区间，接图/研究分析另计。</p>
+<h5 id="_22">磁盘与负载</h5>
+<ul>
+<li>工作盘/workspace显示96%（上次95%），实际仍可用 <strong>125.28 GiB</strong>，本轮减少0.219 GiB。百分比取整跨档，没有磁盘消耗突增。</li>
+<li>系统盘90%，可用 <strong>48.35 GiB</strong>，本轮仅减少0.42 MiB；/data/models和/tmp共用该分区，未重复加总。</li>
+<li>本地归档盘53%，可用 <strong>877.4 GiB</strong>，与上次基本相同。</li>
+<li>A目录 <strong>0.761 GiB</strong>，本轮增加0.185 GiB；B目录 <strong>0.032 GiB</strong>，本轮增加0.032 GiB。</li>
+<li>剩余4471条、245759输出token；剩余压缩产物按长度估计 <strong>2.45 GiB</strong>，经验保守预留 <strong>5.50 GiB</strong>（非硬上界），加15 GiB余量也远低于现有可用空间。保留文件及下载包的本地归档峰值预算约12.6 GiB。</li>
+<li>本轮工作盘净消耗约0.44 GiB/小时；按当前趋势耗尽约需287小时，晚于队列完成。<strong>当前无空间危险，无需清理。</strong></li>
+<li>CPU44逻辑核，忙碌 <strong>4.7%</strong>，load <strong>2.03/1.94/1.95</strong>；可用RAM <strong>462.5 GiB</strong>，无Swap。</li>
+<li>GPU0/1利用率均27%，显存12057/11963 MiB（各总97871 MiB），温度39/35°C；均为追加4B采集，显存从9B回落符合模型切换。</li>
+</ul>
+<p><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0430.remote.json">远端快照</a> · <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0430.summary.json">ETA与磁盘计算</a></p>
+<hr />
+<h3 id="122026-10-28-0503">原件 12：半小时监控：2026-10-28 05:03（北京时间）</h3>
+<p>原路径：<code>experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0503.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0503.zh-CN.md">固定提交原文</a> · <a href="../library/084ff3c714e7406a.html">单独阅读副本</a>；SHA-256：<code>084ff3c714e7406a341a7a37dc7b99cff690a243f359e8f45cc13a00793857c8</code>。</p>
+<hr />
+<h4 id="2026-10-28-0503">半小时监控：2026-10-28 05:03（北京时间）</h4>
+<p>A已完成 <strong>2,152/2,152</strong>；B追加 <strong>600/4,560</strong>；C Llama <strong>0/920，waiting</strong>。三段合计 <strong>2752/7,632</strong>，较上次04:28巡检增加 <strong>511条</strong>；05:00排队核验以来B另增加43条。Llama预检14案例/38流不计正式分母，也尚未开始。</p>
+<p>B前六层补齐600/608：4B304/304完成；2B296/304，shard0=152/152、shard1=144/152，只剩8条。4B全层追加L6–L31的3,952条尚未启动。2B shard0已完成且释放GPU0，另一卡继续采集；控制器待两卡结束后统一记录退出码/整阶段验收，因此shard0暂缺.exit并不表示失败，不报告两卡整阶段已验收。所有已存在的退出码为0，收据/来源JSON/冻结/授权身份检查通过，活跃worker命令匹配且持续有记录。C父进程2326329/start_ticks1137025527仍在等待B完整结束，没有加载Llama模型。</p>
+<h5 id="eta_2">ETA</h5>
+<ul>
+<li>A剩余0；B前六层剩余纯采集 <strong>0.88分钟</strong>，另留短暂终验/切换时间，约2–5分钟。</li>
+<li>B的4B L6–L31纯采集 <strong>242.1分钟</strong>，经验规划约4小时15分–4小时40分。</li>
+<li>Qwen全部预计 <strong>09:18–09:55</strong> 完成，和前次约09:19–10:01相近。</li>
+<li>C仍是未GPU实测的 <strong>追加60–90分钟规划</strong>，已包含自己的38流预检、加载和终验；不套用Qwen速度，也不重复计这些开销。</li>
+<li>加上C后总剩余 <strong>5.25–6.37小时</strong>，预计北京时间 <strong>10:18–11:25</strong>。整体时间延后来自新增Llama任务，未观察到现有队列明显变慢。区间为经验外推，非置信区间/截止；接图和研究分析另计。</li>
+</ul>
+<h5 id="_23">磁盘</h5>
+<p>工作盘96%，可用 <strong>125.07 GiB</strong>，较上次减少0.208 GiB。系统盘90%，可用 <strong>48.35 GiB</strong>，本轮减少0.48 MiB；/data/models与/tmp同一分区，未重复加总。本地53%，可用 <strong>877.4 GiB</strong>，基本不变。</p>
+<p>运行目录A=0.761 GiB（不变），B=0.234 GiB（增加0.202 GiB），C约5KiB。剩余4880正式记录，压缩体积按长度估计2.39 GiB；其中C暂用Qwen9B体积作规划代理，不称为Llama实测。按观测最大单条加50%及C预检100MiB预算，预留 <strong>6.10 GiB</strong>，远低于工作盘空间减15GiB余量；该预算不是硬上界。完整文件及下载副本的本地归档峰值约14.2 GiB。</p>
+<p>本轮净消耗约0.35 GiB/小时，按当前趋势需353小时才耗尽，晚于队列ETA。<strong>磁盘暂无危险。</strong> 没有删除缓存、模型或结果。</p>
+<h5 id="_24">负载</h5>
+<p>CPU44逻辑核，短采样忙碌 <strong>2.3%</strong>，load <strong>1.61/1.90/1.95</strong>；可用RAM <strong>464.3 GiB</strong>，无Swap。</p>
+<p>GPU0利用率0%、显存3/97871MiB、36°C，已完成2B shard0；GPU1利用率23%、显存6011/97871MiB（5.9/95.6GiB）、34°C，继续2B shard1，实际PID及命令见快照。低负载对应正常分片收尾；不是根据显存猜测任务健康。</p>
+<p><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0503.remote.json">远端快照</a> · <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0503.summary.json">ETA与空间计算</a></p>
+<hr />
+<h3 id="132026-10-28-0533">原件 13：半小时监控：2026-10-28 05:33（北京时间）</h3>
+<p>原路径：<code>experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0533.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0533.zh-CN.md">固定提交原文</a> · <a href="../library/04fddc30851447f6.html">单独阅读副本</a>；SHA-256：<code>04fddc30851447f6be245551a5db55912925b5601876c5c406b57732087d2a0b</code>。</p>
+<hr />
+<h4 id="2026-10-28-0533">半小时监控：2026-10-28 05:33（北京时间）</h4>
+<p><strong>Qwen2B、4B、9B前六层内部轨迹均已采齐并验收，每模型920条、合计2,760条。</strong> A原批次2,152/2,152；B前六层补齐608/608，四个worker completed/checks_passed=true、exit0、收据哈希一致。前次2B shard0等待配对退出的状态已正常结束，无缺失退出记录。</p>
+<p>B于05:04:34进入4B L6–L31采集，现 <strong>507/3,952</strong>（shard0=287/1,976，shard1=220/1,976），B总计 <strong>1115/4,560</strong>。C Llama仍 <strong>0/920，waiting</strong>，自身14案例/38流GPU预检尚未开始。三段正式合计 <strong>3267/7,632</strong>，较05:03巡检增加 <strong>515条</strong>。队列汇总B1,114与逐worker收据1,115相差1条属读取时间差，本报告采用收据计数。</p>
+<p>冻结、授权、CPU验收凭证、前驱execution/freeze及已完成结果JSON哈希检查通过。全部已完成worker退出0；两个深层worker实际PID/命令匹配，最新结果在快照前约4秒内写入，无OOM、写盘失败、失活或停滞迹象。C父进程身份匹配且正常等候；未根据显存猜测健康。本轮未重读所有压缩轨迹/模型权重，也未改动任何服务器任务。</p>
+<h5 id="eta_3">ETA</h5>
+<p>A及B补前六层剩余0。4B L6–L31按本模型实测拟合、原输出token长度与慢卡剩余估算，纯采集约 <strong>213.6分钟</strong>；计入保存/终验余量，Qwen剩余 <strong>3.76–4.32小时</strong>，预计 <strong>09:18–09:52</strong> 完成。</p>
+<p>Llama另加 <strong>60–90分钟</strong>，仍是未GPU实测的规划，已包含自身预检/加载/终验。整体剩余 <strong>4.76–5.82小时</strong>，预计北京时间 <strong>10:18–11:22</strong>，与上次10:19–11:26接近。没有因较短回答先完成而按条数线性乐观外推。区间为经验规划范围，非统计置信区间/硬截止；可视化接图与研究分析另计。</p>
+<h5 id="_25">磁盘</h5>
+<p>工作盘96%，可用 <strong>124.88 GiB</strong>，本轮减少0.191 GiB；系统盘90%，可用 <strong>48.35 GiB</strong>，减少0.66 MiB，/data/models和/tmp共用此盘未重复计数。本地归档盘53%，可用 <strong>877.4 GiB</strong>，基本不变。</p>
+<p>A目录0.761 GiB（不变），B目录0.423 GiB（增加0.189 GiB），C约5KiB。剩余4365正式记录、228627输出token，按长度估计压缩产物2.01 GiB；C采用Qwen9B体积代理，尚非Llama实测。含50%最大单条余量及C预检100MiB，预留 <strong>5.47 GiB</strong>（非硬上界），现有空间大于该预算＋15GiB余量。文件和下载副本的本地归档峰值预算13.3 GiB。</p>
+<p>当前净消耗约0.39 GiB/小时，按该趋势耗尽尚需324小时，晚于队列ETA。<strong>当前磁盘无危险，不需要清理。</strong></p>
+<h5 id="_26">负载</h5>
+<p>CPU44逻辑核，短采样忙碌 <strong>4.6%</strong>，load <strong>2.07/2.05/2.01</strong>；可用RAM <strong>462.3 GiB</strong>，无Swap。</p>
+<p>GPU0：28%、11235/97871MiB（11.0/95.6GiB）、40°C；GPU1：27%、10575/97871MiB（10.3/95.6GiB）、35°C。均运行4B深层采集；实际GPU进程及worker命令已保存快照。</p>
+<p><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0533.remote.json">远端快照</a> · <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0533.summary.json">ETA与空间计算</a></p>
+<hr />
+<h3 id="142026-10-28-0604">原件 14：2026-10-28 06:04（北京时间）内部轨迹巡检</h3>
+<p>原路径：<code>experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0604.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0604.zh-CN.md">固定提交原文</a> · <a href="../library/3b5e9306a696d834.html">单独阅读副本</a>；SHA-256：<code>3b5e9306a696d834ca32a3d6dd981b9db5c2f5236d394ddeb677d4803bfd5240</code>。</p>
+<hr />
+<h4 id="2026-10-28-0604">2026-10-28 06:04（北京时间）内部轨迹巡检</h4>
+<p>只读一次巡检并有限修正监控字段兼容；没有启动/停止/重跑实验或修改远端文件。A/B/C身份与授权、CPU收据、已完成worker退出码/收据哈希核对通过；新正式记录的JSON哈希和验收标志通过，不重复解压大型trace或重hash模型。</p>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th style="text-align: right;">已完成</th>
+<th>状态</th>
+<th style="text-align: right;">本轮增量</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A：原始轨迹</td>
+<td style="text-align: right;">2152/2152</td>
+<td>completed</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>B：前六层补齐</td>
+<td style="text-align: right;">608/608</td>
+<td>completed</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>B：4B L6–L31</td>
+<td style="text-align: right;">1008/3952（525+483）</td>
+<td>running</td>
+<td style="text-align: right;">501（238+263）</td>
+</tr>
+<tr>
+<td>C：Llama前六层</td>
+<td style="text-align: right;">0/920</td>
+<td>waiting，GPU预检未开始</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>唯一正式合计</td>
+<td style="text-align: right;">3768/7632</td>
+<td>49.4%</td>
+<td style="text-align: right;">+501</td>
+</tr>
+</tbody>
+</table>
+<p>Qwen2B/4B/9B前六层各920条已完成。当前两个worker均进行到L12的不同既有通道，不代表L12已全部完成。最新记录距快照1.6/2.7秒，PID2327488/2327489命令匹配；B父PID2295050、C等待父PID2326329实例身份一致。所有已完成worker退出0；未发现失活、OOM、写盘错误或其他失败。</p>
+<h5 id="eta_4">ETA</h5>
+<p>A、B前六层剩余0。4B全层剩余约194.0–223.9分钟，Qwen预计09:18–09:48结束。C自身GPU预检及正式采集尚未开始，继续使用未实测60–90分钟追加预算。总剩余254.0–313.9分钟，预计10:18–11:18结束；不含接图与研究分析。</p>
+<p>本轮4B拟合0.1871+0.13151×输出token秒，基于1928正式记录；用已知剩余来源长度、按较慢卡估算。总体结束窗口与上轮10:19–11:23相比略提前，因运行稳定推进及拟合更新。区间为规划浮动范围，非置信区间或停止期限。</p>
+<h5 id="_27">磁盘</h5>
+<ul>
+<li>/workspace/acupuncture：96%，可用124.70GiB，较上次-0.181GiB。</li>
+<li>/data/models和/tmp同属系统分区：90%，可用48.35GiB，变化-0.0010GiB，只计一次。</li>
+<li>本地归档盘：/dev/disk3s5  1948455240 1000000000 920000000    53% 3407266 9213034720    0%   /System/Volumes/Data；可用877.38GiB，变化+0.000GiB。</li>
+<li>只统计三运行目录：A=0.761GiB，B=0.602GiB，C=5049字节；本轮B增长0.179GiB，A/C无增长。</li>
+<li>剩余产物按长度估算1.65GiB；按实测较大trace加余量预留4.82GiB，Llama仍使用9B代理并另计预检。工作盘高于此预算+15GiB余量，无缺口。本地归档峰值预留12.37GiB。</li>
+<li>当前净消耗趋势约361.9小时才耗尽，远晚于实验ETA；风险判定：当前安全。没有删除文件。</li>
+</ul>
+<h5 id="_28">负载</h5>
+<p>44逻辑核，CPU忙碌4.6%；1/5/15分钟load=[2.11, 2.09, 2.03]。可用RAM=462.3GiB，Swap总量/使用均0。</p>
+<p>GPU0：28%，11235/97871MiB，40℃，PID2327488；GPU1：27%，10575/97871MiB，35℃，PID2327489。两进程均为4B全层采集；无额外Explorer或Llama GPU进程。</p>
+<p>证据：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0604.remote.json">远端只读快照</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0604.summary.json">计算与分片明细</a>。初次监控查询误将B授权按A/C字段读取而退出，修正后成功；这是监控字段兼容问题，不是实验失败。</p>
+<hr />
+<h3 id="152026-10-28-063253">原件 15：2026-10-28 06:32:53（北京时间）内部轨迹巡检</h3>
+<p>原路径：<code>experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0633.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0633.zh-CN.md">固定提交原文</a> · <a href="../library/ca2fd4e9f53aab1b.html">单独阅读副本</a>；SHA-256：<code>ca2fd4e9f53aab1bef8e75db38b850034ea4fcde95292349f0f8cc26d83aeba8</code>。</p>
+<hr />
+<h4 id="2026-10-28-063253">2026-10-28 06:32:53（北京时间）内部轨迹巡检</h4>
+<p>一次只读巡检，未修改远端实验、停止/重启任务或清理文件。A/B/C身份与授权、CPU收据、前驱绑定核对通过；已完成worker退出0、收据哈希匹配；新正式记录JSON哈希及验收标志通过。没有重复解压全部trace或重hash模型。</p>
+<p>正式唯一 <strong>4220/7632（55.3%）</strong>，相较上轮新增 <strong>452</strong>，无重复。B的queue-state比更新较晚的worker收据少1条，采用worker收据计数。</p>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th style="text-align: right;">完成/计划</th>
+<th style="text-align: right;">shard0 / shard1完成</th>
+<th style="text-align: right;">增量</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A 2B</td>
+<td style="text-align: right;">616/616</td>
+<td style="text-align: right;">312 / 304</td>
+<td style="text-align: right;">+0</td>
+<td>completed</td>
+</tr>
+<tr>
+<td>A 4B</td>
+<td style="text-align: right;">616/616</td>
+<td style="text-align: right;">312 / 304</td>
+<td style="text-align: right;">+0</td>
+<td>completed</td>
+</tr>
+<tr>
+<td>A 9B</td>
+<td style="text-align: right;">920/920</td>
+<td style="text-align: right;">464 / 456</td>
+<td style="text-align: right;">+0</td>
+<td>completed</td>
+</tr>
+<tr>
+<td>B 2B补齐L4–L5</td>
+<td style="text-align: right;">304/304</td>
+<td style="text-align: right;">152 / 152</td>
+<td style="text-align: right;">+0</td>
+<td>completed</td>
+</tr>
+<tr>
+<td>B 4B补齐L4–L5</td>
+<td style="text-align: right;">304/304</td>
+<td style="text-align: right;">152 / 152</td>
+<td style="text-align: right;">+0</td>
+<td>completed</td>
+</tr>
+<tr>
+<td>B 4B L6–L31</td>
+<td style="text-align: right;">1460/3952</td>
+<td style="text-align: right;">757 / 703</td>
+<td style="text-align: right;">+452</td>
+<td>running</td>
+</tr>
+<tr>
+<td>C Llama L0–L5</td>
+<td style="text-align: right;">0/920</td>
+<td style="text-align: right;">0 / 0</td>
+<td style="text-align: right;">+0</td>
+<td>waiting</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>4b-full/survey/4b-shard-0：PID2327488；最近记录距快照3.1秒；最后来源4b-L15-N008424-D+1__Q05。</li>
+<li>4b-full/survey/4b-shard-1：PID2327489；最近记录距快照4.0秒；最后来源4b-L15-N005196-D+1__Q07。
+A父进程已正常退出；B父PID2295050与C等待父PID2326329存活、实例匹配。C预检未开始，未轮到阶段无worker收据正常。异常清单：[]。</li>
+</ul>
+<h5 id="eta_5">ETA</h5>
+<p>A剩余0、B前六层剩余0。B的4B全层预计剩165.7–192.2分钟，Qwen预计09:19–09:45完成。C未实测，继续使用含自身预检/加载/终验的60–90分钟规划。总剩余225.7–282.2分钟，预计10:19–11:15结束；接图与研究分析另计。</p>
+<p>依据2380条4B正式记录，成对采集时间拟合为0.1869+0.13133×输出token秒；按已知剩余来源长度、较慢卡估算。沿用上轮开销/浮动方法，未重复计入已完成阶段。上轮整体结束窗口：['2026-10-28 10:18:49.506034+08:00', '2026-10-28 11:18:40.205067+08:00']。窗口变化来自真实剩余token和拟合更新；这是外推浮动区间，不是置信区间、硬上限或停止期限。</p>
+<h5 id="_29">磁盘</h5>
+<ul>
+<li>/workspace/acupuncture：/dev/vdb       2704472449024 2559982178304 133736075264  96% /workspace；可用124.55GiB，变化-0.147GiB。</li>
+<li>/data/models与/tmp共用系统分区，只计一次：/dev/vda2      528175951872 454697910272 51916410880  90% /；可用48.35GiB，变化-0.0005GiB。</li>
+<li>本地归档盘：/dev/disk3s5  1948455240 1000000000 920000000    53% 3407319 9211947200    0%   /System/Volumes/Data；可用877.38GiB，变化+0.000GiB。</li>
+<li>仅统计三运行目录：{"A": 816656611, "B": 802886474, "C": 5049}字节；本轮增长{"A": 0, "B": 156377696, "C": 0}字节。</li>
+<li>剩余压缩产物按输出长度估算1.40GiB；较大案例加余量预留4.27GiB（Llama使用9B代理，未实测），本地归档峰值预留11.56GiB。工作盘高于剩余预算+15GiB余量，未见空间缺口。</li>
+<li>当前净消耗趋势约395.6小时耗尽，远晚于本轮ETA；磁盘危险标志：False。</li>
+</ul>
+<h5 id="_30">服务器负载</h5>
+<p>44逻辑核，短采样CPU忙碌4.7%，load1/5/15分钟=[2.0, 2.03, 2.06]。可用RAM462.3GiB；Swap总量0.0GiB，已用0.0GiB。
+- GPU0：利用率26%，显存10.97/95.58GiB，40℃。
+- GPU1：利用率28%，显存10.33/95.58GiB，35℃。
+实际GPU计算进程：</p>
+<pre><code>GPU-1a1ef3a8-8633-f7f7-cb1d-f2ff18569f5d, 2327488, /workspace/acupuncture/.venv-bench/bin/python, 11228
+GPU-cbae4c04-a3d4-5176-93d0-5bfaf154ca68, 2327489, /workspace/acupuncture/.venv-bench/bin/python, 10570
+</code></pre>
+<p>均属于4B全层轨迹，低利用率不被当作采集失败。</p>
+<p>证据：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0633.remote.json">远端快照</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0633.summary.json">计算与分片明细</a>。当前继续监控，尚未满足A/B/C全部完成条件。</p>
+<hr />
+<h3 id="162026-10-28-070321">原件 16：2026-10-28 07:03:21（北京时间）内部轨迹巡检</h3>
+<p>原路径：<code>experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0703.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0703.zh-CN.md">固定提交原文</a> · <a href="../library/dfd46ad759729157.html">单独阅读副本</a>；SHA-256：<code>dfd46ad759729157f9fd4b1ab4f813b9983e95af67938cd859dd024657da4c9b</code>。</p>
+<hr />
+<h4 id="2026-10-28-070321">2026-10-28 07:03:21（北京时间）内部轨迹巡检</h4>
+<p>一次只读巡检（首次SSH连接被关闭，一次有限重试成功），未修改远端实验、停止/重启任务或清理文件。A/B/C身份与授权、CPU收据、前驱绑定核对通过；已完成worker退出0、收据哈希匹配；新正式记录JSON哈希及验收标志通过。没有重复解压全部trace或重hash模型。</p>
+<p>正式唯一 <strong>4681/7632（61.3%）</strong>，相较上轮新增 <strong>461</strong>，无重复。队列状态与worker收据计数差：{'A': 0, 'B': -1, 'C': 0}；采用更新较晚的worker收据计数。</p>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th style="text-align: right;">完成/计划</th>
+<th style="text-align: right;">shard0 / shard1完成</th>
+<th style="text-align: right;">增量</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A 2B</td>
+<td style="text-align: right;">616/616</td>
+<td style="text-align: right;">312 / 304</td>
+<td style="text-align: right;">+0</td>
+<td>completed</td>
+</tr>
+<tr>
+<td>A 4B</td>
+<td style="text-align: right;">616/616</td>
+<td style="text-align: right;">312 / 304</td>
+<td style="text-align: right;">+0</td>
+<td>completed</td>
+</tr>
+<tr>
+<td>A 9B</td>
+<td style="text-align: right;">920/920</td>
+<td style="text-align: right;">464 / 456</td>
+<td style="text-align: right;">+0</td>
+<td>completed</td>
+</tr>
+<tr>
+<td>B 2B补齐L4–L5</td>
+<td style="text-align: right;">304/304</td>
+<td style="text-align: right;">152 / 152</td>
+<td style="text-align: right;">+0</td>
+<td>completed</td>
+</tr>
+<tr>
+<td>B 4B补齐L4–L5</td>
+<td style="text-align: right;">304/304</td>
+<td style="text-align: right;">152 / 152</td>
+<td style="text-align: right;">+0</td>
+<td>completed</td>
+</tr>
+<tr>
+<td>B 4B L6–L31</td>
+<td style="text-align: right;">1921/3952</td>
+<td style="text-align: right;">983 / 938</td>
+<td style="text-align: right;">+461</td>
+<td>running</td>
+</tr>
+<tr>
+<td>C Llama L0–L5</td>
+<td style="text-align: right;">0/920</td>
+<td style="text-align: right;">0 / 0</td>
+<td style="text-align: right;">+0</td>
+<td>waiting</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>4b-full/survey/4b-shard-0：PID2327488；最近记录距快照12.9秒；最后来源4b-L18-N006642-D+1__Q07。</li>
+<li>4b-full/survey/4b-shard-1：PID2327489；最近记录距快照1.5秒；最后来源4b-L18-N003880-D-0.0625__Q02。
+A父进程已正常退出；B父PID2295050与C等待父PID2326329存活、实例匹配。C预检未开始，未轮到阶段无worker收据正常。异常清单：[]。</li>
+</ul>
+<h5 id="eta_6">ETA</h5>
+<p>A剩余0、B前六层剩余0。B的4B全层预计剩135.1–157.8分钟，Qwen预计09:18–09:41完成。C未实测，继续使用含自身预检/加载/终验的60–90分钟规划。总剩余195.1–247.8分钟，预计10:18–11:11结束；接图与研究分析另计。</p>
+<p>依据2841条4B正式记录，成对采集时间拟合为0.1855+0.13121×输出token秒；按已知剩余来源长度、较慢卡估算。沿用上轮开销/浮动方法，未重复计入已完成阶段。上轮整体结束窗口：['2026-10-28 10:18:37.545014+08:00', '2026-10-28 11:15:04.484658+08:00']。窗口变化来自真实剩余token和拟合更新；这是外推浮动区间，不是置信区间、硬上限或停止期限。</p>
+<h5 id="_31">磁盘</h5>
+<ul>
+<li>/workspace/acupuncture：/dev/vdb       2704472449024 2560133349376 133584904192  96% /workspace；可用124.41GiB，变化-0.141GiB。</li>
+<li>/data/models与/tmp共用系统分区，只计一次：/dev/vda2      528175951872 454698479616 51915841536  90% /；可用48.35GiB，变化-0.0005GiB。</li>
+<li>本地归档盘：/dev/disk3s5  1948455240 1000000000 920000000    53% 3407380 9213309920    0%   /System/Volumes/Data；可用877.38GiB，变化+0.000GiB。</li>
+<li>仅统计三运行目录：{"A": 816656611, "B": 952219718, "C": 5049}字节；本轮增长{"A": 0, "B": 149333244, "C": 0}字节。</li>
+<li>剩余压缩产物按输出长度估算1.15GiB；较大案例加余量预留3.71GiB（Llama使用9B代理，未实测），本地归档峰值预留10.71GiB。工作盘高于剩余预算+15GiB余量，未见空间缺口。</li>
+<li>当前净消耗趋势约448.8小时耗尽，远晚于本轮ETA；磁盘危险标志：False。</li>
+</ul>
+<h5 id="_32">服务器负载</h5>
+<p>44逻辑核，短采样CPU忙碌4.7%，load1/5/15分钟=[2.0, 2.0, 2.0]。可用RAM462.3GiB；Swap总量0.0GiB，已用0.0GiB。
+- GPU0：利用率29%，显存10.97/95.58GiB，40℃。
+- GPU1：利用率28%，显存10.33/95.58GiB，35℃。
+实际GPU计算进程：</p>
+<pre><code>GPU-1a1ef3a8-8633-f7f7-cb1d-f2ff18569f5d, 2327488, /workspace/acupuncture/.venv-bench/bin/python, 11230
+GPU-cbae4c04-a3d4-5176-93d0-5bfaf154ca68, 2327489, /workspace/acupuncture/.venv-bench/bin/python, 10570
+</code></pre>
+<p>均属于4B全层轨迹，低利用率不被当作采集失败。</p>
+<p>证据：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0703.remote.json">远端快照</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0703.summary.json">计算与分片明细</a>。当前继续监控，尚未满足A/B/C全部完成条件。</p>
+<hr />
+<h3 id="172026-10-28-073250">原件 17：2026-10-28 07:32:50（北京时间）内部轨迹巡检</h3>
+<p>原路径：<code>experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0733.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0733.zh-CN.md">固定提交原文</a> · <a href="../library/defac3a6cc3fcd95.html">单独阅读副本</a>；SHA-256：<code>defac3a6cc3fcd95c030a7de75b5f48eacd9c9b5f782dfe3a4259d5739a4b1f1</code>。</p>
+<hr />
+<h4 id="2026-10-28-073250">2026-10-28 07:32:50（北京时间）内部轨迹巡检</h4>
+<p>一次只读巡检，未修改远端实验、停止/重启任务或清理文件。A/B/C身份与授权、CPU收据、前驱绑定核对通过；已完成worker退出0、收据哈希匹配；新正式记录JSON哈希及验收标志通过。没有重复解压全部trace或重hash模型。</p>
+<p>正式唯一 <strong>5221/7632（68.4%）</strong>，相较上轮新增 <strong>540</strong>，无重复。队列状态与worker收据计数差：{'A': 0, 'B': -4, 'C': 0}；采用更新较晚的worker收据计数。</p>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th style="text-align: right;">完成/计划</th>
+<th style="text-align: right;">shard0 / shard1完成</th>
+<th style="text-align: right;">增量</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A 2B</td>
+<td style="text-align: right;">616/616</td>
+<td style="text-align: right;">312 / 304</td>
+<td style="text-align: right;">+0</td>
+<td>completed</td>
+</tr>
+<tr>
+<td>A 4B</td>
+<td style="text-align: right;">616/616</td>
+<td style="text-align: right;">312 / 304</td>
+<td style="text-align: right;">+0</td>
+<td>completed</td>
+</tr>
+<tr>
+<td>A 9B</td>
+<td style="text-align: right;">920/920</td>
+<td style="text-align: right;">464 / 456</td>
+<td style="text-align: right;">+0</td>
+<td>completed</td>
+</tr>
+<tr>
+<td>B 2B补齐L4–L5</td>
+<td style="text-align: right;">304/304</td>
+<td style="text-align: right;">152 / 152</td>
+<td style="text-align: right;">+0</td>
+<td>completed</td>
+</tr>
+<tr>
+<td>B 4B补齐L4–L5</td>
+<td style="text-align: right;">304/304</td>
+<td style="text-align: right;">152 / 152</td>
+<td style="text-align: right;">+0</td>
+<td>completed</td>
+</tr>
+<tr>
+<td>B 4B L6–L31</td>
+<td style="text-align: right;">2461/3952</td>
+<td style="text-align: right;">1260 / 1201</td>
+<td style="text-align: right;">+540</td>
+<td>running</td>
+</tr>
+<tr>
+<td>C Llama L0–L5</td>
+<td style="text-align: right;">0/920</td>
+<td style="text-align: right;">0 / 0</td>
+<td style="text-align: right;">+0</td>
+<td>waiting</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>4b-full/survey/4b-shard-0：PID2327488；最近记录距快照5.3秒；最后来源4b-L22-N008997-D+0.0625__Q04。</li>
+<li>4b-full/survey/4b-shard-1：PID2327489；最近记录距快照1.9秒；最后来源4b-L21-N008719-D+1__Q01。
+A父进程已正常退出；B父PID2295050与C等待父PID2326329存活、实例匹配。C预检未开始，未轮到阶段无worker收据正常。异常清单：[]。</li>
+</ul>
+<h5 id="eta_7">ETA</h5>
+<p>A剩余0、B前六层剩余0。B的4B全层预计剩105.5–124.7分钟，Qwen预计09:18–09:38完成。C未实测，继续使用含自身预检/加载/终验的60–90分钟规划。总剩余165.5–214.7分钟，预计10:18–11:08结束；接图与研究分析另计。</p>
+<p>依据3381条4B正式记录，成对采集时间拟合为0.1809+0.13116×输出token秒；按已知剩余来源长度、较慢卡估算。沿用上轮开销/浮动方法，未重复计入已完成阶段。上轮整体结束窗口：['2026-10-28 10:18:26.309629+08:00', '2026-10-28 11:11:12.476922+08:00']。窗口变化来自真实剩余token和拟合更新；这是外推浮动区间，不是置信区间、硬上限或停止期限。</p>
+<h5 id="_33">磁盘</h5>
+<ul>
+<li>/workspace/acupuncture：/dev/vdb       2704472449024 2560274554880 133443698688  96% /workspace；可用124.28GiB，变化-0.132GiB。</li>
+<li>/data/models与/tmp共用系统分区，只计一次：/dev/vda2      528175951872 454699081728 51915239424  90% /；可用48.35GiB，变化-0.0006GiB。</li>
+<li>本地归档盘：/dev/disk3s5  1948455240 1000000000 920000000    53% 3407534 9211849560    0%   /System/Volumes/Data；可用877.38GiB，变化+0.000GiB。</li>
+<li>仅统计三运行目录：{"A": 816656611, "B": 1091234779, "C": 5049}字节；本轮增长{"A": 0, "B": 139015061, "C": 0}字节。</li>
+<li>剩余压缩产物按输出长度估算0.94GiB；较大案例加余量预留3.05GiB（Llama使用9B代理，未实测），本地归档峰值预留9.64GiB。工作盘高于剩余预算+15GiB余量，未见空间缺口。</li>
+<li>当前净消耗趋势约464.3小时耗尽，远晚于本轮ETA；磁盘危险标志：False。</li>
+</ul>
+<h5 id="_34">服务器负载</h5>
+<p>44逻辑核，短采样CPU忙碌4.6%，load1/5/15分钟=[2.25, 2.1, 2.02]。可用RAM462.4GiB；Swap总量0.0GiB，已用0.0GiB。
+- GPU0：利用率27%，显存10.97/95.58GiB，40℃。
+- GPU1：利用率28%，显存10.33/95.58GiB，35℃。
+实际GPU计算进程：</p>
+<pre><code>GPU-1a1ef3a8-8633-f7f7-cb1d-f2ff18569f5d, 2327488, /workspace/acupuncture/.venv-bench/bin/python, 11230
+GPU-cbae4c04-a3d4-5176-93d0-5bfaf154ca68, 2327489, /workspace/acupuncture/.venv-bench/bin/python, 10570
+</code></pre>
+<p>均属于4B全层轨迹，低利用率不被当作采集失败。</p>
+<p>证据：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0733.remote.json">远端快照</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0733.summary.json">计算与分片明细</a>。当前继续监控，尚未满足A/B/C全部完成条件。</p>
+<hr />
+<h3 id="182026-10-28-083525">原件 18：2026-10-28 08:35:25（北京时间）内部轨迹巡检</h3>
+<p>原路径：<code>experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0835.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0835.zh-CN.md">固定提交原文</a> · <a href="../library/08668602aeb9868d.html">单独阅读副本</a>；SHA-256：<code>08668602aeb9868d13f164bd8f43c2945c0687f1c6dbb723c583ea3edbeb0641</code>。</p>
+<hr />
+<h4 id="2026-10-28-083525">2026-10-28 08:35:25（北京时间）内部轨迹巡检</h4>
+<p>一次只读巡检，未修改远端实验、停止/重启任务或清理文件。A/B/C身份与授权、CPU收据、前驱绑定核对通过；已完成worker退出0、收据哈希匹配；新正式记录JSON哈希及验收标志通过。没有重复解压全部trace或重hash模型。</p>
+<p>正式唯一 <strong>6324/7632（82.9%）</strong>，相较上轮新增 <strong>1103</strong>，无重复。队列状态与worker收据计数差：{'A': 0, 'B': -2, 'C': 0}；采用更新较晚的worker收据计数。</p>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th style="text-align: right;">完成/计划</th>
+<th style="text-align: right;">shard0 / shard1完成</th>
+<th style="text-align: right;">增量</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A 2B</td>
+<td style="text-align: right;">616/616</td>
+<td style="text-align: right;">312 / 304</td>
+<td style="text-align: right;">+0</td>
+<td>completed</td>
+</tr>
+<tr>
+<td>A 4B</td>
+<td style="text-align: right;">616/616</td>
+<td style="text-align: right;">312 / 304</td>
+<td style="text-align: right;">+0</td>
+<td>completed</td>
+</tr>
+<tr>
+<td>A 9B</td>
+<td style="text-align: right;">920/920</td>
+<td style="text-align: right;">464 / 456</td>
+<td style="text-align: right;">+0</td>
+<td>completed</td>
+</tr>
+<tr>
+<td>B 2B补齐L4–L5</td>
+<td style="text-align: right;">304/304</td>
+<td style="text-align: right;">152 / 152</td>
+<td style="text-align: right;">+0</td>
+<td>completed</td>
+</tr>
+<tr>
+<td>B 4B补齐L4–L5</td>
+<td style="text-align: right;">304/304</td>
+<td style="text-align: right;">152 / 152</td>
+<td style="text-align: right;">+0</td>
+<td>completed</td>
+</tr>
+<tr>
+<td>B 4B L6–L31</td>
+<td style="text-align: right;">3564/3952</td>
+<td style="text-align: right;">1814 / 1750</td>
+<td style="text-align: right;">+1103</td>
+<td>running</td>
+</tr>
+<tr>
+<td>C Llama L0–L5</td>
+<td style="text-align: right;">0/920</td>
+<td style="text-align: right;">0 / 0</td>
+<td style="text-align: right;">+0</td>
+<td>waiting</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>4b-full/survey/4b-shard-0：PID2327488；最近记录距快照2.3秒；最后来源4b-L29-N004388-D-0.5__Q06。</li>
+<li>4b-full/survey/4b-shard-1：PID2327489；最近记录距快照1.6秒；最后来源4b-L29-N000197-D+1__Q06。
+A父进程已正常退出；B父PID2295050与C等待父PID2326329存活、实例匹配。C预检未开始，未轮到阶段无worker收据正常。异常清单：[]。</li>
+</ul>
+<h5 id="eta_8">ETA</h5>
+<p>A剩余0、B前六层剩余0。B的4B全层预计剩42.7–54.4分钟，Qwen预计09:18–09:30完成。C未实测，继续使用含自身预检/加载/终验的60–90分钟规划。总剩余102.7–144.4分钟，预计10:18–11:00结束；接图与研究分析另计。</p>
+<p>依据4484条4B正式记录，成对采集时间拟合为0.1723+0.13106×输出token秒；按已知剩余来源长度、较慢卡估算。沿用上轮开销/浮动方法，未重复计入已完成阶段。上轮整体结束窗口：['2026-10-28 10:18:18.917782+08:00', '2026-10-28 11:07:31.954860+08:00']。窗口变化来自真实剩余token和拟合更新；这是外推浮动区间，不是置信区间、硬上限或停止期限。</p>
+<h5 id="_35">磁盘</h5>
+<ul>
+<li>/workspace/acupuncture：/dev/vdb       2704472449024 2560505765888 133212487680  96% /workspace；可用124.06GiB，变化-0.215GiB。</li>
+<li>/data/models与/tmp共用系统分区，只计一次：/dev/vda2      528175951872 454700318720 51914002432  90% /；可用48.35GiB，变化-0.0012GiB。</li>
+<li>本地归档盘：/dev/disk3s5  1948455240 1000000000 920000000    53% 3407656 9211726040    0%   /System/Volumes/Data；可用877.38GiB，变化+0.000GiB。</li>
+<li>仅统计三运行目录：{"A": 816656611, "B": 1318089758, "C": 5049}字节；本轮增长{"A": 0, "B": 226854979, "C": 0}字节。</li>
+<li>剩余压缩产物按输出长度估算0.55GiB；较大案例加余量预留1.69GiB（Llama使用9B代理，未实测），本地归档峰值预留7.36GiB。工作盘高于剩余预算+15GiB余量，未见空间缺口。</li>
+<li>当前净消耗趋势约600.9小时耗尽，远晚于本轮ETA；磁盘危险标志：False。</li>
+</ul>
+<h5 id="_36">服务器负载</h5>
+<p>44逻辑核，短采样CPU忙碌4.7%，load1/5/15分钟=[2.08, 2.02, 2.01]。可用RAM462.3GiB；Swap总量0.0GiB，已用0.0GiB。
+- GPU0：利用率27%，显存10.97/95.58GiB，40℃。
+- GPU1：利用率27%，显存10.33/95.58GiB，35℃。
+实际GPU计算进程：</p>
+<pre><code>GPU-1a1ef3a8-8633-f7f7-cb1d-f2ff18569f5d, 2327488, /workspace/acupuncture/.venv-bench/bin/python, 11230
+GPU-cbae4c04-a3d4-5176-93d0-5bfaf154ca68, 2327489, /workspace/acupuncture/.venv-bench/bin/python, 10570
+</code></pre>
+<p>均属于4B全层轨迹，低利用率不被当作采集失败。</p>
+<p>证据：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0835.remote.json">远端快照</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0835.summary.json">计算与分片明细</a>。当前继续监控，尚未满足A/B/C全部完成条件。</p>
+<hr />
+<h3 id="192026-10-28-094048">原件 19：2026-10-28 09:40:48（北京时间）内部轨迹巡检</h3>
+<p>原路径：<code>experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0940.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0940.zh-CN.md">固定提交原文</a> · <a href="../library/572aacb553a83cfe.html">单独阅读副本</a>；SHA-256：<code>572aacb553a83cfed64d9c586c76ed583e6e9fcf2fb45c0b5adc5d0cfe41a42d</code>。</p>
+<hr />
+<h4 id="2026-10-28-094048">2026-10-28 09:40:48（北京时间）内部轨迹巡检</h4>
+<p>Qwen全部6,712条完成，Llama自身GPU预检通过后正在正式采集。只读一次巡检，没有停任务、重启、重跑或改动合同/代码，没有删除文件。</p>
+<p>正式唯一 <strong>7405/7632（97.0%）</strong>，较上轮新增 <strong>1081（Qwen388＋Llama693）</strong>，无重复。queue-state与收据计数差{'A': 0, 'B': 0, 'C': -2}；采用较新worker收据。</p>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th style="text-align: right;">完成/计划</th>
+<th style="text-align: right;">shard0 / shard1完成</th>
+<th style="text-align: right;">增量</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A 2B</td>
+<td style="text-align: right;">616/616</td>
+<td style="text-align: right;">312 / 304</td>
+<td style="text-align: right;">+0</td>
+<td>completed</td>
+</tr>
+<tr>
+<td>A 4B</td>
+<td style="text-align: right;">616/616</td>
+<td style="text-align: right;">312 / 304</td>
+<td style="text-align: right;">+0</td>
+<td>completed</td>
+</tr>
+<tr>
+<td>A 9B</td>
+<td style="text-align: right;">920/920</td>
+<td style="text-align: right;">464 / 456</td>
+<td style="text-align: right;">+0</td>
+<td>completed</td>
+</tr>
+<tr>
+<td>B 2B补齐L4–L5</td>
+<td style="text-align: right;">304/304</td>
+<td style="text-align: right;">152 / 152</td>
+<td style="text-align: right;">+0</td>
+<td>completed</td>
+</tr>
+<tr>
+<td>B 4B补齐L4–L5</td>
+<td style="text-align: right;">304/304</td>
+<td style="text-align: right;">152 / 152</td>
+<td style="text-align: right;">+0</td>
+<td>completed</td>
+</tr>
+<tr>
+<td>B 4B L6–L31</td>
+<td style="text-align: right;">3952/3952</td>
+<td style="text-align: right;">1976 / 1976</td>
+<td style="text-align: right;">+388</td>
+<td>completed</td>
+</tr>
+<tr>
+<td>C Llama L0–L5</td>
+<td style="text-align: right;">693/920</td>
+<td style="text-align: right;">360 / 333</td>
+<td style="text-align: right;">+693</td>
+<td>running</td>
+</tr>
+</tbody>
+</table>
+<h5 id="_37">队列与验收</h5>
+<ul>
+<li>A于04:22:55完成；B于2026-10-28 09:08:35.177131+08:00完成4,560条、六worker均退出0且收据SHA匹配。A/B父进程已退出，这是正常完成。</li>
+<li>C前驱验收passed；Llama自身两worker各7预检案例全部passed/退出0，14案例/38生成流不计入正式分母。预检通过时间2026-10-28 09:10:20.866086+08:00；正式worker随后启动，未用Qwen预检替代。</li>
+<li>C正式360/464＋333/456＝693/920；父PID2326329存活且start_ticks匹配。两个worker命令/PID匹配；记录JSON哈希、来源token一致及hook清除验收标志通过。</li>
+<li>survey/llama31-8b-instruct-shard-0：PID2386839，最近记录距快照5.6秒；最后来源llama31-8b-instruct-L04-N009472-D+0.5__Q08。</li>
+<li>survey/llama31-8b-instruct-shard-1：PID2386840，最近记录距快照3.2秒；最后来源llama31-8b-instruct-L04-N008892-D+1__Q05。</li>
+<li>异常清单：[]。本轮不解压/重hash所有大型trace或模型；完整trace验收由冻结worker与队列执行。</li>
+</ul>
+<h5 id="eta_9">ETA</h5>
+<p>A剩余0，B前六层剩余0，B 4B全层剩余0。C与整个队列预计剩 <strong>14.4–21.1分钟</strong>，北京时间 <strong>09:55–10:02</strong> 完成。</p>
+<p>现在使用Llama本模型693条正式记录：成对采集秒=0.1778+0.10553×输出token。按剩余来源的真实输出长度计算两片，并取较慢片；纯采集约11.4分钟。模型加载/预检/排队已完成，不重复计入；下限加3分钟终验，上限为剩余计算×1.15加8分钟。此区间为浮动预算，非置信区间或硬上限。可视化接图、归档传输和研究分析另计。</p>
+<p>比上轮10:18–11:00提前：Qwen于09:08完成，终验少于原预留；Llama预检与加载已完成，693条真实测量替代原60–90分钟规划区间。不是省略记录或验收。</p>
+<h5 id="_38">磁盘</h5>
+<ul>
+<li>工作盘：/dev/vdb       2704472449024 2560978751488 132739502080  96% /workspace；可用123.62GiB，本轮变化-0.441GiB。</li>
+<li>/data/models与/tmp同分区只计一次：/dev/vda2      528175951872 454701842432 51912478720  90% /；可用48.35GiB，变化-0.0014GiB。</li>
+<li>本地归档盘：/dev/disk3s5  1948455240 1000000000 920000000    53% 3407753 9211499880    0%   /System/Volumes/Data；可用877.38GiB，变化+0.000GiB。</li>
+<li>三运行目录大小（字节）：{"A": 816656611, "B": 1383560016, "C": 402849367}；增量：{"A": 0, "B": 65470258, "C": 402844318}。未对服务器其他目录du。</li>
+<li>剩余227条产物按本模型实测压缩大小与源输出长度估算0.12GiB，较大案例加余量预留0.33GiB，本地归档峰值预留5.51GiB；工作盘超过此需求+15GiB，无缺口。</li>
+<li>本轮净消耗趋势约305.8小时耗尽，晚于ETA；风险标志False。</li>
+</ul>
+<h5 id="_39">负载</h5>
+<p>44逻辑核，CPU忙碌4.7%；load1/5/15分钟=[2.0, 2.01, 2.0]；可用RAM463.0GiB；Swap总量/使用0。
+- GPU0：利用率32%，显存16.54/95.58GiB，42℃。
+- GPU1：利用率35%，显存16.54/95.58GiB，37℃。
+两GPU实际PID2386839/2386840均属于Llama正式轨迹采集；Qwen已退出、无Explorer进程。</p>
+<p>证据：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0940.remote.json">快照</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0940.summary.json">分片/拟合/空间计算</a>。尚未全部完成，继续每小时监控；不在两次唤醒间等待。</p>
+<hr />
+<h3 id="20">原件 20：内部轨迹队列最终巡检：全部完成</h3>
+<p>原路径：<code>experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T1035.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T1035.zh-CN.md">固定提交原文</a> · <a href="../library/13dc88a916afdade.html">单独阅读副本</a>；SHA-256：<code>13dc88a916afdadeba04c1667b4b5f250151ed28985f6b407e055a37e54c04d5</code>。</p>
+<hr />
+<h4 id="_40">内部轨迹队列最终巡检：全部完成</h4>
+<p>核验时间：2026-10-28 10:36:04，北京时间。最后一段于 <strong>2026-10-28T09:53:15.525270+08:00</strong> 完成。</p>
+<p><strong>7,632/7,632条正式唯一记录，较上次新增227条；缺失0、额外0、重复0。</strong> A/B/C全部通过终验，所有正式和预检worker退出0，父进程已退出，两GPU已释放。每小时监控已通过应用工具删除（<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T1035.automation-closeout.json">删除确认</a>）。</p>
+<table>
+<thead>
+<tr>
+<th>模型</th>
+<th>注入覆盖</th>
+<th style="text-align: right;">正式唯一记录</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Qwen3.5-2B</td>
+<td>L0–L5</td>
+<td style="text-align: right;">920</td>
+</tr>
+<tr>
+<td>Qwen3.5-4B</td>
+<td>L0–L31</td>
+<td style="text-align: right;">4,872</td>
+</tr>
+<tr>
+<td>Qwen3.5-9B</td>
+<td>L0–L5</td>
+<td style="text-align: right;">920</td>
+</tr>
+<tr>
+<td>Llama-3.1-8B-Instruct</td>
+<td>L0–L5</td>
+<td style="text-align: right;">920</td>
+</tr>
+<tr>
+<td>合计</td>
+<td>各记录观察模型全部层</td>
+<td style="text-align: right;"><strong>7,632</strong></td>
+</tr>
+</tbody>
+</table>
+<h5 id="_41">阶段与验收</h5>
+<ul>
+<li>A完成2,152条，结束时间2026-10-28T04:22:55.337132+08:00。</li>
+<li>B完成4,560条，结束时间2026-10-28T09:08:35.177131+08:00；其中前六层补齐608条，4B L6–L31共3,952条。</li>
+<li>C完成920条（464/456两片），结束时间2026-10-28T09:53:15.525270+08:00。自身14案例/38流GPU预检通过后才启动正式采集；预检和B的16条校准引用不计入正式分母。</li>
+<li>与三份本地冻结来源清单逐ID对齐；全部记录JSON哈希和验收标志、身份/授权、元数据/小资产哈希、存档权重前后哈希一致、hook清理、收据哈希与退出码核对通过。</li>
+<li>本次不重复下载全部轨迹，不重hash模型或解压所有trace。冻结worker及队列的终验已经执行完整轨迹检查；本次核对其验收证据与现存记录。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>worker</th>
+<th style="text-align: right;">完成/计划</th>
+<th>状态</th>
+<th style="text-align: right;">exit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A survey/2b-shard-0</td>
+<td style="text-align: right;">312/312</td>
+<td>completed</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>A survey/2b-shard-1</td>
+<td style="text-align: right;">304/304</td>
+<td>completed</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>A survey/4b-shard-0</td>
+<td style="text-align: right;">312/312</td>
+<td>completed</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>A survey/4b-shard-1</td>
+<td style="text-align: right;">304/304</td>
+<td>completed</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>A survey/9b-shard-0</td>
+<td style="text-align: right;">464/464</td>
+<td>completed</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>A survey/9b-shard-1</td>
+<td style="text-align: right;">456/456</td>
+<td>completed</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>B 4b-full/survey/4b-shard-0</td>
+<td style="text-align: right;">1976/1976</td>
+<td>completed</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>B 4b-full/survey/4b-shard-1</td>
+<td style="text-align: right;">1976/1976</td>
+<td>completed</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>B six-layer/survey/2b-shard-0</td>
+<td style="text-align: right;">152/152</td>
+<td>completed</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>B six-layer/survey/2b-shard-1</td>
+<td style="text-align: right;">152/152</td>
+<td>completed</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>B six-layer/survey/4b-shard-0</td>
+<td style="text-align: right;">152/152</td>
+<td>completed</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>B six-layer/survey/4b-shard-1</td>
+<td style="text-align: right;">152/152</td>
+<td>completed</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>C survey/llama31-8b-instruct-shard-0</td>
+<td style="text-align: right;">464/464</td>
+<td>completed</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>C survey/llama31-8b-instruct-shard-1</td>
+<td style="text-align: right;">456/456</td>
+<td>completed</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+<p>A、B前六层、B全层、C和整体剩余ETA均为0。实际09:53结束，略早于上轮09:55–10:02外推区间。</p>
+<h5 id="_42">磁盘与归档</h5>
+<ul>
+<li>工作盘：/dev/vdb       2704472449024 2561102835712 132615417856  96% /workspace；可用123.51GiB，较上轮-0.116GiB。</li>
+<li>/data/models和/tmp共用系统分区，只计一次：/dev/vda2      528175951872 454702616576 51911704576  90% /；可用48.35GiB，变化-0.0007GiB。</li>
+<li>本地归档盘：/dev/disk3s5  1948455240 1000000000 920000000    53% 3407826 9211177280    0%   /System/Volumes/Data；可用877.38GiB，变化+0.000GiB。</li>
+<li>仅统计三运行目录：{"A": 816656611, "B": 1383560016, "C": 525923777}字节；本轮增长{"A": 0, "B": 0, "C": 123074410}字节。合计2.54GiB。</li>
+<li>剩余采集产物需求0；后续本地归档按两份占用预留5.08GiB。当前磁盘安全，无缺口，没有删除缓存或结果。</li>
+</ul>
+<h5 id="_43">当前服务器负载</h5>
+<p>44逻辑核，CPU忙碌0.023%；load1/5/15分钟=[0.06, 0.04, 0.11]；可用RAM466.3GiB；Swap总量/使用均0。</p>
+<p>两张H20利用率均0%，显存各3MiB/97,871MiB，温度32℃/30℃；无GPU计算进程。A/B/C父进程和worker均已退出，不再占用显存。</p>
+<h5 id="_44">保存范围</h5>
+<p>本报告确认服务器内部轨迹采集与运行验收完成。大型结果保留于三个远端execution-r01目录；本轮只保存小型监控证据，没有执行全量本地归档或三维接图。</p>
+<p><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T1035.remote.json">只读快照</a> · <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T1035.summary.json">最终计数与验收摘要</a></p>
+<hr />
+<h2 id="_45">时间、运行与停止收据索引</h2>
+<p>下面是所收集JSON的原有时间字段与状态，不把预计结束时间当实际完成时间。未列时间的文件仍有原件链接。完整JSON全部保存在原文归档，不能以此索引中的标量代替完整嵌套内容。</p>
+<table>
+<thead>
+<tr>
+<th>原件</th>
+<th>原记录状态/阶段</th>
+<th>原时间字段（原时区）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/analysis-early-r01/summary.json">analysis-early-r01/summary.json</a></td>
+<td>{}</td>
+<td>{"created_utc": "2026-10-28T06:56:06.145428+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/archive-r01/combined-verification.json">archive-r01/combined-verification.json</a></td>
+<td>{"status": "verified"}</td>
+<td>{"verified_utc": "2026-10-28T06:23:38.731245+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/archive-r01/execution-r01/4b-full/survey/4b-shard-0/receipt.json">archive-r01/execution-r01/4b-full/survey/4b-shard-0/receipt.json</a></td>
+<td>{"status": "completed", "mode": "survey"}</td>
+<td>{"started_utc": "2026-10-27T21:04:34.949112+00:00", "updated_utc": "2026-10-28T00:56:15.350760+00:00", "ended_utc": "2026-10-28T00:56:17.461058+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/archive-r01/execution-r01/4b-full/survey/4b-shard-1/receipt.json">archive-r01/execution-r01/4b-full/survey/4b-shard-1/receipt.json</a></td>
+<td>{"status": "completed", "mode": "survey"}</td>
+<td>{"started_utc": "2026-10-27T21:04:34.958289+00:00", "updated_utc": "2026-10-28T01:05:57.519295+00:00", "ended_utc": "2026-10-28T01:05:59.657937+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/archive-r01/execution-r01/six-layer/survey/2b-shard-0/receipt.json">archive-r01/execution-r01/six-layer/survey/2b-shard-0/receipt.json</a></td>
+<td>{"status": "completed", "mode": "survey"}</td>
+<td>{"started_utc": "2026-10-27T20:44:02.449472+00:00", "updated_utc": "2026-10-27T21:03:04.336834+00:00", "ended_utc": "2026-10-27T21:03:04.894783+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/archive-r01/execution-r01/six-layer/survey/2b-shard-1/receipt.json">archive-r01/execution-r01/six-layer/survey/2b-shard-1/receipt.json</a></td>
+<td>{"status": "completed", "mode": "survey"}</td>
+<td>{"started_utc": "2026-10-27T20:44:02.449561+00:00", "updated_utc": "2026-10-27T21:04:17.303714+00:00", "ended_utc": "2026-10-27T21:04:17.862342+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/archive-r01/execution-r01/six-layer/survey/4b-shard-0/receipt.json">archive-r01/execution-r01/six-layer/survey/4b-shard-0/receipt.json</a></td>
+<td>{"status": "completed", "mode": "survey"}</td>
+<td>{"started_utc": "2026-10-27T20:23:49.777827+00:00", "updated_utc": "2026-10-27T20:43:42.376041+00:00", "ended_utc": "2026-10-27T20:43:44.524609+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/archive-r01/execution-r01/six-layer/survey/4b-shard-1/receipt.json">archive-r01/execution-r01/six-layer/survey/4b-shard-1/receipt.json</a></td>
+<td>{"status": "completed", "mode": "survey"}</td>
+<td>{"started_utc": "2026-10-27T20:23:49.776918+00:00", "updated_utc": "2026-10-27T20:40:04.298668+00:00", "ended_utc": "2026-10-27T20:40:06.527684+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/archive-r01/verification.json">archive-r01/verification.json</a></td>
+<td>{"status": "verified"}</td>
+<td>{"verified_utc": "2026-10-28T06:23:38.571807+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0330.summary.json">monitoring/20261028T0330.summary.json</a></td>
+<td>{}</td>
+<td>{"snapshot_time_beijing": "2026-10-28T03:29:04.809835+08:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0400.summary.json">monitoring/20261028T0400.summary.json</a></td>
+<td>{}</td>
+<td>{"snapshot_time_beijing": "2026-10-28T03:58:18.090111+08:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0430.summary.json">monitoring/20261028T0430.summary.json</a></td>
+<td>{}</td>
+<td>{"snapshot_time_beijing": "2026-10-28T04:28:24.006900+08:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0503.summary.json">monitoring/20261028T0503.summary.json</a></td>
+<td>{}</td>
+<td>{"snapshot_time_beijing": "2026-10-28T05:03:36.051184+08:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0533.summary.json">monitoring/20261028T0533.summary.json</a></td>
+<td>{}</td>
+<td>{"snapshot_time_beijing": "2026-10-28T05:33:20.557780+08:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0604.summary.json">monitoring/20261028T0604.summary.json</a></td>
+<td>{}</td>
+<td>{"snapshot_time_beijing": "2026-10-28T06:04:47.014095+08:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0633.summary.json">monitoring/20261028T0633.summary.json</a></td>
+<td>{}</td>
+<td>{"snapshot_time_beijing": "2026-10-28T06:32:53.047979+08:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0703.summary.json">monitoring/20261028T0703.summary.json</a></td>
+<td>{}</td>
+<td>{"snapshot_time_beijing": "2026-10-28T07:03:21.582183+08:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0733.summary.json">monitoring/20261028T0733.summary.json</a></td>
+<td>{}</td>
+<td>{"snapshot_time_beijing": "2026-10-28T07:32:50.275467+08:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0835.summary.json">monitoring/20261028T0835.summary.json</a></td>
+<td>{}</td>
+<td>{"snapshot_time_beijing": "2026-10-28T08:35:25.053919+08:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0940.summary.json">monitoring/20261028T0940.summary.json</a></td>
+<td>{}</td>
+<td>{"snapshot_time_beijing": "2026-10-28T09:40:48.047099+08:00", "qwen_completed_beijing": "2026-10-28 09:08:35.177131+08:00", "llama_preflight_accepted_beijing": "2026-10-28 09:10:20.866086+08:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T1035.summary.json">monitoring/20261028T1035.summary.json</a></td>
+<td>{"status": "completed_verified"}</td>
+<td>{"snapshot_time_beijing": "2026-10-28T10:36:04.875863+08:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/readiness/queue-launch-r01.json">readiness/queue-launch-r01.json</a></td>
+<td>{}</td>
+<td>{"started_utc": "2026-10-27T18:53:36.345464+00:00"}</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_46">全部原始资产入口</h2>
+<p>本目录在固定提交下共有4668个跟踪文件，包含代码、原回答、失败、收据和压缩证据；文件数不是样本数。<a href="../assets/023-layer-trace-extension-v1-2026-10-28.tsv">逐文件完整账本</a> · <a href="https://github.com/yuxiexiong/acupuncture/tree/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28">原目录</a>。未复制模型权重、环境或凭据。</p></main></html>

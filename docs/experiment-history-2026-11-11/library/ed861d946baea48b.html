@@ -1,0 +1,19 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>B1方案离线核对</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="b1">B1方案离线核对</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-vq-write-interaction-design-audit-v1-2026-11-01/README.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-vq-write-interaction-design-audit-v1-2026-11-01/README.zh-CN.md">固定提交原件</a>；SHA-256：<code>ed861d946baea48bc33e27c0098e3672d8d5a6b85f7e09b024fa6bf4b6a7e01a</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="b1_1">B1方案离线核对</h1>
+<p>日期：2026-11-01。对应<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-vq-write-interaction-causal-plan-v1-2026-11-01.zh-CN.md">方案v1 r1</a>。本目录为规划证据，不是模型实验结果；同一助手自查，不是独立复现。</p>
+<p>执行：</p>
+<pre><code class="language-sh">python3 experiments/cache-vq-write-interaction-design-audit-v1-2026-11-01/check_design.py
+</code></pre>
+<p>结果见 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-vq-write-interaction-design-audit-v1-2026-11-01/check-results.json">check-results.json</a>：</p>
+<ul>
+<li>12份CONV正式JSON均符合两个worker收据中的SHA；旧两背景两主读数的交互逐行重算与发布结果一致。</li>
+<li>固定12输入、6情景、每背景4格；正式96评分，预检28评分，模板3次，合计127次拟议模型调用，0形成。这里仅核算计划，不发生这些调用。</li>
+<li>负分母、过冲、反号、比例不可判、四项差/乘积差和局部可加恒等式经离线检查；C01–C14/E01–E26逐项记录存在。逻辑自查内容仍须读方案，脚本不替代科学审查。</li>
+<li>来源文件和源记录SHA、旧I_out逐行值、比例适用情景、预检/正式完整矩阵均入JSON；源张量只保存既有收据SHA，本地没有重新读取远端张量。</li>
+<li>初次核对脚本将<code>worker-0.log</code>误作目录，读取收据时报错；修正为只遍历目录后重新通过。未发生模型调用，也未改变科学阈值或矩阵。</li>
+</ul>
+<p>当前结论：<strong>设计逻辑及离线定义检查通过；runner未实现，真实hook/张量/数值验收待完成；没有B1运行授权或实验结果。</strong></p>
+<p>本轮自查主动修正：rho&gt;1不等于非相加放大；输出边操作不称为删除持久状态更新；旧全深层四角的I_out和单层I13分开；答案侧小分母不当阴性；有限随机不当零分布。单层结果不决定自动扩层，路线图B的总体任务保留。</p></main></html>

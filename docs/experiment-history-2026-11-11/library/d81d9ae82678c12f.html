@@ -1,0 +1,112 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>v6开放研究工具：实现与设计者自查</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="v6">v6开放研究工具：实现与设计者自查</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/wsp-vlm-open-repair-v6-2026-11-05/SELF_CHECK.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-open-repair-v6-2026-11-05/SELF_CHECK.zh-CN.md">固定提交原件</a>；SHA-256：<code>d81d9ae82678c12fa73254df4ea193156a32fd37cd2dce38f6e52a63a5dfcf00</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="v6_1">v6开放研究工具：实现与设计者自查</h1>
+<h2 id="material-passport">Material Passport</h2>
+<ul>
+<li>2026-11-05；同一助手自查，不是独立审查。依据<code>docs/experiment-design-self-check.zh-CN.md</code> v1。</li>
+<li>本轮是已批准总方案v2的工具实现与离线工程验收；没有新增科学实验矩阵、冻结实际搜索额度或改变B/C筛查主终点。</li>
+<li>证据入口：<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-open-repair-v6-2026-11-05/README.zh-CN.md">实现说明</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-open-repair-v6-2026-11-05/reuse.json">源码复用hash</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-open-repair-v6-2026-11-05/audit/offline_receipt.json">测试回执</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-open-repair-v6-2026-11-05/audit/corrections.json">问题修正记录</a>。</li>
+</ul>
+<h2 id="_1">设计卡</h2>
+<ol>
+<li><strong>主线/本轮问题：</strong> 能否让研究者AI根据VLM失败反馈提出解释、自选参数与计算方法、反复试改和评价；本轮验证工具是否允许并可靠记录这一过程。</li>
+<li><strong>增量：</strong> 从原版筛查运行器推进到有候选身份、跨模块读写、开发评价、反馈和回滚的开放接口。工程增量有价值，但没有新增模型机制/有效性证据。</li>
+<li><strong>依据与反例：</strong> 复用数学开放controller/broker/kernel及v5图文/旧B/C评分；不复用WCP固定选点和作者轨迹重放。最不利情况是所有离线测试成功而真实模型接口不兼容或AI找不到有效补丁，均保留为可能。</li>
+<li><strong>操作：</strong> 真实后端代码固定Qwen3-VL-4B-Instruct既定revision/BF16/SDPA/greedy128；运行时枚举模块、AI提交任意合法参数值、实际BF16支持相对W0计数。此次只操作合成2×4数组、存量图片文件字节和代码，不触碰真实权重。</li>
+<li><strong>估计对象：</strong> 离线检查是代码协议、身份、隔离入口与清理行为；假后端修对不估计VLM收益。未来开发比较为同输入/设置的W0、父候选和新候选完整回答；局部测量不当主终点。</li>
+<li><strong>判读：</strong> 离线失败修实现；通过只表示已测试的控制流成立。真实工程异常停止，不计作任务错误。真实科学阴性须以后按冻结研究合同判读，当前不能下结论。</li>
+<li><strong>范围/成本：</strong> 本地CPU/文件验收；0真实权重反序列化、模型/处理器加载、研究者调用或GPU。B_D58/C_D64包复用已有图片；搜索预算、终验功效待真实基线。</li>
+<li><strong>退出：</strong> 配置未冻结、无授权、预算用尽、动作完成状态不明即拒绝/停止；AI允许无补丁退出。真实验收和搜索没有启动。</li>
+</ol>
+<h2 id="c01c14">C01–C14</h2>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th>判定与理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C01 主线</td>
+<td>通过。接口服务于反馈驱动的稀疏权重修补，不换成固定探针、两层定位或分类器训练</td>
+</tr>
+<tr>
+<td>C02 增量</td>
+<td>工程范围通过。可提交/评价/回滚开放候选；不把合成涨分列作科学认识或论文结果</td>
+</tr>
+<tr>
+<td>C03 资产</td>
+<td>通过。实际导入旧动作解析和B/C评分，改造旧命名空间/broker；固定hash。历史暂停和数值回执未动</td>
+</tr>
+<tr>
+<td>C04 假设</td>
+<td>通过。允许没有可修位置、AI诊断错误、真实模块不兼容；离线通过不是可修性证据</td>
+</tr>
+<tr>
+<td>C05 操作</td>
+<td>通过。静态权重、临时hook、teacher-forced测量、自然生成分开；候选有父ID与相对W0差分</td>
+</tr>
+<tr>
+<td>C06 路径</td>
+<td>通过。原版/父/新候选共用输入和生成，真实参数修改后所有下游正常响应；临时hook另记不参加最佳选择</td>
+</tr>
+<tr>
+<td>C07 耦合</td>
+<td>通过且真实验收待办。绑定别名计一次，冲突值拒绝，真实运行须对照storage绑定；不声称所有模块相互独立</td>
+</tr>
+<tr>
+<td>C08 归因</td>
+<td>通过。只承诺反馈/候选控制链，不从假测量分数或单点修改推断模型病因、原生路径或AI优越性</td>
+</tr>
+<tr>
+<td>C09 区分</td>
+<td>通过。离线两种反馈选出不同模块，证明协议可分支；测试脚本承担控制，不伪称研究者自主发现</td>
+</tr>
+<tr>
+<td>C10 指标</td>
+<td>通过。复用完整答案评分；分格、主条件联合正确、格式、截断、修对/改错都返回。局部挑题不替代完整开发比较</td>
+</tr>
+<tr>
+<td>C11 失败</td>
+<td>通过。基础设施异常单列，前向预留不退款，部分测量与失败Python候选保留，未完成动作不自动重放</td>
+</tr>
+<tr>
+<td>C12 成本</td>
+<td>离线通过/实机待核。样本、token预留、实际token、CPU近似墙钟和总墙钟有记录；费用需账户外部上限，不能假装usage=实付金额</td>
+</tr>
+<tr>
+<td>C13 可信度</td>
+<td>离线通过/实机待验。候选及缓存hash、动作幂等、D单独打包、确认函数不向AI开放；实际Linux权限及真实重载尚未验证</td>
+</tr>
+<tr>
+<td>C14 累积</td>
+<td>通过。保留可复用工具与验收记录；下一步是有限真实工程验收和行为采集，失败可停，不自动扩大参数/任务/预算</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_2">与前版的差别、相关历史错误</h2>
+<ul>
+<li>工具审计只列缺口；本版提供实现、配置模板、合成端到端轨迹和实际D导出。旧数学controller的50次强制结束、文本专用forward、单权重文件假设没有照搬。</li>
+<li>E02：没有把某两层当天然特殊点；选点代码由研究者提交。E03：支持数、有效dtype、L2分别记录，不称“少标量就小扰动”。</li>
+<li>E10/E11：测量/分数/探针不等于正确回答；所有候选以原始回答评分。E16：未知、失败、无补丁和工程异常都可结束，不强行救分。</li>
+<li>E22：D/H身份保留；已见H不能充当新确认。确认函数要求独立性审核凭据，检查组和图片字节重复；无法仅凭哈希证明素材/物体层面的独立性。</li>
+<li>E23：同助手自查和合成测试都不叫独立审查或模型复现。E24/E25：不要求完整机制才允许试改，也不一次实现所有高级诊断算法。</li>
+<li>其余历史错误主要针对缓存机制因果拼接，本轮不作该类操作或主张，因此不适用；没有借此弱化源码、身份和数值检查。</li>
+</ul>
+<h2 id="_3">实质反方自查与修正</h2>
+<ol>
+<li><strong>“脚本本来就会选参数，不能证明AI自主。”</strong> 接受。测试夹具故意是脚本，只验证同一工具能走不同路径；真实入口使用研究者回复，生产代码没有选层/排名算法。未来AI能力要真实会话和公平比较，当前不主张。</li>
+<li><strong>“数值dtype不一致会夸大修改数。”</strong> 已修正。即使checkpoint某张量F32，运行BF16时也先按BF16量化W0与候选再计数；增加F32→BF16不产生实际改动的反例测试。</li>
+<li><strong>“复制旧后端仍看不到图或只测最后token。”</strong> 图文输入按v5；研究者可请求原图/预览附件；capture按真实模块、张量路径和坐标返回形状，decoder图像位置和网格另记。视觉patch语义未验证，不强行等同decoder轴；真实teacher-forced边界不一致直接拒绝。</li>
+<li><strong>“允许自由Python会绕过保护或读终验。”</strong> 生产只用Linux隔离进程，原权重/候选/开发数据只读，工作区可写，无网络/GPU设备和整仓库挂载；观察者二次校验直接写出的NPY，防路径逃逸、形状欺骗、绑定冲突和超预算。文件接口不是OS隔离证明；本机未运行bubblewrap，必须真实机器验收。</li>
+<li><strong>“缓存或上轮补丁残留造成假涨分。”</strong> 缓存身份绑定模型/协议/输入/候选并校验内容hash；当前与最佳分开。候选每次从W0应用、finally恢复并检查，hook finally移除；替身验证异常路径，真实数值仍待核。</li>
+<li><strong>“先修坏再只测好题，也能成为最佳。”</strong> 局部结果不能accept；完整固定开发包比较并过保护/格式要求。配对返回全部修对与改错；保护损伤反例被拒绝。</li>
+<li><strong>“失败途中结果丢了，看起来只剩成功。”</strong> 评价逐条开始/完成/失败日志；内部测量逐条落盘；每次Python结束（含异常）保留合法可读取提案快照；动作完成未知不重放。已加部分测量失败、失败代码产生提案的检查。</li>
+<li><strong>“换组ID就能将旧图作为独立确认。”</strong> 修正为组登记＋图片字节哈希交叉检查，另要求来源独立性审核凭据。新组ID但同图会拒绝；近重复/重压缩仍依赖数据审计，绝不把当前同源合成夹具称独立科学证据。</li>
+<li><strong>“旧HF快照是符号链接，隔离后找不到文件。”</strong> 增加只做字节核验的模型视图准备器；不放宽为挂载整个缓存/仓库。本次未准备实机模型视图。</li>
+<li><strong>“工程模式绕过验收就开始AI搜索。”</strong> 搜索启动器只接受phase=search且要求真实工程验收记录；工程phase只用于以后独立受授权的底层工具验收，不能进入自主搜索循环。</li>
+</ol>
+<p>结论：<strong>本轮离线工程实现验收通过；真实运行验收尚未完成，科学猜想未检验。</strong> 原总方案主线不变。配置默认关闭；不以本自查、GitHub提交或离线通过作为模型运行授权。</p></main></html>

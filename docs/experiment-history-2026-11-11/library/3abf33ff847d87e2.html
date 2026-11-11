@@ -1,0 +1,197 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>机制研究优先级入口与DWC之后的历史方案</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="dwc">机制研究优先级入口与DWC之后的历史方案</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>docs/mechanism-next-priority-after-dwc-2026-11-08.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/mechanism-next-priority-after-dwc-2026-11-08.zh-CN.md">固定提交原件</a>；SHA-256：<code>3abf33ff847d87e2fb02771437557944fc87440ed5e74357af7d62fa65edbd11</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="dwc_1">机制研究优先级入口与DWC之后的历史方案</h1>
+<h2 id="2026-11-08">现行排序（2026-11-08，本轮用户确认）</h2>
+<p>完整待办、完成标准及暂缓项统一维护于<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-mechanism-todo.zh-CN.md">近期To-do</a>。当前顺序为：</p>
+<p><strong>进度：P1首步与P2定向近邻判断已完成，补证方案已交付。</strong> <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-mechanism-p1-judgment-2026-11-08.zh-CN.md">判断与明确建议</a>保留修复增量配置的部分机制结果；<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-native-gain-plan-v1-2026-11-08.zh-CN.md">NGC-01方案与作者自查</a>具体检验原生增益变化的跨场景预测、双向完整答案作用及统一缩放竞争解释。逻辑设计通过，<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-native-gain-v1-2026-11-08/README.zh-CN.md">实现与CPU验收</a>完成；按用户最新指示保持GPU Ready、不排队，模型数值预检及正式运行未做；不能承诺排除一切补偿。P1补强未完成，β细拆与9B继续暂缓。</p>
+<ol>
+<li>P1：判断并补强写入增益配置对历史信号答案作用的解释。</li>
+<li>P2：与P1共同先核对具体主张相对最近邻的新认识，决定补证是否值得。</li>
+<li>P3：关系明确后再加强同一机制的适用范围，9B非默认首项。</li>
+<li>P4：必要的表达与复算材料整理可与前两项并行，沿用v1.8，不重启主线重写。</li>
+<li>P5：按实际贡献选择具体会议，独立审阅成熟稿。</li>
+</ol>
+<p>这是任务优先级调整，不是实验设计或运行许可；下文原方案、设计自查和当时结论保留历史身份，不覆盖现行To-do。</p>
+<hr />
+<h2 id="_1">历史方案：先检验关系能否跨模型，再扩大任务范围</h2>
+<blockquote>
+<p><strong>状态更新（2026-11-08，用户确认）：本页保留为历史方案，非当前执行队列。</strong> 当前目标见<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-mechanism-current-goal.zh-CN.md">核心目标与任务口径</a>：先解释针怎样改变一项重要历史信号的写入或利用及其答案后果，允许有价值的部分解释。下文“当前／唯一顺序／下一优先”均按原日期阅读；本页不授权新设计或模型运行，已有结果和原方案不改。</p>
+</blockquote>
+<p><strong>历史细化方案（非当前队列）：</strong> <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-write-read-cross-model-minimal-plan-v1-2026-11-08.zh-CN.md">CWR9-01最小补实验</a>已固定既有9B/N978方向、24个DWC材料ID、操作矩阵、统计和预算敏感性，并完成C01–C14作者自查。本页保留最初概念讨论；下方当时“方向/样本未定”的状态由新方案取代，工程数值验收与冻结仍未完成，用户当前明确不上卡。</p>
+<p>2026-11-08。状态：方向建议与概念自查；不是可执行合同，未实现、未冻结、未运行。依据为论文v1.6及DWC正式交付提交<code>7f3d1ce20</code>。采用Academic Research Suite实验规划流程及项目实验设计自查v1；作者自查不称独立评审。</p>
+<p><strong>同日复用审计更正：</strong> 先前仅引用9B预检metadata，低估了已有跨模型积累。现已核对四模型18,272份唯一单针回答、其中7,632份内部轨迹，以及4B→9B/2B迁移与每个目标模型1,400道能力测评题的已交付记录。下一步先复用这些结果；不重跑全层扫描、剂量面板或能力测评。G4需要补的是同一写入—读取关系的跨模型检验，不是从零证明其他模型会受干预影响。9B是候选，具体对象与新增测量须经既有资产比较确定，不能因本方向文档而默认重新开展大规模多模型采集。详见<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cross-model-reuse-audit-2026-11-08.zh-CN.md">复用审计</a>。</p>
+<h2 id="1">1. 明确建议及优先级</h2>
+<p>总问题不变：稀疏干预怎样通过历史信号、写入、旧状态处理和后续读取造成大幅回答变化。</p>
+<p><strong>下一优先补G4，首选Qwen3.5-9B上的同族规模迁移：检验4B中得到的历史来源—指定写入—直接读取—完整答案关系能否预测第二个模型的行为。</strong> 同架构族跨规模是第一步，不等于跨架构普遍性；不能仅多列一个模型的答对率就宣称机制推广。</p>
+<p>DWC已在96新情境上确认主方向双向量级；N1210获得区间上界低于M，保留为范围边界。当前不优先追加相同材料、放宽门槛或继续扫描4B层/头。下一轮需要改变解释覆盖的轴。</p>
+<table>
+<thead>
+<tr>
+<th>次序</th>
+<th>要补的证据</th>
+<th>对论文的增量</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>同族第二模型的同关系预测，首选9B</td>
+<td>检验结论是否依赖4B特定权重实例；迁移或分叉都能约束解释</td>
+</tr>
+<tr>
+<td>2</td>
+<td>非编号的内容选择/事实回答，先固定模型</td>
+<td>检验是否局限列表行号与短编号输出；换真实内容判据，不能只改编号外观</td>
+</tr>
+<tr>
+<td>3</td>
+<td>入口如何形成关键写入/读取条件，围绕具体分叉</td>
+<td>增强为什么会出现效应的解释；不开展无目标缓存扫描</td>
+</tr>
+<tr>
+<td>4</td>
+<td>真实转向中的非目标损伤与修复收益</td>
+<td>提供应用价值；目前不能替代机制覆盖证据</td>
+</tr>
+</tbody>
+</table>
+<p>跨模型和换任务不在第一轮同时改变，以免阴性无法区分模型、材料与操作不兼容。异架构模型的算子不一定有相同D/E分解，不能生搬硬套；它是后续广度轴，不借9B阳性提前计分。</p>
+<h2 id="2">2. 下一实验应保留的科学问题与比较</h2>
+<p>本轮问题：在9B的可比稀疏干预背景中，供体历史引起的指定写入差异，能否经后续直接读取产生定向获得、撤回和自身答案恢复？D用途是否仍区别于E？</p>
+<p>建议保留的比较职责：</p>
+<ul>
+<li>干净及原生受针运行：任务可答性、实际损伤、自然停止/截断分账。</li>
+<li>自身来源O与供体来源F的局部写入端点：同一接收者、同一干预背景，只改变指定写入的历史来源；不是从4B复制缓存张量到9B。</li>
+<li>O读取F与F读取O的D用途：双向净转移及冲突配对自身恢复，不能只报告“换状态后输出变了”。</li>
+<li>E用途作为既有竞争比较：防止把任意状态替换都称为直接读取解释。工程零用途检查不当科学阴性对照。</li>
+</ul>
+<p>估计对象沿用完整回答上的供体相关净转移及配对G/W/R，按独立基础情境统计。工程上仅在相应输出用途读替代状态，当前层持久更新不被替换，高层及后续自然响应；这是条件总效果，不宣称唯一原生中介。具体模型revision、方向选择、剂量标定、层集合、生成终点和样本量尚须定为合同；不能照搬N4146编号或4B向量。量级判据与不确定性规则应在正式输出前固定，关系同向与达到关注量级分别报告。</p>
+<h2 id="3">3. 最重要的前提：不能把“调到有效”当迁移</h2>
+<p>第一步先做旧资产、配置和实现的CPU审计。仓库已有9B历史预检metadata，记录revision <code>c202236235762e1c871ad0ccb60c8ee5ba337b9a</code>及当时模型路径；这证明历史运行身份，不证明服务器当前权重完整或新算子已就绪。当前官方config有交替linear/full attention及卷积配置，可作为接口审计入口，不能覆盖历史固定revision。</p>
+<p>方向、剂量和局部写入适配只能按明确规则在分离的开发材料上建立，并记录全部候选与成本；正式材料不用于筛选。若要新拟合9B的去偏移量，须明确它是目标模型校准，不能叫4B参数零样本直迁。适配规模必须有上限，不以G/W阳性为挑选依据，也不反复换针救结果。没有可比损伤或无法形成可交付端点时，应报告迁移前提不满足；不能当作读取关系已被否证，也不能无限寻找例外。</p>
+<p>DWC的96情境可以用来对照或开发，但其结果已见。需要独立确认的9B材料必须另行划分/生成并事先冻结；如果沿用DWC材料只做模型迁移，应准确标为“已见材料上的跨模型检验”，不能再叫新材料确认。</p>
+<h2 id="4">4. 成功、失败、部分结果各说明什么</h2>
+<table>
+<thead>
+<tr>
+<th>观察</th>
+<th>允许的认识增量</th>
+<th>不允许的推论</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>可比端点成立，D双向关系及自身恢复确认</td>
+<td>同族第二模型支持历史—写入—读取的预测关系；若量级门槛亦过，再声明量级确认</td>
+<td>所有混合模型、所有任务、自然唯一通路成立</td>
+</tr>
+<tr>
+<td>F有转移，D获得/撤回为正但较弱</td>
+<td>来源写入可迁移，读取作用强度有边界</td>
+<td>无作用，或隐去强量级失败</td>
+</tr>
+<tr>
+<td>F有转移，D关系无支持/异号且工程与精度足够</td>
+<td>写入到该读取用途的迁移预测受限；定位到接口分叉</td>
+<td>供体历史不含信息，或立即全层搜一个阳性</td>
+</tr>
+<tr>
+<td>E也有效、D不再相对更强</td>
+<td>传递关系与用途优势分开；4B的用途排序未迁移</td>
+<td>只保留D阳性而隐藏E</td>
+</tr>
+<tr>
+<td>干净不答、没有可比损伤、端点无法交付、预算截断过多</td>
+<td>前提或测量范围不满足，不能裁决核心读取迁移</td>
+<td>当作机制科学阴性；通过调输出筛掉困难样本</td>
+</tr>
+<tr>
+<td>区间太宽</td>
+<td>结果不可判，报告估计和设计精度</td>
+<td>“不显著所以没有效应”或自动扩样</td>
+</tr>
+</tbody>
+</table>
+<p>任何结局都保留4B独立确认；它检验解释范围，不重写已发生的结果。不因阴性自动增加模型、方向、剂量或层。</p>
+<h2 id="5">5. 成本与当前缺失信息</h2>
+<p>可复用DWC材料生成/供体配对/完整回答判读/分层统计，以及LVK/SRU算子定义。必须新增的是9B的实际端点、读取反事实和数值验收；旧多模型行为记录不能提供这些测量。</p>
+<p>目前不能给可靠GPU预算：尚缺固定revision的算子兼容性、目标方向选择规则与成本、9B端点可达率、每种场景实际吞吐/峰值显存及所需独立场景精度。DWC的17.46 GPU进程小时包含共卡竞争，既不能直接乘9/4，也不能作为本轮上限。预算应计入适配、失败尝试、预检、正式、加载与共享负载；先完成CPU资产审计，再给可验收合同和预算，不能现在称可上卡。</p>
+<h2 id="6">6. 设计自查与历史错误</h2>
+<p>本次是方向取舍，不伪装成完整执行设计。相比DWC：保留来源、写入、读取和完整答案关系；新增模型轴；不再以扩4B材料填G1，不同时新增任务轴。最强反方意见是“9B阳性可能只是为9B重新调出了类似现象”；处理是预先固定适配规则、分开开发/正式、不按读取效应筛方向，并如实区分算子关系迁移与零样本参数迁移。</p>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th>判定与理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C01</td>
+<td>通过：总问题与来源—写入—读取—完整回答主线保持</td>
+</tr>
+<tr>
+<td>C02</td>
+<td>通过：新增第二模型上的可预测关系，不重复缓存影响输出</td>
+</tr>
+<tr>
+<td>C03</td>
+<td>通过：DWC正式回执、旧9Bmetadata、基础审计；历史资产非当前就绪</td>
+</tr>
+<tr>
+<td>C04</td>
+<td>通过：保留N1210低于M、E异号及跨结构异质性，不预设强度相同</td>
+</tr>
+<tr>
+<td>C05</td>
+<td>未完成：目标revision/针/剂量/层集合待CPU资产审计与明确适配规则，不可执行</td>
+</tr>
+<tr>
+<td>C06</td>
+<td>概念通过：当前层输出用途和持久状态区分，下游响应允许；实现待验收</td>
+</tr>
+<tr>
+<td>C07</td>
+<td>概念通过：不额外独立拼换共享门控，不跨模型复制状态；具体算子待兼容核对</td>
+</tr>
+<tr>
+<td>C08</td>
+<td>通过：条件作用、跨规模与跨架构边界分开，不称自然唯一路径</td>
+</tr>
+<tr>
+<td>C09</td>
+<td>通过：F转移与D/E读取结果有不同结局，前提失败与关系失败分离</td>
+</tr>
+<tr>
+<td>C10</td>
+<td>通过：完整答案、净转移、自身恢复为终点，停止/截断保留</td>
+</tr>
+<tr>
+<td>C11</td>
+<td>通过：阴性、异号、弱效应和不可判分别解释；工程失败不算科学失败</td>
+</tr>
+<tr>
+<td>C12</td>
+<td>未完成：已识别新增测量，但样本精度与全包预算未确定</td>
+</tr>
+<tr>
+<td>C13</td>
+<td>未完成：开发/确认边界已规定，具体材料、版本、冻结与数值验收未完成</td>
+</tr>
+<tr>
+<td>C14</td>
+<td>通过：迁移或边界均形成稳定认识，无自动扩扫描</td>
+</tr>
+</tbody>
+</table>
+<p>相关历史错误E01/E24：不缩目标、不要求一轮完整机制；E02/E04/E19：架构定义是审计前提；E03/E12：坐标少不等于小扰动，净转移非万能消混杂；E05–E09/E13–E18/E26：只主张明确来源与用途的条件总效果，不命名唯一自然路径；E10/E11：完整回答不由EOS/logit/信息存量代理；E20：模型适配失败与读取分叉不假装互斥机制；E21：不凭换模型宣布首次；E22/E23：已见材料及作者自查准确标识；E25：不同时扩所有轴。</p>
+<p><strong>结论：优先级判断成立；可执行设计尚未通过，具体阻塞为C05/C12/C13。</strong> 当前可以明确建议先补跨模型关系，不能把本文作为冻结合同或GPU放行。新实验调用0，无队列或预算变更。</p>
+<h2 id="_2">来源</h2>
+<ul>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-write-read-confirm-v1-2026-11-07/REPORT.zh-CN.md">DWC正式报告</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-write-read-confirm-v1-2026-11-07/analysis/delivery-audit.json">交付审计</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/mechanism-paper-evidence-gaps-2026-11-06.zh-CN.md">论文缺口</a>。</li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-layer-mechanism-v1-2026-10-28/archive-r01/execution-r01/preflight/9b-shard-0/metadata.json">旧9B预检metadata</a>。</li>
+<li><a href="https://huggingface.co/Qwen/Qwen3.5-9B/blob/main/config.json">官方9B配置</a>，2026-11-08查阅；main不是拟运行版本承诺。</li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-mechanism-known-basics-audit-2026-10-31.zh-CN.md">基础审计</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/experiment-design-self-check.zh-CN.md">设计自查规范</a>。</li>
+</ul></main></html>

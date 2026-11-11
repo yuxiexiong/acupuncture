@@ -1,0 +1,228 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>4B 早层：三个失序链与反例（既有轨迹只读分析）</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="4b">4B 早层：三个失序链与反例（既有轨迹只读分析）</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/layer-trace-extension-v1-2026-10-28/analysis-early-r01/fourb-cases.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/analysis-early-r01/fourb-cases.zh-CN.md">固定提交原件</a>；SHA-256：<code>fb8a431ed61b95f8d1b07a607c76b327fb32c89b26a892e9f9f4e9b06ee2bcdb</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="4b_1">4B 早层：三个失序链与反例（既有轨迹只读分析）</h1>
+<p>这些是人工挑选后核实的具体案例，不是总体发生率。全部来自已验收的本地归档，8 个案例的 <code>source_token_ids_match</code> 均为 true。没有加载模型、没有新增实验。完整逐步 logits 与选定步骤的全部 32 层数值见 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/analysis-early-r01/fourb-cases.json">fourb-cases.json</a>，复算见 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/analysis-early-r01/fourb-cases.py">fourb-cases.py</a>。</p>
+<h2 id="_1">读数口径</h2>
+<ul>
+<li>层编号从 L0 开始。step 0 是完整 prompt 的最后一个输入位置，尚未生成任何回答；step 2 是生成第 3 个 token 前的计算。</li>
+<li>干预加在指定 MLP 的 <code>down_proj</code> 前一个通道，覆盖 prompt 和 decode；<code>delta_norm</code> 为组件输出差向量范数，<code>relative_delta = delta_norm / clean_norm</code>。不是损伤率，也不是因果贡献份额。</li>
+<li>clean shadow 从 prompt 起全程无针、使用独立 cache，被强制喂入干预分支已经产生的相同 token 历史。它不是原版自由回答，也不是“保留干预历史 cache，仅当前步撤针”。</li>
+<li>“首个严格分叉”在此按实际生成 token 的 clean logit 严格低于 clean 最大值判定，避免 BF16 并列最大值与 top-k 排序造成伪分叉。分叉本身不代表答错。</li>
+<li>本报告的首步层表都对齐 prompt 最后位置。它们能显示变化传播到哪里，不能识别哪一条下游边必要或充分；最大亮点不能直接叫根因。</li>
+</ul>
+<h2 id="1l0-n4146">案例 1：L0 N4146，同一点从能回答到立即结束</h2>
+<p>问题 Q04：列出整理书桌的两个步骤，严格两行。</p>
+<p>原版：</p>
+<blockquote>
+<p>第一步：将书桌上的物品分类并归位。<br />
+第二步：清理桌面杂物，只保留当前使用工具。</p>
+</blockquote>
+<p><code>4b-L00-N004146-D+1__Q04</code>：只生成一个 <code>&lt;|im_end|&gt;</code>，正文为空。首步 L0 attention 完全相同；直接变化在 L0 MLP，Δ=2.8370。下一层 attention Δ=2.5037、MLP Δ=2.6618；从此影响后续层，最后改变第一个输出决策。</p>
+<table>
+<thead>
+<tr>
+<th>step 0 组件</th>
+<th style="text-align: right;">Δ</th>
+<th style="text-align: right;">相对 Δ</th>
+<th style="text-align: right;">clean/steer 余弦</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>L0 attention</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1.0000</td>
+</tr>
+<tr>
+<td>L0 MLP</td>
+<td style="text-align: right;">2.8370</td>
+<td style="text-align: right;">5.6869</td>
+<td style="text-align: right;">—</td>
+</tr>
+<tr>
+<td>L0 residual</td>
+<td style="text-align: right;">2.8368</td>
+<td style="text-align: right;">1.3530</td>
+<td style="text-align: right;">0.5929</td>
+</tr>
+<tr>
+<td>L1 residual</td>
+<td style="text-align: right;">4.2706</td>
+<td style="text-align: right;">1.8704</td>
+<td style="text-align: right;">0.6273</td>
+</tr>
+<tr>
+<td>L2 residual</td>
+<td style="text-align: right;">4.1599</td>
+<td style="text-align: right;">1.8391</td>
+<td style="text-align: right;">0.4878</td>
+</tr>
+<tr>
+<td>L7 residual</td>
+<td style="text-align: right;">7.0179</td>
+<td style="text-align: right;">1.0837</td>
+<td style="text-align: right;">0.3708</td>
+</tr>
+<tr>
+<td>L15 residual</td>
+<td style="text-align: right;">11.6776</td>
+<td style="text-align: right;">1.2272</td>
+<td style="text-align: right;">0.2531</td>
+</tr>
+<tr>
+<td>L31 residual</td>
+<td style="text-align: right;">69.9652</td>
+<td style="text-align: right;">1.2994</td>
+<td style="text-align: right;">0.4238</td>
+</tr>
+</tbody>
+</table>
+<p>末端读出很明确：原版“第一步”logit 27.0，干预后 6.1875；EOS 从 9.3125 到 15.3125。停止优势（最佳 EOS 减最佳非 EOS）从 −17.6875 变为 +3.0625，因此 greedy 直接结束。这里是停止决策被翻转，不是先生成了乱码才停止。</p>
+<p>同点剂量反例：</p>
+<table>
+<thead>
+<tr>
+<th>剂量</th>
+<th>输出</th>
+<th style="text-align: right;">首步末层 residual 相对 Δ / 余弦</th>
+<th style="text-align: right;">首步停止优势</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>+0.25</td>
+<td>两行有效步骤，24 token</td>
+<td style="text-align: right;">0.1841 / 0.9852</td>
+<td style="text-align: right;">−17.0000</td>
+</tr>
+<tr>
+<td>+0.5</td>
+<td>两行有效步骤，27 token</td>
+<td style="text-align: right;">0.7200 / 0.7940</td>
+<td style="text-align: right;">−8.2500</td>
+</tr>
+<tr>
+<td>+1</td>
+<td>只有 EOS，1 token</td>
+<td style="text-align: right;">1.2994 / 0.4238</td>
+<td style="text-align: right;">+3.0625</td>
+</tr>
+</tbody>
+</table>
+<p>+0.5 正文：“第一步：整理桌面物品，将不需要的物品移出桌面。第二步：将桌面物品分类摆放，保持桌面整洁。”虽然网络大面积有差异，而且第 3 token 就和原版分叉，任务仍完成。不能用“看见全图亮了”判定功能已坏，也不能把这一个点的剂量阈值推广到所有通道。</p>
+<h2 id="2l2-n5063">案例 2：L2 N5063，进入标记循环后持续把出口压下去</h2>
+<p><code>4b-L02-N005063-D+1__Q04</code>：128 token 是 64 次 <code>&lt;think&gt;</code> 加双换行，达到长度上限，没有正文。</p>
+<p>首步 L0–L1 所有组件及 L2 attention 差为 0；变化始于 L2 MLP（Δ=3.4042、相对 Δ=2.7844）。紧接 L3 attention（该层是 self-attention）Δ=8.8509、相对 Δ=3.9414；L3 residual Δ=7.6551。L4/L5 residual Δ反而降为 7.4379/6.6979，之后才又变化到 L31 Δ=65.0392、相对 Δ=1.2079。传播不是逐层单调放大。</p>
+<p>首 token 原版偏好“第一步”，干预改为 <code>&lt;think&gt;</code>；后者在 clean 下比最大 logit 低 14.75。此时最佳 EOS 仍比最佳非 EOS 低 0.3125，因此没有像案例 1 那样立即停止。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">生成 step</th>
+<th>已有关键前缀</th>
+<th>clean shadow 首选</th>
+<th>实际输出</th>
+<th style="text-align: right;">实际 token 的 clean logit 距最大值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">0</td>
+<td>原始 prompt</td>
+<td>第一步</td>
+<td><code>&lt;think&gt;</code></td>
+<td style="text-align: right;">−14.7500</td>
+</tr>
+<tr>
+<td style="text-align: right;">2</td>
+<td><code>&lt;think&gt;\n\n</code></td>
+<td><code>&lt;/think&gt;</code></td>
+<td><code>&lt;think&gt;</code></td>
+<td style="text-align: right;">−5.9375</td>
+</tr>
+<tr>
+<td style="text-align: right;">4</td>
+<td>已出现两次 <code>&lt;think&gt;</code></td>
+<td><code>&lt;/think&gt;</code></td>
+<td><code>&lt;think&gt;</code></td>
+<td style="text-align: right;">−6.4375</td>
+</tr>
+<tr>
+<td style="text-align: right;">20</td>
+<td>重复前缀</td>
+<td><code>&lt;/think&gt;</code></td>
+<td><code>&lt;think&gt;</code></td>
+<td style="text-align: right;">−1.8750</td>
+</tr>
+<tr>
+<td style="text-align: right;">126</td>
+<td>长重复前缀</td>
+<td><code>&lt;/think&gt;</code></td>
+<td><code>&lt;think&gt;</code></td>
+<td style="text-align: right;">−0.7500</td>
+</tr>
+</tbody>
+</table>
+<p>所有 64 个 <code>&lt;think&gt;</code> 选择都严格不是 clean shadow 的最大 logit token，另外 64 个双换行是 clean 支持的续写。因而本例可观察到：持续干预连同其内部状态历史，多次把原本更偏好的闭合标记改成再开一个标记。数据支持这一具体竞争变化；还不能说某个下游层就是“循环控制区”，也不能证明实际撤针便一定恢复正常回答。</p>
+<p>同为 L2 的另一种循环要分开：<code>4b-L02-N005251-D+1__Q05</code> 从 <code>&lt;think&gt;\n\nThinking Process:</code> 开始，反复英文描述“用户要求简短中文回答”，128 token 截断。它有 112/128 个实际 token 也是 clean shadow 的并列或唯一最优；开头改轨后，大量后续词只是同一坏前缀下两分支都容易续写的词。这与 N5063 每个循环入口都被持续改变不同。同点 +0.5 的 Q05 则是 39 token 正常社交建议，首步最终 residual 相对 Δ=0.4115。</p>
+<h2 id="3l4-n5428">案例 3：L4 N5428，外壳保留而填入无关人名</h2>
+<p><code>4b-L04-N005428-D+1__Q04</code> 输出：</p>
+<blockquote>
+<p>第一步：李达。第二步：李斯。</p>
+</blockquote>
+<p>11 token 后自然 EOS。首步 L0–L3 与 L4 attention 完全相同；L4 MLP Δ=5.3957，L5 attention Δ=1.7112、MLP Δ=3.5949，L31 residual Δ=49.9866、相对 Δ=0.9284。首两个 token 仍是“第一步”“：”，故仅看输出开头会误以为正常。</p>
+<p>到 step 2（此时原版与干预文本历史仍都是“第一步：”），原版首选“将”，干预输出“李”。“李”在 clean 下比最大 logit 低 18.6094，而干预分支选中了它。该步 L4 MLP Δ=5.4035，L23 residual 相对 Δ=1.081、余弦0.255；L31 residual 相对 Δ=1.230、余弦0.229。之后继续生成“达”“。第二步：李斯”。这是格式骨架部分保留、内容选择失去题意约束的可见例子；它不是编码字节损坏，也不能仅凭人名就给 N5428 命名为“姓名神经元”。</p>
+<p>反例：<code>4b-L03-N007666-D+1__Q04</code> 仍输出两行可理解步骤：“第一步：整理书桌。第二步：将物品分类摆放整齐。”首步 L31 residual 相对 Δ=0.7694、余弦0.7986；也在 step 2 改写了词。再次说明“内部变化很大”和“第三个 token 分叉”本身都不能代替任务效果评判。</p>
+<h2 id="_2">这几条链最直接支持什么</h2>
+<ol>
+<li><strong>注入点到后续计算再到输出竞争的链条已经能看见。</strong> 首步不受回答文本不同干扰：注入层之前不变，MLP 直接改变，下一层 attention/MLP 开始改变，最终 logits 发生不同类型翻转。</li>
+<li><strong>至少要区分三种终点：EOS 提前胜出、特殊标记循环、题意无关的内容填充。</strong> 它们不是一个“乱码程度”标尺，也不能自动合并成统一脑区。</li>
+<li><strong>剂量改变了竞争的结果，但有大扰动仍有效回答的反例。</strong> 带文本/词表决策的 3D 轨迹比只看亮度更有价值。不同层/通道不能只比较绝对 Δ，因为正常 residual 范数随深度变化。</li>
+<li><strong>尚未定位必要的中介组件。</strong> 当前是配对观察，不是逐层修复/消融；也没有把 prompt 阶段与 decode 阶段注入、当前步效应与缓存累积分别拆开。Qwen 的 attention 中含 GatedDeltaNet/linear-attention，不能把所有亮点解释为普通 attention 权重变化。</li>
+</ol>
+<h2 id="_3">本地证据入口</h2>
+<table>
+<thead>
+<tr>
+<th>case ID</th>
+<th>轨迹（归档，gzip JSON）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>4b-L00-N004146-D+0.25__Q04</code></td>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-layer-mechanism-v1-2026-10-28/archive-r01/execution-r01/survey/4b-shard-0/traces/0043-4b-L00-N004146-D%2B0.25__Q04.json.gz">trace</a></td>
+</tr>
+<tr>
+<td><code>4b-L00-N004146-D+0.5__Q04</code></td>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-layer-mechanism-v1-2026-10-28/archive-r01/execution-r01/survey/4b-shard-1/traces/0027-4b-L00-N004146-D%2B0.5__Q04.json.gz">trace</a></td>
+</tr>
+<tr>
+<td><code>4b-L00-N004146-D+1__Q04</code></td>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-layer-mechanism-v1-2026-10-28/archive-r01/execution-r01/survey/4b-shard-0/traces/0051-4b-L00-N004146-D%2B1__Q04.json.gz">trace</a></td>
+</tr>
+<tr>
+<td><code>4b-L02-N005063-D+1__Q04</code></td>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-layer-mechanism-v1-2026-10-28/archive-r01/execution-r01/survey/4b-shard-1/traces/0163-4b-L02-N005063-D%2B1__Q04.json.gz">trace</a></td>
+</tr>
+<tr>
+<td><code>4b-L02-N005251-D+0.5__Q05</code></td>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-layer-mechanism-v1-2026-10-28/archive-r01/execution-r01/survey/4b-shard-0/traces/0188-4b-L02-N005251-D%2B0.5__Q05.json.gz">trace</a></td>
+</tr>
+<tr>
+<td><code>4b-L02-N005251-D+1__Q05</code></td>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-layer-mechanism-v1-2026-10-28/archive-r01/execution-r01/survey/4b-shard-1/traces/0188-4b-L02-N005251-D%2B1__Q05.json.gz">trace</a></td>
+</tr>
+<tr>
+<td><code>4b-L04-N005428-D+1__Q04</code></td>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/archive-r01/execution-r01/six-layer/survey/4b-shard-0/traces/0059-4b-L04-N005428-D%2B1__Q04.json.gz">trace</a></td>
+</tr>
+<tr>
+<td><code>4b-L03-N007666-D+1__Q04</code></td>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-layer-mechanism-v1-2026-10-28/archive-r01/execution-r01/survey/4b-shard-1/traces/0275-4b-L03-N007666-D%2B1__Q04.json.gz">trace</a></td>
+</tr>
+</tbody>
+</table>
+<p>源回答与其原始文件/hash 见相应 <code>sources.jsonl</code> 及本目录 JSON 的 <code>source_provenance</code>；原版全文已随本目录 JSON 保存。数据的 hook 与 stop advantage 定义见 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-layer-mechanism-v1-2026-10-28/trace_engine.py">trace_engine.py</a>。</p></main></html>

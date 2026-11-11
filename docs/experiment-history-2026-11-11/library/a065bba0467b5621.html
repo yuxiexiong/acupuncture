@@ -1,0 +1,245 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>四方向在两个 k 条件下的目标支持、幅度与来源作用</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="k">四方向在两个 k 条件下的目标支持、幅度与来源作用</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-write-factor-audit-2026-11-08/CONTRAST.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-write-factor-audit-2026-11-08/CONTRAST.zh-CN.md">固定提交原件</a>；SHA-256：<code>a065bba0467b56211a0537b061f739176712cfe5e01c2fdf0be37702e6d3c47f</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="k_1">四方向在两个 k 条件下的目标支持、幅度与来源作用</h1>
+<p>2026-11-08。承接同一主线：针怎样改变历史来源的写入及其答案作用。本轮仅读取冻结 NMT 汇总并逐格作差；不改主线、论文、历史结果，不设计或运行新实验。没有模型加载、前向、GPU、新拟合或新显著性检验。</p>
+<h2 id="1">1. 对象与定义</h2>
+<p>来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-increment-norm-match-v2-2026-11-03/analysis/nmt-readouts-r01.json">冻结NMT分析</a>，固定提交 <code>ce497e411</code>，SHA256见 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-write-factor-audit-2026-11-08/contrast.json">contrast.json</a>。<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-write-factor-audit-2026-11-08/contrast.py">提取脚本</a>只用标准库，核对两条端点作差路径、原始H和D_src，16组全部误差小于1e−12。</p>
+<p>M为固定共同前缀下的t2目标token减竞争token的分数，不是正确率。主表沿用目标非首列32条、六场景等权；48条补充读数在JSON中单列。完整回答Y使用全48条；不可拿32条均值当逐例答案阈值。</p>
+<p>固定接收背景r及k条件b，令Z为不加入该增量的接收基底，F0为加入原生来源增量，F1为加入恢复来源增量，FUP为保留原生增量方向、逐层逐头匹配恢复来源幅度，FDN为恢复来源方向配原生幅度。b=0不修正写入k，b=1修正写入k。</p>
+<ul>
+<li>原生增量基础支持：P_b=F0_b−Z_b。它不是“没有k操作时”的同义词，两个b分别有一个P。</li>
+<li>原生方向上的幅度作用：A_b=FUP_b−F0_b。</li>
+<li>恢复幅度下的等幅来源作用：Q_b=F1_b−FUP_b。两个增量的逐层逐头范数相同，矩阵方向/结构不同；其后续响应自由发生。此对比不识别独立语义内容、具体k/v角度或某个读出部件。</li>
+<li>完整来源作用：T_b=F1_b−F0_b=A_b+Q_b。</li>
+<li>来源对k条件增益的影响：D_src=T_1−T_0=(A_1−A_0)+(Q_1−Q_0)。这是端点作差恒等式，不是新的神经计算定律或可独立相加的自然机制份额。</li>
+</ul>
+<h2 id="2">2. 逐格结果</h2>
+<p>各单元为 b=0 / b=1，单位M；正数为目标相对指定竞争者更有利。</p>
+<h3 id="r1">恢复接收背景 r=1（完整回答可读）</h3>
+<table>
+<thead>
+<tr>
+<th>方向</th>
+<th style="text-align: right;">接收基底Z</th>
+<th style="text-align: right;">原生增量支持P</th>
+<th style="text-align: right;">幅度作用A</th>
+<th style="text-align: right;">等幅来源作用Q</th>
+<th style="text-align: right;">完整来源作用T</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>N4146</td>
+<td style="text-align: right;">−2.010 / −1.524</td>
+<td style="text-align: right;">0.062 / 0.635</td>
+<td style="text-align: right;">−0.049 / 0.922</td>
+<td style="text-align: right;">0.380 / 0.958</td>
+<td style="text-align: right;">0.332 / 1.880</td>
+</tr>
+<tr>
+<td>N1210</td>
+<td style="text-align: right;">−0.724 / −0.342</td>
+<td style="text-align: right;">0.161 / 0.872</td>
+<td style="text-align: right;">0.078 / 0.674</td>
+<td style="text-align: right;">0.392 / 0.538</td>
+<td style="text-align: right;">0.470 / 1.212</td>
+</tr>
+<tr>
+<td>R0</td>
+<td style="text-align: right;">−0.024 / 0.366</td>
+<td style="text-align: right;">0.165 / 0.981</td>
+<td style="text-align: right;">0.040 / 0.595</td>
+<td style="text-align: right;">0.297 / 0.500</td>
+<td style="text-align: right;">0.337 / 1.095</td>
+</tr>
+<tr>
+<td>C1343</td>
+<td style="text-align: right;">2.163 / 1.613</td>
+<td style="text-align: right;">0.339 / 3.444</td>
+<td style="text-align: right;">0.306 / 0.904</td>
+<td style="text-align: right;">1.047 / 0.274</td>
+<td style="text-align: right;">1.352 / 1.178</td>
+</tr>
+</tbody>
+</table>
+<h3 id="r0m">原生接收背景 r=0（只解释固定前缀M，不能解释停止后的自然续写）</h3>
+<table>
+<thead>
+<tr>
+<th>方向</th>
+<th style="text-align: right;">接收基底Z</th>
+<th style="text-align: right;">原生增量支持P</th>
+<th style="text-align: right;">幅度作用A</th>
+<th style="text-align: right;">等幅来源作用Q</th>
+<th style="text-align: right;">完整来源作用T</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>N4146</td>
+<td style="text-align: right;">−2.140 / −1.866</td>
+<td style="text-align: right;">−0.015 / 0.233</td>
+<td style="text-align: right;">−0.109 / 0.462</td>
+<td style="text-align: right;">0.312 / 0.498</td>
+<td style="text-align: right;">0.203 / 0.960</td>
+</tr>
+<tr>
+<td>N1210</td>
+<td style="text-align: right;">−0.854 / −0.510</td>
+<td style="text-align: right;">0.089 / 0.576</td>
+<td style="text-align: right;">0.016 / 0.474</td>
+<td style="text-align: right;">0.285 / 0.358</td>
+<td style="text-align: right;">0.300 / 0.832</td>
+</tr>
+<tr>
+<td>R0</td>
+<td style="text-align: right;">−0.260 / −0.123</td>
+<td style="text-align: right;">0.063 / 0.684</td>
+<td style="text-align: right;">−0.031 / 0.467</td>
+<td style="text-align: right;">0.269 / 0.318</td>
+<td style="text-align: right;">0.238 / 0.785</td>
+</tr>
+<tr>
+<td>C1343</td>
+<td style="text-align: right;">1.311 / 0.783</td>
+<td style="text-align: right;">0.005 / 3.292</td>
+<td style="text-align: right;">0.040 / 0.871</td>
+<td style="text-align: right;">0.922 / 0.169</td>
+<td style="text-align: right;">0.962 / 1.040</td>
+</tr>
+</tbody>
+</table>
+<h3 id="k_2">差异在哪里：两部分对k条件增益的贡献</h3>
+<table>
+<thead>
+<tr>
+<th>方向</th>
+<th style="text-align: right;">r</th>
+<th style="text-align: right;">A_1−A_0</th>
+<th style="text-align: right;">Q_1−Q_0</th>
+<th style="text-align: right;">D_src</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>N4146</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">+0.570</td>
+<td style="text-align: right;">+0.187</td>
+<td style="text-align: right;">+0.757</td>
+</tr>
+<tr>
+<td>N4146</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">+0.970</td>
+<td style="text-align: right;">+0.578</td>
+<td style="text-align: right;">+1.549</td>
+</tr>
+<tr>
+<td>N1210</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">+0.458</td>
+<td style="text-align: right;">+0.073</td>
+<td style="text-align: right;">+0.531</td>
+</tr>
+<tr>
+<td>N1210</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">+0.596</td>
+<td style="text-align: right;">+0.146</td>
+<td style="text-align: right;">+0.741</td>
+</tr>
+<tr>
+<td>R0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">+0.498</td>
+<td style="text-align: right;">+0.049</td>
+<td style="text-align: right;">+0.547</td>
+</tr>
+<tr>
+<td>R0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">+0.556</td>
+<td style="text-align: right;">+0.203</td>
+<td style="text-align: right;">+0.759</td>
+</tr>
+<tr>
+<td>C1343</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">+0.831</td>
+<td style="text-align: right;">−0.753</td>
+<td style="text-align: right;">+0.078</td>
+</tr>
+<tr>
+<td>C1343</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">+0.598</td>
+<td style="text-align: right;">−0.773</td>
+<td style="text-align: right;">−0.174</td>
+</tr>
+</tbody>
+</table>
+<p><strong>已有结果支持的分叉解释：</strong> 四个方向的幅度作用都更有利于b=1。前三方向在等幅来源对比中仍更有利于b=1，因此同号相加；C1343的等幅来源对比更有利于b=0，因此在条件差中抵消幅度带来的增强。C1343的Q在两格都为正，负的是Q_1−Q_0，不能写成恢复来源损害答案或没有效应。</p>
+<p>这不是只有一条分解路径的偶然符号：反向路径以原生幅度比较FDN−F0，再比较F1−FDN，也给出同样的分叉。等幅来源对k条件差的作用，前三方向在r=0为+0.014/+0.075/+0.056、r=1为+0.102/+0.113/+0.111；C1343则为−0.335/−0.438。数值随路径改变，说明不能分配唯一份额。全48条补充集也保留该符号模式；C1343的完整来源差在全48条是+0.370/+0.174，不能把32条主子集的近零/负值推广到所有输入。</p>
+<h2 id="3">3. 完整回答与基础支持</h2>
+<p>恢复接收背景、每格48条；各单元仍为b=0 / b=1。</p>
+<table>
+<thead>
+<tr>
+<th>方向</th>
+<th style="text-align: right;">基底Z</th>
+<th style="text-align: right;">原生增量F0</th>
+<th style="text-align: right;">幅度匹配FUP</th>
+<th style="text-align: right;">恢复来源F1</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>N4146</td>
+<td style="text-align: right;">15 / 16</td>
+<td style="text-align: right;">15 / 21</td>
+<td style="text-align: right;">15 / 33</td>
+<td style="text-align: right;">16 / 39</td>
+</tr>
+<tr>
+<td>N1210</td>
+<td style="text-align: right;">19 / 26</td>
+<td style="text-align: right;">19 / 36</td>
+<td style="text-align: right;">19 / 43</td>
+<td style="text-align: right;">27 / 48</td>
+</tr>
+<tr>
+<td>R0</td>
+<td style="text-align: right;">34 / 36</td>
+<td style="text-align: right;">34 / 42</td>
+<td style="text-align: right;">34 / 45</td>
+<td style="text-align: right;">37 / 47</td>
+</tr>
+<tr>
+<td>C1343</td>
+<td style="text-align: right;">48 / 48</td>
+<td style="text-align: right;">48 / 48</td>
+<td style="text-align: right;">48 / 48</td>
+<td style="text-align: right;">48 / 48</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>三个主要方向的幅度匹配在b=1增加正确数，在b=0未增加；等幅来源比较仍可继续改善回答。N1210在b=0的19→27说明来源优势不应只用k交互概括。</li>
+<li>C1343从基底起已48/48，不能凭正确数不变否定其连续分数效应。原生接收背景受移植前停止限制，不能作为自然恢复阴性。</li>
+<li>跨方向的基础支持和完整回答余量不同；但“天花板”只解释Y无法增加，不能代替对M或条件差的解释。没有用平均M推断逐例阈值，也未声称它预测完整回答。</li>
+</ul>
+<h2 id="4">4. 最有支持的解释与仍属假设的部分</h2>
+<p><strong>已支持的局部计算关系：</strong> 来源对答案竞争的作用同时取决于写入幅度配置及等幅状态增量的方向/结构；二者对两个k条件的作用偏好可同向或反向。四个方向共享幅度增强b=1的效应，C1343的分叉主要体现在等幅来源改变更改善b=0。这是已有有限干预下的行为关系，保留NMT贡献并具体解释其来源差读数的分叉；不宣称完整原生机制。</p>
+<p><strong>最值得保留的内部计算假设：</strong> 等幅来源变化改变了任务相关的有效读出，使其目标支持在两个k条件间重新分布。单层固定读者时，直接读取满足ΔD=αX^Tq；同范数的X仍可产生不同的目标相关向量。对有限跨层干预，q、α及后续映射也会响应，因此现有Q不能唯一归到一个夹角、D用途或下游敏感度。公式本身早已确定，不是发现。</p>
+<p>与竞争解释对照：</p>
+<ul>
+<li>“只有幅度大小决定来源优势”：不足。幅度作用的条件差四方向同为正，来源条件差却可抵消，且等幅来源比较有直接效应。</li>
+<li>“C1343不读取这项增量”：不符。其原生增量在b=1已有很强支持，幅度操作也有效。</li>
+<li>“只是正确率天花板”：只解释Y，不解释连续M中的同向/抵消关系。</li>
+<li>“全部来自接收背景”：不足。上述分叉在各自固定接收背景内出现，且两个背景方向一致；接收背景仍影响量级。</li>
+<li>“一个确定的q/k夹角或β开关已解释全部”：未获支持。β与‖k̄‖仍未分离，已有NBR投影对线性化点敏感，不足以完成此归因。</li>
+</ul>
+<p><strong>边界：</strong> 端点作差精确不等于内部机制识别；反向路径数值不同排除了唯一份额说法。当前只涉及一个模型、固定面板和四个干预方向，不能借WIN/DWC的材料数量扩张该机制的适用范围。本文不改变主线，不引入新运行队列。</p></main></html>

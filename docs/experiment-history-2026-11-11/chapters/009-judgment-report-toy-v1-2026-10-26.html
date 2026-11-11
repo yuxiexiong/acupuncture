@@ -1,0 +1,196 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>009．判断内容与输出标签的分离诊断</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="009">009．判断内容与输出标签的分离诊断</h1>
+<p><a href="../README.zh-CN.html">返回总时间线</a></p>
+<p><strong>时间定位</strong>：版本/记录日期 2026-10-26；未从所选收据确定完整运行起止，不据目录名补写时刻。</p>
+<p><strong>当时的目的与设计</strong></p>
+<p>计划用自行比较/已给答案、内容/标签等条件区分旧双针损伤及C05/C01修复的作用位置。</p>
+<p><strong>实际过程、结果与后来更正</strong></p>
+<p>合同、代码和CPU验收已经准备，正式模型运行暂停。这里没有新模型实验结果；其完整历史设计保留，不把它混入十候选已完成结果。</p>
+<p><strong>来源身份</strong>：<code>judgment-report-toy-v1-2026-10-26</code>；本章主体来源提交 <code>7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8</code>。下方原文中的状态是各文件写作时的状态，不能把早期“尚未运行”覆盖后期正式收据，也不能将后期结果倒填进早期设计。</p>
+<h2 id="_1">原设计、执行过程、结果与更正全文</h2>
+<p>以下按“设计与题目 → 工程/执行记录 → 结果/更正 → 其他历史说明”组织；同类内没有可靠时间时保留路径顺序，不冒充严格先后。正文未删段；仅为本章节重排标题层级、把相对链接指向固定提交。原始字节另外完整保存。</p>
+<h3 id="1acupuncture">原件 1：Acupuncture：答案判断与答案报告的最小区分合同</h3>
+<p>原路径：<code>experiments/judgment-report-toy-v1-2026-10-26/CONTRACT.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/judgment-report-toy-v1-2026-10-26/CONTRACT.zh-CN.md">固定提交原文</a> · <a href="../library/723bc5cd7485a75f.html">单独阅读副本</a>；SHA-256：<code>723bc5cd7485a75f8d1d4c9dff95d811322d13a7f42ff3a8a55d986ba5ec4d24</code>。</p>
+<hr />
+<h4 id="acupuncture">Acupuncture：答案判断与答案报告的最小区分合同</h4>
+<p>2026-10-26。状态：准备与CPU验收；<strong>正式实验未获启动授权</strong>。用户原话：“同意，写合同代码去推进吧，停在正式实验开跑前”。</p>
+<h5 id="material-passport">Material Passport</h5>
+<ul>
+<li>Origin Skill / Mode：academic-research-suite / experiment-agent plan；Ponytail full 用于最小实现。</li>
+<li>Version：judgment-report-toy-v1-2026-10-26。</li>
+<li>Evidence：首轮 <code>validate-parallel</code> 已完成；本轮是结果驱动的新诊断，尚无模型结果。</li>
+<li>实现身份：<code>contract.json</code>、题目、代码、测试和前序依赖由 <code>freeze.json</code> 绑定。</li>
+</ul>
+<h5 id="1">1. 只回答什么</h5>
+<p>两针后的错误，是否依赖答案的内容，或答案的标签／显示位置？需要自行比较时的损伤，是否不同于已经给出正确内容、只需报告时的损伤？第19和23层的局部修复与反向重现，是否也呈现这些依赖？</p>
+<p>主候选 C05 为零起始 L19 attention 的提示最后位置；比较候选 C01 为 L23 attention 同位置。二者都是开发集选出的候选，C01不是阴性对照。不找新层、头、神经元、下游读出器，不组合修复两处。保持两针，恢复一个模块的贡献；反方向在原版中引入相应贡献。保留同位置、同维度、同改变量范数的随机替换对照。</p>
+<p><strong>与原四步合同的关系：</strong> 原步骤1拆针、2梯度筛选、3十候选真实替换均已完成；步骤4具体功能解释与新题确认尚未开始。首轮正确率没有候选通过全部四项双向比较，连续分数信号不能代替该科学结论。原合同允许零解释及停止。本轮是用户另行同意、针对修复与重现不一致及标签偏置线索的有限追加诊断，不表示原步骤3已经通过，也不改原验收门槛。原确认64题与功能确认16对保持未运行。</p>
+<p>本轮不是旧合同的 <code>function-dev</code> 或 <code>confirm</code> 阶段，也不把双卡完成收据改写为旧单卡收据。通过原 <code>parallel_validate.verify_merged</code> 接入真实前序。本轮缺少独立下游读出关系和内容供体因果检验，结论限于<strong>局部干预效应的标签／任务需求依赖</strong>，不能宣布找到完整根因、天然功能区或“前额叶”的大小。</p>
+<h5 id="2">2. 为什么这样拆</h5>
+<p>已有32道MMLU中，原版选D有9次，两针后26次；第23层修复净增9题，其中6题恢复原本会做的题、3题是原版本来就做错的题。这是已见开发材料中的线索，不是本轮确认结果。</p>
+<table>
+<thead>
+<tr>
+<th>材料</th>
+<th>具体做法</th>
+<th>基础样本数／变体数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>原MMLU开发题</td>
+<td>全32题，不按输赢筛选。仅把最后一道题的四个选项循环轮换0、1、2、3位；题干和少样本示例逐字保留。每个正确内容恰好出现在A、B、C、D各一次。</td>
+<td>32／128</td>
+</tr>
+<tr>
+<td>简单比较任务</td>
+<td>16组四只盒子及不同整数数量，唯一最大值。版本一问“哪只最多”；版本二直接给正确盒子的名称，要求报告同一盒子。两版本都做四轮选项轮换。</td>
+<td>16／128</td>
+</tr>
+</tbody>
+</table>
+<p>共48个基础单位、256个输入变体，每候选完整跑256变体×6条件。不新增独立确认集；不把256当独立样本数。功能任务只使用“比较”一个任务族，固定种子20261026。给出的答案是内容而非字母，故仍需内容到标签映射。</p>
+<p>选项循环重排同时改变字母关联和显示顺序，<strong>不能区分偏爱D与偏爱最后一项</strong>。已给答案版本仍需阅读、提取与映射，而且提示显著性和难度不同；需求交互不能独自证明某处专门负责比较。数据不含已发现的选项位置引用；若有歧义则保留并记录，不能悄悄排除。</p>
+<h5 id="3">3. 固定设置</h5>
+<ul>
+<li>Qwen3.5-4B，revision <code>851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a</code>；原始路径、两处权重哈希及PyTorch/Transformers版本见JSON合同。</li>
+<li>BF16、eager、batch=1、每worker 4线程、确定性计算；每次前向重算状态、关闭cache。没有训练、永久权重修改、反向传播或长生成。</li>
+<li>B=L13/N7956负向、A=L14/N8949正向，dose=1。复用旧 <code>RootEngine</code>、原生通道加法、评分与替换，不改旧冻结文件。</li>
+<li><strong>每基础题只用原版“需判断、轮换0”校准参考尺度。</strong> 该题所有轮换、需求与干预条件共享这两个数；两worker各自重算相同参考。避免因换提示重新调针而混淆问题。</li>
+<li>原始参考校准和当前输入身份分开保存；不把参考token哈希冒充当前输入。每次真实评分另保存实际token哈希、长度、两针写入和替换审计。</li>
+<li>四选项按完整的单token标签A–D原始loglikelihood评分；确定性并列取首索引。CPU分词验收及未来模型加载后均检查标签唯一、单token且共用同一前缀。无自然语言答案解析。</li>
+<li>两候选仍用首轮各自的匹配随机种子：C05=20261031，C01=20261027；BF16范数匹配容差仍为3%。</li>
+</ul>
+<h5 id="4">4. 条件与必须保存的读数</h5>
+<p>每候选恰好六条件：原版、AB、保留AB的局部修复、原版中的反向重现、匹配随机修复、匹配随机重现。两针覆盖评分输入；修复不允许关闭两针，只改变提示最后位置的被测模块输出贡献，不替换整层残差或源MLP。</p>
+<p>保存四个选项的分数、正确性、正确项相对最强错误项的优势、预测标签、映射回原始内容的身份及全部技术审计。三个面板分别报告：MMLU、需比较、已给答案。</p>
+<ol>
+<li>正确率为任务主读数；连续优势为诊断。保留四个原对比：修复−AB、修复−随机修复、原版−重现、随机重现−重现。</li>
+<li>每题跨四旋转的“始终同一内容”比例与“始终同一标签／槽位”比例，各条件全部报告；另报A–D分布。AB−原版的D比例给配对区间。其余一致性率当前为描述性读数，不伪装成已做区间检验。</li>
+<li>功能任务按基础题计算“需比较−已给答案”的损伤差、修复差、重现差及匹配对照差，分别给正确率与连续优势的区间。</li>
+<li>逐题拆账：原版对→AB错→修复对；原版和AB都错→修复对；修复新造成的错误；重现造成的错误与新改善。使用全量固定分母，不挑救回的题宣称成功。净正确率相同不等于逐题没变化。</li>
+</ol>
+<p>每基础题先平均四旋转，再按32或16个基础单位进行10,000次配对bootstrap，种子20261026，描述性95%区间。不跨面板混合，不做独立token检验，不宣称多重比较已控制；区间含零表示证据不足，不是等价或不存在路径。</p>
+<h5 id="5">5. 结果如何决定后续</h5>
+<ul>
+<li><strong>标签／槽位依赖线索：</strong> AB相对原版更固定于某标签／槽位、内容随轮换改变；候选修复、反向重现及匹配对照决定该局部效应是否也改变这种依赖。不能把仅有D率上升叫作全部损伤的根因。</li>
+<li><strong>任务需求依赖线索：</strong> 需比较与已给答案的配对效应不同；优先看正确率交互，同时列原版、AB及所有条件原始值。不能用“一边显著、另一边不显著”替代差值检验。</li>
+<li>两条线索可同时成立。正确率四项比较均为正且其95%区间下界均大于0时，只称该面板上的探索性双向任务证据；仅连续读数成立不称能力恢复。</li>
+<li>若简单功能任务任一需求的原版正确率低于75%，标记任务可读性不足；若AB在两需求上均不高于25%，标记共同地板风险。仍完整测量、保留数据，需求差异可能无法区分，不临时加题、换任务或减剂量。</li>
+<li>修复有效而重现证据不足，保留为修复线索；不要自动称“补偿”或“原损伤路径”。两候选都无支持，也如实报告，不扩大搜索预算。</li>
+<li>不自动启动9B、2B、功能区边界扫描或大Benchmark。先用本轮结果判断是否值得进一步建立独立内容和下游读出预测。</li>
+</ul>
+<h5 id="6">6. 执行、成本和停止点</h5>
+<p>代码准备支持两卡：C05固定GPU0，C01固定GPU1，每卡一个模型worker，各256变体。两者独立输出，不竞争写文件。受机器占用限制不能按分配启动时等待，不抢占其他任务；本轮没有自动调度器或自动启动监控。</p>
+<p>沿用逐标签评分，每候选正式10,240次前向，加48次基础题参考校准；初始运行检查另含1次参考校准、4次clean评分前向和8次恒等替换前向，共13次。两候选合计<strong>20,602次前向</strong>，其中校准98次；没有反向或生成。题目—候选—条件单元为3,072，不能用它替代前向计数或ETA。</p>
+<p>本轮不启动模型测速，因此不报假精确ETA。CPU验收记录输入长度、现成环境、GPU占用和磁盘；以后获准开跑时，根据首批真实进度更新ETA，不能把32题旋转当128独立原题计成本或证据。</p>
+<p>本次交付停在：固定数据、合同、代码冻结、本地与服务器CPU测试、分词及依赖验收。<strong>没有加载成品模型，没有运行上述13次初始检查，更没有正式采集。</strong> <code>authorization.prepare.json</code>明确为准备权限；正式<code>run</code>必须同时给<code>--execute</code>和另存的新用户授权（绑定本轮freeze），旧授权无法复用。</p>
+<p>任何技术失败保存错误、部分逐题输出、时间和版本；新尝试换目录，不原地续写。无显著效应、比较题不会做或地板效应属于科学结果，不能当bug改实验。完整性验收要求候选各256题、六条件、来源哈希与数据因素一致、钩子移除、权重恢复核验通过。原首轮证据及旧协议保持原样。</p>
+<hr />
+<h3 id="2_1">原件 2：追加诊断准备记录</h3>
+<p>原路径：<code>experiments/judgment-report-toy-v1-2026-10-26/EXECUTION.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/judgment-report-toy-v1-2026-10-26/EXECUTION.zh-CN.md">固定提交原文</a> · <a href="../library/b5b93ce3ed77302b.html">单独阅读副本</a>；SHA-256：<code>b5b93ce3ed77302b8022223f43d97ed21fcc4c6e088112fef0cc5926292dd870</code>。</p>
+<hr />
+<h4 id="_2">追加诊断准备记录</h4>
+<p>2026-10-26，北京时间17:17前后。<strong>代码、合同与CPU验收已完成，停在正式实验开跑前。</strong> 没有加载Qwen模型，没有模型预检、正式逐题记录或GPU计时结果。</p>
+<h5 id="_3">原来走到哪一步</h5>
+<p>原根因合同分四步：1拆针、2内部筛选、3十候选真实修复/重现、4具体功能解释及新题确认。前三步均已完成，第四步尚未开始。首轮执行完整性通过，但没有候选的正确率同时通过四项双向比较；连续分数的线索不能替代任务正确率，更不能直接命名功能区。原合同允许零解释及停止。</p>
+<p>本轮是用户批准的有限追加诊断，单独版本，不改原判据、不改旧收据，也不把它冒充原第四步。依据是修复与重现不一致，以及答案标签偏置线索。</p>
+<h5 id="_4">准备了什么</h5>
+<ul>
+<li>固定C05/L19 attention及比较候选C01/L23 attention，均只替换提示最后位置的贡献；复用首轮模型、两针、原评分与匹配对照。</li>
+<li>32道MMLU各四次选项轮换；16组比较题各含需判断/已给答案两个版本及四次轮换。共48个基础单位、256变体，每候选六条件。</li>
+<li>每基础题固定参考尺度；保存原始选项分数、内容与标签身份、修复/重现逐题变化及完整干预审计。</li>
+<li>代码具有新授权拦截、冻结校验、失败保全和禁止原地续跑；支持以后获准时每卡一个候选。没有后台队列或自动开跑。</li>
+</ul>
+<p>完整设计见<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/judgment-report-toy-v1-2026-10-26/CONTRACT.zh-CN.md">合同</a>，之后的运行方式见<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/judgment-report-toy-v1-2026-10-26/RUNBOOK.zh-CN.md">RUNBOOK</a>。</p>
+<h5 id="_5">实际验收</h5>
+<table>
+<thead>
+<tr>
+<th>检查</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>服务器CPU测试</td>
+<td>15/15通过，零跳过；包括微型合成网络上的真实钩子、针保持开启、位置与范数、异常清理、记录保全与授权拦截</td>
+</tr>
+<tr>
+<td>前序证据</td>
+<td>原<code>validate-parallel</code>及依赖通过原核验器检查，未改写任何旧证据</td>
+</tr>
+<tr>
+<td>数据</td>
+<td>48基础单位、256变体，来源与轮换规则核验通过</td>
+</tr>
+<tr>
+<td>CPU分词</td>
+<td>全256输入的四个标签均为不同单token、共用同前缀；前缀80—1649 token，中位184</td>
+</tr>
+<tr>
+<td>本地/远端冻结</td>
+<td>两端通过，SHA-256 <code>985788b3a1a72762093e7c4bf07d7f08ebc8960818c6c968cb3b86d28f40ca0c</code></td>
+</tr>
+<tr>
+<td>成品模型验证</td>
+<td>未运行；CPU测试不替代真实模型检查</td>
+</tr>
+</tbody>
+</table>
+<p>证据：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/judgment-report-toy-v1-2026-10-26/readiness/prepare-receipt.json">准备收据</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/judgment-report-toy-v1-2026-10-26/readiness/remote-cpu-tests.log">服务器CPU测试</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/judgment-report-toy-v1-2026-10-26/readiness/remote-freeze-tokenizer-check.log">远端冻结及分词检查</a>。</p>
+<h5 id="_6">资源与停止点</h5>
+<p>只读快照中，两张H20均被其他进程占用：GPU0进程1579923，GPU1进程1579924，各约15.9 GiB显存。未干预这些进程，未预留GPU。因此目前是<strong>部署及CPU准备完成</strong>，不能称两张卡空闲或成品模型已验收。</p>
+<p>可用空间：工作盘135.03 GiB；模型盘和<code>/tmp</code>所在文件系统43.65 GiB；本地归档盘877.38 GiB。本轮准备文件约1 MiB，无模型下载和长生成需求，当前准备空间充足；正式运行前按当时剩余量重查。</p>
+<p>正式计划两候选共20,602次前向（含校准与起步检查），实际模型耗时尚未测量。不开模型测速，不把CPU时间报成正式ETA。获新授权且指定GPU空闲后，才做起步模型检查并据真实进度估时。</p>
+<p>用户本轮只批准“写合同代码去推进，停在正式实验开跑前”。<code>authorization.prepare.json</code>明确禁止模型执行，正式运行须另有绑定本轮freeze的新授权。当前不存在正式输出目录，也没有启动或恢复半小时监控。</p>
+<hr />
+<h3 id="3_1">原件 3：准备与运行说明</h3>
+<p>原路径：<code>experiments/judgment-report-toy-v1-2026-10-26/RUNBOOK.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/judgment-report-toy-v1-2026-10-26/RUNBOOK.zh-CN.md">固定提交原文</a> · <a href="../library/c5ce04c4d1de2808.html">单独阅读副本</a>；SHA-256：<code>c5ce04c4d1de28083aad5a1bcb2f3d6121cf154857a52fb19dadcff54fe50fef</code>。</p>
+<hr />
+<h4 id="_7">准备与运行说明</h4>
+<p>本轮目前只允许准备与CPU验收。未给出正式运行授权；以下运行命令是供之后使用的说明，<strong>本次不执行</strong>。</p>
+<h5 id="cpu">CPU准备</h5>
+<p>在本目录执行，均不加载成品模型：</p>
+<pre><code class="language-sh">python3 task_data.py verify
+python3 -m unittest discover -s . -p 'test_*.py' -v
+python3 experiment.py freeze
+python3 experiment.py check
+</code></pre>
+<p>freeze只能在全部代码审查完成后生成一次，已有freeze不可覆盖。CPU测试中的微型合成网络用于检验真实钩子，不能称成品模型预检。</p>
+<p>服务器现成解释器为<code>/workspace/acupuncture/.venv-bench/bin/python</code>。在相同仓库相对目录使用它执行测试及：</p>
+<pre><code class="language-sh">/workspace/acupuncture/.venv-bench/bin/python experiment.py check --tokenizer
+</code></pre>
+<p>该命令只读分词器、不读成品模型权重、不调用模型前向。前序<code>validate-parallel</code>通过原扩展核验；旧冻结依赖不得覆盖。如有哈希差异，先报告准确文件，再处理。</p>
+<h5 id="_8">以后获得正式授权时</h5>
+<p>另存<code>launch-authorization-r01.json</code>，记录实际用户指令与时间，不预填授权。必要字段：<code>status=authorized</code>、本轮<code>experiment</code>、当前<code>freeze_sha256</code>、<code>candidate_ids=[C05,C01]</code>、<code>maximum_model_workers=2</code>、<code>user_instruction</code>、<code>granted_at</code>。准备授权或旧实验授权会在加载模型前拒绝。</p>
+<p>确认两张卡空闲后，从两个独立终端启动；日志放在输出目录外，记录真实退出码。不启动别的实验或抢占其他作业。</p>
+<pre><code class="language-sh">/workspace/acupuncture/.venv-bench/bin/python experiment.py run --candidate C05 --device cuda:0 --output runs/r01-C05 --authorization launch-authorization-r01.json --execute
+/workspace/acupuncture/.venv-bench/bin/python experiment.py run --candidate C01 --device cuda:1 --output runs/r01-C01 --authorization launch-authorization-r01.json --execute
+</code></pre>
+<p>输出目录必须不存在；没有resume。每卡开始时做一次恒等替换检验，然后完整跑256个变体。每个变体保存六条件、参考/当前输入身份、实际干预审计；失败留下原目录。</p>
+<p>完成后分别核验：</p>
+<pre><code class="language-sh">/workspace/acupuncture/.venv-bench/bin/python experiment.py verify-run --output runs/r01-C05
+/workspace/acupuncture/.venv-bench/bin/python experiment.py verify-run --output runs/r01-C01
+</code></pre>
+<p>要求两个进程正常退出、两个receipt completed、各256个逐题文件、各summary有效、模型权重与钩子检查通过。不要将本轮收据作为旧function-dev/confirm收据输入。后续解释、独立确认和其他模型实验另讨论。</p>
+<hr />
+<h2 id="_9">时间、运行与停止收据索引</h2>
+<p>下面是所收集JSON的原有时间字段与状态，不把预计结束时间当实际完成时间。未列时间的文件仍有原件链接。完整JSON全部保存在原文归档，不能以此索引中的标量代替完整嵌套内容。</p>
+<table>
+<thead>
+<tr>
+<th>原件</th>
+<th>原记录状态/阶段</th>
+<th>原时间字段（原时区）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/judgment-report-toy-v1-2026-10-26/readiness/prepare-receipt.json">readiness/prepare-receipt.json</a></td>
+<td>{"status": "cpu_ready_formal_run_paused", "scope": "Prepare only; no pretrained model load or forward; synthetic CPU hook tests only"}</td>
+<td>{"resource_snapshot_at": "2026-10-26T09:16:55.289020+00:00", "recorded_at": "2026-10-26T09:22:47.521523+00:00"}</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_10">全部原始资产入口</h2>
+<p>本目录在固定提交下共有18个跟踪文件，包含代码、原回答、失败、收据和压缩证据；文件数不是样本数。<a href="../assets/009-judgment-report-toy-v1-2026-10-26.tsv">逐文件完整账本</a> · <a href="https://github.com/yuxiexiong/acupuncture/tree/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/judgment-report-toy-v1-2026-10-26">原目录</a>。未复制模型权重、环境或凭据。</p></main></html>

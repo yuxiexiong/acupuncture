@@ -1,0 +1,54 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>NR-01（原生背景三因素互补恢复）合同 r01</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="nr-01-r01">NR-01（原生背景三因素互补恢复）合同 r01</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-native-complement-recovery-v1-2026-11-02/CONTRACT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-native-complement-recovery-v1-2026-11-02/CONTRACT.zh-CN.md">固定提交原件</a>；SHA-256：<code>32c563dee67da3591f391c22db4d0662a8ae3778c4718e3478871969a7dcf679</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="nr-01-r01_1">NR-01（原生背景三因素互补恢复）合同 r01</h1>
+<p>日期：2026-11-02。设计：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-native-complement-recovery-plan-v1-2026-11-02.zh-CN.md">计划 v1</a> + <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-native-complement-recovery-plan-v2-2026-11-02.zh-CN.md">v2 修订</a>。基准：EH-XC（5f6ef8d）、SK-01（c3b8b97）。授权：用户 2026-11-02「同意，按这四条改好后直接写合同代码，测试后上卡跑」。<strong>已见数据</strong>：010/011/110 与 001 的数值在冻结前已由旧记录得知（见 v2 申报）；只有 100、101 未见。</p>
+<h2 id="1">1. 操作</h2>
+<p>沿用 SK-01 的模型、revision、BF16、内核、token、晚段窗口、L0 剂量 −1、四方向（N4146、N1210、R0、C1343）、12 条输入、worker/GPU 分配、进程内校准。每输入形成 C、评分 C_native；每方向形成 T，然后从完整 T 缓存出发，把以下因素的任意子集恢复为同输入的 C 供体，共 8 格（位 = X F H，1 = 恢复）：X = 第0–12层全部缓存分量；F = 深层 G 层的卷积缓冲（q/k/v 全部通道）；H = 深层 G 层递推 S + 深层全注意力 keys 与 values。全部格自然入口、不挂任何入口 hook；000 即 T_native。</p>
+<h2 id="2">2. 预算</h2>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th style="text-align: right;">形成</th>
+<th style="text-align: right;">评分</th>
+<th style="text-align: right;">校准</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>预检（P01-f0/f1，1 worker；首输入另做记录器关闭重建 C/T4146）</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">68</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td>正式（12 输入，2 worker）</td>
+<td style="text-align: right;">60</td>
+<td style="text-align: right;">396</td>
+<td style="text-align: right;">6</td>
+</tr>
+<tr>
+<td>合计</td>
+<td style="text-align: right;">72</td>
+<td style="text-align: right;">464</td>
+<td style="text-align: right;">7</td>
+</tr>
+</tbody>
+</table>
+<p>GPU ≤1 小时（预计约 0.1），产物 ≤8 GiB。预检工程失败可记账后重试一次；正式不重试。</p>
+<h2 id="3">3. 工程闸门（任一不过即停止，记合同执行失败）</h2>
+<p>校准、GPU 分配等于 B3；L0 写入 ≤1%；层列表与固定配置一致；<strong>重放</strong>：000 = EH-XC T_native，001 = SK P_SK0，111 = C_native（= EH-XC C_native）；<strong>等价前提</strong>：010 = EH-XC XH11，011 = EH-XC X10，110 = EH-XC H01（logits 逐位）；自然入口：X 恢复时等于 x_C，否则等于 x_T（逐位）；每格 X、F、S、KV 四类分量分别哈希并与来源表一致；供体前后哈希不变；每格 14 个 G 内核各一次、chunk 为 0、评分时无形成 hook；首输入记录器开/关逐位一致。</p>
+<h2 id="4-nr_corerule">4. 读数与判读（<code>nr_core.RULE</code>）</h2>
+<p>D = 停止最大 − 非停止最大；同时算固定候选 Q/A/B 版本。N = D(P) − D(C_native)；R(A) = D(P) − D(恢复 A)；r_i、i_ij、i_XFH 按标准 2³ 分解，N = Σr + Σi_ij + i_XFH；条件二阶项 i_ij + i_XFH；保留 L(i) = N − R(其余两类)；三元可加残差 E = N − Σr。只在 N ≥ 1 的输入上形成比例与标签；所有格照常执行。</p>
+<ul>
+<li><strong>预注册（推测档，仅未见量）</strong>：P_X：R(X) &lt; 0.5N；P_XH：i_XH ≥ τ，τ = max(0.5, 0.1N)。方向内两事实都满足、≥5/6 情景记支持；≥5 个情景两事实适用但支持不足记未支持；否则适用不足。跨方向报告 k/4。</li>
+<li><strong>描述（分别报告，可同时成立）</strong>：单因素强恢复 R(i) ≥ 0.5N；单因素保留占多数 L(i) ≥ 0.5N；各交互项按 ≥τ 正、≤−τ 负、其余为小；可加相容 = 三个 i_ij 与 E 的绝对值都 &lt;τ；反向或过度恢复原值报告。R(F)、R(H)、R(XF)、R(FH) 及由它们决定的量标为<strong>已知值复核</strong>（冻结前已见）。</li>
+<li>D 上明显而 Q 上为小的交互，只说竞争集合层面的非加和。距判据边界 ≤0.125 的单元单列为精度敏感。</li>
+<li>措辞：联合恢复强不等于三阶交互强；“恢复效应超加和”与冗余/替代相容，但不证明同一信息或动态补偿；浅层/入口等价只限本轮固定 token 的单步读出。</li>
+</ul>
+<h2 id="5">5. 出口</h2>
+<p>见计划 v1 §9：某类单独保留仍维持 ≥ 半数 N → 该反事实背景下的幅度充分性；三类单独恢复都弱且组合近可加 → 多个中等作用叠加，结束分账分支；二阶明显而三阶小 → 成对项描述；三阶明显且 Q 同向 → 条件性约束；方向差异 → 保留异质性；全恢复或等价闸门不闭合 → 工程或因素完整性失败，不解释为未知机制。</p>
+<h2 id="6">6. 交付</h2>
+<p><code>runs/{preflight,formal}-r01/</code>（记录入 Git，张量不入）、<code>analysis/nr-readouts-r01.json</code>、<code>REPORT.zh-CN.md</code>。</p></main></html>

@@ -1,0 +1,244 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>125．旧Gemma C50队列与停止</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="125gemma-c50">125．旧Gemma C50队列与停止</h1>
+<p><a href="../README.zh-CN.html">返回总时间线</a></p>
+<p><strong>时间定位</strong>：版本/记录日期 2026-11-05；未从所选收据确定完整运行起止，不据目录名补写时刻。</p>
+<p><strong>当时的目的与设计</strong></p>
+<p>原准备把C开放修补流程复用到Gemma3-4B，并等待下载和空卡。</p>
+<p><strong>实际过程、结果与后来更正</strong></p>
+<p>11月5日叫停时尚未进行真实Gemma工程验收、W0或搜索，没有该旧队列的科学成绩。后来的Gemma v8/v9各30轮属于新版本，不可合并成旧C50完成。</p>
+<p><strong>来源身份</strong>：<code>wsp-vlm-c-gemma3-4b-v1-2026-11-05</code>；本章主体来源提交 <code>2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274</code>。下方原文中的状态是各文件写作时的状态，不能把早期“尚未运行”覆盖后期正式收据，也不能将后期结果倒填进早期设计。</p>
+<h2 id="_1">原设计、执行过程、结果与更正全文</h2>
+<p>以下按“设计与题目 → 工程/执行记录 → 结果/更正 → 其他历史说明”组织；同类内没有可靠时间时保留路径顺序，不冒充严格先后。正文未删段；仅为本章节重排标题层级、把相对链接指向固定提交。原始字节另外完整保存。</p>
+<h3 id="1">原件 1：原始文档</h3>
+<p>原路径：<code>experiments/wsp-vlm-c-gemma3-4b-v1-2026-11-05/RESEARCHER.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-c-gemma3-4b-v1-2026-11-05/RESEARCHER.md">固定提交原文</a> · <a href="../library/c1ce04c7e05a3933.html">单独阅读副本</a>；SHA-256：<code>c1ce04c7e05a39338489e06cd775b544bad1cebc7e9dc60f24f5ec94dfbcafd5</code>。</p>
+<hr />
+<p>You are the researcher. The human fixes task, evaluation, data access and costs.
+You diagnose failures, choose measurements, select parameters, calculate edits and
+revise your ideas using actual feedback. No layer, neuron ranking, or edit schedule
+has been prescribed. No successful patch is required. You may stop with a negative
+or inconclusive result. Explain your evidence, next action and expected observation
+before exactly one fenced <code>python</code> or <code>forward</code> block. A plain final reply stops.</p>
+<p>Python runs persistently on CPU in an isolated directory. NumPy is <code>np</code>.
+<code>catalog()</code>, <code>NAMES</code>, <code>load_original(name)</code>, <code>load(name)</code>, <code>save_edit(name,array)</code>,
+<code>drop_edit(name)</code>, <code>edited()</code> expose parameter inspection and staging.
+You write the selection and modification algorithm yourself. No target-model
+training or unmetered model execution is allowed. Disclose any labels/fitting used.
+<code>EVIDENCE</code> contains only permitted development data; <code>ARTIFACTS</code> contains complete
+tool feedback. Successful controls and failures are equally available. No sealed
+confirmation data is accessible. Target-model prompts never receive gold labels.</p>
+<p><code>forward</code> JSON takes <code>op</code> and relevant fields:</p>
+<ul>
+<li><code>status</code>: current, best, resource use. Start here or with <code>evidence</code>/<code>catalog</code>.</li>
+<li><code>evidence</code>, optional <code>ids</code>: input, gold, prior raw answers; initial answers may
+  be absent until original evaluation. Large results are paginated, not discarded.</li>
+<li><code>image</code>, <code>request_id</code>, <code>kind</code> = <code>input</code> or <code>preview</code>: attaches a verified image
+  to your next turn. You may request any allowed development example.</li>
+<li><code>catalog</code>: parameter names/shapes/dtypes/tied aliases from the checkpoint.</li>
+<li><code>runtime_catalog</code>: actual runtime named modules/parameters; counts wall/load cost.</li>
+<li><code>measure</code>, <code>candidate</code>, <code>ids</code>, <code>spec</code>: teacher-forced internal readout. <code>spec</code>
+  supports <code>continuation</code>, <code>score_token_ids</code>, <code>capture</code> and <code>interventions</code>.
+  A capture supplies <code>module</code>, <code>where</code> (<code>input</code>/<code>kwargs</code>/<code>output</code>), <code>path</code> (tuple/dict keys),
+  optional <code>flat_indices</code>. Results retain actual tensor shape, input token IDs,
+  decoder image-token positions and image grid. Vision tensor axes require
+  inspection; do not assume they are decoder-token axes. No arbitrary gradient
+  diagnostic or attention-probability extractor is implemented yet.
+  Temporary interventions additionally supply explicit <code>flat_indices</code>, <code>values</code>
+  and <code>operation</code> (<code>add</code>, <code>replace</code>, <code>scale</code>); arbitrary replacement values may be
+  calculated in Python. They do not become weight edits or best candidates.</li>
+<li><code>commit</code>, <code>parent</code>, <code>rationale</code>: validate staged tensors and create an immutable
+  candidate. Parent must equal current checkout. Actual effective scalars are
+  counted against W0; tied parameters count once. Staging clears on commit.</li>
+<li><code>checkout</code>, <code>candidate</code>: return to any recorded candidate or W0; clears staging.
+  Python variables remain, so explicitly refresh arrays after checkout.</li>
+<li><code>evaluate</code>, <code>candidate</code>, optional <code>ids</code>: paired original/parent/candidate outputs
+  under identical inputs. Omitting ids evaluates the fixed full development pack.
+  Local subsets are diagnostic only; raw answers and repaired/worsened IDs return.</li>
+<li><code>accept</code>, <code>candidate</code>: observer applies the frozen full-development selection
+  and protection rules. Failures do not automatically expand budgets or scope.</li>
+<li><code>artifact</code>, <code>name</code>, optional <code>offset</code>/<code>length</code>: read a page of full returned JSON.</li>
+<li><code>freeze</code>: freeze the current best within the final sparsity budget; ends search.
+  This is a development selection, not evidence of independent generalization.</li>
+<li><code>stop</code>, <code>reason</code>: end with an honest negative/inconclusive result.</li>
+</ul>
+<p>Every tool operation (including errors), selected parent, code and result is logged.
+Weight edits preserve architecture, tensor names and shapes. Do not alter scoring,
+input images, generation settings or budgets. Final deployment must be ordinary
+inference from a reloaded static patch with no diagnostic hooks. An engineering
+tool error is not evidence against the scientific hypothesis.</p>
+<p>This is the first bounded development exploration after original-model screening.
+Use all available development successes and failures, not only a preselected error
+pattern. Read /evidence/bundle.json using Python for the complete package; it
+includes previous_predictions. The human has not established a failure mechanism.
+B concerns total vs spatially conditioned counts. C concerns visual vs usual
+size judgments under original/counterfactual images and no-image controls.
+Do not assume a missing neuron, a particular layer, or one shared cause.</p>
+<p>Selection: ordinary-prompt joint correctness, averaging wording/order within each
+source group then groups equally. B pairs total/subset; C pairs counterfactual
+usual/visual. All conditions and both prompt arms are protected per wording/order
+cell: maximum 0.035 accuracy loss vs original, format/truncation each &lt;= 0.01.
+Only full fixed development evaluation can select a best candidate. Ties prefer
+fewer changed scalars. C's original/no-image controls and five-way correctness
+must also be reported. View raw responses and repaired/worsened IDs.
+Temporary support &lt;=4,000,000 and final support &lt;=1,000,000 actual BF16 scalars
+relative to W0, across any legitimate parameter locations. Wall limit 7200 seconds
+includes your thinking time, model loading, diagnostics and evaluations. No need
+to use all 100 turns. Budget exhausted or no useful patch is a valid outcome.
+Your persistent CPU workspace has NumPy only; use the metered observer for every
+model forward. Select your own observations and edit computation. You may change
+your hypothesis using feedback; an engineering error is not a task failure.</p>
+<hr />
+<h3 id="2">原件 2：用户叫停：所有卡上实验与自动上卡队列已停止</h3>
+<p>原路径：<code>experiments/wsp-vlm-c-gemma3-4b-v1-2026-11-05/STOPPED.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-c-gemma3-4b-v1-2026-11-05/STOPPED.zh-CN.md">固定提交原文</a> · <a href="../library/02e4c2522039c5a5.html">单独阅读副本</a>；SHA-256：<code>02e4c2522039c5a5a7e5bf6446b3abcf9a5bafacd886e5ec51839ddacde983a2</code>。</p>
+<hr />
+<h4 id="_2">用户叫停：所有卡上实验与自动上卡队列已停止</h4>
+<p>2026-11-05 18:35 北京时间，用户指令：“叫停卡上的所有正在跑的实验”。本指令覆盖之前继续推进和自动上卡的授权；未经用户重新授权，不恢复模型实验。</p>
+<ul>
+<li>GPU 0 的 Qwen C 2B 已停止，队列最后记录完成 4/50 轮；不能把未完成轮次记入结果。</li>
+<li>Qwen C 8B 与 Gemma 3 4B 尚在等下载，其自动等卡队列已停止。</li>
+<li>对应三个本地研究控制器及其进程组全部停止。</li>
+<li>远端核对：两张 H20 均无计算进程，显存各 3 MiB，利用率 0%。未强制清理显存或删除产物。</li>
+<li>原有 B/C 4B 各 50 轮此前已经完成，冻结结果保留。</li>
+<li>模型下载保留；下载本身不授权重新上卡。原始日志、失败尝试、候选及逐轮结果保留。</li>
+<li>半小时只读汇报任务已设置；巡检不包含恢复或重启实验的权限。</li>
+</ul>
+<p>Gemma 准备工作已完成本地和服务器各 35 项离线测试，真实处理器/meta 架构 CPU 检查通过。叫停时尚未进行 Gemma GPU 工程验收、全量基线或搜索，不存在 Gemma 科学结果。此前部署快照仅是历史记录，现行执行状态以本文件和 <code>audit/user-stop-remote.json</code> / <code>audit/user-stop-local.json</code> 为准。</p>
+<p>服务器每条新模型运行根目录已写 <code>PAUSED_BY_USER.json</code>，队列状态为 <code>paused_by_user</code>。所有动作与结果保留供之后审计；任何续接须先核查中断动作，不得盲目重放。</p>
+<hr />
+<h3 id="3gemma-3-4bc-50">原件 3：Gemma 3 4B：C 任务 50 轮方法复用</h3>
+<p>原路径：<code>experiments/wsp-vlm-c-gemma3-4b-v1-2026-11-05/README.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-c-gemma3-4b-v1-2026-11-05/README.zh-CN.md">固定提交原文</a> · <a href="../library/19711d8ea3be1277.html">单独阅读副本</a>；SHA-256：<code>19711d8ea3be12772eea84970a5e8057e25b781e529ee9adfd9eb00a9325cdbf</code>。</p>
+<hr />
+<h4 id="gemma-3-4bc-50">Gemma 3 4B：C 任务 50 轮方法复用</h4>
+<p>日期：2026-11-05。用户明确要求“把 gemma3-4b 下载到服务器，然后排队上卡实验。和 qwen vl 一样，50轮”。本目录承接已确认的 <a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-c-scale-v1-2026-11-05/README.zh-CN.md">Qwen 两模型复用</a>，保留逐轮正确率折线图与 CSV 的交付要求。</p>
+<h5 id="_3">固定合同与真正的改动</h5>
+<p>模型为 <code>google/gemma-3-4b-it</code>，官方 revision <code>093f9f388b31de276ce2de164bdc2081324b9767</code>。官方元数据见 <code>upstream-4B.json</code>。服务器现有 HF 账号已获访问权限，经本机官方 HTTPS 核验为 200；凭据只在内存中用于官方域名，不保存、不发送给镜像。权重通过官方签名 CDN 地址下载；地址以 0600 权限置于 Git 外，逐文件校验官方 LFS SHA256 / Git blob SHA1。</p>
+<p>保持不变：C 的 64 个独立源组、2560 条开发请求、原图/题目/答案/顺序、评分、选择与保护、绝对编辑预算、gpt-6-astra / max 独立空上下文研究员、持久 CPU 沙箱和 SSH broker、BF16、SDPA、batch64、greedy、最多128生成 tokens。临时4,000,000、最终1,000,000个改动标量；每个新非零补丁完成全 D 评估计一轮，失败改善也计轮，诊断/部分评估/相同权重不计。50轮自动冻结；不加轮救结果。</p>
+<p>继承每模型384,000样本/前向、1,622,016,000 target-token reservation、36,000 CPU Python秒、2,000研究员工具对话轮/50,000,000研究员tokens，无硬会话 wall cutoff。完整W0基线2560请求计入搜索账本；50候选完整评估至少128,000请求，诊断也计账。工程验收132生成样本+2诊断前向单列；下载约8.60GB权重与处理器文件、CPU预检和实际卡时另记，未测得的耗时不作承诺。</p>
+<p>模型必要适配如下，均不改研究策略：</p>
+<ol>
+<li>加载类使用 Gemma3ForConditionalGeneration，保留官方原始 safetensors 字节和 checkpoint 参数名。旧 <code>language_model.model.*</code>、<code>vision_tower.*</code>、<code>multi_modal_projector.*</code> 通过可审计别名对应新版 Transformers 的模块名；LM head 与词嵌入共享存储按真实配置验证。没有搬运 Qwen 的层号或补丁。</li>
+<li>输入采用 Gemma 原生模板及896×896处理器，单图256视觉tokens、关闭额外pan-and-scan；保留原图像素来源。模板已含BOS，故处理器不再添加第二个BOS；保留原生token_type_ids对图像注意力的定义。不能把 Qwen 图像网格或模板强行套在 Gemma 上。两家族视觉预处理和分词不同，不声称逐token或纯架构受控比较。</li>
+<li>独立新W0完整基线，旧4B Qwen预测不放进Gemma证据包，样本及图片不变。工程代码的视觉参数探针改为Gemma命名；三标量测试仅检验存取/回滚，不参与选点搜索。</li>
+<li>独立运行目录与现有GPU文件锁共用。先等模型下载校验；再等无计算进程、显存低于128MiB、利用率0的空卡，取得锁后再次检查。已运行任务不被中断。服务器执行GPU模型，研究员继续采用本地现有ChatGPT CLI和SSH控制器。</li>
+</ol>
+<h5 id="_4">验收与结果</h5>
+<p>先运行继承的离线合成测试；再用真实处理器及meta架构做零GPU预检：官方参数名映射、真实tie关系、原生模板入口与适配输入完全一致（含图/无图）、continuation不改前缀token。meta实例不是已加载权重，不能冒充真实模型验收。</p>
+<p>领取空卡后，完成真实模型验收：严格checkpoint加载信息、全部运行时参数形状/共享映射、固定batch64重复、输入等价、三个固定参数标量修改/异常回滚/重新加载、诊断测量与直接logits一致。真实验收通过才测全W0和进入50轮。失败保留原件，报告工程错误，不静默降低batch、变更解码、重放不确定调用或把失败记作科学阴性。</p>
+<p>结果目录：<code>/workspace/acupuncture/external/wsp-vlm-c-gemma3-4b-v1-2026-11-05/4B/search/reports/</code>。</p>
+<ul>
+<li><code>result.json</code>：原始基线、最后候选、按冻结规则选中的候选、冻结后的最终百分比。</li>
+<li><code>trajectory.json</code> / <code>trajectory.csv</code>：0轮基线及每个已完成轮次的全部请求正确率、C联合修补指标、候选身份和接受/拒绝理由。</li>
+<li><code>progress.png</code> / <code>progress.svg</code>：两种指标分面；每轮真实候选曲线与按原规则保留的模型曲线分别显示，不只画上升包络。未完成轮次不填造数据。</li>
+</ul>
+<p>每完成一轮自动更新，停止时再更新。报告只读已有评分，不新增目标模型调用。C联合指标仍是选优依据，全部单题正确率可能非单调。原始回答、失败、候选、费用/调用计数和研究员transcript保留。</p>
+<h5 id="_5">设计卡与自查</h5>
+<p>规范：<code>docs/experiment-design-self-check.zh-CN.md</code> v1。设计者本人自查，不是独立评审。</p>
+<p>主线：用稀疏静态权重修补改善C图文冲突表现。本轮问题：相同WSP合同在另一家族Gemma3-4B是否能获得满足原保护条件的开发集改善？新增认识是方法适用范围从Qwen家族向Gemma的延伸或失败边界，不是模型排名或纯参数量因果效应。</p>
+<p>依据：已运行Qwen C提供动机，当前代码、评分和数据为直接资产；Gemma效果尚未知。操作对象是本模型W0与每个候选静态补丁，在相同本模型输入/解码下比较完整回答。正向改善支持该模型该开发任务的可修补性；无合法改善则记录失败；保护失效说明候选代价不被合同接受；验收失败只说明实现未通过。到50轮或真实不可继续的阻塞结束，不自动扩任务、模型、剂量或预算。</p>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th>判定及理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C01</td>
+<td>通过：保持C任务稀疏权重修补，没有转成新机制或其他赛道。</td>
+</tr>
+<tr>
+<td>C02</td>
+<td>通过：新增Gemma家族上的方法适用证据或阴性边界。</td>
+</tr>
+<tr>
+<td>C03</td>
+<td>通过：复用Qwen C引擎/合同/数据及官方Gemma模型卡和已安装实现，来源哈希记录。</td>
+</tr>
+<tr>
+<td>C04</td>
+<td>通过：Qwen阳性不保证Gemma阳性，Gemma基线和收益未知，允许无改善。</td>
+</tr>
+<tr>
+<td>C05</td>
+<td>通过：各候选相对原始W0的真实BF16权重变化；不固定Qwen选点。</td>
+</tr>
+<tr>
+<td>C06</td>
+<td>通过：模型内图片来源、文字、模板/解码固定，补丁后的正常前向响应不冻结。</td>
+</tr>
+<tr>
+<td>C07</td>
+<td>通过：原生共享权重不拆分；旧checkpoint名称只做别名映射，字节不改。</td>
+</tr>
+<tr>
+<td>C08</td>
+<td>通过：估计Gemma模型内开发改善，不能分离家族/训练/分词/视觉预处理贡献。</td>
+</tr>
+<tr>
+<td>C09</td>
+<td>通过：合法改善、无改善、保护失败、工程失败有不同判读，不伪造互斥机制解释。</td>
+</tr>
+<tr>
+<td>C10</td>
+<td>通过：联合修补指标与全部请求正确率同时报告，不以局部logit代替答案。</td>
+</tr>
+<tr>
+<td>C11</td>
+<td>通过：真实工程验收与科学结果分开；科学阴性保留，无静默改设置。</td>
+</tr>
+<tr>
+<td>C12</td>
+<td>通过：旧Qwen结果无法给出Gemma修补效果；只加用户指定的一个模型。</td>
+</tr>
+<tr>
+<td>C13</td>
+<td>通过：固定revision/哈希/数据/合同；64独立源组；开发数据不伪装独立确认。</td>
+</tr>
+<tr>
+<td>C14</td>
+<td>通过：正反结果均能约束方法适用范围；50轮结束，不自动扩张。</td>
+</tr>
+</tbody>
+</table>
+<p>与上一设计相比，仅加入一个不同家族及必要模型/原生处理器适配；保持核心问题、同源数据、预算与选优指标。历史错误：E01保持问题；E02不移植层号；E03相同绝对稀疏度不等于相同扰动；E04/E19工程验证非发现；E10/E11不混指标；E12保护不代表无所有损伤；E14不推必要充分；E16保留阴性；E20不伪设互斥机制；E21不因跨家族阳性直接宣布novelty；E22明确开发选择和源组；E23自查/测试/真实验收/排队/完成分开；E24/E25不扩完整机制矩阵。E05–E09、E13、E15、E17–E18、E26属于缓存拼接或形成读取归因，本轮不做，故不适用。</p>
+<p>反方最强反例：Gemma阳性仍可能是同开发集自适应搜索，不能推出未知样本泛化；不同家族的收益差可能来自不同基线、训练、模板或图像编码，不能归因于单个架构因素；候选高分可能伴随保护失败，不能用全程最高值替代合法保留结果。处理：明确开发身份、分模型W0配对、保留所有轮次与拒绝理由、用原规则选优，不扩大本轮承诺。负向结果不会自动触发更多轮次。</p>
+<p>设计自查结论：通过上述方法复用范围；工程状态以 <code>audit/</code> 及运行回执为准。执行授权来自用户本次直接指令，不由自查产生。零GPU检查通过与后台排队都不等于50轮实验完成。</p>
+<h5 id="_6">运行入口与来源</h5>
+<p>服务器：<code>.venv-bench/bin/python -u experiments/wsp-vlm-c-gemma3-4b-v1-2026-11-05/scale.py --size 4B --server</code>。</p>
+<p>本地控制器：<code>python3 -u experiments/wsp-vlm-c-gemma3-4b-v1-2026-11-05/scale.py --size 4B</code>。</p>
+<p>存在回执时先检查PID、日志及未完成动作，不能盲目再启动。权重、私有签名链接与账号信息不进Git。官方资料：<a href="https://huggingface.co/google/gemma-3-4b-it">模型</a>、<a href="https://huggingface.co/docs/transformers/model_doc/gemma3">Gemma3接口</a>。当前固定环境为torch 2.6.0+cu124 / Transformers 5.20.2，沿用原环境，不升级依赖。</p>
+<hr />
+<h2 id="_7">时间、运行与停止收据索引</h2>
+<p>下面是所收集JSON的原有时间字段与状态，不把预计结束时间当实际完成时间。未列时间的文件仍有原件链接。完整JSON全部保存在原文归档，不能以此索引中的标量代替完整嵌套内容。</p>
+<table>
+<thead>
+<tr>
+<th>原件</th>
+<th>原记录状态/阶段</th>
+<th>原时间字段（原时区）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-c-gemma3-4b-v1-2026-11-05/audit/local-controller-launch-attempt1.json">audit/local-controller-launch-attempt1.json</a></td>
+<td>{}</td>
+<td>{"time_unix": "2026-11-05T10:29:44.385568+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-c-gemma3-4b-v1-2026-11-05/audit/local-controller-launch.json">audit/local-controller-launch.json</a></td>
+<td>{}</td>
+<td>{"time_unix": "2026-11-05T10:30:52.999903+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-c-gemma3-4b-v1-2026-11-05/audit/user-stop-local.json">audit/user-stop-local.json</a></td>
+<td>{}</td>
+<td>{"time_unix": "2026-11-05T10:34:49.673128+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-c-gemma3-4b-v1-2026-11-05/audit/user-stop-remote.json">audit/user-stop-remote.json</a></td>
+<td>{}</td>
+<td>{"time_unix": "2026-11-05T10:35:23.857370+00:00"}</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_8">全部原始资产入口</h2>
+<p>本目录在固定提交下共有43个跟踪文件，包含代码、原回答、失败、收据和压缩证据；文件数不是样本数。<a href="../assets/125-wsp-vlm-c-gemma3-4b-v1-2026-11-05.tsv">逐文件完整账本</a> · <a href="https://github.com/yuxiexiong/acupuncture/tree/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-c-gemma3-4b-v1-2026-11-05">原目录</a>。未复制模型权重、环境或凭据。</p></main></html>

@@ -1,0 +1,78 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>冻结评测题目与来源</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="_1">冻结评测题目与来源</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/capability-damage-v2-2026-10-26/ASSETS.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/capability-damage-v2-2026-10-26/ASSETS.zh-CN.md">固定提交原件</a>；SHA-256：<code>884dfa806566cfad2648e5799fe54676274aa72126917b4fa87d068c60a83f3d</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="_2">冻结评测题目与来源</h1>
+<p>2026-10-26。本文记录 CPU 数据准备，<strong>不是模型评分结果</strong>。同一份题目用于原版与 EVO。</p>
+<table>
+<thead>
+<tr>
+<th>任务</th>
+<th style="text-align: right;">正式题数</th>
+<th>固定设置</th>
+<th style="text-align: right;">最大提示 token</th>
+<th style="text-align: right;">最大提示加候选/生成预算</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MMLU</td>
+<td style="text-align: right;">14,042</td>
+<td>5-shot；字母续写似然；官方按学科题数加权</td>
+<td style="text-align: right;">3,138</td>
+<td style="text-align: right;">3,139</td>
+</tr>
+<tr>
+<td>ARC-Challenge</td>
+<td style="text-align: right;">1,172</td>
+<td>25-shot；完整选项似然；按裸选项 Unicode 字符数归一化</td>
+<td style="text-align: right;">1,283</td>
+<td style="text-align: right;">1,294</td>
+</tr>
+<tr>
+<td>GSM8K</td>
+<td style="text-align: right;">1,319</td>
+<td>5-shot；greedy；最多 2,048 新 token；官方 strict/flexible filters</td>
+<td style="text-align: right;">1,602</td>
+<td style="text-align: right;">3,650</td>
+</tr>
+<tr>
+<td>HumanEval</td>
+<td style="text-align: right;">164</td>
+<td>原始函数补全；0-shot；greedy；最多 1,024 新 token</td>
+<td style="text-align: right;">407</td>
+<td style="text-align: right;">1,431</td>
+</tr>
+</tbody>
+</table>
+<p>共 16,697 题；另有 6 道不计分的技术开发题。开发题来自 MMLU/ARC validation 和 GSM8K train；生成开发题后重置 few-shot 随机种子，未改变正式题目。全部请求均未套聊天模板。种子为 <code>20261026</code>。</p>
+<p><code>prepare_tasks.py</code> 使用固定版 Harness 的实际 <code>ConfigurableTask</code>、采样器、<code>fewshot_context</code> 和 <code>construct_requests</code> 导出请求，没有重写提示模板。所有候选保存相同的公共 <code>context</code>；<code>continuations</code> 保留官方前置分隔符，<code>choices</code> 保留供 ARC 归一化使用的裸选项。<code>doc</code>、<code>target</code> 只供评分，不能拼入当前题的公共校准提示。GSM8K 标记旧快速评测已暴露 100 题、未暴露 1,219 题。</p>
+<h2 id="_3">固定来源与验证</h2>
+<ul>
+<li>LM Evaluation Harness：<code>d6de81643928d653435c431bae19945d41d32520</code>。70 个准备过程使用的源码/配置文件哈希与同 commit 的干净上游副本一致，见 <code>harness-source-verification.json</code>。</li>
+<li>三份 HF 数据 revision、逐任务配置、各 split 内容摘要、实际依赖版本及正式 JSONL 摘要均在 <code>task_manifest.json</code>。</li>
+<li><code>source_expected_files.json</code> 保存从官方 Hugging Face 固定 revision API 取得的文件/LFS 元数据。远端使用同 revision 的镜像下载，179 个选定 parquet/README 文件全部通过官方 SHA-256 核验，见 <code>dataset-source-verification.json</code>。</li>
+<li>HumanEval：官方 <code>openai/human-eval</code> commit <code>b9453e8f1865df0a0057a1383767caa400acfbcf</code>。数据 gzip 与该 commit 的 Git blob 逐字节一致，见 <code>humaneval-data-source-verification.json</code>。</li>
+<li><code>validation/token_length_audit.json</code> 及逐题 <code>token_lengths.jsonl</code> 使用实际本地 tokenizer 和引擎的编码函数，确认全部正式/开发请求无需截断；未加载模型权重。</li>
+</ul>
+<p>首轮直连 HF 无法访问，118 秒后停止本任务自己的 CPU 进程，保留 r01 日志。固定版本镜像路线 r02 用时 279 秒并成功。r03 在离线缓存上用时 106 秒，全部题目、开发题和清单逐字节重建一致。完整运行状态与摘要见 <code>task-preparation-receipt.json</code>。</p>
+<p>首次长度审计发现 MMLU <code>mmlu_management:39</code> 含合法 U+0085 字符，<code>str.splitlines()</code> 会错误拆分 JSON 字符串。冻结数据未改；读取改为真正的 JSONL 换行后审计通过。失败源码和日志保留在 <code>validation/token-length-audit-r01.*</code>。后续读取应使用文件逐行迭代，或仅按 <code>\n</code> 切分。</p>
+<h2 id="_4">无损归档与恢复</h2>
+<p>服务器保留 <code>items/*.jsonl</code> 原文件供执行。仓库以 <code>items/*.jsonl.gz</code> 保存相同内容；<code>compressed-asset-manifest.json</code> 同时记录压缩文件及解压内容的 SHA-256，总压缩大小约 7.4 MB。<code>task_manifest.json</code> 继续指向原始 JSONL 名称及摘要。以下命令在本目录执行，恢复时拒绝覆盖不同内容：</p>
+<pre><code class="language-python">import gzip, hashlib, json
+from pathlib import Path
+
+manifest = json.loads(Path(&quot;compressed-asset-manifest.json&quot;).read_text())
+for info in manifest[&quot;files&quot;].values():
+    archive = Path(info[&quot;file&quot;])
+    packed = archive.read_bytes()
+    assert hashlib.sha256(packed).hexdigest() == info[&quot;sha256&quot;]
+    raw = gzip.decompress(packed)
+    assert hashlib.sha256(raw).hexdigest() == info[&quot;uncompressed_sha256&quot;]
+    output = archive.with_suffix(&quot;&quot;)
+    if output.exists():
+        assert output.read_bytes() == raw
+    else:
+        output.write_bytes(raw)
+</code></pre>
+<p>模型、虚拟环境、上游仓库和数据缓存仍在外部；不随本目录进入 Git。<code>run_prepare_r0*.sh</code> 保留本次服务器的实际参数和路径，跨机器重建时需明确替换这些外部资产位置。</p></main></html>

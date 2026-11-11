@@ -1,0 +1,158 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>NPC-01 报告：V、S、KV 两两组合的反向移植</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="npc-01-vskv">NPC-01 报告：V、S、KV 两两组合的反向移植</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-native-pair-combination-v1-2026-11-03/REPORT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-native-pair-combination-v1-2026-11-03/REPORT.zh-CN.md">固定提交原件</a>；SHA-256：<code>a981b6c6ffbdd0982b163cdde971c7125ddb075fc731c980fe82bea769209501</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="npc-01-vskv_1">NPC-01 报告：V、S、KV 两两组合的反向移植</h1>
+<blockquote>
+<p><strong>更正（2026-11-03，评审后）</strong>：原稿第 6 节称 18 条两两最小组合输入“错误形态是选第一个编号”，核对后为 16/18（另 2 条只有 S＋V 致错的输入是复述列表后截断）；L12 的结论限定为“q/k 保持干净的本轮条件下，18 条错误只有三块同时换入才出现”，不等同于原生 T 的 17 条；补充“在已测组合内受损 S 是必要组成条件”及其限定。读数不变。</p>
+</blockquote>
+<p>2026-11-03。合同 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-native-pair-combination-v1-2026-11-03/CONTRACT.zh-CN.md">r01</a>，冻结 <code>e4ace5d5</code>（main <code>4253aab</code>）。探索性比较，已见开发面板 48 条，作者执行，未经独立评审。全部读数来自冻结分析 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-native-pair-combination-v1-2026-11-03/analysis/npc-readouts-r01.json"><code>analysis/npc-readouts-r01.json</code></a>；§4 中"选的是第一个编号"是数据出来后补做的描述。</p>
+<h2 id="_1">先说不利的部分</h2>
+<ol>
+<li><strong>L12 上没有任何两两组合致错。</strong> V＋S＋KV 改坏的 18 条输入，逐条都属于"需要三块"。这一轮在 L12 上没有找到更小的致错组合。</li>
+<li><strong>L0 上两两组合带入的错误，异常类型与联合受损不同。</strong> S＋KV 改坏的 16 条输入都在 V＋S＋KV（以及 CJ）中改坏，但类型一条都不同：前者全是"错选编号"，后者是"停止"或"混合编号"。所以两两组合只是在这些输入上也足以致错，并没有复现联合受损的表现。</li>
+<li><strong>弱推测只在 L0 上部分成立。</strong> 登记的"含 S 的组合更常成为最小致错组合"：L0 上含 S 的组合带入了 18 条，V＋KV 为 0；L12 上没有任何两两组合致错，无从比较。</li>
+</ol>
+<h2 id="1">1. 执行与验收</h2>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>冒烟 r01</td>
+<td>一次通过：C 与两针 T 逐位桥接到 NCC-01；替换只改指定张量，卷积 q/k 保持干净；自换不变</td>
+</tr>
+<tr>
+<td>预检 r01（2 输入，GPU1）</td>
+<td>通过，38 s；外推 519 设备秒</td>
+</tr>
+<tr>
+<td>正式 r01（48 输入，GPU0+GPU1）</td>
+<td>通过；墙钟 262 + 195 s</td>
+</tr>
+</tbody>
+</table>
+<p>本轮 T 与 NSR-01、NQK-01 的 T 自然 token 逐条一致；记录 sha 核对一致。计数在上限内（轨迹 385/432，续写步 1956/13392）。合计约 0.14 GPUh，无偏离。</p>
+<h2 id="2-cc-4848">2. 主读数：自然完整回答（接收者为干净运行 C，C = 48/48）</h2>
+<table>
+<thead>
+<tr>
+<th>针</th>
+<th>单组 S / V / KV（NSR-01）</th>
+<th style="text-align: right;"><strong>S＋V</strong></th>
+<th style="text-align: right;"><strong>S＋KV</strong></th>
+<th style="text-align: right;"><strong>V＋KV</strong></th>
+<th style="text-align: right;">V＋S＋KV（NQK-01）</th>
+<th style="text-align: right;">全部深层（NSR-01）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>L0</td>
+<td>48 / 48 / 48</td>
+<td style="text-align: right;"><strong>45</strong></td>
+<td style="text-align: right;"><strong>32</strong></td>
+<td style="text-align: right;"><strong>48</strong></td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr>
+<td>L12</td>
+<td>48 / 48 / 48</td>
+<td style="text-align: right;"><strong>48</strong></td>
+<td style="text-align: right;"><strong>48</strong></td>
+<td style="text-align: right;"><strong>48</strong></td>
+<td style="text-align: right;">30</td>
+<td style="text-align: right;">31</td>
+</tr>
+</tbody>
+</table>
+<p><strong>异常类型</strong>（停止 / 错选编号 / 混合编号 / 其他）：
+- L0：S＋V 为 0 / 1 / 2 / 0；S＋KV 为 0 / 16 / 0 / 0；V＋S＋KV 为 16 / 0 / 30 / 0；CJ 为 18 / 0 / 28 / 0。
+- L12：三个两两组合都没有错误。</p>
+<p><strong>首步分差相对 C</strong>：
+- L0：S＋V −7.33，S＋KV −4.63，V＋KV −5.66；
+- L12：S＋V −6.62，S＋KV −3.30，V＋KV −5.41。</p>
+<p>每个两两组合都让首步分差明显下降，但多数输入的回答不变。L0 的 V＋KV 下降 5.66，却一条都没答错。</p>
+<h2 id="3">3. 逐条最小致错组合（已测分组内）</h2>
+<table>
+<thead>
+<tr>
+<th>类别</th>
+<th style="text-align: right;">L0</th>
+<th style="text-align: right;">L12</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>单组即致错</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>有两两最小组合</td>
+<td style="text-align: right;"><strong>18</strong></td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>其中只有 S＋KV / 只有 S＋V / 两者都可</td>
+<td style="text-align: right;">15 / 2 / 1</td>
+<td style="text-align: right;">—</td>
+</tr>
+<tr>
+<td>需要三块（只有 V＋S＋KV 致错）</td>
+<td style="text-align: right;"><strong>28</strong></td>
+<td style="text-align: right;"><strong>18</strong></td>
+</tr>
+<tr>
+<td>未致错（V＋S＋KV 也不致错）</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">30</td>
+</tr>
+<tr>
+<td>两两组合致错而 V＋S＋KV 不致错</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>L0 的 18 条两两最小组合分布在 6 个场景（NQ01–03 各 4 条，NQ04–06 各 2 条）。V＋KV 从来不是最小组合。</li>
+<li>两两组合改坏的输入全部是 V＋S＋KV 也改坏的输入（L0 上 S＋KV 16/16、S＋V 3/3）。</li>
+</ul>
+<h2 id="4">4. 两两组合下的错误形态（数据后描述）</h2>
+<ul>
+<li><strong>L0 的 S＋KV</strong>：16 条错误全部是只输出一个编号，而且都是列表里的<strong>第一个编号</strong>（例如输出 "W58"）。这与先前 SVQ-01（只恢复 V，选成首列编号）、NCC-01（只恢复 V 历史，46/48 以编号开头但多选错）是同一种形态。</li>
+<li><strong>L0 的 S＋V</strong>：3 条错误，1 条输出第一个编号（这条输入的 S＋KV 也选第一个编号）；另 2 条是只有 S＋V 致错的输入，复述了题面的编号列表后截断（记为混合编号）。</li>
+<li>合计：18 条有两两最小组合的输入中，16 条的错误是选第一个编号，2 条（只有 S＋V 致错）是复述列表后截断。</li>
+<li>这些都不是原生 T 的主要表现（L0 的 T 是第一步停止）。</li>
+</ul>
+<h2 id="5-4">5. 按合同 §4 的读法</h2>
+<ul>
+<li><strong>L0</strong>：一部分输入（18/48）的最小致错组合含 S（以 S＋KV 为主），V＋KV 从不足够。这支持"S 与 V 历史或 KV 的联合变化足以致错"，但只针对这部分输入。另有 28 条输入需要三块同时受损。两两组合带入的是另一种错误（错选第一个编号），不是联合受损的停止或混合编号。</li>
+<li><strong>L12</strong>：在卷积 q/k 保持干净的本轮移植条件下，V＋S＋KV 改坏的 18 条输入都只有三块同时换入才出错。原生 T 是 17 条错误（CJ 与 T 逐位相同），V＋S＋KV 是 18 条，二者不能完全等同。</li>
+<li><strong>两针不同</strong>：L0 的部分输入在两块（含 S）时就出错，L12 的出错输入在本轮条件下都需要三块。这作为条件差异保留，不归因于层号。</li>
+<li><strong>S 在已测集合内是必要组成条件</strong>：两针上，所有致错的组合（S＋V、S＋KV、V＋S＋KV、CJ）都含受损 S；保持 S 干净、只换入受损 V＋KV，从不致错。但已测集合里没有“V＋KV＋受损 q/k、S 干净”这一格，所以这个必要性只覆盖已测的组合；受损 S 单独也不足以致错。它不推广为“S 是所有原生损伤的必要原因”，也不说明三块各自承担可相加的份额。</li>
+<li><strong>加入受损 V 改变了错误形态</strong>：L0 上 S＋KV 改坏的 16 条输入，加入受损 V 后（V＋S＋KV）都变成停止或混合编号。这是描述，“信息还在、读取坏了”和“默认回退”都是待检验的解释。</li>
+<li>正确率上的组合效应也可能只是几处连续变化一起越过了决策阈值，不能直接证明某种特定的协同计算。</li>
+<li>措辞限制：都是干净背景中的移植结果，致错只说明"充分"；不是原生损伤路径；不预设经过写入、读取还是后续传播。卷积 q/k 在本轮保持干净，只能说"不含受损 q/k 的组合足以致错"。</li>
+</ul>
+<h2 id="6">6. 能说和不能说</h2>
+<p><strong>能说</strong>（这批输入、固定切点、q/k 保持干净）：
+- L12：在 q/k 保持干净的本轮条件下，没有一个两两组合足以致错，V＋S＋KV 改坏的 18 条都只有三块同时换入才出错；
+- L0：48 条中有 18 条，含 S 的两两组合就足以致错（S＋KV 15 条、S＋V 2 条、两者都可 1 条）；其中 16 条的错误是选第一个编号，2 条是复述列表后截断；另有 28 条需要三块；
+- V＋KV（不含 S）在两针上都从未致错；在已测组合内，受损 S 是致错的必要组成条件，但单独不足。</p>
+<p><strong>不能说</strong>：
+- 受损 V 或 KV 把受损 S"读错了"；
+- 两两组合复现了原生或联合受损的表现（类型不同）；
+- 三块各自承载什么；
+- 推广到其他针、层、任务或模型。</p>
+<h2 id="7">7. 下一步候选（未授权，不自动执行）</h2>
+<ol>
+<li><strong>把这条线收束成一份阶段总结</strong>：NCC-01 → NSR-01 → NQK-01 → NPC-01 四轮，已经给出一张清楚的条件图：干净 S 足以修复；受损的单块（含 q/k）都可被容忍；L12 的出错输入在本轮条件下需要三块同时换入；L0 部分输入在含 S 的两块时就出错（16 条选第一个编号）。先写清楚，再决定是否继续深入。</li>
+<li><strong>不同组合怎样把同一输入导向“选错记录”“混合回答”或“停止”</strong>：L0 上同一批输入，S＋KV 受损时选第一个编号，加入受损 V 后变成停止或混合编号。围绕这一行为差异检验计算解释，而不是继续细分缓存；“选第一个编号是默认回退”只是其中一个待检验的候选。需要另立设计。</li>
+</ol></main></html>

@@ -1,0 +1,54 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Gemma v9共享准入修复与11:15巡检</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="gemma-v91115">Gemma v9共享准入修复与11:15巡检</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/wsp-vlm-gemma3-v9-shared-admission-2026-11-06/README.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-gemma3-v9-shared-admission-2026-11-06/README.zh-CN.md">固定提交原件</a>；SHA-256：<code>e3bb716e75adc2b5ec50e4713e3eb008344b58e276d3ca6b1c76250040af4587</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="gemma-v91115_1">Gemma v9共享准入修复与11:15巡检</h1>
+<p>用户已授权显存足够时同卡并行、及时修复工程阻塞。源码检查发现v9的claim_gpu仍只接受整卡空闲；当GPU1被其他任务占用时，v9第一组会长期持有GPU0独占锁，第二组即使显存充足仍等待。这里复用原队列/验收/基线/搜索，只用queue_shared.py包装共享准入；不修改原v9清单内源码、科学依赖、batch32、数据、模型、评分、Astra/max或30轮预算。</p>
+<h2 id="_1">调度规则与验收边界</h2>
+<p>首选原空卡准入。无空卡时，只认可另一同版任务已真实通过engineering acceptance、broker-ready对应同PID且阶段search；/proc确认该PID使用本包装入口，nvidia确认该卡只有这个已核实PID，至少36 GiB空闲（按新组24 GiB预估加12 GiB余量），间隔2秒再核对，并保持原v8科学完成依赖。使用本组专用共享锁和原queue.lock，不修改其他任务或对方独占锁。第二组仍完整运行自身原engineering，通过后才做基线/搜索；无失败重试、无动作重放。其他项目即使显存占用小也不自动纳入此准入。</p>
+<p>本地、远端test_admission.py均通过：正常同组共享边界可接受，空闲不足、验收未过、工程阶段、无计算进程、陌生进程/混入进程均拒绝。原v8/v9 source-manifest各24文件逐SHA无漂移；新包装入口/test独立runtime-manifest留哈希。此为工程逻辑检查；v9 GPU工程尚未开始，共享路径尚未被真实v9模型执行，不能冒充GPU验收或保证提速。</p>
+<h2 id="_2">无动作边界替换</h2>
+<p>preflight确认旧v9 B2125523/C2125524均waiting_gemma_v8、无engineering/search目录、无模型或研究者动作，本地控制器waiting_server。短暂SIGSTOP本地57718/57720，核实远端边界后终止两个纯等待器、保留旧queue-status，启动包装入口，再原PID SIGCONT控制器。新远端B2245011/C2245012均waiting_gemma_v8，原本地控制器存活；C实验2171236/80319没有被暂停或重启。原等待器停止是计划替换，不是新实验失败。launch、controllers-held/resumed、preflight和acceptance保存身份；后续以新PID及实际进程为准。</p>
+<p>当C完成30轮并核验依赖后，首组v9按原规则进入工程；第二组在首组真实验收并进入搜索后可共卡。此时应核对shared-admission.json、工程收据和真实显存；不能因单元检查通过绕过工程或提前搜索。</p>
+<h2 id="1115">11:15科学进度</h2>
+<table>
+<thead>
+<tr>
+<th>组别</th>
+<th>完整轮次（较10:40）</th>
+<th>W0→所选主分数</th>
+<th>W0→所选全体正确率</th>
+<th>修对/改错</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>v8 B</td>
+<td>30/30（0），已冻结退出</td>
+<td>16.3793%→21.5517%</td>
+<td>43.5345%→46.3362%</td>
+<td>20/7</td>
+</tr>
+<tr>
+<td>v8 C</td>
+<td>27/30（+5），继续</td>
+<td>33.9844%→37.5000%</td>
+<td>79.1406%→79.4141%</td>
+<td>20/13</td>
+</tr>
+<tr>
+<td>v9 B/C</td>
+<td>各0/30</td>
+<td>未运行</td>
+<td>未运行</td>
+<td>等待v8 C完成</td>
+</tr>
+</tbody>
+</table>
+<p>C最优R23仅第7层post_attention_layernorm有效gain1.075，2549个有效BF16标量，其他参数W0。主分数比W0高3.515625个百分点，比上次R22高0.78125个百分点；全体正确率略低于R22的79.4922%，修对/改错从28/19变20/13，是主指标和损伤的取舍。保护CPU复算：最差格下降3.125个百分点，在3.5个百分点门槛内；格式错误率0.4296875%，截断0。</p>
+<p>研究者已完成同层反向gain0.925候选27，未替代最佳；两向名义幅度7.5%和有效支持2549相同，不等于已证明所有实际扰动范数匹配。此前有拆层和剂量对照；本窗无新增measure（累计B5/C3），不把行为差异或norm缩放称为特定MLP写入方向机制。开发结果不是独立泛化。C未冻结、最终报告未完成；B30的冻结/原始证据与停止收据在shared-gpu/heartbeat-1010已交付。</p>
+<h2 id="eta">资源、用量、ETA</h2>
+<p>GPU0 C仍约15.13 GiB、余80.10 GiB，首采样53%；GPU1其他任务2235212约14.6 GiB、97%，未干预。瞬时利用率不代表全窗。磁盘剩123.785 GiB，较10:40净减0.370 GiB；B3.111 GiB不变、C4.453 GiB（+0.369 GiB），各12 GiB及全盘20 GiB门槛满足，无清理。</p>
+<p>C目标累计71,683样本/前向、18,918,921目标tokens、55.633 Python CPU秒；研究者最新成功turn128累计18,730,002 tokens（含缓存输入）。B最终14,459样本/4,454,864目标tokens/256.757 CPU秒/19,956,144研究者tokens不变。工程v8各另计2212生成/2218前向含2080校准，不计修补轮；v9此次新增模型和研究者调用为0。历史401失败无单次usage回执，不能填0；金额未知。</p>
+<p>研究者110–128整回合819.1秒（含API排队/上下文/输出，非纯思考）；该窗口已完成完整评价共1083.3秒、Python3.44秒、提交0.10秒、工具等待94.6秒。工具等待按同Mac request/response mtime差减远端elapsed；远端动作与本地研究者截点不完全同时，不将相加当严格墙钟。新measure耗时0。最近8候选的7个间隔约6.2–10.1分钟，剩3轮约20–35分钟，最终收尾另计。B无需剩余ETA；v9依赖和工程未完成，四组总ETA暂不承诺。</p>
+<p>verification-1115记录完整评分哈希（B31份/C28份全过）、资源、状态和原源码；timing-1115记录计时和最新usage；C-turn-0110保留当前最佳的完整评价原始结果（gzip无损），C-turn-0127保留最新控制审计。之后继续30分钟巡检，C30后若仅收尾故障按已有授权保留证据并释放资源，不让归档阻塞队列。</p></main></html>

@@ -1,0 +1,147 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Gemma v9半小时巡检：2026-11-06 13:40</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="gemma-v92026-11-06-1340">Gemma v9半小时巡检：2026-11-06 13:40</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/wsp-vlm-gemma3-v9-shared-admission-2026-11-06/heartbeat-1340/REPORT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-gemma3-v9-shared-admission-2026-11-06/heartbeat-1340/REPORT.zh-CN.md">固定提交原件</a>；SHA-256：<code>7ce8ced6d9c2b546823f0dddf6c31b4b1f965e5c77aee03cdc62fc57b37c4d9b</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="gemma-v92026-11-06-1340_1">Gemma v9半小时巡检：2026-11-06 13:40</h1>
+<p>B24/30（较13:10 +6）、C15/30（+5），两组继续运行。快照开始于13:40:07；C的queue-status仍是14轮旧循环值，但state、15个非零候选完整评价及turn78回执都确认第15轮完成，以完整证据计15，不将异步状态延迟误报故障。本次仅只读巡检、CPU复算与归档，无模型重放、代码或科学条件变更。</p>
+<table>
+<thead>
+<tr>
+<th>组别</th>
+<th style="text-align: right;">完整轮次</th>
+<th>W0→所选主分数</th>
+<th>W0→全体正确率</th>
+<th>所选修对/改错</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>v9 B</td>
+<td style="text-align: right;">24/30</td>
+<td>16.3793%→16.3793%</td>
+<td>43.5345%→43.5345%</td>
+<td>0/0，仍W0</td>
+</tr>
+<tr>
+<td>v9 C</td>
+<td style="text-align: right;">15/30</td>
+<td>33.9844%→34.7656%</td>
+<td>79.1406%→79.3359%</td>
+<td>6/1，新选R15</td>
+</tr>
+<tr>
+<td>v8 B</td>
+<td style="text-align: right;">30/30，完成不变</td>
+<td>16.3793%→21.5517%</td>
+<td>43.5345%→46.3362%</td>
+<td>20/7</td>
+</tr>
+<tr>
+<td>v8 C</td>
+<td style="text-align: right;">30/30，完成不变</td>
+<td>33.9844%→37.5000%</td>
+<td>79.1406%→79.4141%</td>
+<td>20/13</td>
+</tr>
+</tbody>
+</table>
+<p>v9 B25份/C16份完整评分含W0逐SHA通过；v8各31份不变。原v8/v9源码清单各24文件无漂移，真实工程验收均通过。v9两组未冻结、最终机制报告未提交；开发选优不是独立泛化。原PID远端2245011/2245012及本地57718/57720存活，未重启，v8结束进程未恢复。</p>
+<h2 id="c">C：更小补丁保留主分数，但没有保留原目标修复</h2>
+<p>R15只取R4在第10层attention o_proj中属于head7的24列，保留原BF16值、不重新放大；有效标量59754（原159819），扰动范数0.272802（原0.547043），平方范数占原补丁24.8687%。它与R4主分数同为34.765625%，按冻结规则“同分优先更少修改”替代R4；不是因为全体正确率更高。R4修12错5、净增7；R15修6错1、净增5，全体正确率略低但改错减少。</p>
+<p>CPU逐ID复算确认，R15的counterfact_visual回答没有正确性翻转，原R4的4个该条件修复保留0/4，因而不支持事先“head7分量保留至少3/4修复”的集中假设。其主指标来自其他样本组合；同分不代表同一行为机制。其所有保护格净正确率均未下降，格式错误9/2560、截断0，保护通过。当前补丁更小是一个可复用开发候选，不能称已找到视觉尺寸语义头。</p>
+<p>本窗各完整对照（具体ID、分格变化见audit-recheck，原始回答见压缩tool_result）：</p>
+<table>
+<thead>
+<tr>
+<th>轮次</th>
+<th>修改</th>
+<th style="text-align: right;">主分数</th>
+<th style="text-align: right;">修对/改错</th>
+<th style="text-align: right;">counterfact_visual净正确变化</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>11</td>
+<td>第二组匹配替代通道</td>
+<td style="text-align: right;">33.984375%</td>
+<td style="text-align: right;">11/6</td>
+<td style="text-align: right;">+1</td>
+</tr>
+<tr>
+<td>12</td>
+<td>等范数正交分量削弱</td>
+<td style="text-align: right;">33.984375%</td>
+<td style="text-align: right;">12/7</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>13</td>
+<td>原64列完整消融</td>
+<td style="text-align: right;">34.375%</td>
+<td style="text-align: right;">27/13</td>
+<td style="text-align: right;">+5</td>
+</tr>
+<tr>
+<td>14</td>
+<td>匹配替代64列完整消融</td>
+<td style="text-align: right;">35.15625%</td>
+<td style="text-align: right;">25/25</td>
+<td style="text-align: right;">-2</td>
+</tr>
+<tr>
+<td>15</td>
+<td>原R4的head7分量24列</td>
+<td style="text-align: right;">34.765625%</td>
+<td style="text-align: right;">6/1</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+<p>R14原始主分数更高，但B0/T1/O0的counterfact_visual格下降4.6875个百分点，超过3.5个百分点保护上限，故不是合格最佳。R13/R14属于更强列消融，不与R4的小方向补丁作等剂量比较；两种完整消融之间范数相近。R12保持被提名方向、修改正交部分，没有主指标改善，这是一条有限对照证据，不能单独证明方向唯一。</p>
+<p>C本窗再次通过同一diagnose路径运行原16条W0，生成token序列16/16完全重复，仍有7条与正式batch32缓存不同。这个结果支持该诊断路径在该样本的重复性，不支持跨执行路径等价；沿用前窗batch32正式评价与逐条诊断的混杂边界，不能称缓存损坏、权重漂移或把差异的唯一原因宣告查明。没有替换正式基线。</p>
+<h2 id="b">B：局部量变化未转化成修复</h2>
+<p>匹配头及输出坐标打乱对照后，研究者转向第33层MLP的稀疏条件写入拟合，测试2%/8%原张量范数剂量、反向和目标对应关系打乱（R21–24）。这些是用已见成对失败/成功数据做的监督拟合，不是独立确认。局部近似的留出7对中5对预测变差，弱证据如实保留。</p>
+<p>R21不改变完整开发回答；较强R22确实改变第33层内部残差，但CPU核对29条同路径诊断与实时W0答案29/29相同，没有7个预定失败的行为修复。残差变化不能等同于计数机制成立。两种符号和对应关系控制均未产生合格主分数改善，最佳仍W0；正在原预算内准备匹配不相交通道控制。</p>
+<p>B turn117在CPU分析中把结构化gold记录转成整数而报TypeError；前面已完成的分析变量保留，turn118改为保留结构化标签，分析成功，无模型前向重放、无kernel重启、已暂存补丁未变。原失败和纠正回执归档。本窗无尚未处理的工程阻塞。累计measure/diagnose B3/8、C4/4，诊断不计新增候选，次数不是机制证据；非零结构分解补丁的完整开发评价按原规则计轮。</p>
+<h2 id="eta">资源、计账及ETA</h2>
+<p>GPU0两组同驻留共28.64 GiB、剩66.58 GiB，采样1%；单点利用率不能代表全窗，B主要在研究者回合/拟合阶段，C主要完整生成。GPU1其他任务2307383约14.44 GiB、采样88%，未修改。工作盘剩120.541 GiB，比上次减少6.075 GiB；v9 B1.119 GiB（+0.249）、C1.512 GiB（+0.382），本项目增长约0.631 GiB，不能把全盘下降都归因于本实验。各组12 GiB、全盘20 GiB余量满足，无清理。</p>
+<table>
+<thead>
+<tr>
+<th>v9累计计账</th>
+<th style="text-align: right;">B</th>
+<th style="text-align: right;">C</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>目标样本/前向</td>
+<td style="text-align: right;">11986</td>
+<td style="text-align: right;">41224</td>
+</tr>
+<tr>
+<td>实际目标tokens</td>
+<td style="text-align: right;">3685404</td>
+<td style="text-align: right;">10884573</td>
+</tr>
+<tr>
+<td>Python CPU秒</td>
+<td style="text-align: right;">78.834</td>
+<td style="text-align: right;">34.998</td>
+</tr>
+<tr>
+<td>最新成功研究者回合</td>
+<td style="text-align: right;">124</td>
+<td style="text-align: right;">78</td>
+</tr>
+<tr>
+<td>研究者累计tokens，含缓存输入</td>
+<td style="text-align: right;">20114402</td>
+<td style="text-align: right;">11174379</td>
+</tr>
+</tbody>
+</table>
+<p>各v9工程另计133生成/142前向、2次工程加载、batch32，不计搜索轮；v8既有用量和完成交付不变。研究者金额未知，历史401失败的单次未知用量不填0。</p>
+<p>本地B102–124研究者整回合1077.1秒，工具窗口评价486.8、diagnose18.8、Python24.5、提交15.5、等待91.4秒。C64–78研究者482.8秒，工具窗口已存评价726.2、diagnose8.4、Python4.5、提交3.3、等待74.2秒。C跨窗派发turn63和本地尚未落盘的turn78评价未纳入此工具窗口耗时，故不能与完整轮次增量混作严格墙钟分解。Astra整回合含API排队/上下文/输出，不是纯思考；等待由同Mac请求/响应mtime差减远端elapsed。</p>
+<p>B最近8完整候选的7间隔2.69–11.34分钟，剩6轮按当前阶段粗估30–70分钟；C最近8候选7间隔5.87–13.35分钟，剩15轮约1.5–2.5小时。机制报告/冻结收尾另计，不承诺时刻。30轮后若仅收尾失败，保留结果和停止收据、释放资源，CPU侧继续交付；不自动扩轮/模型或恢复旧队列。</p></main></html>

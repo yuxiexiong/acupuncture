@@ -1,0 +1,177 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>B3（固定45头记录重放 + 2×2 补角 + 随机切分零带）结果报告</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="b345-22">B3（固定45头记录重放 + 2×2 补角 + 随机切分零带）结果报告</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-b3-fixed-head-trace-v1-2026-11-01/REPORT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-b3-fixed-head-trace-v1-2026-11-01/REPORT.zh-CN.md">固定提交原件</a>；SHA-256：<code>1956dd883b624675ee42493b2d72d841b2caeb00a4dff4e93d8631e93549b0b8</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="b345-22_1">B3（固定45头记录重放 + 2×2 补角 + 随机切分零带）结果报告</h1>
+<p>日期：2026-11-01。<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-b3-fixed-head-computation-next-stage-plan-v2-2026-11-01.zh-CN.md">计划 v2</a>；<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-b3-fixed-head-trace-v1-2026-11-01/CONTRACT.zh-CN.md">合同 r01</a>；<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-b3-fixed-head-trace-v1-2026-11-01/DECISIONS.zh-CN.md">决策 D1–D6</a>。代码 <code>239843c</code>，freeze-r01 <code>ab860a6a…a968</code>。同一助手实现、运行与撰写，不是独立复核。读数：<code>analysis/b3-readouts-r01.json</code>。</p>
+<h2 id="1">1. 结论（不利的先说）</h2>
+<ol>
+<li><strong>P2 不成立（科学失败，信息量为正）</strong>：四个方向的 FIX/其余交互 I 都落在随机 45/403 切分交互的合并零带内（同侧超出 0–2/12，门槛 9/12）。随机切分本身也有明显的负交互（每方向 24 个值的均值 −0.65 到 −0.99 logit）。在这个判据下，<strong>“两组 V 历史合起来不如分开相加”是拆分 V 历史的一般性质，不能说是固定45头特有。</strong></li>
+<li><strong>“其余头自身反向作用”被否定</strong>：四个方向的 R（只给其余403头 T 历史）都是<strong>正的</strong>，和 FIX 同向推高停止（N4146 +1.68，N1210 +0.42，R0 +0.45，R1 +0.85）。减弱完全来自负交互 I（−1.71、−0.92、−0.95、−1.57）。</li>
+<li><strong>N4146 的 D≈0 不是“没有其余头效应”</strong>：R=+1.68 与 I=−1.71 几乎相互抵消（D=−0.03）。v1 把 N4146 当作“减弱小”的参照没错，但它的小 D 是两项抵消的结果。</li>
+<li><strong>P1 按规则成立，理由有一半错</strong>：组成分类为 N1210 <code>interaction</code>（share_I 1.82）、R1 <code>interaction</code>（2.17）、R0 <code>D_small</code>（|D̄|=0.496，比门槛 0.5 只差 0.004；不重分类）。登记理由是“其余头单独效应小”，实际 R 不小，只是方向与 D 相反（<code>opposing</code>）。</li>
+<li><strong>终点非加和主要由最终 RMS 尺度承载</strong>（<code>scale_involved</code>，四方向 I 中 r 承载份额 0.84–1.5）。从 CFIX 到 CT，分子项仍为正（+0.22 到 +1.38），分母项为负（−0.74 到 −1.42）：其余头的 T 历史确实加了停止方向分子，但最终 h 的 RMS 增大把它稀释掉了。按合同措辞，这只说明<strong>最终归一化尺度参与了这个终点的非加和</strong>，不说明交互起源于最终 RMSNorm。</li>
+</ol>
+<h2 id="2-22-12-logit">2. 2×2 读数（停止侧，12 输入均值，logit）</h2>
+<table>
+<thead>
+<tr>
+<th>方向</th>
+<th style="text-align: right;">X</th>
+<th style="text-align: right;">F</th>
+<th style="text-align: right;">D</th>
+<th style="text-align: right;">R</th>
+<th style="text-align: right;">I</th>
+<th>组成</th>
+<th>I vs 随机切分零带</th>
+<th>尺度</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>N4146</td>
+<td style="text-align: right;">3.36</td>
+<td style="text-align: right;">3.33</td>
+<td style="text-align: right;">−0.03</td>
+<td style="text-align: right;">+1.68</td>
+<td style="text-align: right;">−1.71</td>
+<td>D_small</td>
+<td>within（带 −2.05…−0.25）</td>
+<td>scale_involved（0.91）</td>
+</tr>
+<tr>
+<td>N1210</td>
+<td style="text-align: right;">3.18</td>
+<td style="text-align: right;">2.68</td>
+<td style="text-align: right;">−0.51</td>
+<td style="text-align: right;">+0.42</td>
+<td style="text-align: right;">−0.92</td>
+<td>interaction（opposing）</td>
+<td>within</td>
+<td>scale_involved（1.50）</td>
+</tr>
+<tr>
+<td>R0</td>
+<td style="text-align: right;">2.39</td>
+<td style="text-align: right;">1.89</td>
+<td style="text-align: right;">−0.50</td>
+<td style="text-align: right;">+0.45</td>
+<td style="text-align: right;">−0.95</td>
+<td>D_small（边界）</td>
+<td>within</td>
+<td>scale_involved（0.87）</td>
+</tr>
+<tr>
+<td>R1</td>
+<td style="text-align: right;">3.40</td>
+<td style="text-align: right;">2.68</td>
+<td style="text-align: right;">−0.72</td>
+<td style="text-align: right;">+0.85</td>
+<td style="text-align: right;">−1.57</td>
+<td>interaction（opposing）</td>
+<td>within</td>
+<td>scale_involved（0.84）</td>
+</tr>
+</tbody>
+</table>
+<p>重放格 X、F 与 C2 逐位一致（logits 哈希闸门），所以这里的 X、F 就是 C2 的数，不算新阳性。</p>
+<p><strong>合同外描述（不改变判定）</strong>：逐输入看，FIX 的 I 比本输入两个随机切分都更负的输入数，分别为 N4146 11/12、N1210 3/12、R0 7/12、R1 7/12；可交换假设下的期望是 4/12。只有 N4146 明显偏离，不足以支持“FIX 特异”。要检验，须另行预注册更多随机切分。</p>
+<h2 id="3">3. 逐层与分支（描述，不是起源定位）</h2>
+<ul>
+<li>停止读出方向上，残差投影的交互在第 20–21 层起超出随机切分零带，而且是<strong>正的</strong>（N4146 首次可检测层为 24，N1210/R0 为 21，R1 为 20）。中段（21–29 层）分子是超加和的；到第 30–31 层，交互回落或变负。</li>
+<li>分支均值：第 31 层（全注意力）mixer 的交互项四方向都在 −0.66 到 −0.98，第 28 层 G mixer 在 −0.32 到 −0.54。中段的正交互主要出现在第 21、24、27 层 mixer，以及第 25–29 层 MLP。</li>
+<li>这些是<strong>所选读数</strong>（停止方向分子）上首次可检测的位置。更早的变化可能没有投影到这个方向，或者相互抵消；而且终点的非加和大部分由 r 承载，不由这里的分子承载。</li>
+</ul>
+<h2 id="4">4. 答案侧（次要，描述）</h2>
+<p>四方向组成都是 <code>self</code>：其余头单独就强烈压低答案词（R = −4.5 到 −7.4），交互为正（+0.8 到 +2.3），都在零带内。这与 C2 的“答案侧 FIX 未兑现”一致：答案侧的针效应大部分由其余头自己携带。</p>
+<h2 id="5">5. 执行</h2>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th style="text-align: right;">形成</th>
+<th style="text-align: right;">评分</th>
+<th style="text-align: right;">校准</th>
+<th style="text-align: right;">逐 token 前向</th>
+<th style="text-align: right;">墙钟</th>
+<th style="text-align: right;">存储</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>预检 r01</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">86</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">260</td>
+<td style="text-align: right;">46 s</td>
+<td style="text-align: right;">0.23 GB</td>
+</tr>
+<tr>
+<td>正式 r01（2 worker）</td>
+<td style="text-align: right;">60</td>
+<td style="text-align: right;">492</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">1560</td>
+<td style="text-align: right;">96 / 98 s</td>
+<td style="text-align: right;">1.39 GB</td>
+</tr>
+<tr>
+<td>合计 / 上限</td>
+<td style="text-align: right;">70 / 70</td>
+<td style="text-align: right;">578 / 578</td>
+<td style="text-align: right;">7 / 7</td>
+<td style="text-align: right;">1820</td>
+<td style="text-align: right;">≈0.07 GPU·h / 0.5</td>
+<td style="text-align: right;">1.6 / 16 GiB</td>
+</tr>
+</tbody>
+</table>
+<p>全部闸门都过了：校准逐值等于 C1-P 与 C2，GPU 分配等于 C2，所有重放格 logits 逐位等于 C2，N:TT = T_native；第13层逐头布局、入口、内核计数正常；第13–31层 <code>(in+mixer)+mlp == out</code> BF16 逐位闭合，G 层 mixer = out_proj；预检中记录器开/关逐位一致。分析的数值检查：由 final h 重算 z 与 logits 读数的最大差为 0.063（门槛 0.15）。预检一次通过，没有用到 D6 的重试。</p>
+<h2 id="6-v1-5">6. 出口（计划 v1 §5）</h2>
+<p>选<strong>出口 (b)：没有可直接上卡的计算预测，缺的是“干预某分支后下游怎样响应”。</strong> 理由：</p>
+<ul>
+<li>现有最具体的说法是“终点减弱是最终 RMS 稀释”。这是代数分解，不是因果结论。</li>
+<li><strong>（更正，见 §8）</strong> 初稿此处写“它在随机切分上同样存在，不是 FIX 特有”。这句写的时候没有检查过，事后核对是错的：随机切分的负交互主要由分子承载，RMS 承载份额明显小于 FIX 切分。</li>
+<li>因此 B3-P 不应写成“一般的 V 历史拆分次加和”（初稿的提法，已撤回），而应先回答 §8 的两个问题：FIX/其余切分的 RMS 超加和是否超出更多随机切分；以及这部分 RMS 增长来自哪些分支。随机切分与 FIX 切分必须接受同一套操作。</li>
+</ul>
+<p>不自动上卡；B3-P 的设计需另行确认。</p>
+<h2 id="7">7. 可以说 / 不可以说</h2>
+<table>
+<thead>
+<tr>
+<th>可以说</th>
+<th>不可以说</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>其余403头单独使用有针 V 历史，同样推高停止（四方向 R&gt;0）</td>
+<td>其余头是抑制头 / 有独立反向作用</td>
+</tr>
+<tr>
+<td>FIX 子集效应超过全 V 的部分完全来自负交互</td>
+<td>这种交互是 FIX 特有的抵消电路</td>
+</tr>
+<tr>
+<td>本轮没有建立 FIX 切分负交互<strong>大小</strong>特殊的证据；所测两个随机切分也有负交互</td>
+<td>所有切分都一样（未超出零带不是等效性证明）；已证明是饱和机制；随机切分的交互承载方式相同（合同外核对显示不同，§8）</td>
+</tr>
+<tr>
+<td>终点非加和大部分由最终 h 的 RMS 变化承载</td>
+<td>交互起源于最终 RMSNorm</td>
+</tr>
+<tr>
+<td>N4146 的 D≈0 是 R 与 I 相互抵消</td>
+<td>N4146 上其余头无效</td>
+</tr>
+</tbody>
+</table>
+<h2 id="8-2026-11-01">8. 合同外核对（报告发布后，2026-11-01；不改变任何冻结判定）</h2>
+<p>起因：评审问到“RMS 增大”这个读法。分母项为负只有在停止分子 p&gt;0 时才等于 RMS 增大，初稿没有单独核对 p 的符号；另外，初稿 §6 说 RMS 稀释在随机切分上也存在，这句也没有核对过。数据取自正式记录里的 <code>final_norm.r</code> 和 cz_s46，12 输入均值：</p>
+<ol>
+<li><strong>p&gt;0，RMS 增大成立。</strong> 所有 N 格的 cz_s46 在 13.7–17.3 之间；r 从 CFIX 的 1.33–1.40 升到 CT 的 1.43–1.48。</li>
+<li><strong>两组单独都基本不增大 r，合起来才增大</strong>：r 的交互（CT−CFIX−CREST+CC）为 +0.13、+0.12、+0.07、+0.11（N4146、N1210、R0、R1）。</li>
+<li><strong>随机切分不是这样</strong>：U1、U2 的 r 交互只有 +0.003 到 +0.039；它们的负交互 I 中由 r 承载的份额为 0.13–0.54，FIX 切分为 0.83–1.54。4 个方向 × 2 个随机切分，8/8 都是 FIX 切分的 r 交互更大。</li>
+</ol>
+<p>读法：负交互的<strong>大小</strong>没有超出随机切分（合同判定 P2 不成立，不变）；但交互的<strong>承载方式</strong>（经由最终 RMS 的超加和增长）在所测切分中只在 FIX/其余切分上明显出现。这是事后检查、只有两个随机切分、用的是均值，属于探索线索，不是 FIX 特异性的证据；检验它需要预注册更多随机切分。初稿 §6 “RMS 稀释在随机切分上同样存在”的说法撤回。</p></main></html>

@@ -1,0 +1,69 @@
+# 根因 toy：本轮执行状态
+
+历史原件；不是本次提出的假设、论证或运行要求。
+
+原路径：`experiments/root-cause-toy-v1-2026-10-26/EXECUTION.zh-CN.md`。来源：[固定提交原件](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/root-cause-toy-v1-2026-10-26/EXECUTION.zh-CN.md)；SHA-256：`3e8bfaf77075acac8fff37a29c4087df38d62e1b5d412feb5c3b829ec07bdceb`。精确字节见原文归档。
+
+---
+
+# 根因 toy：本轮执行状态
+
+2026-10-26 用户已明确授权完成检查、报告 ETA 后在空闲 GPU 启动。授权原文见 [启动授权](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/root-cause-toy-v1-2026-10-26/launch-authorization-20261026.json)。这覆盖此前的模型暂停；实验设置仍以冻结合同为准。
+
+## 当前：首轮已完成，监控已暂停
+
+北京时间 **2026-10-26 15:48:44** 完成。原拆针与排序各64题、双卡各5候选及320条记录全部齐全，worker退出码均0；服务器与本地聚合核验通过，完整证据1,499文件已取回。双卡候选阶段实测53分21秒；自首轮正式启动计88分53秒（含交接）。剩余ETA为0。工作盘可用136.3 GiB，模型/临时盘43.7 GiB，本地约877.4 GiB，空间充足。
+
+首轮有局部修复和连续得分线索，正确率没有候选同时通过四项必要比较，不能称为根因已定位。见[首轮结果与完整证据](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/root-cause-toy-v1-2026-10-26/RESULTS.zh-CN.md)。本次半小时巡检已PAUSED，功能解释和独立确认未自动启动。
+
+## 双卡运行历史
+
+用户随后授权“拆重双卡吧，把资源用满”。北京时间 **14:55:24** 已启动两张 H20：GPU 0 处理 C01—C05，GPU 1 处理 C06—C10，每个候选均为冻结的 64 题、六种条件。这里的“候选验证”就是正式的修复、重现与匹配对照实验，不是启动前的软件检查。拆针与排序已分别在 14:38:31、14:41:34 完成，继续复用。
+
+只把同时运行的模型进程由一个改为两个，模型、题目、校准、剂量、数值精度、随机种子和科学实现不变。原冻结文件和历史收据保持不变；[双卡授权](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/root-cause-toy-v1-2026-10-26/parallel-authorization-20261026.json)及[分片执行代码](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/root-cause-toy-v1-2026-10-26/parallel_validate.py)单独绑定执行修订。新目录为 `runs/root-parallel-r01`，旧目录为 `runs/root-r01`。
+
+- 单卡旧候选进程于 14:43:49 按用户授权停止，保留 12 条已完成记录和退出码 143；这是双卡交接，不是实验失败。C01 的这 12 条在新批次重算，额外成本保留记录，最终统计只使用新批次。
+- 双卡代码 CPU 测试 **36/36** 通过；此前一处过时测试字段检查已修正，失败日志与通过日志均保留。GPU 1 对两道题的全部六条件重算与 GPU 0 原记录完全一致，该检查用时 **26.35 秒**。
+- 15:01 快照：两边各完成 **37/320** 条候选题目记录，共 **74/640（11.6%）**，均持续产出，无运行报错；工作盘可用 **136.4 GiB**，模型/临时盘 **43.7 GiB**。见[最新快照](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/root-cause-toy-v1-2026-10-26/monitoring/root-parallel-r01-live.json)。
+- 双卡启动前给出的候选阶段 ETA 为 **57—65 分钟**，对应约 **15:52—16:00** 完成；基线为单卡候选阶段 113.2 分钟按两卡均分。此 ETA 覆盖当前正式候选实验及汇总，不包括之后尚未冻结的功能解释和独立确认。
+
+两个 worker 分别落盘，再核验候选互斥覆盖、每个候选全部 64 题及六条件、题目身份与全部文件哈希后合并。合并阶段为 `validate-parallel`，必须经 `parallel_validate.py verify` 验证，不能冒充旧单卡 `validate` 收据直接进入下一阶段。两张卡已经正式运行，后续只在发现真实技术问题时修复，不追加与当前运行无关的预检。
+
+## 已通过的检查
+
+- 目标服务器 CPU 测试 26/26 通过，无跳过；[日志](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/root-cause-toy-v1-2026-10-26/readiness/server-cpu-tests-r02.txt)。
+- 权重、分词器、运行库、冻结文件核验通过；[服务器验收](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/root-cause-toy-v1-2026-10-26/readiness/server-ready-r02.json)。
+- 固定功能数据的 1,536 个选项/供体组合分词对齐通过。
+- 真实 4B 模型预检 46.11 秒通过：旧评分一致、原值替换一致、真实局部替换保留两针、替换范围与幅度合规、梯度有效，结束后权重未变且钩子移除；[完整收据](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/root-cause-toy-v1-2026-10-26/runs/root-r01/preflight-r01/receipt.json)。
+
+首个服务器清点曾因部署目录缺少历史身份文件失败，完整保留 [首轮清点](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/root-cause-toy-v1-2026-10-26/readiness/server-check-attempt1.json)。已改为使用本次准备包中的同一资产哈希，重新冻结；没有改变题目、剂量、模型或计算方法。旧准备冻结保留在 [preparation-freeze-r01.json](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/root-cause-toy-v1-2026-10-26/readiness/preparation-freeze-r01.json)。
+
+## 最初单卡启动记录
+
+- 主机：`gqa-h20`；GPU：H20 0。
+- 目录：`/workspace/acupuncture/experiments/root-cause-toy-v1-2026-10-26/runs/root-r01`。
+- 启动：北京时间 **2026-10-26 14:19:52**（UTC 06:19:52）。
+- 冻结 SHA256：`bc612fb814bda7eb4da07d93d70c18b93e6bda1722c113436cd6824ff2fdafc3`。
+- 顺序：`decompose-r01` → `rank-r01` → `validate-r01`；每阶段核验前序完整收据，失败即停。启动脚本见 [pipeline-r01.sh](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/root-cause-toy-v1-2026-10-26/runs/root-r01/pipeline-r01.sh)。
+- 启动复核：首个 worker PID 1534290；已输出 3/64 题的全部条件记录，GPU 0 占用 9,471 MiB，GPU 1 空闲。此为启动快照，不代表持续实时状态。
+
+## 最初单卡启动前 ETA（已被双卡更新替代）
+
+已在正式启动前向用户报告。依据本机真实预检、实际分词长度和服务器统计计时，单 GPU 依当前代码顺序执行：
+
+| 阶段 | 预计分钟 |
+|---|---:|
+| 拆开两针与匹配随机对照 | 20.2 |
+| 梯度候选排序 | 3.3 |
+| 最多 10 个候选的真实修复、重现及对照 | 113.2 |
+| 合计 | **136.7** |
+
+首轮预计北京时间 **16:37 左右**结束；敏感性范围 **16:18—16:59**（118—159 分钟），不是统计置信区间。没有按倍数加安全垫。含各阶段加载、正式计算及统计，不含尚未发生的技术故障、后续人工解释决策和归档。测量与推算见 [ETA 凭证](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/root-cause-toy-v1-2026-10-26/readiness/eta-before-launch-r01.json)。
+
+功能开发与独立确认没有自动排入本脚本：先根据已完成的候选验证写出最多 1—2 个可检验解释，再按合同冻结后确认；没有支持就记录未定位。当前尚无根因结果，预检通过不是科学假设得到支持。
+
+## 半小时巡检
+
+用户已授权每30分钟检查进度、ETA及磁盘空间，并立即修复发现的技术bug。当前聊天心跳 `acupuncture`（Acupuncture 根因实验半小时巡检）已启用。每次均报告；失败记录和原运行保留，实现修复后按冻结与前序收据约束在新目录验证续跑。不得为获得结果修改实验设置。首轮完整交付后停用本次巡检。
+
+首个[监控快照](https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/root-cause-toy-v1-2026-10-26/monitoring/20261026T062706Z.json)：北京时间14:27，拆针29/64题，持续产出，无报错；输出约4.7 MiB，远程输出盘可用约147.1 GiB，模型/临时盘约43.7 GiB，空间充足。ETA暂沿用实测基线16:37，后续按各任务、阶段实测速率更新。

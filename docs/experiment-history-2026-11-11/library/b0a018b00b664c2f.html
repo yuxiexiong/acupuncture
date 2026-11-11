@@ -1,0 +1,146 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>预注册草稿：跨条件预测＋针对预测的因果检验（第 3 件，零 GPU）</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="3-gpu">预注册草稿：跨条件预测＋针对预测的因果检验（第 3 件，零 GPU）</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>docs/cross-condition-predictor-v1-2026-11-03/PREREG_DRAFT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cross-condition-predictor-v1-2026-11-03/PREREG_DRAFT.zh-CN.md">固定提交原件</a>；SHA-256：<code>b0a018b00b664c2fb714d455354854a6aeaae0452f5173abb0e2c66fccb10384</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="3-gpu_1">预注册草稿：跨条件预测＋针对预测的因果检验（第 3 件，零 GPU）</h1>
+<blockquote>
+<p><strong>2026-11-04 当前导航：</strong> 本页是历史资产/候选/草稿，旧 EOS 预注册不进入当前队列。后续以 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/mechanism-second-half-v1-2026-11-03/PROPOSAL.zh-CN.md">Proposal v3</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-mechanism-broadening-roadmap-2026-11-04.zh-CN.md">Roadmap v3</a>及<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-mechanism-todo.zh-CN.md">当前 To-do</a>为准；第一步仍在讨论推进思路。以下旧更正及数据保持原样。</p>
+<p><strong>更正（2026-11-03，作者）</strong>：本文“同层同剂量写入范数相同，因此层内差异只能来自方向、是最有判别力的地方”过头。DIV-01 第零步（main dc88ccc，4B L0）显示：固定剂量下“不停止”的通道多为其他形态的崩溃（单 token 重复等），首步 EOS 条数不能当损伤程度；停止转变在所测 20 个通道、8 题、0.5/0.75 两档下集中在 0.5–0.75。这只说明该层该分辨率下的停止转变区间，不证明幅度决定整体损伤，也不排除方向的作用。固定剂量下的 EOS 差异不再作为“方向起主导”的论据；本线后续由 <a href="https://github.com/yuxiexiong/acupuncture/blob/50a485803f59fe6fe55fbede3f4b8edcc8edab06/docs/mechanism-second-half-v1-2026-11-03/PROPOSAL.zh-CN.md">下半场 Proposal v2</a> 取代，原 EOS 排序预注册不执行。原文以下不改。</p>
+</blockquote>
+<p>2026-11-03。<strong>草稿，未冻结，未授权任何计算。</strong> 依据：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cross-condition-predictor-v1-2026-11-03/INVENTORY.zh-CN.md">检验集盘点</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cross-condition-predictor-v1-2026-11-03/CANDIDATES.zh-CN.md">竞争候选</a>。冻结前须用户审定；冻结后才允许计算任何候选量。</p>
+<h2 id="1">1. 问题与范围</h2>
+<p>什么决定稀疏通道干预效应在不同层、通道和剂量下的方向与强弱？本轮只检验两个因变量：首步停止、问题依赖度崩溃；模型为 Qwen3.5 2B/4B/9B 与 Llama-3.1-8B。中层换事实类错误不在本轮。</p>
+<h2 id="2">2. 三个阶段</h2>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>内容</th>
+<th>GPU</th>
+<th>证据强度</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A 回顾性盲算</td>
+<td>先冻结候选量定义与代码，在已有调查与轨迹上计算，再与结局连接</td>
+<td>0</td>
+<td>弱：结局大多已经见过（盘点 §3）</td>
+</tr>
+<tr>
+<td>B 前瞻检验</td>
+<td>在层内差异大的层上新抽随机通道，先登记每个通道的预测，再生成</td>
+<td>少量（估计每层 20 通道 × 8 题，多数一步就停）</td>
+<td>强</td>
+</tr>
+<tr>
+<td>C 因果干预</td>
+<td>对 A、B 都过关的候选，直接改它对应的写入分量，看效应是否按预测改变</td>
+<td>少量</td>
+<td>决定"解释"还是"伴随量"</td>
+</tr>
+</tbody>
+</table>
+<p>只有走到 C 的候选才能称为解释。A 不通过的候选不进入 B。</p>
+<h2 id="3">3. 因变量（冻结定义）</h2>
+<ul>
+<li><strong>Y1 首步停止</strong>：每个（模型，层，通道，剂量）8 题中首步 EOS 的条数。</li>
+<li><strong>Y2 问题依赖度崩溃</strong>：8 − 8 题中不同首 token 数。</li>
+<li><strong>Y3 符号不对称</strong>（只用剂量阶梯点）：|Y1(+1) − Y1(−1)|，另报 |d|=1/2 时同样的量。</li>
+</ul>
+<h2 id="4-a">4. 候选量（冻结定义，阶段 A 之前不计算）</h2>
+<table>
+<thead>
+<tr>
+<th>代号</th>
+<th>候选</th>
+<th>量</th>
+<th>来源</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P1</td>
+<td>H1 幅度/位置</td>
+<td>相对写入强度 d·m / 该层干净残差范数；层内为常数</td>
+<td>已知</td>
+</tr>
+<tr>
+<td>P2</td>
+<td>H2 停止对齐</td>
+<td>s_stop = 符号 × ⟨γ ⊙ ŵ_n, u_stop⟩；u_stop 取各模型停止 token 集合（与调查停止集合一致）unembedding 行的平均减去全词表平均行</td>
+<td>权重，CPU</td>
+</tr>
+<tr>
+<td>P3</td>
+<td>H3 传播放大</td>
+<td>最后提示位置上，注入后第一个全注意力层（Llama：注入层 +4）的残差相对差 ÷ 注入层残差相对差</td>
+<td>轨迹 <code>first_sites</code></td>
+</tr>
+<tr>
+<td>P4</td>
+<td>H4 压平</td>
+<td>注入层上各提示位置 cos(clean_i, ĉ) 的均值，由三角形公式求得，第一个 token 不计</td>
+<td>轨迹注入层逐位置字段</td>
+</tr>
+<tr>
+<td>特异性对照</td>
+<td>—</td>
+<td>P2 的同一构造，但 u_stop 换成 20 个随机 token 方向</td>
+<td>权重</td>
+</tr>
+<tr>
+<td>上限参照</td>
+<td>—</td>
+<td>首步停止优势（离输出近，只作参照，不参加评选）</td>
+<td>轨迹</td>
+</tr>
+</tbody>
+</table>
+<p>P3、P4 只在有轨迹的条件上计算（2B/9B/Llama L0–L5、4B L0–L31）；P2 可在全部 880 + 320 个通道上计算。</p>
+<h2 id="5">5. 主要检验：层内通道排序</h2>
+<ul>
+<li><strong>纳入单元</strong>：+1 剂量下、10 个通道 Y1 不全相同的（模型，层）。饱和单元（全 8 或全 0）不纳入，单独报告数量。Y2 同理。</li>
+<li><strong>统计量</strong>：每个单元内候选量与 Y 的 Spearman 相关，按单元数等权平均，得到 ρ̄。</li>
+<li><strong>零分布（6.3）</strong>：每个单元内把通道标签随机置换 10,000 次，得到 ρ̄ 的零分布；P2 另与 20 个随机 token 方向的 ρ̄ 比较。</li>
+<li><strong>判据（草稿值，请审定）</strong>：</li>
+<li>候选"层内有预测力"：ρ̄ 落在置换零分布 97.5% 分位以上，<strong>并且</strong>高于全部 20 个随机 token 方向的 ρ̄（只对 P2）。</li>
+<li>P1 在层内为常数，ρ̄ 定义为 0；任何候选都要明显高于它。</li>
+<li>四个模型分别报告；至少在 2 个 Qwen 模型上成立才进入阶段 B。</li>
+<li><strong>分水岭检验（描述 + 预先写定方向）</strong>：</li>
+<li>符号对称性（Y3）：H2 预测不对称与 |P2(+) − P2(−)| 同向；H4 预测 |d|=1 时对称。</li>
+<li>崩溃不停止的通道（Y2 高、Y1 低）：H4 预测其 P4 与停止通道无差；H2 预测其 P2 偏低。</li>
+</ul>
+<h2 id="6-62">6. 6.2 离线预演（冻结前必须完成）</h2>
+<ul>
+<li>合成数据：构造"候选量决定层内排序"与"层内排序随机"两种情形，演示判据能被满足、也能不被满足。</li>
+<li>真实数据闸门（"闸门须在真实数据上通过"）：在冻结的计算代码上，用<strong>一个已污染单元</strong>（4B L0–L2 之一）跑完整管线，看到 PASS，确认读文件、对齐通道、置换都正确。这个单元的结果不进入判读。</li>
+</ul>
+<h2 id="7">7. 停止条件（预先写死）</h2>
+<ul>
+<li>阶段 A 中 P2、P3、P4 都不过判据：本线停止，报告"层内差异来自方向，但三个候选都解释不了"，不调参、不换量。</li>
+<li>只有 P3 过关：进入阶段 B 前先做阶段 C 的小规模干预（因为它最可能是伴随量）。</li>
+<li>阶段 B 预测失败：按科学失败记录；不回到阶段 A 改定义。</li>
+<li>任何工程闸门失败：合同执行失败，信息量为零，不当作负面证据。</li>
+</ul>
+<h2 id="8-bc">8. 阶段 B、C 的轮廓（另立合同）</h2>
+<ul>
+<li><strong>B</strong>：在 A 中层内差异最大、且候选量预测分散的层（预计 2B/4B/9B 的 L0–L4）各新抽 20 个随机通道（新种子），+1 剂量，同 8 题；生成前把每个通道的候选量值和预测排序写进合同。</li>
+<li><strong>C</strong>（按胜出的候选）：</li>
+<li>P2：去掉写入中沿 u_stop 的分量（保持范数）；对照为去掉同范数随机分量。</li>
+<li>P4：只改写入中沿干净残差平均方向的分量，使压平指数升高或降低，保持范数。</li>
+<li>P3：在注入后第一个全注意力层把扰动按比例压回。</li>
+<li>预测与判据在 A 的结果出来后、C 运行前另行冻结。</li>
+</ul>
+<h2 id="9">9. 交付与边界</h2>
+<ul>
+<li>阶段 A 产物：候选量表（每通道）、层内相关与零分布、分水岭表、偏离日志；全部零 GPU。</li>
+<li>边界：8 道题、单次 greedy；剂量数据每层只有 1 个通道；结局大多已见，阶段 A 只是回顾性盲算；Llama 与 Qwen 的提示模板不同。</li>
+</ul>
+<h2 id="10">10. 待用户裁决</h2>
+<ol>
+<li>判据阈值（§5 的 97.5% 分位、"至少 2 个 Qwen 模型"）是否接受。</li>
+<li>阶段 A 是否纳入 Llama（它没有首步 EOS，Y1 全为 0，只能用 Y2）。</li>
+<li>阶段 B 每层 20 个新通道的规模。</li>
+<li>是否同意冻结前用一个已污染单元做真实数据闸门。</li>
+</ol></main></html>

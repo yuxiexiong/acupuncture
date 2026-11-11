@@ -1,0 +1,72 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>执行入口与交接</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="_1">执行入口与交接</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/root-cause-toy-v1-2026-10-26/RUNBOOK.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/root-cause-toy-v1-2026-10-26/RUNBOOK.zh-CN.md">固定提交原件</a>；SHA-256：<code>e96409df9be3edc8da275cd8e9ca1a6d8fe9996f026343c0805009a3c6b6d4bc</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="_2">执行入口与交接</h1>
+<p>主定义见<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/root-cause-toy-v1-2026-10-26/CONTRACT.zh-CN.md">执行合同</a>，机器设置见<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/root-cause-toy-v1-2026-10-26/contract.json">contract.json</a>。没有启动授权文件，入口会在加载模型前退出。</p>
+<h2 id="_3">准备阶段</h2>
+<p>在本目录运行 CPU 检查和冻结核验：</p>
+<pre><code class="language-sh">python -m unittest discover -p 'test_*.py' -v
+python freeze.py verify
+</code></pre>
+<p>需要已有 PyTorch 的解释器。纯Python检查可以单独运行，但缺PyTorch而跳过的张量测试不算完整验收。本次本地CPU运行库为PyTorch 2.7.1；目标服务器为已固定的2.6.0+cu124，不能将本地通过冒充目标环境验证。</p>
+<p><code>check_ready.py --output &lt;新收据路径&gt;</code>只清点目标环境、权重哈希、分词对齐和GPU状态，不加载模型。它需要在已部署的新目录中运行；输出仅表示检查时刻可用，不占用或预留GPU。</p>
+<h2 id="_4">获准后的运行顺序</h2>
+<p>每阶段使用新输出目录。<code>--prior</code>可重复。启动授权文件必须记录用户真实指令、授权时间、本实验名称和<code>status=authorized</code>；准备阶段不伪造该文件。</p>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>入口参数</th>
+<th>必需的已完成收据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>实际模型预检</td>
+<td><code>--stage preflight</code></td>
+<td>无；验证真实模型评分、梯度和修复钩子</td>
+</tr>
+<tr>
+<td>拆针</td>
+<td><code>--stage decompose</code></td>
+<td>preflight</td>
+</tr>
+<tr>
+<td>排名</td>
+<td><code>--stage rank</code></td>
+<td>preflight、decompose</td>
+</tr>
+<tr>
+<td>有限候选真替换</td>
+<td><code>--stage validate</code></td>
+<td>preflight、rank</td>
+</tr>
+<tr>
+<td>功能开发</td>
+<td><code>--stage function-dev --explanations proposal.json</code></td>
+<td>preflight、validate</td>
+</tr>
+<tr>
+<td>新题确认</td>
+<td><code>--stage confirm --explanations final.json</code></td>
+<td>preflight、validate、function-dev</td>
+</tr>
+</tbody>
+</table>
+<p>各模型阶段共同需要：</p>
+<pre><code class="language-sh">python run_root.py --stage &lt;阶段&gt; --execute \
+  --launch-authorization &lt;实际用户启动授权.json&gt; \
+  --model /data/models/Qwen3.5-4B-851bf6e --device cuda:0 \
+  --output &lt;新的阶段目录&gt; --prior &lt;前置阶段receipt.json&gt;
+</code></pre>
+<p>这是参数说明，不是自动启动脚本。模型预检失败时不进入采集；失败目录完整保留。代码修复需另行冻结并从受影响的阶段重新开始，不能修改旧输出。</p>
+<h2 id="_5">两处有意保留的研究决策</h2>
+<p>开发结果出来以前不能知道哪个候选有用、负责什么功能，所以程序不会自动编造结论。</p>
+<p><code>proposal.json</code>需包含：<code>family</code>（reading/comparison/reporting中选1），<code>validation_receipt_sha256</code>，以及1—2项<code>explanations</code>。每项写入已测试的<code>candidate_id</code>与<code>candidate_sha256</code>、<code>hypothesis</code>、<code>task_relation</code>、<code>expected_direction</code>、<code>falsifier</code>，以及未替换下游<code>reader</code>的组件和<code>positions=prompt_last</code>。开发提案不得预填投影。</p>
+<p>功能开发只用clean开发输入学习预定内容分组<code>[1,1,-1,-1]</code>的均值差读数，记录来源哈希。这是内容相关读数，不自动命名功能；真实供体替换、任务终点、标签排列对照仍须一起看。</p>
+<p><code>function-dev</code>产生<code>explanations.frozen.json</code>。收据完成后，使用<code>freeze.py seal</code>将其绑定到该收据，生成新的最终确认输入。确认程序检查它与开发输出完全一致；不能在确认后修改位置、投影或任务族。</p>
+<p>若没有候选通过或无法写出可检验的功能预测，本轮可以在开发验证结束，不需要凑足两条解释。只在答案尾部有效或没有下游读取位置的候选，按合同保留能力干预线索。</p>
+<h2 id="_6">如何看结果</h2>
+<p>逐题JSON保留完整选项得分、实际来源针偏移、局部替换范数、输入哈希和钩子范围。<code>summary.json</code>报告配对效应；功能结果另按计算要求、两种答案标签排列和内容读数分别报告。汇总不会自动把“分数好看”标为找到根因。</p>
+<p>确认集仅64题、功能确认仅16个基础对，区间可能较宽；这是允许的失败结论，不是继续加样本或筛除失败题的理由。真实模型预检和正式结果均不在准备完成收据内冒充已通过。</p></main></html>

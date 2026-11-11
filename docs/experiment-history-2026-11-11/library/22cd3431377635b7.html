@@ -1,0 +1,25 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>v7执行合同：B/C开放修补首轮</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="v7bc">v7执行合同：B/C开放修补首轮</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/wsp-vlm-open-repair-v7-2026-11-05/PLAN.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-open-repair-v7-2026-11-05/PLAN.zh-CN.md">固定提交原件</a>；SHA-256：<code>22cd3431377635b7ea46b6afb86b86b1c027e15d751c6441164f4cf02f5413cb</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="v7bc_1">v7执行合同：B/C开放修补首轮</h1>
+<p>2026-11-05；用户在推进方案后明确回复“同意，推进吧”。授权范围承接<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/docs/wsp-vlm-bc-continuation-v1-2026-11-05.zh-CN.md">推进方案</a>：共享工程1单卡小时、B与C各2单卡小时。授权不扩展到新模型、新任务、LoRA或独立终验。先真实工程验收，后两个分开的AI探索；任何失败保留。</p>
+<h2 id="_1">固定项与数据</h2>
+<p>目标Qwen3-VL-4B-Instruct固定revision、BF16/SDPA/greedy128及处理器与S0相同。B仅D58组/464请求，C仅D64组/2560请求供搜索，带全部原版raw、标签、问法/顺序和两种提示；资料hash见audit/development_export.json。H不提供给搜索会话；已有H分析已影响本设计，不能再称新独立确认。候选冻结后旧H回归若本轮额度不足则留待后续，不能越过2小时追加。</p>
+<p>WSP循环：AI读完整反馈→自己提出可检验想法→选测量或直接权重试改→自己选参数、支持集合和非梯度计算→服务同输入比较原版/父候选/候选→AI根据修对/改错继续、回退或停止。参数目录不限制层、视觉/语言组件、MLP/注意力。最终是同架构静态权重补丁，正常推理不含研究者或诊断hook。</p>
+<h2 id="prepare_livepyhash">数值合同（prepare_live.py生成并hash冻结）</h2>
+<ul>
+<li>工程：累计至多3600秒单卡占用，所有失败加载/重放计入；工程CPU/研究者测试另记墙钟。人工指定的三个组件各一标量只测试存储、回滚与重载，不作为科学候选，也不传作研究者选点建议。</li>
+<li>每分支：墙钟7200秒，含加载、AI等待、CPU诊断和评价，因此单卡占用不超过已批准2小时；100研究者回合/100操作上限，CPU工具累计1200秒。</li>
+<li>B至多12000前向样本、5000万保守目标token预留；C至多24000样本、1亿预留；每请求输入4096token、生成128token。失败不退额度，先到任一上限即停止。更多C样本额度用于其完整开发包较大，并非追加墙钟。</li>
+<li>单次内部导出至多200万标量。临时候选相对W0最多400万变化标量，最终最多100万；对约4B模型分别约0.1%和0.025%，这是有限试验资源边界，不是推导出的可修阈值。跨层、头、行列和低秩实际变化都按唯一标量计数；不得以绑定别名绕过计数。没有效果不自动扩上限。</li>
+<li>研究者沿用旧数学配置gpt-6-astra/max、已有ChatGPT登录；不购买额度、不切换API计费。每分支累计input+output token观察限500万，达到后不再发下一轮，允许最后一轮usage超出该观察限；100轮/7200秒是硬限。登录身份强制chatgpt并删除子进程API-key环境。订阅可能占用账户额度，实际美元成本未知，不能把token或虚拟预留额当账单。这取代v6不适用于当前订阅路径的必填美元字段；计费API路径仍需金额和外部费用限制。</li>
+</ul>
+<h2 id="_2">选择规则</h2>
+<p>B目标：普通提示每组每问法“全数与子集两题全对”，先组内平均再组间平均。C目标：普通提示每组每问法/顺序“反事实通常与反事实视觉两题全对”，同样组内平均、组间等权。五条件全对和每格正确率均另报。初始D目标B=0.4741379310，C=0.5859375，来自已有raw复算，不是修补结果。</p>
+<p>任何晋升必须先完成全部固定D输入，局部试改只供诊断。对B两条件、C五条件的每个提示×问法×顺序格，相对W0正确率下降不得超过0.035（B58组、C64组均最多净损失2组/格）；格式失败率、截断率各不得超过1%。这些是初轮可接受开发损伤上限，不是统计非劣效证明；每格修对/改错完整报告。目标分数优先，平分优先更少变化标量；W0仍可保持最佳。保护包含规则提示，避免普通提示涨分却使规则提示明显崩坏。部分候选有科学线索但未过保护，可以保留分析而不能晋升最终补丁。</p>
+<p>研究者不能读H、改标签/评分/模型设置、绕服务跑前向或训练权重。可自写NumPy算法；当前内部测量支持通用模块输入/kwargs/输出、坐标干预和teacher-forced分数，不含任意求导或专用注意力概率提取。工具缺项单独报告。候选数和有效修改次数不预定，不强迫交付成功补丁。</p>
+<h2 id="_3">验收与自查</h2>
+<p>复用总方案及推进方案的设计卡/C01–C14；本次数值落实后的复查：C01/C02保留AI可修性主线与实质增量；C03复用raw和v6代码，另建v7保留旧证据；C04阴性和损伤均允许；C05/C06每次记录静态差分及正常下游响应；C07绑定别名核查；C08只评有限开发修复，不称机制或AI搜索优越；C09诊断预测由AI逐轮给出；C10多问法组级自然答案终点；C11工程与研究分离；C12数值预算如上，失败计账；C13已见H边界清楚；C14预算结束不自动加码。十四项设计层面通过，真实工程验收另记，不冒充已经通过。</p>
+<p>历史错误重点复查：E02不预选层；E03同时报告支持数和范数；E10不拿logit当正确答案；E11不因探针阴性排除；E12不以差距收窄掩盖控制损伤；E16保留有效阴性；E20允许多原因；E21未开展新颖性确认；E22来源组计样本；E23同一助手自查；E24不等完整机制才试改；E25不展开额外消融。其他历史缓存拆换错误本轮不涉及其操作。</p>
+<p>反方检查：旧选择器会漏T1损伤，已加入多问法目标及逐格保护并用“均分不变但T1变坏”反例测试；开发过拟合仍可能发生，故不作泛化结论；100万支持上限可能找不到有效补丁，阴性仅限此预算；订阅usage不是美元成本，明确未知且无API回退；工程挑三个组件不能冒充AI诊断，隔离保存、不传给研究者作为答案。自主搜索费用与方法全部留痕，合成测试不替代真实会话。</p></main></html>

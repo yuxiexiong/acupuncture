@@ -1,0 +1,12 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>NQ-01 决策日志</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="nq-01">NQ-01 决策日志</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-name-query-order-v1-2026-11-02/DECISIONS.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-name-query-order-v1-2026-11-02/DECISIONS.zh-CN.md">固定提交原件</a>；SHA-256：<code>a148336c8cfd662335611ddf45e5bcaeb97fcc3b3bd2a3197bc664667a1908ce</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="nq-01_1">NQ-01 决策日志</h1>
+<ul>
+<li><strong>D1 计划由评审撰写</strong>（v2，54c8b3b）；实现照做。</li>
+<li><strong>D2 历史重放用未改动的 SVQ runner</strong>：计划预算写 SP01-f0 重放 13 条轨迹（C + 4 方向 × T_nat/T_V/T_F）。直接调用 SVQ 的 run_item 会同时跑它的 T_QK 臂，共 17 条；好处是复用 SVQ 自带的全部 SP-01 重放闸门而不另写一份。预检预算相应从 28 条升到 32 条、诊断 32、解码上限 1024。对科学判据无影响。</li>
+<li><strong>D3 窗口一致性在 CPU 上先冻结</strong>：真实分词器审计写入 data/tokens-r01.json 并冻结，运行时逐输入比对；不靠文本相同推断。</li>
+<li><strong>D4 答案来源</strong>：SP 面板靠记录中的“目标条目”标签提取答案；新面板没有标签，目标编号直接取自 inputs 的 target 字段（由绑定与被问条目生成）。</li>
+<li><strong>D5 Q 的 z</strong>：取诊断分叉中三个编号第二 token 的原始分数，按条目字母对齐；C 与三个 T 臂同样计算。</li>
+</ul></main></html>

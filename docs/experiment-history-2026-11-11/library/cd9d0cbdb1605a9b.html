@@ -1,0 +1,626 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SPF-01 合同 r02：递推状态的来源是否调节缓冲供体对&quot;答哪一条&quot;的影响</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="spf-01-r02">SPF-01 合同 r02：递推状态的来源是否调节缓冲供体对"答哪一条"的影响</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-selection-precedence-v1-2026-11-06/CONTRACT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-selection-precedence-v1-2026-11-06/CONTRACT.zh-CN.md">固定提交原件</a>；SHA-256：<code>cd9d0cbdb1605a9b4ea81d803a92442abea58bba44a39eff7b5003787c754250</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="spf-01-r02_1">SPF-01 合同 r02：递推状态的来源是否调节缓冲供体对"答哪一条"的影响</h1>
+<p><strong>状态：阶段 A 已冻结（<code>freeze-A-r01.json</code>），未获运行授权、未运行；全部内容零 GPU，没有任何模型输出。</strong> r01 草案（<code>c2b71cf</code>）经外部评估后修订为 r02，改动见 §11。2026-11-06 用户"推进吧"之后完成运行器、CPU 测试（6 项）、就绪检查与冻结；冻结前只对齐了 §7、§8 里与实现有出入的措辞（见 §11 第 8 条），判读、界值、臂与预期未动。上卡以用户"开始"为准。冻结后不改本文件；偏离记入 <code>DEVIATIONS.zh-CN.md</code>。同一助手撰写与实现，不是独立审查。设计自查见 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-selection-precedence-v1-2026-11-06/DESIGN.zh-CN.md">DESIGN.zh-CN.md</a>；文献覆盖见<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/literature/selection-carrier-mainline-audit-2026-11-06.zh-CN.md">七步查重</a>。</p>
+<h2 id="0">0. 两层承诺</h2>
+<p><strong>第一层（已有，不依赖本卡）。</strong> 在受针运行 T 上：t1 写入项里，k 的去偏移只有在当步 v 换成"V 历史已恢复的混合背景里的当步 v"时才改善完整回答（LVK-01；这个 v 不等于完整干净运行的 v）；由此产生的状态差经 t2 的直接读取双向改变完整回答（SRU-01）；原生来源状态经该读取致错，在开发外输入上确认（NWC-01）。已知限度：写入项对 k、v 是双线性的，k 与 v 的依赖有一部分是构造必然；读取处同范数随机扰动也致错，方向特异性没有站住；"下一步读取"可能只是编号首 token 共享所致。</p>
+<p><strong>第二层（本卡争取）。</strong> 从"恢复了多少"推进到"选了哪一条、取决于什么"：用供体移植给出有方向的预测。主线是解释选择效应；下面的 H 只是其中一个候选解释。本卡不成立，第一层不受影响。</p>
+<h2 id="1">1. 问题</h2>
+<p><strong>现象的准确描述。</strong> 主要方向上原生受针运行的失败是停嘴（FBR-01 面板 43–48/48 停止），不是选错。拆开看有两部分：任何干净缓冲都让模型开口（FBR-01 四方向 48/48，描述性读数）；开口之后答哪一条是另一件事（只恢复本输入 V 多落首列；平均缓冲在 N4146 上 47/48 落首列）。本卡只检验后者。</p>
+<p><strong>已发表的近邻（承接，不当复现目标）。</strong> 2611.01909 在干净 Qwen3.5-9B 上：把 Address 块（第 16–18 层）的供体递推状态换入宿主，检索跟随供体 0.99（§5.2）；宿主末位置的当步输入换成供体的，无效（0.00）。Qwen3.5-4B 只出现在规模表里：移植该块的<strong>末位置输出</strong>重定向 0.70，移除该块后准确率仍 0.94；4B 上没有报告递推状态移植，4B 的 Address 块层号论文也没有给出（16–18 是按 9B 的编号规则推的）。我们 NSR-01 在 4B 上换入供体的全部深层递推状态，38 条错选里 32 条是供体答案。</p>
+<p><strong>本卡的问题。</strong></p>
+<blockquote>
+<p>把递推状态从本输入的干净来源换成本输入的受针来源，是否足以增强缓冲供体对答案选择的影响；把它换回干净来源，是否又能压住这种影响？</p>
+</blockquote>
+<p>操纵变量是<strong>递推状态的来源</strong>（本输入干净运行 / 本输入受针运行），不是"选择是否失效"。受针来源的状态放进干净运行后仍然答对（NSR-01），所以"失效"是待解释的现象，不是操作保证的事实。</p>
+<table>
+<thead>
+<tr>
+<th>缓冲 ← 供体时</th>
+<th>其余部分干净</th>
+<th>其余部分受针</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>递推状态 ← 本输入干净运行</strong></td>
+<td>格 a</td>
+<td>格 c</td>
+</tr>
+<tr>
+<td><strong>递推状态 ← 本输入受针运行</strong></td>
+<td>格 b</td>
+<td>格 d</td>
+</tr>
+</tbody>
+</table>
+<p>格 d 是 FBR-01 事后线索（N4146 同场景原始跟随 21/24）的前瞻检验；格 a、b、c 没有测过。</p>
+<p><strong>候选解释 H（推测档，简称"优先级翻转"）。</strong> 递推状态来自干净运行时缓冲供体不改变答哪一条；来自受针运行时答案跟随缓冲供体，且与其余部分是否受针无关。即 D(b) − D(a) 与 D(d) − D(c) 都大。"优先级翻转"只是 H 的简称，不是任何结局允许写的结论。</p>
+<p><strong>承诺范围。</strong> 只承诺"在这块开发面板、这些方向上，这些缓存替换下缓冲供体的选择效应是否随递推状态来源改变"。不承诺原选择被破坏、缓冲接管了控制；不承诺这是自然的选择路径；不承诺原生停嘴由此解释；不承诺开发外、别的任务或别的模型成立。</p>
+<h2 id="2">2. 固定条件</h2>
+<p>Qwen3.5-4B revision <code>851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a</code>，BF16/eager/batch 1/torch 原核。L0 形成干预、NA 布局、B1 窗口、−1 强度、冻结校准、解析器与停止 ID 全部继承 LVK/NWR/FBR。面板：LVK 新面板 48 条、6 场景（<code>data/panel-items-lvk48.json</code>）。方向：N4146 为主要；N1210 为第二方向，只跑核心臂，单独判读，不替代主要方向。本卡不加 C1343、R0。</p>
+<p>层集合：G = {13,14,16,17,18,20,21,22,24,25,26,28,29,30}；G4 = {16,17,18}（推定的 Address 块）；深层全注意力层 = {15,19,23,27,31}。</p>
+<h2 id="3">3. 操作</h2>
+<p>每个场景内，对全部输入各形成一次干净缓存 C 与两个方向的受针缓存 T（边界在最后一个提示 token 之前）。<strong>每个臂只把指定部件换成指定来源的张量，其余逐字节不动；之后做 t1 前向与贪心续写到停止或共 32 token。全程不挂任何钩子。</strong></p>
+<p>部件：<strong>S</strong>（G 层 <code>recurrent_states</code>；S4 只含第 16–18 层，So 为其余深层）；<strong>Bv / Bqk</strong>（G 层 <code>conv_states</code> 的 V 通道 / q、k 通道，全部槽；两者都换即整块缓冲 B）；<strong>K</strong>（深层全注意力层的 <code>keys</code>、<code>values</code>：来源为本输入干净运行时换全部已缓存位置，来源为供体时只换最后 4 个已缓存位置）。</p>
+<p>来源：本输入干净运行、本输入受针运行（同方向）、供体的干净运行。</p>
+<table>
+<thead>
+<tr>
+<th>臂</th>
+<th>背景</th>
+<th>换了什么</th>
+<th>用途</th>
+<th>方向</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C0</td>
+<td>C</td>
+<td>不改</td>
+<td>前提；桥接 LVK</td>
+<td>—</td>
+</tr>
+<tr>
+<td>C_Sd</td>
+<td>C</td>
+<td>S ← 供体</td>
+<td><strong>已知有效的参照</strong>（NSR-01；近邻同类操作）</td>
+<td>—</td>
+</tr>
+<tr>
+<td>C_S4d / C_Sod</td>
+<td>C</td>
+<td>只换第 16–18 层的 S / 只换其余深层的 S</td>
+<td>受近邻启发的本任务检验，无同操作先例</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>C_Bd</strong></td>
+<td>C</td>
+<td>B ← 供体</td>
+<td><strong>格 a</strong></td>
+<td>—</td>
+</tr>
+<tr>
+<td>C_Sd1_Bd2</td>
+<td>C</td>
+<td>S ← 供体 1，B ← 供体 2</td>
+<td>冲突</td>
+<td>—</td>
+</tr>
+<tr>
+<td>C_ST</td>
+<td>C</td>
+<td>S ← 本输入受针</td>
+<td>受针来源的状态单独放进干净运行（NSR-01 的 CS）</td>
+<td>两个</td>
+</tr>
+<tr>
+<td><strong>C_ST_Bd</strong></td>
+<td>C</td>
+<td>S ← 本输入受针，B ← 供体</td>
+<td><strong>格 b</strong></td>
+<td>两个</td>
+</tr>
+<tr>
+<td>T0</td>
+<td>T</td>
+<td>不改</td>
+<td>前提；桥接 FBR-01</td>
+<td>两个</td>
+</tr>
+<tr>
+<td>T_Bown</td>
+<td>T</td>
+<td>B ← 本输入干净</td>
+<td>前提；桥接 FBR-01</td>
+<td>两个</td>
+</tr>
+<tr>
+<td>T_Sown</td>
+<td>T</td>
+<td>S ← 本输入干净</td>
+<td>格 c 可判的前提；NCC-01 的 TS</td>
+<td>两个</td>
+</tr>
+<tr>
+<td><strong>T_Bd</strong></td>
+<td>T</td>
+<td>B ← 供体</td>
+<td><strong>格 d</strong></td>
+<td>两个</td>
+</tr>
+<tr>
+<td><strong>T_Sown_Bd</strong></td>
+<td>T</td>
+<td>S ← 本输入干净，B ← 供体</td>
+<td><strong>格 c</strong></td>
+<td>两个</td>
+</tr>
+<tr>
+<td>T_Bvd_Bqkown</td>
+<td>T</td>
+<td>Bv ← 供体，Bqk ← 本输入干净</td>
+<td>效应是否随 V 通道走</td>
+<td>两个</td>
+</tr>
+<tr>
+<td>T_Bvown_Bqkd</td>
+<td>T</td>
+<td>Bv ← 本输入干净，Bqk ← 供体</td>
+<td><strong>已知无效的参照</strong>（QST-01）</td>
+<td>两个</td>
+</tr>
+<tr>
+<td>T_Bvown</td>
+<td>T</td>
+<td>Bv ← 本输入干净</td>
+<td>复现"只换 V：开口但落首列"</td>
+<td>主要</td>
+</tr>
+<tr>
+<td>T_Kown</td>
+<td>T</td>
+<td>K ← 本输入干净</td>
+<td>KV 恢复臂；NCC-01 的 TK</td>
+<td>主要</td>
+</tr>
+<tr>
+<td>T_Bvd</td>
+<td>T</td>
+<td>Bv ← 供体，Bqk 保持受针</td>
+<td>供体 V 在受针 q/k 下是否仍有方向</td>
+<td>主要</td>
+</tr>
+<tr>
+<td>T_Sd</td>
+<td>T</td>
+<td>S ← 供体</td>
+<td>受针背景里供体状态是否带着选择</td>
+<td>主要</td>
+</tr>
+<tr>
+<td>T_Sd1_Bd2</td>
+<td>T</td>
+<td>S ← 供体 1，B ← 供体 2</td>
+<td>冲突</td>
+<td>主要</td>
+</tr>
+<tr>
+<td>T_Kd</td>
+<td>T</td>
+<td>K（末 4 位置）← 供体</td>
+<td>同位置的注意力通路参照</td>
+<td>主要</td>
+</tr>
+</tbody>
+</table>
+<p><strong>供体。</strong> 对每个接收者：同场景的其余全部输入；主要方向的格 b、格 d 另加下一个场景里目标行为另外两行的输入各一条。同场景供体按预测是否可分为四类（行号是记录在列表中的位置）：</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>定义</th>
+<th>"跟行"预测</th>
+<th>"跟键"预测</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AL 对齐</td>
+<td>同一排列、另一个查询</td>
+<td>供体目标行</td>
+<td>同一行（两种读法重合）</td>
+</tr>
+<tr>
+<td>KS 同键</td>
+<td>另一排列、同一个查询</td>
+<td>供体目标行</td>
+<td>接收者自己的目标</td>
+</tr>
+<tr>
+<td>RS 同行</td>
+<td>另一排列、目标行与接收者相同</td>
+<td>接收者自己的目标</td>
+<td>供体所问实体在接收者列表里的行</td>
+</tr>
+<tr>
+<td>BD 都不同</td>
+<td>另一排列，其余</td>
+<td>供体目标行</td>
+<td>供体所问实体的行；与自己、与"跟行"互不相同</td>
+</tr>
+<tr>
+<td>OS 异场景</td>
+<td>下一个场景</td>
+<td>供体目标行</td>
+<td>无（没有共同实体）</td>
+</tr>
+</tbody>
+</table>
+<p>真实账本上的计数（<code>analysis/design_table_output.txt</code>）：AL/KS/RS/BD/OS 供体共 84/96/84/84/96 个，各类预测行在三行上均衡；目标在首列的接收者 16 个。同场景内实体与编号绑定固定，"跟键"与"跟供体的答案编号"不可分，留给新面板。冲突臂只用两个 AL 供体（36 个接收者有）。</p>
+<h2 id="4">4. 读数</h2>
+<p>每条轨迹按自然完整回答分类（FC-01 解析器原规则）：恰好给出接收者列表里的一个编号时记它的行号 0/1/2；否则记"停止"或"其他"。</p>
+<p><strong>统计量。每个在任何与供体无关的输出下恰为 0</strong>（全答自己、全落首列、全停嘴都得 0；已在真实账本上对每个接收者断言）：</p>
+<table>
+<thead>
+<tr>
+<th>统计量</th>
+<th>定义</th>
+<th>可计算的接收者</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>D_tr 转移</strong></td>
+<td>对每个 AL 供体：1[输出 = 供体目标行] 减去同一行在"两种读法都不预测它"的同场景供体下出现的比例；逐接收者平均</td>
+<td>48</td>
+</tr>
+<tr>
+<td>D_rk</td>
+<td>BD 供体：落在供体目标行 +1，落在供体所问实体的行 −1</td>
+<td>36</td>
+</tr>
+<tr>
+<td>D_ks / D_rs</td>
+<td>两个 KS 供体上的跟行（此处跟键预测答自己）/ 两个 RS 供体上的跟键（此处跟行预测答自己）</td>
+<td>48 / 36</td>
+</tr>
+<tr>
+<td>D_os</td>
+<td>两个异场景供体上的跟行</td>
+<td>48</td>
+</tr>
+<tr>
+<td>W 冲突</td>
+<td>输出等于状态供体的预测 +1，等于缓冲供体的预测 −1</td>
+<td>36</td>
+</tr>
+</tbody>
+</table>
+<p>D_tr 的含义：净的、由供体决定的答案比例。它扣除了对照集里同一行的出现率，所以<strong>不能拿 FBR-01 的原始跟随率 21/24 给它定门槛</strong>。</p>
+<p><strong>不确定性。</strong> 对 6 个场景有放回重抽 10000 次（种子 20261106）取 95% 百分位区间；配对对比另报场景层面精确符号翻转置换的 p（6 个场景时最小为 0.031）。6 个场景的区间只表达开发阶段的不确定性，不代表总体可靠性。</p>
+<p><strong>一个界值 M = 0.25，三档读法。</strong> 效应 x 的区间下界 ≥ M 记"成立"，上界 ≤ M 记"低于界值"，其余"不可判"。M 的含义是最小有意义效应：净的由供体决定的答案不到四分之一时，多数答案并不随供体变。选 0.25 的理由见 DESIGN §2；它是设计者的选择，不是从数据标定出来的。<strong>界值校核（冻结规则的一部分）：</strong> 对四格各做构造上的零分布（在每个接收者内部打乱供体与输出的对应，2000 次），其 97.5% 分位若达到 0.25，判读写"界值未通过校核"，所有"成立"降为"不可判"。预演里输出为与供体无关的随机行时该分位为 0.163。每个效应旁边另报同一次运行里的两个参照点：已知无效的移植（T_Bvown_Bqkd）与已知有效的移植（C_Sd）的 D_tr。</p>
+<p><strong>主读数（每个方向）。</strong></p>
+<table>
+<thead>
+<tr>
+<th>读数</th>
+<th>定义</th>
+<th>回答什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>E</td>
+<td>D_tr(格 d)</td>
+<td>原生受针运行里缓冲供体的选择效应是否存在</td>
+</tr>
+<tr>
+<td><strong>Δ_needle</strong></td>
+<td>D_tr(d) − D_tr(c)，逐接收者配对</td>
+<td>把本输入的干净递推状态换回去，是否压住该效应</td>
+</tr>
+<tr>
+<td><strong>Δ_clean</strong></td>
+<td>D_tr(b) − D_tr(a)，逐接收者配对</td>
+<td>把受针来源的递推状态放进干净运行，是否足以引出该效应</td>
+</tr>
+<tr>
+<td>交互</td>
+<td>Δ_needle − Δ_clean</td>
+<td>只报告数值与区间</td>
+</tr>
+</tbody>
+</table>
+<p>四格的 D_tr 连续值与区间全部报告。每个供体臂另给一个开发性标签（FOLLOW / SELF / DEGRADED / INTERMEDIATE，点估计 ≥ 0.50、≤ 0.15 及答自己的比例 ≥ 0.75 划分），<strong>门槛未经标定，只作描述，不进任何结局</strong>。</p>
+<h2 id="5-spf_corepy-analysisrehearsal_outputtxt">5. 冻结判读（看任何新输出前写定；实现在 <code>spf_core.py</code>；每个结局与标签值都在合成数据上出现过也缺席过，见 <code>analysis/rehearsal_output.txt</code>）</h2>
+<p><strong>前提。</strong> Y(C0) ≥ 0.90；Y(T0) ≤ 0.25；Y(T_Bown) ≥ 0.75。Δ_needle 另需 Y(T_Sown) ≥ 0.75，否则不可判。</p>
+<p><strong>结局（每个方向，取第一个满足的）。</strong></p>
+<table>
+<thead>
+<tr>
+<th>结局</th>
+<th>条件</th>
+<th>允许写的句子（都要带效应量与区间）</th>
+<th>不允许写的句子</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0 前提不成立</td>
+<td>前提任一不成立</td>
+<td>这块面板或这次执行不适用</td>
+<td>任何关于来源的结论</td>
+</tr>
+<tr>
+<td>1 低于界值</td>
+<td>E 低于界值</td>
+<td>用全部同场景供体前瞻检验，缓冲供体的净选择效应低于 0.25；FBR-01 的事后线索没有以这个量级复现</td>
+<td>缓冲不带任何选择信息</td>
+</tr>
+<tr>
+<td>2 不可判</td>
+<td>E 不可判</td>
+<td>报告 D_tr 与区间</td>
+<td>"部分成立""有趋势"</td>
+</tr>
+<tr>
+<td><strong>3 来源调节</strong></td>
+<td>E、Δ_needle、Δ_clean 都成立</td>
+<td>在这块开发面板、这个方向上，受针来源的递推状态增强了缓冲供体对完整答案选择的影响：干净运行里换入它即出现该效应，受针运行里换回干净来源的状态即压住该效应</td>
+<td>原选择被破坏；缓冲接管了控制权；这是自然机制；原生停嘴由此解释；开发外或别的模型成立</td>
+</tr>
+<tr>
+<td>4 换回可压住、单换不足以引出</td>
+<td>E、Δ_needle 成立，Δ_clean 低于界值</td>
+<td>换回干净来源的递推状态压住了缓冲供体效应；但只把递推状态换成受针来源不足以在干净运行里引出它，还需要其余受针背景</td>
+<td>递推状态来源单独决定；递推状态无关</td>
+</tr>
+<tr>
+<td>5 不随状态来源变</td>
+<td>E 成立，Δ_needle、Δ_clean 都低于界值</td>
+<td>缓冲供体效应不随递推状态来源改变。另报格 a：成立则"干净运行里缓冲供体也改变答哪一条"，低于界值则"效应随其余背景出现"</td>
+<td>与 2611.01909 矛盾（它换的是末位置当步输入）；H 部分成立</td>
+</tr>
+<tr>
+<td>6 部分</td>
+<td>E 成立，其余含不可判或未列出的组合</td>
+<td>逐项报告</td>
+<td>给整体图样命名</td>
+</tr>
+</tbody>
+</table>
+<p>结局 4、5 里 H 不成立属科学失败，但各自是一条关于选择效应的可保留认识。结局 1 属科学失败（线索未复现）。结局 2 属没拿到结果。结局 0 若出自实现问题属合同执行失败。</p>
+<p><strong>参照与补充标签。</strong> 三档读法同上，除非另注。</p>
+<table>
+<thead>
+<tr>
+<th>标签</th>
+<th>测量</th>
+<th>允许写</th>
+<th>不允许写</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>R_S</td>
+<td>D_tr(C_Sd)</td>
+<td>成立：在我们的任务与切点上，供体递推状态改变干净接收者答哪一条（与 NSR-01 同向）</td>
+<td>这是我们的发现；复现了 2611.01909 在 4B 上的数字（它没有 4B 的状态移植）</td>
+</tr>
+<tr>
+<td>R_S4、R_So</td>
+<td>D_tr(C_S4d)、D_tr(C_Sod)</td>
+<td>第 16–18 层的状态单独是否足够、其余深层是否也能</td>
+<td>该块是唯一来源；这是对近邻同操作的复现</td>
+</tr>
+<tr>
+<td>R_QK</td>
+<td>T_Bvown_Bqkd：D_tr 低于界值且答自己的比例 ≥ 0.75</td>
+<td>成立：复现 QST-01，供体 q/k 单独不改答案</td>
+<td>q/k 无关</td>
+</tr>
+<tr>
+<td>V</td>
+<td>E 成立时：D_tr(T_Bvd_Bqkown) 成立且 R_QK 一侧低于界值</td>
+<td>缓冲供体效应随 V 通道走，q/k 用本输入干净的即可</td>
+<td>V 是唯一载体；已定位到 t1 写入</td>
+</tr>
+<tr>
+<td>VQ（主要方向）</td>
+<td>D_tr(T_Bvd) 低于界值，且目标不在首列时落首列比例 ≥ 0.50</td>
+<td>供体 V 在受针 q/k 下没有方向，输出落首列</td>
+<td>k 是地址</td>
+</tr>
+<tr>
+<td>S_T（主要方向）</td>
+<td>D_tr(T_Sd)</td>
+<td>成立：受针背景里供体递推状态也改变答哪一条</td>
+<td>—</td>
+</tr>
+<tr>
+<td>X_C、X_T</td>
+<td>W：下界 ≥ 0.25 记"状态"，上界 ≤ −0.25 记"缓冲"，否则"未能区分"</td>
+<td>两个干净来源指向不同记录时答案跟谁</td>
+<td>固定的优先级规则</td>
+</tr>
+<tr>
+<td>KV（主要方向）</td>
+<td>D_tr(T_Kd)；另报 Y(T_Kown)</td>
+<td>末 4 个位置的供体 KV 是否改变答哪一条；恢复全部深层 KV 修回多少</td>
+<td>KV 不参与；完整层输入替换的其他作用已被覆盖</td>
+</tr>
+<tr>
+<td>OPEN</td>
+<td>四个换入干净缓冲的供体臂首步开口率的最小值 ≥ 0.90</td>
+<td>干净缓冲不论来自谁都让受针运行开口</td>
+<td>开口与选择是两个独立模块</td>
+</tr>
+<tr>
+<td>READ</td>
+<td>仅当 E 成立：D_rk 下界 ≥ 0.25 记"跟行"；上界 ≤ −0.25 记"跟键"；D_ks 与 D_rs 各自成立记"两者都有"；否则"<strong>未能区分</strong>"</td>
+<td>在同场景供体上更像跟行、跟键，或两者都有</td>
+<td>区间跨零时写"混合"；位置编码；与答案编号的区分</td>
+</tr>
+</tbody>
+</table>
+<p><strong>只作描述。</strong> 各臂错答类型；按接收者目标行分层的正确数；D_os；KS 供体下的失配代价；每个统计量去掉 FBR-01 已见的（接收者，供体）对之后的值；开发性标签。</p>
+<p><strong>看数据前登记的预期。</strong></p>
+<table>
+<thead>
+<tr>
+<th>预期</th>
+<th>档位</th>
+<th>依据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>R_S 成立；R_QK 成立；Y(T_Kown) 很低；OPEN 成立</td>
+<td>已有结果的重现</td>
+<td>NSR-01 32/38；QST-01 84/84；NCC-01 3/48；FBR-01 48/48</td>
+</tr>
+<tr>
+<td>E 在 N4146 成立</td>
+<td>推测，有事后线索</td>
+<td>FBR-01 同场景原始跟随 21/24（不是 D_tr）</td>
+</tr>
+<tr>
+<td>E 在 N1210 不可判或低于界值</td>
+<td>推测</td>
+<td>FBR-01 事后 8/24</td>
+</tr>
+<tr>
+<td>格 a 低于界值；X_C 为"状态"</td>
+<td>类比</td>
+<td>2611.01909 在 9B 上末位置输入交换 0.00；C1343 上换缓冲仍答自己的</td>
+</tr>
+<tr>
+<td>Δ_needle 成立；S_T 成立；X_T 为"状态"</td>
+<td>推测</td>
+<td>NCC-01 只恢复 S 即 48/48</td>
+</tr>
+<tr>
+<td><strong>Δ_clean 成立</strong></td>
+<td><strong>推测，没有把握</strong></td>
+<td>无直接数据；NSR-01 只说明受针来源的 S 单独放进干净运行不致错</td>
+</tr>
+<tr>
+<td>V 成立；VQ 成立</td>
+<td>推导（一格未测）；类比</td>
+<td>QST-01 加 FBR-01；SVQ-01</td>
+</tr>
+<tr>
+<td>R_S4、R_So</td>
+<td>不登记方向</td>
+<td>近邻在 4B 上只有输出移植（0.70），且该尺寸冗余最多</td>
+</tr>
+<tr>
+<td>READ 为"跟行"</td>
+<td>类比</td>
+<td>2609.38530 残差流层面位置份额 0.72；FBR-01 事后位置 10、实体 4</td>
+</tr>
+<tr>
+<td>KV（T_Kd）低于界值</td>
+<td>推测</td>
+<td>无直接数据</td>
+</tr>
+</tbody>
+</table>
+<h2 id="6">6. 阶段与退出</h2>
+<ul>
+<li><strong>阶段 A（本合同）。</strong> 开发面板、缓存级替换、无钩子。面板与 FBR-01 的两类单供体结果已经看过，所以是有预先规定的前瞻检验，不是独立确认。界值与规则在冻结时即定，不因结果调整。</li>
+<li><strong>阶段 B（另行设计、另行冻结、另行授权）。</strong> 进入条件：<strong>N4146 的 E 成立</strong>（结局 3、4、5、6 均可）。理由：只要缓冲供体的选择效应存在，"它是否经 t1 写入项产生"就是有意义的问题，不取决于 H 是否成立。内容按结局取舍：</li>
+<li>各结局共有：只把 t1 写入项的 v 换成"供体缓冲背景里的当步 v"（LVK 的操作形式），看能否复现格 d 的效应。</li>
+<li>结局 3、4 另加：受针前后第 19、23、27 层的注意力落在哪一行。</li>
+<li>结局 5 且格 a 成立时另加：2611.01909 的末位置当步输入交换，与"换前 4 个位置的缓冲"对口径。
+  阶段 A 结束后先回来重新判断是否值得做阶段 B，不自动续跑。</li>
+<li><strong>阶段 C（另行冻结；阶段 B 之后仍有可写的关系才做）。</strong> 新面板：键 × 行 × 编号交叉；Qwen3.5-9B 上同一张表；切点在问题之前与之后的只留 KV / 只留递推。</li>
+<li><strong>退出。</strong> N4146 结局为 0、1、2：本卡结束，FBR-01 保留为边界结果，不追加层、头、剂量。任何结局都不改界值、不加臂重跑。N1210 同口径报告，不替代主要方向，也不因它更好看而改称主要方向。</li>
+</ul>
+<h2 id="7">7. 工程闸门（任一失败即停，记为合同执行失败，不是科学阴性）</h2>
+<ol>
+<li>面板：输入与分词账本哈希；运行中 token 等于账本。</li>
+<li>桥接（逐位：t1 的 bf16 logits、首 token、自然 token 序列、终止方式）。每个接收者：
+   - C0 对 LVK-01 干净记录（1 次）；
+   - T0、T_Bown 对 LVK-01 的 L00、F 臂（每个方向各 1 次；FBR-01 的 T、F_own 当时也桥接到这两臂）；
+   - T_Bvown 对 LVK-01 的 V 臂（主要方向 1 次；NCC-01 的 TV 当时也桥接到它）；
+   - T_Bd 对 FBR-01 的 F_one_s（每个方向 1 次）；对 F_one_o 只在 FBR-01 的异场景参照恰好是本卡异场景供体的 32 个接收者上（主要方向）；
+   - T_Sown、T_Kown 对 NCC-01 的 TS、TK（主要方向各 1 次）；
+   - C_ST 对 NSR-01 的 CS（主要方向 1 次）；C_Sd 在 NSR-01 用过的那个供体上对 CSx（1 次）。</li>
+</ol>
+<p>冻结前已核：这些旧操作换的张量集合与本卡的 S、Bv、K 逐项相同（CPU 测试里与 NCC-01、FBR-01 的原函数逐位比对），全部参照记录与 t1 张量存在（就绪检查）。其余格子没有旧记录，不设桥接。桥接是闸门，不是证据。
+3. 编辑范围：每个臂的缓存与其背景缓存相比，只有声明的部件不同，其余全部张量逐字节相同；被换入的张量逐位等于来源缓存的对应张量。
+4. 供体：供体缓存在本场景单元内形成一次并复用；其形成哈希等于该输入作为接收者时的哈希。
+5. 供体 KV 只换最后 4 个已缓存位置；断言这 4 个位置的 token 在本单元全部输入之间相同（CPU 测试已在真实分词器上对 48 条输入验过，是 <code>\n&lt;think&gt;\n\n&lt;/think&gt;</code>）。
+6. 全程无钩子；核函数未被替换；源缓存哈希在全部臂跑完后不变。
+7. 已换入的递推状态确实被用到：T_Sown 与 T0 的 t1 logits 不同（2609.04434 附录 B 指出的实现陷阱）。
+8. 设计表：运行器生成的供体表与 <code>spf_core.donor_table</code> 逐项相同；统计量在常数输出下为 0 的断言在运行前重跑。
+9. 预检：NQ02（6 条输入的场景）整场景、主要方向全部臂。失败即停，允许一次有记录的修复重试。
+10. 闸门只写对被检对象本身成立的关系。</p>
+<h2 id="8">8. 预算</h2>
+<p>正式运行 6780 条自然轨迹：与方向无关的 1512、N4146 3336、N1210 1932（<code>analysis/design_table_output.txt</code>）。按 FBR-01 在共享卡上的实测（约 0.40 秒每条）外推约 0.75 小时；另加 48 条输入 × 3 次形成。预检 426 条轨迹，上限 0.3 小时。<strong>正式运行硬上限 2.0 小时（两个进程墙钟之和，共享卡）。</strong> 不存张量，只存记录；存储 ≤ 2 GiB（服务器 /workspace 目前只剩 108 GB）。执行单元是场景：一个场景的全部缓存（最多 9 条输入 × 3 份，加 3 条异场景供体的干净缓存）同时留在显存里，预检记录峰值显存，正式运行的授权据此核对。</p>
+<h2 id="9">9. 本卡不回答的</h2>
+<ul>
+<li>原生停嘴如何形成。</li>
+<li>受针来源的递推状态里，选择是被破坏、被改写，还是仍在而读不到。</li>
+<li>效应是否经 t1 写入项、是否经原 SRU 的 t2 直接读取传递（阶段 B；即使阶段 B 阳性也不自动闭合全链）。</li>
+<li>跟随的是位置、实体还是答案编号的最终区分。</li>
+<li>别的任务、别的模型尺寸、别的施针层位。</li>
+<li>谁会因此改做法：查重里这一栏是空的，本卡不改变它。</li>
+</ul>
+<h2 id="10">10. 查重列出的必打基线在哪里</h2>
+<table>
+<thead>
+<tr>
+<th>基线</th>
+<th>位置与限度</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2611.01909 的状态移植</td>
+<td>阶段 A：C_Sd（全部深层 G）是同类操作在本任务上的检验；C_S4d、C_Sod 无同操作先例可比</td>
+</tr>
+<tr>
+<td>其末位置输入交换</td>
+<td>阶段 B（结局 5 且格 a 成立时）；格 a 换的是前 4 个位置的缓冲，不是同一操作</td>
+</tr>
+<tr>
+<td>KV 臂</td>
+<td>阶段 A：T_Kown、T_Kd</td>
+</tr>
+<tr>
+<td>键 × 行交叉</td>
+<td>阶段 A 开发级（D_rk、D_ks、D_rs）；键、行、编号三分在阶段 C</td>
+</tr>
+<tr>
+<td>"直接换层输入"对照</td>
+<td><strong>未覆盖。</strong> 缓冲替换换的是这些位置层输入在 q/k/v 支路上的历史投影；完整层输入替换还会改变门控、残差与其他计算。T_Kd 只给出同位置注意力通路的一个参照</td>
+</tr>
+<tr>
+<td>同一步读取与下一步读取</td>
+<td>阶段 B</td>
+</tr>
+<tr>
+<td>状态来源 × 其余背景并报交互</td>
+<td>阶段 A：四格连续值、两个配对对比、交互</td>
+</tr>
+<tr>
+<td>首列回退对照</td>
+<td>阶段 A：统计量在与供体无关的输出下恰为 0；目标在首列的接收者单列</td>
+</tr>
+<tr>
+<td>供体特异性</td>
+<td>阶段 A：由"输出是否随供体的预测行改变"直接检验，不靠随机扰动对照。FBR-01 的 20 个同范数随机缓冲改动只是背景证据（N4146 上完整回答正确数全为 0），它匹配的是平均缓冲修复，不承担本卡供体替换的特异性</td>
+</tr>
+<tr>
+<td>失配对照</td>
+<td>阶段 A 描述性（KS 供体）；重采样对照未做</td>
+</tr>
+<tr>
+<td>第二个尺寸、第二个任务族</td>
+<td>阶段 C（9B）；第二个任务族未排</td>
+</tr>
+<tr>
+<td>切点在问题前后的只留 KV / 只留递推</td>
+<td>阶段 C</td>
+</tr>
+</tbody>
+</table>
+<h2 id="11-r01-r02-codex-2026-11-06-c2b71cf">11. r01 → r02 的改动（依据：Codex 2026-11-06 对 <code>c2b71cf</code> 的评估，逐条核实后采纳）</h2>
+<ol>
+<li><strong>事实更正。</strong> 2611.01909 的 0.99 是 9B 的状态移植；4B 的 0.70 是末位置输出移植，4B 无状态移植、无层号（已对原文 §5.2、§7、表 3 复核）。LVK 换入的 v 是混合背景的当步 v，不是完整干净运行的 v（LVK 合同第 9 行）。</li>
+<li><strong>操纵变量改为"递推状态的来源"。</strong> 表格与结局不再写"完好 / 失效"；"优先级翻转"降为 H 的简称。</li>
+<li><strong>主读数改为连续效应与两个配对对比</strong>（Δ_needle、Δ_clean）加置换 p；四个门槛减为一个界值 M；原四档格标签降为不进结局的开发性标签。</li>
+<li><strong>READ</strong>：区间跨零记"未能区分"，不记"混合"；"两者都有"要求 D_ks 与 D_rs 各自成立。</li>
+<li><strong>阶段 B 的进入条件</strong>由"仅结局 4（旧编号）"改为"N4146 的 E 成立"，内容按结局取舍，仍不自动续跑。</li>
+<li><strong>N1210 只跑核心臂</strong>：轨迹由 8184 降到 6780，上限由 2.5 降到 2.0 小时。</li>
+<li><strong>两处过强的说法收窄</strong>："缓冲替换等价于层输入替换"改为未覆盖；FBR-01 随机对照不再写成本卡的特异性对照。</li>
+<li><strong>冻结前对齐实现的措辞（不涉及判读）。</strong> §7 第 2 条按实际桥接对象逐项写明（T0、T_Bown、T_Bvown 直接对 LVK-01 的 L00、F、V 臂；F_one_o 只在 32 个接收者上有）；§7 第 5 条改为"本单元全部输入"；§8 写明预检轨迹数、执行单元与显存核对。</li>
+</ol></main></html>

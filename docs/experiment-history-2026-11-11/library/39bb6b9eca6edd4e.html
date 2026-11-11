@@ -1,0 +1,264 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>缓存形成机制｜CFM-FORM-AB v2 合同 r01</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="cfm-form-ab-v2-r01">缓存形成机制｜CFM-FORM-AB v2 合同 r01</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-formation-mechanism-formation-ab-v2-2026-10-31/CONTRACT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-mechanism-formation-ab-v2-2026-10-31/CONTRACT.zh-CN.md">固定提交原件</a>；SHA-256：<code>39bb6b9eca6edd4ef893d971085c46eb42da9bd7f78eacc343d629d16ce4d3b5</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="cfm-form-ab-v2-r01_1">缓存形成机制｜CFM-FORM-AB v2 合同 r01</h1>
+<ul>
+<li>编号 <code>CFM-FORM-AB-v2-20261031</code>；设计 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-formation-mechanism-next-step-plan-v2-2026-10-31.zh-CN.md">下一步实验方案 v2</a>（8a993c4，下称"方案"）。</li>
+<li>本合同把方案落成可执行的定义；与方案不同之处只有 §4 的路线修订与 §6 的"进一步削弱"阈值，均在 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-mechanism-formation-ab-v2-2026-10-31/IMPLEMENTATION.zh-CN.md">IMPLEMENTATION.zh-CN.md</a> 决策日志登记。冻结后不改；偏离一律记入决策日志。</li>
+<li>代码：<code>form_ab.py</code>（运行与闸门）、<code>form_analysis.py</code>（读数与判读）、<code>test_form_ab.py</code>（CPU 测试）。</li>
+</ul>
+<h2 id="1-e2">1. 对象（全部继承 E2，不重新挑选）</h2>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th>取值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>模型与内核</td>
+<td>Qwen3.5-4B 851bf6e8，BF16，eager，transformers 5.20.2 torch 参考内核（与 CFM-S1–S3、E2 相同，运行时记录 <code>kernel_identity</code>）</td>
+</tr>
+<tr>
+<td>针</td>
+<td>L0 N4146，剂量 −1；阶段一 <code>masked_injection</code> 的写入算术；校准逐值等于 II-B 归档</td>
+</tr>
+<tr>
+<td>输入</td>
+<td>E2 的 VAR03、VAR04、VRD03、VRD04、VRL03、VRL04 × f0/f1（12 个）；token、区段标签、b 来自 E2 冻结的 <code>data/segments-heldout-r01.json</code></td>
+</tr>
+<tr>
+<td>时窗</td>
+<td>L = {b+1,…,τ}，τ = n−2；针、A、B 只在 L 内；x[n−1] 无针，只用于评分</td>
+</tr>
+<tr>
+<td>层</td>
+<td>浅层 0–12，深层 13–31；B 处理第 1–12 层；A 作用于第 13 层解码层的输入残差</td>
+</tr>
+</tbody>
+</table>
+<h2 id="2">2. 五个形成条件</h2>
+<table>
+<thead>
+<tr>
+<th>条件</th>
+<th>针</th>
+<th>A</th>
+<th>B</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+</tr>
+<tr>
+<td>T（即 X0 的形成轨迹）</td>
+<td>✓</td>
+<td>–</td>
+<td>–</td>
+</tr>
+<tr>
+<td>XA</td>
+<td>✓</td>
+<td>✓</td>
+<td>–</td>
+</tr>
+<tr>
+<td>XB</td>
+<td>✓</td>
+<td>–</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>XAB</td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+</tr>
+</tbody>
+</table>
+<h2 id="3">3. 执行路线与操作定义</h2>
+<p><strong>路线</strong>：五个条件共用位置 0…b 的一次干净整段前向（这段在所有条件中都无针）；L 内每个位置 t 依次以单 token 前向推进 C、T、XA、XB、XAB。</p>
+<ul>
+<li><strong>A</strong>：δ0(t) = float32(r0_T(t)) − float32(r0_C(t))，r0 为第 0 层解码层完整输出残差，取自同一步的 C 与 T。在 XA、XAB 中，第 13 层解码层入口（input_layernorm 之前）执行 r13 ← BF16(float32(r13) − δ0(t))。δ0 不预先舍入；每次记录 ‖δ0‖、实际改变量、舍入残差。</li>
+<li><strong>B</strong>：在 XB、XAB 的位置 t 前向之前，把第 1–12 层的全部缓存字段（线性层的递推状态与卷积缓冲；全注意力层位置 0…t−1 的 K/V）替换为 C 在边界 t−1 处对应字段的克隆。当前位置的 q/k/v、门、更新与输出照常计算，下一位置重新替换。深层历史不动。</li>
+<li><strong>评分</strong>：τ 之后构造 M_score(X) = C 的第 0–12 层 + X 的第 13–31 层（E2 的 <code>transplant</code>），移除全部钩子，从独立深拷贝输入 x[n−1]，取首步全词表 logits。评分 6 次：C、T_native（T 自身完整缓存）、X0（C 浅层 + T 深层）、XA、XB、XAB。不做候选强制、不做自由生成。</li>
+</ul>
+<h2 id="4">4. 工程闸门（任一不过即停；不重试、不放宽）</h2>
+<p><strong>路线修订（方案 §4.2-2）</strong>：方案要求新路径与 E2 逐位一致，并写明"若 chunk/step 路径导致不一致，预检停止……数值路线修订另行记录后才重审"。冻结前的工程探针（<code>readiness/probe-r01.json</code>，只跑 C、T，不含任何 X 条件）显示：E2 的整段路径在本环境逐位重现 E2；逐步路径<strong>不</strong>逐位一致（缓存清单与 logits 哈希不同），D 差为 C 0.0、T 0.0625。B 只能逐位置执行，因此逐位重放在构造上不可达。本合同把该闸门拆为 R0 与 R：</p>
+<table>
+<thead>
+<tr>
+<th>闸门</th>
+<th>内容</th>
+<th>何时</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>R0 来源</td>
+<td>E2 整段路径的 C、T（L0·01）：τ 缓存清单 + 首步 token/D/logits 哈希/top5 与 E2 记录<strong>逐位</strong>相同</td>
+<td>预检</td>
+</tr>
+<tr>
+<td>R 路线容差</td>
+<td>逐步路径的 C、T_native、X0 三个首步 D 与 E2 的 00、L0·01、a 之差都 ≤ 0.05 × Δ_E2（Δ_E2 = D_a − D_00，取自同一输入的 E2 记录，且须 &gt; 0）。0.05 在探针之前写入代码</td>
+<td>每个输入</td>
+</tr>
+<tr>
+<td>时序</td>
+<td>每一步 XA/XB/XAB 的第 0 层输出与 T 逐位相同；B 在 t=b+1 逐位惰性；A 在 XA/XAB 中恰好作用 |L| 次，其他条件 0 次</td>
+<td>每个输入</td>
+</tr>
+<tr>
+<td>B 来源</td>
+<td>每个 B 步后：全注意力层位置 0…t−1 的 K/V 逐位等于供体；卷积缓冲左移一位后逐位等于供体末段；供体哈希在步前步后不变</td>
+<td>每个输入</td>
+</tr>
+<tr>
+<td>结构</td>
+<td>五条件第 0 层缓存逐位相同；XA 浅层 = T 浅层；XAB 浅层 = XB 浅层；缓存管理状态相同</td>
+<td>每个输入</td>
+</tr>
+<tr>
+<td>评分隔离</td>
+<td>混合缓存浅层清单 = C、深层清单 = 本条件；管理状态相同；评分时钩子计数等于裸模型基线；状态哈希相同则 logits 必须相同</td>
+<td>每个输入</td>
+</tr>
+<tr>
+<td>惰性钩子</td>
+<td>安装未激活的 A 钩子重跑 C、T：缓存清单与首步 logits 逐位等于正式 C、T</td>
+<td>预检</td>
+</tr>
+<tr>
+<td>其他</td>
+<td>校准、token 哈希、冻结、授权、CPU 收据、权重哈希与钩子移除（同 E2）</td>
+<td>全程</td>
+</tr>
+</tbody>
+</table>
+<p>这些闸门只验操作与数值，不以效应方向为通过条件。</p>
+<h2 id="5">5. 读数</h2>
+<p>每个输入、每个评分格：D = max(z[E]) − max(z[非E])，E = {248044, 248046}；EOS = 实际 argmax ∈ E；固定 token 对比 m = z[e<em>] − z[c</em>]，e<em>、c</em> 为 C 评分中停止集合内、外的最大者；记录各格两个 max 的 token 身份。</p>
+<p>情景层面：D 为两事实均值，同时保留两条原始值。Δ = D_X0 − D_C。</p>
+<table>
+<thead>
+<tr>
+<th>量</th>
+<th>定义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A|B0</td>
+<td>D_X0 − D_XA</td>
+</tr>
+<tr>
+<td>A|B1</td>
+<td>D_XB − D_XAB</td>
+</tr>
+<tr>
+<td>B|A0</td>
+<td>D_X0 − D_XB</td>
+</tr>
+<tr>
+<td>B|A1</td>
+<td>D_XA − D_XAB</td>
+</tr>
+<tr>
+<td>AB</td>
+<td>D_X0 − D_XAB</td>
+</tr>
+<tr>
+<td>I</td>
+<td>D_XAB − D_XA − D_XB + D_X0</td>
+</tr>
+<tr>
+<td>R_k</td>
+<td>上述差 / Δ（Δ ≤ 0 时不定义，不贴标签）</td>
+</tr>
+</tbody>
+</table>
+<p>同样的量对 m 另算一套（解释辅助，不替代 D）。</p>
+<p><strong>描述尺度（不是显著性）</strong>：R &gt; 1 越过干净基线的反转；0.7 ≤ R ≤ 1 强削弱；0.3 &lt; R &lt; 0.7 部分削弱；−0.3 ≤ R ≤ 0.3 弱；R &lt; −0.3 增强。弱不等于零效应。本面板没有效应量的零分布（方案 E25 固定五条件、不加对照矩阵）；报告路线容差 |ΔD|/Δ_E2 作为数值底参照，不作为零分布。</p>
+<h2 id="6">6. 判读（按情景，可并存，不贴整模型单一标签）</h2>
+<table>
+<thead>
+<tr>
+<th>行</th>
+<th>判定式（bands 按 §5）</th>
+<th>可以支持</th>
+<th>不应推出</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>B 两背景强、A 两背景弱</td>
+<td>B|A0、B|A1 强；A|B0、A|B1 弱</td>
+<td>持续把浅层过去状态置为干净，会大幅减少深层最终效应；入口抵消不足以产生同等改变</td>
+<td>原生唯一历史通路；α 主导</td>
+</tr>
+<tr>
+<td>A 两背景强、B 两背景弱</td>
+<td>对称</td>
+<td>已发生浅层响应后，入口减法仍大幅改变深层效应</td>
+<td>针直接传到底；浅层无作用</td>
+</tr>
+<tr>
+<td>两者部分、联合进一步削弱</td>
+<td>A|B0、B|A0 部分，且 R_AB − max(R_A|B0, R_B|A0) &gt; 0.3</td>
+<td>两类操作都有影响，单独不足以替代联合</td>
+<td>把比例相加成自然份额</td>
+</tr>
+<tr>
+<td>单独都强、联合不再明显增加</td>
+<td>A|B0、B|A0 强，且 R_AB − max(…) ≤ 0.3</td>
+<td>存在多个有效干预入口</td>
+<td>两条独立冗余承载路径</td>
+</tr>
+<tr>
+<td>条件依赖</td>
+<td>(A|B0、B|A0 弱且 AB 强或反转) 或 某操作在一个背景弱、在另一背景至少部分</td>
+<td>形成效应对操作组合有条件依赖</td>
+<td>由 I 命名 K/V 或递推交互</td>
+</tr>
+<tr>
+<td>增强或反转</td>
+<td>五个 R 中任一为增强或反转</td>
+<td>被改动的形成条件可能原先限制了输出效应，或操作造成新的状态组合</td>
+<td>把异号改称支持；调剂量救假说</td>
+</tr>
+<tr>
+<td>全弱</td>
+<td>A|B0、B|A0、AB 都弱</td>
+<td>两项操作在统一背景中都未大幅削弱既有深层效应</td>
+<td>把剩余叫"浅层同位置放大"；自动换层换模型</td>
+</tr>
+<tr>
+<td>事实版本不一致</td>
+<td>任一事实 Δ ≤ 0，或五个差在两事实间的档位或符号不同</td>
+<td>形成依赖与输入有关</td>
+<td>用均值掩盖</td>
+</tr>
+</tbody>
+</table>
+<p>另报：情景间符号不一致（各差）；赢家切换（X0/XA/XB/XAB 中两个 max 的 token 身份是否变化）；D 与固定对比的 I/Δ 是否落在不同档位。后两者出现时，D 的交互不定位到任何内部运算。</p>
+<h2 id="7">7. 规模与停止</h2>
+<ul>
+<li>预检：VAR03-f0，1 个 worker；R0 的 2 前缀 + 2 评分、五条件 5 前缀 + 6 评分、惰性钩子重跑 2 前缀 + 2 评分，合计 <strong>9 前缀 / 10 评分</strong>（方案 §8 上限）。</li>
+<li>正式：12 输入 × (5 前缀 + 6 评分) = <strong>60 / 72</strong>；2 个 worker，每卡 1 个（实测每输入约 17 s，多 worker 无收益）。代码在运行中按上限断言。</li>
+<li>停止：预检任一闸门不过不进正式；正式任一输入闸门不过即整轮停止，保留已完成记录，不自动重跑。固定面板完成即停，不因结果扩题、加剂量或换层。</li>
+</ul>
+<h2 id="8">8. 保存</h2>
+<p>每个输入：记录 JSON（全部评分、审计、闸门、清单、E2 来源路径）；张量文件（逐位置 δ0、r0_C、r0_T；逐位置 B 供体 = C 的第 1–12 层缓存；五条件 τ 处深层完整缓存；6 个评分的全词表 logits）。哈希写入 worker 收据。</p>
+<h2 id="9">9. 失败类型</h2>
+<ul>
+<li>任何闸门失败：合同执行失败，信息量为零，不报告为科学阴性。</li>
+<li>Δ ≤ 0 或事实版本不一致：作为结果边界报告。</li>
+<li>全弱：没拿到"操作足以削弱"的证据，按方案结束本分支，不是"形成与浅层历史无关"的证据。</li>
+</ul></main></html>

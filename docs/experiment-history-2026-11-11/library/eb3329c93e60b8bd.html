@@ -1,0 +1,104 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>FC-01（首步选择、条件续答与卷积恢复的有限行为验证）合同 r01</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="fc-01-r01">FC-01（首步选择、条件续答与卷积恢复的有限行为验证）合同 r01</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-first-token-continuation-v1-2026-11-02/CONTRACT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-first-token-continuation-v1-2026-11-02/CONTRACT.zh-CN.md">固定提交原件</a>；SHA-256：<code>eb3329c93e60b8bd951aa7e0ff1b936462e349ba601e42d1d58ebc92cc454583</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="fc-01-r01_1">FC-01（首步选择、条件续答与卷积恢复的有限行为验证）合同 r01</h1>
+<p>日期：2026-11-02。设计：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-first-token-continuation-plan-v1-2026-11-02.zh-CN.md">计划 v1</a>（评审撰写，6486eff），本合同只把计划冻结为可执行规则，不改科学判据。基准：NR-01（c19cb45）、CT-01（c11487f）。授权：用户 2026-11-02「同意，直接写计划合同代码，测试后上卡跑」。已见面板；续写输出未见。</p>
+<h2 id="1">1. 操作</h2>
+<p>沿用 NR-01 的模型、revision、BF16、内核、token、晚段窗口、L0 剂量 −1、四方向、12 条输入、worker/GPU 分配、进程内校准。每输入形成 C；每方向形成 T。从评分前缓存的独立克隆出发，先处理末 prompt token 得到第一步 logits，再按臂选择第一个输出：</p>
+<table>
+<thead>
+<tr>
+<th>臂</th>
+<th>起点缓存</th>
+<th>第一个输出</th>
+<th>之后</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C_nat</td>
+<td>C</td>
+<td>argmax</td>
+<td>自然贪心</td>
+</tr>
+<tr>
+<td>C_noEOS1</td>
+<td>C</td>
+<td>屏蔽停止集合后 argmax</td>
+<td>自然贪心</td>
+</tr>
+<tr>
+<td>T_nat</td>
+<td>T</td>
+<td>argmax</td>
+<td>自然贪心</td>
+</tr>
+<tr>
+<td>T_noEOS1</td>
+<td>T</td>
+<td>屏蔽停止集合后 argmax</td>
+<td>自然贪心</td>
+</tr>
+<tr>
+<td>T_q0</td>
+<td>T</td>
+<td>强制 q0（C_nat 的实际首 token）</td>
+<td>自然贪心</td>
+</tr>
+<tr>
+<td>T_F</td>
+<td>T 但深层 G 层卷积缓冲恢复为 C（NR-01 的 010 组装）</td>
+<td>argmax</td>
+<td>自然贪心，缓存正常更新</td>
+</tr>
+</tbody>
+</table>
+<p>最多 32 个新 token（含强制 token 与停止 token）；停止集合 {248044, 248046}，模型配置的 eos（248044）已包含在内；argmax 平局取最小下标；无采样、温度、重复惩罚或自动模板；生成期不注入针、不挂任何 hook；<code>&lt;think&gt;</code> 不当作停止。真实选出的 token 喂入下一步。预检另做 C_q0（等价核对）以及首输入的 C/T4146 重建续写。</p>
+<h2 id="2">2. 预算</h2>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th style="text-align: right;">形成</th>
+<th style="text-align: right;">轨迹</th>
+<th style="text-align: right;">解码前向上限</th>
+<th style="text-align: right;">校准</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>预检（P01-f0/f1，1 worker；含 C_q0 ×2、重建续写 ×2）</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">40</td>
+<td style="text-align: right;">1280</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td>正式（12 输入，2 worker）</td>
+<td style="text-align: right;">60</td>
+<td style="text-align: right;">216</td>
+<td style="text-align: right;">6912</td>
+<td style="text-align: right;">6</td>
+</tr>
+<tr>
+<td>合计</td>
+<td style="text-align: right;">72</td>
+<td style="text-align: right;">256</td>
+<td style="text-align: right;">8192</td>
+<td style="text-align: right;">7</td>
+</tr>
+</tbody>
+</table>
+<p>GPU ≤1 小时（预检实测后若预计超限则停止汇报，不缩短 32 或减少输入）；产物 ≤8 GiB。预检工程失败可记账后重试一次；正式不重试。</p>
+<h2 id="3">3. 工程闸门（任一不过即停止）</h2>
+<p>校准、GPU 分配等于 B3；L0 写入 ≤1%；第一步原始 logits：C_nat = NR C_native，T 三臂 = NR T_native，T_F = NR R010（逐位）；T_nat/T_noEOS1/T_q0 第一步 logits 与更新后缓存哈希相同；q0 = C_nat 首 token = NR a_token、非停止、是目标编号的前缀；C_noEOS1 与 C_nat 逐 token 且终态缓存哈希相同；预检 C_q0 同上；屏蔽/强制只在第一步，强制的 q0 实际喂入下一步；T_F 组装：浅层、S、KV 来自 T，深层卷积来自 C（哈希）；供体不变；生成前无 hook；预检重建缓存哈希一致、续写逐 token 相同。</p>
+<h2 id="4-fc_core-56">4. 读数与判读（<code>fc_core</code>，照计划 §5–6）</h2>
+<p>可见文本 = 去掉停止 token 文本、去掉所有 <code>&lt;think&gt;…&lt;/think&gt;</code>（未闭合则其后全部去掉）。编号 = <code>(?&lt;![A-Za-z0-9])[A-Z][0-9]+(?![A-Za-z0-9])</code>。Y_delivery：可见文本含目标编号且无其他不同编号（主读数）；Y_strict：可见文本去首尾空白后恰为目标编号。互斥主分类：多编号 &gt; 正确 / 干扰编号 / 其他编号 &gt; 停止且无编号 / 预算内无编号。正交标签：think 出现/未闭合、编号数、首个编号及是否正确、目标重复、可见文本是否含完整问题原文及次数、停止步、token 数。</p>
+<ul>
+<li><strong>P_F</strong>（推测档）：每情景两事实都满足“C_nat 正确且 T_F 正确”（Y_delivery）才支持；方向内 ≥5/6 情景支持；预期 ≥3/4 方向。若 C_nat 两事实都正确的情景不足 5 个，记基线不足。另报 T_nat → T_F 的转移（错→对、都对、对→错、都错）。</li>
+<li>T_noEOS1、T_q0 不预设优劣，按计划 §6 结果表解读；q0 提示审计（计划 §4）逐输入报告。</li>
+<li>措辞：T_q0 答对只说明“给定正确前缀后能生成正确后缀”，不推出记忆完整；失败不推出内容删除；首 token 排名只作解释变量。</li>
+</ul>
+<h2 id="5">5. 交付</h2>
+<p><code>runs/{preflight,formal}-r01/</code>（逐轨迹 token ID、带特殊 token 的解码全文、终止原因、每步屏蔽/强制标记、第一步 logits 哈希与缓存哈希；入 Git）、<code>analysis/fc-readouts-r01.json</code>、<code>REPORT.zh-CN.md</code>。</p></main></html>

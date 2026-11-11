@@ -1,0 +1,183 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>NVB-01 报告 r01：保留原生 t1 输出，只改留存状态中的 v</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="nvb-01-r01-t1-v">NVB-01 报告 r01：保留原生 t1 输出，只改留存状态中的 v</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-native-bridge-v1-2026-11-03/REPORT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-native-bridge-v1-2026-11-03/REPORT.zh-CN.md">固定提交原件</a>；SHA-256：<code>d8e95ac85c6652820fcfff24057b95af199ae11fcdfcdac246dd1b28cc8ccd71</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="nvb-01-r01-t1-v_1">NVB-01 报告 r01：保留原生 t1 输出，只改留存状态中的 v</h1>
+<blockquote>
+<p><strong>更正（11-03 评审后）</strong>
+1. §4 原写“C1343 的答案原本就全对（Y 48/48）”，有误：原生输出四格是 <strong>0/48</strong>，恢复输出四格才是 48/48。C1343 只在原生输出一侧恢复留存，增强就达到 +3.29（ρ 1.13），与三个缺口方向（ρ 0.11–0.34）明显不同。这个方向差异要正视，不能因为它是诊断方向就略过。
+2. §4 原写 t2 q/k 余弦接近 1 所以“不像是 t2 当步 q 的大变化”，并把深层 t1 写入列为更可能的来源。这说过头了：余弦不反映幅度，也不能保证任务相关方向上的小变化无关。两类候选都没有检验，不分先后。
+3. 回答层面要分开两个量：固定做 k 操作后只换留存的增量是 +23/+22/+11；扣除不做 k 时的留存主效应后，回答层面的交互 J_S(Y) 是 +22/+14/+8。
+4. 补充零 GPU 核对（已有 <code>vdiff</code> 张量）：写进状态的 ‖v1−v0‖ 在两种输出背景下，第 13 层 192/192 完全相同；更深 G 层的比值 c=1/c=0 为 0.99–1.01，只有第 28 层是 0.82–0.94。所以幅度上几乎没有差别；方向没有记录，未检验。</p>
+</blockquote>
+<p>计划 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-native-bridge-plan-v2-2026-11-03.zh-CN.md">v2</a>；合同 <code>CONTRACT.zh-CN.md</code>；冻结 r02 <code>4a1cbf12…</code>（代码 136a1c4）。判读 <code>analysis/nvb-readouts-r01.json</code>（<code>nvb_analysis.py</code> 按冻结规则生成）。logits 张量（约 1.9 GB）留在服务器 <code>runs/formal-r01/worker-*/tensors</code>。</p>
+<h2 id="0">0. 先说不利的部分</h2>
+<ol>
+<li><strong>主预测 P1 不成立。</strong> 我预注册的是：DS0 在至少 2/3 个缺口方向上为 beyond_random_substantial，且 ρ∈[0.5, 1.2]。实测 0/3：N4146 为 not_supported（DS0 +0.25，比 0.25 的门槛差 0.001，ρ 0.11）；N1210、R0 为 beyond_random_partial（ρ 0.33、0.34）。<strong>保留原生输出、只把留存 v 换成 v1，只能带回联合恢复效应的约一到三成。</strong></li>
+<li><strong>单独恢复输出支路也不够。</strong> DO0 为 +0.04～+0.25，只有 R0 刚过线，且只占 DF 的 3%～14%。</li>
+<li><strong>大部分增强只在两者同时恢复时出现。</strong> 恢复输出支路后，同一个留存操作的增量 DS1 为 +1.45～+2.12，约是原生输出下 DS0 的 2.5～8.6 倍。按冻结读法，N4146 读作“只改留存不够，需输出支路配合”。N1210、R0 虽然读作“留存用途部分起作用”，但同样是 DS1 远大于 DS0。</li>
+<li><strong>预检 r01 是一次合同执行失败</strong>（我写坏了随机臂闸门，见 DEVIATIONS D1），用掉了唯一一次修复重试。它不产生证据。</li>
+<li>面板是已见开发面板，只有 R 族、一个模型、同六场景。</li>
+</ol>
+<h2 id="1">1. 工程</h2>
+<ul>
+<li>正式运行 48/48 通过验证，一次通过。</li>
+<li>对角四格 B000/B001/B110/B111 与 LVK L00/L01/L10/L11 在 t1 bf16、C t2 全词表、M、自然 token 上逐位一致；完整缓存与参考实现（原生 t1 / LVK LHook）逐位一致。</li>
+<li>固定 c、b 改 a（含随机臂对 B00b）时，t1 logits 与全部非 S 缓存逐位相同，14 个 G 层的 S 全部不同。</li>
+<li>FP64 误差：custom update 最大 2.1e−7；S_a−S_c 恒等式最大 4.4e−7；随机幅度最大 2.4e−7。有符号零例外 0。</li>
+<li>计数：decode 21581（上限 66048），其中随机臂 t1 与 C t2 各 7296。设备时间 1265+1011 = 2276 s（0.63 h）；两次预检约 0.04 h；合计约 0.67 GPUh，在 1.5 h 总上限内。</li>
+<li>重放检验（P4，工程要求）：DF = +2.33 / +1.49 / +1.83，与 LVK 新面板 I_local 一致；B110/B111 的自然完整正确数 16/27/37 与 39/48/47，与 LVK L10/L11 一致。</li>
+</ul>
+<h2 id="2-m-32">2. 主结果（三个缺口方向；M 为目标非首列 32 条、六场景等权）</h2>
+<p>k 效应 e(c,a)=M(c,a,1)−M(c,a,0)：</p>
+<table>
+<thead>
+<tr>
+<th>方向</th>
+<th style="text-align: right;">e(0,0)</th>
+<th style="text-align: right;">e(0,1)</th>
+<th style="text-align: right;">e(1,0)</th>
+<th style="text-align: right;">e(1,1)</th>
+<th style="text-align: right;"><strong>DS0</strong></th>
+<th style="text-align: right;">DS1</th>
+<th style="text-align: right;">DO0</th>
+<th style="text-align: right;">DF</th>
+<th style="text-align: right;">ρ=DS0/DF</th>
+<th>随机 DR 中位 / 最大</th>
+<th style="text-align: right;">p</th>
+<th>P</th>
+<th>R</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>N4146</td>
+<td style="text-align: right;">+0.27</td>
+<td style="text-align: right;">+0.52</td>
+<td style="text-align: right;">+0.49</td>
+<td style="text-align: right;">+2.61</td>
+<td style="text-align: right;"><strong>+0.25</strong>（6/6 正，差 0.001 未过线）</td>
+<td style="text-align: right;">+2.12</td>
+<td style="text-align: right;">+0.21</td>
+<td style="text-align: right;">+2.33</td>
+<td style="text-align: right;">0.11</td>
+<td>−0.05 / +0.10</td>
+<td style="text-align: right;">0.05</td>
+<td>not_supported</td>
+<td>storage_needs_output</td>
+</tr>
+<tr>
+<td>N1210</td>
+<td style="text-align: right;">+0.34</td>
+<td style="text-align: right;">+0.83</td>
+<td style="text-align: right;">+0.38</td>
+<td style="text-align: right;">+1.83</td>
+<td style="text-align: right;"><strong>+0.49</strong></td>
+<td style="text-align: right;">+1.45</td>
+<td style="text-align: right;">+0.04</td>
+<td style="text-align: right;">+1.49</td>
+<td style="text-align: right;">0.33</td>
+<td>−0.19 / −0.02</td>
+<td style="text-align: right;">0.05</td>
+<td>beyond_random_partial</td>
+<td>storage_partial</td>
+</tr>
+<tr>
+<td>R0</td>
+<td style="text-align: right;">+0.14</td>
+<td style="text-align: right;">+0.76</td>
+<td style="text-align: right;">+0.39</td>
+<td style="text-align: right;">+1.97</td>
+<td style="text-align: right;"><strong>+0.62</strong></td>
+<td style="text-align: right;">+1.58</td>
+<td style="text-align: right;">+0.25</td>
+<td style="text-align: right;">+1.83</td>
+<td style="text-align: right;">0.34</td>
+<td>−0.13 / +0.08</td>
+<td style="text-align: right;">0.05</td>
+<td>beyond_random_partial</td>
+<td>storage_partial</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>三个方向的 DS0 都高于全部 19 次随机抽样（p=0.05，本随机族下单侧可得的最小值）。N1210、R0 分别在 5/6、4/6 个场景高于全部抽样的场景均值，N4146 为 0/6。随机族下的 DR 多为负值：同幅度的逐头随机改变会轻微削弱 k 效应，而不是增强（P2 成立）。</li>
+<li><strong>P3 成立</strong>：DS1 在 3/3 个缺口方向都获得支持。</li>
+<li>多数方向 storage_main：0/3。</li>
+<li>首 16 条的 P 标签与主子集相同。</li>
+</ul>
+<h2 id="3-48">3. 自然完整回答（全 48 条）</h2>
+<table>
+<thead>
+<tr>
+<th>方向</th>
+<th>000 / 001</th>
+<th>010 / 011</th>
+<th>100 / 101</th>
+<th>110 / 111</th>
+<th>只换留存，c=1：b=0 / b=1</th>
+<th style="text-align: right;">J_S(Y)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>N4146</td>
+<td>0 / 0</td>
+<td>0 / 0</td>
+<td>15 / 16</td>
+<td>16 / 39</td>
+<td>+1 / <strong>+23</strong></td>
+<td style="text-align: right;">+22</td>
+</tr>
+<tr>
+<td>N1210</td>
+<td>1 / 0</td>
+<td>0 / 0</td>
+<td>19 / 26</td>
+<td>27 / 48</td>
+<td><strong>+8</strong> / <strong>+22</strong></td>
+<td style="text-align: right;">+14</td>
+</tr>
+<tr>
+<td>R0</td>
+<td>1 / 1</td>
+<td>1 / 1</td>
+<td>34 / 36</td>
+<td>37 / 47</td>
+<td><strong>+3</strong> / <strong>+11</strong></td>
+<td style="text-align: right;">+8</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>c=0 各格在 t1 停止 31～48 次（与原生相同；这是结构必然，不计为成功或失败），所以原生输出一侧没有自然交付变化。</li>
+<li>c=1 时首 token 相同，差异只来自留存的 S：在做 k 操作的背景下，只换留存 v 就能把完整正确数提高 +11～+23（3/3 获得支持）。这是“恢复输出支路后，留存 v 的用途对完整回答起作用”的直接证据。</li>
+</ul>
+<h2 id="4">4. 描述（不作判据）</h2>
+<ul>
+<li>t2 q/k 余弦（C 路线，同一输入 token）：只改输出支路（000 对 100）时，q 中位 0.999、k 0.985～0.99；只改留存（000 对 010）时为 1.00。<strong>t2 当步 q/k 的差异很小，却伴随很大的交互。</strong> 推测档：更可能的来源是 c 改变了更深 G 层在 t1 的输入，从而改变那些层写入的 k、v（包括 c=0 时深层的 v1 与 c=1 时不同）。本轮没有检验这一点。</li>
+<li>主效应（不做 k，只改留存，M）：c=0 时 −0.02～+0.09，c=1 时 +0.39～+0.63；随机族 −0.17～+0.06。</li>
+<li>C1343（诊断方向）：DS0 +3.29、ρ 1.13，标为 beyond_random_substantial；原生 e(0,0) 为 −0.53，换留存 v1 后 k 效应变为正。该方向的答案原本就全对（Y 48/48），不进入多数方向计数。</li>
+</ul>
+<h2 id="5">5. 能说什么、不能说什么</h2>
+<p>能说的（限 R 族、LVK 新面板、本随机族）：</p>
+<ul>
+<li>保留原生 t1 输出及全部非 S 缓存，只把 G 层 t1 写入的留存 v 换成局部 v1，k 写入对 t2 目标选择的作用有增强，且三方向都超过逐头随机方向族；但幅度只是联合恢复的约 0.1～0.34。</li>
+<li>恢复输出支路后，同一留存操作的增量大得多（DS1 +1.45～+2.12），并且直接改变完整回答（+11～+23）。也就是说，LVK 观察到的 v 依赖<strong>主要不是</strong>由“原生输出下的留存 v”单独提供，而是留存用途与输出支路恢复的结合。</li>
+<li>“原生背景下 k 弱”不能只归到留存写入里 v 的内容。按 v2 §4 预先写好的反面可能：原生 t1 输出形成的后续计算限制了留存差的作用。</li>
+</ul>
+<p>不能说的：</p>
+<ul>
+<li>不能说“需要两者共同”已经得到证明。单独条件弱，不等于其他组合不能起作用；本轮只测了这几个格。</li>
+<li>不能把交互归到 t2 的 q。当步 q/k 余弦接近 1，只能说“不像是 t2 当步 q 的大变化”；深层 t1 写入的变化是推测，没有测。</li>
+<li>不能把 C 路线的条件竞争写成原生行为修复：c=0 各格仍在 t1 停止。</li>
+<li>不能把“超过随机族”推广为“排除一般扰动”；结论只限逐头、按头匹配幅度的随机方向。</li>
+<li>ρ、DS1/DS0 都不是机制份额。</li>
+</ul>
+<h2 id="6-to-do-1">6. 对 To-do 第 1 项的意义与出口</h2>
+<ul>
+<li>补到的地方：原生 T 与 LVK 修复之间，“只改留存 v”这一段的作用已经测出，量级小（约一到三成），且超过随机族。修复的主体落在“留存用途 × 输出支路恢复”的结合上。</li>
+<li>撤回的判断：“关键条件主要落在留存 v 上”（v1 方案的工作预测、v2 的 P1）。</li>
+<li>留下的问题（不自动追加）：c 改变的哪一部分使留存差变得有效？候选（推测档）是 c 在更深 G 层改变 t1 的写入输入，以及 t1 输出进入 KV 与卷积新槽后的其他后果。可能的下一步是在 c=1 下只对第 13 层或部分层做 c 的切分，但需要另立设计和授权。</li>
+<li>本轮不自动追加实验。To-do 第 1 项保持进行中。</li>
+</ul></main></html>

@@ -1,0 +1,616 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>086．QKF：Q/K组件因子的设计附件</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="086qkfqk">086．QKF：Q/K组件因子的设计附件</h1>
+<p><a href="../README.zh-CN.html">返回总时间线</a></p>
+<p><strong>时间定位</strong>：版本/记录日期 2026-11-02；未从所选收据确定完整运行起止，不据目录名补写时刻。</p>
+<p><strong>当时的目的与设计</strong></p>
+<p>固定20个唯一科学臂、48输入、三方向、预检和预算；用48份既有记录检查来源和旧终点。</p>
+<p><strong>实际过程、结果与后来更正</strong></p>
+<p>CPU交付检查完成，没有新模型运行。原始张量可读性、匹配随机的构造、观察器和真实数值验收当时仍未完成；后继实际QKF另列。</p>
+<p><strong>来源身份</strong>：<code>cache-qk-component-factor-design-v1-2026-11-02</code>；本章主体来源提交 <code>7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8</code>。下方原文中的状态是各文件写作时的状态，不能把早期“尚未运行”覆盖后期正式收据，也不能将后期结果倒填进早期设计。</p>
+<h2 id="_1">原设计、执行过程、结果与更正全文</h2>
+<p>以下按“设计与题目 → 工程/执行记录 → 结果/更正 → 其他历史说明”组织；同类内没有可靠时间时保留路径顺序，不冒充严格先后。正文未删段；仅为本章节重排标题层级、把相对链接指向固定提交。原始字节另外完整保存。</p>
+<h3 id="1qkf-01-qk">原件 1：QKF-01：共同偏移的 q/k 分量与完整回答效应</h3>
+<p>原路径：<code>docs/cache-qk-component-factor-plan-v1-2026-11-02.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-qk-component-factor-plan-v1-2026-11-02.zh-CN.md">固定提交原文</a> · <a href="../library/32dab47929c9b6dd.html">单独阅读副本</a>；SHA-256：<code>32dab47929c9b6dde9c99ff0bc21d7795e154b8b904a9d704e050f0d2785e7d5</code>。</p>
+<hr />
+<h4 id="qkf-01-qk">QKF-01：共同偏移的 q/k 分量与完整回答效应</h4>
+<p>日期：2026-11-02；版本 v1；依据版本 <code>1c6ac5db</code>。状态：<strong>正式设计，作者逻辑自查通过；实现/模型数值验收未完成，未运行，无新 GPU 授权。</strong> 本轮用户授权为写方案、自查和 Git 交付。使用 academic-research-suite / experiment-agent / plan；自查不属于独立评审。</p>
+<p><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-qkf-self-check-v1-2026-11-02.zh-CN.md">自查记录</a> · <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-qk-component-factor-design-v1-2026-11-02/design-manifest.json">机器可读矩阵、预算和来源清单</a> · <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-mechanism-known-basics-audit-2026-10-31.zh-CN.md">主线与架构审计</a></p>
+<h5 id="1">1. 设计卡：为什么做这一轮</h5>
+<ul>
+<li><strong>核心问题不变：</strong> 稀疏激活干预如何改变历史状态、旧状态处理与后续读取，最终造成大的回答变化。</li>
+<li><strong>本轮问题：</strong> 已验证有行为作用的共同 q/k 偏移，其 q、k 分量单独和共同承担多少完整回答效应？这个结论是否依赖随机对照在卷积后的旧槽贡献偏小？</li>
+<li><strong>认识增量：</strong> 从“末端共同偏移可双向搬运效应”推进到有固定预测、可失败的分量因果约束；不是再次确认缓存可影响输出，也不是重找层/头热点。</li>
+<li><strong>估计对象：</strong> 固定接收者历史背景的一次卷积前编辑及全部自然下游响应的总效果。既不隔离纯读取/纯写入，也不估计原生机制份额。</li>
+<li><strong>预测：</strong> k 分量的恢复比例 P 和原错误复现比例 B 可能均高于 q；仅为待检验预测，幅度较大不推出因果作用较大。允许 q 更强、两者都强、仅联合作用、异号及不可判。</li>
+<li><strong>范围：</strong> 已见的 NA 原布局/B1、48 输入、6 基础场景、3 个有缺口方向；不是未见泛化验证。C1343 的无缺口反例保留为旧证据，不加入新模型矩阵。</li>
+<li><strong>退出：</strong> 全矩阵一次完成后按 §7 报告；不因不符预测调倍率、换随机种子、换题或扩层。不要求本轮闭合整个机制。</li>
+</ul>
+<h5 id="2">2. 已有证据、源码事实与未知</h5>
+<h6 id="21">2.1 证据锚点</h6>
+<ol>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-common-offset-v1-2026-11-02/CONTRACT.zh-CN.md">QCO 合同</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-common-offset-v1-2026-11-02/REPORT.zh-CN.md">结果</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-common-offset-v1-2026-11-02/qco_core.py">冻结读数实现</a>，结果提交 <code>d3908d95</code>。</li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-common-offset-v1-2026-11-02/ANALYSIS-offset-scale.zh-CN.md">几何补充</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-common-offset-v1-2026-11-02/analysis/offset_scale_r01.py">CPU 分析脚本</a>，提交 <code>1c6ac5db</code>；属于事后描述。</li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-query-state-transfer-v1-2026-11-02/CONTRACT.zh-CN.md">QST 合同</a>冻结缓存位置、自然生成和完整交付定义；QST 未发现稳定查询身份转移，不能由此推出全模型没有查询信息。</li>
+<li>QCO <code>freeze-r01.json</code>、<code>analysis/offsets-manifest-r01.json</code>、采集及正式两 worker 的 receipt 是张量、环境和旧输出的来源；本轮不重估 μ、不重抽 r。</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>方向</th>
+<th style="text-align: right;">只恢复 V 正确</th>
+<th style="text-align: right;">减共同偏移正确</th>
+<th style="text-align: right;">减随机偏移正确</th>
+<th style="text-align: right;">加共同偏移复现原错误</th>
+<th style="text-align: right;">加随机偏移复现原错误</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>N4146</td>
+<td style="text-align: right;">16/48</td>
+<td style="text-align: right;">47/48</td>
+<td style="text-align: right;">14/48</td>
+<td style="text-align: right;">32/32</td>
+<td style="text-align: right;">20/32</td>
+</tr>
+<tr>
+<td>N1210</td>
+<td style="text-align: right;">28/48</td>
+<td style="text-align: right;">48/48</td>
+<td style="text-align: right;">21/48</td>
+<td style="text-align: right;">19/20</td>
+<td style="text-align: right;">7/20</td>
+</tr>
+<tr>
+<td>R0</td>
+<td style="text-align: right;">38/48</td>
+<td style="text-align: right;">48/48</td>
+<td style="text-align: right;">27/48</td>
+<td style="text-align: right;">8/10</td>
+<td style="text-align: right;">2/10</td>
+</tr>
+</tbody>
+</table>
+<p>这里最后两列是原错误子集的原始计数，不是全部48条的输出重放数，也不是场景等权 B。B 沿用旧定义，分别约 1.00/0.93/0.77。C1343 的 V-only 已为48/48，不能算第四个修复阳性。原报告个别措辞把“原输出”写成“原错误”，本表明确分母而不改历史报告。</p>
+<h6 id="22">2.2 架构事实与推断边界</h6>
+<p>固定实现采用 key×value 状态方向时：</p>
+<p><code>S_t = α_t (I − β_t k_t k_tᵀ) S_(t−1) + β_t k_t v_tᵀ</code>，<code>o_t = S_tᵀ q_t</code>。</p>
+<p>k 同时参与旧状态的定向处理和新值写入；q 改变当前读出后也能经后续层与生成反馈改变未来更新。因此 q/k 分量实验不等于读取/写入两条互斥路径实验。公式是已有实现事实，不是本轮发现。</p>
+<p>已存偏移与干净投影同量级、部分反向；这否定“远大于原向量而淹没”的候选。旧三槽经卷积的线性贡献仍不含当前 token 项和非线性，不能直接推断实际归一化后的旋转角。C1343 的相似几何但无损伤限制所有只靠大小/角度的解释。</p>
+<h5 id="3">3. 冻结对象和操作边界</h5>
+<ul>
+<li>模型：Qwen3.5-4B，revision <code>851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a</code>。tokenizer、BF16、内核、模板、校准来源和运行数值路径沿用 QCO/QST freeze；禁止升级依赖后混合解释。</li>
+<li>输入：QST <code>data/design-r01.json</code> 的同48条 NA 文本；6场景，已有 NQ02/NQ04 的 A 查询排除规则原样继承，不因本轮结果删输入。完整 token、输入 ID 和顺序在 manifest 锁定。</li>
+<li>形成：同一宽切分 B1；方向 <code>N_L00_C4146_D-1</code>、<code>N_L00_C1210_D-1</code>、<code>R0_L00_D-1</code>；沿用原校准与实际注入向量，不新增校准或剂量。每文本重建一次 C 和三个 T，含干净重建共4次；共享只读预填。</li>
+<li>G 层：13,14,16,17,18,20,21,22,24,25,26,28,29,30；不拆层、不扫头、不重开45头。</li>
+<li>编辑对象：每层 <code>[1,8192,4]</code> 的 q 通道 <code>[0,2048)</code>、k <code>[2048,4096)</code>，仅槽 <code>[1,4)</code>。槽0不编辑。q/k 各16个128维头，切块遵循实际 reshape；这是短卷积输入投影，不是任意历史 q/k，也不是注意力 KV。</li>
+<li>边界：读末提示 token 前编辑一次，此时缓存截至倒数第二个 token；首读使用旧后三槽和当前投影，卷积核长4。生成阶段无针、不持续扣偏移。</li>
+<li><strong>所有科学臂共有背景：</strong> 接收者为 T(i,d)，G 卷积 V 的全部四槽取 C(i)，G 的 q/k 按下表；其他卷积、递推 S、全注意力 KV 与元数据保持接收者。每臂从相同未消费缓存深拷贝，供体、基底与偏移只读。</li>
+<li><strong>正常响应：</strong> 编辑后所有层的隐藏状态、门、当前 q/k/v、递推更新、KV追加、生成 token 都正常计算，不钉住干净轨迹。仅初始来源固定，不声称后续保持固定。</li>
+</ul>
+<h5 id="4">4. 比较矩阵与随机对照</h5>
+<h6 id="41-20">4.1 每输入×方向的20个唯一科学臂</h6>
+<p>记 Q_T、Q_C 为上节 q/k 活动槽；m_q/m_k 为通道掩码。μ 是 QCO 留本场景外五场景等权均值，r_pre 是 QCO 已冻结随机张量。r_post 在 §4.2 定义。三种向量分别取 q、k、q+k，共9种编辑。</p>
+<table>
+<thead>
+<tr>
+<th>臂族</th>
+<th>q/k 基底</th>
+<th>编辑</th>
+<th style="text-align: right;">数量</th>
+<th>对应旧臂</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>V</td>
+<td>Q_T</td>
+<td>无</td>
+<td style="text-align: right;">1</td>
+<td>QCO V</td>
+</tr>
+<tr>
+<td>F</td>
+<td>Q_C</td>
+<td>无</td>
+<td style="text-align: right;">1</td>
+<td>QCO F</td>
+</tr>
+<tr>
+<td>R_{u,h}</td>
+<td>Q_T</td>
+<td>减 m_h u</td>
+<td style="text-align: right;">3向量×3掩码=9</td>
+<td>R_mu,qk=R；R_pre,qk=R_rand</td>
+</tr>
+<tr>
+<td>A_{u,h}</td>
+<td>Q_C</td>
+<td>加 m_h u</td>
+<td style="text-align: right;">3向量×3掩码=9</td>
+<td>A_mu,qk=A；A_pre,qk=A_rand</td>
+</tr>
+</tbody>
+</table>
+<p>u∈{μ,r_pre,r_post}，h∈{q,k,qk}。对于每个u，去除侧四格为 V/R_u,q/R_u,k/R_u,qk，加入侧为 F/A_u,q/A_u,k/A_u,qk。两侧无编辑基底不同，不把它们合为一个2×2。另每输入 C 自然1条、每方向 T_nat 1条，用于重放与损伤背景说明，不参与分量交互。</p>
+<p>全矩阵包含4个新增 μ 单半臂；随机两档也都保留单半和联合臂，防止先看哪半阳性才补其对照。各向量的 qk 必须是同一冻结 q 与 k 两半拼接，不独立再抽一次。q/k 分量不按彼此范数缩放；比较的是真实偏移两半在各自原幅度下的效果，不是单位强度敏感性。</p>
+<h6 id="42">4.2 两档随机配平：精确定义</h6>
+<p><strong>r_pre：</strong> 原 QCO 逐层×q/k×槽的输入范数配平随机向量；直接复用其张量、种子和哈希，不重抽。不假定经过卷积后仍等强。</p>
+<p><strong>r_post：</strong> 由同一 r_pre 确定性缩放。对每层 l、分量 g、头 h，定义旧槽首读线性映射</p>
+<p><code>L_l(u)[c] = Σ_(j=0..2) W_l[c,j] u[c,j]</code>。</p>
+<p><code>a_lgh = ||L_l(μ)_gh||₂ / ||L_l(r_pre)_gh||₂</code>；该头全部128通道×3槽共同乘同一个 a，得到 r_post。使用 FP64 计算范数/倍率，再以 FP32 保存编辑张量。这个配平控制首读旧槽合成贡献，不控制之后第二/第三步，也不控制 SiLU 后、归一化后或下游总扰动。只在执行 μ/r 的原始干预位置编辑，不另设卷积后 hook。</p>
+<ul>
+<li>μ 与随机的头贡献均为0：a=1；目标为0而随机非0：a=0；目标非0而随机贡献≤1e−12，或倍率非有限：该匹配无法成立，CPU验收失败，不换随机种子救结果。1e−12是除零保护，不是行为阈值。</li>
+<li>全部倍率、输入范数、旧槽输出范数、最大倍率在任何新增输出前冻结。无行为反馈调幅，无截断后仍声称匹配。</li>
+<li>实际编辑为 <code>BF16(FP32(base) ± mask*u)</code>，只转换被编辑切片；无编辑切片不写回。以写回后与写回前的 FP32 差定义 δ_actual，不能用名义倍率冒充实际注入。</li>
+<li>r_pre 对应 μ 同掩码、同正负基底的实际总编辑范数相对差≤5%；r_post 对应实际 δ_actual 经 L 后的<strong>逐层×分量×头</strong>范数相对差≤5%。相对差为 |a−b|/max(a,b)，双零通过，单零失败。全部头报告，不由总体均值遮盖局部失配。</li>
+<li>匹配失败不是科学阴性：μ 的完整分量矩阵仍可报告，失败的随机配平比较标工程不可判，不筛掉失败输入后重算“通过”。不得利用行为结果调整容差。</li>
+<li>只使用这一份已冻结随机方向；它是有界参照，不是随机方向总体的零分布，不能计算“随机显著性”。</li>
+</ul>
+<h6 id="43-token">4.3 补足缺失的当前 token 量，不另开模型网格</h6>
+<p>在上述自然轨迹<strong>首个读出步</strong>被动保存14层的 x_now、卷积前旧槽、卷积输出（SiLU前）、SiLU后 q/k 和归一化后 q/k，或能够逐值重建它们的最小张量。读取不改变返回值/张量，不额外调用模型；新观察器须通过旧臂重放验收。每臂的 x_now 来自其自身运行，不能假定与未编辑臂相同。</p>
+<p>CPU分析分开报告：(a) L(δ_actual) 的配平；(b) 固定该臂 x_now、只移除直接编辑贡献的局部非线性几何；(c) 同输入不同臂实际归一化 q/k 的总差。b是局部条件计算，不是整网反事实；c含上游响应，不是直接偏移独占效果。仅作解释边界和量程描述，不用于选臂、头、方向或重新定义主判据。自然生成分叉后的差不冒充相同上下文的差。</p>
+<h5 id="5">5. 终点、分母和聚合</h5>
+<h6 id="51">5.1 主终点与旧定义</h6>
+<p>自然贪心完整交付 Y_full 沿用 QST：正确交付唯一目标编号，最终 stop，无未闭合 think；复述、多编号、截断均失败。允许编号前有文字，不能把“首 token 不是共同字母”当成没开口。停止token {248044,248046}，最多32新token；保留原文、完整ids、终止原因、旧 Y_delivery/Y_strict。</p>
+<p>对每方向，E_s 为各场景内先平均再六场景等权；48输入不能直接当48独立场景。固定</p>
+<p><code>G = E_s[Y_F − Y_V]</code>；<code>D_i = 1[Y_F=1 且 Y_V=0]</code>。</p>
+<p><code>P_(u,h) = E_s[Y_R(u,h) − Y_V] / G</code>。</p>
+<p><code>B_(u,h) = E_s[D_i * 1(ids_A(u,h)=ids_V)] / E_s[D_i]</code>。</p>
+<p>沿用 QCO 适用条件 G&gt;0 且至少4场景有正缺口；分母为0不填0。P允许负值或&gt;1，不裁剪；B仅原错误子集，另列全48条原输出重放率和原始错误分母。报告每臂原本正确→错误、错误→正确、错误→另一错误的配对转移表，避免净收益遮住改坏格。</p>
+<h6 id="52">5.2 辅助读数</h6>
+<ul>
+<li>首 token 的共同字母对两个停止token最大logit的分差，仅是起始形式读数。</li>
+<li>继承共同首字母的诊断分叉，记录3个候选编号的下一 token logits；自然第二步相同前缀时它是同一信息，不作独立证据。</li>
+<li>两条<strong>固定候选</strong>分差分别保存：目标对另外两个编号；目标不在首列时另列目标对首列。用于交互的 M 指目标减固定竞争者：目标非首列取首列，目标在首列取原记录第二条。不得跨臂挑最大竞争者后称线性交互。</li>
+<li>自然输出按唯一正确编号、唯一首列错误、其他唯一编号、多编号/复述、无编号、截断分列；目标在首列与不在首列分开。类别是行为描述，不命名内部任务框架。</li>
+</ul>
+<h5 id="6">6. 预先冻结的判读</h5>
+<h6 id="61">6.1 单半的行为作用与方向预测</h6>
+<p>每个 μ 单半保留旧 P/B 实质门槛：P≥0.5、B≥0.5；恢复至少4场景净改善为正，复现至少4场景存在D_i原错误的逐token复现。分别与两档随机比较 P差≥0.25、B差≥0.25。它们是操作性效应阈值，不是统计显著性。</p>
+<ul>
+<li>过 P/B 与场景门槛：该分量在本背景承担较大双向行为作用；若只过一侧，仅称去除恢复/加入复现。</li>
+<li>对某随机档也过优势门槛且匹配验收通过：只称优于<strong>该档冻结参照</strong>。两档不一致全部报告，不选择支持结论的一档。</li>
+<li>“k 强于 q”的预测按三方向分别评估：<code>P_mu,k−P_mu,q ≥0.25</code> 且 <code>B_mu,k−B_mu,q ≥0.25</code>，恢复差至少4/6场景为正，复现差在有D的场景中至少2/3为正（向上取整）。反向同式支持q强；仅一侧支持报告不对称；其余未支持明确排序。该预测不因k较大而先验通过，也不用于排除方向。</li>
+<li>三方向各自给结果，不投多数票形成全模型机制。不把不达门槛解释为零作用或等价。</li>
+</ul>
+<h6 id="62">6.2 四格交互和天花板</h6>
+<p>去除侧：<code>I_Y^R = E_s[Y_R,qk − Y_R,q − Y_R,k + Y_V]</code>。
+加入侧同式以 A 和 F 替换；再报告原错误复现指标 <code>I_B = B_qk−B_q−B_k+B_00</code>，其中B_00按F的ids实际计算（D上应为0）。连续读数各固定竞争者另算相同四格差 <code>I_M</code>，单位logit，不把I_Y/I_B/I_M相加。</p>
+<p>报告逐输入四格、逐场景交互、等权均值和范围。预设 |I_Y|或|I_B|≥0.10且至少4场景同号，仅称“该指标上可见非加和”（B无D场景按加权贡献0列出，不另造分母）；不称显著协同。未满足则报告原值与未达描述门槛，不宣称加和已证实。</p>
+<p>同时列出基底及各单半距离0/1的剩余空间，以及原错误子集上四格修复模式的计数。两个单半各自接近完全修复时，负I_Y可能来自饱和；<strong>不能把“两半不超过单半之和”命名拮抗</strong>。只有联合过门槛而单半未过，称“联合达到预定门槛、单半未达到”，不能推出每个分量在自然机制中必要。连续分差帮助理解，但不能把行为交互自动归因某个内部计算交互。</p>
+<h6 id="63">6.3 统计身份</h6>
+<p>本轮是已见面板上的预先规定分量检验，不是独立确认。六场景是聚合单位，留一场景偏移估计之间有训练重叠；不把六折或144条件格当独立实验。本轮不报告总体p值、独立样本置信区间或功效保证；公布完整六场景结果和阈值判读。48输入总正确数与场景等权估计均保留，不混用。</p>
+<h5 id="7">7. 结果出口与累积</h5>
+<table>
+<thead>
+<tr>
+<th>结果</th>
+<th>本轮留下的认识与处理</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>k单半双向强，q弱；两档随机后仍保留优势</td>
+<td>支持真实偏移k分量在该背景/幅度下较强；为具体k依赖旧状态处理/写入计算提供约束，不直接选定其中一条</td>
+</tr>
+<tr>
+<td>q更强</td>
+<td>撤回k优先预测；保留q分量约束，不用几何大小解释掉反例</td>
+</tr>
+<tr>
+<td>两单半都强或仅联合达门槛</td>
+<td>分别报告多种编辑可达同终点或联合操作依赖；用逐题模式区分饱和与不同题的互补，不称唯一机制</td>
+</tr>
+<tr>
+<td>去除与加入排序不同/异号</td>
+<td>操作背景与非线性影响不可忽略；停止单一分量主导说法</td>
+</tr>
+<tr>
+<td>pre随机下有优势、post随机下消失</td>
+<td>证据对配平口径敏感；支持旧槽线性贡献幅度是重要替代解释，不能算出它解释的百分比或断言方向完全无关</td>
+</tr>
+<tr>
+<td>联合旧臂不能重放</td>
+<td>工程不可判，停止科学解释；不以放宽logit容差掩盖定义改变</td>
+</tr>
+<tr>
+<td>联合重放通过但单半均弱</td>
+<td>有效结果，拒绝单半足够预测；不自动扩层、调幅或换随机种子</td>
+</tr>
+</tbody>
+</table>
+<p>无论哪种结果，本轮均归档完整矩阵后结束。只有获得具体的新计算预测才另拟下一实验；不把因子实验自动接成无边界定位流程。</p>
+<h5 id="8">8. 工程验收、执行边界和交付</h5>
+<h6 id="81-cpu">8.1 CPU先做（本文件交付不声称已完成以下模型实现）</h6>
+<ol>
+<li>验证 QCO freeze、48条原记录/receipt、输入清单、μ/r/卷积核哈希与场景排除。μ和r原张量只在服务器，Git清单存在不等于本机已读到张量；缺失时停止，不以新估计替代。</li>
+<li>穷举20臂×48×3的唯一键，展开预算；检查q/k掩码互斥、和等于qk，三槽索引与头reshape；全零向量及未编辑臂不写回。</li>
+<li>CPU构造r_post，验证线性旧槽映射与固定倍率，写清头零范数情况；未经过SiLU的量不标“归一化后”。生成资产manifest并冻结。</li>
+<li>用合成数据验收P/B、正确→错误计数、0分母、场景权重、四格交互和饱和反例；不得只测期望阳性。冻结代码、判据、资产和本计划哈希后，方可进入另行授权的预检。</li>
+</ol>
+<h6 id="82">8.2 有界模型验收（未来授权后）</h6>
+<p>预检固定 <code>NA-NQ01-ABC-A</code>、<code>NA-NQ02-ABC-B</code>，三个方向全部20臂及C/T_nat，并每方向加R_zero/A_zero两条无写回操作。2输入×(1+3+3×20+3×2)=140轨迹。</p>
+<ul>
+<li>C/T形成哈希等于旧QCO；V块、非目标缓存、槽0与供体不被污染；生成前针hook卸除。</li>
+<li>C、T_nat、V、F、R_mu,qk、A_mu,qk、R_pre,qk、A_pre,qk与旧QCO逐token、首步logits/cache hash及诊断一致；零操作等于V/F。这个要求针对同定义参照，不要求新科学臂零翻转。</li>
+<li>观察器不得修改前向输出；上述参照重放同时验证新增读取逻辑。没有正确的当前项捕获时停止修复观察器，不用旧三槽伪装全量后归一化结果。</li>
+<li>检查§4实际配平；匹配失败按该对照不可判，不反向选种子。全局身份/缓存/重放错误停止整轮；科学阳性与否不是验收条件。</li>
+<li>预检工程失败允许留痕修复后完整重试一次；不得读结果后改科学定义。正式不自动重跑，保留已完成和失败记录。</li>
+</ul>
+<p>正式按6场景分给最多2个worker，单输入缓存构建后复用全部臂；一旦失败或超上限即安全结束，保留收据。环境与资源状态由执行时回执确认，不把历史SSH状态当当前可用证明。</p>
+<h6 id="83">8.3 必交付</h6>
+<p>新运行目录拟为 <code>experiments/cache-qk-component-factor-v1-2026-11-02/</code>，当前不创建伪结果。运行时交付 CONTRACT/freeze、CPU与模型验收、逐输入臂原文/ids/终止/诊断/来源哈希/实际编辑范数、首读观测张量及manifest、逐场景P/B/交互/转移表、失败与偏离、完整预算收据。大张量留服务器且记录哈希和持久路径，小型原始行为证据入Git。报告分别写测量、推论、未检验项；禁止写“读取/写入机制已分离”。</p>
+<h5 id="9-4">9. 完整预算：不是只算4个新单半臂</h5>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th style="text-align: right;">预填</th>
+<th style="text-align: right;">C/T形成</th>
+<th style="text-align: right;">自然轨迹</th>
+<th style="text-align: right;">自然解码前向上限</th>
+<th style="text-align: right;">诊断前向</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>旧资产CPU审计/构造r_post</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>预检（一次）</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">140</td>
+<td style="text-align: right;">4480</td>
+<td style="text-align: right;">140</td>
+</tr>
+<tr>
+<td>正式</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">192</td>
+<td style="text-align: right;">3072</td>
+<td style="text-align: right;">98304</td>
+<td style="text-align: right;">3072</td>
+</tr>
+<tr>
+<td>正常合计</td>
+<td style="text-align: right;">50</td>
+<td style="text-align: right;">200</td>
+<td style="text-align: right;">3212</td>
+<td style="text-align: right;">102784</td>
+<td style="text-align: right;">3212</td>
+</tr>
+<tr>
+<td>含一次完整预检重试的硬上限</td>
+<td style="text-align: right;">52</td>
+<td style="text-align: right;">208</td>
+<td style="text-align: right;">3352</td>
+<td style="text-align: right;">107264</td>
+<td style="text-align: right;">3352</td>
+</tr>
+</tbody>
+</table>
+<p>正式细账：</p>
+<ul>
+<li>μ四个新单半臂：4×48×3=576轨迹。</li>
+<li>两档随机单半及联合：12×48×3=1728轨迹，其中旧pre联合288条可与原记录比较，但本轮仍计入重放成本。</li>
+<li>V/F及μ联合R/A：4×48×3=576轨迹。</li>
+<li>C自然48、T_nat自然144：192轨迹。</li>
+<li>合计2880科学臂+192背景参照=3072；其中1056条为旧QCO可重放参照、2016条新条件。所有3072条均有诊断，未将旧参照当零成本。</li>
+</ul>
+<p>形成按每输入C+3T计4次，已包含干净缓存重建，无额外采集阶段。形成token前向已由固定清单复算：预检212、正式5100、正常5312、含重试5524；预填处理token分别为61、1452、1513、1574，另记不与形成混算。首读张量在自然轨迹内读取，0额外模型前向；诊断为共同首字母后1次分叉前向，已单列，不能又算自然解码。新增校准0；加载模型与I/O计入设备占用时间。</p>
+<p>QCO正式1392轨迹、240形成的worker耗时合计1224秒；按轨迹比粗放外推本轮正式约0.75设备小时，重建较少但新增观察/I/O可能抵消节省。<strong>规划估计全轮0.8–1.3设备小时，非已测ETA</strong>。预检每次≤0.25设备小时，正式≤1.5，全轮≤2设备小时，产物≤12GiB；并行两卡按各worker墙钟求和，不称墙钟等待2小时。若预检实测预计无法在剩余预算完成，先停止并报告，不偷减对照。实际短输出不能保证所有新臂都短，token上限另行严格执行。</p>
+<p>预算纠正：截图“新增576条、总1200–1700条”不是本设计完整账；完整覆盖两档随机、联合与背景参照后必须使用本表。预算增加源于明确比较范围，不是增加层/方向/剂量扫描。</p>
+<hr />
+<h3 id="2qkf-01-v1">原件 2：QKF-01 作者设计自查 v1</h3>
+<p>原路径：<code>docs/cache-qkf-self-check-v1-2026-11-02.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-qkf-self-check-v1-2026-11-02.zh-CN.md">固定提交原文</a> · <a href="../library/061f81de9cc4d12f.html">单独阅读副本</a>；SHA-256：<code>061f81de9cc4d12fd152eba13162e5608615e98149fa19a0842cb87a4ba85f49</code>。</p>
+<hr />
+<h4 id="qkf-01-v1">QKF-01 作者设计自查 v1</h4>
+<p>日期2026-11-02；规范：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/experiment-design-self-check.zh-CN.md">experiment-design-self-check v1</a>。对象：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-qk-component-factor-plan-v1-2026-11-02.zh-CN.md">正式方案</a>。由同一助手设计、反方检查与修订；<strong>不是独立审查或模型复现</strong>。使用 academic-research-suite 的实验规划流程，用户已明确方向及要求直接成稿，不重复询问研究问题。</p>
+<h5 id="1_1">1. 设计卡与审查依据</h5>
+<p>主线保持“稀疏干预→历史状态/旧状态处理/读取→完整回答”。本轮检验共同偏移q/k两部分在固定混合背景中的单独与联合总效果，以及随机比较对卷积旧槽贡献配平口径的敏感性。新增认识是对已验证效应给出可失败的计算分量约束，不承诺纯读写分离。</p>
+<p>设计卡八项分别见方案§1（主线、增量、估计对象、退出）、§2（证据与反例）、§3–4（操作和固定项）、§5–7（指标和结果出口）、§9（范围成本）。已读根README、研究状态、AGENTS、架构审计、QCO合同/冻结实现/报告/receipt、QST合同及几何分析源码。依据远端<code>1c6ac5db</code>；截图仅作建议来源，不作为运行授权。模型张量在服务器，本轮没有声称重新加载或计算它们。</p>
+<h5 id="2_1">2. 与前一轮和反馈的比较</h5>
+<table>
+<thead>
+<tr>
+<th>保留/修订</th>
+<th>原内容</th>
+<th>交付版本与理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>保留主线</td>
+<td>共同偏移去除可修复、加入可重现</td>
+<td>q/k因子拆分承接同一偏移、同一背景和自然完整交付</td>
+</tr>
+<tr>
+<td>修订命名</td>
+<td>q=读取、k=写入</td>
+<td>k共享旧状态处理与新写入；只称分量作用，不冒充路径归因</td>
+</tr>
+<tr>
+<td>修订几何解释</td>
+<td>大偏移覆盖原方向；后改为转向</td>
+<td>大小解释已被否定；旧槽几何不等于实际非线性后方向；在已有轨迹内补读当前项</td>
+</tr>
+<tr>
+<td>完整因子</td>
+<td>新增只q、只k</td>
+<td>两侧分别保留00/10/01/11；V/F与联合臂均重放，并计成本</td>
+</tr>
+<tr>
+<td>随机参照</td>
+<td>输入范数相同</td>
+<td>保留旧随机，另加逐层/分量/头旧槽合成贡献匹配；不称所有阶段等强</td>
+</tr>
+<tr>
+<td>修订交互</td>
+<td>联合显著超过两单半之和</td>
+<td>固定四格差与逐题模式、连续固定候选分差；不作伪独立显著性，不把饱和当拮抗</td>
+</tr>
+<tr>
+<td>修订预算</td>
+<td>约1200–1700轨迹、0.5–0.8小时</td>
+<td>全部明确臂得到正式3072轨迹；正常3212、最多3352；含C重建、参照、诊断、预检重试</td>
+</tr>
+<tr>
+<td>保留边界</td>
+<td>3个有缺口方向、C1343不适用</td>
+<td>不扩大新运行；C1343保留为几何不足以解释行为的反例</td>
+</tr>
+</tbody>
+</table>
+<h5 id="3-c01c14">3. C01–C14逐项决定</h5>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>判定</th>
+<th>理由与位置</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C01</td>
+<td>通过</td>
+<td>§1保持整体课题，分量作用是连接已知历史偏移与回答效应的下一约束，不换成EOS或纯缓存敏感性</td>
+</tr>
+<tr>
+<td>C02</td>
+<td>通过</td>
+<td>§4/6给出哪半可单独双向作用、联合条件、随机配平敏感性的新增预测；不是重复双向全量操作</td>
+</tr>
+<tr>
+<td>C03</td>
+<td>通过</td>
+<td>§2锚定QCO/QST合同、冻结代码、receipt、源码分析；复用μ/r和旧输出，理论事实不占新科学臂</td>
+</tr>
+<tr>
+<td>C04</td>
+<td>通过</td>
+<td>明列随机也致错、C1343相似几何无损伤、大偏移说法失效；k较大仅预测，允许反向结果</td>
+</tr>
+<tr>
+<td>C05</td>
+<td>通过</td>
+<td>§3固定版本、B1、方向、14层、通道/槽索引和末提示token前边界；一次编辑，不持续修补</td>
+</tr>
+<tr>
+<td>C06</td>
+<td>通过</td>
+<td>§3区分初始来源固定与之后自然响应；当前投影、门、未来缓存没有被钉住，估计总效果</td>
+</tr>
+<tr>
+<td>C07</td>
+<td>通过</td>
+<td>§2共享k作用不被拆成独立写入/处理；混合反事实不称自然轨迹，未做value补偿</td>
+</tr>
+<tr>
+<td>C08</td>
+<td>通过</td>
+<td>§6–7只称分量在当前背景/幅度下作用，双向成立仍不证明原生唯一中介或机制份额</td>
+</tr>
+<tr>
+<td>C09</td>
+<td>通过</td>
+<td>k优先、q优先、双单半强、仅联合达标、正反不对称均有独立出口；差异消失不命名未知剩余</td>
+</tr>
+<tr>
+<td>C10</td>
+<td>通过</td>
+<td>§5完整交付为主；P含改坏格、B限定原错误分母；首字母、分差、复述分别报告，不把代理当交付</td>
+</tr>
+<tr>
+<td>C11</td>
+<td>通过</td>
+<td>§8身份/缓存/同定义重放失败为工程失败；新臂阴性不触发修代码；配平失效只阻断该对照解释</td>
+</tr>
+<tr>
+<td>C12</td>
+<td>通过</td>
+<td>§9只新增缺失单半及匹配随机行为；补当前项复用自然首读；逐臂核算3072，重建/诊断/重试全部计入</td>
+</tr>
+<tr>
+<td>C13</td>
+<td>通过</td>
+<td>§6标已见开发面板，六场景非独立六折；资产hash冻结，无重新选种子/结果驱动阈值；代码/数值未验收明确</td>
+</tr>
+<tr>
+<td>C14</td>
+<td>通过</td>
+<td>§7给出反向或不对称如何撤回预测；停止自动切层/调幅，不要求本轮闭合全部机制</td>
+</tr>
+</tbody>
+</table>
+<h5 id="4-e01e26">4. E01–E26历史错误复查</h5>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>本设计处理</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>E01</td>
+<td>§1核心问题不改；首步形式仅辅助</td>
+</tr>
+<tr>
+<td>E02</td>
+<td>§2先核公式与卷积位置；14层是继承范围，不宣称天然特殊</td>
+</tr>
+<tr>
+<td>E03</td>
+<td>§4按实际BF16写入差验收；q/k不同幅度不能叫等强敏感性</td>
+</tr>
+<tr>
+<td>E04</td>
+<td>状态公式只定义k用途；实际单半行为未知才是实验</td>
+</tr>
+<tr>
+<td>E05</td>
+<td>共享k的双重用途明列，不做βv补偿；混合状态是显式反事实</td>
+</tr>
+<tr>
+<td>E06</td>
+<td>q/k分量不代表全部读取/写入，V与其他状态背景明确</td>
+</tr>
+<tr>
+<td>E07</td>
+<td>双向/四格不推出原生路径，出口保留背景条件</td>
+</tr>
+<tr>
+<td>E08</td>
+<td>每臂明确T接收、V来源C、q/k基底与编辑；未编辑缓存哈希验收</td>
+</tr>
+<tr>
+<td>E09</td>
+<td>I_Y/I_B/I_M分开，禁止从行为交互推内部交互</td>
+</tr>
+<tr>
+<td>E10</td>
+<td>完整交付保留stop、唯一编号、think闭合；起始字母不是开口能力</td>
+</tr>
+<tr>
+<td>E11</td>
+<td>旧槽几何不代表查询信息存量，补当前项也不直接证明语义机制</td>
+</tr>
+<tr>
+<td>E12</td>
+<td>随机可致错，单份随机不是零分布；均值净修复另附改坏格</td>
+</tr>
+<tr>
+<td>E13</td>
+<td>V来自同题C，q/k偏移来自其他场景均值；不声称原记忆自然恢复</td>
+</tr>
+<tr>
+<td>E14</td>
+<td>分量干预效果不叫机制份额、自然必要或唯一充分</td>
+</tr>
+<tr>
+<td>E15</td>
+<td>固定QCO版本、背景、阶段、层、卷积前对象与完整交付；不跨阶段拼链</td>
+</tr>
+<tr>
+<td>E16</td>
+<td>§7接受单半阴性与预测反向；工程检查不依赖新臂方向</td>
+</tr>
+<tr>
+<td>E17</td>
+<td>减偏移不撤销已经形成的S/KV后果；只改末端活动槽</td>
+</tr>
+<tr>
+<td>E18</td>
+<td>不把没有q/k单半解释的部分叫浅层放大；不设三分唯一解释</td>
+</tr>
+<tr>
+<td>E19</td>
+<td>无编辑/旧臂重放作为工程，不当新机制成果</td>
+</tr>
+<tr>
+<td>E20</td>
+<td>q/k、幅度、背景可以共同影响；非互斥读写命名已撤回</td>
+</tr>
+<tr>
+<td>E21</td>
+<td>本轮无领域首次/新方法主张；既有activation patching/因子逻辑是工具，不额外做泛文献网格</td>
+</tr>
+<tr>
+<td>E22</td>
+<td>6场景权重、48派生输入、共享训练折分清；无独立样本p值，无外部泛化声明</td>
+</tr>
+<tr>
+<td>E23</td>
+<td>作者自查不是独立审查；计划与GPU授权、代码验收、实际运行四状态分开</td>
+</tr>
+<tr>
+<td>E24</td>
+<td>不以尚未区分k旧状态处理与写入为理由否定有实质预测的分量结果</td>
+</tr>
+<tr>
+<td>E25</td>
+<td>固定20臂，禁止临时加层/种子/倍率；当前项采集不另加forward；完整成本明列</td>
+</tr>
+<tr>
+<td>E26</td>
+<td>编辑发生在读取入口且下游自然响应，测总效果，不命名纯形成中介</td>
+</tr>
+</tbody>
+</table>
+<h5 id="5_1">5. 实质反方审查与修订</h5>
+<p><strong>反例A：k更强只是k扰动更大。</strong> 即便所有预期结果出现，仍不能推单位强度k敏感或写入主导。处理：明确本轮是原幅度分量贡献，两个随机各匹配同分量，禁止q/k自然敏感性排序；不另加跨分量剂量扫描。该边界保留了“真实偏移哪半足以产生行为效应”的增量。</p>
+<p><strong>反例B：两个单半各自修复全部错误，四格差反而负。</strong> 用同一原错误集构造V=0、Rq=Rk=Rqk=1，I_Y=−1；没有理由叫破坏性拮抗。修订：增加天花板/逐题四格模式，禁止机械命名；固定候选M不经过跨臂max再算交互，且仍不据此证明内部协同。</p>
+<p><strong>反例C：随机被卷积缩小，所谓方向优势其实是不同有效幅度。</strong> 增加r_post，但它只匹配首读旧槽线性范数；补当前项的实测几何后也不能把方向与非线性增益完全分开。修订：只判断优势是否对配平口径稳健，不承诺解释百分比；逐头不匹配则标不可判，不选成功子集。</p>
+<p><strong>反例D：随机方向只有一个，恰好弱。</strong> 这会限制随机总体主张，但不否定μ两半相对自身联合端点的配对作用。保留冻结参照和明确条件，不用额外种子矩阵制造完整感或伪显著性。</p>
+<p><strong>反例E：阴性来自实现没命中实际槽，或观察器改变路径。</strong> 工程验证与科学判据分开：活跃三槽、切块和旧臂逐位重放；失败停止、不解释科学结果。CPU规则与模型验收仍未完成，不虚报可执行。</p>
+<p><strong>反例F：只看原错误子集遗漏修复造成的反效果。</strong> P用所有输入的净正确率，另报配对改坏；B才限定原错误。不得删除自然原本正确的输入或把全48重放率称原错误复现率。</p>
+<p><strong>反例G：预算只加576新单半，随机与重放漏记。</strong> 穷举20唯一臂并计C/T_nat，正式3072；模型形成C+3T=192，预检重试另列。相对截图预算增加，但未增加层、方向、剂量。CPU manifest 将独立复算这些数，不以口头“约0.5小时”替代。</p>
+<p><strong>反例H：匹配头某一贡献为零，缩放爆炸或BF16抹掉变化。</strong> 冻结除零条件、全部倍率和实际差验收；不暗改种子/截断倍率；该随机比较无法成立即不可判，μ主因子仍报告。缺匹配不冒充μ无效。</p>
+<p>复查后 C01/C02/C08/C14 仍通过：没有换问题；无论k优先预测成功或失败都能留下对实际偏移分量作用的约束；没有把所有结果都导向新网格。</p>
+<h5 id="6_1">6. 交付时状态</h5>
+<ul>
+<li><strong>逻辑设计：通过（作者自查）。</strong> 修正了读写命名、交互天花板、随机配平口径及预算漏项。</li>
+<li><strong>已做工程文档检查：</strong> 读取已有协议/实现/回执；CPU核对既有48条记录哈希、矩阵算术、来源清单和新增文档链接。具体检查结果见<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-qk-component-factor-design-v1-2026-11-02/delivery-check.json">CPU交付核对</a>。这不是新实验代码验收。</li>
+<li><strong>待做：</strong> 新运行器、服务器μ/r/卷积核实际可读性、r_post张量构造与实际配平、首读观察器无扰动和模型重放验收。不得把待做写成通过。</li>
+<li><strong>授权：</strong> 本轮只写方案/自查/Git。新增GPU、模型生成、模型评分和新模型前向均为0。</li>
+<li><strong>成本：</strong> 正常3212、含一次预检重试最多3352自然轨迹；正式3072；规划全轮0.8–1.3设备小时、硬上限2设备小时，均未执行。</li>
+</ul>
+<hr />
+<h3 id="3qkf-01">原件 3：QKF-01 设计附件（未运行）</h3>
+<p>原路径：<code>experiments/cache-qk-component-factor-design-v1-2026-11-02/README.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-qk-component-factor-design-v1-2026-11-02/README.zh-CN.md">固定提交原文</a> · <a href="../library/36bbf156febb6ac8.html">单独阅读副本</a>；SHA-256：<code>36bbf156febb6ac8ceafa551e0cf9f2b89e11dc6007e27267173b85450611c38</code>。</p>
+<hr />
+<h4 id="qkf-01">QKF-01 设计附件（未运行）</h4>
+<p><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-qk-component-factor-plan-v1-2026-11-02.zh-CN.md">方案</a> · <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-qkf-self-check-v1-2026-11-02.zh-CN.md">作者自查</a></p>
+<ul>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-qk-component-factor-design-v1-2026-11-02/design-manifest.json">design-manifest.json</a>：20个唯一科学臂、48输入/3方向、预检、完整预算、固定竞争者和已有来源SHA-256；不是模型运行freeze或授权。</li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-qk-component-factor-design-v1-2026-11-02/delivery-check.json">delivery-check.json</a>：本轮CPU交付核对，含48条旧原始记录哈希、旧终点复算、矩阵/预算与文档链接检查。没有加载模型或服务器大张量。</li>
+</ul>
+<p>实际实验目录另建，禁止把本设计目录写成已运行。μ/r原张量和卷积核的服务器可读性、匹配随机构造、新观察器及模型数值验收仍待完成。</p>
+<hr />
+<h2 id="_2">时间、运行与停止收据索引</h2>
+<p>下面是所收集JSON的原有时间字段与状态，不把预计结束时间当实际完成时间。未列时间的文件仍有原件链接。完整JSON全部保存在原文归档，不能以此索引中的标量代替完整嵌套内容。</p>
+<table>
+<thead>
+<tr>
+<th>原件</th>
+<th>原记录状态/阶段</th>
+<th>原时间字段（原时区）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>本目录未提取到上述类型JSON</td>
+<td>不据此推断运行成功或失败</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_3">全部原始资产入口</h2>
+<p>本目录在固定提交下共有3个跟踪文件，包含代码、原回答、失败、收据和压缩证据；文件数不是样本数。<a href="../assets/086-cache-qk-component-factor-design-v1-2026-11-02.tsv">逐文件完整账本</a> · <a href="https://github.com/yuxiexiong/acupuncture/tree/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-qk-component-factor-design-v1-2026-11-02">原目录</a>。未复制模型权重、环境或凭据。</p></main></html>

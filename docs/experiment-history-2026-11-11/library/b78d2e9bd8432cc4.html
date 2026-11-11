@@ -1,0 +1,69 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>QCD-01 零 GPU 分析：三类失败分别出在哪一步</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="qcd-01-gpu">QCD-01 零 GPU 分析：三类失败分别出在哪一步</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-coverage-dose-v1-2026-11-02/ANALYSIS-failure-steps.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-coverage-dose-v1-2026-11-02/ANALYSIS-failure-steps.zh-CN.md">固定提交原件</a>；SHA-256：<code>b78d2e9bd8432cc4910e6c8b1280d7c5a4c5e90826a5b82061fee9178c917c99</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="qcd-01-gpu_1">QCD-01 零 GPU 分析：三类失败分别出在哪一步</h1>
+<p>日期：2026-11-02。事后描述，不在 freeze 内，无预注册、无零分布。数据：QCD-01 阶段 G + S 正式记录（108 文本 × 4 方向 × 7 政策，各 nat 与 V←C_b）。脚本 <code>analysis/failure_steps_r01.py</code>（服务器上用真实分词器运行），结果 <code>analysis/failure-steps-r01.json</code>。</p>
+<h2 id="_1">方法</h2>
+<p>把每条自然输出定位到三个决策点（用已存 token、首步分数与第二步分数）：</p>
+<ul>
+<li><strong>D1 开口</strong>：第一个 token 是共同首字母、停止 token，还是别的。</li>
+<li><strong>D2 选哪条</strong>（仅 D1 = 共同首字母时）：第二个 token 对应目标、首列编号，还是另一条。</li>
+<li><strong>D3 交付一个还是继续</strong>（仅当先输出了一个完整编号时）：紧接着是停止 token（单个交付），还是继续写；若后面又出现其他编号，记为“列举”。</li>
+</ul>
+<p>注意：当 D1 = 共同首字母时，诊断分叉与自然第二步按构造相同，所以这里的 M 不是独立证据，只是 D2 的连续版本。</p>
+<h2 id="_2">结果</h2>
+<p><strong>1. 恢复 V 后“直接以编号开头”的格为 37–54/54（多数 54；最低是 NA C1343 的 E1，37/54）。</strong> 更正：初稿写 48–54/54，与结果 JSON 不符。另外“不以共同首字母开头”不等于没开口或答错——E1 有些正确回答带文字前缀（NA C1343 E1：17 格不以编号开头，但 54/54 交付正确）。所以 D1 这里只是“是否直接以编号开头”的读数，不是“是否开始回答”。</p>
+<p><strong>2. 恢复后的错误有两种不同形态，出在不同的决策点。</strong></p>
+<table>
+<thead>
+<tr>
+<th>形态</th>
+<th>典型条件</th>
+<th>D1</th>
+<th>D2</th>
+<th>D3</th>
+<th>例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>答首条即停</td>
+<td>宽窗口 B1（NA N4146 36/36 非首位格；LA N4146、N1210、R0 30/36 左右）；也零星见于 N1、N-A、B-Q</td>
+<td>共同首字母</td>
+<td><strong>首列编号</strong></td>
+<td><strong>停止</strong></td>
+<td><code>V91&lt;|im_end|&gt;</code></td>
+</tr>
+<tr>
+<td>复述记录</td>
+<td>E1（覆盖问题与指令前部）：NA N4146、LA N4146 / N1210 / R0</td>
+<td>共同首字母</td>
+<td>从首列开始</td>
+<td><strong>继续，按记录顺序把三条都列出</strong></td>
+<td><code>U17 铁锚、U43 竹篮、U86 陶罐…</code></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>答首条即停：D2 处首列编号压过目标（M 在这些格为 −0.1 到 −2.7），之后正常停止——交付了一个错误的单编号。</li>
+<li>复述记录：E1 + V 在目标非首位的格里，只交付一个编号的几乎都是目标（首列单编号只有 1–2 格），错误是“从第一条开始复述整条记录”。<strong>但这不能说明 E1 的目标选择没有问题</strong>（更正初稿）：上一句先筛掉了列举型失败。NA N4146 的 E1 在目标非首位的 36 格中，第二步有 31 格先输出首列编号、只有 5 格先输出目标——E1 同时涉及“从哪里开始输出”和“之后是否继续列举”，两者在这些格里分不开。</li>
+</ul>
+<p><strong>3. 未恢复时的损伤形态也不同。</strong></p>
+<ul>
+<li>B1：NA 直接停（<code>&lt;|im_end|&gt;</code> 54/54），LA 写“目标条目”后停。</li>
+<li>E1：从不停止（D1 = 其他 54/54），而是开始<strong>评论输入</strong>：“您提供的信息中包含两部分内容…”、“您提供的信息中包含了一些重复…”、“根据您提供的图纸目录信息…”。模型像是把输入当作需要描述的材料，而不是要回答的问题。</li>
+</ul>
+<p><strong>4. 恢复 V 把原本答对的格改错，共 44 个条件格，分两类。</strong> 这些是重复使用同一批文本、跨政策和方向统计的条件格，不是 44 道独立题目；它证明“恢复 V 不总是修复”存在反例，不能当作错误率。</p>
+<ul>
+<li>20 格在 E1：其中 18 格是目标恰在首位、未恢复时自然交付了目标的格，恢复 V 后变成复述记录（多编号）。</li>
+<li>其余 24 格主要在 LA 的 B1、N1、N-A、N-Q、B-Q：恢复后变成“答首条即停”（17 格）或停止无编号（5 格）等。</li>
+</ul>
+<h2 id="_3">读法（推测档，供下一轮设计）</h2>
+<ul>
+<li>更正后的结论：<strong>不同形成条件留下了不同的回答模式；“目标选择偏移”和“转向复述输入”是两个需要进一步区分的解释</strong>，不是已经分开的两个内部环节。“任务框架”只是假说，不是已发现的功能模块。</li>
+<li>D1/D2/D3 是观察位置，不是已定位的内部机制：行为在第三步显现，不代表内部损伤到第三步才发生——模型可能在输出第一个编号之前就已进入复述输入的生成方式。</li>
+<li>描述：宽窗口下恢复 V 后常见“首条即停”；前部窗口 E1 下常见“复述记录”，未恢复时评论输入。</li>
+<li>下一轮可以把“首列 vs 目标”与“单交付 vs 复述/评论”作为<strong>两个不同读数</strong>分别记录，但不预先认定它们对应相互独立的机制。</li>
+<li>限制：事后分析；只在这块面板、这四个方向；D2 读数与诊断分叉不独立；“评论输入”是从输出文本前缀归纳的描述，不是分类器判定。</li>
+</ul></main></html>

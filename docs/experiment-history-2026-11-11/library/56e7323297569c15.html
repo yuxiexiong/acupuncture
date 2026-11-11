@@ -1,0 +1,155 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SK-01（深层递推状态 S × 注意力 KV + 原生恢复臂）结果报告</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="sk-01-s-kv">SK-01（深层递推状态 S × 注意力 KV + 原生恢复臂）结果报告</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-sk-history-v1-2026-11-02/REPORT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-sk-history-v1-2026-11-02/REPORT.zh-CN.md">固定提交原件</a>；SHA-256：<code>56e7323297569c1594018c15808c48f1377a9bfcb49051a7c6086cf128bfc88c</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="sk-01-s-kv_1">SK-01（深层递推状态 S × 注意力 KV + 原生恢复臂）结果报告</h1>
+<p>日期：2026-11-02。<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-sk-history-v1-2026-11-02/CONTRACT.zh-CN.md">合同 r01</a>；<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-sk-history-v1-2026-11-02/DECISIONS.zh-CN.md">决策 D1–D5</a>；计划 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-sk-history-action-plan-v1-2026-11-02.zh-CN.md">v1</a> + <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-sk-history-action-plan-v2-2026-11-02.zh-CN.md">v2</a>。代码 <code>c5ac0c1</code>，freeze-r01 <code>614b5efc…0aaa</code>。已见输入，新格结果未见。同一助手实现、运行与撰写。</p>
+<h2 id="1">1. 结论（不利的先说）</h2>
+<ol>
+<li><strong>P_S 不成立（0/4）。</strong> 在干预入口下，深层递推状态 S 单独替换就能拿到历史作用 H 的大部分（S0/H 方向均值 0.62–0.74，逐输入 0.53–0.81），但 KV 并不“小到可以忽略”：在 S 已经换成 T 的背景下，再换 KV 还有 K1 = 1.8–2.5 logit，超过 ε（约 1.3–1.5）。所以多数输入落在“其他”（S 为主、KV 依赖 S 背景），而不是“S 集中”。S 集中只出现在零星事实上（N4146 1 例、R0 2 例）。</li>
+<li><strong>P_native 不成立（0/4）。</strong> 在完整原生 T 背景里，只把深层 S 恢复成 C，竞争差只回退 R_S = 1.3–2.5（原生总变化 N 的 10–17%），低于门槛 max(0.5, 0.2N) ≈ 2.5–2.9；只恢复 KV 回退 0.4–0.7。</li>
+<li><strong>原生背景里，S 与 KV 是冗余或替代关系。</strong> 同时恢复两者回退 R_SK = 2.9–4.2，大于两者单独之和（J_native = −1.0 到 −1.5，即联合恢复超加和）。原生模式判为“冗余或替代”：N4146、R0、C1343 各 5/6 或 6/6 个情景；N1210 为条件依赖（冗余 3、恢复操作都弱 2）。</li>
+<li><strong>在原生背景里，深层历史整体只承载原生变化的约两到三成</strong>（R_SK/N = 0.21–0.29）。其余七成以上在原生 T 背景中没有被这三种恢复撤掉；在本轮的恢复操作下它们保持不动，这些成分与浅层/入口、深层卷积历史都保持 T 有关，但“未撤掉的部分”不是已经分配好的独立份额，可能包含保留状态与被恢复状态的交互。<strong>更正</strong>：初稿此处拿 NFC 链上 e1 的 54–63% 来比较，这是错的，因为 e1 同时换了入口和深层历史，不是纯 S+KV。可比的量是 EH 中从干净背景往上加深层历史的作用：干净入口下 H0 = 4.7–5.6（约为原生 N 的 35–41%），干预入口下 H1 = 6.6–7.3（约 47–52%）。从原生 T 往下撤 S+KV 只回退 21–29%。“往上加”与“往下撤”仍然不一致，说明存在条件性的替代或冗余，但差距比初稿写的小。</li>
+<li><strong>行为上，单独恢复深层 S 就让首步不再停止</strong>：P_S0 首步停止 N4146 0/12、C1343 0/12、N1210 2/12（P 为 12/12）；单独恢复 KV 不改变行为（P_K0 12/12）。这是因为原生 T 的 D 只略高于 0（约 1），1–2 logit 的回退就足以越过门槛；它说明的是“离门槛很近”，不说明 S 承载了原生效应的大部分。R0 原生本来就几乎不停止（1/12），所有恢复臂都是 0/12。</li>
+<li><strong>固定候选 F 上的读数大得多</strong>：R_S(F) = 5.4–6.6，R_SK(F) = 8.2–9.7（D 上分别是 1.3–2.5 和 2.9–4.2）。恢复深层 S 时，干净首词 q0 相对停止词恢复了很多，但另一个非停止词顶上来，吸收了大部分（赢家更替）。所以 D 上的小回退，部分是竞争者换人造成的。</li>
+</ol>
+<h2 id="2-d12-f">2. 主要读数（D，12 输入均值；括号为 F）</h2>
+<table>
+<thead>
+<tr>
+<th>方向</th>
+<th style="text-align: right;">H</th>
+<th style="text-align: right;">S0</th>
+<th style="text-align: right;">S1</th>
+<th style="text-align: right;">K0</th>
+<th style="text-align: right;">K1</th>
+<th style="text-align: right;">J</th>
+<th style="text-align: right;">N</th>
+<th style="text-align: right;">R_S</th>
+<th style="text-align: right;">R_K</th>
+<th style="text-align: right;">R_SK</th>
+<th style="text-align: right;">J_native</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>N4146</td>
+<td style="text-align: right;">6.81</td>
+<td style="text-align: right;">5.01</td>
+<td style="text-align: right;">5.93</td>
+<td style="text-align: right;">0.88</td>
+<td style="text-align: right;">1.80</td>
+<td style="text-align: right;">0.92</td>
+<td style="text-align: right;">14.22</td>
+<td style="text-align: right;">1.93 (6.48)</td>
+<td style="text-align: right;">0.64 (2.75)</td>
+<td style="text-align: right;">4.03 (9.67)</td>
+<td style="text-align: right;">−1.45</td>
+</tr>
+<tr>
+<td>N1210</td>
+<td style="text-align: right;">6.61</td>
+<td style="text-align: right;">4.11</td>
+<td style="text-align: right;">5.43</td>
+<td style="text-align: right;">1.18</td>
+<td style="text-align: right;">2.49</td>
+<td style="text-align: right;">1.31</td>
+<td style="text-align: right;">13.79</td>
+<td style="text-align: right;">1.34 (5.38)</td>
+<td style="text-align: right;">0.37 (2.01)</td>
+<td style="text-align: right;">2.94 (8.23)</td>
+<td style="text-align: right;">−1.23</td>
+</tr>
+<tr>
+<td>R0</td>
+<td style="text-align: right;">7.30</td>
+<td style="text-align: right;">5.15</td>
+<td style="text-align: right;">6.32</td>
+<td style="text-align: right;">0.98</td>
+<td style="text-align: right;">2.15</td>
+<td style="text-align: right;">1.17</td>
+<td style="text-align: right;">12.62</td>
+<td style="text-align: right;">1.45 (6.55)</td>
+<td style="text-align: right;">0.57 (2.66)</td>
+<td style="text-align: right;">3.16 (9.48)</td>
+<td style="text-align: right;">−1.14</td>
+</tr>
+<tr>
+<td>C1343</td>
+<td style="text-align: right;">6.43</td>
+<td style="text-align: right;">4.56</td>
+<td style="text-align: right;">5.19</td>
+<td style="text-align: right;">1.24</td>
+<td style="text-align: right;">1.87</td>
+<td style="text-align: right;">0.63</td>
+<td style="text-align: right;">14.53</td>
+<td style="text-align: right;">2.45 (6.13)</td>
+<td style="text-align: right;">0.73 (1.61)</td>
+<td style="text-align: right;">4.18 (9.09)</td>
+<td style="text-align: right;">−1.01</td>
+</tr>
+</tbody>
+</table>
+<p>主矩阵的 S、K 在 D 与 F 上完全相同（主矩阵各格的赢家组成不变）；原生恢复臂在 D 与 F 上差别很大（见 §1.6）。交叉表：48 个事实中，“非 S 集中 × P_native 违反”占 44，“S 集中 × 违反”3，“非 S 集中 × 支持”1。</p>
+<h2 id="3">3. 执行</h2>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th style="text-align: right;">形成</th>
+<th style="text-align: right;">评分</th>
+<th style="text-align: right;">校准</th>
+<th style="text-align: right;">墙钟</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>预检 r01</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">68</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">51 s</td>
+</tr>
+<tr>
+<td>正式 r01（2 worker）</td>
+<td style="text-align: right;">60</td>
+<td style="text-align: right;">396</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">约 120 s / worker</td>
+</tr>
+</tbody>
+</table>
+<p>全部闸门通过：C_native、T_native、SK00（= X10）、SK11（= XH11）与 EH-XC 逐位相同；每格的深层 S、深层 KV、深层卷积、浅层四类分量分别哈希，均与来源表一致；供体前后哈希不变；主矩阵入口等于 x_T，原生恢复臂自然入口等于 x_T；内核计数正确；记录器开/关一致。约 0.08 GPU 小时。精度：每方向有 4–9 个事实距某一判据边界 ≤0.125，属于精度敏感，但不改变 0/4 的结论（S 集中和 P_native 支持的事实本来就极少）。</p>
+<h2 id="4-9-5">4. 出口（计划 §9 / 合同 §5）</h2>
+<ul>
+<li>结果对应出口表中的“S 为主但不集中，且原生不对应”：混合背景里的“历史主要随 S 走”成立（S0/H 约 0.6–0.7），但它<strong>不能直接外推到原生背景</strong>。原生背景里，深层 S 与 KV 互为替代，深层历史整体只占约两到三成；大部分原生变化在本轮的恢复操作下保持不动。</li>
+<li>由此修正此前的叙述：深层历史的作用大小取决于其他状态是否已被干预。从干净背景往上加时它约占原生变化的 35–52%（视入口而定），从原生干预背景往下撤时只占 21–29%；两类深层状态之间、以及它们与其余保留状态之间，存在方向一致的非加和关系（与冗余或补偿相容，但尚未证明储存的是同一份信息或发生了动态补偿）。</li>
+<li>下一步（未设计、未授权）：问题不应写成“剩下的七成在哪里”，而应是“哪些保留的状态使得撤掉深层历史后原生变化仍大部分存在，联合恢复能否打破这种保持”。可以在原生背景里做互补的恢复，即恢复浅层与入口、恢复深层卷积，以及它们与深层历史的组合。前提是先写出能区分“分布式冗余”和“某一类别承载”的可失败预测，而不是机械扫描。</li>
+</ul>
+<h2 id="5">5. 可以说 / 不可以说</h2>
+<table>
+<thead>
+<tr>
+<th>可以说</th>
+<th>不可以说</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>在干预入口下，深层 S 单独拿到历史作用的约六到七成，KV 的作用依赖 S 背景</td>
+<td>KV 无作用 / S 集中（P_S 0/4）</td>
+</tr>
+<tr>
+<td>原生 T 背景里，单独恢复 S 回退约 10–17%，联合恢复 S+KV 回退约 21–29%，两者冗余或替代</td>
+<td>深层历史在原生背景里不承载作用</td>
+</tr>
+<tr>
+<td>单独恢复深层 S 就让 N4146、C1343 的首步不再停止</td>
+<td>S 承载了原生效应的大部分（这是因为原生 D 离门槛很近）</td>
+</tr>
+<tr>
+<td>D 上的小回退部分来自非停止赢家更替（F 上回退大得多）</td>
+<td>原生行为变化主要是事实丢失</td>
+</tr>
+</tbody>
+</table></main></html>

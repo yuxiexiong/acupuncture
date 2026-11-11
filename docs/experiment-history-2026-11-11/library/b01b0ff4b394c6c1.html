@@ -1,0 +1,150 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>停止自主搜索，改为直接复用作者公开代码</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="_1">停止自主搜索，改为直接复用作者公开代码</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/wsp-process-reproduction-v1-2026-11-03/author-code-reuse-r1/README.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-process-reproduction-v1-2026-11-03/author-code-reuse-r1/README.zh-CN.md">固定提交原件</a>；SHA-256：<code>b01b0ff4b394c6c1c861a7698727bf058fa0644bdf2b110981966f74bcac2c45</code>。精确字节见原文归档。</p>
+<hr />
+<p><strong>2026-11-05最新目标：用户明确要求AI根据新结果自主诊断、选针，已规划<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-process-reproduction-v1-2026-11-03/autonomous-process-r1/PLAN.zh-CN.md">自主过程复现</a>。本目录的原评分/构建等工程接口可复用；历史动作重放方案不再是当前目标，不启动author_actions派发器。这里只新增方案和自查，尚未实施或运行。下文保留历史身份。</strong></p>
+<p><strong>当前安排：全部数学工作（含验收）已按用户要求挂起；编程任务撤出当前待办及启动队列。活动队列为空，无自动续接。仅在用户明确要求开始后恢复数学。已有代码、数据、快照与日志保留；见 <code>PAUSED_BY_USER.json</code>。</strong></p>
+<p><strong>最新实施状态（2026-11-04）：</strong> 必要适配已在 <code>adapter/</code> 实现，详见 <a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-process-reproduction-v1-2026-11-03/author-code-reuse-r1/INTERFACE-REPORT.zh-CN.md">接口验收报告</a> 与 <code>status.json</code>。本文下方是停止与首次准备时的历史记录；未公开服务不再被一概视为不可补足的阻塞，具体边界以 BOUNDARY 为准。正式实验仍未启动。</p>
+<h1 id="_2">停止自主搜索，改为直接复用作者公开代码</h1>
+<p><strong>后续边界澄清：</strong> <a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-process-reproduction-v1-2026-11-03/author-code-reuse-r1/BOUNDARY.zh-CN.md">BOUNDARY.zh-CN.md</a>覆盖本文“必须取得全部私有源码”的过宽判断：允许补必要工程适配，固定作者科学代码；前向数值契约须另行验收。本文停止收据与历史事实不变，当前仍不运行。</p>
+<p>2026-11-04，最新用户指令优先于此前50-pass续跑授权。本目录覆盖旧车队、恢复器与半小时监控的执行安排：<strong>全部保持停止；本次没有启动新搜索、没有重跑旧动作。</strong></p>
+<h2 id="_3">已停止及保留的结果</h2>
+<ul>
+<li>Mac runner 79154、controller 79157已退出，远端broker组1355922与动作组1383675已退出。19:33:02北京时间观测GPU计算进程列表为空；自动任务<code>wsp</code>已删除。</li>
+<li>0.8B数学停在28/50成功forward。开发集候选21→43/256（+8.59pp，报告SE2.94pp），但独立验证turn075被用户叫停，没有完整生成文件或完成响应，不能宣布验证阳性或整轮成功。</li>
+<li>旧日志、原始请求、候选及快照保留。旧已结算38734.997369GPU秒不改写；停止收据单列中断动作保守上界1883.889019GPU秒，合计核算上界40618.886388秒，即11.2830GPU小时。这是两卡分配时间的保守核算，含退出到首次空闲观测的延迟，不是精确内核时间。</li>
+<li>4B数学此前完成阴性；0.8B与4B编程继续暂停，均未被重新启动。</li>
+</ul>
+<h2 id="_4">已实际改好的部分</h2>
+<p>新版本不再将“让编辑器自行重写分析”当作作者代码复用。<code>prepare.py</code>只下载、核对、提取，不执行模型或分析动作：</p>
+<ol>
+<li>固定作者提交<code>4d09ba6d6a7e891dd8063974dfe81b3d78e3494f</code>。本次也核对了上游最新提交，仍为此版本。</li>
+<li>下载30个公开文件，逐一核验Git blob SHA-1和文件大小，另外记录SHA-256。包括公开脚本、profile、模型文本配置、practice、原始初始提示、通知和p50c工具记录。保存于仓库外部资产目录<code>external/wsp-author-code-reuse-r1/upstream</code>。</li>
+<li>按原记录顺序提取80段Python源码，代码字符串逐字一致；69个forward请求对象完全相等；另保留1条非执行的edit_hash记录。没有新增排序公式、阈值、层选择或干预策略。80段代码均通过语法解析；这不证明依赖齐全或运行成功。</li>
+<li>没有下载或应用<code>edit.npz</code>最终补丁。拟复用的是产生候选的原过程代码，而不是直接加载最终权重。</li>
+<li>新检查点入口<code>build_with_author.py</code>直接调用作者原封不动的<code>build_ckpt.py</code>，同样校验<code>profiles.py</code>身份。唯一适配是将作者脱敏模型路径绑定到显式传入的本地目录，并明确选<code>qwen35think</code>，避免误用其默认<code>qwen3</code>。不自写张量替换/舍入算法。</li>
+<li>在独立远端目录执行极小合成CPU验收：BF16舍入、未改张量、配置复制、原文件不变、作者构建收据均通过。没有加载真实模型，没有forward，没有GPU计算。该检查不是完整推理等价验收。</li>
+</ol>
+<p>这项改动是<strong>准备原过程的代码重放</strong>，不再是一次独立的盲搜。固定作者已选动作之后，不能宣称编辑器在新实验中独立发现了同一根针。数值结果与生成仍必须重新测量，不能拿作者打印输出冒充本机结果；当前尚未执行这些动作。</p>
+<h2 id="_5">扩大审计后发现的其他类似情况</h2>
+<table>
+<thead>
+<tr>
+<th>组件</th>
+<th>旧实现/复用事实</th>
+<th>本次处理与仍缺的证据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>痛点诊断、排序、选针</td>
+<td>Astra自主写新代码；不是作者80段分析的原样执行</td>
+<td>已提取原代码与请求，关闭自主编辑器入口；原过程依赖未齐，未执行</td>
+</tr>
+<tr>
+<td>检查点构建</td>
+<td>自写<code>forward_service.build_checkpoint</code>，虽按相似BF16逻辑实现，没直接调用公开builder</td>
+<td>新入口调用原builder并通过小型CPU验收；旧实现保留作历史，不热改旧运行</td>
+</tr>
+<tr>
+<td>profile/采样常量</td>
+<td>自写SAMPLING/LIMITS，部分数值相同不等于直接复用；早期自主请求还把32k改成8k</td>
+<td>作者profile、初始提示及逐次请求原样保存，不能再自行改批量/长度；没有运行</td>
+</tr>
+<tr>
+<td>数学评分</td>
+<td>复用extract/is_correct，但AST删除了缺失mcqa的import块；属于有适配的复用</td>
+<td>保留原mathqa不做AST改写。<code>mcqa.loop_signals</code>未公开，完整原模块导入是阻塞；已有五例正确性检查不等于完整原评分栈验收</td>
+</tr>
+<tr>
+<td>生成与种子</td>
+<td>自写按题目hash取seed，再对样本编号相加；作者只公开按题目seed的说明，具体服务器代码缺失</td>
+<td>将其列为重建且未证同实现，不因相同采样参数就声明等价；不接缓存、不沿用为“原版”</td>
+</tr>
+<tr>
+<td>teacher-forced与生成激活</td>
+<td>自写HF hook、索引、padding和dtype；生成激活通过重读文本采集</td>
+<td>作者服务器未公开，不能确认与其内部采集逐项相同；新严格复用入口不暗接此服务</td>
+</tr>
+<tr>
+<td>数学沙箱/validator</td>
+<td>自写持久kernel、save_edit、整张量缩放判定容差等</td>
+<td>公开<code>harness/sandbox.py</code>的PRELUDE是围棋网络，不能冒充数学持久内核；数学prelude/validator缺失</td>
+</tr>
+<tr>
+<td>编辑器/调度</td>
+<td>自写controller、SSH恢复和消息组装；上下文等设置曾中途修正</td>
+<td>停用旧调度，不清除历史差异；原始config/instructions已保留，完整数学调度器未公开</td>
+</tr>
+<tr>
+<td>模型与tokenizer</td>
+<td>原raw revision固定，文本权重已有字节验收；0.8B采用作者文本配置的Qwen2 profile</td>
+<td>不是“重新写了模型”；本次保留原资产，未切到当前库raw默认Qwen3_5 tokenizer。版本相同不保证随机执行逐位相同</td>
+</tr>
+<tr>
+<td>终验工具与环境</td>
+<td>evaluate.py公开，但依赖weightenv包、mcqa与IFEval组件未完整发布；作者推理库和硬件未完整冻结</td>
+<td>原文件直接保存，不伪造依赖、不追加隐藏终验。运行时复现仍有信息缺口</td>
+</tr>
+</tbody>
+</table>
+<p>审计同时区分：<strong>已知代码不同、独立重建但数值可能一致、作者未公开而无法核实</strong>。不能把后三类都写成已经证明结果被改坏，也不能把五个小测试通过写成全部一致。</p>
+<h2 id="_6">当前明确的阻塞</h2>
+<p>作者<a href="https://github.com/RikiyaT/lm_understand-logs/blob/4d09ba6d6a7e891dd8063974dfe81b3d78e3494f/exp8_math/README.md">实验8 README</a>明确未包含完整agent harness和forward服务器。公开<a href="https://github.com/RikiyaT/lm_understand-logs/blob/4d09ba6d6a7e891dd8063974dfe81b3d78e3494f/harness/sandbox.py">通用sandbox</a>实际为围棋实验实现，不能靠文件名判断它能运行数学日志。</p>
+<p>要达到用户要求的端到端“代码完全复用”，仍须取得数学实验的持久内核/prelude/validator、forward服务器（含seed分配和内部激活采集）以及原评分依赖，最好附运行时版本清单。此前自写替代虽能运行，<strong>在本次严格复用要求下不能继续用它补缺再宣称全部对齐</strong>。因此<code>status.json</code>明确禁用执行，并保留阻塞；没有建立可自动回退到旧服务器的入口。</p>
+<p>公开文件已完成直接复用准备，builder的独立入口已验收；<strong>完整搜索接线尚未完成，不能称已修好全部差异或可立即开跑。</strong> 没有向作者发送消息，也没有新增实验授权。</p>
+<h2 id="_7">使用与验收记录</h2>
+<p>准备命令（仅下载与提取，不执行原代码）：</p>
+<pre><code class="language-sh">python3 experiments/wsp-process-reproduction-v1-2026-11-03/author-code-reuse-r1/prepare.py --out external/wsp-author-code-reuse-r1
+</code></pre>
+<p><code>sources.json</code>列公开来源和Git对象身份；<code>source-acceptance.json</code>列30文件校验及150记录的提取身份；<code>cpu-acceptance.json</code>列builder合成检查；<code>stop-receipt.json</code>列停止与中断计费。作者原始归档仍只留本地，Git交付源URL/hash、提取器、薄路径适配器与检查结果，不上传先前审批拒绝的归档，也不拆包绕过。</p>
+<h2 id="_8">本次范围自查</h2>
+<p>设计卡：目的为停止错误口径的自主搜索并准备直接复用公开实现；增量为可核验的代码身份与明确缺口。仅操作源码、路径适配和小型CPU样本；目标模型、候选与旧运行证据不改。终点为来源身份和组件可用性，不是数学能力提升。新GPU预算为零；依赖缺失即保持停止，不自选算法填补。</p>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th>判定与理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C01–C02</td>
+<td>通过：恢复用户所指“原代码复现”的目标；新增逐动作身份及缺口审计，不把另一条自主搜索当复现</td>
+</tr>
+<tr>
+<td>C03</td>
+<td>通过：实际下载和核验公开原件，复用builder而非再实现</td>
+</tr>
+<tr>
+<td>C04</td>
+<td>通过：保留开发集正向但独立验证缺失；不因旧轨迹较差便宣判实现错误</td>
+</tr>
+<tr>
+<td>C05–C07</td>
+<td>准备范围通过：只绑定脱敏路径；源代码、动作内容不改；全服务操作语义仍因缺源未验收</td>
+</tr>
+<tr>
+<td>C08–C10</td>
+<td>通过：代码一致与数值一致、能力改善、独立发现分开；没有新科学结论</td>
+</tr>
+<tr>
+<td>C11</td>
+<td>通过：中断验证不记成功/阴性，语法通过不记运行通过</td>
+</tr>
+<tr>
+<td>C12</td>
+<td>通过：0新增模型forward；仅小型CPU构建检查和既有材料审计</td>
+</tr>
+<tr>
+<td>C13</td>
+<td>准备范围通过：固定版本、哈希、原账和失败均保留；端到端运行身份尚不完整</td>
+</tr>
+<tr>
+<td>C14</td>
+<td>通过：公开源码准备可复用；缺源时停止，不以扩大预算或改算法来替代</td>
+</tr>
+</tbody>
+</table>
+<p>相关历史错误E16/E22/E23：不把阴性自动当bug；开发集不是独立确认；源码校验不是运行验收。其余机制因果类条目不适用于本次非模型执行整改。与旧方案的实质区别是从“新编辑器重新寻找方法”改为“固定作者已执行代码”，因此不混续旧账、不称盲搜。</p>
+<p>反方检查：即使80段代码逐字一致，也可能因缺失内核、随机数调度和运行库而结果不同；处理是保留阻塞，不声称完整通过。逻辑准备范围通过；严格端到端复现工程验收未通过、等待缺失实现，不提供伪就绪启动命令。</p></main></html>

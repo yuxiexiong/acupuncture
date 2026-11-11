@@ -1,0 +1,85 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>WSB-01 服务器 CPU 验收与真实预检就绪状态</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="wsb-01-cpu">WSB-01 服务器 CPU 验收与真实预检就绪状态</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-write-signal-background-v1-2026-11-11/SERVER_CPU_ACCEPTANCE.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-write-signal-background-v1-2026-11-11/SERVER_CPU_ACCEPTANCE.zh-CN.md">固定提交原件</a>；SHA-256：<code>7f1efa654dd83278105cb10825d28fbe1d29de6db5a77a0ab7b2da75e1432e40</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="wsb-01-cpu_1">WSB-01 服务器 CPU 验收与真实预检就绪状态</h1>
+<p>2026-11-11，北京时间 17:50 最终核对。用户明确授权完成服务器 CPU 环境核对、发现问题先修复，仍不上卡。</p>
+<p><strong>结论：CPU 环境核对通过，当前代码与服务器环境具备进入真实模型预检的条件。真实预检未启动，正式实验未启动，GPU 授权仍关闭。</strong> 本轮加载完整模型 0 次、模型前向 0 次、GPU 小时 0；全程 <code>CUDA_VISIBLE_DEVICES=''</code>，最终 <code>cuda_initialized=false</code>。没有恢复定时巡检，没有查询或改变其他 GPU 任务。</p>
+<h2 id="1">1. 实际完成的核对</h2>
+<table>
+<thead>
+<tr>
+<th>对象</th>
+<th>结果与证据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>服务器</td>
+<td><code>gqa-h20</code>；操作镜像目录 <code>/workspace/acupuncture</code>，无 Git 元数据。只上传本实验文件及唯一缺失的历史文本，使用逐文件 hash 对齐，不对旧目录做 checkout 或整体覆盖</td>
+</tr>
+<tr>
+<td>既有解释器</td>
+<td><code>/workspace/claude-jump/qwen35-neuron-steering-20261025/.venv/bin/python</code>；沿用环境，未安装或升级依赖</td>
+</tr>
+<tr>
+<td>依赖版本</td>
+<td>PyTorch <code>2.6.0+cu124</code>、Transformers <code>5.20.2</code>，与冻结模型合同一致。版本带 CUDA 后缀不代表本轮使用了 CUDA</td>
+</tr>
+<tr>
+<td>上游计算函数</td>
+<td>真实安装的 Qwen3.5 递推 kernel 已在 CPU 合成张量上验收。采用历史 torch 路径，FLA／Hub kernels／额外 causal-conv 包均未启用；未为了性能更换 kernel</td>
+</tr>
+<tr>
+<td>CPU 测试</td>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-write-signal-background-v1-2026-11-11/readiness/cpu-server-r02.json">cpu-server-r02.json</a>：15 项全部通过，0 failures、0 errors，<code>upstream_kernel_tested=true</code>。完整<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-write-signal-background-v1-2026-11-11/readiness/cpu-server-r02.log">日志</a>保留</td>
+</tr>
+<tr>
+<td>仓库运行依赖</td>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-write-signal-background-v1-2026-11-11/readiness/environment-server-r02.json">environment-server-r02.json</a>：386 个文件核对通过，<code>environment_checked=true</code>；包括形成、解析、材料、校准与旧 C0/OO/DO 桥接记录</td>
+</tr>
+<tr>
+<td>模型资产</td>
+<td>固定 revision <code>851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a</code>；12 个资产文件的大小与 SHA256 核对通过。这里是按块读取文件做 hash，不实例化模型、不把权重加载为模型张量</td>
+</tr>
+<tr>
+<td>上游源码</td>
+<td>Qwen3.5 模型实现与缓存实现 hash 均与旧 NGC 环境记录一致，未修改上游文件</td>
+</tr>
+<tr>
+<td>最后的一致性核对</td>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-write-signal-background-v1-2026-11-11/readiness/preflight-readiness-server-r01.json">preflight-readiness-server-r01.json</a>：CPU 收据、环境清单、当前源文件及外部源码相互匹配；关闭的授权确实拒绝启动</td>
+</tr>
+<tr>
+<td>空间</td>
+<td>当时空闲 <code>59,449,982,976</code> 字节，约 <strong>55.37 GiB</strong>；高于预检所需的 8 GiB。正式空间是否够用，须待预检的实际产物外推，不在本轮提前判通过</td>
+</tr>
+</tbody>
+</table>
+<p>本地修复回归也通过：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-write-signal-background-v1-2026-11-11/readiness/cpu-local-r05.json">cpu-local-r05.json</a>，15 项；本地仍没有对应 Qwen3.5 上游模块，因此这份本地收据不能替代服务器收据。</p>
+<h2 id="2">2. 发现的问题及修复</h2>
+<p><strong>问题一：原启动逻辑把两次资产核对的耗时也拿来判断身份相等。</strong></p>
+<p><code>model_assets()</code> 返回文件身份和 <code>wall_seconds</code>，两次文件完全一致也几乎不可能耗时相同。原先比较整份返回字典，会在真正启动时误报失败。现改成重新核对全部资产文件，然后只比较通过状态、文件数和 manifest hash；耗时保留作计费记录。新增回归证明“只有耗时不同”通过，而文件数、hash 或通过状态不同仍拒绝。没有跳过模型文件校验。</p>
+<p><strong>问题二：服务器少一份方案引用的历史尺寸审计文本。</strong></p>
+<p>首轮 CPU 测试有 1 个 error，环境验收也因此停止；失败并非上游数值测试失败。缺失文件为 <code>experiments/cache-native-write-readout-v1-2026-11-05/analysis/posthoc/output-shared-fraction-r01.txt</code>。从已确认仓库精确补回，SHA256 为 <code>a8a9a8a4d00b011c97b6fa48b071c846b4d4df6f4d52a21d3490771fa71b2553</code>，与原设计收据一致。没有重跑历史实验或改造一份新结果代替它。</p>
+<p>首轮失败的<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-write-signal-background-v1-2026-11-11/readiness/cpu-server-r01.json">CPU 收据</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-write-signal-background-v1-2026-11-11/readiness/cpu-server-r01.log">CPU 日志</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-write-signal-background-v1-2026-11-11/readiness/environment-server-r01.log">环境失败日志</a>和<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-write-signal-background-v1-2026-11-11/readiness/revisions/server-r01/wsb_run.py">当时源码</a>全部保留，后续通过没有覆盖失败记录。</p>
+<p><strong>问题三：原空间门槛把全包产物上限当作每个阶段都必须空出的空间。</strong></p>
+<p>服务器约 55 GiB 可用，原逻辑会连小预检也拒绝。预检仅 60 份差值包，dense 差值合计约 3.281 GiB；现明确预检空间门槛与阶段产物上限为 <strong>8 GiB</strong>，正式启动则检查预检实测后含 1.25 余量的正式空间预测。预检／失败／正式合计 <strong>64 GiB 总上限不变</strong>，超限仍停止；没有删除旧文件，也没有减少科学配对、重放验收或降低保存精度。</p>
+<p>工程自查：这项资源细化保持 C12/C13 的全部重建、重放、失败与存盘入账要求；C01/C02/C08/C14 的问题、估计对象、判读和退出不变。不是新科学设计，不将预检空间充足冒充正式资源已通过。</p>
+<h2 id="3">3. 现在能做与不能宣称的事情</h2>
+<p><strong>能做的下一步：在获得上卡授权后，开始原方案的真实预检。</strong> 固定 NQ02 的 6 个既有输入、30 个有序配对；192 条自然轨迹，另加 12 次零差 t1 验收。单 H20，预检硬上限 <strong>0.4 GPU 进程小时＝24 分钟</strong>，包含模型加载、形成、来源采集、重放、自然生成和存盘。启动时重新检查 GPU 是否空闲、显存和磁盘；本次 CPU 核对没有对 GPU 可用性作判断或预约。</p>
+<p>真实预检必须回答三件尚未验证的事：</p>
+<ol>
+<li>在完整模型中，新运行是否能重放旧 C0/OO/DO；同源增量重放的全部 t1 缓存、logits、自然 token 和停止方式是否一致。</li>
+<li>完整模型里的数值误差、层覆盖和状态身份是否满足协议，而非仅在人工小张量上成立。</li>
+<li>根据实测最长单价、全部续写上界和产物体积，正式实验能否放进 2.2 小时／全包 3 小时，以及当时的可用存储。</li>
+</ol>
+<p><strong>不能宣称：</strong> 已通过真实模型数值预检、正式四格已运行、假设得到支持、已经足以投稿、或正式卡时必定小于估计。CPU 通过不批准正式实验；没有自动转正式或自动重试。</p>
+<p>当前授权文件仍为 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-write-signal-background-v1-2026-11-11/authorization.disabled.json">authorization.disabled.json</a>，<code>gpu_authorized=false</code>、<code>allowed_stages=[]</code>。这份报告是预检就绪判断，不是上卡授权。</p>
+<h2 id="4">4. 可追溯交付</h2>
+<ul>
+<li>初次上传与修复部署：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-write-signal-background-v1-2026-11-11/readiness/deployment-server-r01.json">deployment-server-r01.json</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-write-signal-background-v1-2026-11-11/readiness/deployment-server-r02.json">deployment-server-r02.json</a>。覆盖前先核对旧 hash，并将本实验的首轮源码另存。</li>
+<li>服务器证据回收：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-write-signal-background-v1-2026-11-11/readiness/server-collection-r01.json">server-collection-r01.json</a>，逐文件 SHA256 与原始传输包 hash。</li>
+<li>服务器环境清单绑定当前三份修复源码及测试，未来任何代码修改都必须重新生成对应验收收据；不沿用首轮或本地旧收据放行。</li>
+<li>原<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-write-signal-background-v1-2026-11-11/PLAN.zh-CN.md">设计</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-write-signal-background-v1-2026-11-11/SELF_CHECK.zh-CN.md">作者自查</a>与<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-write-signal-background-v1-2026-11-11/IMPLEMENTATION.zh-CN.md">本地实施记录</a>保留各自当时身份；当前服务器工程状态以本报告为准。</li>
+</ul></main></html>

@@ -1,0 +1,135 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SPF-01 设计说明与自查（对应合同 r02 草案）</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="spf-01-r02">SPF-01 设计说明与自查（对应合同 r02 草案）</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-selection-precedence-v1-2026-11-06/DESIGN.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-selection-precedence-v1-2026-11-06/DESIGN.zh-CN.md">固定提交原件</a>；SHA-256：<code>c072b23c98fbf29574f59dc2d43e78b348b05dd04dd22e89f33c859c58722bcd</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="spf-01-r02_1">SPF-01 设计说明与自查（对应合同 r02 草案）</h1>
+<p>2026-11-06。合同草案见 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-selection-precedence-v1-2026-11-06/CONTRACT.zh-CN.md">CONTRACT.zh-CN.md</a>。同一助手撰写，不是独立审查。</p>
+<h2 id="1">1. 合并了什么</h2>
+<table>
+<thead>
+<tr>
+<th>来自</th>
+<th>采纳的内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Codex 11-06 的两份回复</td>
+<td>两层承诺结构；逐条写"不能推出什么"；成功以预先预测的供体选择为准，不以正确率上升为准；不提前把结果命名为"控制权转移"</td>
+</tr>
+<tr>
+<td>本会话</td>
+<td>假说写在 2611.01909 之上；现象描述改为"原生停嘴，拆成开口与选择"；查重列出的必打基线进卡；QST-01、NSR-01、NCC-01、SVQ-01 的旧结果作参照臂与桥接闸门</td>
+</tr>
+<tr>
+<td>Codex 对 r01 的评估（r02 采纳）</td>
+<td>两处事实更正；操纵变量是状态来源；连续效应与配对对比为主读数；READ 区间跨零不叫"混合"；阶段 B 进入条件放宽；N1210 只跑核心臂；两处过强说法收窄</td>
+</tr>
+</tbody>
+</table>
+<p>与 Codex 概念设计卡仍然不同的三处：不新建面板，先在旧面板上做开发（三种轮换已构成键与行的交叉）；允许把缓冲拆成 V 与 q/k（QST-01 已做一半）；加干净接收背景与"只换状态来源"两格。</p>
+<h2 id="2">2. 判据与结论的对应</h2>
+<ul>
+<li><strong>D_tr</strong> 测的是：供体换了，输出的行是否跟着供体预测的行换，并扣除同一行在不预测它的供体下的出现率。它撑得住"答案随供体改变"。撑不住"跟的是位置"。</li>
+<li><strong>Δ_needle、Δ_clean</strong> 是同一接收者上两个臂的 D_tr 之差。它们撑得住"换了递推状态的来源，缓冲供体效应随之变化"。撑不住"选择被破坏"或"缓冲接管"：受针来源的状态里发生了什么，本卡不测。</li>
+<li><strong>结局 3</strong> 要求 E、Δ_needle、Δ_clean 三者都过界值。四格都是拼接缓存，所以它只是一个条件性依赖图样。</li>
+<li><strong>V</strong> 撑得住"效应随 V 通道走"。撑不住"经 t1 写入项"。</li>
+<li><strong>READ</strong> 只在同场景供体上可算，键与编号不可分；区间跨零只说明没分开。</li>
+<li><strong>R_S</strong> 是对已有结果的重现，不是贡献；它与 R_QK 一起给出同一次运行里"有效"与"无效"两个参照点。</li>
+</ul>
+<p><strong>界值 M = 0.25 的理由（设计者的选择，不请用户凭感觉定）。</strong>
+1. 含义：D_tr 是净的由供体决定的答案比例。低于四分之一时，多数答案不随供体变，"缓冲供体决定答哪一条"这句话不成立。
+2. 与零的距离：统计量在任何与供体无关的输出下恰为 0，所以 0.25 不是在噪声底上划线；抽样波动由场景重抽区间与置换 p 承担。
+3. 不从旧数据标定：FBR-01 的 21/24 是原始跟随率，没有扣对照，不能换算成 D_tr。
+4. 校核写死在判读里（<code>spf_core.perm_null</code>，已实现并预演）：对四格各做一个构造上的零分布，在每个接收者内部打乱"哪个供体对应哪个输出"，重算 D_tr 的均值。若这个零分布的 97.5% 分位达到 0.25，说明界值在本面板上分不开效应与同供体无关的波动，判读写"界值未通过校核"，所有"成立"降为"不可判"。预演里输出完全随机（与供体无关的随机行）时，该分位是 0.163，低于 0.25 但不远，所以 0.25 到 0.3 的效应要靠场景间一致才判得出。
+5. 同一次运行另报两个参照点：已知无效的移植（T_Bvown_Bqkd）与已知有效的移植（C_Sd）的 D_tr。它们不进校核规则，因为"已知无效"本身可能不复现（那是一个实质结果）。
+6. 预演给出的刻度：净效应约 0.3 且场景间一致时判"成立"；约 0.15 时判"低于界值"；一半场景完全成立、一半完全不成立时（均值 0.5，区间 0.12–0.88）判"不可判"。</p>
+<h2 id="3-c01c14">3. C01–C14 自查</h2>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th>判定与理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C01 主线</td>
+<td>通过。主线是解释干预后的选择效应；H 是候选解释之一。</td>
+</tr>
+<tr>
+<td>C02 新增认识</td>
+<td>通过。格 a、b、c 未测过；格 d 是事后线索的前瞻检验。结局 3、4、5 各给出一条不同的认识。</td>
+</tr>
+<tr>
+<td>C03 先例</td>
+<td>通过（r02 更正后）。近邻的 9B 与 4B 结果分开写；C_S4d、C_Sod 不再当复现。</td>
+</tr>
+<tr>
+<td>C04 依据与反例</td>
+<td>通过。依据 21/24、8/12；反例 N1210 8/24、R0 4/24、C1343 1/24，位置 10 对实体 4。</td>
+</tr>
+<tr>
+<td>C05 操作定义</td>
+<td>通过。合同 §3 给出每个臂换哪些张量、来源、切点。</td>
+</tr>
+<tr>
+<td>C06 其余状态</td>
+<td>通过。只说换入时其余逐字节不动。</td>
+</tr>
+<tr>
+<td>C07 自然性</td>
+<td>部分。全部是拼接缓存；合同不把任何结局写成自然机制，并描述失配代价。</td>
+</tr>
+<tr>
+<td>C08 结论上限</td>
+<td>通过。操纵变量写成来源；每个结局配了不允许写的句子。</td>
+</tr>
+<tr>
+<td>C09 可区分</td>
+<td>通过。16 个合成世界给出 7 种结局，三档标签各值都出现过。</td>
+</tr>
+<tr>
+<td>C10 终点</td>
+<td>通过。全部基于自然完整回答。</td>
+</tr>
+<tr>
+<td>C11 阴性与不可判</td>
+<td>通过。低于界值、不可判、前提不成立分开，失败类型写明。</td>
+</tr>
+<tr>
+<td>C12 成本</td>
+<td>通过。6780 条轨迹，外推 0.75 小时，上限 2.0。</td>
+</tr>
+<tr>
+<td>C13 数据身份</td>
+<td>通过。面板与两类单供体结果已见，写明是开发性前瞻检验。</td>
+</tr>
+<tr>
+<td>C14 累积</td>
+<td>通过。E 成立即可讨论阶段 B，但不自动续跑。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="4">4. 反方复查</h2>
+<ul>
+<li><strong>结局 3 也可能平凡：受针来源的状态只是噪声，任何干净信号都会被跟随。</strong> 接受。所以允许写的句子只说"增强了缓冲供体的影响"，不说选择被保留或被转移。</li>
+<li><strong>格 b 里受针来源的状态放进干净运行后仍答对。</strong> 这使格 b 可解释，也可能意味着干净的其余部分不依赖这块状态，那时 Δ_clean 低于界值，结局 4。合同把它标为没有把握。</li>
+<li><strong>换缓冲不等于换层输入。</strong> 接受；r02 已改为"未覆盖"。</li>
+<li><strong>6 个场景，区间很粗。</strong> 接受；只作开发阶段的不确定性。置换 p 最小 0.031，D_rk 与冲突统计量只有 4 个场景，置换 p 最小 0.125，所以它们只用区间、不报显著性。</li>
+<li><strong>放宽阶段 B 会不会滑向在局部现象上越挖越深。</strong> 有这个风险。阶段 B 只要求 E 成立，因此结局 5 之后做出来的可能只是"受损背景里的一段局部关系"。对策是阶段 A 结束后先回到规划判断它对整稿的价值，再决定做不做。</li>
+<li><strong>二十个臂、多个标签，会不会从里面挑阳性。</strong> 结局只由 E 与两个配对对比决定；其余标签各自独立报告并各有登记的预期。</li>
+<li><strong>"不做证伪论文"。</strong> 主臂是构造：在指定背景下指定模型答哪一条的缓存替换。结局 1、2 结束这条线，不产出"某某不行"的贡献。</li>
+</ul>
+<h2 id="5-gpu2026-11-06">5. 冻结前做完的事（零 GPU，2026-11-06 用户"推进吧"之后）</h2>
+<ol>
+<li>界值校核规则已写进 <code>spf_core.py</code> 并进了预演。</li>
+<li><strong>旧操作的张量集合已核。</strong> NCC-01 的 S、V、K 三组分别是 14 个深层 GDN 层的递推状态、这些层卷积缓冲的 V 通道、第 15/19/23/27/31 层的键值；NSR-01 的 CS、CSx 用同一个 S 组。与本卡的 S、Bv、K 逐项相同。CPU 测试在伪造缓存上把本卡的替换函数与 NCC-01、FBR-01 的原函数逐位比对。</li>
+<li><strong>末 4 个已缓存位置已核。</strong> 真实分词器上 48 条输入的这 4 个位置都是 <code>\n&lt;think&gt;\n\n&lt;/think&gt;</code>。</li>
+<li><strong>显存。</strong> 没有直接量过单份缓存的大小。旁证：FBR-01 同时持有约 30 份缓存副本时峰值 10.2 GB（含模型）。运行器在预检记录峰值，正式运行启动前要求空闲显存不少于预检峰值的两倍且不少于 20 GB。</li>
+<li><strong>运行器、CPU 测试、就绪检查。</strong> <code>spf_run.py</code>、<code>spf_analysis.py</code>、<code>test_spf.py</code>（6 项通过）、<code>readiness/cpu_check.py</code>（通过）。CPU 测试覆盖：预演与设计表；真实账本上的计划、臂顺序与轨迹数 6780、预检 426；伪造缓存上每个臂的替换范围、对旧函数的逐位一致、篡改能被检出；真实分词器上的模板尾；分析脚本在伪造记录上给出预期结局。就绪检查确认 48 个接收者的桥接参照齐全：LVK 干净 48、L00 96、F 96、V 48；FBR 同场景单供体 96、异场景 32；NCC 的 TS、TK 各 48；NSR 的 CS、CSx 各 48。</li>
+<li><strong>冻结。</strong> <code>freeze-A-r01.json</code>（<code>673161bc…8963</code>），40 个文件：本目录的代码、合同、偏离记录、面板条目，加上所依赖的 FBR/NWC/NWR/SRU/LVK 冻结链与 FBR、NCC、NSR 正式运行的验收与收据。</li>
+</ol>
+<p>CPU 测试没有覆盖、要靠预检暴露的部分：真实模型上缓存张量的形状与设备、形成哈希对 LVK 的一致、每条桥接的逐位相等、显存。预检失败按合同只允许一次有记录的修复重试。</p>
+<h2 id="6">6. 结论</h2>
+<p>逻辑设计：通过（同一助手自查，C07 为部分）。阶段 A 已冻结，全部零 GPU，没有任何模型输出。未完成：运行授权、预检、正式运行、分析与报告。</p></main></html>

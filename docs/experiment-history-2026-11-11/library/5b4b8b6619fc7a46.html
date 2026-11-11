@@ -1,0 +1,275 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>QST-01 v1 实验设计作者自查</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="qst-01-v1">QST-01 v1 实验设计作者自查</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>docs/cache-query-state-transfer-self-check-v1-2026-11-02.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-query-state-transfer-self-check-v1-2026-11-02.zh-CN.md">固定提交原件</a>；SHA-256：<code>5b4b8b6619fc7a46826c1b9200bc474ac2a4ef9c530f9d54df74f811712c9a3c</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="qst-01-v1_1">QST-01 v1 实验设计作者自查</h1>
+<p>2026-11-02；依据 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/experiment-design-self-check.zh-CN.md">experiment-design-self-check v1</a>。审查对象：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-query-state-transfer-plan-v1-2026-11-02.zh-CN.md">完整计划</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-query-state-transfer-design-v1-2026-11-02/design-r01.json">清单与规则</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-query-state-transfer-design-v1-2026-11-02/cpu_design_check.py">CPU检查</a>。身份：同一设计助手的逻辑审查和反方检查，<strong>不是独立评审、模型重算或独立复现</strong>。</p>
+<p>结论：<strong>修订后逻辑设计通过。</strong> 已完成来源记录、配对、分母、预算、判据反例的CPU检查；未完成模型实现、目标环境分词复核和模型数值验收，无新GPU授权或运行。以上状态不得合并成“可直接上卡”。</p>
+<h2 id="1">1. 八项设计卡</h2>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>主线与本轮问题</td>
+<td>主线为针如何改变写入、旧状态处理与读取而影响回答；本轮问末端q/k历史的查询身份能否定向改变完整答案，以及受针形成是否削弱该作用</td>
+</tr>
+<tr>
+<td>新增认识</td>
+<td>从同题恢复推进到跨查询身份跟随；用固定接收者的两外来供体识别定向作用，避免只测一般恢复。替换方法和卷积更新公式本身不是新增发现</td>
+</tr>
+<tr>
+<td>依据及反例</td>
+<td>SVQ/QC同题V/F差异支持候选；q/k单独无交付、V改坏已有正确格、QCD主位置标准未达、布局仍混淆均保留；来源见计划§2</td>
+</tr>
+<tr>
+<td>操作</td>
+<td>Qwen3.5-4B固定revision，NA/B1/四方向/旧校准；读末提示token前换G14层q/k四槽，V固定C(a)，S/KV/浅层取接收者；后续自然响应。另有干净接收者背景U；计划§3–5</td>
+</tr>
+<tr>
+<td>估计对象</td>
+<td>固定背景下供体身份改变的总效果J/W，以及同一背景内干净与受针供体的配对差；不是固定S的纯读出效应或原生中介份额</td>
+</tr>
+<tr>
+<td>判读</td>
+<td>正向、反向、部分、未达到标准、仅连续量、背景依赖及工程不可判各有出口；U不阳性不阻断H_C的科学解释；计划§6–7</td>
+</tr>
+<tr>
+<td>范围与成本</td>
+<td>主36接收者/四基础场景，全48接收者/六场景，已见开发面板；正式1380轨迹，含重试最多1680，最多298形成/63419前向/3设备小时；计划§4、9</td>
+</tr>
+<tr>
+<td>退出</td>
+<td>无论结果结束该批；阴性不扩层/头/剂量/布局，阳性也不自动开下一实验；工程失败保留partial；计划§7–10</td>
+</tr>
+</tbody>
+</table>
+<h2 id="2">2. 与方向稿、截图建议及先前设计的比较</h2>
+<p>保留方向稿的核心问题、NA同记录配对、固定V/接收背景、干净及受针供体、四方向和自然完整交付。暂缓布局配对，不改总课题。</p>
+<p>实质修订：</p>
+<ol>
+<li>明确核长4、缓冲四槽与首读有效旧三槽；把“q/k历史读哪条”收紧为“末端投影历史替换的定向总效果”，同时承认k改变当前更新。模型物理对象依源码，目标环境仍需验收。</li>
+<li>增加干净接收者U完整132配对，但与原48干净参照去重；正式1380条，不把截图粗估当精确合同。U是科学参照，不能要求转移阳性作为工程条件。</li>
+<li>将方向稿的自身→外来比较降为补充，主比较改为同接收者的两个外来供体b/c。主分母从48明确为36，内容场景从六明确为四；非首列主子集12与补充有向对28分开。</li>
+<li>增加W双供体均完整跟随，防止仅一侧损伤造成J上升；冻结反向判读及H_C/H_T配对削弱规则，不把反向当“丢失”。</li>
+<li>新主交付终点要求真正停止、思考区闭合；同时保留旧Y_delivery和Y_strict，不能把到预算但含目标编号算完整交付或修改旧结论。</li>
+<li>明列重建、预填、诊断、未替换C、重建重放、唯一一次预检重试和设备时间；不用“已有状态”省略实际成本。</li>
+</ol>
+<p>相较QCD，本轮不再次分离剂量/覆盖；利用其稳定来源与同题恢复对照，测以前没有的身份定向作用。相较失败形态分析，不把输出位置当内部受损位置，不先把行为分为互相独立模块。</p>
+<h2 id="3-c01c14">3. C01–C14逐项判定</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>判定与理由</th>
+<th>具体落点与边界</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C01 主线</td>
+<td>通过：目标仍为历史状态如何传递针的回答效应</td>
+<td>计划§1；EOS仅辅助，无新攻击目标</td>
+</tr>
+<tr>
+<td>C02 增量</td>
+<td>通过：完全符合预期时可识别查询身份相关的条件作用，并比较针形成对它的改变</td>
+<td>§5–7；不以输出有变化或核长为发现</td>
+</tr>
+<tr>
+<td>C03 资产</td>
+<td>通过：用了既有冻结源码、QC/QCD记录/收据、供体审计、失败分析、布局与基础审计</td>
+<td>§2–4及清单source_sha256；无首次性声明，不重测架构常识</td>
+</tr>
+<tr>
+<td>C04 假设</td>
+<td>通过：q/k单独无交付、V能改坏、可能混合失配等最不利事实均进判读</td>
+<td>§2、3、7；受针不必信息消失，干净也不保证可转移</td>
+</tr>
+<tr>
+<td>C05 操作</td>
+<td>通过：准确到卷积前通道、层、槽、读出前时点和宽形成窗口</td>
+<td>§3–5；末槽token实测映射属工程待验收</td>
+</tr>
+<tr>
+<td>C06 路径</td>
+<td>通过：仅分叉起点固定背景，未来变量正常响应</td>
+<td>§5；没有手动改不等于后续固定</td>
+</tr>
+<tr>
+<td>C07 耦合</td>
+<td>通过：承认k同时更新与读取，q/k+V混合可能失配</td>
+<td>§3、5；不作βv补偿、不声称天然联合关系</td>
+</tr>
+<tr>
+<td>C08 归因</td>
+<td>通过：最大主张为特定背景的定向总效果及形成条件差</td>
+<td>§6–7；不称原生必要/充分、最初来源或机制份额</td>
+</tr>
+<tr>
+<td>C09 区分</td>
+<td>通过：固定答案、身份跟随、单侧损伤、反向、仅连续量有不同记录/出口</td>
+<td>§6–7与CPU反例；U与H_C不必同向，两种解释可并存</td>
+</tr>
+<tr>
+<td>C10 指标</td>
+<td>通过：主终点是自然完整交付，J/W不以分数或首token代替；所有格进入</td>
+<td>§6.1–6.3；终止约束修订公开，新旧指标同时保留</td>
+</tr>
+<tr>
+<td>C11 失败</td>
+<td>通过：自身同路径校验是工程条件，外来供体转移是科学结果</td>
+<td>§7–8；标准是操作性阈值，未达不等于零效应</td>
+</tr>
+<tr>
+<td>C12 成本</td>
+<td>通过：CPU已做匹配和公式，新增756条外来轨迹是既有记录缺的测量，其余624是来源/基线重放</td>
+<td>§5、9；无布局、拆头、剂量网格，全部重建计账</td>
+</tr>
+<tr>
+<td>C13 可信度</td>
+<td>通过：源记录对收据哈希，完整清单/分母，旧面板开发身份，失败保留，四方向不挑</td>
+<td>§4、8–10；未来运行前还须实现与数值验收，无独立确认称谓</td>
+</tr>
+<tr>
+<td>C14 累积</td>
+<td>通过：阳性给出查询定向作用，阴性结束这个具体候选，部分/反向可保留边界</td>
+<td>§7；不因预算小就运行，不自动放大实验</td>
+</tr>
+</tbody>
+</table>
+<p>所有“通过”均指逻辑设计；工程项仍为待验收，未用推测填成已通过。</p>
+<h2 id="4-e01e26">4. E01–E26历史错误复查</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>本轮处理</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>E01</td>
+<td>保留写入—历史—读取—回答主线；撤针与停止是条件/读数</td>
+</tr>
+<tr>
+<td>E02</td>
+<td>从安装源码确认卷积对象和核长；G沿用既有恢复对象，不称某层天然特殊</td>
+</tr>
+<tr>
+<td>E03</td>
+<td>原剂量和实际注入审计沿用；不从通道稀疏推小扰动，亦不因幅度大排除放大</td>
+</tr>
+<tr>
+<td>E04</td>
+<td>四槽/三有效槽是工程事实，不算机制发现；真正新增是行为身份跟随</td>
+</tr>
+<tr>
+<td>E05</td>
+<td>q/k与V混合明确标为反事实；不作共享变量补偿来伪造纯读取</td>
+</tr>
+<tr>
+<td>E06</td>
+<td>本轮只覆盖指定卷积块，不代表全部写入/读取机制</td>
+</tr>
+<tr>
+<td>E07</td>
+<td>双外来供体成功也不证明原生路径、唯一中介或无补偿</td>
+</tr>
+<tr>
+<td>E08</td>
+<td>每臂背景、V、q/k来源全部列明，C(a)避免与宽切分C_b混名</td>
+</tr>
+<tr>
+<td>E09</td>
+<td>不以距离或内部交互与行为同时变推因果；主因果词只对应实际供体操作</td>
+</tr>
+<tr>
+<td>E10</td>
+<td>首字母、停止竞争、诊断、自然完整交付分开；预算截断不计完整交付</td>
+</tr>
+<tr>
+<td>E11</td>
+<td>受针供体不转移不等于信息被删；分数偏移不等于语义存量</td>
+</tr>
+<tr>
+<td>E12</td>
+<td>不称配对差自动消除一般损伤；用两外来供体、W和非首列子集约束固定答案/单侧损伤；仍保留背景失配</td>
+</tr>
+<tr>
+<td>E13</td>
+<td>换入的确是另一个查询形成的投影；跟随供体明确记为原题错误，不称旧记忆恢复</td>
+</tr>
+<tr>
+<td>E14</td>
+<td>只报告定向作用与针形成条件差；不混用必要/充分/最初形成/末端承载</td>
+</tr>
+<tr>
+<td>E15</td>
+<td>不将旧S2/S3等不同条件拼链；本轮C/T供体与V背景、时点对齐到QCD</td>
+</tr>
+<tr>
+<td>E16</td>
+<td>U或H_C阴性不得触发修实现；工程闸门只验真实来源、确定性重放及规则</td>
+</tr>
+<tr>
+<td>E17</td>
+<td>不用残差减法“撤回”历史后果；替换后所有下游响应都计入总效果</td>
+</tr>
+<tr>
+<td>E18</td>
+<td>无定向时不把剩余解释自动命名浅层放大或V失配</td>
+</tr>
+<tr>
+<td>E19</td>
+<td>无操作、自身替换及旧参照重放属于工程验收，不作科学发现</td>
+</tr>
+<tr>
+<td>E20</td>
+<td>背景依赖、供体变化、损伤与转移可能共存；不构造三选一穷尽解释</td>
+</tr>
+<tr>
+<td>E21</td>
+<td>使用已有移植工具；本轮无新颖性/首次主张，旧查重不是排他证据</td>
+</tr>
+<tr>
+<td>E22</td>
+<td>36主接收者只覆盖四基础场景；全部48覆盖六场景；方向和配对均非独立题；明确已见开发面板</td>
+</tr>
+<tr>
+<td>E23</td>
+<td>本文件为作者自查；CPU合成检查不是模型重算、独立评审或独立复现</td>
+</tr>
+<tr>
+<td>E24</td>
+<td>本轮允许留下有边界的查询身份因果作用，不要求全部形成机制；同时不把“只是改了输出”包装为实质增量</td>
+</tr>
+<tr>
+<td>E25</td>
+<td>U去重共用，不加U背景受针供体全因子、层/头/剂量/布局扫描；必要受针供体和重放没有为省时删除</td>
+</tr>
+<tr>
+<td>E26</td>
+<td>末端q/k替换直接影响当前更新与读取，未隔离形成中介；计划明确操作总效果</td>
+</tr>
+</tbody>
+</table>
+<h2 id="5">5. 实质反方检查与修复</h2>
+<p><strong>反例A：模型无论换谁都答第一个编号，能否假装转移？</strong> 自身→外来可以被骗，已改主判据为b/c两外来身份对照；恒定答案J=0、W=0，并要求两供体都非首列的12条也达标准。CPU合成固定B、固定C及首列依赖案例均不能通过。此修复仍不能证明广泛语义能力，结论限四场景的定向作用。</p>
+<p><strong>反例B：b供体只让模型答错更少，c供体把它破坏了，J仍为正。</strong> J可达0.5，新增W要求双边都完整交付；合成单边案例不通过。混合面板仍须逐格公开，不能用整体均值掩盖损伤分布。</p>
+<p><strong>反例C：干净接收者不能转移，受针接收者反而能。</strong> 若将U命名为必须阳性的“阳性对照”，会错误阻断真实背景依赖。改为科学参照，允许U阴性/H_C阳性的出口。工程阳性仅指同题自复制与旧路径重放。</p>
+<p><strong>反例D：H_T把b/c颠倒，ΔJ很大，会不会叫信息丢失？</strong> 增加反向W和对称标准；先检测反向，再判削弱。CPU验证完美反向不进入削弱标签。其余局部反向全部报告，仍不得称信息消失。</p>
+<p><strong>反例E：受针供体在C(a)的V上不适配，干净供体适配。</strong> 本轮不能排除此解释。主张是固定背景中供体形成条件改变了定向作用，不是状态内信息量减少；无需为当前有边界主张无限补组合。成功后才有具体计算解释问题可问。</p>
+<p><strong>反例F：最后四槽根本不是问题token，或只有三槽有效。</strong> 已用源码修正对象：末端模板投影可带上下文差异，不搬问题位置；存四首读用旧三。目标环境逐token映射/缓存对齐预检若失败，是实现边界错误而非科学阴性。</p>
+<p><strong>反例G：到32token只出现一次目标编号，但还没结束。</strong> 旧Y_delivery可能给真。新主终点要求stop且思考区闭合；CPU用预算截断、多编号、未闭合及合法文字前缀样例验证。所有旧指标仍保留，以防借新定义抹掉历史反例。</p>
+<p><strong>反例H：大量配对只是同四个场景重复，阈值看似显著。</strong> 明确四场景等权、12非首列子集与36主集并不独立。≥1/3和≥3/4是最小模式规则，不做二项独立检验、伪置信区间或泛化成功率。只能作开发证据。</p>
+<p><strong>反例I：只靠源码和JSON能否宣布数值通过？</strong> 不能。CPU只验证来源记录和设计逻辑；重建哈希、末槽投影、实际剂量、624参照重放必须在未来实现验收中验证。同路径失败暂停，跨供体正常变化不阻断。</p>
+<p><strong>反例J：预检和模型加载漏记，或同一干净参照计两次？</strong> 已从真实48条L/b统计完整预算；预检重建+无操作轨迹独立计入，正式U自身就是C，不重复；计时包含全部worker占用和重试。生成长答案增加的成本由32token上限显式覆盖，不保证截图估算时间。</p>
+<p>复查 C01/C02/C08/C14：上述修复均仍检验历史投影的查询定向作用及针形成对其影响，没有换课题、靠免责声明保留硬伤或将任务退化为“有变化即可”。</p>
+<h2 id="6">6. 已完成验证与未完成事项</h2>
+<p>已完成：读取项目README/状态、QCD合同与G收据、基础审计、前版方向和最新用户截图；核48来源记录哈希；核132/84/36/12/28分母；计算预检/正式/重试预算；合成测试固定偏置、单侧失败、单场景独占、首列偏好、反向、削弱、完整交付；核卷积更新的纯算术例。可运行 <code>python3 experiments/cache-query-state-transfer-design-v1-2026-11-02/cpu_design_check.py</code> 复查。此脚本只用标准库和旧纯解析函数，不加载tokenizer、模型或CUDA。</p>
+<p>未完成：新runner与组装实现、目标运行环境逐token审计、缓存/注入量及数值重放、真实新轨迹、科学结果。工程待验收不妨碍交付完整逻辑设计，亦不能被本文件的“通过”替代。下一次若仅写实现，可以做CPU验证；模型加载/前向仍须符合当时明确授权。</p></main></html>

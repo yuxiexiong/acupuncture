@@ -1,0 +1,88 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>WSP 扩展前的服务器磁盘盘点</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="wsp">WSP 扩展前的服务器磁盘盘点</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>docs/wsp-server-disk-audit-2026-11-05.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/docs/wsp-server-disk-audit-2026-11-05.zh-CN.md">固定提交原件</a>；SHA-256：<code>c497ff671a519e307ad48b3503802f45e51acdd7b1164aabedaef810003fb561</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="wsp_1">WSP 扩展前的服务器磁盘盘点</h1>
+<p>2026-11-05 18:30 北京时间；SSH <code>gqa-h20</code>。仅只读盘点，没有删除、改写、去重、加载模型或中断任务。</p>
+<h2 id="_1">当前容量</h2>
+<table>
+<thead>
+<tr>
+<th>文件系统</th>
+<th style="text-align: right;">总容量 GiB</th>
+<th style="text-align: right;">已用 GiB</th>
+<th style="text-align: right;">可用 GiB</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/workspace</code>，<code>/dev/vdb</code></td>
+<td style="text-align: right;">2518.74</td>
+<td style="text-align: right;">2431.42</td>
+<td style="text-align: right;"><strong>77.30</strong></td>
+</tr>
+<tr>
+<td><code>/</code>（含 <code>/tmp</code>），<code>/dev/vda2</code></td>
+<td style="text-align: right;">491.90</td>
+<td style="text-align: right;">423.66</td>
+<td style="text-align: right;"><strong>48.16</strong></td>
+</tr>
+</tbody>
+</table>
+<p>工作盘 <code>df</code> 显示97%使用率；inode仅10%，当前问题是字节容量而非文件数。系统盘和工作盘是不同文件系统，清理<code>/tmp</code>不会增加<code>/workspace</code>空间。ext4预留等因素使总容量减已用不等于普通可用容量。盘点期间工作盘可用空间约79→77 GiB，存在其他活动，不能把以下预算当锁定余量。</p>
+<p>检测到其他任务正在运行：WSP C的2B/8B服务、8B下载、Gemma3-4B下载及共享队列进程。它们不属于已经结束的v8 B/C 4B搜索，不能因本聊天旧任务结束而停止或清理这些目录。</p>
+<h2 id="_2">优先处理清单</h2>
+<table>
+<thead>
+<tr>
+<th>优先级</th>
+<th>路径／对象</th>
+<th style="text-align: right;">当前占用或预计回收</th>
+<th>判断和前置条件</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>external/wsp-vlm-open-repair-v8-2026-11-05/C/{candidates,actions/*/proposal}</code></td>
+<td style="text-align: right;">相关张量实际占101.44 GiB；按manifest预计可无损去重 <strong>76.81 GiB</strong></td>
+<td>保留所有候选路径、清单、失败记录。应先全量复核SHA256，再对完全相同的不可变文件做硬链接去重；不是删除候选。当前只抽查了两份大文件实际哈希，76.81仍是清单推算值。</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>external/wsp/vllm-cache/torch_compile_cache</code></td>
+<td style="text-align: right;"><strong>4.40 GiB</strong></td>
+<td>旧数学线的可再生成编译缓存；删除后下次需要重新编译。当前未检测到打开文件、cwd或内存映射引用。执行前仍需再次核对。</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>/root/.cache/torch</code>、<code>/tmp/torchinductor_root</code>、<code>/root/.cache/pip</code>、<code>/root/.cache/uv</code></td>
+<td style="text-align: right;">合计约 <strong>1.32 GiB</strong>，只释放系统盘</td>
+<td>前两项未检测到打开/映射引用；包缓存须在清理时再查安装进程。收益较小，不是工作盘问题的主要解法。</td>
+</tr>
+<tr>
+<td>暂缓</td>
+<td><code>/tmp/tmp7502u29y</code>、<code>tmpab1ts89u</code>、<code>tmpk2i7ytsm</code>、<code>tmpt_cwr15y</code>、<code>tmpy8mb_j9w</code></td>
+<td style="text-align: right;">合计约 <strong>9.2 GiB</strong>，系统盘</td>
+<td>内容是2026-08-11的<code>u_ref.pt</code>、<code>ckpt_46.pt</code>、<code>ckpt_0.pt</code>等实验检查点，不是普通下载缓存。虽未检测到打开引用，但未核实归档和唯一性，不建议直接删除。</td>
+</tr>
+</tbody>
+</table>
+<p>前两项若全部通过执行前复核，按本次快照工作盘余量可从77.30增至约 <strong>158.51 GiB</strong>；未计其他任务期间新增占用。当前没有实际回收任何空间。</p>
+<h2 id="c">C 为什么存了这么多</h2>
+<p>已结束的C目录合计104.89 GiB，其中候选约72.45 GiB、动作目录约29.74 GiB（主要是提案张量）、work约1.45 GiB、artifacts约1.24 GiB。</p>
+<p>检查<code>weights.py</code>的<code>Candidates.commit</code>和<code>service.py</code>的提案归档代码发现：实际修改虽然稀疏，持久化却用<code>np.save</code>保存整张FP32张量。词嵌入矩阵形状为151936×2560，单份<code>.npy</code>为1,555,824,768字节，约1.45 GiB。即使只改其中少数坐标，仍会保存整张矩阵。</p>
+<p>本次扫描得到1,020个候选/提案张量文件，清单中只有171个不同SHA256。最大重复组同一嵌入矩阵保存25次；另一组保存13次。对后者两份文件（包括最终冻结候选<code>c-556e560b…</code>）重新读取并计算完整SHA256，均与清单一致。当前这些目录未检测到打开FD、cwd或内存映射引用。没有对所有101.44 GiB做全量重新哈希，因此不能把预计回收值称为已验收。</p>
+<p>建议近期采用保持原路径和原字节内容的精确去重，兼容旧读取器及回执。硬链接共享文件必须继续保持不可变，后续修改须新建文件而非原地写；执行时记录原路径→内容哈希/共享inode映射并核对前后空间与全部引用。更长期应在新版本存储层使用基座加稀疏改动，并验证能逐字节重建旧候选；这一改造尚未实施，不在本次盘点中修改运行代码。</p>
+<h2 id="_3">不应直接删除的空间大户</h2>
+<ul>
+<li><code>/workspace/cross-model-asr</code> 约657.43 GiB，<code>claude-jump</code>约306.12 GiB，<code>jevrep</code>约173.79 GiB：其他研究项目，尚未核对归档、所有者及活跃依赖。</li>
+<li><code>/workspace/acupuncture/experiments</code>约145.47 GiB：大量缓存机制实验的张量/轨迹，如<code>s2-formation-test-v3</code>约19.75 GiB。不能把历史实验产物当垃圾；若要腾空间，应先确认外部完整备份与校验再迁出。</li>
+<li><code>/workspace/hf_cache</code>约176.09 GiB：共享模型，不因目录叫cache就可整体删除。当前下载、模型服务和其他队列可能依赖它。</li>
+<li><code>/root/.cache/pypoetry</code>约6.42 GiB：几乎全在<code>virtualenvs</code>，是环境目录，不是可一键清理的安装包缓存。</li>
+<li><code>/workspace/miniconda/pkgs</code>约1.65 GiB，但没有发现顶层<code>.conda</code>或<code>.tar.bz2</code>下载包；不能把整个目录都按可删安装包估算。</li>
+<li>WSP模型、处理器、数据、最终补丁、逐题原始回答和失败日志应保留。此前GitHub精简证据包不包含所有完整张量和运行元数据，不能以“报告已上传”作为删除远端完整证据的依据。</li>
+</ul>
+<h2 id="_4">对后续扩展的影响</h2>
+<p>优先无损去重C的重复张量，再清理确认不用的旧编译缓存，比先动其他项目更可控。但预计158 GiB余量也不是无限扩展许可：现有方式仅一次C的50轮就产生约105 GiB。新模型的张量大小、并行轮数和下载余量均须计入；建议在继续大量候选搜索前解决整张嵌入矩阵重复持久化的问题，并让新任务按实际增长预留空间。</p>
+<p>盘点方法：<code>df -hT/-i</code>、<code>du -x -B1</code>分层统计；按候选/提案manifest的SHA256归组，并按实际inode/分配块计算重复量；两个最大体积文件完整哈希抽查；只读遍历<code>/proc/*/{cwd,fd,maps}</code>检查上述建议路径的当时引用。没有读取进程环境变量或凭据。删除与去重操作均尚未执行。</p></main></html>

@@ -1,0 +1,163 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>EH（入口 × 深层历史 2×2 + 反向顺序 FIX 臂）结果报告</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="eh-22-fix">EH（入口 × 深层历史 2×2 + 反向顺序 FIX 臂）结果报告</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-entry-history-v1-2026-11-02/REPORT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-entry-history-v1-2026-11-02/REPORT.zh-CN.md">固定提交原件</a>；SHA-256：<code>21f703d40ce375775645cbcb5969db0a0977652f381dca032fe815612bda8de8</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="eh-22-fix_1">EH（入口 × 深层历史 2×2 + 反向顺序 FIX 臂）结果报告</h1>
+<p>日期：2026-11-02。<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-entry-history-v1-2026-11-02/CONTRACT.zh-CN.md">合同 r01</a>；<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-entry-history-v1-2026-11-02/DECISIONS.zh-CN.md">决策 D1–D4</a>；<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-entry-history-plan-v1-2026-11-02.zh-CN.md">计划 v1</a>。代码 <code>27d72c6</code>，freeze-r01 <code>f77f1066…284a</code>。输入已见，新格结果未见。同一助手实现、运行与撰写。</p>
+<h2 id="1">1. 结论（不利的先说）</h2>
+<ol>
+<li><strong>没有哪个因素单独达到联合效果：冻结标签全部是“部分”。</strong> 只换深层历史（干净入口）拿到 e1 的 56–71%（逐输入 0.48–0.78），只换入口拿到 11–21%（0.04–0.26）。47/48 个输入判为“部分”，只有 1 个是“历史单独足够”。跨方向标签为部分。</li>
+<li><strong>深层历史是主要承载者，但需要和入口配合：交互为正。</strong> I = D11 − D10 − D01 + D00 = +1.2 到 +2.4（逐输入 +0.25 到 +3.25）。在干预入口下，历史的作用更大（6.6–7.3 对 4.7–5.6）；在干预历史下，入口的作用也更大（2.3–3.7 对 0.8–1.8）。也就是说，干预后的入口和干预后的深层历史是<strong>相互放大</strong>的。预注册的 P1 成立（s_H ≥ 0.5 且 &gt; s_X：6、5、6、6 个情景）。</li>
+<li><strong>P2 不成立：固定45头的 V 历史在干净背景下作用并没有变小很多。</strong> e2_rev（在 C_native 上只加 FIX 的 V 历史）= 3.9–5.0，NFC 中的 e2_fwd = 4.5–6.3；比值均值 0.76–0.99（逐输入 0.58–1.35），0/24 个情景 ≤0.5。各方向多数情景判为“顺序无关”（4、4、4、2），其余为部分；跨方向标签为条件依赖。</li>
+<li><strong>FIX 单独在干净背景下不翻转首步</strong>：FIX0 的 D 均值为 −8.1 到 −9.0，首步停止 0/48。结合第 3 条：FIX 的 V 历史带来的竞争推进<strong>大小</strong>基本与顺序无关（约为 N 背景中的 76–99%），但能否<strong>翻转</strong>取决于之前已经累积了多少。上一轮“45 头承担过阈值作用”应改写为：45 头贡献一块大小基本稳定的推进（约 4–6 logit），翻转是否发生取决于它叠加在什么状态上。</li>
+<li>所有格的首步都不停止（00、10、01、11、FIX0 全为 0/12）：e1 和 FIX 的作用都只是缩小与停止门槛的距离。</li>
+</ol>
+<h2 id="2-d12">2. 主要读数（D，12 输入均值）</h2>
+<table>
+<thead>
+<tr>
+<th>方向</th>
+<th style="text-align: right;">D00</th>
+<th style="text-align: right;">D10（入口）</th>
+<th style="text-align: right;">D01（历史）</th>
+<th style="text-align: right;">D11（=N:CC）</th>
+<th style="text-align: right;">e1</th>
+<th style="text-align: right;">历史｜干净入口</th>
+<th style="text-align: right;">历史｜干预入口</th>
+<th style="text-align: right;">入口｜干净历史</th>
+<th style="text-align: right;">入口｜干预历史</th>
+<th style="text-align: right;">I</th>
+<th style="text-align: right;">D(FIX0)</th>
+<th style="text-align: right;">e2_rev</th>
+<th style="text-align: right;">e2_fwd</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>N4146</td>
+<td style="text-align: right;">−12.88</td>
+<td style="text-align: right;">−11.78</td>
+<td style="text-align: right;">−7.24</td>
+<td style="text-align: right;">−4.97</td>
+<td style="text-align: right;">7.91</td>
+<td style="text-align: right;">5.64</td>
+<td style="text-align: right;">6.81</td>
+<td style="text-align: right;">1.10</td>
+<td style="text-align: right;">2.27</td>
+<td style="text-align: right;">1.17</td>
+<td style="text-align: right;">−8.10</td>
+<td style="text-align: right;">4.78</td>
+<td style="text-align: right;">6.03</td>
+</tr>
+<tr>
+<td>N1210</td>
+<td style="text-align: right;">−12.88</td>
+<td style="text-align: right;">−11.07</td>
+<td style="text-align: right;">−8.15</td>
+<td style="text-align: right;">−4.46</td>
+<td style="text-align: right;">8.42</td>
+<td style="text-align: right;">4.73</td>
+<td style="text-align: right;">6.61</td>
+<td style="text-align: right;">1.81</td>
+<td style="text-align: right;">3.69</td>
+<td style="text-align: right;">1.88</td>
+<td style="text-align: right;">−7.92</td>
+<td style="text-align: right;">4.96</td>
+<td style="text-align: right;">5.05</td>
+</tr>
+<tr>
+<td>R0</td>
+<td style="text-align: right;">−12.88</td>
+<td style="text-align: right;">−11.76</td>
+<td style="text-align: right;">−7.98</td>
+<td style="text-align: right;">−4.45</td>
+<td style="text-align: right;">8.43</td>
+<td style="text-align: right;">4.90</td>
+<td style="text-align: right;">7.30</td>
+<td style="text-align: right;">1.13</td>
+<td style="text-align: right;">3.53</td>
+<td style="text-align: right;">2.40</td>
+<td style="text-align: right;">−9.03</td>
+<td style="text-align: right;">3.85</td>
+<td style="text-align: right;">4.46</td>
+</tr>
+<tr>
+<td>R1</td>
+<td style="text-align: right;">−12.88</td>
+<td style="text-align: right;">−12.05</td>
+<td style="text-align: right;">−7.38</td>
+<td style="text-align: right;">−4.95</td>
+<td style="text-align: right;">7.93</td>
+<td style="text-align: right;">5.50</td>
+<td style="text-align: right;">7.09</td>
+<td style="text-align: right;">0.83</td>
+<td style="text-align: right;">2.43</td>
+<td style="text-align: right;">1.59</td>
+<td style="text-align: right;">−8.06</td>
+<td style="text-align: right;">4.82</td>
+<td style="text-align: right;">6.34</td>
+</tr>
+</tbody>
+</table>
+<h2 id="3">3. 执行</h2>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th style="text-align: right;">形成</th>
+<th style="text-align: right;">评分</th>
+<th style="text-align: right;">校准</th>
+<th style="text-align: right;">墙钟</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>预检 r01</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">42</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">41 s</td>
+</tr>
+<tr>
+<td>正式 r01（2 worker）</td>
+<td style="text-align: right;">60</td>
+<td style="text-align: right;">252</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">81 / 81 s</td>
+</tr>
+</tbody>
+</table>
+<p>全部闸门通过：校准与 GPU 分配等于 B3；C_native、T_native、XH11 与 B3 的 C_native、T_native、N:CC 逐位相同；H01、FIX0 的第13层自然输入与 x_C 逐位相同；X10、XH11 的入口等于 x_T；FIX0 的卷积布局逐通道正确；内核计数正确。约 0.05 GPU 小时。</p>
+<h2 id="4">4. 出口与下一步（未设计、未授权）</h2>
+<ul>
+<li>按出口规则，这是“必须配合 / 部分”的情形：e1 的大部分随深层历史走（约六到七成），但历史与入口相互放大（正交互），单独的入口只占一到两成。所以下一步若继续拆 e1，应在深层历史内部区分递推状态 S 与注意力 KV（CFM-COMBO 的先验是 KV 小），同时保留干预入口作为条件，因为历史的作用依赖入口。</li>
+<li>对 45 头：它的推进量基本不依赖 e1 背景，这让“FIX 的 V 历史贡献约 4–6 logit”可以独立陈述（条件性的只有“是否翻转”）。</li>
+<li>到这一步，原生首步竞争变化（约 13–14 logit）在本面板上有了一个较完整的条件分账：深层历史（S+KV）约 5–7，入口约 1–4（依赖历史），两者交互约 +1–2，FIX 的卷积 V 历史约 4–6，其余卷积历史净约 0。各项都是条件作用，顺序会影响分账。</li>
+</ul>
+<h2 id="5">5. 可以说 / 不可以说</h2>
+<table>
+<thead>
+<tr>
+<th>可以说</th>
+<th>不可以说</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>e1 的约六到七成随深层历史（S+KV）走，入口单独约一到两成，二者正交互</td>
+<td>入口无作用 / 深层历史单独足够</td>
+</tr>
+<tr>
+<td>干预入口与干预历史相互放大</td>
+<td>已定位到 S 或 KV</td>
+</tr>
+<tr>
+<td>FIX 的 V 历史推进量在干净背景下约为 N 背景的 76–99%</td>
+<td>FIX 必须依赖 e1 背景（P2 被否）</td>
+</tr>
+<tr>
+<td>FIX 单独在干净背景下不翻转首步（0/48）</td>
+<td>FIX 承担“关键过阈值作用”</td>
+</tr>
+</tbody>
+</table></main></html>

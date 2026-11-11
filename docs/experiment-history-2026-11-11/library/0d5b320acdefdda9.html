@@ -1,0 +1,13 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>NBR-01 偏离与修复记录</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="nbr-01">NBR-01 偏离与修复记录</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-native-bridge-record-v1-2026-11-03/DEVIATIONS.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-native-bridge-record-v1-2026-11-03/DEVIATIONS.zh-CN.md">固定提交原件</a>；SHA-256：<code>0d5b320acdefdda9afb1a5cc15bcecff1567cd689f05882c4725ea92e1c5f0b3</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="nbr-01_1">NBR-01 偏离与修复记录</h1>
+<h2 id="d12026-11-03-r01-r02">D1（2026-11-03，预检 r01 合同执行失败 → 修复重试 r02）</h2>
+<ul>
+<li><strong>现象</strong>：<code>runs/preflight-r01</code> 的第一次梯度前向反向时报错：<code>one of the variables needed for gradient computation has been modified by an inplace operation: [1, 32, 128, 128] ... version 1; expected version 0</code>。约 28 设备秒，无记录，无判读证据。<strong>分类：合同执行失败（信息量为零）。</strong></li>
+<li><strong>根因</strong>：t2 核读取缓存中的递推状态，autograd 为反向（对 q 等的梯度）保存了这块张量；随后模型按正常流程把新状态原地写回同一张量。CPU 测试只用了独立张量，没有走“缓存原地更新”这条真实调用路径。</li>
+<li><strong>修复</strong>：梯度模式下，每个线性注意力层把 <code>initial_state.detach().clone()</code> 交给原核，卷积更新也使用 <code>conv_state</code> 的克隆。只改变 autograd 看到的张量身份，前向数值不变（梯度前向的缓存随后丢弃）；推理前向与逐位闸门不受影响。CPU 测试新增一例：用真实原核与原地写回复现报错，并验证修复后可反向、输出逐位不变。</li>
+<li><strong>共卡</strong>：本次预检开始时，另一条工作流（cache-chain-generalization）在两张卡上各有一个约 10 GB 的进程。显存合计远低于 96 GB；batch1 推理逐进程独立，数值由逐位重放闸门检验；只影响耗时。不动对方进程。</li>
+<li><strong>重试</strong>：唯一一次有记录的修复重试：CPU 收据 r02、冻结 r02、授权 preflight-r02、输出 <code>runs/preflight-r02</code>；r01 目录原样保留。</li>
+</ul></main></html>

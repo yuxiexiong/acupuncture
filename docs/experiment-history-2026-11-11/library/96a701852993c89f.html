@@ -1,0 +1,33 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>原点镜像负剂量调查执行合同 v1</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="v1">原点镜像负剂量调查执行合同 v1</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/layer-negative-dose-survey-toy-v1-2026-10-27/PROTOCOL.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-negative-dose-survey-toy-v1-2026-10-27/PROTOCOL.zh-CN.md">固定提交原件</a>；SHA-256：<code>96a701852993c89f38af819b886f7440328b5e7bfc31eba2317d0cad55f4ac69</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="v1_1">原点镜像负剂量调查执行合同 v1</h1>
+<p>2026-10-27。用户明确要求沿用正剂量组的原模型、原层、原通道，负剂量再做一轮，并进一步纠正：“0.75就不要了，我就要跟正的完全完全配对的，完全。左右对应的对齐的。”本合同据此固定五档负剂量，不包含±0.75。授权包含实现、CPU/GPU验收和通过后的正式运行；保留此前每半小时汇报的要求。</p>
+<h2 id="_1">固定对象与镜像关系</h2>
+<p>正组为 <code>layer-dose-survey-toy-v1-2026-10-27</code>，科学freeze为 <code>0b461d0f11b6631dbb71aba237db7d1f227da00f4b4ad566375bf0c318cd926a</code>。三个模型仍为Qwen3.5-2B/4B/9B，24/32/32层，revision、权重来源与运行环境沿用已核验正组。</p>
+<p><code>selection.json</code>、<code>questions.json</code>及<code>asset_manifest.json</code>逐字节复制正组。选点清单SHA-256为 <code>f4ce775991cef21f3afeeb56d6c5f79d10efcb4dc592c124592c7721996720f6</code>，其中历史实验名称、正剂量清单和plan状态作为来源记录保留；本轮剂量、授权和状态由本目录合同与新收据决定。不重新随机、不换点，不以已读答案筛选通道。</p>
+<ul>
+<li>新增负档：−1/16、−1/8、−1/4、−1/2、−1。</li>
+<li>复用正档：+1/16、+1/8、+1/4、+1/2、+1；0为共享原版。</li>
+<li>十一栏按数值从左到右：−1、−1/2、−1/4、−1/8、−1/16、0、+1/16、+1/8、+1/4、+1/2、+1。</li>
+<li>每栏同模型、同层、同通道、同题、同原始清洁校准；既有正侧和原版逐份校验后复用，不再生成。</li>
+</ul>
+<h2 id="_2">干预与检测逻辑</h2>
+<p>仅在原gated MLP中间激活进入down_proj之前，给原目标通道加有符号偏移：<code>c(d)=d*m/||Wdown[:,channel]||₂</code>。m仍为原版完整提示的该层block输出逐token L2中位数，排除首token；引用与正组同一份校准。每档由原始double比例独立计算再转BF16，不对已舍入正偏移再做缩放，也不翻转模型权重。</p>
+<p>±d的请求偏移必须符号相反、幅度相等。实际BF16激活加法分别对照 <code>BF16(x+offset)</code> 核验；因舍入，不能强制两侧 <code>actual_delta</code> 数值恰好相反。自由生成随后选择不同token时，后续上下文也可能分叉；“完全配对”指固定实验条件与参考尺度，而非强制两侧生成相同文本或行为恰好相反。</p>
+<p>每个通道、每个剂量均独立回答原Q01–Q08八题。题目、中文简答指令、聊天模板逐字不变；thinking关闭，greedy，BF16，eager，batch=1，每worker四CPU线程。提示及全部生成步持续注入；每次调用新上下文和新cache，退出时撤hook，不累积针、不训练、不改权重。</p>
+<p>最多128个新token，正常EOS提前结束保留实际全部token（包括结束标记）；达到上限保留完整128，不补齐、不续写、不先多生成后截短。乱码、空正文、循环、无预期变化均保留，不触发语义重试。不增加人格、恶性或能力总分。</p>
+<h2 id="_3">数量、调度与输出</h2>
+<p>88点×5负剂量×8题=3,520份正式新回答：2B 960（每worker480），4B/9B各1,280（每worker640）；共440个完整八题负条件。最大450,560个新生成token，不含预检。</p>
+<p>复用3,544份唯一来源（3,520份正剂量、24份原版），合计7,064份唯一科学记录；704个问题组，每组11栏，共7,744个展示单元，原版仅按24份唯一来源计。复用来源保留真实来源路径及SHA/token哈希，不把原导出中的new标签当成本轮新增。</p>
+<p>两H20按2B→4B→9B顺序，每模型两worker，GPU0偶数层、GPU1奇数层。前一模型全部完成并核验后才换模型；不抢占其他作业。独立 <code>preflight-r01/</code> 与 <code>survey-r01/</code>，导出分别 <code>preflight-delivery-r01/</code>、<code>delivery-r01/</code>；不覆盖失败或旧正组目录。正式控制器核验六worker后自动导出。</p>
+<h2 id="_4">验收与执行门槛</h2>
+<p>CPU检查固定88点、原八题/模板、正负剂量一一对应、负号和独立BF16计算、仅改原通道、异常撤hook、负后恢复、138/3,520计数、防止0.75或未授权正档进入正式任务、文件/token校验、完整11栏导出和不把partial标成完成。</p>
+<p>有界GPU验收每worker23次、六worker共138次（最多17,664新token）：原八题无hook基线8；本worker首/中/末点分别Q01/Q04/Q08做+1重放、0 hook、撤针恢复各3；中点Q04五个负档5；最后再对该中点Q04无hook恢复1。+1只作工程重放，不属于新科学样本。负档完成后恢复须逐token与原版一致。</p>
+<p>基线、+1重放、0 hook和恢复共108次精确token/原文对照；30次负档冒烟全部保留。所有点检查请求/BF16偏移、目标位置覆盖、有限值、hook移除和目标权重前后哈希。各worker原题模板、clean calibration、列范数及模型/runtime metadata须与原来源精确匹配（GPU设备编号可不同）。</p>
+<p>CPU与六worker GPU验收均通过才创建正式授权收据并启动3,520份采集，无需重复向用户确认本轮已明确授权的执行。若身份、数值、token对照或输出完整性失败，保留失败版本和全部partial，定位工程原因；不得静默改科学设置、放宽检查或覆盖旧尝试。</p>
+<h2 id="_5">交付、监控与解释</h2>
+<p>每30分钟报告新增进度（分母3,520，预检和复用不计入）、真实PID/退出码、记录增长及哈希、ETA情景、GPU和实际文件系统可用空间。不用名义running替代进展证据；不因超过ETA停止正常实验。当前模型按实际worker吞吐更新，取两卡较慢者；未启动模型用其自身预检，另列剩余全128情景。归档/阅读分开记录，未测的时间不编造。</p>
+<p>完成后核验六worker、全部来源/token、每个负条件八题、704组11栏；取回完整原文和证据，进行开放式正负配对阅读，保存逐层笔记、反例与覆盖。结束本批巡检。两侧行为不反向、两侧都损伤、不单调或未见明显变化均是有效结果。</p>
+<p>每层一个点、八道已读探索题不能证明整层功能、一般能力保持或跨模型功能同源。本轮不恢复根因/判断报告/旧全量实验，不执行静态权重修改或其他新增条件。</p></main></html>

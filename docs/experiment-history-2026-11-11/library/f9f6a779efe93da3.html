@@ -1,0 +1,15 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CFM-LOCAL-READOUT v1 决策日志</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="cfm-local-readout-v1">CFM-LOCAL-READOUT v1 决策日志</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-local-readout-causal-v1-2026-11-01/DECISIONS.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-local-readout-causal-v1-2026-11-01/DECISIONS.zh-CN.md">固定提交原件</a>；SHA-256：<code>f9f6a779efe93da33a9c5f02929d28c4594e1d1ff20e4780053ba994390913fd</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="cfm-local-readout-v1_1">CFM-LOCAL-READOUT v1 决策日志</h1>
+<p>每条：偏离了什么、为什么、影响哪些结论。</p>
+<ul>
+<li><strong>D1 模板前向（冻结前）</strong>：方案只计“前缀形成”和“单步评分”。重建评分缓存需要一个结构正确的 cache 对象，combo 用新形成的 C 前缀作模板，本轮禁止形成。改为每 worker 一次 1-token（位置0）前向取对象，随后所有内容张量被归档覆盖并逐字段核对 bridge manifest；正确性由 Y_T / T_native logits 逐位重放检验。单列计数（预检1、正式2），不计入评分与形成。影响：无科学读数依赖它；若重放失败即说明此路不通，按合同停止。</li>
+<li><strong>D2 补丁精度（冻结前）</strong>：方案 §6 写“FP32 减法”，§10.4 要求减后加回逐位恢复。FP32 下 (c−d)+d 不保证逐位等于 c；改为 FP64 减法/加回后一次转回 BF16（BF16 值在 FP64 中精确）。已写入方案 r3 §10.4。删除对象不变；删除量误差仍按实际返回值计。</li>
+<li><strong>D3 随机方向归一化精度（冻结前）</strong>：标准正态仍按方案在 CPU FP32 生成；逐头归一化放在 FP64，使匹配后的逐头范数与 I 相等到 1e−12（FP32 归一化有 ~1e−7 误差，会让“范数一致”闸门无法逐位成立）。方向本身不变。</li>
+<li><strong>D4 记录器关闭的 N 参考（冻结前）</strong>：方案 §9.2 列为“N记录器关闭参考”。冻结代码 <code>form_ab.score</code> 要求模型无任何钩子，而 N 必须装入口钩子；改为只装入口钩子、直接前向并比较 logits 哈希。检验目的（记录器不改变输出）不变。</li>
+<li><strong>D5 D 复算容差（冻结前）</strong>：读数里的 D 以冻结 <code>bridge.score</code> 的值为准；<code>lr_core.cell_readout</code> 的 FP64 复算与之差 ≤1e−5 作为一致性检查，不另取值。</li>
+<li><strong>D6 我在讨论中的口误（冻结前登记）</strong>：对话中曾称 VAR03-f0“原生不停止”、VRL04-f0“原生停止”，与归档相反（VAR03-f0 原生 D=+0.0625，VRL04-f0 为 −0.8125）。方案原文正确，预检选择不受影响。</li>
+<li><strong>D7 冻结前已见的局部描述</strong>：CPU 预演（<code>readiness/cpu-real-data-r01.json</code>）给出 M 背景 cos(I, A_S+A_F) 在 −0.47 至 −0.56。它来自归档、不含任何新评分，合同中登记为已知描述，不作判据，也不据此改动判据。</li>
+</ul></main></html>

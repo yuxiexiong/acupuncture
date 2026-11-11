@@ -1,0 +1,145 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>B 全量审核与 C 统计验收 v2</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="b-c-v2">B 全量审核与 C 统计验收 v2</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/wsp-vlm-screen-prep-v2-2026-11-05/README.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-screen-prep-v2-2026-11-05/README.zh-CN.md">固定提交原件</a>；SHA-256：<code>d6d0e9eb37d2302ab0f49499177989d1b290bb4f0d9a9d2a033c501bf60ab005</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="b-c-v2_1">B 全量审核与 C 统计验收 v2</h1>
+<p>日期：2026-11-05。状态：<strong>数据审核与 CPU 离线验收完成；未加载目标模型，未运行模型实验。</strong></p>
+<p>本交付接续<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/docs/wsp-vlm-behavior-screen-v1-2026-11-05.zh-CN.md">筛查方案</a>和<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-screen-data-v1-2026-11-05/README.zh-CN.md">v1 数据审计</a>。用户已明确取消 B 的160组硬门槛，要求按实际合格来源组固定，不补题。本次只落实这一修订并补齐 C 统计，不更改既定筛查效果阈值。</p>
+<h2 id="1-b-146">1. B 最终固定146组</h2>
+<p>此前159是排除已知问题后的上限，不能称为159组合格。现已检查全部164个来源组：41张四组联系表，并对计数、遮挡、参照物或深度存疑的图放大复核。每组的审核结论、理由、通过的原题ID与图像哈希见<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-screen-prep-v2-2026-11-05/audit/B_review_notes.tsv">逐组审核表</a>及<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-screen-prep-v2-2026-11-05/audit/B_visual_review.json">完整审核记录</a>。这是本助手视觉审核，不是独立人工复核或标签绝对无误保证。</p>
+<table>
+<thead>
+<tr>
+<th>审核结论</th>
+<th style="text-align: right;">来源组数</th>
+<th>处理</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>图片与所选原题对审核通过</td>
+<td style="text-align: right;">146</td>
+<td>全部纳入，每来源图只计一组</td>
+</tr>
+<tr>
+<td>遮挡、空间参照或对象类别存疑</td>
+<td style="text-align: right;">14</td>
+<td>不纳入；不能称为已证明标签错误</td>
+</tr>
+<tr>
+<td>标签与图像冲突</td>
+<td style="text-align: right;">3</td>
+<td>不纳入</td>
+</tr>
+<tr>
+<td>全部计数与子集问题对象集合不匹配</td>
+<td style="text-align: right;">1</td>
+<td>不纳入</td>
+</tr>
+<tr>
+<td>合计</td>
+<td style="text-align: right;">164</td>
+<td>无新增图片、补题或改标签</td>
+</tr>
+</tbody>
+</table>
+<p>146组中位置与距离各73组。先分配只有一种合格题对的来源组，再以固定 seed=20261105 的来源ID哈希排序，将同时合格者分配到当前较少的层；不根据模型输出选题。每来源图只取一个<strong>实际通过审核</strong>的题对，并不宣称该图的其他原题也合格。</p>
+<table>
+<thead>
+<tr>
+<th>集合</th>
+<th style="text-align: right;">位置</th>
+<th style="text-align: right;">距离</th>
+<th style="text-align: right;">合计</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D 开发</td>
+<td style="text-align: right;">29</td>
+<td style="text-align: right;">29</td>
+<td style="text-align: right;">58</td>
+</tr>
+<tr>
+<td>H 留出</td>
+<td style="text-align: right;">44</td>
+<td style="text-align: right;">44</td>
+<td style="text-align: right;">88</td>
+</tr>
+<tr>
+<td>合计</td>
+<td style="text-align: right;">73</td>
+<td style="text-align: right;">73</td>
+<td style="text-align: right;">146</td>
+</tr>
+</tbody>
+</table>
+<p>沿用原方案40%/60%的分配原则，以实际N取整；不是补回160，也不是用模板充当额外样本。<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-screen-prep-v2-2026-11-05/audit/B_selected_groups.jsonl">冻结清单</a>与<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-screen-prep-v2-2026-11-05/prepare_b.py">生成代码</a>可重建相同结果。146张所选图片的像素哈希互异，pHash汉明距离≤4的图对数为0；这不证明任意视觉相似性均已排除。</p>
+<p>重要分布边界：56组子集答案为0，42组全部数与子集数相同。这些组仍进入总体正确率；只有全数与子集数不同的104组才有资格支持“子集误答成全数”的特定错误模式。D/H的总数、子集数、差值、视角、分层分布已写入<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-screen-prep-v2-2026-11-05/audit/offline_acceptance.json">离线验收收据</a>。将来必须呈现这些分层，不能把不同数值难度的差异命名为纯组合能力的因果效应。</p>
+<p>审核中 <code>320153</code> 在放大复核后由初步通过改为存疑：黑白动物的类别无法可靠确定。修正在清单冻结前完成，保留这个修订说明。其他例子：<code>1671</code>两问不是同一对象集合；<code>153988</code>远近标签与前景杯/背景电视矛盾；<code>400946</code>猫数冲突。所有不纳入组均有逐行理由。</p>
+<h2 id="2-c">2. C 数据不变，统计代码补齐</h2>
+<p>C 沿用已审核的160组、D64/H96、320张图与6,400个输入。此次没有重新选样、改提示、重划集合。重建输入与gold后逐字节比对原准备文件，三项 SHA-256 均不变，见收据。D/H共享45个对象名称，H96组中55组至少有一个D已出现名称；来源图组与无序对象对隔离，不代表物体全未见或严格IID。</p>
+<p><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-screen-prep-v2-2026-11-05/statistics_c.py">statistics_c.py</a>只读取已保存答案，复用v1严格名称解析器，完成：</p>
+<ul>
+<li>五条件各格正确率、五条件同时正确率；B0/B1、T0/T1、两种顺序分别报告。主格使用每来源组预先固定的名称顺序，不固定取顺序0。</li>
+<li>原图通常问句与反事实图通常问句的配对 b/c/Δ、单侧精确McNemar、按来源组10,000次bootstrap的95%区间（seed=20261105）。bootstrap区间不冒充零假设分布。</li>
+<li>固定 A/B/C 三项 Holm 校正；未运行候选p=1，不能删掉A缩小检验家族。只有C结果时输出保守的暂时校正；B结果到齐后使用完整家族重新汇总。</li>
+<li>模板/顺序一致性、B1逐条件修对与改错、挑战正确率与联合正确率；一致性中的 <code>same_parsed</code> 包含双方均无法解析，须同时看 <code>both_format_valid</code>，不能把它当正确性。</li>
+<li>C预登记错误模式的分母与计数：无图通常、原图通常和反事实视觉均对，反事实通常却输出反事实视觉答案。D至少8例、H至少12例的解释要求沿用方案；程序计数本身不证明已经在打开H前登记了诊断。</li>
+<li>既定优先级门槛及暂不优先规则；任何整臂截断率或格式失败率&gt;5%，先输出测量协议失败。格式错误、拒答、截断记错且单列；基础设施失败、缺失、重复或未知ID直接拒绝统计，不能偷偷缩小分母。</li>
+</ul>
+<p>模型输出接口：一行一个JSON，至少含 <code>request_id</code>、<code>text</code>（字符串）、<code>truncated</code>（布尔值），可含 <code>status:"ok"</code>；其他status代表基础设施失败。模型只接收输入记录中的text/image，不接收gold或条件标识。完整分析入口核对gold与原冻结清单完全相同。</p>
+<p>D与H的顺序仍须遵守：先仅分析D，登记错误描述与规则，然后才打开H。CLI默认只接受D预测；<code>--split all</code>用于H已按方案打开后的完整汇总。它不是推理运行器，不自动执行或证明这个时间顺序。</p>
+<h2 id="3">3. 离线验收及运行方式</h2>
+<p>已核对466张所选本地图片（B146＋C320）的RGB像素哈希；<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-screen-prep-v2-2026-11-05/audit/local_image_manifest.json">本地PNG文件清单</a>另存实际PNG字节哈希，供搬运校验。v1的 <code>bytes_sha256</code> 是上游编码图片字节哈希，导出的PNG编码可以不同，不能误当成本地PNG字节哈希；验收中发现这一字段语义差异后已修正，未改动上游记录。</p>
+<p><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-screen-prep-v2-2026-11-05/test_offline.py">测试</a>覆盖9项：B冻结可重建、精确检验方向/已知尾概率、Holm/Wilson、缺失/重复/未知/基础设施错误、全对阴性夹具、明确缺口阳性夹具与门槛、指定顺序及提示副作用、格式失败、D-only入口无需H输出。全部通过。<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-screen-prep-v2-2026-11-05/accept_offline.py">accept_offline.py</a>又用实际6,400格结构运行10,000次来源组bootstrap验收：全对夹具判暂不优先，人工构造的缺口夹具判行为缺口优先。收据明确标为 <code>SYNTHETIC_NOT_MODEL_RESULTS</code>。这些数字不属于Qwen实验结果。</p>
+<p>环境：Python3.9.6、NumPy2.0.2、Pillow11.0.0（实际版本以验收执行环境为准）。仅使用CPU；目标模型加载0次、推理0次、GPU时间0。</p>
+<p>在仓库根目录可复核：</p>
+<pre><code class="language-bash">python3 experiments/wsp-vlm-screen-prep-v2-2026-11-05/prepare_b.py
+python3 -m unittest discover -s experiments/wsp-vlm-screen-prep-v2-2026-11-05 -p 'test_*.py' -v
+python3 experiments/wsp-vlm-screen-prep-v2-2026-11-05/accept_offline.py
+</code></pre>
+<p>这些命令依赖v1审计文件与已下载的本地图片。Git仅存代码、清单、审核证据与收据；原始图片/parquet仍在忽略的external目录，下载来源与revision沿用v1。</p>
+<p>将来有已保存输出时，D统计命令形式：</p>
+<pre><code class="language-bash">python3 experiments/wsp-vlm-screen-prep-v2-2026-11-05/statistics_c.py \
+  --gold external/wsp-vlm-screen-data-v1-2026-11-05/prepared_C/gold.jsonl \
+  --predictions /absolute/path/to/D-predictions.jsonl \
+  --out /absolute/path/to/D-statistics.json --split D
+</code></pre>
+<p>此示例没有执行。完整汇总改用完整预测及 <code>--split all</code>；可用 <code>--family-pvalues</code> 提供固定A/B/C家族的实际原始p值JSON，C值必须与本次预测一致。</p>
+<h2 id="4">4. 仍缺什么</h2>
+<table>
+<thead>
+<tr>
+<th>尚缺项</th>
+<th>当前边界／下一步工作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>B的T1改写与完整输入包</td>
+<td>已冻结146个原题对；仍需逐题写并审核292个等义改写，再生成T0/T1×两条件×B0/B1共1,168条请求。不能用机械前缀冒充等义稳健性对照。</td>
+</tr>
+<tr>
+<td>B专属评分与统计验收</td>
+<td>数字输出严格解析、全部数/子集数错误模式和分层统计尚未实现；可复用本次配对统计函数，需独立合成夹具验收。</td>
+</tr>
+<tr>
+<td>正式模型运行器与执行环境验收</td>
+<td>未来目标仍为Qwen3-VL-4B-Instruct固定revision；尚未加载权重，未验证图像processor、实际缩放、输出接口、耗时和GPU预算。</td>
+</tr>
+<tr>
+<td>D诊断登记与H确认</td>
+<td>尚无任何目标模型输出；D/H的阶段性登记、完整推理和结果卡均未发生。</td>
+</tr>
+<tr>
+<td>WSP诊断与补丁搜索</td>
+<td>尚未开始；行为差异不证明稀疏可修，不能预先指定哪两层或只允许MLP。</td>
+</tr>
+</tbody>
+</table>
+<p>本次请求的B全量审核、按实际数冻结、C统计及离线验收已完成；不把整套B/C模型实验标为可立即启动。B/C完整未来请求预算为1,168＋6,400＝7,568条（不含工程预检）；本次实际请求为0。原三候选12 GPU小时是未来上限而非已测耗时，不以减少14组为理由改变质量阈值或自动开跑。H88的单比例最坏正态近似95%误差约±10.4pp，原H96功效表不能冒充B的新实际功效保证。</p>
+<h2 id="5-wsp">5. WSP在哪里进入</h2>
+<p>本轮先筛查“固定模型在什么条件下稳定失败”，尚不修改模型。若某候选满足行为缺口条件，再让研究者AI根据逐题失败与对照反馈提出内部诊断，定位可影响该失败的层/头/通道，使用受预算约束的稀疏权重修补并根据开发反馈迭代。定位是待做的工作，不能把原作者层号或两层结构直接搬过来。</p>
+<p>内部信息可读出只是线索；探针阴性不作硬淘汰，阳性也不证明少量权重能修好。后续须用干预检验与补丁泛化、保护题及等预算搜索对照判断。强提示若已解决问题，应重新评估权重固化的实际价值；强提示无效也不意味着WSP一定有优势。本次统计代码最多支持进入诊断的优先级，不能支持修复成功、机制发现或论文贡献已成立。</p>
+<p><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-screen-prep-v2-2026-11-05/SELF_CHECK.zh-CN.md">设计修订与自查</a>记录本次样本量修改、C01–C14与反方检查；同一助手自查不算独立审查。</p></main></html>

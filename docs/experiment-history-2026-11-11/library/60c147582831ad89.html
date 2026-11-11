@@ -1,0 +1,54 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>缓存机制线：19:08反馈后的研究定位与下一步取舍</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="1908">缓存机制线：19:08反馈后的研究定位与下一步取舍</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>docs/cache-mechanism-position-and-next-decision-2026-11-01.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-mechanism-position-and-next-decision-2026-11-01.zh-CN.md">固定提交原件</a>；SHA-256：<code>60c147582831ad89ed4427716b9a07418d7af006a5fa8049095e911212b826ca</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="1908_1">缓存机制线：19:08反馈后的研究定位与下一步取舍</h1>
+<p>2026-11-01；基于结果提交a99905f。本文是研究取舍，不是新运行结果或GPU授权。</p>
+<h2 id="1">1. 不变的问题与目前位置</h2>
+<p>核心问题仍是：少数通道的激活干预，怎样改变写入、历史状态处理与后续读取，最终造成显著回答变化？我们希望接通同一条件下的因果链，并产生可失败的预测；不要求每个环节都是新原理。</p>
+<p>今天的文献结论是：已有研究回答了重要组成部分，也在特定任务中接通过局部因果链。不能把不同论文与不同实验中的箭头拼成我们这根针的完整解释。参考<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/literature/merged-prior-art-artemisinin-2026-11-01.zh-CN.md">今日文献综合</a>及<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-mechanism-known-basics-audit-2026-10-31.zh-CN.md">架构基础审计</a>。</p>
+<table>
+<thead>
+<tr>
+<th>已有知识</th>
+<th>我们应补的证据，而非重复发现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>少坐标可以产生大写入；幅度和几何影响控制效果（Leverage Is Not Reach）</td>
+<td>具体条件下，哪部分历史变化有实际因果作用；解释能否超出幅度/几何的朴素预测</td>
+</tr>
+<tr>
+<td>线性注意力的写入、状态变换与查询读取已有公式和分析（How Linear Attention Remembers）；混合模型已有缓存交换</td>
+<td>同一干预改变哪些计算，这些变化怎样造成观测到的输出；交换阳性不能代替计算解释</td>
+</tr>
+<tr>
+<td>WriteSAE等已有写入替换与行为检验</td>
+<td>我们的计算预测或材料选择规则能否在未参与制定的新输入上被因果操作检验</td>
+</tr>
+</tbody>
+</table>
+<p>以上是贡献方向，不是“没人研究过”的新颖性声明。今日综合登记的124个条目不等于全部精读或核实。</p>
+<h2 id="2">2. 已有证据结账</h2>
+<p>|阶段/分支|真正拿到的东西|仍未拿到的东西|
+|A：CONV-FACTOR|在指定原生评分后半段，换回干净F_V使8/12首步停止变为0；V与Q有条件性非相加|不是完整生成解释；不是V等于语义内容或Q等于纯读取|
+|B1及配对传播|第13层指定交互删除在原生背景输出作用弱；后续追踪未找到合格候选|不证明整个13层不敏感，也不证明局部计算普遍无效|
+|B2|冻结的45个层—头位置，其V有较大停止侧作用，并改变Q的条件效应；主判断5/6成立|一般非线性饱和仍兼容；H按停止投影选出，不能推出停止/答案有独立机制|
+|B2计算后续a99905f|局部交互直接投影约−0.04至+0.03；27–31层4/6同向，两个候选均未通过冻结线|没有找到足以支持下一次针对性计算干预的一致预测；账目不等于因果来源|</p>
+<p>因此：A完成；B已有材料关系和负面计算约束，但原计划的计算解释交付未完成；当前H×Q细拆分支按规则结束。完整C（回到回答及适用边界）也未完成。不能把“B2主判断成立”写成“B阶段已完成”。</p>
+<h2 id="3">3. 为什么暂停细拆</h2>
+<p>截至上述资产，没有已通过检查、能区别于一般幅度/几何/饱和的具体计算预测。这里是“尚未找到”，不是证明只有一般饱和。四轮使用直接投影筛选的局限，不能用换层、换热点继续同一种流程弥补。</p>
+<p>此次末端分账不同不证明不同输入用了不同计算；最终归一化分母与舍入分量也不是已证实的机制。第27层和RMS线索保留为事后观察，不自动立项。</p>
+<p>按<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-mechanism-stage-roadmap-2026-11-01.zh-CN.md">路线图§4、6</a>，暂停B继续细拆，保留所有阴性及B2阳性。现在可做的有界增量，是检验已因果兑现过一次的材料选择规则是否有样本外预测价值。</p>
+<h2 id="4">4. 下一份计划与其地位</h2>
+<p>建议<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-head-rule-prospective-input-plan-v1-2026-11-01.zh-CN.md">规则新输入检验C1-P</a>：原针、固定选头算法，在六个新情景的两个事实版本上，比较H与同层同数量的随机头子集。它是提前开展C中的预测/适用边界子任务，明确修订研究推进顺序；不以“机制已完成”为前提，也不冒充C整体完成。</p>
+<p>先测新输入，不把新输入、其他针和随机干预方向捆成一个实验。当前还没有在这些新输入上的C/T缓存，需要计入形成成本。若规则有增量，再单独设计其他干预方向的检验；若规则没有增量，不继续更换头数、题目或剂量。</p>
+<p>对19:08建议的两点收紧：</p>
+<ul>
+<li>规则在随机干预方向上也成立，最多支持所测范围内的一般选择规律；不能单独证明一般饱和这一计算解释。</li>
+<li>仅原针成功，也可能因剂量、方向、效应范围或统计分辨力不同；没有相应匹配证据，不能宣布通道特异。</li>
+</ul>
+<p>规则即使成功，也只提供材料预测；仍缺具体计算的因果连接及对应完整回答证据。课题目前可交付的是“有条件的历史材料作用、子集预测候选和已排除的简化”，不能包装为完整机制论文结论。</p>
+<h2 id="5">5. 取舍自查</h2>
+<p>本取舍保留主线，不新增计算候选、不重跑失败分支；比较对象由计算解释改为明确声明的材料规则外推。C01/C02/C08/C14重点复查：范围变化已显式说明；增量是未见实例中的规则优势；不赋予机制因果含义；无优势则停止。完整新设计卡、C01–C14及反方检查在C1-P方案中。本文未进行新的模型运行或独立复现。</p></main></html>

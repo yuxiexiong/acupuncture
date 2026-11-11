@@ -1,0 +1,93 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Laya 插针可行性与开源实现核查（2026-11-09）</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="laya-2026-11-09">Laya 插针可行性与开源实现核查（2026-11-09）</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>docs/literature/laya-intervention-open-source-audit-2026-11-09.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/literature/laya-intervention-open-source-audit-2026-11-09.zh-CN.md">固定提交原件</a>；SHA-256：<code>b9d28d017858cc45f13787c2a16bfb795701882515193b61c43107879f5ea042</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="laya-2026-11-09_1">Laya 插针可行性与开源实现核查（2026-11-09）</h1>
+<h2 id="_1">结论与术语</h2>
+<p>用户约定：今后本项目讨论中的“JEV”默认指 <strong>Laya</strong>；外部资料仍按真实模型名称引用，不能把 TypeSafe Jev、AutoJev/Qwen 的证据归到 Laya。</p>
+<p><strong>Laya 具备实施内部激活干预的条件，且找到了直接针对 Laya 的开源实现：Hantlowt/laya-studio。</strong> 旧名 laya-steering-lab 已迁移至此；GitHub repository ID 均为 1386961676。其 PyTorch 后端在编码层输出加向量，再使用原决策头，属于真正的内部激活干预。它不是少数 MLP 通道插针，也不是已经证实有效的通用修复方法。</p>
+<p>本次交付是源码与已有实现核查，不是新实验设计。没有下载权重、安装依赖、加载 Laya、调用付费 API、运行真实模型或 GPU；不把本文当作运行合同或科学实验通过记录。</p>
+<h2 id="_2">已固定的来源</h2>
+<table>
+<thead>
+<tr>
+<th>对象</th>
+<th>固定版本与入口</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>官方 Laya runtime</td>
+<td><a href="https://github.com/NandhaKishorM/laya/tree/3c346a2f8b542838eed6a1d210aa378c79e71c4c">NandhaKishorM/laya，3c346a2f8b542838eed6a1d210aa378c79e71c4c</a></td>
+</tr>
+<tr>
+<td>模型说明与权重入口</td>
+<td><a href="https://huggingface.co/convaiinnovations/laya">convaiinnovations/laya</a>；英文模型卡描述 ModernBERT-large 主体加两层 Transformer 决策头，约 421M 参数。多语言版另用 mmBERT，不混用。</td>
+</tr>
+<tr>
+<td>直接干预实现</td>
+<td><a href="https://github.com/Hantlowt/laya-studio/tree/beef4e28445d591561ffd17c8b9f5d6a744532ca">Hantlowt/laya-studio，beef4e28445d591561ffd17c8b9f5d6a744532ca</a></td>
+</tr>
+<tr>
+<td>Studio 当时核对的依赖</td>
+<td><a href="https://github.com/Hantlowt/laya-studio/blob/beef4e28445d591561ffd17c8b9f5d6a744532ca/docs/design.md">design.md</a>记录 Laya 0.3.20 / upstream 970dc8c5f63d7b886a68409493f37d569424f933；<a href="https://github.com/Hantlowt/laya-studio/blob/beef4e28445d591561ffd17c8b9f5d6a744532ca/requirements/constraints.txt">constraints.txt</a>固定 laya==0.3.20。不能把它当作已验收适配最新 Laya。</td>
+</tr>
+<tr>
+<td>官方可选 checkpoint pin</td>
+<td>当前 <a href="https://github.com/NandhaKishorM/laya/blob/3c346a2f8b542838eed6a1d210aa378c79e71c4c/laya/revisions.py">revisions.py</a>列出英文 checkpoint 55cf4c4ebb4ebe31b2550e8bdf3bd21b99753851；这是上游可选 reviewed pin，本次没有下载或核对其权重。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_3">实际改动了什么</h2>
+<p><a href="https://github.com/Hantlowt/laya-studio/blob/beef4e28445d591561ffd17c8b9f5d6a744532ca/src/laya_studio/backends.py">backends.py</a> 的 PyTorchLayaBackend：</p>
+<ol>
+<li>加载官方 Laya，设 eval，并将所有参数 requires_grad 设为 False。</li>
+<li>从 encoder.layers 等候选容器中找到编码层。</li>
+<li>predict_steered_batch 在指定层 register_forward_hook。</li>
+<li>当输出为三维张量、最后一维与向量长度相符时，返回 h + alpha * v[None, None, :]；tuple 输出只改首项。</li>
+<li>继续原 predict_batch 和原决策头，finally 移除 hook。</li>
+</ol>
+<p>因此它是<strong>单层、全 token、通常全隐藏维度的稠密向量干预</strong>。没有 token 子集或少通道选择，冻结权重也不代表无任务数据适配。</p>
+<p><a href="https://github.com/Hantlowt/laya-studio/blob/beef4e28445d591561ffd17c8b9f5d6a744532ca/src/laya_studio/strategies.py">strategies.py</a> 的 ActivationSteeringStrategy：</p>
+<ul>
+<li>目前只支持二分类任务，默认 layer=-1。</li>
+<li>用正负样本的 encoder 平均池化 embedding 均值差，归一化后作方向。</li>
+<li>在验证集选择强度；默认候选为 -1、-0.5、0.5、1，<strong>没有零剂量候选</strong>。</li>
+<li>向量来自池化的最终编码表示，并非逐个候选层同位置的配对激活；维度相同不能证明语义方向在不同层对齐。</li>
+<li>没有验证样本时会保留默认第一个强度；也没有显式检查两类样本都存在。这些配置不能直接当作有效校准。</li>
+</ul>
+<p>README 中 multi_vector_steering、contrastive_vector 等方法使用外部 embedding classifier，<strong>只有 activation_steering 才是这里确认的内部激活干预</strong>。MLX 后端明确 reports unsupported；不能为图方便换成 MLX 后把嵌入分类结果当内部针。</p>
+<h2 id="laya">Laya 原生的干预空间</h2>
+<p>固定版 <a href="https://github.com/NandhaKishorM/laya/blob/3c346a2f8b542838eed6a1d210aa378c79e71c4c/laya/common.py">common.py</a> 的 DecisionModel 路径：</p>
+<p>encoder → 加 question-type embedding → Transformer 决策头 → gather 各选项 marker → scorer → 选项 logits。</p>
+<p>scorer 为 LayerNorm → Linear → GELU → Linear(d, 1)。因此源码层面可以访问：</p>
+<ul>
+<li>编码层输出：Studio 已实现的针位；</li>
+<li>编码器/决策头中的 MLP 中间通道：可做稀疏针，但本次未交付或验收该适配；</li>
+<li>scorer 的中间特征：更接近最终读出，影响选项分数不等于修复上游信息使用。</li>
+</ul>
+<p>官方 on_predict_start/end 是请求生命周期钩子，不是隐藏状态针。最新源码的 CPU 优化路径会检查 module hooks，并在发现 hook 后回退普通路径；这是有利的实现事实，但不能代替选定 runtime/backend 的实测验收。编译、TileLang、ONNX、MLX 与不同 attention 后端也不能默认等价。</p>
+<p>Laya 是双向编码决策模型；本次没有发现可直接承接我们自回归生成期缓存写入—撤针—后续读取链的同构实现，不能搬用 Qwen 缓存结论。</p>
+<h2 id="_4">本次工程检查与证据边界</h2>
+<p>从固定版 backends.py 用 Python AST 提取原 predict_steered_batch 方法，使用现有 PyTorch、合成 CPU 张量与一个仅保存回调的假模块做检查，不调用 Laya 或真实模型前向：</p>
+<ul>
+<li>三维输出按指定 alpha 加向量：通过。</li>
+<li>原输入张量没有被原地修改：通过。</li>
+<li>tuple 其余元素保持：通过。</li>
+<li>成功和故意抛异常后均移除 hook：通过。</li>
+<li>二维输出和末维不匹配时<strong>原样返回、没有报错</strong>：确认存在静默跳过分支。</li>
+</ul>
+<p>这只是抽出的 hook 方法验收，不是官方真实模型/backend 兼容验收。当前本机 Python 可找到 torch、numpy，未安装 laya。没有安装或扩环境。</p>
+<p>检视 Studio 当前完整文件树、README、设计与测试：存在 smoke fixtures；README 明确它们用于工程检查而非科学证据，快速测试用 FakeBackend。<strong>本次未找到公开可核验的真实 Laya activation_steering 前后收益表、逐题输出与相应运行收据</strong>；这不等于证明作者从未运行。</p>
+<h2 id="_5">检索中的易混淆结果</h2>
+<ul>
+<li><a href="https://github.com/GopiKWork/jev-experiments/tree/3fae1a87cb96c5067c42446a8d3d29faa73f1b92">GopiKWork/jev-experiments</a> 的 steering_demo.py：Laya 判断后由 Python 引导 Strands agent；没有改 Laya 内部激活。</li>
+<li><a href="https://github.com/YashDThapliyal/laya-whitebox-attack/tree/eccda6ca37889abed8ea0fd33f1b224d68bfae7d">YashDThapliyal/laya-whitebox-attack</a>：公开的微调与 HotFlip 输入 token 替换，不是稀疏内部激活针。</li>
+<li><a href="https://github.com/Exemocaro/System-One-Control-Bench/tree/6e2efa8ab91e5a70ac13f538e28634c5cff6edcb">System-One-Control-Bench</a>：模型选择游戏动作，steering 指外部控制；不作为内部针证据。</li>
+<li>先前 Jev/Qwen 权重编辑材料不属于 Laya 直接证据。</li>
+</ul>
+<p>检索使用 Laya + activation steering / activation patching / activation addition / register_forward_hook / neuron intervention / weight editing，以及 GitHub 仓库搜索。该范围不覆盖所有未索引代码、私有仓库或已删除内容，不声称领域内只有这一份实现。</p>
+<h2 id="_6">试用判断</h2>
+<p><strong>优先复用 Laya Studio 的 PyTorch activation_steering 实现，而非重写整套搜索框架。</strong> 现成入口是该仓库 CLI 的 activation_steering@层号；完整使用方法见固定版 README 的 Research suites。</p>
+<p>目前可以确认“有实现，计算路径可干预”；不能确认“有有效稀疏配方，或能改善目标任务”。开始真实试用前仍需固定 checkpoint/runtime/backend、验证 hook 调用和实际非零扰动，并保留原版/零剂量/移除 hook 的一致性检查。它们是工程验收条件，不是本轮已完成的模型试验；后续若制定科学实验，需另按项目 C01–C14 自查，不以此文替代。</p>
+<p>本轮未安排搜索层数、剂量、任务或算力预算，也没有启动模型实验。</p></main></html>

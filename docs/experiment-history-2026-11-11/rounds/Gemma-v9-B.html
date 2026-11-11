@@ -1,0 +1,2577 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Gemma-v9-B：逐轮目的、修改与结果</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="gemma-v9-b">Gemma-v9-B：逐轮目的、修改与结果</h1>
+<p>本页逐轮转录已归档值，不重新评分、不运行模型。共30个完整候选；不是新增30次实验。研究者当时的理由按原文保留，其中预期不能读作已验证结果。每轮均从其记录指定的基线和父候选解释，不能默认累加补丁。</p>
+<p>原始完整档案（含逐题答案）：</p>
+<ul>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-gemma3-v9-shared-admission-2026-11-06/resume-final-audit/B-remote-evidence.tar.gz.part000">experiments/wsp-vlm-gemma3-v9-shared-admission-2026-11-06/resume-final-audit/B-remote-evidence.tar.gz.part000</a></li>
+</ul>
+<h2 id="1">第1轮</h2>
+<p><strong>当时目的与操作理由（原文）</strong></p>
+<p>Round 1: test whether suppressing opposing MLP writes at the strongest cross-source residual-localization site reduces instruction-sensitive spatial overcounting. No claim of a universal spatial or zero-count mechanism.</p>
+<p><strong>本轮原记录的主分数</strong>：<code>0.15517241379310345</code>；保留原始0–1尺度。</p>
+<p><strong>选优/保护结果</strong></p>
+<pre><code class="language-json">{
+  &quot;not_selected&quot;: &quot;Candidate does not improve the frozen selection rule&quot;
+}
+</code></pre>
+<p><strong>完整候选定义（基线、位置、改动数量、幅度、张量身份）</strong></p>
+<pre><code class="language-json">{
+  &quot;base&quot;: &quot;w0-a8a8df63cbfe2a4bfa07bf8ace8660b3758297bf43daf2025fe2f98cb562fc5f&quot;,
+  &quot;changed_scalars&quot;: 315332,
+  &quot;id&quot;: &quot;c-c4ec1a6a917668e504b846cbd91c589138fb843d1f2c1e9a9048d6b2e6a9f2cb&quot;,
+  &quot;l2&quot;: 0.1847874701039664,
+  &quot;parent&quot;: &quot;w0-a8a8df63cbfe2a4bfa07bf8ace8660b3758297bf43daf2025fe2f98cb562fc5f&quot;,
+  &quot;rationale&quot;: &quot;Round 1: test whether suppressing opposing MLP writes at the strongest cross-source residual-localization site reduces instruction-sensitive spatial overcounting. No claim of a universal spatial or zero-count mechanism.&quot;,
+  &quot;tensors&quot;: {
+    &quot;language_model.model.layers.15.mlp.down_proj.weight&quot;: {
+      &quot;base_sha256&quot;: &quot;5c91b7ffbc2caefbf4ee8c663b969c84bd6612bce6b71bade5326ef6cfcb7658&quot;,
+      &quot;changed&quot;: 315332,
+      &quot;content_sha256&quot;: &quot;a27ccdf1ede1e7e6cb8b334afa0b7d434cf07f5dde2446787249d9fd059a084b&quot;,
+      &quot;dtype&quot;: &quot;BF16&quot;,
+      &quot;encoding&quot;: &quot;absolute-f32-sparse-v1&quot;,
+      &quot;file&quot;: &quot;d1c22bc5b4c5e89e96731058caaebd81a03e061022317d0081526d04793e9c0f.npz&quot;,
+      &quot;sha256&quot;: &quot;9d28a553686ab8645b1fdabcc001898c188ba689d2ac84b570ee2f02e5172891&quot;,
+      &quot;shape&quot;: [
+        2560,
+        10240
+      ],
+      &quot;stored_coordinates&quot;: 315332
+    }
+  }
+}
+</code></pre>
+<p><strong>归档评价字段全文</strong></p>
+<pre><code class="language-json">{
+  &quot;candidate&quot;: &quot;c-c4ec1a6a917668e504b846cbd91c589138fb843d1f2c1e9a9048d6b2e6a9f2cb&quot;,
+  &quot;full_development&quot;: true,
+  &quot;protocol&quot;: &quot;e3ba1ed45f1f2145e30d1e496dd9b918e56e7c6b51e26bdec65107f6aeda65bf&quot;,
+  &quot;summary&quot;: {
+    &quot;accuracy&quot;: 0.4375,
+    &quot;cells&quot;: {
+      &quot;B0:T0:-:subset&quot;: {
+        &quot;correct&quot;: 17,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T0:-:total&quot;: {
+        &quot;correct&quot;: 29,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T1:-:subset&quot;: {
+        &quot;correct&quot;: 19,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T1:-:total&quot;: {
+        &quot;correct&quot;: 27,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T0:-:subset&quot;: {
+        &quot;correct&quot;: 17,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T0:-:total&quot;: {
+        &quot;correct&quot;: 34,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T1:-:subset&quot;: {
+        &quot;correct&quot;: 20,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T1:-:total&quot;: {
+        &quot;correct&quot;: 40,
+        &quot;n&quot;: 58
+      }
+    },
+    &quot;format_errors&quot;: 4,
+    &quot;n&quot;: 464,
+    &quot;primary_groups&quot;: 58,
+    &quot;primary_joint&quot;: 0.15517241379310345,
+    &quot;repair_score&quot;: 0.15517241379310345,
+    &quot;truncated&quot;: 3
+  }
+}
+</code></pre>
+<p>逐题数组保留在上述完整档案；本页未重新判分。数组身份/长度：<code>{"ids": 464, "predictions": 464, "scored": 464}</code>。</p>
+<h2 id="2">第2轮</h2>
+<p><strong>当时目的与操作理由（原文）</strong></p>
+<p>Round 2: strong-dose falsification of layer-15 opposing-write hypothesis after round 1 produced two repairs, one loss, and a worse joint endpoint.</p>
+<p><strong>本轮原记录的主分数</strong>：<code>0.15517241379310345</code>；保留原始0–1尺度。</p>
+<p><strong>选优/保护结果</strong></p>
+<pre><code class="language-json">{
+  &quot;not_selected&quot;: &quot;Candidate does not improve the frozen selection rule&quot;
+}
+</code></pre>
+<p><strong>完整候选定义（基线、位置、改动数量、幅度、张量身份）</strong></p>
+<pre><code class="language-json">{
+  &quot;base&quot;: &quot;w0-a8a8df63cbfe2a4bfa07bf8ace8660b3758297bf43daf2025fe2f98cb562fc5f&quot;,
+  &quot;changed_scalars&quot;: 323625,
+  &quot;id&quot;: &quot;c-ca1fd32687347ea8afbfe384a32eca2c5f090a3a341c7b73dcee390bbe863ad5&quot;,
+  &quot;l2&quot;: 0.5542326181252037,
+  &quot;parent&quot;: &quot;w0-a8a8df63cbfe2a4bfa07bf8ace8660b3758297bf43daf2025fe2f98cb562fc5f&quot;,
+  &quot;rationale&quot;: &quot;Round 2: strong-dose falsification of layer-15 opposing-write hypothesis after round 1 produced two repairs, one loss, and a worse joint endpoint.&quot;,
+  &quot;tensors&quot;: {
+    &quot;language_model.model.layers.15.mlp.down_proj.weight&quot;: {
+      &quot;base_sha256&quot;: &quot;5c91b7ffbc2caefbf4ee8c663b969c84bd6612bce6b71bade5326ef6cfcb7658&quot;,
+      &quot;changed&quot;: 323625,
+      &quot;content_sha256&quot;: &quot;655626fd7829bededed52894d52b82f72797e4053a8749e4c5f8a0c40ee30711&quot;,
+      &quot;dtype&quot;: &quot;BF16&quot;,
+      &quot;encoding&quot;: &quot;absolute-f32-sparse-v1&quot;,
+      &quot;file&quot;: &quot;d1c22bc5b4c5e89e96731058caaebd81a03e061022317d0081526d04793e9c0f.npz&quot;,
+      &quot;sha256&quot;: &quot;64be0ad2ea5a5d93b3f3fb3662ac2f3ef38aac2dfac2180b347716f0db24ca8f&quot;,
+      &quot;shape&quot;: [
+        2560,
+        10240
+      ],
+      &quot;stored_coordinates&quot;: 323625
+    }
+  }
+}
+</code></pre>
+<p><strong>归档评价字段全文</strong></p>
+<pre><code class="language-json">{
+  &quot;candidate&quot;: &quot;c-ca1fd32687347ea8afbfe384a32eca2c5f090a3a341c7b73dcee390bbe863ad5&quot;,
+  &quot;full_development&quot;: true,
+  &quot;protocol&quot;: &quot;e3ba1ed45f1f2145e30d1e496dd9b918e56e7c6b51e26bdec65107f6aeda65bf&quot;,
+  &quot;summary&quot;: {
+    &quot;accuracy&quot;: 0.4331896551724138,
+    &quot;cells&quot;: {
+      &quot;B0:T0:-:subset&quot;: {
+        &quot;correct&quot;: 17,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T0:-:total&quot;: {
+        &quot;correct&quot;: 29,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T1:-:subset&quot;: {
+        &quot;correct&quot;: 19,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T1:-:total&quot;: {
+        &quot;correct&quot;: 27,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T0:-:subset&quot;: {
+        &quot;correct&quot;: 17,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T0:-:total&quot;: {
+        &quot;correct&quot;: 33,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T1:-:subset&quot;: {
+        &quot;correct&quot;: 19,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T1:-:total&quot;: {
+        &quot;correct&quot;: 40,
+        &quot;n&quot;: 58
+      }
+    },
+    &quot;format_errors&quot;: 2,
+    &quot;n&quot;: 464,
+    &quot;primary_groups&quot;: 58,
+    &quot;primary_joint&quot;: 0.15517241379310345,
+    &quot;repair_score&quot;: 0.15517241379310345,
+    &quot;truncated&quot;: 1
+  }
+}
+</code></pre>
+<p>逐题数组保留在上述完整档案；本页未重新判分。数组身份/长度：<code>{"ids": 464, "predictions": 464, "scored": 464}</code>。</p>
+<h2 id="3">第3轮</h2>
+<p><strong>当时目的与操作理由（原文）</strong></p>
+<p>Round 3: preplanned weak-dose test. Absolute replacement of the same tensor reconstructed from W0, not cumulative editing.</p>
+<p><strong>本轮原记录的主分数</strong>：<code>0.15517241379310345</code>；保留原始0–1尺度。</p>
+<p><strong>选优/保护结果</strong></p>
+<pre><code class="language-json">{
+  &quot;not_selected&quot;: &quot;Candidate does not improve the frozen selection rule&quot;
+}
+</code></pre>
+<p><strong>完整候选定义（基线、位置、改动数量、幅度、张量身份）</strong></p>
+<pre><code class="language-json">{
+  &quot;base&quot;: &quot;w0-a8a8df63cbfe2a4bfa07bf8ace8660b3758297bf43daf2025fe2f98cb562fc5f&quot;,
+  &quot;changed_scalars&quot;: 303157,
+  &quot;id&quot;: &quot;c-56fbfac90fd712acc8d09c7b62fdef29fdc6055677815a47dbf492dc1e6673eb&quot;,
+  &quot;l2&quot;: 0.09250112627153091,
+  &quot;parent&quot;: &quot;c-ca1fd32687347ea8afbfe384a32eca2c5f090a3a341c7b73dcee390bbe863ad5&quot;,
+  &quot;rationale&quot;: &quot;Round 3: preplanned weak-dose test. Absolute replacement of the same tensor reconstructed from W0, not cumulative editing.&quot;,
+  &quot;tensors&quot;: {
+    &quot;language_model.model.layers.15.mlp.down_proj.weight&quot;: {
+      &quot;base_sha256&quot;: &quot;5c91b7ffbc2caefbf4ee8c663b969c84bd6612bce6b71bade5326ef6cfcb7658&quot;,
+      &quot;changed&quot;: 303157,
+      &quot;content_sha256&quot;: &quot;6a293931c6cda1105227fa3627d3d35f408fc9e945f14af514658267c1b05735&quot;,
+      &quot;dtype&quot;: &quot;BF16&quot;,
+      &quot;encoding&quot;: &quot;absolute-f32-sparse-v1&quot;,
+      &quot;file&quot;: &quot;d1c22bc5b4c5e89e96731058caaebd81a03e061022317d0081526d04793e9c0f.npz&quot;,
+      &quot;sha256&quot;: &quot;71563b0711886de9e56dbf3c228927e089be7b0f6b6e37698d238acdb666cc85&quot;,
+      &quot;shape&quot;: [
+        2560,
+        10240
+      ],
+      &quot;stored_coordinates&quot;: 303157
+    }
+  }
+}
+</code></pre>
+<p><strong>归档评价字段全文</strong></p>
+<pre><code class="language-json">{
+  &quot;candidate&quot;: &quot;c-56fbfac90fd712acc8d09c7b62fdef29fdc6055677815a47dbf492dc1e6673eb&quot;,
+  &quot;full_development&quot;: true,
+  &quot;protocol&quot;: &quot;e3ba1ed45f1f2145e30d1e496dd9b918e56e7c6b51e26bdec65107f6aeda65bf&quot;,
+  &quot;summary&quot;: {
+    &quot;accuracy&quot;: 0.4375,
+    &quot;cells&quot;: {
+      &quot;B0:T0:-:subset&quot;: {
+        &quot;correct&quot;: 17,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T0:-:total&quot;: {
+        &quot;correct&quot;: 29,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T1:-:subset&quot;: {
+        &quot;correct&quot;: 19,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T1:-:total&quot;: {
+        &quot;correct&quot;: 27,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T0:-:subset&quot;: {
+        &quot;correct&quot;: 17,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T0:-:total&quot;: {
+        &quot;correct&quot;: 34,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T1:-:subset&quot;: {
+        &quot;correct&quot;: 20,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T1:-:total&quot;: {
+        &quot;correct&quot;: 40,
+        &quot;n&quot;: 58
+      }
+    },
+    &quot;format_errors&quot;: 4,
+    &quot;n&quot;: 464,
+    &quot;primary_groups&quot;: 58,
+    &quot;primary_joint&quot;: 0.15517241379310345,
+    &quot;repair_score&quot;: 0.15517241379310345,
+    &quot;truncated&quot;: 2
+  }
+}
+</code></pre>
+<p>逐题数组保留在上述完整档案；本页未重新判分。数组身份/长度：<code>{"ids": 464, "predictions": 464, "scored": 464}</code>。</p>
+<h2 id="4">第4轮</h2>
+<p><strong>当时目的与操作理由（原文）</strong></p>
+<p>Round 4: opposite-sign causal control; same layer, channels and direction, W0-relative rather than compounded.</p>
+<p><strong>本轮原记录的主分数</strong>：<code>0.16379310344827586</code>；保留原始0–1尺度。</p>
+<p><strong>选优/保护结果</strong></p>
+<pre><code class="language-json">{
+  &quot;not_selected&quot;: &quot;Format/truncation protection failed&quot;
+}
+</code></pre>
+<p><strong>完整候选定义（基线、位置、改动数量、幅度、张量身份）</strong></p>
+<pre><code class="language-json">{
+  &quot;base&quot;: &quot;w0-a8a8df63cbfe2a4bfa07bf8ace8660b3758297bf43daf2025fe2f98cb562fc5f&quot;,
+  &quot;changed_scalars&quot;: 315326,
+  &quot;id&quot;: &quot;c-f424d58fbc0c68bde2d127a6fe99e7898fd822f010f788ee44f630abbad602c7&quot;,
+  &quot;l2&quot;: 0.18479350926624297,
+  &quot;parent&quot;: &quot;c-56fbfac90fd712acc8d09c7b62fdef29fdc6055677815a47dbf492dc1e6673eb&quot;,
+  &quot;rationale&quot;: &quot;Round 4: opposite-sign causal control; same layer, channels and direction, W0-relative rather than compounded.&quot;,
+  &quot;tensors&quot;: {
+    &quot;language_model.model.layers.15.mlp.down_proj.weight&quot;: {
+      &quot;base_sha256&quot;: &quot;5c91b7ffbc2caefbf4ee8c663b969c84bd6612bce6b71bade5326ef6cfcb7658&quot;,
+      &quot;changed&quot;: 315326,
+      &quot;content_sha256&quot;: &quot;8f1973f5e64e5c8e0af07f109ffd6ad4054ef5683330821b9d11211560b4360b&quot;,
+      &quot;dtype&quot;: &quot;BF16&quot;,
+      &quot;encoding&quot;: &quot;absolute-f32-sparse-v1&quot;,
+      &quot;file&quot;: &quot;d1c22bc5b4c5e89e96731058caaebd81a03e061022317d0081526d04793e9c0f.npz&quot;,
+      &quot;sha256&quot;: &quot;28badd0c5a1ddcbda557bbae616d8c1015e34735ecdf8df016235ad785e66b42&quot;,
+      &quot;shape&quot;: [
+        2560,
+        10240
+      ],
+      &quot;stored_coordinates&quot;: 315326
+    }
+  }
+}
+</code></pre>
+<p><strong>归档评价字段全文</strong></p>
+<pre><code class="language-json">{
+  &quot;candidate&quot;: &quot;c-f424d58fbc0c68bde2d127a6fe99e7898fd822f010f788ee44f630abbad602c7&quot;,
+  &quot;full_development&quot;: true,
+  &quot;protocol&quot;: &quot;e3ba1ed45f1f2145e30d1e496dd9b918e56e7c6b51e26bdec65107f6aeda65bf&quot;,
+  &quot;summary&quot;: {
+    &quot;accuracy&quot;: 0.4224137931034483,
+    &quot;cells&quot;: {
+      &quot;B0:T0:-:subset&quot;: {
+        &quot;correct&quot;: 16,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T0:-:total&quot;: {
+        &quot;correct&quot;: 28,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T1:-:subset&quot;: {
+        &quot;correct&quot;: 17,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T1:-:total&quot;: {
+        &quot;correct&quot;: 27,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T0:-:subset&quot;: {
+        &quot;correct&quot;: 17,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T0:-:total&quot;: {
+        &quot;correct&quot;: 31,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T1:-:subset&quot;: {
+        &quot;correct&quot;: 20,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T1:-:total&quot;: {
+        &quot;correct&quot;: 40,
+        &quot;n&quot;: 58
+      }
+    },
+    &quot;format_errors&quot;: 8,
+    &quot;n&quot;: 464,
+    &quot;primary_groups&quot;: 58,
+    &quot;primary_joint&quot;: 0.15517241379310345,
+    &quot;repair_score&quot;: 0.16379310344827586,
+    &quot;truncated&quot;: 4
+  }
+}
+</code></pre>
+<p>逐题数组保留在上述完整档案；本页未重新判分。数组身份/长度：<code>{"ids": 464, "predictions": 464, "scored": 464}</code>。</p>
+<h2 id="5">第5轮</h2>
+<p><strong>当时目的与操作理由（原文）</strong></p>
+<p>Round 5: direction-specificity control with fixed selected channels and fixed per-channel coefficients, replacing only the write direction by a seeded orthogonal random vector.</p>
+<p><strong>本轮原记录的主分数</strong>：<code>0.15517241379310345</code>；保留原始0–1尺度。</p>
+<p><strong>选优/保护结果</strong></p>
+<pre><code class="language-json">{
+  &quot;not_selected&quot;: &quot;Format/truncation protection failed&quot;
+}
+</code></pre>
+<p><strong>完整候选定义（基线、位置、改动数量、幅度、张量身份）</strong></p>
+<pre><code class="language-json">{
+  &quot;base&quot;: &quot;w0-a8a8df63cbfe2a4bfa07bf8ace8660b3758297bf43daf2025fe2f98cb562fc5f&quot;,
+  &quot;changed_scalars&quot;: 315179,
+  &quot;id&quot;: &quot;c-5f2247cf8ea2005724281021da9d14c29836ea07257fe3adf8032ec99b6e9d10&quot;,
+  &quot;l2&quot;: 0.184802047696979,
+  &quot;parent&quot;: &quot;c-f424d58fbc0c68bde2d127a6fe99e7898fd822f010f788ee44f630abbad602c7&quot;,
+  &quot;rationale&quot;: &quot;Round 5: direction-specificity control with fixed selected channels and fixed per-channel coefficients, replacing only the write direction by a seeded orthogonal random vector.&quot;,
+  &quot;tensors&quot;: {
+    &quot;language_model.model.layers.15.mlp.down_proj.weight&quot;: {
+      &quot;base_sha256&quot;: &quot;5c91b7ffbc2caefbf4ee8c663b969c84bd6612bce6b71bade5326ef6cfcb7658&quot;,
+      &quot;changed&quot;: 315179,
+      &quot;content_sha256&quot;: &quot;2b9c924f5f745391fc4b41ed59aa11c4b6a60952a7ba6c094b90dfa20896b423&quot;,
+      &quot;dtype&quot;: &quot;BF16&quot;,
+      &quot;encoding&quot;: &quot;absolute-f32-sparse-v1&quot;,
+      &quot;file&quot;: &quot;d1c22bc5b4c5e89e96731058caaebd81a03e061022317d0081526d04793e9c0f.npz&quot;,
+      &quot;sha256&quot;: &quot;171e95562ad75aa56b7271a1d382769ba3a13c89d72bc549bbd362a8a1427d6f&quot;,
+      &quot;shape&quot;: [
+        2560,
+        10240
+      ],
+      &quot;stored_coordinates&quot;: 315179
+    }
+  }
+}
+</code></pre>
+<p><strong>归档评价字段全文</strong></p>
+<pre><code class="language-json">{
+  &quot;candidate&quot;: &quot;c-5f2247cf8ea2005724281021da9d14c29836ea07257fe3adf8032ec99b6e9d10&quot;,
+  &quot;full_development&quot;: true,
+  &quot;protocol&quot;: &quot;e3ba1ed45f1f2145e30d1e496dd9b918e56e7c6b51e26bdec65107f6aeda65bf&quot;,
+  &quot;summary&quot;: {
+    &quot;accuracy&quot;: 0.4267241379310345,
+    &quot;cells&quot;: {
+      &quot;B0:T0:-:subset&quot;: {
+        &quot;correct&quot;: 17,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T0:-:total&quot;: {
+        &quot;correct&quot;: 29,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T1:-:subset&quot;: {
+        &quot;correct&quot;: 17,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T1:-:total&quot;: {
+        &quot;correct&quot;: 26,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T0:-:subset&quot;: {
+        &quot;correct&quot;: 17,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T0:-:total&quot;: {
+        &quot;correct&quot;: 32,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T1:-:subset&quot;: {
+        &quot;correct&quot;: 20,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T1:-:total&quot;: {
+        &quot;correct&quot;: 40,
+        &quot;n&quot;: 58
+      }
+    },
+    &quot;format_errors&quot;: 5,
+    &quot;n&quot;: 464,
+    &quot;primary_groups&quot;: 58,
+    &quot;primary_joint&quot;: 0.15517241379310345,
+    &quot;repair_score&quot;: 0.15517241379310345,
+    &quot;truncated&quot;: 1
+  }
+}
+</code></pre>
+<p>逐题数组保留在上述完整档案；本页未重新判分。数组身份/长度：<code>{"ids": 464, "predictions": 464, "scored": 464}</code>。</p>
+<h2 id="6">第6轮</h2>
+<p><strong>当时目的与操作理由（原文）</strong></p>
+<p>Round 6: test channel-selection specificity using disjoint randomized channels matched on W0 column norm and measured activation statistics; preserve direction and coefficient vector.</p>
+<p><strong>本轮原记录的主分数</strong>：<code>0.15517241379310345</code>；保留原始0–1尺度。</p>
+<p><strong>选优/保护结果</strong></p>
+<pre><code class="language-json">{
+  &quot;not_selected&quot;: &quot;Candidate does not improve the frozen selection rule&quot;
+}
+</code></pre>
+<p><strong>完整候选定义（基线、位置、改动数量、幅度、张量身份）</strong></p>
+<pre><code class="language-json">{
+  &quot;base&quot;: &quot;w0-a8a8df63cbfe2a4bfa07bf8ace8660b3758297bf43daf2025fe2f98cb562fc5f&quot;,
+  &quot;changed_scalars&quot;: 315392,
+  &quot;id&quot;: &quot;c-0901b506056bf9b33091d3b2206a26cfb82ca99bdbaa00488e1af24b5d8675c1&quot;,
+  &quot;l2&quot;: 0.18481276504673094,
+  &quot;parent&quot;: &quot;c-5f2247cf8ea2005724281021da9d14c29836ea07257fe3adf8032ec99b6e9d10&quot;,
+  &quot;rationale&quot;: &quot;Round 6: test channel-selection specificity using disjoint randomized channels matched on W0 column norm and measured activation statistics; preserve direction and coefficient vector.&quot;,
+  &quot;tensors&quot;: {
+    &quot;language_model.model.layers.15.mlp.down_proj.weight&quot;: {
+      &quot;base_sha256&quot;: &quot;5c91b7ffbc2caefbf4ee8c663b969c84bd6612bce6b71bade5326ef6cfcb7658&quot;,
+      &quot;changed&quot;: 315392,
+      &quot;content_sha256&quot;: &quot;f9fccbb48c703514a541d55d3a522ea7625a62fb736190fabd75d9e2d744900d&quot;,
+      &quot;dtype&quot;: &quot;BF16&quot;,
+      &quot;encoding&quot;: &quot;absolute-f32-sparse-v1&quot;,
+      &quot;file&quot;: &quot;d1c22bc5b4c5e89e96731058caaebd81a03e061022317d0081526d04793e9c0f.npz&quot;,
+      &quot;sha256&quot;: &quot;068d7d05d45820daa1a86c1104f8d1805c238cb1c181177d225a5a64bd8fe81a&quot;,
+      &quot;shape&quot;: [
+        2560,
+        10240
+      ],
+      &quot;stored_coordinates&quot;: 315392
+    }
+  }
+}
+</code></pre>
+<p><strong>归档评价字段全文</strong></p>
+<pre><code class="language-json">{
+  &quot;candidate&quot;: &quot;c-0901b506056bf9b33091d3b2206a26cfb82ca99bdbaa00488e1af24b5d8675c1&quot;,
+  &quot;full_development&quot;: true,
+  &quot;protocol&quot;: &quot;e3ba1ed45f1f2145e30d1e496dd9b918e56e7c6b51e26bdec65107f6aeda65bf&quot;,
+  &quot;summary&quot;: {
+    &quot;accuracy&quot;: 0.4375,
+    &quot;cells&quot;: {
+      &quot;B0:T0:-:subset&quot;: {
+        &quot;correct&quot;: 17,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T0:-:total&quot;: {
+        &quot;correct&quot;: 29,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T1:-:subset&quot;: {
+        &quot;correct&quot;: 19,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T1:-:total&quot;: {
+        &quot;correct&quot;: 27,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T0:-:subset&quot;: {
+        &quot;correct&quot;: 17,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T0:-:total&quot;: {
+        &quot;correct&quot;: 34,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T1:-:subset&quot;: {
+        &quot;correct&quot;: 20,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T1:-:total&quot;: {
+        &quot;correct&quot;: 40,
+        &quot;n&quot;: 58
+      }
+    },
+    &quot;format_errors&quot;: 4,
+    &quot;n&quot;: 464,
+    &quot;primary_groups&quot;: 58,
+    &quot;primary_joint&quot;: 0.15517241379310345,
+    &quot;repair_score&quot;: 0.15517241379310345,
+    &quot;truncated&quot;: 1
+  }
+}
+</code></pre>
+<p>逐题数组保留在上述完整档案；本页未重新判分。数组身份/长度：<code>{"ids": 464, "predictions": 464, "scored": 464}</code>。</p>
+<h2 id="7">第7轮</h2>
+<p><strong>当时目的与操作理由（原文）</strong></p>
+<p>Round 7: generic-prefix-direction control. Random-channel reassignment reproduced the selected-channel correctness flips, so channel-specific mechanism claims are rejected.</p>
+<p><strong>本轮原记录的主分数</strong>：<code>0.15517241379310345</code>；保留原始0–1尺度。</p>
+<p><strong>选优/保护结果</strong></p>
+<pre><code class="language-json">{
+  &quot;not_selected&quot;: &quot;Candidate does not improve the frozen selection rule&quot;
+}
+</code></pre>
+<p><strong>完整候选定义（基线、位置、改动数量、幅度、张量身份）</strong></p>
+<pre><code class="language-json">{
+  &quot;base&quot;: &quot;w0-a8a8df63cbfe2a4bfa07bf8ace8660b3758297bf43daf2025fe2f98cb562fc5f&quot;,
+  &quot;changed_scalars&quot;: 313961,
+  &quot;id&quot;: &quot;c-fbc0a56b556349ccbbc4882b0c14aad8e1c805310fa649829a140fbd297bf25c&quot;,
+  &quot;l2&quot;: 0.18481215937443368,
+  &quot;parent&quot;: &quot;c-0901b506056bf9b33091d3b2206a26cfb82ca99bdbaa00488e1af24b5d8675c1&quot;,
+  &quot;rationale&quot;: &quot;Round 7: generic-prefix-direction control. Random-channel reassignment reproduced the selected-channel correctness flips, so channel-specific mechanism claims are rejected.&quot;,
+  &quot;tensors&quot;: {
+    &quot;language_model.model.layers.15.mlp.down_proj.weight&quot;: {
+      &quot;base_sha256&quot;: &quot;5c91b7ffbc2caefbf4ee8c663b969c84bd6612bce6b71bade5326ef6cfcb7658&quot;,
+      &quot;changed&quot;: 313961,
+      &quot;content_sha256&quot;: &quot;1d3b484b60aea89b08e9d997904ef65a5429133a53d4c14343bcff9a98c055fc&quot;,
+      &quot;dtype&quot;: &quot;BF16&quot;,
+      &quot;encoding&quot;: &quot;absolute-f32-sparse-v1&quot;,
+      &quot;file&quot;: &quot;d1c22bc5b4c5e89e96731058caaebd81a03e061022317d0081526d04793e9c0f.npz&quot;,
+      &quot;sha256&quot;: &quot;34172acc7eb71727718c19b2f4fcad45c74f409be5894334bf0e2aecfa600fb4&quot;,
+      &quot;shape&quot;: [
+        2560,
+        10240
+      ],
+      &quot;stored_coordinates&quot;: 313961
+    }
+  }
+}
+</code></pre>
+<p><strong>归档评价字段全文</strong></p>
+<pre><code class="language-json">{
+  &quot;candidate&quot;: &quot;c-fbc0a56b556349ccbbc4882b0c14aad8e1c805310fa649829a140fbd297bf25c&quot;,
+  &quot;full_development&quot;: true,
+  &quot;protocol&quot;: &quot;e3ba1ed45f1f2145e30d1e496dd9b918e56e7c6b51e26bdec65107f6aeda65bf&quot;,
+  &quot;summary&quot;: {
+    &quot;accuracy&quot;: 0.43103448275862066,
+    &quot;cells&quot;: {
+      &quot;B0:T0:-:subset&quot;: {
+        &quot;correct&quot;: 17,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T0:-:total&quot;: {
+        &quot;correct&quot;: 29,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T1:-:subset&quot;: {
+        &quot;correct&quot;: 18,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T1:-:total&quot;: {
+        &quot;correct&quot;: 27,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T0:-:subset&quot;: {
+        &quot;correct&quot;: 17,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T0:-:total&quot;: {
+        &quot;correct&quot;: 32,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T1:-:subset&quot;: {
+        &quot;correct&quot;: 20,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T1:-:total&quot;: {
+        &quot;correct&quot;: 40,
+        &quot;n&quot;: 58
+      }
+    },
+    &quot;format_errors&quot;: 4,
+    &quot;n&quot;: 464,
+    &quot;primary_groups&quot;: 58,
+    &quot;primary_joint&quot;: 0.15517241379310345,
+    &quot;repair_score&quot;: 0.15517241379310345,
+    &quot;truncated&quot;: 2
+  }
+}
+</code></pre>
+<p>逐题数组保留在上述完整档案；本页未重新判分。数组身份/长度：<code>{"ids": 464, "predictions": 464, "scored": 464}</code>。</p>
+<h2 id="8">第8轮</h2>
+<p><strong>当时目的与操作理由（原文）</strong></p>
+<p>Round 8: revised answer-balanced hypothesis. Test sparse nonuniform layer-10 post-MLP norm gains after normalized branch captures showed more consistency than raw writes.</p>
+<p><strong>本轮原记录的主分数</strong>：<code>0.15517241379310345</code>；保留原始0–1尺度。</p>
+<p><strong>选优/保护结果</strong></p>
+<pre><code class="language-json">{
+  &quot;not_selected&quot;: &quot;Format/truncation protection failed&quot;
+}
+</code></pre>
+<p><strong>完整候选定义（基线、位置、改动数量、幅度、张量身份）</strong></p>
+<pre><code class="language-json">{
+  &quot;base&quot;: &quot;w0-a8a8df63cbfe2a4bfa07bf8ace8660b3758297bf43daf2025fe2f98cb562fc5f&quot;,
+  &quot;changed_scalars&quot;: 256,
+  &quot;id&quot;: &quot;c-3c85a6ea55aec23ea34ea619b1e0790a00c21fdd9be133d4cde5e88e912cebae&quot;,
+  &quot;l2&quot;: 21.267054277831946,
+  &quot;parent&quot;: &quot;w0-a8a8df63cbfe2a4bfa07bf8ace8660b3758297bf43daf2025fe2f98cb562fc5f&quot;,
+  &quot;rationale&quot;: &quot;Round 8: revised answer-balanced hypothesis. Test sparse nonuniform layer-10 post-MLP norm gains after normalized branch captures showed more consistency than raw writes.&quot;,
+  &quot;tensors&quot;: {
+    &quot;language_model.model.layers.10.post_feedforward_layernorm.weight&quot;: {
+      &quot;base_sha256&quot;: &quot;af7761db8fb6d65d7a92deced7aa6ed9ab39d59ee3f31efbf19eff7359129043&quot;,
+      &quot;changed&quot;: 256,
+      &quot;content_sha256&quot;: &quot;64a617ffd66f53359226b04b5e7d859979947239c2f317aaeed9c5d237af2e73&quot;,
+      &quot;dtype&quot;: &quot;BF16&quot;,
+      &quot;encoding&quot;: &quot;absolute-f32-sparse-v1&quot;,
+      &quot;file&quot;: &quot;72f7688908dd4021f31f16b0ab7bcd5e283e44fbb3079a8c543be98fec663b29.npz&quot;,
+      &quot;sha256&quot;: &quot;a5c6c2e57462037826cc4ec2650963b3d1d1a609360c1843319165ac5c2241bd&quot;,
+      &quot;shape&quot;: [
+        2560
+      ],
+      &quot;stored_coordinates&quot;: 256
+    }
+  }
+}
+</code></pre>
+<p><strong>归档评价字段全文</strong></p>
+<pre><code class="language-json">{
+  &quot;candidate&quot;: &quot;c-3c85a6ea55aec23ea34ea619b1e0790a00c21fdd9be133d4cde5e88e912cebae&quot;,
+  &quot;full_development&quot;: true,
+  &quot;protocol&quot;: &quot;e3ba1ed45f1f2145e30d1e496dd9b918e56e7c6b51e26bdec65107f6aeda65bf&quot;,
+  &quot;summary&quot;: {
+    &quot;accuracy&quot;: 0.42887931034482757,
+    &quot;cells&quot;: {
+      &quot;B0:T0:-:subset&quot;: {
+        &quot;correct&quot;: 16,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T0:-:total&quot;: {
+        &quot;correct&quot;: 29,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T1:-:subset&quot;: {
+        &quot;correct&quot;: 18,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T1:-:total&quot;: {
+        &quot;correct&quot;: 26,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T0:-:subset&quot;: {
+        &quot;correct&quot;: 17,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T0:-:total&quot;: {
+        &quot;correct&quot;: 34,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T1:-:subset&quot;: {
+        &quot;correct&quot;: 20,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T1:-:total&quot;: {
+        &quot;correct&quot;: 39,
+        &quot;n&quot;: 58
+      }
+    },
+    &quot;format_errors&quot;: 5,
+    &quot;n&quot;: 464,
+    &quot;primary_groups&quot;: 58,
+    &quot;primary_joint&quot;: 0.15517241379310345,
+    &quot;repair_score&quot;: 0.15517241379310345,
+    &quot;truncated&quot;: 3
+  }
+}
+</code></pre>
+<p>逐题数组保留在上述完整档案；本页未重新判分。数组身份/长度：<code>{"ids": 464, "predictions": 464, "scored": 464}</code>。</p>
+<h2 id="9">第9轮</h2>
+<p><strong>当时目的与操作理由（原文）</strong></p>
+<p>Round 9: quarter-dose test of the fixed sparse layer-10 norm-gain fit, reconstructed from W0 rather than compounded.</p>
+<p><strong>本轮原记录的主分数</strong>：<code>0.15517241379310345</code>；保留原始0–1尺度。</p>
+<p><strong>选优/保护结果</strong></p>
+<pre><code class="language-json">{
+  &quot;not_selected&quot;: &quot;Format/truncation protection failed&quot;
+}
+</code></pre>
+<p><strong>完整候选定义（基线、位置、改动数量、幅度、张量身份）</strong></p>
+<pre><code class="language-json">{
+  &quot;base&quot;: &quot;w0-a8a8df63cbfe2a4bfa07bf8ace8660b3758297bf43daf2025fe2f98cb562fc5f&quot;,
+  &quot;changed_scalars&quot;: 253,
+  &quot;id&quot;: &quot;c-6fcbd979adeff148dc4524a26d079168de8a8a8e1c2148d6d39510b0063eeb53&quot;,
+  &quot;l2&quot;: 5.591960258375412,
+  &quot;parent&quot;: &quot;c-3c85a6ea55aec23ea34ea619b1e0790a00c21fdd9be133d4cde5e88e912cebae&quot;,
+  &quot;rationale&quot;: &quot;Round 9: quarter-dose test of the fixed sparse layer-10 norm-gain fit, reconstructed from W0 rather than compounded.&quot;,
+  &quot;tensors&quot;: {
+    &quot;language_model.model.layers.10.post_feedforward_layernorm.weight&quot;: {
+      &quot;base_sha256&quot;: &quot;af7761db8fb6d65d7a92deced7aa6ed9ab39d59ee3f31efbf19eff7359129043&quot;,
+      &quot;changed&quot;: 253,
+      &quot;content_sha256&quot;: &quot;2f5e3b40410b300ca8e31676ba0a70193678359db42b5a5753a0929ba5603399&quot;,
+      &quot;dtype&quot;: &quot;BF16&quot;,
+      &quot;encoding&quot;: &quot;absolute-f32-sparse-v1&quot;,
+      &quot;file&quot;: &quot;72f7688908dd4021f31f16b0ab7bcd5e283e44fbb3079a8c543be98fec663b29.npz&quot;,
+      &quot;sha256&quot;: &quot;54e16aff849f100a44c9d7eac936317def7c253114ae607f9647d6b40a53e1a0&quot;,
+      &quot;shape&quot;: [
+        2560
+      ],
+      &quot;stored_coordinates&quot;: 253
+    }
+  }
+}
+</code></pre>
+<p><strong>归档评价字段全文</strong></p>
+<pre><code class="language-json">{
+  &quot;candidate&quot;: &quot;c-6fcbd979adeff148dc4524a26d079168de8a8a8e1c2148d6d39510b0063eeb53&quot;,
+  &quot;full_development&quot;: true,
+  &quot;protocol&quot;: &quot;e3ba1ed45f1f2145e30d1e496dd9b918e56e7c6b51e26bdec65107f6aeda65bf&quot;,
+  &quot;summary&quot;: {
+    &quot;accuracy&quot;: 0.42887931034482757,
+    &quot;cells&quot;: {
+      &quot;B0:T0:-:subset&quot;: {
+        &quot;correct&quot;: 17,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T0:-:total&quot;: {
+        &quot;correct&quot;: 29,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T1:-:subset&quot;: {
+        &quot;correct&quot;: 17,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T1:-:total&quot;: {
+        &quot;correct&quot;: 27,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T0:-:subset&quot;: {
+        &quot;correct&quot;: 17,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T0:-:total&quot;: {
+        &quot;correct&quot;: 33,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T1:-:subset&quot;: {
+        &quot;correct&quot;: 20,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T1:-:total&quot;: {
+        &quot;correct&quot;: 39,
+        &quot;n&quot;: 58
+      }
+    },
+    &quot;format_errors&quot;: 5,
+    &quot;n&quot;: 464,
+    &quot;primary_groups&quot;: 58,
+    &quot;primary_joint&quot;: 0.15517241379310345,
+    &quot;repair_score&quot;: 0.15517241379310345,
+    &quot;truncated&quot;: 1
+  }
+}
+</code></pre>
+<p>逐题数组保留在上述完整档案；本页未重新判分。数组身份/长度：<code>{"ids": 464, "predictions": 464, "scored": 464}</code>。</p>
+<h2 id="10">第10轮</h2>
+<p><strong>当时目的与操作理由（原文）</strong></p>
+<p>Round 10: opposite-sign control for the fixed layer-10 sparse norm-gain fit; absolute W0-relative replacement.</p>
+<p><strong>本轮原记录的主分数</strong>：<code>0.15517241379310345</code>；保留原始0–1尺度。</p>
+<p><strong>选优/保护结果</strong></p>
+<pre><code class="language-json">{
+  &quot;not_selected&quot;: &quot;Candidate does not improve the frozen selection rule&quot;
+}
+</code></pre>
+<p><strong>完整候选定义（基线、位置、改动数量、幅度、张量身份）</strong></p>
+<pre><code class="language-json">{
+  &quot;base&quot;: &quot;w0-a8a8df63cbfe2a4bfa07bf8ace8660b3758297bf43daf2025fe2f98cb562fc5f&quot;,
+  &quot;changed_scalars&quot;: 256,
+  &quot;id&quot;: &quot;c-85d54d388453a734e5e30b33fe10cd900d03f858502264732c02634c75989a8a&quot;,
+  &quot;l2&quot;: 21.27719422622788,
+  &quot;parent&quot;: &quot;c-6fcbd979adeff148dc4524a26d079168de8a8a8e1c2148d6d39510b0063eeb53&quot;,
+  &quot;rationale&quot;: &quot;Round 10: opposite-sign control for the fixed layer-10 sparse norm-gain fit; absolute W0-relative replacement.&quot;,
+  &quot;tensors&quot;: {
+    &quot;language_model.model.layers.10.post_feedforward_layernorm.weight&quot;: {
+      &quot;base_sha256&quot;: &quot;af7761db8fb6d65d7a92deced7aa6ed9ab39d59ee3f31efbf19eff7359129043&quot;,
+      &quot;changed&quot;: 256,
+      &quot;content_sha256&quot;: &quot;78ff1e598270f484344c62cdeb82c097c25cd1c09ececf3c99d11adb06c2b697&quot;,
+      &quot;dtype&quot;: &quot;BF16&quot;,
+      &quot;encoding&quot;: &quot;absolute-f32-sparse-v1&quot;,
+      &quot;file&quot;: &quot;72f7688908dd4021f31f16b0ab7bcd5e283e44fbb3079a8c543be98fec663b29.npz&quot;,
+      &quot;sha256&quot;: &quot;8207724e4f497fbcb84a7987b1a012fe16022f77bc594705b829a407900aa191&quot;,
+      &quot;shape&quot;: [
+        2560
+      ],
+      &quot;stored_coordinates&quot;: 256
+    }
+  }
+}
+</code></pre>
+<p><strong>归档评价字段全文</strong></p>
+<pre><code class="language-json">{
+  &quot;candidate&quot;: &quot;c-85d54d388453a734e5e30b33fe10cd900d03f858502264732c02634c75989a8a&quot;,
+  &quot;full_development&quot;: true,
+  &quot;protocol&quot;: &quot;e3ba1ed45f1f2145e30d1e496dd9b918e56e7c6b51e26bdec65107f6aeda65bf&quot;,
+  &quot;summary&quot;: {
+    &quot;accuracy&quot;: 0.4224137931034483,
+    &quot;cells&quot;: {
+      &quot;B0:T0:-:subset&quot;: {
+        &quot;correct&quot;: 17,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T0:-:total&quot;: {
+        &quot;correct&quot;: 28,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T1:-:subset&quot;: {
+        &quot;correct&quot;: 18,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T1:-:total&quot;: {
+        &quot;correct&quot;: 26,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T0:-:subset&quot;: {
+        &quot;correct&quot;: 17,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T0:-:total&quot;: {
+        &quot;correct&quot;: 32,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T1:-:subset&quot;: {
+        &quot;correct&quot;: 18,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T1:-:total&quot;: {
+        &quot;correct&quot;: 40,
+        &quot;n&quot;: 58
+      }
+    },
+    &quot;format_errors&quot;: 4,
+    &quot;n&quot;: 464,
+    &quot;primary_groups&quot;: 58,
+    &quot;primary_joint&quot;: 0.15517241379310345,
+    &quot;repair_score&quot;: 0.15517241379310345,
+    &quot;truncated&quot;: 1
+  }
+}
+</code></pre>
+<p>逐题数组保留在上述完整档案；本页未重新判分。数组身份/长度：<code>{"ids": 464, "predictions": 464, "scored": 464}</code>。</p>
+<h2 id="11">第11轮</h2>
+<p><strong>当时目的与操作理由（原文）</strong></p>
+<p>Round 11: test specificity of the fitted coordinate-to-offset assignment by a fixed seeded permutation, reconstructed from W0.</p>
+<p><strong>本轮原记录的主分数</strong>：<code>0.15517241379310345</code>；保留原始0–1尺度。</p>
+<p><strong>选优/保护结果</strong></p>
+<pre><code class="language-json">{
+  &quot;not_selected&quot;: &quot;Candidate does not improve the frozen selection rule&quot;
+}
+</code></pre>
+<p><strong>完整候选定义（基线、位置、改动数量、幅度、张量身份）</strong></p>
+<pre><code class="language-json">{
+  &quot;base&quot;: &quot;w0-a8a8df63cbfe2a4bfa07bf8ace8660b3758297bf43daf2025fe2f98cb562fc5f&quot;,
+  &quot;changed_scalars&quot;: 255,
+  &quot;id&quot;: &quot;c-9a9d3fb778055472a9cb7e4ee52eb093da314dcbe2bb5d308370040fd31bea47&quot;,
+  &quot;l2&quot;: 21.474213506043125,
+  &quot;parent&quot;: &quot;c-85d54d388453a734e5e30b33fe10cd900d03f858502264732c02634c75989a8a&quot;,
+  &quot;rationale&quot;: &quot;Round 11: test specificity of the fitted coordinate-to-offset assignment by a fixed seeded permutation, reconstructed from W0.&quot;,
+  &quot;tensors&quot;: {
+    &quot;language_model.model.layers.10.post_feedforward_layernorm.weight&quot;: {
+      &quot;base_sha256&quot;: &quot;af7761db8fb6d65d7a92deced7aa6ed9ab39d59ee3f31efbf19eff7359129043&quot;,
+      &quot;changed&quot;: 255,
+      &quot;content_sha256&quot;: &quot;0b7581f8dc18cc2d857052d249b7bcf6aefbd10c32e2b2d2def8490c7c2b2189&quot;,
+      &quot;dtype&quot;: &quot;BF16&quot;,
+      &quot;encoding&quot;: &quot;absolute-f32-sparse-v1&quot;,
+      &quot;file&quot;: &quot;72f7688908dd4021f31f16b0ab7bcd5e283e44fbb3079a8c543be98fec663b29.npz&quot;,
+      &quot;sha256&quot;: &quot;ce7dd52e6b8c96f61a5bcfcea49e19f20ceb4e1a34e902ab4dbd0a084d8cfb5f&quot;,
+      &quot;shape&quot;: [
+        2560
+      ],
+      &quot;stored_coordinates&quot;: 255
+    }
+  }
+}
+</code></pre>
+<p><strong>归档评价字段全文</strong></p>
+<pre><code class="language-json">{
+  &quot;candidate&quot;: &quot;c-9a9d3fb778055472a9cb7e4ee52eb093da314dcbe2bb5d308370040fd31bea47&quot;,
+  &quot;full_development&quot;: true,
+  &quot;protocol&quot;: &quot;e3ba1ed45f1f2145e30d1e496dd9b918e56e7c6b51e26bdec65107f6aeda65bf&quot;,
+  &quot;summary&quot;: {
+    &quot;accuracy&quot;: 0.4353448275862069,
+    &quot;cells&quot;: {
+      &quot;B0:T0:-:subset&quot;: {
+        &quot;correct&quot;: 17,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T0:-:total&quot;: {
+        &quot;correct&quot;: 28,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T1:-:subset&quot;: {
+        &quot;correct&quot;: 19,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T1:-:total&quot;: {
+        &quot;correct&quot;: 27,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T0:-:subset&quot;: {
+        &quot;correct&quot;: 17,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T0:-:total&quot;: {
+        &quot;correct&quot;: 34,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T1:-:subset&quot;: {
+        &quot;correct&quot;: 20,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T1:-:total&quot;: {
+        &quot;correct&quot;: 40,
+        &quot;n&quot;: 58
+      }
+    },
+    &quot;format_errors&quot;: 4,
+    &quot;n&quot;: 464,
+    &quot;primary_groups&quot;: 58,
+    &quot;primary_joint&quot;: 0.15517241379310345,
+    &quot;repair_score&quot;: 0.15517241379310345,
+    &quot;truncated&quot;: 1
+  }
+}
+</code></pre>
+<p>逐题数组保留在上述完整档案；本页未重新判分。数组身份/长度：<code>{"ids": 464, "predictions": 464, "scored": 464}</code>。</p>
+<h2 id="12">第12轮</h2>
+<p><strong>当时目的与操作理由（原文）</strong></p>
+<p>Round 12: bounded context-dependent layer-10 MLP write correction using only reproduced failure/success contrasts.</p>
+<p><strong>本轮原记录的主分数</strong>：<code>0.15517241379310345</code>；保留原始0–1尺度。</p>
+<p><strong>选优/保护结果</strong></p>
+<pre><code class="language-json">{
+  &quot;not_selected&quot;: &quot;Format/truncation protection failed&quot;
+}
+</code></pre>
+<p><strong>完整候选定义（基线、位置、改动数量、幅度、张量身份）</strong></p>
+<pre><code class="language-json">{
+  &quot;base&quot;: &quot;w0-a8a8df63cbfe2a4bfa07bf8ace8660b3758297bf43daf2025fe2f98cb562fc5f&quot;,
+  &quot;changed_scalars&quot;: 320117,
+  &quot;id&quot;: &quot;c-c8f65464ad2c443cc3422afb83ca5fd2d80e805fbab186fe8feeb87fb1d624d8&quot;,
+  &quot;l2&quot;: 0.77918319881508,
+  &quot;parent&quot;: &quot;w0-a8a8df63cbfe2a4bfa07bf8ace8660b3758297bf43daf2025fe2f98cb562fc5f&quot;,
+  &quot;rationale&quot;: &quot;Round 12: bounded context-dependent layer-10 MLP write correction using only reproduced failure/success contrasts.&quot;,
+  &quot;tensors&quot;: {
+    &quot;language_model.model.layers.10.mlp.down_proj.weight&quot;: {
+      &quot;base_sha256&quot;: &quot;2d79f8adf60d2ffb66f98455b103f3718c04debc473659a45001f78bb4c20b44&quot;,
+      &quot;changed&quot;: 320117,
+      &quot;content_sha256&quot;: &quot;749d33ce668cd86a2087c954bf5bf2320fe5c8364682e122684923c0cbe0b3a1&quot;,
+      &quot;dtype&quot;: &quot;BF16&quot;,
+      &quot;encoding&quot;: &quot;absolute-f32-sparse-v1&quot;,
+      &quot;file&quot;: &quot;d38a0fd5a0424c05e758141a67a45de0ba98438cca23030d5ef4f54800653cf6.npz&quot;,
+      &quot;sha256&quot;: &quot;6c29cef14710ef0cad415fab19cf164086eebfce9f3c4d5252d25189169c972e&quot;,
+      &quot;shape&quot;: [
+        2560,
+        10240
+      ],
+      &quot;stored_coordinates&quot;: 320117
+    }
+  }
+}
+</code></pre>
+<p><strong>归档评价字段全文</strong></p>
+<pre><code class="language-json">{
+  &quot;candidate&quot;: &quot;c-c8f65464ad2c443cc3422afb83ca5fd2d80e805fbab186fe8feeb87fb1d624d8&quot;,
+  &quot;full_development&quot;: true,
+  &quot;protocol&quot;: &quot;e3ba1ed45f1f2145e30d1e496dd9b918e56e7c6b51e26bdec65107f6aeda65bf&quot;,
+  &quot;summary&quot;: {
+    &quot;accuracy&quot;: 0.4267241379310345,
+    &quot;cells&quot;: {
+      &quot;B0:T0:-:subset&quot;: {
+        &quot;correct&quot;: 17,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T0:-:total&quot;: {
+        &quot;correct&quot;: 29,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T1:-:subset&quot;: {
+        &quot;correct&quot;: 17,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T1:-:total&quot;: {
+        &quot;correct&quot;: 26,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T0:-:subset&quot;: {
+        &quot;correct&quot;: 17,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T0:-:total&quot;: {
+        &quot;correct&quot;: 33,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T1:-:subset&quot;: {
+        &quot;correct&quot;: 20,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T1:-:total&quot;: {
+        &quot;correct&quot;: 39,
+        &quot;n&quot;: 58
+      }
+    },
+    &quot;format_errors&quot;: 5,
+    &quot;n&quot;: 464,
+    &quot;primary_groups&quot;: 58,
+    &quot;primary_joint&quot;: 0.15517241379310345,
+    &quot;repair_score&quot;: 0.15517241379310345,
+    &quot;truncated&quot;: 3
+  }
+}
+</code></pre>
+<p>逐题数组保留在上述完整档案；本页未重新判分。数组身份/长度：<code>{"ids": 464, "predictions": 464, "scored": 464}</code>。</p>
+<h2 id="13">第13轮</h2>
+<p><strong>当时目的与操作理由（原文）</strong></p>
+<p>Round 13: fourfold-strength test of the fixed context-dependent layer-10 MLP correction, reconstructed from W0.</p>
+<p><strong>本轮原记录的主分数</strong>：<code>0.15517241379310345</code>；保留原始0–1尺度。</p>
+<p><strong>选优/保护结果</strong></p>
+<pre><code class="language-json">{
+  &quot;not_selected&quot;: &quot;Candidate does not improve the frozen selection rule&quot;
+}
+</code></pre>
+<p><strong>完整候选定义（基线、位置、改动数量、幅度、张量身份）</strong></p>
+<pre><code class="language-json">{
+  &quot;base&quot;: &quot;w0-a8a8df63cbfe2a4bfa07bf8ace8660b3758297bf43daf2025fe2f98cb562fc5f&quot;,
+  &quot;changed_scalars&quot;: 325784,
+  &quot;id&quot;: &quot;c-da458586f51a0f64d12d3b16af1ceb493c2b468458ec7229f7b6610a8697e7ce&quot;,
+  &quot;l2&quot;: 3.1166515305393143,
+  &quot;parent&quot;: &quot;c-c8f65464ad2c443cc3422afb83ca5fd2d80e805fbab186fe8feeb87fb1d624d8&quot;,
+  &quot;rationale&quot;: &quot;Round 13: fourfold-strength test of the fixed context-dependent layer-10 MLP correction, reconstructed from W0.&quot;,
+  &quot;tensors&quot;: {
+    &quot;language_model.model.layers.10.mlp.down_proj.weight&quot;: {
+      &quot;base_sha256&quot;: &quot;2d79f8adf60d2ffb66f98455b103f3718c04debc473659a45001f78bb4c20b44&quot;,
+      &quot;changed&quot;: 325784,
+      &quot;content_sha256&quot;: &quot;a7e7a474c9ce5643bb571c411c9a0c3fba760cfc3614a3f4bd121fd3e15a0a0a&quot;,
+      &quot;dtype&quot;: &quot;BF16&quot;,
+      &quot;encoding&quot;: &quot;absolute-f32-sparse-v1&quot;,
+      &quot;file&quot;: &quot;d38a0fd5a0424c05e758141a67a45de0ba98438cca23030d5ef4f54800653cf6.npz&quot;,
+      &quot;sha256&quot;: &quot;8691445a033d05a831ea5af7553ee524ac630b9fc62f5b32fee45948cdf4db41&quot;,
+      &quot;shape&quot;: [
+        2560,
+        10240
+      ],
+      &quot;stored_coordinates&quot;: 325784
+    }
+  }
+}
+</code></pre>
+<p><strong>归档评价字段全文</strong></p>
+<pre><code class="language-json">{
+  &quot;candidate&quot;: &quot;c-da458586f51a0f64d12d3b16af1ceb493c2b468458ec7229f7b6610a8697e7ce&quot;,
+  &quot;full_development&quot;: true,
+  &quot;protocol&quot;: &quot;e3ba1ed45f1f2145e30d1e496dd9b918e56e7c6b51e26bdec65107f6aeda65bf&quot;,
+  &quot;summary&quot;: {
+    &quot;accuracy&quot;: 0.42887931034482757,
+    &quot;cells&quot;: {
+      &quot;B0:T0:-:subset&quot;: {
+        &quot;correct&quot;: 16,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T0:-:total&quot;: {
+        &quot;correct&quot;: 29,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T1:-:subset&quot;: {
+        &quot;correct&quot;: 17,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T1:-:total&quot;: {
+        &quot;correct&quot;: 27,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T0:-:subset&quot;: {
+        &quot;correct&quot;: 17,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T0:-:total&quot;: {
+        &quot;correct&quot;: 34,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T1:-:subset&quot;: {
+        &quot;correct&quot;: 19,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T1:-:total&quot;: {
+        &quot;correct&quot;: 40,
+        &quot;n&quot;: 58
+      }
+    },
+    &quot;format_errors&quot;: 4,
+    &quot;n&quot;: 464,
+    &quot;primary_groups&quot;: 58,
+    &quot;primary_joint&quot;: 0.15517241379310345,
+    &quot;repair_score&quot;: 0.15517241379310345,
+    &quot;truncated&quot;: 3
+  }
+}
+</code></pre>
+<p>逐题数组保留在上述完整档案；本页未重新判分。数组身份/长度：<code>{"ids": 464, "predictions": 464, "scored": 464}</code>。</p>
+<h2 id="14">第14轮</h2>
+<p><strong>当时目的与操作理由（原文）</strong></p>
+<p>Round 14: equal-strength opposite-sign control for the context-dependent layer-10 MLP patch.</p>
+<p><strong>本轮原记录的主分数</strong>：<code>0.1724137931034483</code>；保留原始0–1尺度。</p>
+<p><strong>选优/保护结果</strong></p>
+<pre><code class="language-json">{
+  &quot;not_selected&quot;: &quot;Format/truncation protection failed&quot;
+}
+</code></pre>
+<p><strong>完整候选定义（基线、位置、改动数量、幅度、张量身份）</strong></p>
+<pre><code class="language-json">{
+  &quot;base&quot;: &quot;w0-a8a8df63cbfe2a4bfa07bf8ace8660b3758297bf43daf2025fe2f98cb562fc5f&quot;,
+  &quot;changed_scalars&quot;: 325783,
+  &quot;id&quot;: &quot;c-2ad0f3e5c4095a1f1e84100f66b9e69cca5559ce6bf5c207799d2fd6515b6cab&quot;,
+  &quot;l2&quot;: 3.1166547163993816,
+  &quot;parent&quot;: &quot;c-da458586f51a0f64d12d3b16af1ceb493c2b468458ec7229f7b6610a8697e7ce&quot;,
+  &quot;rationale&quot;: &quot;Round 14: equal-strength opposite-sign control for the context-dependent layer-10 MLP patch.&quot;,
+  &quot;tensors&quot;: {
+    &quot;language_model.model.layers.10.mlp.down_proj.weight&quot;: {
+      &quot;base_sha256&quot;: &quot;2d79f8adf60d2ffb66f98455b103f3718c04debc473659a45001f78bb4c20b44&quot;,
+      &quot;changed&quot;: 325783,
+      &quot;content_sha256&quot;: &quot;7a4072d1e1dfc380477cd748dcdfca078171b3ef1182231100fe8a4c9a127eef&quot;,
+      &quot;dtype&quot;: &quot;BF16&quot;,
+      &quot;encoding&quot;: &quot;absolute-f32-sparse-v1&quot;,
+      &quot;file&quot;: &quot;d38a0fd5a0424c05e758141a67a45de0ba98438cca23030d5ef4f54800653cf6.npz&quot;,
+      &quot;sha256&quot;: &quot;9e09e4946ac31bddc66fdc115afd550720172b376db312ab3e25e66b2a7707f2&quot;,
+      &quot;shape&quot;: [
+        2560,
+        10240
+      ],
+      &quot;stored_coordinates&quot;: 325783
+    }
+  }
+}
+</code></pre>
+<p><strong>归档评价字段全文</strong></p>
+<pre><code class="language-json">{
+  &quot;candidate&quot;: &quot;c-2ad0f3e5c4095a1f1e84100f66b9e69cca5559ce6bf5c207799d2fd6515b6cab&quot;,
+  &quot;full_development&quot;: true,
+  &quot;protocol&quot;: &quot;e3ba1ed45f1f2145e30d1e496dd9b918e56e7c6b51e26bdec65107f6aeda65bf&quot;,
+  &quot;summary&quot;: {
+    &quot;accuracy&quot;: 0.4202586206896552,
+    &quot;cells&quot;: {
+      &quot;B0:T0:-:subset&quot;: {
+        &quot;correct&quot;: 17,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T0:-:total&quot;: {
+        &quot;correct&quot;: 28,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T1:-:subset&quot;: {
+        &quot;correct&quot;: 17,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T1:-:total&quot;: {
+        &quot;correct&quot;: 29,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T0:-:subset&quot;: {
+        &quot;correct&quot;: 16,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T0:-:total&quot;: {
+        &quot;correct&quot;: 30,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T1:-:subset&quot;: {
+        &quot;correct&quot;: 19,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T1:-:total&quot;: {
+        &quot;correct&quot;: 39,
+        &quot;n&quot;: 58
+      }
+    },
+    &quot;format_errors&quot;: 6,
+    &quot;n&quot;: 464,
+    &quot;primary_groups&quot;: 58,
+    &quot;primary_joint&quot;: 0.1724137931034483,
+    &quot;repair_score&quot;: 0.1724137931034483,
+    &quot;truncated&quot;: 4
+  }
+}
+</code></pre>
+<p>逐题数组保留在上述完整档案；本页未重新判分。数组身份/长度：<code>{"ids": 464, "predictions": 464, "scored": 464}</code>。</p>
+<h2 id="15">第15轮</h2>
+<p><strong>当时目的与操作理由（原文）</strong></p>
+<p>Round 15: source-to-target permutation control for the conditional layer-10 MLP fit.</p>
+<p><strong>本轮原记录的主分数</strong>：<code>0.16379310344827586</code>；保留原始0–1尺度。</p>
+<p><strong>选优/保护结果</strong></p>
+<pre><code class="language-json">{
+  &quot;not_selected&quot;: &quot;Candidate does not improve the frozen selection rule&quot;
+}
+</code></pre>
+<p><strong>完整候选定义（基线、位置、改动数量、幅度、张量身份）</strong></p>
+<pre><code class="language-json">{
+  &quot;base&quot;: &quot;w0-a8a8df63cbfe2a4bfa07bf8ace8660b3758297bf43daf2025fe2f98cb562fc5f&quot;,
+  &quot;changed_scalars&quot;: 325538,
+  &quot;id&quot;: &quot;c-72cd35b996efdf2a869d4556d236f84681b3e06a6379d1b35073336c022af422&quot;,
+  &quot;l2&quot;: 3.116654615573034,
+  &quot;parent&quot;: &quot;c-2ad0f3e5c4095a1f1e84100f66b9e69cca5559ce6bf5c207799d2fd6515b6cab&quot;,
+  &quot;rationale&quot;: &quot;Round 15: source-to-target permutation control for the conditional layer-10 MLP fit.&quot;,
+  &quot;tensors&quot;: {
+    &quot;language_model.model.layers.10.mlp.down_proj.weight&quot;: {
+      &quot;base_sha256&quot;: &quot;2d79f8adf60d2ffb66f98455b103f3718c04debc473659a45001f78bb4c20b44&quot;,
+      &quot;changed&quot;: 325538,
+      &quot;content_sha256&quot;: &quot;6f160d23065a7a45804e8529ab552e50ee261c803f0d0cea2bfc07ea660955a5&quot;,
+      &quot;dtype&quot;: &quot;BF16&quot;,
+      &quot;encoding&quot;: &quot;absolute-f32-sparse-v1&quot;,
+      &quot;file&quot;: &quot;d38a0fd5a0424c05e758141a67a45de0ba98438cca23030d5ef4f54800653cf6.npz&quot;,
+      &quot;sha256&quot;: &quot;fc74799e74b6efc0ede0defc0db13482a573c7271ead2d326936288badde7008&quot;,
+      &quot;shape&quot;: [
+        2560,
+        10240
+      ],
+      &quot;stored_coordinates&quot;: 325538
+    }
+  }
+}
+</code></pre>
+<p><strong>归档评价字段全文</strong></p>
+<pre><code class="language-json">{
+  &quot;candidate&quot;: &quot;c-72cd35b996efdf2a869d4556d236f84681b3e06a6379d1b35073336c022af422&quot;,
+  &quot;full_development&quot;: true,
+  &quot;protocol&quot;: &quot;e3ba1ed45f1f2145e30d1e496dd9b918e56e7c6b51e26bdec65107f6aeda65bf&quot;,
+  &quot;summary&quot;: {
+    &quot;accuracy&quot;: 0.4331896551724138,
+    &quot;cells&quot;: {
+      &quot;B0:T0:-:subset&quot;: {
+        &quot;correct&quot;: 17,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T0:-:total&quot;: {
+        &quot;correct&quot;: 28,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T1:-:subset&quot;: {
+        &quot;correct&quot;: 19,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T1:-:total&quot;: {
+        &quot;correct&quot;: 28,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T0:-:subset&quot;: {
+        &quot;correct&quot;: 17,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T0:-:total&quot;: {
+        &quot;correct&quot;: 32,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T1:-:subset&quot;: {
+        &quot;correct&quot;: 20,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T1:-:total&quot;: {
+        &quot;correct&quot;: 40,
+        &quot;n&quot;: 58
+      }
+    },
+    &quot;format_errors&quot;: 4,
+    &quot;n&quot;: 464,
+    &quot;primary_groups&quot;: 58,
+    &quot;primary_joint&quot;: 0.15517241379310345,
+    &quot;repair_score&quot;: 0.16379310344827586,
+    &quot;truncated&quot;: 3
+  }
+}
+</code></pre>
+<p>逐题数组保留在上述完整档案；本页未重新判分。数组身份/长度：<code>{"ids": 464, "predictions": 464, "scored": 464}</code>。</p>
+<h2 id="16">第16轮</h2>
+<p><strong>当时目的与操作理由（原文）</strong></p>
+<p>Round 16: test 10% attenuation of layer-7 attention head 3 after reproduced-contrast screening.</p>
+<p><strong>本轮原记录的主分数</strong>：<code>0.15517241379310345</code>；保留原始0–1尺度。</p>
+<p><strong>选优/保护结果</strong></p>
+<pre><code class="language-json">{
+  &quot;not_selected&quot;: &quot;Format/truncation protection failed&quot;
+}
+</code></pre>
+<p><strong>完整候选定义（基线、位置、改动数量、幅度、张量身份）</strong></p>
+<pre><code class="language-json">{
+  &quot;base&quot;: &quot;w0-a8a8df63cbfe2a4bfa07bf8ace8660b3758297bf43daf2025fe2f98cb562fc5f&quot;,
+  &quot;changed_scalars&quot;: 655360,
+  &quot;id&quot;: &quot;c-2e8329f42f4b36320b032d66f7049211ed7cdc3f8a3fc61265500f17761080e9&quot;,
+  &quot;l2&quot;: 1.6723784999681621,
+  &quot;parent&quot;: &quot;w0-a8a8df63cbfe2a4bfa07bf8ace8660b3758297bf43daf2025fe2f98cb562fc5f&quot;,
+  &quot;rationale&quot;: &quot;Round 16: test 10% attenuation of layer-7 attention head 3 after reproduced-contrast screening.&quot;,
+  &quot;tensors&quot;: {
+    &quot;language_model.model.layers.7.self_attn.o_proj.weight&quot;: {
+      &quot;base_sha256&quot;: &quot;00425c6d47ec3dfb015ad177d26a1b94be12ce7675dfefc2588ae79f859de32e&quot;,
+      &quot;changed&quot;: 655360,
+      &quot;content_sha256&quot;: &quot;19580feb7cb1730e28769237af7b283eb40f1a0dfa0ccbb3294541727ad85010&quot;,
+      &quot;dtype&quot;: &quot;BF16&quot;,
+      &quot;encoding&quot;: &quot;absolute-f32-sparse-v1&quot;,
+      &quot;file&quot;: &quot;97aee9ae536d262afa8e953162e58cf011fe85d13af21e034533efa77e588e26.npz&quot;,
+      &quot;sha256&quot;: &quot;7fe9c6177d4516f307336b4d5f9ef535ef96b8be9771922f1d6c45a73f519c8f&quot;,
+      &quot;shape&quot;: [
+        2560,
+        2048
+      ],
+      &quot;stored_coordinates&quot;: 655360
+    }
+  }
+}
+</code></pre>
+<p><strong>归档评价字段全文</strong></p>
+<pre><code class="language-json">{
+  &quot;candidate&quot;: &quot;c-2e8329f42f4b36320b032d66f7049211ed7cdc3f8a3fc61265500f17761080e9&quot;,
+  &quot;full_development&quot;: true,
+  &quot;protocol&quot;: &quot;e3ba1ed45f1f2145e30d1e496dd9b918e56e7c6b51e26bdec65107f6aeda65bf&quot;,
+  &quot;summary&quot;: {
+    &quot;accuracy&quot;: 0.4267241379310345,
+    &quot;cells&quot;: {
+      &quot;B0:T0:-:subset&quot;: {
+        &quot;correct&quot;: 17,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T0:-:total&quot;: {
+        &quot;correct&quot;: 29,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T1:-:subset&quot;: {
+        &quot;correct&quot;: 16,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T1:-:total&quot;: {
+        &quot;correct&quot;: 27,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T0:-:subset&quot;: {
+        &quot;correct&quot;: 17,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T0:-:total&quot;: {
+        &quot;correct&quot;: 32,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T1:-:subset&quot;: {
+        &quot;correct&quot;: 20,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T1:-:total&quot;: {
+        &quot;correct&quot;: 40,
+        &quot;n&quot;: 58
+      }
+    },
+    &quot;format_errors&quot;: 7,
+    &quot;n&quot;: 464,
+    &quot;primary_groups&quot;: 58,
+    &quot;primary_joint&quot;: 0.15517241379310345,
+    &quot;repair_score&quot;: 0.15517241379310345,
+    &quot;truncated&quot;: 2
+  }
+}
+</code></pre>
+<p>逐题数组保留在上述完整档案；本页未重新判分。数组身份/长度：<code>{"ids": 464, "predictions": 464, "scored": 464}</code>。</p>
+<h2 id="17">第17轮</h2>
+<p><strong>当时目的与操作理由（原文）</strong></p>
+<p>Round 17: preplanned fivefold-dose test of layer-7 head-3 attenuation.</p>
+<p><strong>本轮原记录的主分数</strong>：<code>0.16379310344827586</code>；保留原始0–1尺度。</p>
+<p><strong>选优/保护结果</strong></p>
+<pre><code class="language-json">{
+  &quot;not_selected&quot;: &quot;Format/truncation protection failed&quot;
+}
+</code></pre>
+<p><strong>完整候选定义（基线、位置、改动数量、幅度、张量身份）</strong></p>
+<pre><code class="language-json">{
+  &quot;base&quot;: &quot;w0-a8a8df63cbfe2a4bfa07bf8ace8660b3758297bf43daf2025fe2f98cb562fc5f&quot;,
+  &quot;changed_scalars&quot;: 655360,
+  &quot;id&quot;: &quot;c-90ceb0794dc1676a002f413ab2c27befbcaa8fbd38bf3d9037f18f21c807ab17&quot;,
+  &quot;l2&quot;: 8.360465490920674,
+  &quot;parent&quot;: &quot;c-2e8329f42f4b36320b032d66f7049211ed7cdc3f8a3fc61265500f17761080e9&quot;,
+  &quot;rationale&quot;: &quot;Round 17: preplanned fivefold-dose test of layer-7 head-3 attenuation.&quot;,
+  &quot;tensors&quot;: {
+    &quot;language_model.model.layers.7.self_attn.o_proj.weight&quot;: {
+      &quot;base_sha256&quot;: &quot;00425c6d47ec3dfb015ad177d26a1b94be12ce7675dfefc2588ae79f859de32e&quot;,
+      &quot;changed&quot;: 655360,
+      &quot;content_sha256&quot;: &quot;14b4c854be15907389fd258a1073530db935602fb624d5da0154c841e8d4d96c&quot;,
+      &quot;dtype&quot;: &quot;BF16&quot;,
+      &quot;encoding&quot;: &quot;absolute-f32-sparse-v1&quot;,
+      &quot;file&quot;: &quot;97aee9ae536d262afa8e953162e58cf011fe85d13af21e034533efa77e588e26.npz&quot;,
+      &quot;sha256&quot;: &quot;00ac82d3b46e68ed8d2480d2b5bf66ff9369ba3f8d680234e255bd5edc440fe9&quot;,
+      &quot;shape&quot;: [
+        2560,
+        2048
+      ],
+      &quot;stored_coordinates&quot;: 655360
+    }
+  }
+}
+</code></pre>
+<p><strong>归档评价字段全文</strong></p>
+<pre><code class="language-json">{
+  &quot;candidate&quot;: &quot;c-90ceb0794dc1676a002f413ab2c27befbcaa8fbd38bf3d9037f18f21c807ab17&quot;,
+  &quot;full_development&quot;: true,
+  &quot;protocol&quot;: &quot;e3ba1ed45f1f2145e30d1e496dd9b918e56e7c6b51e26bdec65107f6aeda65bf&quot;,
+  &quot;summary&quot;: {
+    &quot;accuracy&quot;: 0.4331896551724138,
+    &quot;cells&quot;: {
+      &quot;B0:T0:-:subset&quot;: {
+        &quot;correct&quot;: 15,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T0:-:total&quot;: {
+        &quot;correct&quot;: 29,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T1:-:subset&quot;: {
+        &quot;correct&quot;: 17,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T1:-:total&quot;: {
+        &quot;correct&quot;: 29,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T0:-:subset&quot;: {
+        &quot;correct&quot;: 17,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T0:-:total&quot;: {
+        &quot;correct&quot;: 34,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T1:-:subset&quot;: {
+        &quot;correct&quot;: 20,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T1:-:total&quot;: {
+        &quot;correct&quot;: 40,
+        &quot;n&quot;: 58
+      }
+    },
+    &quot;format_errors&quot;: 8,
+    &quot;n&quot;: 464,
+    &quot;primary_groups&quot;: 58,
+    &quot;primary_joint&quot;: 0.15517241379310345,
+    &quot;repair_score&quot;: 0.16379310344827586,
+    &quot;truncated&quot;: 3
+  }
+}
+</code></pre>
+<p>逐题数组保留在上述完整档案；本页未重新判分。数组身份/长度：<code>{"ids": 464, "predictions": 464, "scored": 464}</code>。</p>
+<h2 id="18">第18轮</h2>
+<p><strong>当时目的与操作理由（原文）</strong></p>
+<p>Round 18: opposite-sign control for layer-7 head-3 attenuation.</p>
+<p><strong>本轮原记录的主分数</strong>：<code>0.14655172413793102</code>；保留原始0–1尺度。</p>
+<p><strong>选优/保护结果</strong></p>
+<pre><code class="language-json">{
+  &quot;not_selected&quot;: &quot;Protection failed in wording/order/prompt cell: B1:T0:-:total&quot;
+}
+</code></pre>
+<p><strong>完整候选定义（基线、位置、改动数量、幅度、张量身份）</strong></p>
+<pre><code class="language-json">{
+  &quot;base&quot;: &quot;w0-a8a8df63cbfe2a4bfa07bf8ace8660b3758297bf43daf2025fe2f98cb562fc5f&quot;,
+  &quot;changed_scalars&quot;: 655360,
+  &quot;id&quot;: &quot;c-4c4ef0b96c105bba4f60040bed18b13399c544879679c8c93d0969acd6c65d3a&quot;,
+  &quot;l2&quot;: 8.360256427926407,
+  &quot;parent&quot;: &quot;c-90ceb0794dc1676a002f413ab2c27befbcaa8fbd38bf3d9037f18f21c807ab17&quot;,
+  &quot;rationale&quot;: &quot;Round 18: opposite-sign control for layer-7 head-3 attenuation.&quot;,
+  &quot;tensors&quot;: {
+    &quot;language_model.model.layers.7.self_attn.o_proj.weight&quot;: {
+      &quot;base_sha256&quot;: &quot;00425c6d47ec3dfb015ad177d26a1b94be12ce7675dfefc2588ae79f859de32e&quot;,
+      &quot;changed&quot;: 655360,
+      &quot;content_sha256&quot;: &quot;592804193a3b2e3f10193a384162a2deeb94487c40248a459167458ffe812719&quot;,
+      &quot;dtype&quot;: &quot;BF16&quot;,
+      &quot;encoding&quot;: &quot;absolute-f32-sparse-v1&quot;,
+      &quot;file&quot;: &quot;97aee9ae536d262afa8e953162e58cf011fe85d13af21e034533efa77e588e26.npz&quot;,
+      &quot;sha256&quot;: &quot;d3e60b171c90e8ce5fe04a06c60eff2ca11b3de242d392dd94d5134e2a156688&quot;,
+      &quot;shape&quot;: [
+        2560,
+        2048
+      ],
+      &quot;stored_coordinates&quot;: 655360
+    }
+  }
+}
+</code></pre>
+<p><strong>归档评价字段全文</strong></p>
+<pre><code class="language-json">{
+  &quot;candidate&quot;: &quot;c-4c4ef0b96c105bba4f60040bed18b13399c544879679c8c93d0969acd6c65d3a&quot;,
+  &quot;full_development&quot;: true,
+  &quot;protocol&quot;: &quot;e3ba1ed45f1f2145e30d1e496dd9b918e56e7c6b51e26bdec65107f6aeda65bf&quot;,
+  &quot;summary&quot;: {
+    &quot;accuracy&quot;: 0.4224137931034483,
+    &quot;cells&quot;: {
+      &quot;B0:T0:-:subset&quot;: {
+        &quot;correct&quot;: 17,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T0:-:total&quot;: {
+        &quot;correct&quot;: 29,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T1:-:subset&quot;: {
+        &quot;correct&quot;: 18,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T1:-:total&quot;: {
+        &quot;correct&quot;: 26,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T0:-:subset&quot;: {
+        &quot;correct&quot;: 18,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T0:-:total&quot;: {
+        &quot;correct&quot;: 31,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T1:-:subset&quot;: {
+        &quot;correct&quot;: 18,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T1:-:total&quot;: {
+        &quot;correct&quot;: 39,
+        &quot;n&quot;: 58
+      }
+    },
+    &quot;format_errors&quot;: 3,
+    &quot;n&quot;: 464,
+    &quot;primary_groups&quot;: 58,
+    &quot;primary_joint&quot;: 0.15517241379310345,
+    &quot;repair_score&quot;: 0.14655172413793102,
+    &quot;truncated&quot;: 2
+  }
+}
+</code></pre>
+<p>逐题数组保留在上述完整档案；本页未重新判分。数组身份/长度：<code>{"ids": 464, "predictions": 464, "scored": 464}</code>。</p>
+<h2 id="19">第19轮</h2>
+<p><strong>当时目的与操作理由（原文）</strong></p>
+<p>Round 19: preselected, norm-matched layer-7 head-4 attenuation control.</p>
+<p><strong>本轮原记录的主分数</strong>：<code>0.16379310344827586</code>；保留原始0–1尺度。</p>
+<p><strong>选优/保护结果</strong></p>
+<pre><code class="language-json">{
+  &quot;not_selected&quot;: &quot;Protection failed in wording/order/prompt cell: B1:T0:-:total&quot;
+}
+</code></pre>
+<p><strong>完整候选定义（基线、位置、改动数量、幅度、张量身份）</strong></p>
+<pre><code class="language-json">{
+  &quot;base&quot;: &quot;w0-a8a8df63cbfe2a4bfa07bf8ace8660b3758297bf43daf2025fe2f98cb562fc5f&quot;,
+  &quot;changed_scalars&quot;: 655360,
+  &quot;id&quot;: &quot;c-d0ea435cf315594c1edb20c55e01599264a06e3f90035a4a1e016bd110db8e79&quot;,
+  &quot;l2&quot;: 8.360875693025152,
+  &quot;parent&quot;: &quot;c-4c4ef0b96c105bba4f60040bed18b13399c544879679c8c93d0969acd6c65d3a&quot;,
+  &quot;rationale&quot;: &quot;Round 19: preselected, norm-matched layer-7 head-4 attenuation control.&quot;,
+  &quot;tensors&quot;: {
+    &quot;language_model.model.layers.7.self_attn.o_proj.weight&quot;: {
+      &quot;base_sha256&quot;: &quot;00425c6d47ec3dfb015ad177d26a1b94be12ce7675dfefc2588ae79f859de32e&quot;,
+      &quot;changed&quot;: 655360,
+      &quot;content_sha256&quot;: &quot;bd476697ffe46705d1f570afae651a3f64b1505e4dcc9e96b7a321a34f331f38&quot;,
+      &quot;dtype&quot;: &quot;BF16&quot;,
+      &quot;encoding&quot;: &quot;absolute-f32-sparse-v1&quot;,
+      &quot;file&quot;: &quot;97aee9ae536d262afa8e953162e58cf011fe85d13af21e034533efa77e588e26.npz&quot;,
+      &quot;sha256&quot;: &quot;a8046737a2aac1447e8569bceb922bd29bda9192734883aa73459a329b1cd7c7&quot;,
+      &quot;shape&quot;: [
+        2560,
+        2048
+      ],
+      &quot;stored_coordinates&quot;: 655360
+    }
+  }
+}
+</code></pre>
+<p><strong>归档评价字段全文</strong></p>
+<pre><code class="language-json">{
+  &quot;candidate&quot;: &quot;c-d0ea435cf315594c1edb20c55e01599264a06e3f90035a4a1e016bd110db8e79&quot;,
+  &quot;full_development&quot;: true,
+  &quot;protocol&quot;: &quot;e3ba1ed45f1f2145e30d1e496dd9b918e56e7c6b51e26bdec65107f6aeda65bf&quot;,
+  &quot;summary&quot;: {
+    &quot;accuracy&quot;: 0.42887931034482757,
+    &quot;cells&quot;: {
+      &quot;B0:T0:-:subset&quot;: {
+        &quot;correct&quot;: 17,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T0:-:total&quot;: {
+        &quot;correct&quot;: 28,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T1:-:subset&quot;: {
+        &quot;correct&quot;: 18,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T1:-:total&quot;: {
+        &quot;correct&quot;: 28,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T0:-:subset&quot;: {
+        &quot;correct&quot;: 17,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T0:-:total&quot;: {
+        &quot;correct&quot;: 31,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T1:-:subset&quot;: {
+        &quot;correct&quot;: 20,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T1:-:total&quot;: {
+        &quot;correct&quot;: 40,
+        &quot;n&quot;: 58
+      }
+    },
+    &quot;format_errors&quot;: 3,
+    &quot;n&quot;: 464,
+    &quot;primary_groups&quot;: 58,
+    &quot;primary_joint&quot;: 0.15517241379310345,
+    &quot;repair_score&quot;: 0.16379310344827586,
+    &quot;truncated&quot;: 0
+  }
+}
+</code></pre>
+<p>逐题数组保留在上述完整档案；本页未重新判分。数组身份/长度：<code>{"ids": 464, "predictions": 464, "scored": 464}</code>。</p>
+<h2 id="20">第20轮</h2>
+<p><strong>当时目的与操作理由（原文）</strong></p>
+<p>Round 20: output-coordinate permutation control for the layer-7 head-3 update.</p>
+<p><strong>本轮原记录的主分数</strong>：<code>0.16379310344827586</code>；保留原始0–1尺度。</p>
+<p><strong>选优/保护结果</strong></p>
+<pre><code class="language-json">{
+  &quot;not_selected&quot;: &quot;Candidate does not improve the frozen selection rule&quot;
+}
+</code></pre>
+<p><strong>完整候选定义（基线、位置、改动数量、幅度、张量身份）</strong></p>
+<pre><code class="language-json">{
+  &quot;base&quot;: &quot;w0-a8a8df63cbfe2a4bfa07bf8ace8660b3758297bf43daf2025fe2f98cb562fc5f&quot;,
+  &quot;changed_scalars&quot;: 652919,
+  &quot;id&quot;: &quot;c-79dba63fd2dfcf6f509b40f2b7382b2b420275690ac2615f5f39de86619c42d7&quot;,
+  &quot;l2&quot;: 8.360503128033987,
+  &quot;parent&quot;: &quot;c-d0ea435cf315594c1edb20c55e01599264a06e3f90035a4a1e016bd110db8e79&quot;,
+  &quot;rationale&quot;: &quot;Round 20: output-coordinate permutation control for the layer-7 head-3 update.&quot;,
+  &quot;tensors&quot;: {
+    &quot;language_model.model.layers.7.self_attn.o_proj.weight&quot;: {
+      &quot;base_sha256&quot;: &quot;00425c6d47ec3dfb015ad177d26a1b94be12ce7675dfefc2588ae79f859de32e&quot;,
+      &quot;changed&quot;: 652919,
+      &quot;content_sha256&quot;: &quot;d45dd994a41d91e837a5061d5662832ba9a3d34c36f6692619a5fd1eec08dd1a&quot;,
+      &quot;dtype&quot;: &quot;BF16&quot;,
+      &quot;encoding&quot;: &quot;absolute-f32-sparse-v1&quot;,
+      &quot;file&quot;: &quot;97aee9ae536d262afa8e953162e58cf011fe85d13af21e034533efa77e588e26.npz&quot;,
+      &quot;sha256&quot;: &quot;b4d78831017ad4033682a172124635bbc0ea2472c9f927da44df04b0176cf20b&quot;,
+      &quot;shape&quot;: [
+        2560,
+        2048
+      ],
+      &quot;stored_coordinates&quot;: 652919
+    }
+  }
+}
+</code></pre>
+<p><strong>归档评价字段全文</strong></p>
+<pre><code class="language-json">{
+  &quot;candidate&quot;: &quot;c-79dba63fd2dfcf6f509b40f2b7382b2b420275690ac2615f5f39de86619c42d7&quot;,
+  &quot;full_development&quot;: true,
+  &quot;protocol&quot;: &quot;e3ba1ed45f1f2145e30d1e496dd9b918e56e7c6b51e26bdec65107f6aeda65bf&quot;,
+  &quot;summary&quot;: {
+    &quot;accuracy&quot;: 0.43103448275862066,
+    &quot;cells&quot;: {
+      &quot;B0:T0:-:subset&quot;: {
+        &quot;correct&quot;: 16,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T0:-:total&quot;: {
+        &quot;correct&quot;: 29,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T1:-:subset&quot;: {
+        &quot;correct&quot;: 19,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T1:-:total&quot;: {
+        &quot;correct&quot;: 27,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T0:-:subset&quot;: {
+        &quot;correct&quot;: 17,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T0:-:total&quot;: {
+        &quot;correct&quot;: 33,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T1:-:subset&quot;: {
+        &quot;correct&quot;: 18,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T1:-:total&quot;: {
+        &quot;correct&quot;: 41,
+        &quot;n&quot;: 58
+      }
+    },
+    &quot;format_errors&quot;: 4,
+    &quot;n&quot;: 464,
+    &quot;primary_groups&quot;: 58,
+    &quot;primary_joint&quot;: 0.15517241379310345,
+    &quot;repair_score&quot;: 0.16379310344827586,
+    &quot;truncated&quot;: 1
+  }
+}
+</code></pre>
+<p>逐题数组保留在上述完整档案；本页未重新判分。数组身份/长度：<code>{"ids": 464, "predictions": 464, "scored": 464}</code>。</p>
+<h2 id="21">第21轮</h2>
+<p><strong>当时目的与操作理由（原文）</strong></p>
+<p>Round 21: bounded, gain-aware conditional correction of the final decoder MLP write, reconstructed from W0.</p>
+<p><strong>本轮原记录的主分数</strong>：<code>0.16379310344827586</code>；保留原始0–1尺度。</p>
+<p><strong>选优/保护结果</strong></p>
+<pre><code class="language-json">{
+  &quot;not_selected&quot;: &quot;Candidate does not improve the frozen selection rule&quot;
+}
+</code></pre>
+<p><strong>完整候选定义（基线、位置、改动数量、幅度、张量身份）</strong></p>
+<pre><code class="language-json">{
+  &quot;base&quot;: &quot;w0-a8a8df63cbfe2a4bfa07bf8ace8660b3758297bf43daf2025fe2f98cb562fc5f&quot;,
+  &quot;changed_scalars&quot;: 281391,
+  &quot;id&quot;: &quot;c-50a30c46840c103d1ef66d122fd784f1526ccb3305f42c1f42603ba6dc7008c3&quot;,
+  &quot;l2&quot;: 0.8297451911826307,
+  &quot;parent&quot;: &quot;w0-a8a8df63cbfe2a4bfa07bf8ace8660b3758297bf43daf2025fe2f98cb562fc5f&quot;,
+  &quot;rationale&quot;: &quot;Round 21: bounded, gain-aware conditional correction of the final decoder MLP write, reconstructed from W0.&quot;,
+  &quot;tensors&quot;: {
+    &quot;language_model.model.layers.33.mlp.down_proj.weight&quot;: {
+      &quot;base_sha256&quot;: &quot;2d291bc5e5bf8a4a49641d6b3994bdcf3009ff6874a7591c6274f3ff8f302858&quot;,
+      &quot;changed&quot;: 281391,
+      &quot;content_sha256&quot;: &quot;6bf714fe0e5d56b81676ef7fd0a4f2203bd084d0a806d1dd2860ce20e27f9b87&quot;,
+      &quot;dtype&quot;: &quot;BF16&quot;,
+      &quot;encoding&quot;: &quot;absolute-f32-sparse-v1&quot;,
+      &quot;file&quot;: &quot;dbe9de5d5d4eb2a31b88993c18fefad68a76e2c757ab18d8c1b48566714e432f.npz&quot;,
+      &quot;sha256&quot;: &quot;66fe59988af077c2a91330ee520a06c2a719036af744884c0cf3c5747a05fcaa&quot;,
+      &quot;shape&quot;: [
+        2560,
+        10240
+      ],
+      &quot;stored_coordinates&quot;: 281391
+    }
+  }
+}
+</code></pre>
+<p><strong>归档评价字段全文</strong></p>
+<pre><code class="language-json">{
+  &quot;candidate&quot;: &quot;c-50a30c46840c103d1ef66d122fd784f1526ccb3305f42c1f42603ba6dc7008c3&quot;,
+  &quot;full_development&quot;: true,
+  &quot;protocol&quot;: &quot;e3ba1ed45f1f2145e30d1e496dd9b918e56e7c6b51e26bdec65107f6aeda65bf&quot;,
+  &quot;summary&quot;: {
+    &quot;accuracy&quot;: 0.4353448275862069,
+    &quot;cells&quot;: {
+      &quot;B0:T0:-:subset&quot;: {
+        &quot;correct&quot;: 17,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T0:-:total&quot;: {
+        &quot;correct&quot;: 29,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T1:-:subset&quot;: {
+        &quot;correct&quot;: 18,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T1:-:total&quot;: {
+        &quot;correct&quot;: 27,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T0:-:subset&quot;: {
+        &quot;correct&quot;: 17,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T0:-:total&quot;: {
+        &quot;correct&quot;: 34,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T1:-:subset&quot;: {
+        &quot;correct&quot;: 20,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T1:-:total&quot;: {
+        &quot;correct&quot;: 40,
+        &quot;n&quot;: 58
+      }
+    },
+    &quot;format_errors&quot;: 4,
+    &quot;n&quot;: 464,
+    &quot;primary_groups&quot;: 58,
+    &quot;primary_joint&quot;: 0.15517241379310345,
+    &quot;repair_score&quot;: 0.16379310344827586,
+    &quot;truncated&quot;: 2
+  }
+}
+</code></pre>
+<p>逐题数组保留在上述完整档案；本页未重新判分。数组身份/长度：<code>{"ids": 464, "predictions": 464, "scored": 464}</code>。</p>
+<h2 id="22">第22轮</h2>
+<p><strong>当时目的与操作理由（原文）</strong></p>
+<p>Round 22: predeclared fourfold-strength test of the fixed gain-aware layer-33 MLP correction, reconstructed from W0.</p>
+<p><strong>本轮原记录的主分数</strong>：<code>0.16379310344827586</code>；保留原始0–1尺度。</p>
+<p><strong>选优/保护结果</strong></p>
+<pre><code class="language-json">{
+  &quot;not_selected&quot;: &quot;Candidate does not improve the frozen selection rule&quot;
+}
+</code></pre>
+<p><strong>完整候选定义（基线、位置、改动数量、幅度、张量身份）</strong></p>
+<pre><code class="language-json">{
+  &quot;base&quot;: &quot;w0-a8a8df63cbfe2a4bfa07bf8ace8660b3758297bf43daf2025fe2f98cb562fc5f&quot;,
+  &quot;changed_scalars&quot;: 312937,
+  &quot;id&quot;: &quot;c-25911ce0fd2317868882852917b4bdd5007e7c6826dd4d91d048ddf4d886d8f7&quot;,
+  &quot;l2&quot;: 3.3188799173574677,
+  &quot;parent&quot;: &quot;c-50a30c46840c103d1ef66d122fd784f1526ccb3305f42c1f42603ba6dc7008c3&quot;,
+  &quot;rationale&quot;: &quot;Round 22: predeclared fourfold-strength test of the fixed gain-aware layer-33 MLP correction, reconstructed from W0.&quot;,
+  &quot;tensors&quot;: {
+    &quot;language_model.model.layers.33.mlp.down_proj.weight&quot;: {
+      &quot;base_sha256&quot;: &quot;2d291bc5e5bf8a4a49641d6b3994bdcf3009ff6874a7591c6274f3ff8f302858&quot;,
+      &quot;changed&quot;: 312937,
+      &quot;content_sha256&quot;: &quot;36e211f4041628e66ada146817cb9fd03ba48653552821779be63377cc53d100&quot;,
+      &quot;dtype&quot;: &quot;BF16&quot;,
+      &quot;encoding&quot;: &quot;absolute-f32-sparse-v1&quot;,
+      &quot;file&quot;: &quot;dbe9de5d5d4eb2a31b88993c18fefad68a76e2c757ab18d8c1b48566714e432f.npz&quot;,
+      &quot;sha256&quot;: &quot;ba24790dc3cd30782c0c97f6c463a3d7253920e2fb7e03023878357ed52cecd2&quot;,
+      &quot;shape&quot;: [
+        2560,
+        10240
+      ],
+      &quot;stored_coordinates&quot;: 312937
+    }
+  }
+}
+</code></pre>
+<p><strong>归档评价字段全文</strong></p>
+<pre><code class="language-json">{
+  &quot;candidate&quot;: &quot;c-25911ce0fd2317868882852917b4bdd5007e7c6826dd4d91d048ddf4d886d8f7&quot;,
+  &quot;full_development&quot;: true,
+  &quot;protocol&quot;: &quot;e3ba1ed45f1f2145e30d1e496dd9b918e56e7c6b51e26bdec65107f6aeda65bf&quot;,
+  &quot;summary&quot;: {
+    &quot;accuracy&quot;: 0.4331896551724138,
+    &quot;cells&quot;: {
+      &quot;B0:T0:-:subset&quot;: {
+        &quot;correct&quot;: 17,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T0:-:total&quot;: {
+        &quot;correct&quot;: 29,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T1:-:subset&quot;: {
+        &quot;correct&quot;: 18,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T1:-:total&quot;: {
+        &quot;correct&quot;: 26,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T0:-:subset&quot;: {
+        &quot;correct&quot;: 17,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T0:-:total&quot;: {
+        &quot;correct&quot;: 34,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T1:-:subset&quot;: {
+        &quot;correct&quot;: 20,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T1:-:total&quot;: {
+        &quot;correct&quot;: 40,
+        &quot;n&quot;: 58
+      }
+    },
+    &quot;format_errors&quot;: 4,
+    &quot;n&quot;: 464,
+    &quot;primary_groups&quot;: 58,
+    &quot;primary_joint&quot;: 0.15517241379310345,
+    &quot;repair_score&quot;: 0.16379310344827586,
+    &quot;truncated&quot;: 2
+  }
+}
+</code></pre>
+<p>逐题数组保留在上述完整档案；本页未重新判分。数组身份/长度：<code>{"ids": 464, "predictions": 464, "scored": 464}</code>。</p>
+<h2 id="23">第23轮</h2>
+<p><strong>当时目的与操作理由（原文）</strong></p>
+<p>Round 23: predeclared equal-strength opposite-sign control for the conditional layer-33 MLP correction.</p>
+<p><strong>本轮原记录的主分数</strong>：<code>0.16379310344827586</code>；保留原始0–1尺度。</p>
+<p><strong>选优/保护结果</strong></p>
+<pre><code class="language-json">{
+  &quot;not_selected&quot;: &quot;Candidate does not improve the frozen selection rule&quot;
+}
+</code></pre>
+<p><strong>完整候选定义（基线、位置、改动数量、幅度、张量身份）</strong></p>
+<pre><code class="language-json">{
+  &quot;base&quot;: &quot;w0-a8a8df63cbfe2a4bfa07bf8ace8660b3758297bf43daf2025fe2f98cb562fc5f&quot;,
+  &quot;changed_scalars&quot;: 312943,
+  &quot;id&quot;: &quot;c-646d98308bd4c4db8500e57c0acc1593a34546691cab52f716e4c17e070c60d8&quot;,
+  &quot;l2&quot;: 3.319006193434169,
+  &quot;parent&quot;: &quot;c-25911ce0fd2317868882852917b4bdd5007e7c6826dd4d91d048ddf4d886d8f7&quot;,
+  &quot;rationale&quot;: &quot;Round 23: predeclared equal-strength opposite-sign control for the conditional layer-33 MLP correction.&quot;,
+  &quot;tensors&quot;: {
+    &quot;language_model.model.layers.33.mlp.down_proj.weight&quot;: {
+      &quot;base_sha256&quot;: &quot;2d291bc5e5bf8a4a49641d6b3994bdcf3009ff6874a7591c6274f3ff8f302858&quot;,
+      &quot;changed&quot;: 312943,
+      &quot;content_sha256&quot;: &quot;4b5e3295cab46f3b07084d4577c062d1f7e89906ede6714d08e1b4036ac14d5a&quot;,
+      &quot;dtype&quot;: &quot;BF16&quot;,
+      &quot;encoding&quot;: &quot;absolute-f32-sparse-v1&quot;,
+      &quot;file&quot;: &quot;dbe9de5d5d4eb2a31b88993c18fefad68a76e2c757ab18d8c1b48566714e432f.npz&quot;,
+      &quot;sha256&quot;: &quot;7e69bde727aaaa93fe5d4d13fdd5aade3e3c944a08e91669f2505122eec2b4f9&quot;,
+      &quot;shape&quot;: [
+        2560,
+        10240
+      ],
+      &quot;stored_coordinates&quot;: 312943
+    }
+  }
+}
+</code></pre>
+<p><strong>归档评价字段全文</strong></p>
+<pre><code class="language-json">{
+  &quot;candidate&quot;: &quot;c-646d98308bd4c4db8500e57c0acc1593a34546691cab52f716e4c17e070c60d8&quot;,
+  &quot;full_development&quot;: true,
+  &quot;protocol&quot;: &quot;e3ba1ed45f1f2145e30d1e496dd9b918e56e7c6b51e26bdec65107f6aeda65bf&quot;,
+  &quot;summary&quot;: {
+    &quot;accuracy&quot;: 0.4331896551724138,
+    &quot;cells&quot;: {
+      &quot;B0:T0:-:subset&quot;: {
+        &quot;correct&quot;: 17,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T0:-:total&quot;: {
+        &quot;correct&quot;: 29,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T1:-:subset&quot;: {
+        &quot;correct&quot;: 18,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T1:-:total&quot;: {
+        &quot;correct&quot;: 26,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T0:-:subset&quot;: {
+        &quot;correct&quot;: 17,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T0:-:total&quot;: {
+        &quot;correct&quot;: 34,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T1:-:subset&quot;: {
+        &quot;correct&quot;: 20,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T1:-:total&quot;: {
+        &quot;correct&quot;: 40,
+        &quot;n&quot;: 58
+      }
+    },
+    &quot;format_errors&quot;: 4,
+    &quot;n&quot;: 464,
+    &quot;primary_groups&quot;: 58,
+    &quot;primary_joint&quot;: 0.15517241379310345,
+    &quot;repair_score&quot;: 0.16379310344827586,
+    &quot;truncated&quot;: 2
+  }
+}
+</code></pre>
+<p>逐题数组保留在上述完整档案；本页未重新判分。数组身份/长度：<code>{"ids": 464, "predictions": 464, "scored": 464}</code>。</p>
+<h2 id="24">第24轮</h2>
+<p><strong>当时目的与操作理由（原文）</strong></p>
+<p>Round 24: source-to-target permutation control for the gain-aware conditional layer-33 MLP fit.</p>
+<p><strong>本轮原记录的主分数</strong>：<code>0.16379310344827586</code>；保留原始0–1尺度。</p>
+<p><strong>选优/保护结果</strong></p>
+<pre><code class="language-json">{
+  &quot;not_selected&quot;: &quot;Candidate does not improve the frozen selection rule&quot;
+}
+</code></pre>
+<p><strong>完整候选定义（基线、位置、改动数量、幅度、张量身份）</strong></p>
+<pre><code class="language-json">{
+  &quot;base&quot;: &quot;w0-a8a8df63cbfe2a4bfa07bf8ace8660b3758297bf43daf2025fe2f98cb562fc5f&quot;,
+  &quot;changed_scalars&quot;: 312645,
+  &quot;id&quot;: &quot;c-589644f45f380ff6e94113f8a53bd6f747b4ae9fd83ef493da0164ea43cff0fe&quot;,
+  &quot;l2&quot;: 3.318905031307596,
+  &quot;parent&quot;: &quot;c-646d98308bd4c4db8500e57c0acc1593a34546691cab52f716e4c17e070c60d8&quot;,
+  &quot;rationale&quot;: &quot;Round 24: source-to-target permutation control for the gain-aware conditional layer-33 MLP fit.&quot;,
+  &quot;tensors&quot;: {
+    &quot;language_model.model.layers.33.mlp.down_proj.weight&quot;: {
+      &quot;base_sha256&quot;: &quot;2d291bc5e5bf8a4a49641d6b3994bdcf3009ff6874a7591c6274f3ff8f302858&quot;,
+      &quot;changed&quot;: 312645,
+      &quot;content_sha256&quot;: &quot;68fa5e921b1d330dac5cfaf2fa3402c18f29cd04de228b05b27fafa742146a34&quot;,
+      &quot;dtype&quot;: &quot;BF16&quot;,
+      &quot;encoding&quot;: &quot;absolute-f32-sparse-v1&quot;,
+      &quot;file&quot;: &quot;dbe9de5d5d4eb2a31b88993c18fefad68a76e2c757ab18d8c1b48566714e432f.npz&quot;,
+      &quot;sha256&quot;: &quot;0039dce7bd5d4cb91f49e04de15d4bb3d26642b3f826a956927073be246413e2&quot;,
+      &quot;shape&quot;: [
+        2560,
+        10240
+      ],
+      &quot;stored_coordinates&quot;: 312645
+    }
+  }
+}
+</code></pre>
+<p><strong>归档评价字段全文</strong></p>
+<pre><code class="language-json">{
+  &quot;candidate&quot;: &quot;c-589644f45f380ff6e94113f8a53bd6f747b4ae9fd83ef493da0164ea43cff0fe&quot;,
+  &quot;full_development&quot;: true,
+  &quot;protocol&quot;: &quot;e3ba1ed45f1f2145e30d1e496dd9b918e56e7c6b51e26bdec65107f6aeda65bf&quot;,
+  &quot;summary&quot;: {
+    &quot;accuracy&quot;: 0.4331896551724138,
+    &quot;cells&quot;: {
+      &quot;B0:T0:-:subset&quot;: {
+        &quot;correct&quot;: 17,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T0:-:total&quot;: {
+        &quot;correct&quot;: 29,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T1:-:subset&quot;: {
+        &quot;correct&quot;: 18,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T1:-:total&quot;: {
+        &quot;correct&quot;: 26,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T0:-:subset&quot;: {
+        &quot;correct&quot;: 17,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T0:-:total&quot;: {
+        &quot;correct&quot;: 34,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T1:-:subset&quot;: {
+        &quot;correct&quot;: 20,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T1:-:total&quot;: {
+        &quot;correct&quot;: 40,
+        &quot;n&quot;: 58
+      }
+    },
+    &quot;format_errors&quot;: 4,
+    &quot;n&quot;: 464,
+    &quot;primary_groups&quot;: 58,
+    &quot;primary_joint&quot;: 0.15517241379310345,
+    &quot;repair_score&quot;: 0.16379310344827586,
+    &quot;truncated&quot;: 2
+  }
+}
+</code></pre>
+<p>逐题数组保留在上述完整档案；本页未重新判分。数组身份/长度：<code>{"ids": 464, "predictions": 464, "scored": 464}</code>。</p>
+<h2 id="25">第25轮</h2>
+<p><strong>当时目的与操作理由（原文）</strong></p>
+<p>Round 25: preselected disjoint matched-column control for the conditional layer-33 MLP correction.</p>
+<p><strong>本轮原记录的主分数</strong>：<code>0.16379310344827586</code>；保留原始0–1尺度。</p>
+<p><strong>选优/保护结果</strong></p>
+<pre><code class="language-json">{
+  &quot;not_selected&quot;: &quot;Candidate does not improve the frozen selection rule&quot;
+}
+</code></pre>
+<p><strong>完整候选定义（基线、位置、改动数量、幅度、张量身份）</strong></p>
+<pre><code class="language-json">{
+  &quot;base&quot;: &quot;w0-a8a8df63cbfe2a4bfa07bf8ace8660b3758297bf43daf2025fe2f98cb562fc5f&quot;,
+  &quot;changed_scalars&quot;: 311106,
+  &quot;id&quot;: &quot;c-de828d06a785aecb5a7746ec583804f76ecd1219d7eda3b71c04ad66b35ed196&quot;,
+  &quot;l2&quot;: 3.318860583265865,
+  &quot;parent&quot;: &quot;c-589644f45f380ff6e94113f8a53bd6f747b4ae9fd83ef493da0164ea43cff0fe&quot;,
+  &quot;rationale&quot;: &quot;Round 25: preselected disjoint matched-column control for the conditional layer-33 MLP correction.&quot;,
+  &quot;tensors&quot;: {
+    &quot;language_model.model.layers.33.mlp.down_proj.weight&quot;: {
+      &quot;base_sha256&quot;: &quot;2d291bc5e5bf8a4a49641d6b3994bdcf3009ff6874a7591c6274f3ff8f302858&quot;,
+      &quot;changed&quot;: 311106,
+      &quot;content_sha256&quot;: &quot;6b762a7cdc87bfbac257aafbedff00f6c29c6dceca1e63bbf11c0e8a57e603dc&quot;,
+      &quot;dtype&quot;: &quot;BF16&quot;,
+      &quot;encoding&quot;: &quot;absolute-f32-sparse-v1&quot;,
+      &quot;file&quot;: &quot;dbe9de5d5d4eb2a31b88993c18fefad68a76e2c757ab18d8c1b48566714e432f.npz&quot;,
+      &quot;sha256&quot;: &quot;36a6d14c81de0d59a3e70bbb3074c714b7d29aefae71b93d02f03e7cc2b4f971&quot;,
+      &quot;shape&quot;: [
+        2560,
+        10240
+      ],
+      &quot;stored_coordinates&quot;: 311106
+    }
+  }
+}
+</code></pre>
+<p><strong>归档评价字段全文</strong></p>
+<pre><code class="language-json">{
+  &quot;candidate&quot;: &quot;c-de828d06a785aecb5a7746ec583804f76ecd1219d7eda3b71c04ad66b35ed196&quot;,
+  &quot;full_development&quot;: true,
+  &quot;protocol&quot;: &quot;e3ba1ed45f1f2145e30d1e496dd9b918e56e7c6b51e26bdec65107f6aeda65bf&quot;,
+  &quot;summary&quot;: {
+    &quot;accuracy&quot;: 0.4331896551724138,
+    &quot;cells&quot;: {
+      &quot;B0:T0:-:subset&quot;: {
+        &quot;correct&quot;: 17,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T0:-:total&quot;: {
+        &quot;correct&quot;: 29,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T1:-:subset&quot;: {
+        &quot;correct&quot;: 18,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T1:-:total&quot;: {
+        &quot;correct&quot;: 26,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T0:-:subset&quot;: {
+        &quot;correct&quot;: 17,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T0:-:total&quot;: {
+        &quot;correct&quot;: 34,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T1:-:subset&quot;: {
+        &quot;correct&quot;: 20,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T1:-:total&quot;: {
+        &quot;correct&quot;: 40,
+        &quot;n&quot;: 58
+      }
+    },
+    &quot;format_errors&quot;: 4,
+    &quot;n&quot;: 464,
+    &quot;primary_groups&quot;: 58,
+    &quot;primary_joint&quot;: 0.15517241379310345,
+    &quot;repair_score&quot;: 0.16379310344827586,
+    &quot;truncated&quot;: 2
+  }
+}
+</code></pre>
+<p>逐题数组保留在上述完整档案；本页未重新判分。数组身份/长度：<code>{"ids": 464, "predictions": 464, "scored": 464}</code>。</p>
+<h2 id="26">第26轮</h2>
+<p><strong>当时目的与操作理由（原文）</strong></p>
+<p>Round 26: sparse, supervised final-block MLP output-gain correction, reconstructed from W0.</p>
+<p><strong>本轮原记录的主分数</strong>：<code>0.15517241379310345</code>；保留原始0–1尺度。</p>
+<p><strong>选优/保护结果</strong></p>
+<pre><code class="language-json">{
+  &quot;not_selected&quot;: &quot;Format/truncation protection failed&quot;
+}
+</code></pre>
+<p><strong>完整候选定义（基线、位置、改动数量、幅度、张量身份）</strong></p>
+<pre><code class="language-json">{
+  &quot;base&quot;: &quot;w0-a8a8df63cbfe2a4bfa07bf8ace8660b3758297bf43daf2025fe2f98cb562fc5f&quot;,
+  &quot;changed_scalars&quot;: 256,
+  &quot;id&quot;: &quot;c-0f5f88848fb6bef8fa9e134f632fa6828bb3f5d3ab2228d47b1b10dccf612b8c&quot;,
+  &quot;l2&quot;: 184.08499438099238,
+  &quot;parent&quot;: &quot;w0-a8a8df63cbfe2a4bfa07bf8ace8660b3758297bf43daf2025fe2f98cb562fc5f&quot;,
+  &quot;rationale&quot;: &quot;Round 26: sparse, supervised final-block MLP output-gain correction, reconstructed from W0.&quot;,
+  &quot;tensors&quot;: {
+    &quot;language_model.model.layers.33.post_feedforward_layernorm.weight&quot;: {
+      &quot;base_sha256&quot;: &quot;074f3c02938721ea0da67160cbc9277954660d6473026f9ef7b6c9a506770044&quot;,
+      &quot;changed&quot;: 256,
+      &quot;content_sha256&quot;: &quot;bf009636e098968d7fdfce684efb9c23028eb1040334fee9b6e6106980d20032&quot;,
+      &quot;dtype&quot;: &quot;BF16&quot;,
+      &quot;encoding&quot;: &quot;absolute-f32-sparse-v1&quot;,
+      &quot;file&quot;: &quot;469a534e9507b45ce644f5240a96c218e743f2ff6244a7d5ef733da7b332f469.npz&quot;,
+      &quot;sha256&quot;: &quot;3b0c04dd05fa27e9d4dea4732801860e6815d8bdc7c4383fcf3eecc6fe829ca3&quot;,
+      &quot;shape&quot;: [
+        2560
+      ],
+      &quot;stored_coordinates&quot;: 256
+    }
+  }
+}
+</code></pre>
+<p><strong>归档评价字段全文</strong></p>
+<pre><code class="language-json">{
+  &quot;candidate&quot;: &quot;c-0f5f88848fb6bef8fa9e134f632fa6828bb3f5d3ab2228d47b1b10dccf612b8c&quot;,
+  &quot;full_development&quot;: true,
+  &quot;protocol&quot;: &quot;e3ba1ed45f1f2145e30d1e496dd9b918e56e7c6b51e26bdec65107f6aeda65bf&quot;,
+  &quot;summary&quot;: {
+    &quot;accuracy&quot;: 0.4331896551724138,
+    &quot;cells&quot;: {
+      &quot;B0:T0:-:subset&quot;: {
+        &quot;correct&quot;: 17,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T0:-:total&quot;: {
+        &quot;correct&quot;: 29,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T1:-:subset&quot;: {
+        &quot;correct&quot;: 18,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T1:-:total&quot;: {
+        &quot;correct&quot;: 26,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T0:-:subset&quot;: {
+        &quot;correct&quot;: 17,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T0:-:total&quot;: {
+        &quot;correct&quot;: 34,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T1:-:subset&quot;: {
+        &quot;correct&quot;: 20,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T1:-:total&quot;: {
+        &quot;correct&quot;: 40,
+        &quot;n&quot;: 58
+      }
+    },
+    &quot;format_errors&quot;: 5,
+    &quot;n&quot;: 464,
+    &quot;primary_groups&quot;: 58,
+    &quot;primary_joint&quot;: 0.15517241379310345,
+    &quot;repair_score&quot;: 0.15517241379310345,
+    &quot;truncated&quot;: 1
+  }
+}
+</code></pre>
+<p>逐题数组保留在上述完整档案；本页未重新判分。数组身份/长度：<code>{"ids": 464, "predictions": 464, "scored": 464}</code>。</p>
+<h2 id="27">第27轮</h2>
+<p><strong>当时目的与操作理由（原文）</strong></p>
+<p>Round 27: predeclared fourfold dose of the fixed sparse block-33 MLP output-gain correction.</p>
+<p><strong>本轮原记录的主分数</strong>：<code>0.15517241379310345</code>；保留原始0–1尺度。</p>
+<p><strong>选优/保护结果</strong></p>
+<pre><code class="language-json">{
+  &quot;not_selected&quot;: &quot;Format/truncation protection failed&quot;
+}
+</code></pre>
+<p><strong>完整候选定义（基线、位置、改动数量、幅度、张量身份）</strong></p>
+<pre><code class="language-json">{
+  &quot;base&quot;: &quot;w0-a8a8df63cbfe2a4bfa07bf8ace8660b3758297bf43daf2025fe2f98cb562fc5f&quot;,
+  &quot;changed_scalars&quot;: 256,
+  &quot;id&quot;: &quot;c-e45b96d9e6e9e1a0a221f66d62a6bb161177967a81486263010e3fb593fcd389&quot;,
+  &quot;l2&quot;: 736.1360082595131,
+  &quot;parent&quot;: &quot;c-0f5f88848fb6bef8fa9e134f632fa6828bb3f5d3ab2228d47b1b10dccf612b8c&quot;,
+  &quot;rationale&quot;: &quot;Round 27: predeclared fourfold dose of the fixed sparse block-33 MLP output-gain correction.&quot;,
+  &quot;tensors&quot;: {
+    &quot;language_model.model.layers.33.post_feedforward_layernorm.weight&quot;: {
+      &quot;base_sha256&quot;: &quot;074f3c02938721ea0da67160cbc9277954660d6473026f9ef7b6c9a506770044&quot;,
+      &quot;changed&quot;: 256,
+      &quot;content_sha256&quot;: &quot;fc5aec14765bb497cb6e425cb3864c93c855f897cec36cbf7f0528b0e2a0c845&quot;,
+      &quot;dtype&quot;: &quot;BF16&quot;,
+      &quot;encoding&quot;: &quot;absolute-f32-sparse-v1&quot;,
+      &quot;file&quot;: &quot;469a534e9507b45ce644f5240a96c218e743f2ff6244a7d5ef733da7b332f469.npz&quot;,
+      &quot;sha256&quot;: &quot;8813721708ed15468de231dfcb7387657c241a4496343361fb7e70b8a55d51f8&quot;,
+      &quot;shape&quot;: [
+        2560
+      ],
+      &quot;stored_coordinates&quot;: 256
+    }
+  }
+}
+</code></pre>
+<p><strong>归档评价字段全文</strong></p>
+<pre><code class="language-json">{
+  &quot;candidate&quot;: &quot;c-e45b96d9e6e9e1a0a221f66d62a6bb161177967a81486263010e3fb593fcd389&quot;,
+  &quot;full_development&quot;: true,
+  &quot;protocol&quot;: &quot;e3ba1ed45f1f2145e30d1e496dd9b918e56e7c6b51e26bdec65107f6aeda65bf&quot;,
+  &quot;summary&quot;: {
+    &quot;accuracy&quot;: 0.43103448275862066,
+    &quot;cells&quot;: {
+      &quot;B0:T0:-:subset&quot;: {
+        &quot;correct&quot;: 17,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T0:-:total&quot;: {
+        &quot;correct&quot;: 29,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T1:-:subset&quot;: {
+        &quot;correct&quot;: 17,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T1:-:total&quot;: {
+        &quot;correct&quot;: 26,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T0:-:subset&quot;: {
+        &quot;correct&quot;: 17,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T0:-:total&quot;: {
+        &quot;correct&quot;: 34,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T1:-:subset&quot;: {
+        &quot;correct&quot;: 20,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T1:-:total&quot;: {
+        &quot;correct&quot;: 40,
+        &quot;n&quot;: 58
+      }
+    },
+    &quot;format_errors&quot;: 5,
+    &quot;n&quot;: 464,
+    &quot;primary_groups&quot;: 58,
+    &quot;primary_joint&quot;: 0.15517241379310345,
+    &quot;repair_score&quot;: 0.15517241379310345,
+    &quot;truncated&quot;: 2
+  }
+}
+</code></pre>
+<p>逐题数组保留在上述完整档案；本页未重新判分。数组身份/长度：<code>{"ids": 464, "predictions": 464, "scored": 464}</code>。</p>
+<h2 id="28">第28轮</h2>
+<p><strong>当时目的与操作理由（原文）</strong></p>
+<p>Round 28: predeclared opposite-sign control for the sparse final-block gain correction.</p>
+<p><strong>本轮原记录的主分数</strong>：<code>0.16379310344827586</code>；保留原始0–1尺度。</p>
+<p><strong>选优/保护结果</strong></p>
+<pre><code class="language-json">{
+  &quot;not_selected&quot;: &quot;Candidate does not improve the frozen selection rule&quot;
+}
+</code></pre>
+<p><strong>完整候选定义（基线、位置、改动数量、幅度、张量身份）</strong></p>
+<pre><code class="language-json">{
+  &quot;base&quot;: &quot;w0-a8a8df63cbfe2a4bfa07bf8ace8660b3758297bf43daf2025fe2f98cb562fc5f&quot;,
+  &quot;changed_scalars&quot;: 256,
+  &quot;id&quot;: &quot;c-13e2f16c7a5f5562043f7bd002218c05d939c34e0fb2c35bd3162496d9aa905b&quot;,
+  &quot;l2&quot;: 735.9089431826807,
+  &quot;parent&quot;: &quot;c-e45b96d9e6e9e1a0a221f66d62a6bb161177967a81486263010e3fb593fcd389&quot;,
+  &quot;rationale&quot;: &quot;Round 28: predeclared opposite-sign control for the sparse final-block gain correction.&quot;,
+  &quot;tensors&quot;: {
+    &quot;language_model.model.layers.33.post_feedforward_layernorm.weight&quot;: {
+      &quot;base_sha256&quot;: &quot;074f3c02938721ea0da67160cbc9277954660d6473026f9ef7b6c9a506770044&quot;,
+      &quot;changed&quot;: 256,
+      &quot;content_sha256&quot;: &quot;c39bf7778dd8647287050d5db048ecc98d200250bb323ecc8f25ac258b376ae2&quot;,
+      &quot;dtype&quot;: &quot;BF16&quot;,
+      &quot;encoding&quot;: &quot;absolute-f32-sparse-v1&quot;,
+      &quot;file&quot;: &quot;469a534e9507b45ce644f5240a96c218e743f2ff6244a7d5ef733da7b332f469.npz&quot;,
+      &quot;sha256&quot;: &quot;6ef9fe1bd312aa4e67cbe5ba584d8a2188296328b1d4c3d8785fa1936293b375&quot;,
+      &quot;shape&quot;: [
+        2560
+      ],
+      &quot;stored_coordinates&quot;: 256
+    }
+  }
+}
+</code></pre>
+<p><strong>归档评价字段全文</strong></p>
+<pre><code class="language-json">{
+  &quot;candidate&quot;: &quot;c-13e2f16c7a5f5562043f7bd002218c05d939c34e0fb2c35bd3162496d9aa905b&quot;,
+  &quot;full_development&quot;: true,
+  &quot;protocol&quot;: &quot;e3ba1ed45f1f2145e30d1e496dd9b918e56e7c6b51e26bdec65107f6aeda65bf&quot;,
+  &quot;summary&quot;: {
+    &quot;accuracy&quot;: 0.4353448275862069,
+    &quot;cells&quot;: {
+      &quot;B0:T0:-:subset&quot;: {
+        &quot;correct&quot;: 17,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T0:-:total&quot;: {
+        &quot;correct&quot;: 29,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T1:-:subset&quot;: {
+        &quot;correct&quot;: 19,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T1:-:total&quot;: {
+        &quot;correct&quot;: 26,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T0:-:subset&quot;: {
+        &quot;correct&quot;: 17,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T0:-:total&quot;: {
+        &quot;correct&quot;: 34,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T1:-:subset&quot;: {
+        &quot;correct&quot;: 20,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T1:-:total&quot;: {
+        &quot;correct&quot;: 40,
+        &quot;n&quot;: 58
+      }
+    },
+    &quot;format_errors&quot;: 4,
+    &quot;n&quot;: 464,
+    &quot;primary_groups&quot;: 58,
+    &quot;primary_joint&quot;: 0.15517241379310345,
+    &quot;repair_score&quot;: 0.16379310344827586,
+    &quot;truncated&quot;: 1
+  }
+}
+</code></pre>
+<p>逐题数组保留在上述完整档案；本页未重新判分。数组身份/长度：<code>{"ids": 464, "predictions": 464, "scored": 464}</code>。</p>
+<h2 id="29">第29轮</h2>
+<p><strong>当时目的与操作理由（原文）</strong></p>
+<p>Round 29: predeclared gain-stratified permutation control for the sparse final-block gain correction.</p>
+<p><strong>本轮原记录的主分数</strong>：<code>0.15517241379310345</code>；保留原始0–1尺度。</p>
+<p><strong>选优/保护结果</strong></p>
+<pre><code class="language-json">{
+  &quot;not_selected&quot;: &quot;Format/truncation protection failed&quot;
+}
+</code></pre>
+<p><strong>完整候选定义（基线、位置、改动数量、幅度、张量身份）</strong></p>
+<pre><code class="language-json">{
+  &quot;base&quot;: &quot;w0-a8a8df63cbfe2a4bfa07bf8ace8660b3758297bf43daf2025fe2f98cb562fc5f&quot;,
+  &quot;changed_scalars&quot;: 256,
+  &quot;id&quot;: &quot;c-66463e76e784ed48e09eb01dc7a6a1443449d036e82de8e4ab9da2bc1d1e2a44&quot;,
+  &quot;l2&quot;: 736.1728690763213,
+  &quot;parent&quot;: &quot;c-13e2f16c7a5f5562043f7bd002218c05d939c34e0fb2c35bd3162496d9aa905b&quot;,
+  &quot;rationale&quot;: &quot;Round 29: predeclared gain-stratified permutation control for the sparse final-block gain correction.&quot;,
+  &quot;tensors&quot;: {
+    &quot;language_model.model.layers.33.post_feedforward_layernorm.weight&quot;: {
+      &quot;base_sha256&quot;: &quot;074f3c02938721ea0da67160cbc9277954660d6473026f9ef7b6c9a506770044&quot;,
+      &quot;changed&quot;: 256,
+      &quot;content_sha256&quot;: &quot;9a49d23ab61c0ed52a90b192d82c547552952ad20dec38c5d8b1f08c6acda013&quot;,
+      &quot;dtype&quot;: &quot;BF16&quot;,
+      &quot;encoding&quot;: &quot;absolute-f32-sparse-v1&quot;,
+      &quot;file&quot;: &quot;469a534e9507b45ce644f5240a96c218e743f2ff6244a7d5ef733da7b332f469.npz&quot;,
+      &quot;sha256&quot;: &quot;3bba1baf493a2619a5a1b5f7ae25ab1fac6a97b035d6921cfeeefaf4a731d4fc&quot;,
+      &quot;shape&quot;: [
+        2560
+      ],
+      &quot;stored_coordinates&quot;: 256
+    }
+  }
+}
+</code></pre>
+<p><strong>归档评价字段全文</strong></p>
+<pre><code class="language-json">{
+  &quot;candidate&quot;: &quot;c-66463e76e784ed48e09eb01dc7a6a1443449d036e82de8e4ab9da2bc1d1e2a44&quot;,
+  &quot;full_development&quot;: true,
+  &quot;protocol&quot;: &quot;e3ba1ed45f1f2145e30d1e496dd9b918e56e7c6b51e26bdec65107f6aeda65bf&quot;,
+  &quot;summary&quot;: {
+    &quot;accuracy&quot;: 0.43103448275862066,
+    &quot;cells&quot;: {
+      &quot;B0:T0:-:subset&quot;: {
+        &quot;correct&quot;: 17,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T0:-:total&quot;: {
+        &quot;correct&quot;: 29,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T1:-:subset&quot;: {
+        &quot;correct&quot;: 18,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T1:-:total&quot;: {
+        &quot;correct&quot;: 26,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T0:-:subset&quot;: {
+        &quot;correct&quot;: 17,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T0:-:total&quot;: {
+        &quot;correct&quot;: 33,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T1:-:subset&quot;: {
+        &quot;correct&quot;: 20,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T1:-:total&quot;: {
+        &quot;correct&quot;: 40,
+        &quot;n&quot;: 58
+      }
+    },
+    &quot;format_errors&quot;: 5,
+    &quot;n&quot;: 464,
+    &quot;primary_groups&quot;: 58,
+    &quot;primary_joint&quot;: 0.15517241379310345,
+    &quot;repair_score&quot;: 0.15517241379310345,
+    &quot;truncated&quot;: 1
+  }
+}
+</code></pre>
+<p>逐题数组保留在上述完整档案；本页未重新判分。数组身份/长度：<code>{"ids": 464, "predictions": 464, "scored": 464}</code>。</p>
+<h2 id="30">第30轮</h2>
+<p><strong>当时目的与操作理由（原文）</strong></p>
+<p>Round 30: predeclared disjoint matched-coordinate control for the sparse final-block gain correction.</p>
+<p><strong>本轮原记录的主分数</strong>：<code>0.16379310344827586</code>；保留原始0–1尺度。</p>
+<p><strong>选优/保护结果</strong></p>
+<pre><code class="language-json">{
+  &quot;not_selected&quot;: &quot;Candidate does not improve the frozen selection rule&quot;
+}
+</code></pre>
+<p><strong>完整候选定义（基线、位置、改动数量、幅度、张量身份）</strong></p>
+<pre><code class="language-json">{
+  &quot;base&quot;: &quot;w0-a8a8df63cbfe2a4bfa07bf8ace8660b3758297bf43daf2025fe2f98cb562fc5f&quot;,
+  &quot;changed_scalars&quot;: 256,
+  &quot;id&quot;: &quot;c-e7e1b0c14054fe386e7a02cd0b41db40e1b5b0d41d843e7fac13799898a7db10&quot;,
+  &quot;l2&quot;: 736.1962867715715,
+  &quot;parent&quot;: &quot;c-66463e76e784ed48e09eb01dc7a6a1443449d036e82de8e4ab9da2bc1d1e2a44&quot;,
+  &quot;rationale&quot;: &quot;Round 30: predeclared disjoint matched-coordinate control for the sparse final-block gain correction.&quot;,
+  &quot;tensors&quot;: {
+    &quot;language_model.model.layers.33.post_feedforward_layernorm.weight&quot;: {
+      &quot;base_sha256&quot;: &quot;074f3c02938721ea0da67160cbc9277954660d6473026f9ef7b6c9a506770044&quot;,
+      &quot;changed&quot;: 256,
+      &quot;content_sha256&quot;: &quot;33537c9d6039e351475588e7755355c95497e144a1bdf5f3bd590eeb30f2ec62&quot;,
+      &quot;dtype&quot;: &quot;BF16&quot;,
+      &quot;encoding&quot;: &quot;absolute-f32-sparse-v1&quot;,
+      &quot;file&quot;: &quot;469a534e9507b45ce644f5240a96c218e743f2ff6244a7d5ef733da7b332f469.npz&quot;,
+      &quot;sha256&quot;: &quot;5e6bf45e37f6f1463543881219ee33af7fdc64f1073fc490f9220cc19af1ab01&quot;,
+      &quot;shape&quot;: [
+        2560
+      ],
+      &quot;stored_coordinates&quot;: 256
+    }
+  }
+}
+</code></pre>
+<p><strong>归档评价字段全文</strong></p>
+<pre><code class="language-json">{
+  &quot;candidate&quot;: &quot;c-e7e1b0c14054fe386e7a02cd0b41db40e1b5b0d41d843e7fac13799898a7db10&quot;,
+  &quot;full_development&quot;: true,
+  &quot;protocol&quot;: &quot;e3ba1ed45f1f2145e30d1e496dd9b918e56e7c6b51e26bdec65107f6aeda65bf&quot;,
+  &quot;summary&quot;: {
+    &quot;accuracy&quot;: 0.4331896551724138,
+    &quot;cells&quot;: {
+      &quot;B0:T0:-:subset&quot;: {
+        &quot;correct&quot;: 17,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T0:-:total&quot;: {
+        &quot;correct&quot;: 29,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T1:-:subset&quot;: {
+        &quot;correct&quot;: 18,
+        &quot;n&quot;: 58
+      },
+      &quot;B0:T1:-:total&quot;: {
+        &quot;correct&quot;: 26,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T0:-:subset&quot;: {
+        &quot;correct&quot;: 17,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T0:-:total&quot;: {
+        &quot;correct&quot;: 34,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T1:-:subset&quot;: {
+        &quot;correct&quot;: 20,
+        &quot;n&quot;: 58
+      },
+      &quot;B1:T1:-:total&quot;: {
+        &quot;correct&quot;: 40,
+        &quot;n&quot;: 58
+      }
+    },
+    &quot;format_errors&quot;: 4,
+    &quot;n&quot;: 464,
+    &quot;primary_groups&quot;: 58,
+    &quot;primary_joint&quot;: 0.15517241379310345,
+    &quot;repair_score&quot;: 0.16379310344827586,
+    &quot;truncated&quot;: 2
+  }
+}
+</code></pre>
+<p>逐题数组保留在上述完整档案；本页未重新判分。数组身份/长度：<code>{"ids": 464, "predictions": 464, "scored": 464}</code>。</p></main></html>

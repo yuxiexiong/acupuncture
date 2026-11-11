@@ -1,0 +1,190 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>QC-01（目标指定 × 问题布局 × 注入覆盖）结果报告</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="qc-01">QC-01（目标指定 × 问题布局 × 注入覆盖）结果报告</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-query-layout-coverage-v1-2026-11-02/REPORT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-query-layout-coverage-v1-2026-11-02/REPORT.zh-CN.md">固定提交原件</a>；SHA-256：<code>4bf856958398e78d945b177645f5e61433715910524c22e041145bbafaade84f</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="qc-01_1">QC-01（目标指定 × 问题布局 × 注入覆盖）结果报告</h1>
+<p>日期：2026-11-02。<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-query-layout-coverage-v1-2026-11-02/CONTRACT.zh-CN.md">合同 r01</a>；<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-query-layout-coverage-v1-2026-11-02/DECISIONS.zh-CN.md">决策 D1–D7</a>；计划 v1（8f9324e，评审撰写）。代码 <code>8a63880</code>，freeze-r01 <code>2cd5ce17…27aa</code>。五个新条件此前无模型输出；NB 复用 NQ-01（6 个场景各一条逐位重放通过）。同一助手实现、运行与撰写。</p>
+<h2 id="1">1. 结论（不利与限制先说）</h2>
+<ol>
+<li><strong>覆盖与注入总量混淆，本轮不能区分。</strong> 问题在窗口内的条件（NA、LA）窗口 26–27 token，缩窄后（NA-tail、LA-tail）20 token；每 token 名义写入范数相同（约 2.63），宽窗口的注入总量约多 30%。所以下面的“覆盖效应”是“覆盖范围 + 总剂量”一起变化的总效应，不能写成“问题 token 被写坏”。</li>
+<li><strong>LB（标签式、问题在前）不可判</strong>：干净运行只有 48/54，NQ01、NQ03 两个场景低于 8/9（6 个失败格都是干净模型把三个编号全列出来）。LB 的结果只作描述，不进入比较结论。</li>
+<li><strong>缩窄本身也减轻了损伤</strong>：tail 条件下未恢复的 T_nat 有 0–18/54 自然答对（NB 为 0–1/54）；LA-tail 的 R0 因 T_nat 37/54 答对，按规则判为“效应未迁移/不可判”。按计划，这部分只算减轻损伤，不算 V 修复更强。</li>
+<li><strong>预注册的 P_cov 成立（两种指定方式都支持）</strong>：同文本、只缩窄注入窗口，T_V“跟随查询”从 1/4 方向（NA、LA 都只有 C1343）升到 4/4（NA-tail）和 3/4 + 1 不可判（LA-tail）。</li>
+<li><strong>SP 上的“首列”失败在按名查询下复现了</strong>：NA（按名、问题在记录后、问题在窗口内）的 N4146 方向，T_V 在目标不在首位的 36 格里 <strong>36/36 输出首列编号</strong>、0 输出目标；同文本缩窄后变成 36/36 目标。LA 在 N4146、N1210、R0 也是首列占多数（31/30/29 of 36）。</li>
+<li><strong>在可判条件中，两种指定方式呈现相似的宽窄窗口趋势</strong>（LB 不可判，四模板比较缺一角，不能说指定方式总体不重要）：宽覆盖下 NA 与 LA 都失败（NA 在 N1210、R0 略好）；缩窄后两者都恢复。布局（问题在前 vs 在后，且都不注入）在 NB 与 NA-tail 之间对 T_V 几乎没有差别（R0 上 NA-tail 更好）。</li>
+<li>合起来（类比档，跨条件解释）：SP 与 NQ 相反的恢复结果，主要对应“问题所在区域是否被注入”（连同剂量），而不是目标指定方式。T_F（完整卷积恢复）在全部可判条件中都是 52–54/54（LB R0 43/54 不可判），没有失败。</li>
+<li>工程全部通过：NB 重放 6 条 × 13 轨迹与 NQ-01 逐位相同；所有窗口按 token 审计；C/T 共用窗口前缓存；通道块来源逐位核对。同文本宽/窄覆盖的 C 自然输出 54/54 相同，首步 logits 哈希 0/54 相同。零 GPU 审计（§7）：差异在 BF16 精度级别（共同首 token 分数最大差 0.25、首步分差最大差 0.375、诊断三候选最大差 0.375 logit，中位 0–0.125），来源是窗口边界移动后，哪些 token 走整段预填、哪些逐 token 形成的计算切分不同；C 的首步分差最小 10.6 logit，任何 C 判读不受影响。恢复用的 C 供体也随之有同级差异。（更正：初稿写“证实各自形成 C 的必要”，不成立——这只说明切分改变 BF16 数值，两种选择没有哪个更正确。）</li>
+</ol>
+<h2 id="2-54-t_nat-t_v-t_f-t_v-36-t_v">2. 主表（54 格；T_nat / T_V / T_F 交付；T_V 在非首位 36 格中 目标/首列；T_V 方向标签）</h2>
+<table>
+<thead>
+<tr>
+<th>条件</th>
+<th style="text-align: right;">窗口</th>
+<th style="text-align: right;">C</th>
+<th>N4146</th>
+<th>N1210</th>
+<th>R0</th>
+<th>C1343</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NB</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">54</td>
+<td>0/54/54；36/0；查询</td>
+<td>0/54/54；36/0；查询</td>
+<td>0/45/54；27/7；混合</td>
+<td>1/54/54；36/0；查询</td>
+</tr>
+<tr>
+<td>LB（不可判）</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">48</td>
+<td>1/49/54；31/5</td>
+<td>0/44/52；26/9</td>
+<td>3/25/43；8/24</td>
+<td>0/54/54；36/0</td>
+</tr>
+<tr>
+<td>NA</td>
+<td style="text-align: right;">26–27</td>
+<td style="text-align: right;">54</td>
+<td>0/18/54；0/36；<strong>首位</strong></td>
+<td>0/31/54；14/18；混合</td>
+<td>1/40/54；22/14；混合</td>
+<td>0/54/54；36/0；查询</td>
+</tr>
+<tr>
+<td>LA</td>
+<td style="text-align: right;">27</td>
+<td style="text-align: right;">53</td>
+<td>0/17/54；2/31；混合</td>
+<td>9/22/54；6/30；混合</td>
+<td>2/25/54；7/29；混合</td>
+<td>0/53/54；35/1；查询</td>
+</tr>
+<tr>
+<td>NA-tail</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">54</td>
+<td>14/54/54；36/0；查询</td>
+<td>0/54/54；36/0；查询</td>
+<td>5/54/54；36/0；查询</td>
+<td>12/54/54；36/0；查询</td>
+</tr>
+<tr>
+<td>LA-tail</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">53</td>
+<td>14/54/54；36/0；查询</td>
+<td>1/53/54；35/1；查询</td>
+<td>37/48/54；不可判</td>
+<td>18/54/54；36/0；查询</td>
+</tr>
+</tbody>
+</table>
+<h2 id="3-t_v">3. 预定比较（T_V 逐格配对：仅前者对 / 仅后者对 / 都对 / 都错）</h2>
+<ul>
+<li><strong>覆盖（同文本）</strong>：NA → NA-tail：0/36/18/0、0/23/31/0、0/14/40/0、0/0/54/0；LA → LA-tail：0/37/17/0、0/31/22/1、1/24/24/5、0/1/53/0。几乎只有“缩窄后才对”的格。N1210 上 T_nat 在两种覆盖下都是 0/54，T_V 仍从 31 升到 54：自然正确率没有改善时，V 恢复后的正确率仍明显改善，说明恢复效果对形成条件敏感；但同为 0/54 不代表损伤程度相同（连续分数可能已改善而未跨阈值），不能排除剂量减轻。</li>
+<li><strong>指定方式</strong>：NA vs LA：3/2/15/34、11/2/20/21、15/0/25/14、1/0/53/0；NA-tail vs LA-tail：0/0/54/0、1/0/53/0、6/0/48/0、0/0/54/0。NB vs LB（LB 不可判，仅描述）：5/0/49/0、10/0/44/0、20/0/25/9、0/0/54/0。</li>
+<li><strong>布局（问题都不注入）</strong>：NB vs NA-tail：0/0/54/0、0/0/54/0、0/9/45/0、0/0/54/0。</li>
+<li>同前缀诊断 M&gt;0 的格（T_nat / T_V）：宽覆盖 NA 18/18、20/34、28/40、50/54，LA 19/20、19/23、20/23、20/52；缩窄后 NA-tail 全部 54/54，LA-tail 54/54、48/53、43/49、54/54。描述，不进判据。</li>
+</ul>
+<h2 id="4">4. 执行</h2>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th style="text-align: right;">形成</th>
+<th style="text-align: right;">自然轨迹</th>
+<th style="text-align: right;">实际解码前向</th>
+<th style="text-align: right;">诊断</th>
+<th style="text-align: right;">校准</th>
+<th style="text-align: right;">墙钟</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>预检 r01（1 worker）</td>
+<td style="text-align: right;">32</td>
+<td style="text-align: right;">80</td>
+<td style="text-align: right;">359</td>
+<td style="text-align: right;">80</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">113 s</td>
+</tr>
+<tr>
+<td>正式 r01（2 worker）</td>
+<td style="text-align: right;">1380</td>
+<td style="text-align: right;">3588</td>
+<td style="text-align: right;">15621</td>
+<td style="text-align: right;">3588</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">2008 / 2088 s</td>
+</tr>
+</tbody>
+</table>
+<p>合计约 1.17 GPU 设备小时（上限 2）；形成 token 前向预检 724、正式 31275；校准引用 NQ-01 六份原值（哈希在回执）。全词表张量在服务器（正式每 worker 约 2.5 GB），哈希在 <code>receipt.json</code>。</p>
+<h2 id="5">5. 解读与出口</h2>
+<ul>
+<li>计划 §7 的出口“同文本覆盖差异稳定”成立：下一步候选是另立合同区分<strong>覆盖与剂量</strong>（例如在缩窄窗口内把每 token 剂量提高到与宽窗口总量相同，或在宽窗口里降低每 token 剂量），本轮不暗加。</li>
+<li>不能说：问题 token 被写坏；指定方式无关（LB 不可判，NA/LA 在 N1210、R0 有差别）；V 是选择的承载者。可以说：在这个面板上，只恢复 V 能否恢复正确选择，强烈依赖问题区域是否在注入窗口内（含剂量变化）；SP 与 NQ 的相反结果主要对应这一点。</li>
+</ul>
+<h2 id="6">6. 可以说 / 不可以说</h2>
+<table>
+<thead>
+<tr>
+<th>可以说</th>
+<th>不可以说</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>同文本缩窄注入窗口（跳过问题），T_V 跟随查询从 1/4 方向升到 4/4（按名）与 3/4（标签，R0 不可判）；P_cov 成立</td>
+<td>问题 token 被干预写坏（覆盖与剂量混淆）</td>
+</tr>
+<tr>
+<td>问题在窗口内时，按名查询也出现首列失败（N4146 36/36）</td>
+<td>SP 失败来自标签式指定</td>
+</tr>
+<tr>
+<td>缩窄也减轻了损伤（T_nat 0–18/54 自然答对）；N1210 上自然正确率不变时 V 恢复仍明显改善</td>
+<td>改善与剂量减轻无关；指定方式总体不重要</td>
+</tr>
+<tr>
+<td>LB 基线不足、不可判</td>
+<td>问题在前对标签式无影响</td>
+</tr>
+</tbody>
+</table>
+<h2 id="7-c-gpu2026-11-02">7. 附：宽/窄覆盖 C 的数值审计（零 GPU，2026-11-02，评审要求）</h2>
+<table>
+<thead>
+<tr>
+<th>对</th>
+<th>共同首 token 分数差 最大/中位</th>
+<th>首步（共同首 token − 停止最大值）差 最大/中位</th>
+<th>诊断三候选差 最大/中位</th>
+<th style="text-align: right;">C 首步分差最小值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NA vs NA-tail</td>
+<td>0.250 / 0.000</td>
+<td>0.312 / 0.062</td>
+<td>0.250 / 0.125</td>
+<td style="text-align: right;">12.44</td>
+</tr>
+<tr>
+<td>LA vs LA-tail</td>
+<td>0.250 / 0.000</td>
+<td>0.375 / 0.062</td>
+<td>0.375 / 0.125</td>
+<td style="text-align: right;">10.62</td>
+</tr>
+</tbody>
+</table>
+<p>在这些分数量级（10–20 logit）上 BF16 相邻可表示数间距为 0.0625–0.125，差异是 1–3 个间距。窗口前缓存哈希两者都不同（预填长度不同，按构造必然）。尚未单独检验“换用另一切分的 C 作供体”是否改变 T_V 结果；这是一个便宜的工程对照，建议并入下一份合同。</p></main></html>

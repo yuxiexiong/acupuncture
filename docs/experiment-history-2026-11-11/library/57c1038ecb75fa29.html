@@ -1,0 +1,325 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>NWR-01 报告 r01：原生写入项写出的递推状态经 t2 直接读取是否造成实质选择错误</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="nwr-01-r01-t2">NWR-01 报告 r01：原生写入项写出的递推状态经 t2 直接读取是否造成实质选择错误</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-native-write-readout-v1-2026-11-05/REPORT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-native-write-readout-v1-2026-11-05/REPORT.zh-CN.md">固定提交原件</a>；SHA-256：<code>57c1038ecb75fa29da73130e9c64e19f59ac4b95a64cb7a04c8528a56627a109</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="nwr-01-r01-t2_1">NWR-01 报告 r01：原生写入项写出的递推状态经 t2 直接读取是否造成实质选择错误</h1>
+<p>合同 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-native-write-readout-v1-2026-11-05/CONTRACT-r02.zh-CN.md">CONTRACT-r02</a>（freeze-r01 <code>fb04254d…0689</code>）。预检、正式均 verification passed，一次通过，无修复重试。判读 <code>analysis/nwr-readouts-r01.json</code>。t2 logits 与逐层补丁统计（392 MB）留服务器 <code>runs/formal-r01/worker-*/tensors</code>。同一助手实现、运行、判读与撰写，不是独立验收。授权：2026-11-05 用户"你把你列出来的这一轮内容全部做掉"。</p>
+<p><strong>冻结判读的标签是"强支持"。</strong> 强标准的七条不等式点估计全部成立。下面先说它不能被读成什么。</p>
+<h2 id="0">0. 先说限制</h2>
+<ol>
+<li><strong>随机对照很分散，有一个种子接近主效应。</strong> 五个同范数随机补丁的正确数是 38、46、21、45、36（基线 L11 为 39）。种子 3 损失 18 条，是主臂损失 23 条的 78%，而且同样全部落到首列错号。平均损失 0.033 让"超过随机"的门槛通过，但准确的说法是：在这个幅度下，五个随机方向里四个不致错、一个致错。主臂的损失大于全部五个种子，n=5 时这只相当于 1/6 的秩。<strong>不能写"方向特异性已确立"。</strong></li>
+<li><strong>"超过修复缺口一半"是贴线通过。</strong> l_D − 0.5b 的点估计是 0.069，6 场景重抽区间为 −0.014 到 0.148，跨 0。</li>
+<li><strong>接收者是 L11，不是原生运行自己。</strong> t2 的 q、k、门控都是 L11 的。测到的是"原生写入的状态被一个已修复的读者读到时发生什么"，不是 L00 自己的 t2 读取。L00 在 t1 即停止（47/48），它自己的 t2 在自然路线下不存在。</li>
+<li><strong>只有一个方向（N4146）、一块已见面板（48 条、6 场景）。</strong> 这是开发性结果，不是确认。</li>
+<li><strong>原生写入多出来的 v 分量在读取处没有可见的额外作用。</strong> 供体换成原生写入（L00）与换成只修 v 的写入（L10）几乎一样：正确数 16 对 18。t2 直接读取处承载的是选择错误，不是停止；主臂 48 条里没有一条停止。</li>
+<li>第 3 节的"48/48 输出首列编号"是看到结果后的描述，未预注册。</li>
+</ol>
+<h2 id="1">1. 工程</h2>
+<ul>
+<li>全部闸门通过：</li>
+<li>来源：形成哈希等于 LVK；C、L00、L10、L11 的 t1 bf16 logits、首 token、自然 token 序列与 LVK 逐位一致。</li>
+<li>重放：L11 的 C 路线 t2 全词表与 LVK 逐位一致；a=b=0 的复刻顺序钩子与原生 t2 逐位相同（C、N 两条路线）；D10 的 C 路线 t2 全词表与自然 token 序列与 SRU 撤回 10 格逐位一致（正确数 18，与 SRU 报告相同）。</li>
+<li>公式：D00/E00/D10 局部输出对 FP64 公式最大相对误差 2.6e−8。</li>
+<li>随机：随机补丁与真实 D 补丁的逐层逐头 L2 范数最大相对误差 1.2e−7。</li>
+<li>有符号零例外 0 次；钩子每个 G 层触发一次，t3 起零钩子，源缓存哈希不变。</li>
+<li><strong>t1 结构（48/48 条输入）</strong>：L00 与"原核直接喂影子 v"（与 L10 逐位相同）相比，第 13 层的 q、k、g、β、S₀ 逐位相同，只有 v 不同（v 差的相对范数中位数 1.04）。第 14 到 30 层的 13 个 G 层，q、k、g、β 在 48/48 条上都不同，S₀ 在 48/48 条上相同。即：两端点的差异全部产生于 t1 这一步，在首个 G 层只是 v，在更高层是该步派生的全部核输入。</li>
+<li>计数：自然轨迹 529（上限 576；L00 的 47 条在 t1 停止不续写），decode 2372（上限 18624）。设备时间 230 + 196 = 426 秒，加预检 37 秒，合计约 0.13 GPUh，在 1.5 GPUh 硬上限内。</li>
+<li>L11 的首 token 在 48/48 条上等于共享首 token，接收者全部到达 t2；L10 有 2 条不等。</li>
+</ul>
+<h2 id="2-n414648-6">2. 主结果（N4146；48 条；比率为 6 场景等权）</h2>
+<table>
+<thead>
+<tr>
+<th>臂</th>
+<th style="text-align: right;">正确</th>
+<th style="text-align: right;">明确错号（全部为首列编号）</th>
+<th style="text-align: right;">停止无编号</th>
+<th style="text-align: right;">其他</th>
+<th style="text-align: right;">Y</th>
+<th style="text-align: right;">E_num</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C 干净</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1.000</td>
+<td style="text-align: right;">0.000</td>
+</tr>
+<tr>
+<td>L00 原生</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">47</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">0.000</td>
+</tr>
+<tr>
+<td>L10 只修 v</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">30</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.333</td>
+<td style="text-align: right;">0.630</td>
+</tr>
+<tr>
+<td>L11 修 v 和 k（接收者）</td>
+<td style="text-align: right;">39</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0.806</td>
+<td style="text-align: right;">0.194</td>
+</tr>
+<tr>
+<td><strong>D00：读原生写入的状态，直接读取</strong></td>
+<td style="text-align: right;"><strong>16</strong></td>
+<td style="text-align: right;"><strong>32</strong></td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0.333</td>
+<td style="text-align: right;">0.667</td>
+</tr>
+<tr>
+<td>E00：读原生写入的状态，修正用途</td>
+<td style="text-align: right;">46</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0.963</td>
+<td style="text-align: right;">0.037</td>
+</tr>
+<tr>
+<td>D10：SRU 撤回格重放</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">30</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0.370</td>
+<td style="text-align: right;">0.630</td>
+</tr>
+<tr>
+<td>R1</td>
+<td style="text-align: right;">38</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0.787</td>
+<td style="text-align: right;">0.111</td>
+</tr>
+<tr>
+<td>R2</td>
+<td style="text-align: right;">46</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0.963</td>
+<td style="text-align: right;">0.037</td>
+</tr>
+<tr>
+<td>R3</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">27</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0.426</td>
+<td style="text-align: right;">0.574</td>
+</tr>
+<tr>
+<td>R4</td>
+<td style="text-align: right;">45</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0.944</td>
+<td style="text-align: right;">0.056</td>
+</tr>
+<tr>
+<td>R5</td>
+<td style="text-align: right;">36</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0.741</td>
+<td style="text-align: right;">0.259</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>量</th>
+<th style="text-align: right;">点估计</th>
+<th>门槛</th>
+<th>6 场景重抽区间（描述）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>b = Y(L11) − Y(L00)</td>
+<td style="text-align: right;">0.806</td>
+<td>≥ 0.25</td>
+<td>0.639 到 0.963</td>
+</tr>
+<tr>
+<td>l_D</td>
+<td style="text-align: right;">0.472</td>
+<td>≥ 0.20</td>
+<td>0.306 到 0.630</td>
+</tr>
+<tr>
+<td>l_D − 0.5b</td>
+<td style="text-align: right;">0.069</td>
+<td>&gt; 0</td>
+<td>−0.014 到 0.148</td>
+</tr>
+<tr>
+<td>l_D − l_E（l_E = −0.157）</td>
+<td style="text-align: right;">0.630</td>
+<td>&gt; 0</td>
+<td>0.593 到 0.667</td>
+</tr>
+<tr>
+<td>l_D − l_R（l_R = 0.033；各种子 0.019、−0.157、0.380、−0.139、0.065）</td>
+<td style="text-align: right;">0.439</td>
+<td>&gt; 0</td>
+<td>0.326 到 0.544</td>
+</tr>
+<tr>
+<td>e_D</td>
+<td style="text-align: right;">0.472</td>
+<td>≥ 0.15</td>
+<td>0.306 到 0.630</td>
+</tr>
+<tr>
+<td>e_D − e_R（e_R = 0.013）</td>
+<td style="text-align: right;">0.459</td>
+<td>&gt; 0</td>
+<td>0.341 到 0.561</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>七条全部成立，接收者未到 t2 的比例 0，D00 达到 token 上限的比例 0。按合同 §5 标签为<strong>强支持</strong>。</li>
+<li>相对 L11 的逐输入转移：D00 把 23 条从正确变成首列错号，其余 16 条保持正确、9 条保持错号；没有一条改对，没有一条变成停止。E00 把 7 条从错号改对，没有改坏。</li>
+<li>C 路线目标竞争 ΔM（目标非首列 32 条，场景等权）：D00 −2.96，D10 −2.16，E00 +0.70，随机五个种子 −0.29、−0.06、−2.46、+0.51、−0.91。</li>
+</ul>
+<h2 id="3">3. 事后描述（未预注册）</h2>
+<p>主臂 D00 的 48 条输出<strong>全部是列在第一位的编号</strong>。16 条"正确"恰好是目标本身列在第一位的输入。在目标不在首列的 32 条上：</p>
+<table>
+<thead>
+<tr>
+<th>臂</th>
+<th style="text-align: right;">输出目标编号</th>
+<th style="text-align: right;">输出首列编号</th>
+<th style="text-align: right;">其他</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>L11</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>D00</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">32</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>D10</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">30</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>E00</td>
+<td style="text-align: right;">30</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>R1 / R2 / R3 / R4 / R5</td>
+<td style="text-align: right;">22 / 30 / 5 / 29 / 20</td>
+<td style="text-align: right;">6 / 2 / 27 / 3 / 12</td>
+<td style="text-align: right;">4 / 0 / 0 / 0 / 0</td>
+</tr>
+</tbody>
+</table>
+<p>读法：读入原生写入的状态后，模型不再按查询选记录，统一退回第一条。种子 3 的随机补丁也把 27 条推到首列。两者合起来的最朴素解释是：首列编号是这次 t2 读取被扰乱后的默认落点，原生写入的状态在五个比较方向里是把读取推到这个落点最彻底的一个。"原生写入的状态携带了指向首列的特定内容"与"它只是足够大地扰乱了读取"在本轮分不开。</p>
+<h2 id="4">4. 能说什么、不能说什么</h2>
+<p>能说的（限 N4146、LVK 新面板、接收者 L11）：
+- 原生受针运行在 t1 写出的递推状态，只经 t2 一次直接读取，就足以把一个已修复运行的回答从 39/48 拉到 16/48，损失全部是明确的首列错号，不是停止。
+- 同一状态经修正用途 E 读入不致错，反而改对 7 条。用途有选择性。
+- 同范数随机补丁平均不致错，但五个里有一个致错且错法相同。
+- 原生运行与只修 v 的运行在 t1 的全部差异源自首个 G 层的 v；这一句现在有 48/48 的逐位核验。</p>
+<p>不能说的：
+- 不能说这是 L00 自己的 t2 读取，或原生全部失败已解释。原生运行的主要失败是 t1 停止，本轮不涉及。
+- 不能说方向特异性已确立，见 §0 第 1 条。
+- 不能说原生写入的 v 分量经 t2 读取起作用：D00 与 D10 无可见差别。
+- 不能推到其他方向、其他面板、其他任务或其他模型。
+- 不能把 0.472 或 23 条读成"机制解释份额"。</p>
+<h2 id="5-gpu-lvksru">5. 零 GPU 重读：已有 LVK/SRU 输出按同一分类规则</h2>
+<p><code>analysis/enum-offline-r01.json</code>。三个缺口方向上，原生运行 L00 是 43 到 47 条停止；只修 v 之后的错答 30、17、11 条全部是首列错号；SRU 的直接读取替换几乎只在"正确"与"首列错号"之间搬运，停止最多变化 1 条（N4146 撤回侧 39→18 正确，错号 9→30；获得侧 16→34 正确，错号 30→12）。C1343 修 v 后 48/48 正确，没有选择错误可搬。逐格计数见论文工作稿表 3。</p>
+<h2 id="6">6. 出口</h2>
+<p>按合同 §5，本轮局部工作到此结束，不追加 t1、全程钩子、其他供体、层或头。强支持只意味着 v8 的 B 阶段（开发外确认）可以被考虑，是否做由整稿判断决定；§0 第 1 条的随机分散是 B 阶段设计必须正面处理的对象。</p>
+<h2 id="7-2026-11-05-gpu">7. 事后剖析（2026-11-05 追加；零 GPU；描述性，未预注册）</h2>
+<p>读正式运行已存的逐层逐头补丁统计，脚本与输出在 <code>analysis/posthoc/</code>。冻结判读不变。</p>
+<table>
+<thead>
+<tr>
+<th>事实</th>
+<th>数值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>原生 D 补丁跨输入一致性</td>
+<td>与每个固定随机方向的余弦，约 88%–91% 的层—头满足 均值绝对值 &gt; 3 倍标准误</td>
+</tr>
+<tr>
+<td>补丁中跨输入共享成分的能量占比（由上述余弦粗估，<code>shared_fraction.py</code>）</td>
+<td>全部 48 条约 0.57；能量最大的三层约 0.46；同场景 8 条内约 0.62。估计只用 5 个方向，相对误差约一成</td>
+</tr>
+<tr>
+<td>补丁能量分布</td>
+<td>第 21、25、28 层合计约 75%，第 24 层约 8%</td>
+</tr>
+<tr>
+<td>范数：原生补丁 ÷ SRU 撤回补丁</td>
+<td>中位数 1.88，逐输入 1.79–2.02</td>
+</tr>
+<tr>
+<td>C 路线目标竞争平移（目标非首列 32 条均值）</td>
+<td>D00 −2.94；D10 −2.16；随机五种子 −0.30、−0.08、−2.43、+0.50、−0.92</td>
+</tr>
+<tr>
+<td>各随机方向平移的跨输入符号一致性</td>
+<td>种子 3 在 100% 输入上为负；种子 4 在 69% 输入上为正</td>
+</tr>
+<tr>
+<td>种子 3 与原生补丁的能量加权余弦</td>
+<td>+0.022（五种子为 −0.006、−0.000、+0.022、−0.009、+0.005）</td>
+</tr>
+</tbody>
+</table>
+<p>读法：
+- <strong>更正（同日，外部核查指出）：</strong> 初稿写"原生补丁是跨输入近似不变的偏移，不是逐输入内容"，过强。数据支持的是：补丁里有一个跨输入共享的成分，粗估占能量一半多；其余随输入变化。"固定偏移"是假说，不是结论。
+- <strong>更正（同上）：</strong> 初稿由"原生补丁比 SRU 撤回补丁大近一倍而效果相近"推出"多出来的 v 分量几乎不起作用"，推不出。模型有非线性、饱和与分量交互，两种操作的最终效果不能相减当作剩余部分单独的效果；而且两个端点在更高层的 q、k、门控都不同，这份状态差不是纯粹的 v 写入分量。可说的只有：两份补丁范数差近一倍而效果相近，所以本轮按原生补丁范数匹配的随机对照，其幅度约为 SRU 撤回补丁的 1.9 倍。
+- 随机方向的作用是跨输入近似恒定的平移，大小因方向而异；种子 3 的作用不是因为与原生补丁对齐。原生补丁的平移约为五个随机值的 2.5 个标准差，n=5，不构成特异性结论。
+- 这些只用于设计开发外确认，不能回头升级本报告的结论。</p>
+<h2 id="8-2026-11-06">8. 开发外确认之后的更正（2026-11-06）</h2>
+<p><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-native-write-confirm-v1-2026-11-05/REPORT.zh-CN.md">NWC-01</a> 在 72 条新输入上检验了 §7 提出的三个假说，结果对 §7 有三处更正：</p>
+<ul>
+<li>§7 表中"共享成分的能量占比约 0.57"偏低。那个估计量在完全共享的向量上自检只给出约 0.5。NWC-01 直接测量补丁向量的跨输入余弦：同族 0.95 到 0.96，跨族 0.91 到 0.93。补丁在不同输入之间高度相似。</li>
+<li>"多出来的 v 分量几乎无效"这个猜想被否证：端点状态差 L00−L10 单独读入造成大量错答。</li>
+<li>"起作用的分量按自己的范数比随机方向高效"不成立：40 个同范数随机方向里 17 到 22 个达到它一半的单步分差。本报告 §0 第 1 条对方向特异性的保留是对的，实际情况比当时估计的更不利。</li>
+</ul>
+<p>本报告 §2 的操作结果（39→16、全部首列错号、修正用途不致错）在新输入上得到确认。</p></main></html>

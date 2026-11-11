@@ -1,0 +1,70 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>WCP-01 编程工程验收</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="wcp-01">WCP-01 编程工程验收</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/wsp-coding-painpoint-v1-2026-11-03/README.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-coding-painpoint-v1-2026-11-03/README.md">固定提交原件</a>；SHA-256：<code>187bc374d0f880585304bda5ca6b9a0d07f1ad1bf7fc047fdd69b081488b9b65</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="wcp-01_1">WCP-01 编程工程验收</h1>
+<p><strong>本轮阶段调度已收尾：</strong> <a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-coding-painpoint-v1-2026-11-03/orchestration/STARTUP.zh-CN.md">启动清单与剩余预算</a>。调度/分阶段编辑权限/恢复验收通过，真实Astra采用用户选择的Mac→SSH路径；Mac需在线。正式搜索保持关闭；旧版报告中的待补齐范围由本轮收据更新。</p>
+<p><strong>四类验收与资源复核已完成：</strong> <a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-coding-painpoint-v1-2026-11-03/REPORT.zh-CN.md">REPORT.zh-CN.md</a>。数据、CPU评分/隔离、0.8B和4B编译干预通过；正式搜索未启动，完整研究ETA尚不能确认。WCP阶段调度与编辑器信息开封的剩余范围见报告末节。</p>
+<p><strong>工程修订r2：</strong> 首次0.8B BF16 runtime/compiled等价检查未过，已停止并获得用户明确选择：主操作保留编译权重增益，不称运行时针的等价实现。新的主验收为目标列按float32增益再BF16舍入逐元素相同，其余全部张量不变、零增益生成一致；runtime比较只保留诊断，不提高旧阈值。完整修订自查见方案SELF_CHECK顶部。下方初版等价要求按此修订理解；原失败收据保留并计入预算。</p>
+<p>2026-11-03。依据<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/docs/wsp-coding-painpoint-v1-2026-11-03/PLAN.zh-CN.md">方案</a>及本轮用户明确授权：补齐数据、评分、隔离与干预接口，完成工程验收，复核 ETA/磁盘；<strong>不启动数学或编程正式搜索</strong>。</p>
+<h2 id="_1">本轮验收合同</h2>
+<ul>
+<li>CPU：固定版本 MBPP / HumanEval+ / GSM8K 数据来源与哈希、参考解答和分区；代码抽取、正确/错误/语法/运行/超时判定；bubblewrap独立namespace、UID/GID65534、capabilities清空、无模型/凭据/网络/GPU，cgroup与rlimit约束。</li>
+<li>GPU：每模型仅4条合成提示×2种子×原版/零针/−0.5/+0.5四臂，最多32个≤128-token回答；短固定文本TF检查λ=−1/−0.5/+0.5/+1的runtime与编译干预、零针、FP32恒等式、流式统计。针眼固定L0前8坐标，仅用于工程，不作为科研候选。</li>
+<li>0.8B工程设备时间≤1800秒、4B≤3600秒，纳入原方案A阶段。外层timeout包含加载与失败；等待他人GPU不抢卡，不在等待时加载模型。CPU评分使用最多4worker、单程序≤60秒/4GB/1核/16进程；全组运行有单独外层限时。</li>
+<li>本轮不生成D/S/V/T/M的模型回答、不调用研究编辑器、不选择科学针。参考代码执行属于CPU评分验收，不是模型实验。</li>
+<li>验收差异与失败原件保留，新修订用新收据；原始权重、旧实验、日志、快照、构建记录不删除。仅清本工程私有可重建完整checkpoint副本，保留来源快照与build记录。</li>
+</ul>
+<h2 id="_2">设计自查增补（同一助手，非独立审查）</h2>
+<p>设计卡：问题为新任务的工具是否按已批准协议执行；增量为评分、隔离、数值与资源实测可信度；复用旧WSP加载/快照/Reader/vLLM；操作仅CPU参考和固定短合成GPU输入；终点为身份、得分、权限边界、数值容差、时间与空间；失败不改标准制造通过；授权来自本轮用户工程验收指令，正式搜索仍禁止。</p>
+<table>
+<thead>
+<tr>
+<th>条目</th>
+<th>判定与理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C01/C02</td>
+<td>通过：支撑编程能力修复研究，不把工程分数称科研增益。</td>
+</tr>
+<tr>
+<td>C03/C04</td>
+<td>通过：固定来源和既有工程复用；原始MBPP参考可能错误、BF16等价可能失败，必须实际验收。</td>
+</tr>
+<tr>
+<td>C05/C06</td>
+<td>通过：具体hook/编译操作同原方案，L0前8是合成fixture，不用于推断科学选点；下游自然响应。</td>
+</tr>
+<tr>
+<td>C07/C08</td>
+<td>通过：恒等式有精确算术条件，BF16实际误差独立测；无缓存路径或唯一根因主张。</td>
+</tr>
+<tr>
+<td>C09/C10</td>
+<td>通过：错误评分/非法权限/不一致快照/数值偏差有直接拒绝判据，不以模型回答正确代替。</td>
+</tr>
+<tr>
+<td>C11/C12</td>
+<td>通过：失败为工程阻塞；限短合成输入与CPU参考，复用旧吞吐，不启动长序列基线伪装验收。</td>
+</tr>
+<tr>
+<td>C13/C14</td>
+<td>通过：来源哈希、代码身份、日志与退出状态分开记录；通过后只交付就绪情况，不能自动开始搜索。</td>
+</tr>
+</tbody>
+</table>
+<p>重点复查E03（少通道不等于弱扰动）、E19（代数/工程不是科学发现）、E22/E23（合成验收不是独立能力复现）、E25（不为ETA重跑完整基准）。其他原方案E01–E26处理继续有效。</p>
+<p>反方：短输入通过仍不保证16k运行性能或长期可靠性。处理：报告实测加载/短生成/CPU评分，长输出ETA明确保留条件与停止线；绝不承诺“短验收证明正式全部可完成”。数据通过原测试也不能证明规范完美，因此参考QA与语义/重复审查分别记录。</p>
+<h2 id="_3">实现</h2>
+<ul>
+<li>prepare_sources.py：固定来源，小文件下载，清单与SHA256。</li>
+<li>isolated.py / scoring.py：只读挂载、干净环境、namespace+cgroup隔离，冻结抽取和原版EvalPlus规则。</li>
+<li>prepare_data.py：CPU参考核验、疑似重复审计、确定性开发分区草稿；审查后才冻结。</li>
+<li>freeze_data.py / data-review.json：记录源题审查、冻结D/S/V/T/M及提示哈希；observer私有资料与D挂载目录分开。</li>
+<li>score_batch.py：observer评分日志、重复请求复用、按题pass@1；不完整或执行器故障拒绝报告完整分数。</li>
+<li>model_interface.py：复用WSP前向，编程提示/采样、全位置增益、编译快照、流式激活统计。</li>
+<li>cpu_acceptance.py / gpu_acceptance.py：固定fixture验收，没有正式搜索入口。</li>
+</ul>
+<p>实际结果以本目录后续 REPORT 和 receipts 为准。本合同不预填通过。</p></main></html>

@@ -1,0 +1,47 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>原版缓存接入前：等价条件核验未通过</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="_1">原版缓存接入前：等价条件核验未通过</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/wsp-process-reproduction-v1-2026-11-03/fleet-v1/runs/original-cache-r1/README.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-process-reproduction-v1-2026-11-03/fleet-v1/runs/original-cache-r1/README.zh-CN.md">固定提交原件</a>；SHA-256：<code>792d1892987bfb60e87472f0d5654efd9b05d5aadb53acd5ac048d84d0670f81</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="_2">原版缓存接入前：等价条件核验未通过</h1>
+<p>2026-11-04。用户要求消除重复原版计算，核对缓存不影响实验结果后接入，不改题目、采样、搜索条件，不重跑已有结果；并要求先说明复现中的错误。本次仅CPU读取已有原始结果，没有新GPU验证、没有部署缓存或改变权重。</p>
+<h2 id="_3">已观察到的反例</h2>
+<p>同一原版items文件、相同题目顺序和逐样本种子：</p>
+<table>
+<thead>
+<tr>
+<th>比较</th>
+<th style="text-align: right;">token不同</th>
+<th>结果影响</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>turn013与021，48回答、8192上限</td>
+<td style="text-align: right;">3/48</td>
+<td>一条从2281变5929token；均长7555.9变7631.9；正确数均7，截断比例均0.875</td>
+</tr>
+<tr>
+<td>turn046与050，240回答、32768上限</td>
+<td style="text-align: right;">4/240</td>
+<td>文本不同；摘要正确数均24，均长及截断比例相同</td>
+</tr>
+<tr>
+<td>turn054与057与059，256回答、32768上限</td>
+<td style="text-align: right;">0/256</td>
+<td>三份原版raw文件SHA256相同：6a45f4a0f3dbf5dcba73541bbe1900630c6ed7caaf0a5289a536af309eea9125</td>
+</tr>
+</tbody>
+</table>
+<p>前两组输入一致的证明见cost-audit-r1/our-snapshot.json中的original_items_sha256；逐样本token核对见同文件duplicate_original_requests。此次进一步从服务器对应actions/turn-<em>/gen_</em>_original.raw.jsonl核对seed、文本、长度及finish_reason，原始数据保留不变。</p>
+<p>同输入不稳定的具体底层原因尚未定位；不能未经证据就断言是某个CUDA核、采样实现或硬件。现有反例足以否定“固定seed所以所有缓存与重算逐字节等价”。保持总体正确率也不足以证明搜索轨迹不变，因为编辑器可读全文和长度摘要。三次相同的256回答批次可支持该批次历史一致，但不能证明未来所有重算都会相同。</p>
+<h2 id="_4">当前处理</h2>
+<p>缓存接入验收暂不通过，未写入生产实现。为避免澄清期间继续派发重复计算，已将唯一Mac控制器75957在等待turn063时SIGSTOP；只阻止新请求，正在计算的GPU批次继续完成并保存response。dispatch-hold.json记录时间、精确命令与PID；其他实验不动，不重启或重放任何动作。</p>
+<p>待用户澄清的是研究口径，不是常规代码修复授权：</p>
+<ol>
+<li>固定复用首次原版回答，保留输入/种子/评分/配对及数据来源；承认这会把每次原版重生成改成固定基线，不能宣称与作者执行方式严格相同。</li>
+<li>保留每次原版生成方式，暂不缓存；这需要用户确认其优先于“别重跑已有结果”的限制。</li>
+</ol>
+<p>用户回复前不得自动恢复新请求派发；不能以定时监控将计划SIGSTOP当故障而修复。没有改变50成功pass目标或48GPUh上限。原始日志、消耗、失败和已完成结果不重写。</p>
+<h2 id="_5">应承担的错误</h2>
+<p>将公开接口重建表述得过近于原实现复现；未在开跑前完整对齐编辑器配置/指令/解释门；重复原版计算没有事先建立可验收复用合同；先低估预算后又把全部剩余按最昂贵批次外推成主ETA。当前运行必须标为“存在中途配置修正的公开接口过程复现”，不能追溯改称从零严格同实现。搜索路径不同和没有阳性本身不是工程错误；但未经验证的实现差异也不能被当作单纯搜索随机性。</p>
+<p>自查：本次是已有数据的工程等价审计，不是新科学实验。遵守C06匹配条件、C10不以正确率代替完整搜索反馈、C11不把工程失败称阴性、C12只读旧证据、C13原始日志保留；未通过的条件明确保留，没有用自查授权新的推理。缓存方案选择后需独立实现验收，本文不宣称缓存已修好，也不给未经实现支持的新完成ETA。</p></main></html>

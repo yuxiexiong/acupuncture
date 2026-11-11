@@ -1,0 +1,46 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>WIN-01 偏离记录（冻结 r01 之后）</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="win-01-r01">WIN-01 偏离记录（冻结 r01 之后）</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/window-recovery-win01-v1-2026-11-04/DEVIATIONS.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/window-recovery-win01-v1-2026-11-04/DEVIATIONS.zh-CN.md">固定提交原件</a>；SHA-256：<code>22d3de40d5b94e2586e8e2c1c07fac51a8bfe53f3d8b910d6f34e579d394d7c2</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="win-01-r01_1">WIN-01 偏离记录（冻结 r01 之后）</h1>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>时间</th>
+<th>偏离</th>
+<th>原因</th>
+<th>影响</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>V1</td>
+<td>2026-11-04 14:25 UTC</td>
+<td><code>win_analysis.load_records</code> 改为只遍历 <code>worker-*</code> <strong>目录</strong>（原代码把 <code>worker-0.log</code> 也当成目录，读盲读包时报错）</td>
+<td>冻结代码的文件匹配错误；正式运行本身不受影响（运行器另有自己的校验）</td>
+<td>只影响读取记录的循环，不改任何读数、判据或范围。改后的文件 sha 与冻结清单不同，报告注明</td>
+</tr>
+<tr>
+<td>V2</td>
+<td>2026-11-04 盲读后</td>
+<td>加做一个敏感性分析（不替代主分析）：一读中判 follows_fact 且备注含"截断/中断"的 27 条（不含已裁决的 2 条）改判 not_delivered，重跑冻结分析</td>
+<td>CRL01–03 一读读者把"推导链指向答案、结论句截断"判为答对，偏离规则"中断前未出现答案→not_delivered"；二读 15% 只能抓到其中一部分</td>
+<td>主分析按合同（一读＋裁决）。敏感性下所有判定标签不变，最大数值变化 0.08（事实 M5 L0）</td>
+</tr>
+<tr>
+<td>V3</td>
+<td>2026-11-04 盲读</td>
+<td>两名一读读者用脚本把逐条手判结果写成 jsonl（<code>labelgen/w.py</code>、<code>gen.py</code>，逐条手写的 id/标签/说明，不含规则匹配）</td>
+<td>只是写文件方式</td>
+<td>无；作者核对过脚本内容</td>
+</tr>
+<tr>
+<td>V4</td>
+<td>2026-11-04 评审后</td>
+<td>对 V2 涉及的 29 条争议回答（含已裁决 2 条）由作者按原规则逐条统一裁决，只看题面与文本、不看所属格；改 5 条（3 条答案写出前截断→未交付，2 条修正已给结论时截断→无法判断），其余 22 条保持答对</td>
+<td>评审指出一刀切改判只是上界，争议回答应按原规则裁决</td>
+<td>报告并列三种口径；判定标签不变；最大逐格变化在偏严上界下为 4 条</td>
+</tr>
+</tbody>
+</table></main></html>

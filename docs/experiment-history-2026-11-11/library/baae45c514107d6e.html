@@ -1,0 +1,77 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>GPU Ready：设计与技术验收完成，正式复现待讨论</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="gpu-ready">GPU Ready：设计与技术验收完成，正式复现待讨论</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/x-recipe-reproduction-v1-2026-10-29/GPU_READY.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/GPU_READY.zh-CN.md">固定提交原件</a>；SHA-256：<code>baae45c514107d6e60793c4f45df0f583b213d96e67f206fd83b417d9a621680</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="gpu-ready_1">GPU Ready：设计与技术验收完成，正式复现待讨论</h1>
+<p>验收日期：2026-10-30（北京时间）。<strong>GPU Ready已实测通过；正式1,170条采集没有启动。</strong> 两张H20已释放。当前不创建正式批准文件，也没有自动启动下一阶段的后台任务。</p>
+<h2 id="_1">讨论材料</h2>
+<ul>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/DESIGN.zh-CN.md">实验设计</a>：对象、五题安排、对照关系、保存内容、解释边界。</li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/RECIPE_CATALOG.zh-CN.md">210个配置与47题全文</a>：可以逐条检查来源、坐标、剂量和题目。</li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/PROTOCOL.zh-CN.md">完整技术协议</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/catalog.json">232条来源映射</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/sources/eligibility_audit.json">排除与重复审查</a>。</li>
+</ul>
+<p>正式计划：Qwen3.5-4B，210配置×5题＝1,050条插针回答；另有120条按同题及解码设置去重的原版回答，共1,170次生成。每条最多128新token。讨论后批准才运行；不会因某个配方没有出现预期人格而调整剂量或筛掉结果。</p>
+<h2 id="_2">已完成验收</h2>
+<table>
+<thead>
+<tr>
+<th>检查</th>
+<th>实际结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CPU测试</td>
+<td>12项运行器/关口测试＋8项导出测试，20通过、0跳过</td>
+</tr>
+<tr>
+<td>模型资产</td>
+<td>固定revision的12文件大小和SHA-256全部核验</td>
+</tr>
+<tr>
+<td>校准</td>
+<td>原版参考文本一次前向，取得并冻结32层尺度</td>
+</tr>
+<tr>
+<td>GPU 0</td>
+<td>24/24技术记录，退出码0，161.06秒</td>
+</tr>
+<tr>
+<td>GPU 1</td>
+<td>24/24技术记录，退出码0，161.54秒</td>
+</tr>
+<tr>
+<td>运行分支</td>
+<td>10组有效解码、固定/逐提示校准、同层多点干预</td>
+</tr>
+<tr>
+<td>零剂量/撤针恢复</td>
+<td>两卡均逐token等于对应原版</td>
+</tr>
+<tr>
+<td>跨卡一致性</td>
+<td>24个对应预检条件的token序列全部相同</td>
+</tr>
+<tr>
+<td>完整性</td>
+<td>文件/token哈希、停止条件、128上限、hook调用次数核验通过；目标权重未变、hook移除</td>
+</tr>
+<tr>
+<td>正式运行关口</td>
+<td>formal_approval.json不存在；无批准不得进入GPU占用/模型加载</td>
+</tr>
+</tbody>
+</table>
+<p>总计48条预检记录、4518个生成token；含校准及加载约0.0953 worker GPU小时。这些记录独立保存，不计入正式五题。没有读取预检答案来筛选配方、改剂量或判定人格成立。</p>
+<p>首次把两套CPU测试放在同一进程中时，导出测试检测到先前hook测试已导入Torch而失败。失败收据r04完整保留；按照导出器“不导入模型库”的测试条件，将两套测试隔离为独立进程后，r05全部通过，没有修改或放宽断言。</p>
+<h2 id="_3">时间与已知边界</h2>
+<p>按预检平均回答长度外推，双卡正式生成约57分钟；按全部128token、预检每token中位速率外推约78分钟。可暂按约1—1.5小时安排生成，题目差异会影响速度，等待算力、归档与阅读报告另计。这是估计，不是已完成时长或硬预算。</p>
+<p>当前环境使用PyTorch参考实现处理缺少优化扩展的卷积和gated-delta算子；本次没有更换内核或后端。原作者私有统计不可得、部分历史解码设置缺失以及HF采样实现差异均按协议披露。新克隆须恢复<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/EXTERNAL_ASSETS.json">外部资产清单</a>中的模型和历史参考源码；本次本地与服务器的冻结文件哈希已一致核验。</p>
+<p>GPU Ready证明当前代码、输入与执行分支能够工作；它不证明210个来源标签都能复现，也不认证稳定人格或通道的天然功能。</p>
+<h2 id="_4">证据</h2>
+<ul>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/gpu-readiness.receipt.json">总验收收据</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/cpu-tests-r05.receipt.json">CPU通过收据</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/cpu-tests-r04.receipt.json">首轮测试失败记录</a>。</li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/preflight-gpu0-r01/receipt.json">GPU 0收据</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/preflight-gpu1-r01/receipt.json">GPU 1收据</a>，对应records目录保存所有原文/token。</li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/scales.json">校准值和来源</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/freeze.json">冻结清单</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/preflight-launch.json">实际启动命令</a>。</li>
+</ul>
+<p>冻结SHA-256：<code>845dabc4e78750b47cc264580ee3d7570e6e6a18b5ba5e34ea516bb015c9f57a</code>。</p></main></html>

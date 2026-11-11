@@ -1,0 +1,148 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>NPC-01 方案：V、S、KV 两两组合——最少要哪几块一起受损才改变答案</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="npc-01-vskv">NPC-01 方案：V、S、KV 两两组合——最少要哪几块一起受损才改变答案</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>docs/cache-native-pair-combination-v1-2026-11-03/PLAN.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-native-pair-combination-v1-2026-11-03/PLAN.zh-CN.md">固定提交原件</a>；SHA-256：<code>1c784709431c9ddf672dfd0689321074b1a3931cdcd188a5cf233a934319506e</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="npc-01-vskv_1">NPC-01 方案：V、S、KV 两两组合——最少要哪几块一起受损才改变答案</h1>
+<p>2026-11-03（v1.1，按评审收紧判读措辞，操作不变）。<strong>设计稿，未冻结、未实现、未运行，无 GPU 授权。</strong> 依据：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-native-s-reverse-v1-2026-11-03/REPORT.zh-CN.md">NSR-01 报告</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-native-qk-history-v1-2026-11-03/REPORT.zh-CN.md">NQK-01 报告</a>。档位：<strong>推导</strong>＝有论证链；<strong>类比</strong>＝相邻证据支持；<strong>推测</strong>＝待验证。</p>
+<h2 id="1">1. 问题</h2>
+<p>前两轮在干净运行 C 里做反向移植，已经确定：
+- 受损的 S、V 历史、KV 各自单独放进去都不致错（NSR-01，两针 48/48）；
+- 受损的卷积 q/k 历史单独也不致错（NQK-01，两针 48/48）；不含受损 q/k 的组合已足以致错，但 L12 的逐条差异（复现 15/17、新增 3）表明 q/k 仍可能调节个别输入；
+- 不含 q/k 的 V＋S＋KV 组合足以致错（L0 2/48，与全部深层受损逐条一致；L12 30/48，复现 15/17）。</p>
+<p>本轮问：<strong>在这批输入、固定移植切点、q/k 保持干净的条件下，哪些受损缓存组合足以改变完整回答？</strong> 逐条输入判断，再看两针的分布。</p>
+<p>结果决定后续研究哪一种组合依赖：S 与 V 历史或 KV 的联合变化，还是 V 历史与 KV 的联合变化。具体经过写入、读取还是后续传播，是后续要区分的问题，本轮不回答。</p>
+<h2 id="2">2. 操作</h2>
+<p>沿用 NSR-01/NQK-01 的模型、面板（LVK 新面板 48 条）、两个针（L0/N4146/−1、L12/C3621/−1）、形成、切点 τ（处理最后一个提示 token 之前）、生成设置（贪心，最多 32 个新 token；不加针、不挂钩子、不强制前缀）、G 层（14 层）、深层 KV 层（15,19,23,27,31）和 V 通道切片（[V_LO:]，V_LO = 4096）。接收者为同一输入的 C，供体为同一输入、同一针的 T：</p>
+<table>
+<thead>
+<tr>
+<th>格</th>
+<th>换入的受损内容（其余全部保持 C，含卷积 q/k 历史）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CSV</td>
+<td>G 层 S＋G 层卷积 V 通道</td>
+</tr>
+<tr>
+<td>CSK</td>
+<td>G 层 S＋深层 KV</td>
+</tr>
+<tr>
+<td>CVK</td>
+<td>G 层卷积 V 通道＋深层 KV</td>
+</tr>
+</tbody>
+</table>
+<p>另跑 C 与两针 T 作桥接端点。三个单组（NSR-01）与 V＋S＋KV（NQK-01）、全部深层（NSR-01 的 CJ）取自既有正式记录，逐输入配对。每条输入 9 条自然轨迹。</p>
+<h2 id="3">3. 读数</h2>
+<ul>
+<li>主读数：自然完整回答（全 48 条）；相对 C 的改坏数与场景数；异常类型（停止 / 错选编号 / 混合编号 / 其他，NSR-01 冻结定义）。</li>
+<li><strong>逐条配对</strong>：每格改坏的输入里，有多少在同一输入的 CVSK、CJ、T 中也改坏，异常类型相同多少，输出文本完全相同多少；CVSK 改坏的输入能被哪几个两两组合单独带入。</li>
+<li><strong>逐条最小致错组合</strong>（在已测分组内）：某条输入在某个两两组合下出错、而组合内两个单组（NSR-01）都不出错，该组合是这条输入的一个最小致错组合；三个两两组合都不出错、只有 V＋S＋KV 出错，记为“需要三块”；单组即出错的记为“单组足够”（预期为 0）；V＋S＋KV 也不出错的记为“未致错”。报告每针各类的输入数，以及每条输入的最小组合集合。结论由这一分布给出，不由各组合的错误总数概括。</li>
+<li>首步描述同前，只描述。汇总：逐输入、六场景等权，场景分层 bootstrap（2000 次，种子 20261103）。不算比例，不设总标签。</li>
+</ul>
+<h2 id="4">4. 判读（逐针分别读；部分复现照实报告，不硬塞进下表）</h2>
+<table>
+<thead>
+<tr>
+<th>观察</th>
+<th>支持的读法</th>
+<th>不能说的</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>多数输入的最小组合含 S（CSV 或 CSK），CVK 少有</td>
+<td>S 与 V 历史或 KV 的联合变化足以致错</td>
+<td>“受损 V 把受损 S 读错了”；这就是原生损伤路径</td>
+</tr>
+<tr>
+<td>多数输入的最小组合是 CVK</td>
+<td>V 历史与 KV 的联合变化足以致错，不需要受损 S</td>
+<td>S 与损伤无关（NCC-01 中恢复 S 足以修复）</td>
+</tr>
+<tr>
+<td>三个两两组合都各自带入一部分输入</td>
+<td>不同输入的最小组合不同</td>
+<td>对所有输入“任意两块都够”；识别出三条独立路径</td>
+</tr>
+<tr>
+<td>多数输入“需要三块”</td>
+<td>在已测分组内，这些输入需要 V、S、KV 三块同时受损</td>
+<td>三块各自承载什么</td>
+</tr>
+<tr>
+<td>只有 CSV 或只有 CSK 致错</td>
+<td>S 与那一个读取侧块的组合足够</td>
+<td>另一个读取侧块无作用</td>
+</tr>
+<tr>
+<td>两针结果不同</td>
+<td>两针的组合要求不同，作为条件差异保留</td>
+<td>把差异归给层号</td>
+</tr>
+</tbody>
+</table>
+<p>措辞限制：
+- 都是干净背景中的移植结果，是混合缓存干预的总效果，不是原生损伤路径；
+- 致错的组合是"充分"，不证明"必要"；
+- L12 的全部深层受损就等于原生 T（NSR-01 已核实），L0 不是（浅层第 1–12 层也受影响）。</p>
+<h2 id="5">5. 工作预测（数据前登记，只写方向，不是预定结论）</h2>
+<ul>
+<li><strong>弱推测</strong>：含 S 的组合（CSV、CSK）比 CVK 更常成为最小致错组合。依据较弱：跨输入干净 S 能带入供体答案，只说明 S 能影响答案选择，不说明同一输入受损的 S 保留了什么，也不直接预测哪个组合最容易致错。本轮不是对“受损信息被错误读取”的检验。</li>
+<li>两针是否相同，不作预测。</li>
+</ul>
+<h2 id="6">6. 工程验收（实现时断言，任一失败即停）</h2>
+<ol>
+<li>形成 hash 等于 NCC-01、NSR-01、NQK-01；C 与两针 T 的 t1 bf16 logits 和自然 token 等于 NCC-01 正式记录。</li>
+<li>每格目标张量等于 T（V 只换 [V_LO:]，卷积 q/k 保持 C），其余所有张量逐位等于 C；接收者与 T 前后不变。</li>
+<li>预检自换（以 C 为供体，CSV 组），缓存不变、t1 等于 C。</li>
+<li>分析端核对既有记录 sha，并核对本轮 T 与 NSR-01、NQK-01 的 T 自然 token 一致。</li>
+<li>6.2 演示：三格的切片与保留、违规拦截、逐条配对、分析入口端到端；冻结前真实模型冒烟须全部通过。</li>
+</ol>
+<h2 id="7">7. 成本</h2>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th style="text-align: right;">正式 48</th>
+<th style="text-align: right;">预检 2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>形成 / 前缀预填 / 形成 token</td>
+<td style="text-align: right;">144 / 48 / 3834</td>
+<td style="text-align: right;">6 / 2 / 162</td>
+</tr>
+<tr>
+<td>t1 / 自然轨迹</td>
+<td style="text-align: right;">432 / 432</td>
+<td style="text-align: right;">18 / 18</td>
+</tr>
+<tr>
+<td>工程前向</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">2</td>
+</tr>
+</tbody>
+</table>
+<p>参照 NQK-01 实测（单条输入约 11 秒），估计 0.2 GPUh；上限正式 0.8 GPUh，预检与冒烟 0.15。复用 NQK-01 的运行器、替换函数和闸门，新增代码只有三个组合的目标定义。</p>
+<h2 id="8">8. 停止与下一步</h2>
+<ul>
+<li>工程闸门失败为合同执行失败；预检允许一次有记录的修复；正式开始后不修、不重试。</li>
+<li>结果弱或不可判时不加格、不扫层、不拆头。完成即停。</li>
+<li>下一步按结果另立设计：</li>
+<li>若多数输入的最小组合含 S：再区分 S 与 V 历史或 KV 的联合变化经过写入、读取还是后续传播（可借用 SRU-01 的 t2 直接读取工具，但要在原生自然生成里做）；</li>
+<li>若多数为 CVK：转向 V 历史与 KV 怎样共同改变选择；</li>
+<li>若"三块都要"：先在恢复方向上做对应的两两恢复，确认这种组合要求是否双向成立，再决定深入哪一块。</li>
+</ul>
+<h2 id="9">9. 自查（作者自查，非独立评审）</h2>
+<ol>
+<li><strong>是否在无限拆零件？</strong> 不是。这是 NSR-01/NQK-01 留下的明确问题："各自可容忍、组合才致错"里，最少哪几块就够。只加 3 格，答案直接决定下一步研究对象，不扫层、不拆头。</li>
+<li><strong>为什么只做反向（干净接收者）？</strong> 损伤的组合要求是在这个方向上出现的。恢复方向在 NCC-01 中单组就已足够，两两恢复不能增加区分力；只有当三块都需要时，才回到恢复方向确认（§8）。</li>
+<li><strong>天花板与地板</strong>：干净接收者没有天花板。L12 的改坏上限只有约 17 条，即使部分复现也可能只看到少数改坏，要逐条配对而不是只看总数。</li>
+<li><strong>已见面板、单个切点、两个针</strong>：结论只限这些条件。</li>
+</ol></main></html>

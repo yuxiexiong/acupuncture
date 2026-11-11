@@ -1,0 +1,85 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>0.8B：诊断、候选排序与干预代码对照</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="08b">0.8B：诊断、候选排序与干预代码对照</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/wsp-process-reproduction-v1-2026-11-03/fleet-v1/runs/code-comparison-r1/README.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-process-reproduction-v1-2026-11-03/fleet-v1/runs/code-comparison-r1/README.zh-CN.md">固定提交原件</a>；SHA-256：<code>25e2eb6e6b36830bf20bb3dbdc3a19958c1a1574918363ad86d727bba25bced3</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="08b_1">0.8B：诊断、候选排序与干预代码对照</h1>
+<p>日期：2026-11-04。身份：ANALYZED，仅分析已有代码和输出。主比较冻结至成功pass25，末尾补记刚返回的pass26；不是新实验，不修改或中断运行，不向编辑器提供作者信息。本文在观察者仓库，不进入编辑器工作区或上下文。</p>
+<h2 id="_1">结论及责任边界</h2>
+<p>关键差别确实在分析算法，而不只是最终碰巧选中了不同神经元：对照状态的定义、候选分数、候选截断规则、权重修改的几何含义均有不同。我们有使用作者同类的方向投影，但没有按作者实际的分析代码链执行。因此当前轨迹不能表述为“作者的具体算法原样复现后失败”。此前将自主重新发现与具体过程复现混在一起，是复现任务定义和验收上的失误。</p>
+<p>这些差异提供了无明显收益的合理解释，但未做只改变一个因素的配对复现，不能给每个差异分配确定的因果责任，也不能保证照用作者分析便会成功。作者记录本身是一次成功搜索轨迹，不是保证收敛的固定算法。</p>
+<h2 id="1">1. 痛点方向：同题分支差与同句早晚差不是同一个量</h2>
+<p>作者早期用4个情境、每个情境两条短轨迹，比较正常推进与重复卡住的尾段均值；由隐藏状态差构造重复方向。我们turn011用2条轨迹中同一句话的第一次出现与后续重复段之差。</p>
+<p>我们的设计控制了字面内容，却混合了重复、位置和上下文积累；作者的设计对准了正常/异常行为差，但也存在分支词汇内容混杂。两者都含人工构造轨迹，不能说一方全自然、一方全人工。无论哪种均值差，命名为“重复方向”都不自动证明它是重复的原因。</p>
+<h2 id="2">2. 排序：变化幅度不等于向故障方向的写入量</h2>
+<p>令a为MLP中间激活，W为down_proj，w_j为其第j列，u为单位重复方向。</p>
+<p>作者早期及后续writer排序的核心是：</p>
+<p><code>score_j = mean_pairs(Δa_j) * (uᵀ w_j)</code></p>
+<p>还检查各情境的符号一致性与分层写入。它在固定方向下度量正常/异常激活差向该方向的线性写入量：正负号可以区分强化与抵消该差异的成分。这仍是基于选定对照的归因量，不是独立因果证明。</p>
+<p>我们turn011的实际分数是：</p>
+<p><code>score_j = min(|Δa_1j|, |Δa_2j|) * ||w_j|| * 1[Δa_1j Δa_2j &gt; 0]</code></p>
+<p>它检查两条轨迹激活同号，却丢失输出方向的符号；抵消重复的补偿通道同样可以高分。因此“高分→清零”缺少方向依据。turn014打印方向夹角不能追溯改变turn011的排序规则。</p>
+<p>后期已经修正一部分：turn052采用有符号<code>Δa*(uᵀW)</code>。但输入候选先在turn049按高/低自然重复组的标准化效应&gt;|1|筛选，再按<code>|Δa|*列范数</code>每层只取6个；turn053又要求|rho|≥0.85、两条构造轨迹同号，最后最多取3个。因而它并不是作者对全体writer的同一排序：前置筛选会排除未入围者，高相关也不等于贡献覆盖率高。跨问题的自然激活差与两条构造轨迹方向相乘，还引入了两个统计来源的匹配问题。</p>
+<h2 id="3">3. 干预：同样叫消融，删掉的内容不同</h2>
+<p>作者早期局部方向干预：</p>
+<p><code>W' = W - α u(uᵀW)</code></p>
+<p>稀疏化后只对选中列施加同样的方向投影：</p>
+<p><code>w'_j = w_j - α u(uᵀw_j)</code></p>
+<p>在输入激活固定时，仅改变输出沿u的分量，保留与u正交的输出分量。α=1为该分量清除；α&gt;1会反向/过度抵消，不能统称简单去除。局部的正交保持不保证整个非线性网络能力不变。</p>
+<p>我们的多条路线不同：</p>
+<table>
+<thead>
+<tr>
+<th>实际代码</th>
+<th>修改</th>
+<th>与上述操作的区别</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>turn014、053</td>
+<td>选中整列设零</td>
+<td>删除该神经元所有输出方向，连同可能有用的成分</td>
+</tr>
+<tr>
+<td>turn055/056及边界通道路线</td>
+<td>选中整列乘增益</td>
+<td>故障相关和其他输出分量一起放大</td>
+</tr>
+<tr>
+<td>turn027</td>
+<td><code>W'=W(I-kkᵀ)</code>，k在MLP激活空间</td>
+<td>去除一个输入特征；与残差输出空间的左投影不是同一操作</td>
+</tr>
+<tr>
+<td>turn060</td>
+<td>单列减去<code>0.5*隐藏状态差/平均激活差</code></td>
+<td>按局部均值定剂量，试图消去半个观测状态差；不是按原权重沿u的投影定剂量</td>
+</tr>
+</tbody>
+</table>
+<p>必须保留反例：turn020确实执行了作者同形的<code>W-u(uᵀW)</code>。但方向来自我们的早晚重复差，并一次改动11层的MLP与attention共22个矩阵；作者早期先局部测试，再组合已支持的部位。公式相同不代表诊断方向和作用范围相同。大范围改动可能同时影响驱动和补偿过程，这是风险解释，不是已分离验证的原因。</p>
+<h2 id="4">4. 稀疏化依据：作者检查了覆盖，我们直接设了候选数量上限</h2>
+<p>作者tool_calls第62行先对原诊断对照排序、保存每处top64，并检查新情境的排名相关性（0.666、0.583）和top64重合（55、36）。这一阶段top64尚未应用；不能把后来的稀疏方案说成最初发现收益的原因。</p>
+<p>第91行在应用稀疏方案时输出了新情境归因。由其原始数值计算，选中列覆盖两处全部列“重复减正常”有符号净投影差的约90.98%、98.04%。这不是覆盖91%/98%的因果机制，也不是正贡献总质量；此前另一项正贡献总质量指标只有49.8%、55.5%，两者不可混用。</p>
+<p>我们turn053的<code>len(matched)&lt;3</code>没有对应的贡献覆盖测量；不能由“只改3列、相关系数很高”推出主要故障写入已经覆盖。作者也是先观察到方向干预的收益，再做这种压缩；我们在未获得可靠收益前多次直接尝试极少整列。可能同时出现覆盖不足与整列副作用。</p>
+<h2 id="5">5. 已有输出如何支持或限制这些解释</h2>
+<ul>
+<li>边界词路线：局部TF降低某个重复开头的概率，但六倍整列增益自由生成从24/240正确降至0/240，全部触顶。它直接否定“压低该词就修复循环”的预测；不能据此证明所有方向方法无效。</li>
+<li>turn060局部校准：后续turn062测得紧邻层重复投影约减半（比值0.4924），到较后层剩约0.9208；正常推进段平均log-prob变动−0.03295，而后续重复段仅−0.00618。局部目标达到，没有形成清晰的选择性改善。</li>
+<li>对应自由生成turn063：21→22/256，+0.39个百分点，报告SE1.96个百分点；15救回、14损坏，没有可靠收益。</li>
+<li>作者在新情境TF中测得正常推进平均+0.00232、重复分支−0.02410，且6个重复情境均下降。与我们的局部输出相比，作者该阶段的选择性证据更强；不同探针不能把两组数值当作严格配对检验。</li>
+<li>作者早期生成筛选多保留32k，我们10次早期生成使用8k。观察窗口不同可能改变淘汰顺序；这不是单纯运行速度优化，不能声称保持了作者那次具体搜索的评估条件。</li>
+<li>刚返回的pass26/turn067：依据近似循环头反馈排序的整头消融，21→13/256，差−3.12个百分点、报告SE1.98个百分点。该代理分数未给出收益；有限样本下不能把一次下降解释为已证明该头的唯一功能。</li>
+</ul>
+<h2 id="_2">判断</h2>
+<p>已有证据最支持：痛点大类找对了，但我们用于定位它的代理量与作者不同；候选排序早期不区分强化和补偿，后期存在前置筛选和未经覆盖验证的极窄选择；干预又经常把其他输出一起改掉。局部代理改善多次没转化为自然生成收益。这比把失败笼统归为“模型不行”或一个未核实的底层bug更有依据。</p>
+<p>这些是已观察的分析链差距与有证据的解释，不是唯一原因的定论。编辑器设置曾中途对齐、服务实现与数值差异仍是其他因素；没有反事实比较就不能排除。0.8B搜索仍未结束，不能宣布最终阴性。</p>
+<h2 id="_3">来源与自查</h2>
+<p>作者固定revision：<code>4d09ba6d6a7e891dd8063974dfe81b3d78e3494f</code>。</p>
+<ul>
+<li><a href="https://github.com/RikiyaT/lm_understand-logs/blob/4d09ba6d6a7e891dd8063974dfe81b3d78e3494f/exp8_math/runs/p50c/turns/t008/answer.md">早期评分t008</a></li>
+<li><a href="https://github.com/RikiyaT/lm_understand-logs/blob/4d09ba6d6a7e891dd8063974dfe81b3d78e3494f/exp8_math/runs/p50c/turns/t010/answer.md">逐层写入t010</a></li>
+<li><a href="https://github.com/RikiyaT/lm_understand-logs/blob/4d09ba6d6a7e891dd8063974dfe81b3d78e3494f/exp8_math/runs/p50c/tool_calls.jsonl">tool_calls.jsonl</a>：1-based行13为局部方向干预；62为转移评分及top64提名；91为稀疏应用与归因。</li>
+</ul>
+<p>我方来源：仓库<code>external/wsp-fleet-v1/math-0p8b/experiment/turn-NNN/reply.txt</code>与<code>tool_result.json</code>，关键代码及结果的身份见同目录<code>evidence.json</code>；补充范围统计见相邻<code>halfway-comparison-r1</code>。</p>
+<p>自查：本轮无新设计/运行授权，不做新模型计算；公式核对矩阵左右乘维度；区分局部代数保持与全网效果；区分相关、归因和因果；不以最终补丁倒填早期流程；不将正贡献质量与有符号净差覆盖混淆；保留我们也用过相同公式及后期已用有符号排序的反例；不把单轨迹失败归为确定单因。未修改编辑器提示、状态、候选或运行条件。</p></main></html>

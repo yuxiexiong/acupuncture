@@ -1,0 +1,311 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>下一阶段候选 B（状态滞留）与 S（sink / L3 边界）：七步查重报告</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="b-ssink-l3">下一阶段候选 B（状态滞留）与 S（sink / L3 边界）：七步查重报告</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>docs/literature/next-stage-state-sink-related-work-audit-2026-10-29.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/literature/next-stage-state-sink-related-work-audit-2026-10-29.zh-CN.md">固定提交原件</a>；SHA-256：<code>0bfcc3475bf0645514aa63d773a6c76605c63d21d06062708ece4f311ca0ee43</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="b-ssink-l3_1">下一阶段候选 B（状态滞留）与 S（sink / L3 边界）：七步查重报告</h1>
+<p>2026-10-29。用户指令：“跑查重，一次查明白”。三路模型辅助检索并行（B 线第 1–4 步、S 线第 1–4 步、两线共用第 5–6 步），汇总与第 7 步由主会话完成。本报告只写文献覆盖，不写 novelty 段、不给等级。原始笔记、逐步查询表与原文引文在 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/literature/next-stage-state-sink-audit-2026-10-29"><code>next-stage-state-sink-audit-2026-10-29/</code></a>。</p>
+<h2 id="0">0. 先说坏消息</h2>
+<ol>
+<li><strong>B 线的现象已发表。</strong> Prefix Steering（2610.04967）只在一小段 token 上转向、之后不再干预，效应延续到转向结束后很久；机制被作者列为开放：“our behavioral experiments do not distinguish between these mechanisms”（OLMo 3、Qwen3，纯 Transformer）。</li>
+<li><strong>B 线的方法在同一模型上已有。</strong> 2609.04434 在 <strong>Qwen3.5-4B</strong> 上做 split-prefill（只留 KV 或只留递推状态）与 state-swap，并给出类比档预言：语言/人设/语气类效应走递推状态。</li>
+<li><strong>B 线的痛点被反转。</strong> Prefix Steering、PrOSV、KV Cache Steering、ReFT 都把“撤掉后仍有效”当作优点；“转向经前缀缓存污染下一个请求”没有找到任何报告。唯一的正面证据（2605.10664 GCAD，多轮 CAA 的“KV 污染”）没有撤除臂，作者只写“likely mechanism”。</li>
+<li><strong>S 线前一半已被占。</strong> “干预使上下文不可用而参数知识保留”在概念层被 Jin 2502.01563（ICML 2025，破坏 Q/K massive values 后 passkey 100%→0–2%）占据；方法 S4（配对事实候选 logit 差）被 Ortu 2402.11655、Du 2404.04633 覆盖，且 Hagström 2412.17031 公开批评此类 logit 差未归一化。</li>
+<li><strong>对前一轮审计（2026-10-28 晚）的两处更正。</strong> ①2608.12149 的删 PAS 实验只在 M-A-P GDN 检查点（340M、1.3B）上做，Qwen3.5 只有观测图；全文无 EOS 读数——“sink 破坏导致停止”在 Qwen3.5 上无直接证据，C5 降为两步类比。②2603.16335（Yap）不只是 C4 零结果：其表 5（decode_only 转向 p=0.36–0.67 无效，prefill_only p=0.0007）被作者写成“behavioral commitments are computed during prefill in GatedDeltaNet”，在结论层断言了 B3 的一部分（未排除全注意力 KV，属推断）。另，2606.11375 是探针层面、各向同性、不传播的结果，不是输出层面的反证（见 <code>experiments/early-stop-knowledge-readout-v1-2026-10-29/PROTOCOL-CHECK-2606.11375.zh-CN.md</code>）。</li>
+</ol>
+<h2 id="1">1. 主张与覆盖判定</h2>
+<p>层级：结论被占 / 方法层覆盖 / 被蕴含 / 部分覆盖 / 未找到。“对象”指具体模型、干预、测量组合。</p>
+<h3 id="b">B 线</h3>
+<table>
+<thead>
+<tr>
+<th>主张</th>
+<th>判定</th>
+<th>层级</th>
+<th>关键依据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>B1 撤除后效应经缓存状态而非文本延续</td>
+<td>部分覆盖</td>
+<td>现象结论被占（Prefix Steering）；KV 一半被蕴含（KV 写入后不变）；“持续到维持异常”在优化输入上被占（2610.09027：“The adversarial text alone is thus not sufficient”）；Liu 2606.19831 §7.3 在稠密 Qwen3-4B L25 上得出“文本承载”，与我们 L25 同形</td>
+<td>2610.04967；2610.09027；2606.19831</td>
+</tr>
+<tr>
+<td>B1 方法：撤针 vs 无针重建</td>
+<td>方法层覆盖</td>
+<td>2609.11020 的同 token 序列对照即无干预重建；Liu release 臂即撤针</td>
+<td>2609.11020；2606.19831</td>
+</tr>
+<tr>
+<td>B2 混合模型中递推状态还是 KV 携带</td>
+<td><strong>未找到（结论）</strong>；方法层覆盖</td>
+<td>2609.04434 同模型 split-prefill/state-swap，指向递推状态（类比）；HiSPA 2601.01972 相反方向（注意力补回 SSM 冲掉的信息）；WriteSAE 2605.12770 衰减式表明取决于遗忘门实测值，文献不蕴含是或否；S0 Tuning 2604.01168 在 Qwen3.5-4B 上初始状态扰动的直接影响到提示末尾只剩 0.03% KL（反向证据）</td>
+<td>2609.04434；2601.01972；2605.12770；2604.01168</td>
+</tr>
+<tr>
+<td>B2 对象：承载者随注入深度从状态切到文本</td>
+<td>未找到</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>B3 痛点：关不掉/缓存复用污染/混合模型转向安全</td>
+<td>部分覆盖，且方向不利</td>
+<td>KV 污染已命名并有修复（GCAD）；跨请求前缀缓存污染未找到报告；拒答方向可跨 Transformer/SSM/Zamba2 迁移（2609.04721），不利于“混合模型转向不安全”</td>
+<td>2605.10664；2609.04721</td>
+</tr>
+</tbody>
+</table>
+<h3 id="s">S 线</h3>
+<table>
+<thead>
+<tr>
+<th>主张</th>
+<th>判定</th>
+<th>层级</th>
+<th>关键依据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S1 前半：首个全注意力层前写入使提示事实在干预期间不可用</td>
+<td>部分覆盖</td>
+<td>概念与模板层被占（Jin；Ben-Artzy 2409.03621；Lad 2406.19384；2603.22473 在 Qwen3.5-0.8B 消融 L0 困惑度 204,370）；GDN 混合 + 以首个全注意力层为界 + 配对敏感度的对象未找到</td>
+<td>2502.01563；2409.03621；2406.19384</td>
+</tr>
+<tr>
+<td>S1 后半：失效表现为首 token EOS</td>
+<td><strong>未找到</strong>，且有形态反证</td>
+<td>破坏 sink/massive 结构后的已报告形态是复述提示（House of Cards 2410.01866）、重复（Cancedda 2402.09221）、停用词/乱码（Super Weight 2411.07191），无一报告 EOS（迁移到 Qwen3.5 为类比）</td>
+<td>2410.01866；2402.09221；2411.07191</td>
+</tr>
+<tr>
+<td>S1 被蕴含？（2602.02712 命题 4.1）</td>
+<td><strong>本轮检验：未蕴含</strong></td>
+<td>对 16 个早层条件与两条随机方向（正负号）计算 argmax(LN(v)·Eᵀ)：无一为 EOS，EOS 排名 2,499–245,820（L0/N4146 +1 最近，第 2,499 名）；且剂量 ±1 非渐近区</td>
+<td>本报告 §3</td>
+</tr>
+<tr>
+<td>S2 边界与 sink/massive 形成层对齐（L3）</td>
+<td>部分覆盖 + 不利类比</td>
+<td>形成层机制由 2608.12149 提出但不测小尺寸 Qwen3.5、不测停止；2610.16745 附录 F.2 同族 Qwen3.6-27B 首次越过 sink 判据在 L15（41/50），不在 L3</td>
+<td>2608.12149；2610.16745</td>
+</tr>
+<tr>
+<td>S3 EOS 是上下文不可用时的默认输出</td>
+<td>未找到覆盖</td>
+<td>类比支持：Eikema &amp; Aziz 2311.08817（LLaMA 70.7% 提示的整序列众数为空，但“众数为空”推不出“首 token argmax 为 EOS”）；Jin 附录一句 “may not even be able to provide a response”；AID 2503.10167 命名自然 “silence”</td>
+<td>2311.08817；2502.01563；2503.10167</td>
+</tr>
+<tr>
+<td>S4 方法：配对事实候选 logit 差</td>
+<td>方法层覆盖</td>
+<td>不构成方法贡献；须回应 Hagström 的归一化批评</td>
+<td>2402.11655；2404.04633；2412.17031</td>
+</tr>
+</tbody>
+</table>
+<p><strong>空着的部分全部在对象层</strong>：混合 GDN 模型中激活干预撤除后由哪种缓存携带、承载者随深度切换、未经优化的单通道干预即可经状态持续；GDN 混合架构上以首个全注意力层为界的加性写入导致“事实不可用 + 首步 EOS”这一形态、以及它与文献中“重复/回声”形态的差异。方法层没有空位。</p>
+<h2 id="2">2. 七步执行记录</h2>
+<table>
+<thead>
+<tr>
+<th>步</th>
+<th>做法</th>
+<th>规模</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1 抽象阶梯</td>
+<td>B：“对状态 S 施加 T 后移除，效应经 S 延续”，T 取 steering、patching、KV 编辑、prompt injection、SSM 状态注入；S：“深度 d 前的 T 摧毁上下文使用并使输出塌缩为默认 token”，T 取 steering、消融、噪声、删层、massive 置零、sink 移除、BOS 扰动</td>
+<td>见三份笔记逐步查询表</td>
+</tr>
+<tr>
+<td>2 方法论单独搜</td>
+<td>cache swap/state transplant/forced-prefix replay；配对反事实 + 候选 logit 差、context reliance 度量</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>3 蕴含检索</td>
+<td>KV 不衰减、线性注意力遗忘门衰减式（WriteSAE）、2602.02712 命题 4.1（并做数值检验）、sink/massive 理论</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>4 同义术语</td>
+<td>B：persistent steering、carryover、hysteresis、state contamination、cache poisoning、one-shot/KV cache steering、SSM/Mamba/GDN steering 等；S：attention sink、massive activation、super weight、no-op attention、register token、context neglect、EOS collapse、empty response、silence 等；中文 1 条</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>5 引用链</td>
+<td>Semantic Scholar 前向被引与参考文献：2608.12149（被引 2/参考 52）、2610.16745（0/25）、2606.29522（3/30）、2605.06342（2/39）、2507.08799（12/34）、2404.05971（12/28）、2602.22719（3/83）、2605.10664（7/35）；新取正文 6 篇，其中 2610.04967 与 2609.11020 为本轮最重要发现</td>
+<td><code>citation-chains/</code></td>
+</tr>
+<tr>
+<td>6 对抗检索</td>
+<td>每线 ≥6 条“杀手查询”；痛点正反证据；三臂设计先例</td>
+<td><code>adversarial-and-citations.md</code></td>
+</tr>
+<tr>
+<td>7 边界申报</td>
+<td>见 §4</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p>检索规模：WebSearch 共 106 条（B 38、S 33、对抗与引用链 35），WebFetch 4 次（均为摘要器转述，不计为读过）。下载 PDF 61 份；<strong>取到正文并定向检查的约 45 篇</strong>（B 12、S 15、对抗 18 新读 + 1 复核；三路有重叠，未去重）。主会话另对 4 条关键杀手（2610.04967、2609.04434、2610.09027、2603.16335）用 pdftotext 抽文本核对原句。</p>
+<p>检验轮次：B1–B3、S2、S4 只经过本轮一轮；S1、S3 另有前一轮（2026-10-28 晚，20 条查询）。按协议，存活不等于强度。</p>
+<h2 id="3-gpu">3. 本轮的零 GPU 蕴含检验</h2>
+<p>2602.02712 命题 4.1：所有位置加常向量 v、剂量趋大时，logits 收敛到 LN(v)·Wᵀ。若其 argmax 恰为 EOS，则“首步 EOS”为推论。用 Qwen3.5-4B 权重（tied embedding，最终 RMSNorm 为 x/rms·(1+w)）在 CPU 上计算各条件写入方向 ±W_down[:,c] 与两条随机方向 ±v：</p>
+<ul>
+<li>早层 16 个原生条件与 4 个方向条件：argmax 无一为 EOS（248044/248046）；EOS 排名 2,499–245,820。</li>
+<li>中后层同样无一为 EOS。</li>
+<li>读法（推导档）：各早层写入方向“指向”的 token 彼此完全不同，而干预后输出一致为首步 EOS；EOS 不是写入方向的直接投影，更接近读不到上下文时的默认输出。这支持 S3、并排除 S1 被命题 4.1 直接蕴含。</li>
+</ul>
+<h2 id="4">4. 边界申报</h2>
+<ul>
+<li><strong>未覆盖</strong>：在审稿件（OpenReview 未系统检索，ICML 2026 Seok &amp; Kim “truncation collapse” 正文取不到，可能涉及早 EOS，无法判定）；ACL Anthology 未系统检索；GitHub issue 与实践者论坛未系统检索（“缓存键不含转向配置”为推测，未核源码）；vLLM/LMCache 复用 GDN 状态快照只来自搜索摘要；非英文检索只有 1 条中文查询。</li>
+<li><strong>时效</strong>：2026 年 9–10 月相关预印本密集，10 月下旬并行工作可能尚未入索引。</li>
+<li><strong>图片样例</strong>：若干论文的生成样例是图片，未读到原样例文本。</li>
+<li><strong>方法隐患（影响后续实验，不影响已完成数据）</strong>：①2609.04434 附录 A：公开实现在多 token 分块喂入时会静默忽略恢复的递推状态；任何状态交换实验须先验证 Δ=‖logits(q|R(c))−logits(q|0)‖∞≠0。本项目已完成的撤针/重建臂不做缓存保存与恢复（同一次生成内关 hook / 从头带强制前缀重放），且 continue 臂逐 token 等于 full 的断言全部通过，不受此影响（推导）。②2604.15409：FP16 下缓存解码与整段重算在 greedy 下也会分叉；本项目预检 zero-fork 臂只少量覆盖“无针 continue vs rebuild”，未做系统零分布标定。</li>
+<li>检索与阅读均为模型辅助子代理完成；关键原句已由主会话复核，其余引文以笔记中的原文为准。</li>
+</ul>
+<h2 id="5">5. 对课题判据的影响（只陈述覆盖，不评级）</h2>
+<ul>
+<li>B 线：现象与方法已有，痛点在实践中被当作功能；仅剩对象层的“在混合模型里谁携带、随深度如何切换”。若推进，须先回答“谁会因此改变做法”——目前文献没有给出具名的失败案例。</li>
+<li>S 线：前半概念被占、方法被占；后半“首步 EOS 形态”与文献已报告的“重复/回声”形态不同，本轮蕴含检验未能把它推成已知推论；L3 对齐有同族不利类比。剩余空位同样在对象层。</li>
+</ul>
+<h2 id="6-2026-10-29">6. 更正记录：按青蒿素判据重审（2026-10-29，第二版）</h2>
+<p>用户要求按青蒿素原则重审。上文 §0 与 §5 有四处判读错误（检索结果不变）：</p>
+<table>
+<thead>
+<tr>
+<th>原稿</th>
+<th>错在哪</th>
+<th>更正</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>§0 把“B 现象已被 Prefix Steering 发表”列为坏消息</td>
+<td>“前人见过”是先例，不是否证；且该文明写 “our behavioral experiments do not distinguish between these mechanisms”——机制是<strong>提出而未检验</strong></td>
+<td>移出坏消息；作为现象普遍性的先例与开放问题的出处</td>
+</tr>
+<tr>
+<td>§0 更正②把 Yap 2603.16335 写成“结论层断言了 B3”</td>
+<td>Yap 未排除全注意力 KV，是<strong>未检验的断言</strong></td>
+<td>这是开口：状态交换正是检验它</td>
+</tr>
+<tr>
+<td>§0 把“2609.04434 同模型已有 split-prefill/state-swap”列为坏消息</td>
+<td>方法被占不致命</td>
+<td>其代码公开（<code>github.com/kirillTerra/split-prefill</code>），按“先复用开源”直接在其上改；其附录 A 的 Δ≠0 验证一并沿用</td>
+</tr>
+<tr>
+<td>§0、§5 与会话汇报中“两线在当前表述下不够格当主课题”“B 不作为主线”</td>
+<td>方法层杀题 + 每条主张仅一轮约 35 条查询即判死（搜得少当死得硬）</td>
+<td><strong>撤回</strong>。覆盖报告只陈述覆盖；删留按下表“谁改做法”判</td>
+</tr>
+</tbody>
+</table>
+<h3 id="61">6.1 真正的坏消息（事实约束与竞争解释）</h3>
+<ul>
+<li><strong>B2 承载者有相反方向的证据</strong>：Liu 2606.19831 §7.3 在稠密 Qwen3-4B L25 把持续归于已生成文本；HiSPA 2601.01972（注意力补回被 SSM 冲掉的信息）；S0 Tuning 2604.01168（Qwen3.5-4B 初始状态扰动的直接影响到提示末尾只剩 0.03% KL）。承载者是开放分叉，必须由实验裁决。</li>
+<li><strong>S2 有竞争形态与不利层位</strong>：破坏 sink/massive 结构的已报告形态是复述、重复、停用词（2410.01866、2402.09221、2411.07191），不是 EOS；同族 Qwen3.6-27B 的 sink 判据首次越过在 L15（2610.16745 附录 F.2）。</li>
+<li><strong>方法约束</strong>：Hagström 2412.17031 批评配对 logit 差未归一化——我们的 R 以原版 S 归一并配置换零分布与参照带，须在写作中正面回应。</li>
+<li><strong>方法隐患</strong>：公开实现可能静默丢弃恢复的递推状态（2609.04434 附录 A）；状态交换前必须验证 Δ≠0。</li>
+<li><strong>痛点证据</strong>：没有找到“转向关不掉造成损害”的具名报告；“持续”在 Prefix Steering、KV cache steering、ReFT 中被当作功能。这约束的是<strong>痛点的写法</strong>（受益者是要利用或控制持续性的人），不是课题生死。</li>
+</ul>
+<h3 id="62">6.2 三列表：前人到哪 / 我们推到哪（仅已有数据） / 谁改做法</h3>
+<table>
+<thead>
+<tr>
+<th>主张</th>
+<th>前人到哪</th>
+<th>我们推到哪（已有数据）</th>
+<th>谁改做法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>B1 现象：撤除后效应持续</td>
+<td>Prefix Steering：短段转向后行为持续，OLMo 3/Qwen3 稠密，机制未分；GCAD：多轮 KV 污染，“likely mechanism”，无撤除臂</td>
+<td>单通道注入 × continue/withdraw/rebuild 三臂，混合 Qwen3.5-4B；L2/N5063 撤针不恢复、无针重建恢复（开发锚点 4/4，新题 18/20、9/9）；L25 重建仍异常 24/24</td>
+<td>用前缀/一次性/KV 转向的人：持续是靠缓存（重置缓存即可撤销、前缀缓存复用会把它带走）还是靠文本（重置缓存也撤不掉），决定怎么开关它；GCAD 类修复：先用重建臂判污染来源</td>
+</tr>
+<tr>
+<td>B1 方法：撤针 vs 无针重建</td>
+<td>2609.11020 同 token 序列对照；Liu release 臂；单独使用</td>
+<td>三臂同时、continue 逐 token 复现断言、分叉点状态指纹一致性</td>
+<td>用撤除设计做归因的人：只有撤除臂无法区分状态与文本，须加重建臂</td>
+</tr>
+<tr>
+<td>B1 结论边界</td>
+<td>2610.09027：对抗输入的持续“is not a default property… but it can be optimized for”（Transformer，KV）</td>
+<td>未经优化的早层单通道写入即经内部状态持续（N5063）</td>
+<td>做持续性威胁评估的人：“持续需优化”只对输入扰动成立；激活写入在混合模型早层默认持续（推导，限本面板）</td>
+</tr>
+<tr>
+<td>B1 深度切换</td>
+<td>Liu §7.3：L25 文本承载（稠密）</td>
+<td>同一模型内承载者随深度切换：早层 N5063 为状态，L25 为文本，L12/L13 介于两者且比例随面板变化</td>
+<td>选择注入层的人：撤销手段随层不同（早层重置缓存，后层需处理文本）</td>
+</tr>
+<tr>
+<td>B2 方法：只换 KV / 只换递推态</td>
+<td>2609.04434：Qwen3.5-4B split-prefill、state-swap，用于上下文信息（语言/人设/语气）</td>
+<td>尚无数据</td>
+<td>复用其代码即可开工；对象换成激活干预后的持续性</td>
+</tr>
+<tr>
+<td>B2 结论：谁携带</td>
+<td>Yap 断言 GDN 递推态（未排除 KV）；2609.04434 类比指向递推态；HiSPA、S0 Tuning 反向</td>
+<td>尚无数据</td>
+<td>Yap 式在混合模型上做 SAE 转向的人：只在 prefill 注入是否足够、重置递推态能否撤销</td>
+</tr>
+<tr>
+<td>S1 前半：早层写入使上下文不可用</td>
+<td>Jin 2502.01563：破坏 Q/K massive values，上下文任务崩、参数知识保留（稠密，准确率）；Ben-Artzy、Lad、2603.22473（Qwen3.5-0.8B 消融 L0）</td>
+<td>加性单通道/随机方向，按层尺度校准；配对事实敏感度 R 逐层：早层 ±1 开发 0.03/0.05、确认 16/16 未检出，中层约 0.4，后层约 0.8；L3 高于 L0–L2；开发与新题确认一致</td>
+<td>在混合模型上选转向层的人：L0–L2 的写入在干预期间让提示事实失效（即便强制给出答案），L3 起保留部分；涉及上下文的任务应避开</td>
+</tr>
+<tr>
+<td>S1 后半：失效形态为首 token EOS</td>
+<td>已报告形态为复述、重复、停用词；无 EOS 报告</td>
+<td>早层 ±1 首步 EOS 120–144/192（两面板）；20 个写入方向的反嵌入投影无一为 EOS（排名 2,499–245,820）；首步停止由提示前部写入驱动</td>
+<td>用“空输出/停止”作拒答或安全成功指标的评测：在早层干预下空输出可能是上下文失效而非拒答（推测，需在拒答评测上验证）</td>
+</tr>
+<tr>
+<td>S2 sink 形成层对齐</td>
+<td>2608.12149 提出 PAS 机制（其他 GDN 检查点，准确率/困惑度）；Qwen3.6 sink 在 L15</td>
+<td>只有 R 的 L3 &gt; L0–L2；无 sink 读数</td>
+<td>尚无；须先做竞争解释检验（4B 全层轨迹归档已有每层每位置范数，可零 GPU 读首 token 范数跃升层）</td>
+</tr>
+<tr>
+<td>S3 EOS 是上下文缺失的默认出口</td>
+<td>Eikema &amp; Aziz 整序列众数为空（不能推出首 token argmax 为 EOS）；AID 自然 “silence”；Jin 附录一句</td>
+<td>方向各异而输出一致为首步 EOS，EOS 非写入方向投影（推导）</td>
+<td>设计解码与失败检测的人：首步 EOS 可作为“上下文失效”的廉价信号（推测，需验证误报）</td>
+</tr>
+<tr>
+<td>S4 方法：配对 logit 差</td>
+<td>Ortu、Du 已用；Hagström 批评未归一化</td>
+<td>以原版 S 归一的保留比 R + 2¹² 符号翻转精确置换零分布 + 无作用条件参照带，合成预演三档可触发</td>
+<td>用 logit 差测上下文依赖的人：一套带零分布标定的做法</td>
+</tr>
+</tbody>
+</table>
+<h3 id="63">6.3 禁止的过度声明（只禁这些句子，不缩小课题）</h3>
+<ul>
+<li>“首次发现干预撤除后效应持续”（Prefix Steering、Paulo 2404.05971、KV cache steering）。</li>
+<li>“首次在 Qwen3.5 上分离 KV 与递推状态的方法”（2609.04434）。</li>
+<li>“首次发现早层干预使上下文失效”（Jin、Ben-Artzy、Lad）。</li>
+<li>“配对 logit 差是新方法”（Ortu、Du）。</li>
+</ul>
+<h3 id="64">6.4 删留（按“谁改做法”，仍为一轮检索，存活不等于强度）</h3>
+<ul>
+<li><strong>B 线保留，且是唯一有现成开工路径的一条</strong>：回答 Prefix Steering 与 Yap 留下的开放问题——激活干预在混合模型里撤除后由哪种缓存携带、承载者如何随深度切换。第一步：复用 2609.04434 代码，先验证恢复的递推态确实生效（Δ≠0），再在 N5063 与 L12/L13/L25 条件上做“只换递推态 / 只换 KV”。</li>
+<li><strong>S 线保留</strong>：S1 的逐层 R 与“EOS 而非重复”的形态差异是对 Jin 等先例的提纯。S2 不立主张，先作竞争解释检验（零 GPU，读既有 4B 轨迹归档）。</li>
+<li>两条线都需要第二轮查重（重点：OpenReview 在审稿件、实践者 issue、“被占”行的引用链再扩一层），之后才给等级。</li>
+</ul></main></html>

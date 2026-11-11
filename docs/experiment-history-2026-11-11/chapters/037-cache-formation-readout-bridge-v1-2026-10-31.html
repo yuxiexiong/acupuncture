@@ -1,0 +1,1049 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>037．形成到读取的V桥接</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="037v">037．形成到读取的V桥接</h1>
+<p><a href="../README.zh-CN.html">返回总时间线</a></p>
+<p><strong>时间定位</strong>：已提取运行收据的最早时间锚点（可含预检） 2026-10-31T22:22:26.797473+08:00；不能当作全部子运行起止。</p>
+<p><strong>当时的目的与设计</strong></p>
+<p>用逐位置V_C、V_T、V_H双向钳制，检验形成期B操作的效果能否随V搬运；再交叉递推末态，其他量按合同自然响应。</p>
+<p><strong>实际过程、结果与后来更正</strong></p>
+<p>完成108次形成、168次评分。V双向操作有效，递推S单项交叉不能替代全部效果；完整逐情景数据、归一化及token竞争诊断随本章保留。</p>
+<p><strong>来源身份</strong>：<code>cache-formation-readout-bridge-v1-2026-10-31</code>；本章主体来源提交 <code>7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8</code>。下方原文中的状态是各文件写作时的状态，不能把早期“尚未运行”覆盖后期正式收据，也不能将后期结果倒填进早期设计。</p>
+<h2 id="_1">原设计、执行过程、结果与更正全文</h2>
+<p>以下按“设计与题目 → 工程/执行记录 → 结果/更正 → 其他历史说明”组织；同类内没有可靠时间时保留路径顺序，不冒充严格先后。正文未删段；仅为本章节重排标题层级、把相对链接指向固定提交。原始字节另外完整保存。</p>
+<h3 id="1-v1-r3vtcv">原件 1：缓存形成—读取连接方案 v1 r3：同针V/状态交叉、T↔C整体V交叉与最终尺度诊断</h3>
+<p>原路径：<code>docs/cache-formation-readout-bridge-plan-v1-2026-10-31.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-formation-readout-bridge-plan-v1-2026-10-31.zh-CN.md">固定提交原文</a> · <a href="../library/9ff7091c7abdbc22.html">单独阅读副本</a>；SHA-256：<code>9ff7091c7abdbc2212b06da738461000891cf0c89fabd1f21cf72dba6d9454ee</code>。</p>
+<hr />
+<h4 id="v1-r3vtcv">缓存形成—读取连接方案 v1 r3：同针V/状态交叉、T↔C整体V交叉与最终尺度诊断</h4>
+<p>编号：CFM-FORM-READ-BRIDGE-v1-20261031。状态：<strong>r3 设计逻辑自查通过；执行合同与实现见 <code>experiments/cache-formation-readout-bridge-v1-2026-10-31/</code>。</strong> 2026-10-31。使用 academic-research-suite 实验规划流程，按<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/experiment-design-self-check.zh-CN.md">实验设计自查规范v1</a>逐项检查。同一助手自查，不是独立审查。当前只交付文档，无模型加载、前向、生成或GPU。</p>
+<p><strong>r3（2026-10-31，用户批准按三条意见修改）：</strong> ①新增T↔C双向V交叉（TC、CT），让"整根针相对干净运行的深层效应"与"B改变的部分"在同条件下各有对应；两者互补，不按恢复比例划分机制大小；②新增同幅随机方向V位移对照TR（每输入2个抽样），只服务于"V_C替换的作用超出同幅一般扰动"这一级主张；③§5.1简化为记录真实最终分母r并离线比例换算，FP64只核算冻结token集合；④描述切点只作描述，不承担"机制通过／不通过"。修订细节与重新自查见§14。r2固定于<code>361a93d</code>。</p>
+<p>r2保留原5个形成条件、10个单步评分/输入及全部科学判据；新增§5.1最终归一化分母与非统一缩放变化的离线诊断，以及§13修订自查。不把固定分母后的剩余量自动叫作语义/词语偏好，不增加GPU条件。r1固定于Git提交<code>23c78980a3059cd89a044154b4fb8fab2d8df7a5</code>。</p>
+<h5 id="0">0. 本轮目的与设计卡</h5>
+<p><strong>总问题不变：</strong> 同一根暂时激活针怎样改变写入、旧状态处理和后续读取，最终造成显著回答变化？</p>
+<p><strong>本轮问题：</strong> A5中浅层历史固定B引起的深层输出效应变化，能否由深层卷积前V的改变传递；由该V操作形成的差异，又能否经深层递推状态在末提示位置的更新与读取传递到输出竞争？</p>
+<p>这不是要求V一定成立。V是A1支持、但尚未在A5背景下检验的候选。本轮可以否定“这段连接主要由此候选承担”的加强解释；不把余量自动叫作门、浅层放大或深层积累。</p>
+<table>
+<thead>
+<tr>
+<th>设计卡项目</th>
+<th>定义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>新增认识</td>
+<td>在同输入、同针、同历史背景和统一评分下，接上“B→V操作→形成状态→实际更新/读取→竞争读数”的受控连接，或留下明确反例；不承诺唯一原生路径</td>
+</tr>
+<tr>
+<td>依据/不利证据</td>
+<td>A1的V条件性作用；A3深层承载；A5的B部分削弱；B12的竞争结构。A1供体10而A5为C、面板不同；A5混合评分不停止、VRL04固定m不覆盖最强停止token；均为限制而非可忽略噪声</td>
+</tr>
+<tr>
+<td>操作</td>
+<td>固定L0 N4146 −1；晚段固定；两种浅层历史背景×两份深层V供体；评分统一干净浅层；再对V比较对交叉深层递推末态</td>
+</tr>
+<tr>
+<td>估计对象</td>
+<td>形成期V干预的条件效应；这些干预所形成递推末态在指定剩余缓存背景中的输出作用。不是自然间接效应、唯一必要性或自然贡献份额</td>
+</tr>
+<tr>
+<td>范围</td>
+<td>Qwen3.5-4B一个模型、一根针、六个已见情景×两事实；探索性连接验证，不扩针/模型/剂量/情景</td>
+</tr>
+<tr>
+<td>成本</td>
+<td>缺少同条件轨迹，不能纯CPU完成新干预；r3正式上限108个前缀构建、168次单步评分（9形成×12、14评分×12）；预检另计，见§8/§14</td>
+</tr>
+<tr>
+<td>退出</td>
+<td>来源/工程失败停止；V弱或反向也保留；状态交叉无效不扩大层扫描。完成固定矩阵后结束，按§6留下结论</td>
+</tr>
+</tbody>
+</table>
+<h5 id="1">1. 依据、身份与已有资产</h5>
+<ul>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-formation-mechanism-asset-inventory-v1-2026-10-31.zh-CN.md">资产盘点v1 r3</a>：A1/A3/A5、B11/B12及尚未连接处。</li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-asset-audit-v1-2026-10-31/REPORT.zh-CN.md">本次实际张量核对</a>：12份张量、12份记录与固定181d80a收据匹配；72份logits一致。浅层供体、深层末态和全logits可用，逐步深层驱动/读取缺失。</li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-asset-audit-v1-2026-10-31/source/CONTRACT.zh-CN.md">FORM-AB固定合同副本</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-asset-audit-v1-2026-10-31/source/IMPLEMENTATION.zh-CN.md">实现记录</a>、source/runs/formal-r01/worker-0/1收据：保留逐步/整段数值路线的历史差别。本轮直接对齐A5逐步路线，不另要求旧E2整段路线逐位一致。</li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-mechanism-known-basics-audit-2026-10-31.zh-CN.md">基础知识审计</a>K03/K05/K07/K08/K13：MLP和缓存时序、递推公式、读方向及max读数边界属于已知。投影替换和缓存移植是已有工具，不主张新方法或领域首次。</li>
+<li>S3合同/源码的本地归档位于<code>experiments/cache-intervention-chain-analysis-v1-2026-10-31/source/experiments/cache-formation-mechanism-s3-route-intervention-v3-2026-10-31/</code>。只借用明确的卷积前V定义；不照搬“11→10”的历史供体或旧结论。</li>
+</ul>
+<p>本轮没有做新一轮定向文献查重；比较增量限于项目证据。相关方法框架沿用上述审计，不将文献中的一般机制当成本项目实证。</p>
+<h5 id="2">2. 全部固定项与时序</h5>
+<p>模型revision <code>851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a</code>，BF16、eager、transformers 5.20.2 torch参考内核；以A5冻结清单及实际文件哈希核对。校准、针写入算术、token、位置、mask、事实标签均继承A5；不重新校准到更大效应。</p>
+<p>输入：VAR03/04、VRD03/04、VRL03/04，各f0/f1。b为最后事实token；L={b+1,…,τ}，τ=n−2；末提示token x[n−1]单步评分，不扎针。共同干净前缀0…b；L内逐token推进。浅层0–12、深层13–31是沿用的操作切分，不是天然功能分区。</p>
+<p>B完全继承A5：每个L位置计算前，把层1–12全部过去缓存换为同输入/事实C的t−1快照；当前更新照常发生。A入口抵消本轮不使用。</p>
+<p>深层线性层集合G={13,14,16,17,18,20,21,22,24,25,26,28,29,30}；全部32头。全注意力层15/19/23/27/31不直接替换V。此范围继承A3/A5的深层目标，不能根据新读数挑层、挑头或挑位置。</p>
+<h5 id="3-vb">3. 形成期：V是否传递B的效应</h5>
+<p>先按原定义重建C、T（有针/B关）、H（有针/B开，即旧XB的形成轨迹）。C、T、H均须与A5保存端点匹配。记录同输入/事实、每个L位置、G内每层的<code>in_proj_qkv</code>卷积前V切片，形成固定供体带V_T、V_H。</p>
+<p>再从共同干净前缀构建U、W：</p>
+<table>
+<thead>
+<tr>
+<th>形成条件</th>
+<th>L0针</th>
+<th>浅层B</th>
+<th>G内卷积前V</th>
+<th>其他量</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C</td>
+<td>无</td>
+<td>关</td>
+<td>自然</td>
+<td>自然</td>
+</tr>
+<tr>
+<td>T</td>
+<td>−1</td>
+<td>关</td>
+<td>自然产生V_T</td>
+<td>自然</td>
+</tr>
+<tr>
+<td>H</td>
+<td>−1</td>
+<td>开</td>
+<td>自然产生V_H</td>
+<td>自然</td>
+</tr>
+<tr>
+<td>U</td>
+<td>−1</td>
+<td>关</td>
+<td>逐位置替换为固定V_H</td>
+<td>按当前接收轨迹计算</td>
+</tr>
+<tr>
+<td>W</td>
+<td>−1</td>
+<td>开</td>
+<td>逐位置替换为固定V_T</td>
+<td>按当前接收轨迹计算</td>
+</tr>
+<tr>
+<td>TC（r3）</td>
+<td>−1</td>
+<td>关</td>
+<td>逐位置替换为固定V_C</td>
+<td>按当前接收轨迹计算</td>
+</tr>
+<tr>
+<td>CT（r3）</td>
+<td>无</td>
+<td>关</td>
+<td>逐位置替换为固定V_T</td>
+<td>按当前接收轨迹计算</td>
+</tr>
+<tr>
+<td>TR0/TR1（r3）</td>
+<td>−1</td>
+<td>关</td>
+<td>逐位置替换为V_T+ξ，ξ为随机方向、范数逐层逐位置等于‖V_C−V_T‖（固定种子）</td>
+<td>按当前接收轨迹计算</td>
+</tr>
+</tbody>
+</table>
+<p>替换边界是<code>in_proj_qkv</code>输出的V切片、进入卷积之前；替换全部V通道，保留同次投影的q/k原值。不是全注意力V，也不是卷积后v。供体克隆并固定，不使用修改后的运行重新生成供体。</p>
+<p>在U/W中，k、β、α、q、z、卷积、递推、全注意力和下游残差都按接收者继续响应；未手动替换不等于固定。后续层V仍被相应供体钉住，故这是一个联合变量操作，不是自然自由传播。V改变当前卷积输出、当前递推写入/读出、未来卷积缓冲及下游历史，不称“只删记忆”。不进行βv补偿或拆换k/β。</p>
+<p>在τ冻结完整缓存。基础评分全部使用 <strong>C浅层0–12＋本条件深层13–31</strong>，无任何形成期hook，从独立深拷贝输入同一个末提示token。记评分为Y_T、Y_H、Y_U、Y_W（T对应旧X0，不是原生T_native）。另评分C和T_native用于旧结果溯源。</p>
+<p>对每个读数Y报告：</p>
+<ul>
+<li>已知B差：Δ_B=Y_T−Y_H。</li>
+<li>B关时V效应：E_V0=Y_T−Y_U；检验V_H能否把T推向H。</li>
+<li>B开时V效应：E_V1=Y_W−Y_H；检验V_T能否把H推回T。</li>
+<li>固定V_T时的B残余：Y_T−Y_W；固定V_H时的B残余：Y_U−Y_H。</li>
+</ul>
+<p>若双向V效应接近Δ_B、固定V时B残余小，则支持此V操作对本轮B效应有强条件性解释力。不能因此宣布自然中介已唯一识别。四格的算术恒等式/交互只作汇总，不当新机制。</p>
+<p><strong>r3：T↔C整体V交叉与随机位移对照。</strong> 令Δ_full=Y_T−Y_C（即A5的Δ）。报告E_VC0=Y_T−Y_TC（V_C能否把T拉向C）、E_VC1=Y_CT−Y_C（V_T能否把C推向T），以及E_null,k=Y_T−Y_TRk（k=0,1）。主张分两级，合同冻结时写死：(a) <strong>替换效应</strong>：这个具体替换造成了多大变化，始终可报告；(b) <strong>超出同幅一般扰动</strong>：只在逐情景E_VC0与两个E_null并列列出时描述"V_C替换的削弱大于同幅随机位移"，不作统计检验、不估计随机位移分布，两个抽样的极值不当门槛。T↔C与T↔H互补：前者问深层V能否承载整体干预相对干净运行的深层效应，后者问浅层历史操作改变的部分是否经过V；即使T↔C阳性，仍是指定替换条件下、统一浅层评分中的深层缓存效应，不是完整自由回答，也不宣布V解释了全部原生机制。T/H的“替换自身供体”必须作为工程惰性检查，不新增科学条件。</p>
+<h5 id="4-v">4. 评分期：V形成的递推状态差异是否能传递输出效应</h5>
+<p>只观察“V变、状态变、输出也变”仍不足。因此对§3中真正只改变V来源的两对 <strong>(T,U)</strong> 与 <strong>(W,H)</strong>，各加两个交叉评分。这样每一对的状态来源差异都由相同B背景下的V干预产生，而不是另取一份无关的干净状态。</p>
+<p>定义J(a←S_b)：以a的统一评分缓存为接收者，在输入末提示token之前，将G内14层的<code>recurrent_states</code>整体换成b在τ的同字段；浅层仍为C，深层卷积缓冲与全注意力KV仍为a。管理字段/位置不变，独立克隆，不加针。只交换这一个时刻，不在层间重新置换。</p>
+<p>新增评分固定为J(T←S_U)、J(U←S_T)、J(W←S_H)、J(H←S_W)。加上原有每对两个基础评分，各构成“递推状态来源×剩余缓存背景”的四格。</p>
+<p>对任一对(a,b)，定义δ=Y_a−Y_b，并报告：</p>
+<ul>
+<li>Q_a=Y_a−Y_J(a←S_b)：在a剩余缓存背景中，将旧递推状态换为b的作用。</li>
+<li>Q_b=Y_J(b←S_a)−Y_b：在b剩余缓存背景中，将旧递推状态换为a的作用。</li>
+<li>剩余差：Y_J(a←S_b)−Y_b、Y_a−Y_J(b←S_a)，以及两背景效应差Q_a−Q_b。</li>
+</ul>
+<p><strong>操作名称必须准确：这是“既有递推状态经当前更新与读取的条件性作用”，不是只换查询、不是纯读取隔离。</strong> 当前q/k/v、门值由接收者输入和卷积背景产生；进入该层后旧状态会先被处理/更新再读取，且较浅深层操作会改变后续层当前驱动。除共同C浅层外，不宣称查询固定。所有评分只走一个末提示位置，不自由生成，排除后续生成文字反馈；所得更新后缓存不用作下一次评分。</p>
+<p>这段若有效，能将“V形成操作”接到“由其形成的旧递推状态在特定背景中影响输出”。它仍不排除V还经卷积或KV起作用，也不证明各层作用可相加。若只在一个背景有效，报告条件依赖，不算双向传递。状态交换是具有明确含义的混合反事实，不声称它在自然轨迹中必然出现。</p>
+<h5 id="5">5. 要补的测量及其用途</h5>
+<p>仅补与上述比较相关的字段，不恢复XA/XAB、不新增浅层全轨迹。T/H/U/W的形成过程与全部交叉评分均记录，C只作参照与供体。</p>
+<table>
+<thead>
+<tr>
+<th>阶段/字段</th>
+<th>精确范围</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>形成：卷积前V（替换前和实际替换后）</td>
+<td>T/H/U/W；G全部L位置</td>
+<td>核验供体写入与实际操作位移；区分“原本会产生什么”与“实际用了什么”</td>
+</tr>
+<tr>
+<td>形成：内核实际q/k/v、g或α、β，z及归一化/缩放约定</td>
+<td>相同范围</td>
+<td>记录写入、旧状态处理与当前读出实际使用的量；不从投影前值猜内核驱动</td>
+</tr>
+<tr>
+<td>形成：S_b、S_τ；每步真实core输出与旧状态读出项、当前写入读出项</td>
+<td>相同范围；保存中间状态范数/哈希，完整状态只存端点</td>
+<td>CPU按实际驱动重建中间状态，核对记录；避免逐步保存全部大型S矩阵。真实core输出不能由CPU推导值冒充</td>
+</tr>
+<tr>
+<td>形成：完整Mτ及缓存管理信息</td>
+<td>五条件；含浅层、深层、卷积、递推、KV</td>
+<td>构造统一评分和状态交叉；与A5端点对齐；保存可重放对象而不只哈希</td>
+</tr>
+<tr>
+<td>评分：G的实际内核驱动、S旧/S新、真实core输出、z及模块输出；各深层入口/出口残差</td>
+<td>四基础混合评分、四J评分；C/T_native保留端点</td>
+<td>直接观察旧状态怎样经当前处理读出，如何传入后续残差；不以状态范数代替作用</td>
+</tr>
+<tr>
+<td>评分：全注意力实际query、key/value、注意力输出；最终norm前后隐状态、全词表logits</td>
+<td>同上8评分；注意力使用eager路径，不为记录改内核</td>
+<td>在混合网络中保留实际后续响应，及token竞争方向的终点，不强行把一切归于递推</td>
+</tr>
+</tbody>
+</table>
+<p>记录驱动时必须保留内核内q/k归一化与q缩放后的实际值；如果只截到函数入口参数，必须按固定源码重建且单列身份。现有S3 wrapper不能直接假定覆盖形成期单token内核：它对prefix有跳过逻辑，实施时须专门验收。</p>
+<p>局部诊断使用已知公式（key×value存储方向）：</p>
+<p>S_t=α_t(I−β_t k_t k_tᵀ)S_{t−1}+β_t k_t v_tᵀ；
+o_t=S_{t−1}ᵀw_t+n_t，w_t=α_t[q_t−β_t k_t(k_tᵀq_t)]，n_t=β_t v_t(k_tᵀq_t)。</p>
+<p>保存实际旧状态项S旧ᵀw、当前写入项n与真实core输出。比较其向量及在实际后续读出下的变化，不将局部范数差当全模型解释比例。公式分解是工具；认识增量来自本次特定轨迹中的大小/方向及§3–4介入作用。</p>
+<p>CPU重建S的诊断验收：端点相对Frobenius误差≤1e−5、core输出相对误差≤5e−3（相对分母max(参照范数,1e−8)），同时报绝对误差。此容差是记录/公式重建工程尺度，不是效果显著性、旧A5路线容差或科学零分布；失败则该诊断不通过，不调阈值救结论。缓存移植与供体本身仍要求逐位核验。</p>
+<h6 id="token">输出读数：不再只看一个固定停止token</h6>
+<p>主要终点沿用D及每格完整logits；EOS独立报告。每个输入在新干预运行前，从已核验A5记录冻结token集合：两个停止token {248044,248046} 与 C/X0/XB的非停止赢家并集。报告所有“停止token−冻结非停止token”logit差，并特别报告248046−248044。保留旧m与D=m+gE−gN分解及实际赢家；不根据U/W/J结果更换有利的固定对比。</p>
+<p>不把logit绝对升降直接解释为语义变化，不把<code>&lt;think&gt;</code>或回答开头的出现称为完整推理/正确交付。原生行为尚未接通是本轮明确边界；本轮不增加候选评分/自由回答，避免将形成中介检验混入后续文字反馈。整体主线仍包括行为，该缺口留在资产盘点，不宣布闭环。</p>
+<h6 id="51-r2">5.1 r2新增：最终归一化尺度与词语偏好变化</h6>
+<p><strong>目的与增量：</strong> 检查§3–4中传递的分数效应，多少依赖最终RMSNorm分母，哪些变化已经改变了词语之间的竞争结构。仍研究缓存作用如何到达输出，不转向另找熵神经元或attention sink。先前B12已观察X0→XB有10/12非停止赢家改变，因此“全部只是最终统一正比例缩放”不符合这些旧读数；这不排除尺度与方向变化并存，也不估计尺度大小。</p>
+<p><strong>来源身份：</strong> 借用<a href="https://github.com/stdlogits/neuron-lens/blob/main/docs/findings.md#9-attention-sinks-the-outputs-temperature-and-entropy-neurons">Neuron Lens第9节</a>的固定最终尺度对照，以及<a href="https://arxiv.org/abs/2406.16254">Confidence Regulation Neurons in Language Models，2024</a>的机制先例。是他人报告，不是本项目已复现结果，不复制Qwen3-8B的维度编号或神经元标签。Qwen3.5实际计算定义另核<a href="https://github.com/huggingface/transformers/blob/v5.20.2/src/transformers/models/qwen3_5/modeling_qwen3_5.py">transformers v5.20.2源码</a>：有效增益是<strong>1+weight</strong>，最终输出头无bias；不是直接把weight当γ。当前为指定版本源码核查，服务器实际安装文件/模型权重仍须工程验收。</p>
+<p><strong>补录范围：</strong> 将原§5的最终norm前后隐状态记录扩展到全部10个评分/输入（含C和T_native），均在同一末提示位置。保存norm前原dtype向量h、实际FP32 mean(h²)、eps、实际rsqrt因子/分母r、norm后向量、全logits；最终norm权重与输出头的路径/revision/hash、dtype、执行顺序、是否bias/softcap/logit处理也要保存。模型权重不重复入Git。记录不能改原前向算术；r取含eps的sqrt(mean(h²)+eps)，不是只存向量范数。旧A5只有logits，缺r和h，不能伪造已完成此诊断。</p>
+<p><strong>唯一主参照：</strong> 对每个输入/事实，所有10个评分都用同一个干净C末提示位置的r_C；禁止用各格自己或各比较的不同参照尺度混算。逐事实先计算，再按原规则合并情景。固定的是最终一个RMSNorm的标量分母；h、增益γ、输出头W及上游已发生的一切保留原来源。</p>
+<p>理想实数/高精度参考下，定义a_X=W[γ⊙h_X]，z_X=a_X/r_X，固定尺度输出z_X^fix=a_X/r_C，其中γ=1+weight。实际模型仍输出自己的原logits，不在真实前向中回填固定尺度，不影响任何缓存和后续科学条件。</p>
+<p><strong>离线计算与精度身份（r3 简化）：</strong> 在实数算术、无bias输出头下，固定分母后的logits恰为 z_X^fix = z_X·r_X/r_C，因此D、固定token差的固定尺度值可由原logits与记录的r直接换算，不默认做全词表FP64重投影。Qwen3.5最终norm输出先转回BF16再进输出头，换算不是逐位精确：为给出数值界，每个评分在worker内用同一评分的h与只读输出头，对冻结token集合（两个停止token、预冻结非停止token、本格实际两个赢家）做FP64重算，报告η_X=max|z_X^FP64−z_X^actual|（只在该集合上）。D与固定token差的原/高精度差界为2η_X，配对差为2(η_a+η_b)；效果差不超过界时不贴方向标签。熵用原logits×(r_X/r_C)计算并单列"含舍入"身份。不能因数值不理想扩大阈值。</p>
+<p><strong>配对报告：</strong> 对原方案所有形成/状态交叉比较的(a,b)，对D、预冻结token差及熵H分别计算：</p>
+<ul>
+<li>E_total=F(z_a)−F(z_b)。</li>
+<li>E_fix=F(z_a^fix)−F(z_b^fix)。</li>
+<li>E_scale=E_total−E_fix。</li>
+</ul>
+<p>原始模型读数照旧作主科学终点；这些是附加高精度分解，先报告它与原始效果的误差。H用全词表softmax、temperature=1和自然对数，不加采样/top-k/top-p；H不是正确率或人的信心。E_scale表示<strong>在共同r_C的这套反事实定义下，解除最终分母差异带来的效果差额</strong>，不是天然独立因果份额；负值/抵消/超过总效果均允许。不默认报百分比，不把E_fix套入原始D的0.3/0.7档位。max/熵为非线性，分账依赖参照，公式加和不能证明两条独立通路。</p>
+<p>熵不套用D的2η界；直接报告每格H在实际logits与高精度logits间的差，以及配对差的变化。若这项数值差覆盖待解释的熵效果或改变其符号，则熵解释标为不可判。尺度差额的大小也应连同这些数值敏感性报告，不能以一个比例掩盖舍入。</p>
+<p><strong>另检验真正的非统一缩放变化：</strong> 对每格全词表logits先减词表均值，再除中心化向量L2范数，得u_X；用u_a/u_b距离以及原冻结token差的符号、实际赢家/排名共同报告。只要不是零方差，<code>z_b=s z_a+c·1</code>（s&gt;0）就有u_a=u_b且所有排名不变；这是已知数学性质。常数c不影响softmax。范数为零或数值近零就标不可判，不以任意epsilon生成方向结论；方向变化是否可靠须对高精度与原logits分别核对。</p>
+<p><strong>关键修正：E_fix不等于“词语偏好”。</strong> 例如h_b=s h_a，同一输出方向仍然可能让固定分母后的得分幅度改变，虽然排序没变。故剩余量只能叫“固定最终分母后仍保留的变化”；词语竞争结构改变必须另由u、固定token差符号/排名支持。结构改变也不等于语义正确或事实恢复。仅改最终正标量分母无法改变实数模型argmax、停止/非停止赢家及D符号；BF16近并列翻转归为数值边界，不称温度造成行为反转。</p>
+<table>
+<thead>
+<tr>
+<th>实际结果组合</th>
+<th>认识增量与对原链的解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>E_fix较E_total明显减小，竞争结构近似不变</td>
+<td>在指定C尺度下，最终分母解释了相应分数/熵差的一部分；不能仅由此认定具体熵神经元或attention sink，也不能把同向变化叫语义恢复</td>
+</tr>
+<tr>
+<td>固定尺度后仍有作用，且u/排名或固定token对偏好变化可靠</td>
+<td>缓存/V操作的作用包含最终标量缩放无法解释的竞争变化；加强“读出内容/方向改变”的有限解释，但仍不证明某个语义内容</td>
+</tr>
+<tr>
+<td>E_fix仍大但u/排名基本不变</td>
+<td>可能是投影幅度变化；不能把固定尺度剩余自动叫作词语偏好改变，需保留非语义尺度解释</td>
+</tr>
+<tr>
+<td>尺度差额与固定尺度变化反向</td>
+<td>两部分在这个参照下抵消；原总D可能掩盖较大的变化。不将相减后的更大值称自然放大份额</td>
+</tr>
+<tr>
+<td>V/状态交叉原本在D上传递，但固定尺度后传递弱</td>
+<td>把这段条件链解释为包含最终尺度作用；原干预证据不作废，但撤回“同一种词语偏好被搬运”的加强说法</td>
+</tr>
+<tr>
+<td>两种作用同时存在或情景间不同</td>
+<td>逐比较保留尺度与结构两类作用，不选一个统一标签，不自动扩针/扫层</td>
+</tr>
+<tr>
+<td>缺h/r、实际实现不符、误差覆盖关键变化</td>
+<td>尺度归因未完成/不可判；不拿旧logits拟合出的缩放系数冒充真实归一化分母</td>
+</tr>
+</tbody>
+</table>
+<p>新增工程要求：核对实际最终norm为此实现、γ=1+w、head无bias/后处理；h/r/后norm/logits同输入同评分对应，权重只读。若不符，先修定义重审，不机械套用公式。该诊断不变更5形成/10评分矩阵；GPU前向计数不增加。新增每格2560维h及标量/小型元数据，离线输出头读取/投影的CPU时间、RAM和输出存储单独计入资源预检；不把120次CPU投影说成免费，不另采集模型中间层。原64GiB存储上限不变。</p>
+<h5 id="6">6. 结果判读与认识增量</h5>
+<p>逐事实原值→情景内两事实均值；独立分析单位为六个已见情景。无显著性检验、无全模型总判决。<strong>r3：所有切点（含0.7–1.3、0.3）只作预先固定的描述词，不承担"机制通过／不通过"；主报告是逐事实绝对效应、相对Δ_B或Δ_full的比例及两事实原值。</strong>绝对效应是主报告；对Δ_B&gt;0的D，附E_V0/Δ_B、E_V1/Δ_B及固定V残余。仅为预先规定的描述，双向均在[0.7,1.3]且残余绝对值≤0.3Δ_B称“近似传递”；均≤0.3且非负称“弱”，其余报部分/反向/超调/背景依赖。切点不是自然定律或统计证据，逐事实越界必须保留。</p>
+<p>状态交叉Q/δ仅在对应|δ|≥0.3|Δ_B|时作同样描述；小于此值仍报绝对Q，标“上游V效应弱，比例不稳定”，不拿微小分母制造强传递。读数不是D时独立报绝对差，不强用D分母或套D档位。新出现的token赢家不得删除。精确重放失败不进入科学判读。</p>
+<table>
+<thead>
+<tr>
+<th>结果形态（并非互斥机制分类）</th>
+<th>本轮多知道什么</th>
+<th>下一步/停止含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>V双向近似传递，固定V后B残余小；两对状态交叉也随供体近似传递</td>
+<td>在同背景下得到一段V形成操作→递推末态→当前更新读取→输出竞争的条件性连接</td>
+<td>记录有界链；仍不称自然唯一路径或普遍机制。再讨论代表性/原生行为验证，不自动运行</td>
+</tr>
+<tr>
+<td>V双向有效，但递推交叉弱</td>
+<td>V操作确实影响终点，单独旧递推末态在这些背景中不足以传递该差异</td>
+<td>否定“这部分效应可单靠此递推状态交叉解释”的强版本；卷积/KV/组合读取保留为候选，不直接选定、不立即加网格</td>
+</tr>
+<tr>
+<td>V仅一向有效，或状态交叉仅一背景有效</td>
+<td>供体作用依赖其余形成/缓存背景，不能稳定搬运</td>
+<td>保留条件依赖与混合反事实身份，撤回稳定单通路表述</td>
+</tr>
+<tr>
+<td>深层V变化明显但两向干预均弱</td>
+<td>变化幅度不足以说明输出作用；A1的强V结论不能直接推广到A5设置</td>
+<td>停止本轮V主连接分支，不靠加剂量/挑层救假说</td>
+</tr>
+<tr>
+<td>V操作反向或超调</td>
+<td>简单“B通过减少某种有害V信号而削弱效应”不成立，可能存在补偿/背景失配</td>
+<td>报告反例，不把异号解释为原预测成功；不称自然保护/放大份额</td>
+</tr>
+<tr>
+<td>局部旧状态投影显著改变，但J输出弱</td>
+<td>局部读出差异没有在本终点呈现相应作用，可能被后续计算抵消</td>
+<td>不把局部大差异升级为答案机制；保留实际残差/输出证据</td>
+</tr>
+<tr>
+<td>D传递但固定token竞争向量明显不同</td>
+<td>只能支持集合优势在指定操作下相似，不能支持同一种竞争关系被恢复</td>
+<td>按token结构限制链的主张，不能只用D给完整连接盖章</td>
+</tr>
+<tr>
+<td>不同情景/两事实出现方向分歧</td>
+<td>候选连接有输入条件，均值不足以概括</td>
+<td>逐项保留，不宣称六情景统一机制</td>
+</tr>
+</tbody>
+</table>
+<p>|（r3）E_VC0、E_VC1双向接近Δ_full，且E_VC0明显大于两个E_null|在统一浅层评分下，深层V的替换在两个方向都能搬运整体针效应的大部分；且削弱大于同幅随机位移|仍是指定替换下的深层缓存效应；不称V解释全部原生机制；随机位移只有2个抽样，不作统计结论|
+|（r3）E_VC0大，但E_null同样大|V替换的作用与同幅一般扰动同级，不能主张针特异|只保留替换效应一级主张|
+|（r3）T↔C强而T↔H弱，或相反|两种对比各问其问题：整体深层效应与B改变的部分对V的依赖不同|不由此划分机制份额|</p>
+<p>“相同竞争结构”的核查至少要求：新评分向目标供体靠近时，预冻结关键token差值不出现与D改善相矛盾的大幅反向；逐项报告，不以临时综合分数挑成功。若此项不能给一致解释，则主张限于D，不把人工判断包装成额外通过门。</p>
+<h5 id="7">7. 工程验收与停止条件（尚未实施）</h5>
+<ol>
+<li>固定A5代码、资产、模型/校准、输入/标签与内核；旧12张量可直接核对，hash已核验不等于新实现通过。</li>
+<li>C/T/H重放的完整Mτ清单及C、T_native、Y_T、Y_H全词表logits，对旧A5逐位一致；记录器不改变运算路径。不能用旧“0.05×E2差”代替本轮同路径重放。失败停止，任何路线修订须另版本重审。</li>
+<li>V供体同输入/事实/层/位置；实际写入逐位等于供体，q/k切片未被hook直接改写，供体不变；自身供体替换必须重放T/H原结果。后续q/k正常改变不算违规。</li>
+<li>评分所有形成hook移除；共同浅层逐位为C；基础深层为各自来源；J只在评分前改变14个recurrent_states，其余字段/管理状态保持接收者来源。对自身S的移植逐位惰性，禁止浅拷贝串扰。</li>
+<li>CPU小张量/已有归档字段完成操作单元检查与公式检查；不需要加载完整模型。真实记录器惰性、供体自换、旧结果重放仍须将来获运行授权后验收，当前没有通过。</li>
+<li>逐步驱动可重建、端点可重放、所有新增轨迹真正落盘并有哈希；不把运行内存捕获误记为归档。权重/钩子完整性、非有限值、OOM/磁盘不足全部属于工程失败，保存失败记录，不换参数重试。</li>
+<li>同一个固定输入VAR03-f0做有界真实预检，科学读数不用于更改层、符号、供体或阈值。它是已见面板的一员，预检不是独立确认；正式重算且单列预检成本。</li>
+</ol>
+<h5 id="8">8. 执行顺序、复用与成本上限</h5>
+<p>当前只写方案。未来实施顺序：先CPU与来源验收→有授权后的真实预检→参考重放/形成轨迹→U/W形成→基础评分→四个J评分→CPU核查与报告。无论V阳性与否都保留预先固定四个J，避免看到结果后选背景；弱V时只报绝对作用，不用比例伪造链。</p>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th style="text-align: right;">前缀构建计数</th>
+<th style="text-align: right;">单步评分计数</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>正式每输入（r3）</td>
+<td style="text-align: right;">9：C/T/H/U/W/TC/CT/TR0/TR1</td>
+<td style="text-align: right;">14：C/T_native/Y_T/Y_H/Y_U/Y_W/Y_TC/Y_CT/Y_TR0/Y_TR1＋4J</td>
+<td>C/T/H重放与轨迹补录；U/W/TC/CT/TR为新增形成条件，J只消费既有末态</td>
+</tr>
+<tr>
+<td>正式12输入上限（r3）</td>
+<td style="text-align: right;">108</td>
+<td style="text-align: right;">168</td>
+<td>其中36个参考前缀/48个参考评分不是新独立科学条件，但照计成本</td>
+</tr>
+<tr>
+<td>预检VAR03-f0上限（r3）</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">22</td>
+<td>上述9/14、无记录器C/T/H 3/4、T/H自身V替换2/2、两次自身S评分0/2；r2的"附加惰性C/T"与无记录器重放重复，删去</td>
+</tr>
+<tr>
+<td>合计上限（r3）</td>
+<td style="text-align: right;">122</td>
+<td style="text-align: right;">190</td>
+<td>前缀中共享干净前史不降低此保守计数；逐token调用次数另报</td>
+</tr>
+</tbody>
+</table>
+<p>复用A5已经核验的浅层供体（338位置），不重新生成每个B供体；C仍需重建以获得τ完整浅层和参考评分。必须对t−1位置与新C来源逐项核对。旧T/H深层末态用于端点认证，不能用它们跳过缺失驱动的重建。评分不重算前缀。</p>
+<p>实际GPU时间、轨迹I/O与峰值内存当前未知；A5约119秒不能直接充当本轮承诺。未来预检需报告加载/参考重放/记录/评分/归档分别耗时，并用实际字节/输入估算总存储；本轮规划存储上限64GiB（含原始新增轨迹，不含模型权重）。<strong>r3：服务器 /workspace 实际余量约49GB，上限改为16GiB</strong>；逐步驱动按原dtype保存，深层τ缓存全存、浅层只存C。超过就停止并修订记录方案，不静默丢字段。本次不分配卡、不运行预检，不声称资源验收通过。GPU时长硬预算须在任何将来正式执行前依据已授权预检结果冻结；这属于资源待验收，不是逻辑设计缺失。</p>
+<p>保存到未来独立版本实验目录<code>experiments/cache-formation-readout-bridge-v1-2026-10-31/</code>；本轮不创建运行回执。原始端点、供体带、介入轨迹、失败、逐事实输出、每格来源清单与哈希完整保留；大张量不入Git，路径/大小/hash入Git。未运行结果不登记为新资产。</p>
+<h5 id="9">9. 与上一方案及讨论思路的区别</h5>
+<ul>
+<li>相对FORM-AB：保留针/输入/B/切分/统一评分；不重复A入口抵消。新增变量特定的形成比较和由该操作产生的状态交叉，目的从“形成受什么条件影响”推进到“哪部分变化可以传递效应”。</li>
+<li>相对S3：不把01/02、11→10的结果移植过来；在A5的03/04、干净早史、T↔H供体上重新界定V比较，因而可直接接A5，但不是原S3的严格复现。</li>
+<li>相对倒序扫层：固定G整体，不寻找热点；交换的是同一根L0针不同形成条件下的V/末态，不换针眼或层来伪装减法。</li>
+<li>相对扩十针：暂不增加；当前问题是既有单针机制片段如何连接，代表性仍未验证。将来检验其他针，应检验此解释的可失败预测，不因本轮阳性就宣称普遍。</li>
+<li>相对纯补录：不以相关轨迹宣布中介，必须保留§3–4的有界介入对比。没有把V或递推状态预定为最终答案。</li>
+</ul>
+<h5 id="10-c01c14">10. C01–C14自查（修订后）</h5>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th>判定、依据及边界</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C01</td>
+<td>通过：§0保持写入—处理—读取—回答主线，首步竞争是有界窗口，§5保留未闭合行为缺口。</td>
+</tr>
+<tr>
+<td>C02</td>
+<td>通过：§3固定V检验B残余，§4把该操作形成的S接到相同评分终点；不只重定位层。</td>
+</tr>
+<tr>
+<td>C03</td>
+<td>通过：§1实际核验资产、基础公式、A1/A3/A5与B12；旧结果与新计划分开。</td>
+</tr>
+<tr>
+<td>C04</td>
+<td>通过：§0/§6正视供体不同、混合不停止、V强未必可迁移与固定token遗漏。</td>
+</tr>
+<tr>
+<td>C05</td>
+<td>通过：§2–4逐一明确层/位置/供体/hook、τ与末token；形成V与评分S操作分开。</td>
+</tr>
+<tr>
+<td>C06</td>
+<td>通过：§3其他量正常响应，§4q/k/v不全固定；只固定供体及共同浅层。</td>
+</tr>
+<tr>
+<td>C07</td>
+<td>通过：不割裂k/β、不补偿βv；V交叉与S/conv组合为显式混合反事实，不自称原生。</td>
+</tr>
+<tr>
+<td>C08</td>
+<td>通过：估计对象是条件性传递，非自然份额、唯一中介或最初形成位置；§4不叫纯读取。</td>
+</tr>
+<tr>
+<td>C09</td>
+<td>通过：§6有可反驳的双向传递、背景依赖及阴性；不把未解释余量命名成互斥机制。</td>
+</tr>
+<tr>
+<td>C10</td>
+<td>通过：D与固定token向量、EOS、局部量分开；§5不把norm/首token当完整回答。</td>
+</tr>
+<tr>
+<td>C11</td>
+<td>通过：§7工程闸门先于判读；弱/反向允许，描述阈值无统计显著性含义。</td>
+</tr>
+<tr>
+<td>C12</td>
+<td>通过：§8说明缺失逐步驱动为何须参考重建，J不重算前缀；不同时加随机/层/针矩阵。</td>
+</tr>
+<tr>
+<td>C13</td>
+<td>通过：六已见情景、12输入，预检另计；旧源固定，新实现未验收；同助手自查。</td>
+</tr>
+<tr>
+<td>C14</td>
+<td>通过：§6/§8停止条件明确，阴性撤回V加强解释；不自动换层/扩大，阳性亦不宣布闭环。</td>
+</tr>
+</tbody>
+</table>
+<h5 id="11-e01e26">11. E01–E26历史错误覆盖</h5>
+<table>
+<thead>
+<tr>
+<th>错误</th>
+<th>本次处理</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>E01</td>
+<td>§0主线不变，撤针为评分边界。</td>
+</tr>
+<tr>
+<td>E02</td>
+<td>切分及14线性层继承架构与A5，不命名天然分区。</td>
+</tr>
+<tr>
+<td>E03</td>
+<td>针为参考残差尺度的−1，不预设微小；不跨层比norm当增益。</td>
+</tr>
+<tr>
+<td>E04</td>
+<td>§5公式只作重建工具；效应传递须§3–4实际介入。</td>
+</tr>
+<tr>
+<td>E05</td>
+<td>k/β不拼拆，无value补偿；状态交叉的混合背景如实说明。</td>
+</tr>
+<tr>
+<td>E06</td>
+<td>V只是候选，不能代表全部写入；记录k/β/α与实际读取。</td>
+</tr>
+<tr>
+<td>E07</td>
+<td>双向阳性仅支持指定反事实，不证明唯一自然路径。</td>
+</tr>
+<tr>
+<td>E08</td>
+<td>每格供体/接收者/固定与响应清楚，§3表和§4J定义可逐字段验收。</td>
+</tr>
+<tr>
+<td>E09</td>
+<td>局部与输出共同变化不当因果连接，状态交叉专门检验输出作用。</td>
+</tr>
+<tr>
+<td>E10</td>
+<td>EOS和D分别报告；当前不支持完整交付恢复。</td>
+</tr>
+<tr>
+<td>E11</td>
+<td>不从V、S或投影推出事实删除/语义完整保留。</td>
+</tr>
+<tr>
+<td>E12</td>
+<td>相减不能排除一般损伤，无随机零分布，不称方向特异性或显著性。</td>
+</tr>
+<tr>
+<td>E13</td>
+<td>T/H供体同输入同事实，仍有信息重新带入的反事实解释，不称找回原记忆。</td>
+</tr>
+<tr>
+<td>E14</td>
+<td>§0/§4限定条件性形成/承载/读出作用，非最初形成/自然必要性。</td>
+</tr>
+<tr>
+<td>E15</td>
+<td>不将旧S3与A5直接拼链；在A5背景下重新测试。</td>
+</tr>
+<tr>
+<td>E16</td>
+<td>工程验收不以效果正负为标准；阴性不救。</td>
+</tr>
+<tr>
+<td>E17</td>
+<td>不用入口残差减法；V替换明确改变当前响应与未来状态。</td>
+</tr>
+<tr>
+<td>E18</td>
+<td>V弱或S交叉弱不把剩余直接命名浅层放大。</td>
+</tr>
+<tr>
+<td>E19</td>
+<td>自身供体替换和重放均为工程检查，不当发现。</td>
+</tr>
+<tr>
+<td>E20</td>
+<td>位置/变量/背景作用可并存，判读不是互斥穷尽表。</td>
+</tr>
+<tr>
+<td>E21</td>
+<td>不宣称新方法或领域首次；旧查重仅提供工具背景。</td>
+</tr>
+<tr>
+<td>E22</td>
+<td>六已见情景，两个事实配对；token/层/头不独立，预检非确认。</td>
+</tr>
+<tr>
+<td>E23</td>
+<td>设计通过与实现/资源/授权/结果严格分栏，同助手自查。</td>
+</tr>
+<tr>
+<td>E24</td>
+<td>允许接上一段条件链，不要求本轮解释全部行为。</td>
+</tr>
+<tr>
+<td>E25</td>
+<td>5形成条件＋10评分/输入固定；不自动加全层扫描或十针矩阵。</td>
+</tr>
+<tr>
+<td>E26</td>
+<td>形成hook评分前移除，共同C浅层隔离；J另标评分阶段状态输入作用，不混称形成中介。</td>
+</tr>
+</tbody>
+</table>
+<h5 id="12">12. 实质反方检查与修正记录</h5>
+<ol>
+<li><strong>反例：V与输出同变，但真正承载在其他变量。</strong> 原先仅补录无法识别，已修为双向V交叉与固定V时的B残余。仍可能有失配/补偿，因此结论限于该操作，不称独占中介。C02/C08/C14复查通过。</li>
+<li><strong>反例：在T/H之间换S，只能证明A5效应与S有关，不能接到V。</strong> 已改成只在同B背景、仅V来源不同的(T,U)/(W,H)两对交换S，状态差来源与形成干预对齐；两方向都固定，不择优。C05/C08复查通过。</li>
+<li><strong>反例：S替换也改变当前更新与下游query，不能叫纯读取。</strong> 保留这些自然响应，明确命名“旧状态经当前更新与读取的作用”；实际驱动与局部旧状态/当前写入读出项同步记录。无需为纯读隔离再加一套门/query网格，仍能回答本轮条件链。C06/C08通过。</li>
+<li><strong>反例：V改变卷积和KV，S交叉阴性仍可能有缓存作用。</strong> 不以S阴性否定所有V作用；反驳的只是特定递推状态承载解释，§6给出退出，不自动加全缓存组合。C09/C14通过。</li>
+<li><strong>反例：只在D上恢复，实际竞争token不同。</strong> 已冻结两个停止token和旧非停止赢家集合，保留全logits和旧m；新格不能挑新有利对比。矛盾时只报告D的有限作用。C10通过。</li>
+<li><strong>反例：层内读取变化被下游抵消，或拼接造成普遍破坏也能产生效应。</strong> 保存实际层间响应并保留双向/反向结果；不把局部大差异或简单恢复量叫原生份额，不声称一般损伤被排除。边界不摧毁“该V形成操作产生的状态在指定背景有何输出作用”这一估计对象。</li>
+<li><strong>反例：记录器改变数值路径，所谓中介其实是重放差。</strong> 新C/T/H必须对同路径旧A5逐位；失败停，不使用历史E2容差冒充验收。未执行工程前不称可直接开跑。</li>
+</ol>
+<p>最终判定：<strong>设计逻辑自查通过</strong>。有效增量是一个可失败、同条件的形成—状态—更新读取连接，不是完整机制闭环。实现未编写；来源、CPU/真实数值/资源验收尚未完成；没有执行授权、没有GPU运行、没有新结果。若将来工程证据迫使改变操作/终点/判读，须另版本重过相应项及C01/C02/C08/C14。</p>
+<h5 id="13-r2">13. r2修订自查与反方复查</h5>
+<p>设计卡补充：问题为“同一缓存形成/状态操作的输出效应依赖最终分母多少，是否含非统一缩放变化”；估计对象为§5.1共同C分母的输出端反事实，不改形成和评分时序。新增测量是全部10评分的h/r与实现/权重身份；成本为CPU输出头投影及记录，不新增GPU格。已有最不利证据是B12排名改变，纯温度不能涵盖它。r1未区分这些解释，r2解决分数传递与竞争结构传递混同；未变成另一条课题。</p>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th>r2重新判定与原因</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C01</td>
+<td>通过：新增解释处在原链的输出端，形成—读取目的保持。</td>
+</tr>
+<tr>
+<td>C02</td>
+<td>通过：区分最终分母依赖与非统一缩放变化，改变对V/状态传递的实质解释，不以代数恒等式算发现。</td>
+</tr>
+<tr>
+<td>C03</td>
+<td>通过：核Neuron Lens§9、论文先例、指定Qwen3.5源码及B12；他人结果/源码/本项目测量分栏。</td>
+</tr>
+<tr>
+<td>C04</td>
+<td>通过：排名变化反驳“全部纯缩放”；h同比例变化反驳“固定分母剩余必是偏好”。</td>
+</tr>
+<tr>
+<td>C05</td>
+<td>通过：仅最后RMSNorm的r固定为同输入/事实C；h、γ、W保留，实际前向不回填。</td>
+</tr>
+<tr>
+<td>C06</td>
+<td>通过：所有上游作用仍在h里，不声称排除了早层归一化；GPU格与缓存来源不变。</td>
+</tr>
+<tr>
+<td>C07</td>
+<td>通过：明确h/r同源却被反事实拆开，结果依赖参照；不声称自然独立份额。</td>
+</tr>
+<tr>
+<td>C08</td>
+<td>通过：E_scale是指定输出端操作差额，E_fix不叫纯语义或独立自然路径。</td>
+</tr>
+<tr>
+<td>C09</td>
+<td>通过：尺度、幅度与偏好可并存，§5.1列反向/混合/不可判，不强制二选一。</td>
+</tr>
+<tr>
+<td>C10</td>
+<td>通过：原D/固定token/EOS仍为原定义；新增H、u独立报告，排序与置信集中不同。</td>
+</tr>
+<tr>
+<td>C11</td>
+<td>通过：源码不符/缺记录/舍入覆盖效应时暂停解释，不把工程失败当阴性。</td>
+</tr>
+<tr>
+<td>C12</td>
+<td>通过：旧logits不足以识别r；补原评分记录并CPU后处理，不增GPU前向；CPU投影资源另计。</td>
+</tr>
+<tr>
+<td>C13</td>
+<td>通过：六已见情景不变；v1r1留Git，r2未运行，同助手自查，不说已经找到熵神经元。</td>
+</tr>
+<tr>
+<td>C14</td>
+<td>通过：结果将决定保留“尺度传递”“非统一竞争传递”或混合解释；不自动扩层/针/模型。</td>
+</tr>
+</tbody>
+</table>
+<p>E01–E26重新核对：E01/E02/E03保留主线/层身份/尺度限制；E04新增分解不是发现；E05/E06/E07/E08明确末端h/r反事实与固定项；E09不以熵和状态同变建立因果；E10/E11分数/熵非交付或信息；E12相减不排除一般损伤；E13供体C只提供分母，不提供向量内容；E14/E15末端尺度不替代形成机制或跨条件拼链；E16保留反向/不可判；E17/E18不称撤销整针、余量不预命名；E19重建恒等仅工程验收；E20两类作用非互斥；E21方法有先例、不称原创；E22/E23样本和自查身份不变；E24有界解释可积累；E25不加GPU网格；E26只分析同一评分终点，不能把尺度固定称形成中介隔离。§11原逐项措施继续有效。</p>
+<p>反方最强反例与处理：</p>
+<ol>
+<li><strong>h成比例，固定分母后有差，但排序完全一样。</strong> 已取消“剩余=偏好”的措辞，增加中心化方向和排名检查；C08/C10复查通过。</li>
+<li><strong>只改最终分母就让EOS翻转。</strong> 理想无bias线性头下不可能；若出现先查舍入、实现与处理链。真实排名改变意味着至少有非共同正缩放变化，不能靠温度解释；C04/C11通过。</li>
+<li><strong>换一个参照分母就能改变分账结论。</strong> 全部格固定同题C，明示参照依赖，不宣称自然百分比；不事后改参照找大作用；C07/C08通过。</li>
+<li><strong>旧logits可以拟合出缩放系数，为何还要r？</strong> 拟合比例不能区分h幅度、方向与真实r；记录实际r才能做所承诺的分母反事实；C02/C12通过。</li>
+<li><strong>FP64输出计算不是原BF16运行。</strong> 两者独立保存并核算误差，主结论保留原输出；新固定尺度只作高精度终端反事实。不能以新计算篡改A5/旧判据；C11/C13通过。</li>
+<li><strong>最终分母影响弱就能排除归一化机制？</strong> 不能；更早层RMSNorm已影响h。本轮只约束最后分母，不改上游机制类别；C06/C14通过。</li>
+</ol>
+<p>修订结论：<strong>设计逻辑自查通过</strong>，不是独立审查。实现/记录器/高精度重建与CPU资源验收未完成；新测量与固定尺度分析均未执行，无GPU。原72前缀/140评分总上限（含预检）不变；将来CPU头投影单列，不计作新独立实验或免费计算。</p>
+<h5 id="14-r32026-10-31">14. r3修订与重新自查（2026-10-31）</h5>
+<p><strong>来由：</strong> 用户审阅一份外部意见及其回应后批准三条修改：T↔C整体V交叉；尺度诊断简化；描述切点不承担通过角色。外部意见中"B效应只是边角""再加两格就解释主体"两处已被回应驳回：32–52%是特定操作下的削弱比例，不是机制份额；T↔C阳性也只是指定替换下的深层缓存效应。</p>
+<table>
+<thead>
+<tr>
+<th>变更</th>
+<th>内容</th>
+<th>理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>新增TC、CT</td>
+<td>T中V钉为V_C；C中V钉为V_T；其余照常响应</td>
+<td>T↔H只问"B改变的部分"；主线问整根针相对干净运行的变化，需同条件对应。两组互补</td>
+</tr>
+<tr>
+<td>新增TR0/TR1</td>
+<td>T中V钉为V_T+ξ，‖ξ‖逐层逐位置=‖V_C−V_T‖，随机方向，种子固定</td>
+<td>V_C进入有针运行的失配大于V_H，一般扰动风险更高；这是支持"超出同幅一般扰动"这一级主张的最少对照，不建随机矩阵</td>
+</tr>
+<tr>
+<td>§5.1简化</td>
+<td>记录r，z^fix=z·r_X/r_C离线换算；FP64仅冻结token集合</td>
+<td>实数下恒等；全词表重投影只服务舍入界，代价不相称</td>
+</tr>
+<tr>
+<td>切点角色</td>
+<td>只作描述</td>
+<td>无零分布，切点不是机制门槛；A5已出现0.3附近的切点假象</td>
+</tr>
+<tr>
+<td>存储</td>
+<td>16GiB</td>
+<td>服务器实际余量</td>
+</tr>
+</tbody>
+</table>
+<p><strong>C01–C14复查：</strong> C01 主线不变，T↔C直接对应"整根针"问题；C02 增量为整体效应与B效应在同条件下对V的依赖之比较；C04 新增最不利可能"E_null与E_VC0同级"已列入§6；C05 TC/CT/TR的供体、位置、层与随机种子逐项定义；C07 V仍整体钉住，不拆k/β；C08 估计对象仍是指定替换的条件效应，(b)级主张仅描述；C09 §6新增三行允许阴性与不一致；C11 TR不是工程闸门，不以方向判失败；C12 预算按9/14重算并含预检；C13 随机位移只2个抽样，明示；C14 完成固定矩阵即停，阳性不自动扩针扩层。其余项与r2相同。</p>
+<p><strong>E01–E26：</strong> E07/E14 T↔C阳性不称自然唯一路径；E12 随机位移对照不是零分布，不称显著；E18 T↔C弱时不把余量命名为放大；E20 T↔C与T↔H不互斥；E25 只增加4个形成条件、无层/针扫描。其余同r2。</p>
+<p><strong>结论：</strong> r3设计逻辑自查通过（同一助手，非独立审查）。实现、合同、测试与运行另见实验目录。</p>
+<hr />
+<h3 id="2cfm-form-read-bridge-v1-r01">原件 2：缓存形成—读取连接｜CFM-FORM-READ-BRIDGE v1 合同 r01</h3>
+<p>原路径：<code>experiments/cache-formation-readout-bridge-v1-2026-10-31/CONTRACT.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-readout-bridge-v1-2026-10-31/CONTRACT.zh-CN.md">固定提交原文</a> · <a href="../library/3cab89441110a4d7.html">单独阅读副本</a>；SHA-256：<code>3cab89441110a4d76f051d45a461234bba89da07d56d451ec6dcc054cb9085b8</code>。</p>
+<hr />
+<h4 id="cfm-form-read-bridge-v1-r01">缓存形成—读取连接｜CFM-FORM-READ-BRIDGE v1 合同 r01</h4>
+<ul>
+<li>编号 <code>CFM-FORM-READ-BRIDGE-v1-20261031</code>；设计 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-formation-readout-bridge-plan-v1-2026-10-31.zh-CN.md">形成—读取连接方案 v1 r3</a>（下称"方案"）。</li>
+<li>承接 A5 = <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-mechanism-formation-ab-v2-2026-10-31">CFM-FORM-AB v2</a>（冻结 73e0eedd，结果 181d80a）：同输入、同针、同晚段、同逐步路线、同 B、同统一评分；直接复用其冻结代码 <code>form_ab.py</code>。</li>
+<li>冻结后不改；偏离记入 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-readout-bridge-v1-2026-10-31/IMPLEMENTATION.zh-CN.md">IMPLEMENTATION.zh-CN.md</a>。代码 <code>bridge.py</code>、<code>bridge_analysis.py</code>、<code>test_bridge.py</code>。</li>
+</ul>
+<h5 id="1_1">1. 对象</h5>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th>取值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>模型、针、输入、时窗</td>
+<td>与 A5 相同：Qwen3.5-4B 851bf6e8 BF16 eager；L0 N4146 −1；VAR03/04、VRD03/04、VRL03/04 × f0/f1；L = b+1…n−2，逐 token</td>
+</tr>
+<tr>
+<td>浅层 / 深层</td>
+<td>0–12 / 13–31；B = 第 1–12 层每步读 C 在 t−1 的过去缓存（A5 定义）</td>
+</tr>
+<tr>
+<td>V</td>
+<td>深层 14 个线性层 G = {13,14,16,17,18,20,21,22,24,25,26,28,29,30} 的 <code>in_proj_qkv</code> 输出中 value 切片（卷积之前），全部 32 头；q/k 切片不动</td>
+</tr>
+<tr>
+<td>冻结 token 集合</td>
+<td>停止 {248044, 248046} ∪ A5 中 C/X0/XB 的非停止赢家（<code>data/frozen-tokens-r01.json</code>，运行前生成）</td>
+</tr>
+</tbody>
+</table>
+<h5 id="2-9">2. 形成条件（每个输入 9 个）</h5>
+<table>
+<thead>
+<tr>
+<th>条件</th>
+<th>针</th>
+<th>B</th>
+<th>G 内 V</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C</td>
+<td>–</td>
+<td>关</td>
+<td>自然（产生 V_C）</td>
+</tr>
+<tr>
+<td>T</td>
+<td>✓</td>
+<td>关</td>
+<td>自然（V_T）</td>
+</tr>
+<tr>
+<td>H（= A5 XB）</td>
+<td>✓</td>
+<td>开</td>
+<td>自然（V_H）</td>
+</tr>
+<tr>
+<td>U</td>
+<td>✓</td>
+<td>关</td>
+<td>逐位置钉为 V_H</td>
+</tr>
+<tr>
+<td>W</td>
+<td>✓</td>
+<td>开</td>
+<td>逐位置钉为 V_T</td>
+</tr>
+<tr>
+<td>TC</td>
+<td>✓</td>
+<td>关</td>
+<td>逐位置钉为 V_C</td>
+</tr>
+<tr>
+<td>CT</td>
+<td>–</td>
+<td>关</td>
+<td>逐位置钉为 V_T</td>
+</tr>
+<tr>
+<td>TR0、TR1</td>
+<td>✓</td>
+<td>关</td>
+<td>逐位置钉为 V_T + ξ；ξ 方向随机，范数逐层逐位置 = ‖V_C − V_T‖；种子 20261031 + 1000·k + crc32(输入 id)</td>
+</tr>
+</tbody>
+</table>
+<p>供体带在第一轮（C、T、H 同步推进）中记录，克隆后固定；第二轮推进其余六个条件。未被钉住的量（k、β、α、q、z、卷积、递推、全注意力、下游残差）都按接收者照常响应。</p>
+<h5 id="3-14">3. 评分（每个输入 14 次，首步，无形成期钩子）</h5>
+<ul>
+<li>C、T_native（T 自身完整缓存）；Y_X = C 浅层 + X 深层，X ∈ {T, H, U, W, TC, CT, TR0, TR1}。</li>
+<li>状态交叉 J(a←S_b)：以 Y_a 为接收者，评分前只把 G 的 14 个 <code>recurrent_states</code> 换成 b 在 τ 的值。四个：J(T←S_U)、J(U←S_T)、J(W←S_H)、J(H←S_W)。</li>
+<li>评分时只装只读记录器：G 层内核驱动量与旧状态项/当前写入项、全注意力层 q/k/v 投影与输出、第 13–31 层出入口残差、最终 norm 的输入 h 与输出。另记录真实最终分母 r = sqrt(mean(h²)+eps)，以及冻结 token 集合上的 FP64 重算值 η。</li>
+</ul>
+<h5 id="4">4. 工程闸门（任一不过即停；不重试、不放宽）</h5>
+<table>
+<thead>
+<tr>
+<th>闸门</th>
+<th>内容</th>
+<th>何时</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A5 重放</td>
+<td>C、T、H 的完整 τ 缓存清单与 A5 的 C、T、XB 逐位相同；B 供体（C 浅层逐位置快照）哈希与 A5 逐位相同；C、T_native、Y_T、Y_H 首步 logits 哈希与 A5 的 C、T_native、X0、XB 逐位相同</td>
+<td>每个输入</td>
+</tr>
+<tr>
+<td>V 操作</td>
+<td>只改 G 层 value 切片；q/k 切片逐位不变；实际写入逐位等于供体；供体带哈希在第二轮前后不变</td>
+<td>每个输入、每一步</td>
+</tr>
+<tr>
+<td>结构</td>
+<td>九个条件第 0 层缓存逐位相同；第 0 层输出：有针条件逐位等于 T，无针条件逐位等于 C；U/TC/TR 浅层 = T，W 浅层 = H，CT 浅层 = C；缓存管理状态相同；B 来源检查每步通过</td>
+<td>每个输入</td>
+</tr>
+<tr>
+<td>评分隔离</td>
+<td>混合缓存浅层 = C、深层 = 本条件；J 只改变 14 个递推状态，其余字段来自接收者；评分时钩子计数等于"只装记录器"的计数；最终 norm 由 h 逐位复算一致；状态哈希相同则 logits 相同</td>
+<td>每个输入</td>
+</tr>
+<tr>
+<td>预检惰性</td>
+<td>关闭记录器重跑 C/T/H 及 4 个评分逐位一致；T←V_T、H←V_H 自身 V 替换逐位等于 T、H；J(T←S_T)、J(H←S_H) 逐位等于 Y_T、Y_H</td>
+<td>预检</td>
+</tr>
+<tr>
+<td>其他</td>
+<td>校准、token、冻结、授权、CPU 收据、权重哈希、钩子移除、调用上限、存储上限</td>
+<td>全程</td>
+</tr>
+</tbody>
+</table>
+<p><strong>诊断（不是停止闸门）</strong>：CPU 按记录的驱动量从共同前缀状态逐步重建 G 层递推状态，端点相对误差 ≤ 1e−5、内核输出相对误差 ≤ 5e−3。失败只标"该诊断不通过"，不改阈值。</p>
+<h5 id="5_1">5. 读数</h5>
+<p>每个评分：D = max(z[E]) − max(z[非E])；EOS；冻结 token 差（各停止 token − 各冻结非停止 token，以及 248046−248044）；熵 H；两个赢家身份；r；η。</p>
+<p>逐事实先算，再取两事实均值作情景读数，两条原值同时保留：</p>
+<table>
+<thead>
+<tr>
+<th>量</th>
+<th>定义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Δ_B</td>
+<td>Y_T − Y_H</td>
+</tr>
+<tr>
+<td>E_V0 / E_V1</td>
+<td>Y_T − Y_U / Y_W − Y_H</td>
+</tr>
+<tr>
+<td>固定 V 的 B 残余</td>
+<td>Y_T − Y_W，Y_U − Y_H</td>
+</tr>
+<tr>
+<td>状态交叉 (T,U)</td>
+<td>δ = Y_T − Y_U；Q_a = Y_T − J(T←S_U)；Q_b = J(U←S_T) − Y_U；剩余差 J(T←S_U) − Y_U、Y_T − J(U←S_T)</td>
+</tr>
+<tr>
+<td>状态交叉 (W,H)</td>
+<td>δ = Y_W − Y_H；Q_a = Y_W − J(W←S_H)；Q_b = J(H←S_W) − Y_H；剩余差同理</td>
+</tr>
+<tr>
+<td>Δ_full</td>
+<td>Y_T − C</td>
+</tr>
+<tr>
+<td>E_VC0 / E_VC1</td>
+<td>Y_T − Y_TC / Y_CT − C</td>
+</tr>
+<tr>
+<td>E_null,k</td>
+<td>Y_T − Y_TRk</td>
+</tr>
+<tr>
+<td>B×V 交互</td>
+<td>Y_T − Y_U − Y_W + Y_H（只作汇总）</td>
+</tr>
+</tbody>
+</table>
+<p><strong>尺度分解</strong>（方案 r3 §5.1）：z^fix = z·r_X/r_C（C 为同输入同事实）。对上表每个配对效果报告 E_total、E_fix、E_scale = E_total − E_fix（D、冻结 token 差、熵）。这是共同 C 分母下的输出端反事实，不是自然份额；熵的固定尺度值含 BF16 舍入。配对效果的数值界为 2(η_a + η_b)，效果绝对值不超过界时不贴方向词。</p>
+<p><strong>竞争结构</strong>：中心化单位化 logits 的距离 ‖u_a − u_b‖；对 E_V0、E_V1、E_VC0、E_VC1 等效果，若某个冻结 token 差的变化与 D 的变化方向相反、且幅度 ≥ 0.5|D 效果|，记为"与 D 矛盾"。</p>
+<h5 id="6_1">6. 描述（只作描述，不承担机制通过或不通过）</h5>
+<p>比例档：&lt; 0 反向；[0, 0.3] 弱；(0.3, 0.7) 部分；[0.7, 1.3] 近似；&gt; 1.3 超调。</p>
+<ul>
+<li><strong>B 传递</strong>（Δ_B &gt; 0 时）：r0 = E_V0/Δ_B，r1 = E_V1/Δ_B。描述词按顺序判定：任一反向记"反向"；任一超调记"超调"；两者近似且两残余 ≤ 0.3Δ_B 记"近似传递"；两者都弱记"弱"；一弱一非弱记"背景依赖"；其余记"部分"。</li>
+<li><strong>状态交叉</strong>：仅在 |δ| ≥ 0.3|Δ_B| 时按同一规则描述 Q_a/δ、Q_b/δ；否则只报绝对 Q，标"上游 V 效应弱、比例不稳定"。</li>
+<li><strong>T↔C</strong>（Δ_full &gt; 0 时）：E_VC0/Δ_full、E_VC1/Δ_full 用同一规则描述。并列报告 E_null,0/Δ_full、E_null,1/Δ_full，以及"E_VC0 是否大于两个随机抽样"。</li>
+</ul>
+<p><strong>主张分级（冻结）</strong>：
+- (a) <strong>替换效应</strong>：任何结果都可报告。
+- (b) <strong>"V_C 替换的削弱大于同幅随机位移"</strong>：只作逐情景描述，不作统计检验，不估计随机位移的分布，两个抽样的极值不当门槛。若 E_null 与 E_VC0 同级，只保留 (a)。
+- 任何结果都不称"自然中介""唯一路径""V 解释了全部原生机制"，也不称"完整回答已恢复"。</p>
+<p>方案 §6 的判读表全部适用：V 双向有效但递推交叉弱、一向有效、两向都弱、反向或超调、局部投影大但 J 弱、D 传递但冻结 token 矛盾、情景或事实不一致。T↔C 与 T↔H 互补，不按比例划分机制份额。</p>
+<h5 id="7_1">7. 规模与停止</h5>
+<ul>
+<li>预检：VAR03-f0，1 个 worker；9 前缀 / 14 评分，加关闭记录器的 C/T/H 3/4、自身 V 2/2、自身 S 0/2，合计 <strong>14 / 22</strong>。</li>
+<li>正式：12 × (9 / 14) = <strong>108 / 168</strong>；2 个 worker（每卡 1 个）。存储上限 16 GiB（每个 worker 8 GiB），代码内断言。</li>
+<li>停止：预检任一闸门不过不进正式；正式任一输入闸门不过即整轮停止，保留已完成记录。固定矩阵完成即停，不因结果加层、加针、加剂量。</li>
+</ul>
+<h5 id="8_1">8. 失败类型</h5>
+<p>闸门失败为合同执行失败，信息量为零。Δ ≤ 0 或比例不稳定作为结果边界报告。V 弱或反向是科学结果，按方案 §6 撤回加强解释，不调参救。</p>
+<hr />
+<h3 id="3cfm-form-read-bridge-v1">原件 3：CFM-FORM-READ-BRIDGE v1 实现说明与决策日志</h3>
+<p>原路径：<code>experiments/cache-formation-readout-bridge-v1-2026-10-31/IMPLEMENTATION.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-readout-bridge-v1-2026-10-31/IMPLEMENTATION.zh-CN.md">固定提交原文</a> · <a href="../library/71805fd521f2fb91.html">单独阅读副本</a>；SHA-256：<code>71805fd521f2fb91d74eb0a24eab382dee58279b6dd1311076399e5cbcb0740e</code>。</p>
+<hr />
+<h4 id="cfm-form-read-bridge-v1">CFM-FORM-READ-BRIDGE v1 实现说明与决策日志</h4>
+<table>
+<thead>
+<tr>
+<th>文件</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>bridge.py</code></td>
+<td>九个形成条件（两轮逐步推进）、V 钉住钩子、只读记录器、14 个评分（含 4 个状态交叉）、全部闸门、冻结/授权/worker/控制器/核验；在 A5 冻结的 <code>form_ab.py</code> 上构建</td>
+</tr>
+<tr>
+<td><code>bridge_analysis.py</code></td>
+<td>合同 §5–6 的读数与描述；<code>selftest</code> 演示每个描述词都能出现、也能不出现</td>
+</tr>
+<tr>
+<td><code>test_bridge.py</code></td>
+<td>小号随机 Qwen3.5 上的 CPU 测试（G=(5,6)），含按定义独立重建 J、V 从第一步起生效、随机位移范数、调用上限、钩子拒绝等</td>
+</tr>
+<tr>
+<td><code>data/frozen-tokens-r01.json</code></td>
+<td>运行前从 A5 记录生成的冻结 token 集合（含 A5 记录 sha）</td>
+</tr>
+<tr>
+<td><code>readiness/real_smoke.py</code></td>
+<td>冻结前真实模型闸门演示：只输出闸门、计数、耗时、存储与重建诊断，不输出任何评分读数</td>
+</tr>
+</tbody>
+</table>
+<h5 id="_2">决策日志</h5>
+<ol>
+<li><strong>方案 r3 的三处修改</strong>按用户批准执行：T↔C 双向 V 交叉、同幅随机方向位移对照（每输入 2 个抽样）、尺度诊断简化、描述切点不承担通过角色。方案其余矩阵与判据不变。</li>
+<li><strong>数值路线</strong>：直接对齐 A5 的逐步路线，要求与 A5 记录逐位重放（形成清单、B 供体、4 个评分），不再使用 E2 容差。</li>
+<li><strong>随机位移只对 T←V_C 方向做</strong>：(b) 级主张只针对 V_C 替换。CT 方向没有对照，只作 (a) 级报告。</li>
+<li><strong>尺度诊断</strong>：评分内用同一 h 与只读输出头，对冻结 token 集合加两个赢家做 FP64 重算，得到 η；固定尺度值按 r_X/r_C 离线换算。没有做全词表 FP64 重投影（方案 r3 §5.1）。</li>
+<li><strong>记录范围</strong>：形成期记录全部 9 个条件的 G 层内核入口参数（q、k、v、g、β）、z、内核输出、旧状态项与当前写入项（float32），以及每步状态范数；完整状态只存端点（共同前缀状态 S_b 与各条件 τ 深层缓存）。逐步状态没有存哈希，以免约 13 GB 的哈希开销，方案写的是"范数/哈希"。</li>
+<li><strong>方案 §8 预检中的"附加惰性 C/T 2/2"已删去</strong>：它与关闭记录器的 C/T/H 重放重复（方案 r3 §8 已同步）。</li>
+<li><strong>冻结前真实模型演示</strong>发现并修复一个缺陷：CPU 重建函数读到了 GPU 上的驱动量。报错之前的形成闸门与 A5 重放已经通过。修复后的 <code>readiness/smoke-r02.json</code>（VAR03-f0）全部闸门通过：重建状态误差 ≤ 4e−7、内核输出误差 ≤ 2.7e−3，η ≤ 0.062，44 s，峰值显存 10.7 GB，张量 0.69 GB/输入。演示不打印、不保存评分读数；正式运行从头重算。</li>
+<li>CPU 测试 <code>test_v_pinning_from_first_step</code> 初稿把"t=b+1 时自然 V 等于 T"写成对所有 G 层成立。实际只对第一个 G 层成立，因为后面的层会受前层被钉住的 V 在同一步内影响。这是测试写错，不是代码错误，已改正。</li>
+<li>2 个 worker（每卡 1 个）：每输入约 30–45 s，12 个输入在双卡上约 5 分钟。</li>
+</ol>
+<h5 id="_3">运行记录</h5>
+<ul>
+<li>preflight-r01：2026-10-31 14:22 UTC，1 worker，63 s，通过（A5 逐位重放、预检惰性三项；14 前缀/22 评分）。</li>
+<li>formal-r01：2026-10-31 14:24–14:28 UTC，2 worker（每卡 1 个），247 s，12/12 输入全部闸门通过，108 前缀/168 评分，共 8.46 GB。</li>
+<li>判读：<code>analysis/bridge-readouts-r01.json</code>（冻结的 <code>bridge_analysis.py run</code>）；CPU 重建诊断 12/12 × 9 条件全部通过。</li>
+<li>张量（逐步驱动、供体带、深层缓存、全词表 logits、评分期内部量）不进 git，留在服务器 <code>/workspace/acupuncture/experiments/cache-formation-readout-bridge-v1-2026-10-31/runs/*/worker-*/tensors/</code>，哈希在各 worker 的 <code>receipt.json</code>。</li>
+</ul>
+<h5 id="_4">测试</h5>
+<p>见 <code>readiness/cpu-receipt-r01.json</code>。</p>
+<hr />
+<h3 id="4cfm-form-read-bridge-v1-v-b">原件 4：缓存形成—读取连接｜CFM-FORM-READ-BRIDGE v1｜深层 V 与递推状态能否传递 B 效应与整体针效应</h3>
+<p>原路径：<code>experiments/cache-formation-readout-bridge-v1-2026-10-31/README.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-readout-bridge-v1-2026-10-31/README.md">固定提交原文</a> · <a href="../library/f378f104461039b8.html">单独阅读副本</a>；SHA-256：<code>f378f104461039b82184341c645c14fe2b281a6f9be061b088de58711010951b</code>。</p>
+<hr />
+<h4 id="cfm-form-read-bridge-v1-v-b">缓存形成—读取连接｜CFM-FORM-READ-BRIDGE v1｜深层 V 与递推状态能否传递 B 效应与整体针效应</h4>
+<ul>
+<li>设计：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-formation-readout-bridge-plan-v1-2026-10-31.zh-CN.md">形成—读取连接方案 v1 r3</a></li>
+<li>合同：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-readout-bridge-v1-2026-10-31/CONTRACT.zh-CN.md">CONTRACT.zh-CN.md</a></li>
+<li>实现与决策日志：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-readout-bridge-v1-2026-10-31/IMPLEMENTATION.zh-CN.md">IMPLEMENTATION.zh-CN.md</a></li>
+<li>承接：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-mechanism-formation-ab-v2-2026-10-31">CFM-FORM-AB v2（A5）</a></li>
+</ul>
+<hr />
+<h2 id="_5">时间、运行与停止收据索引</h2>
+<p>下面是所收集JSON的原有时间字段与状态，不把预计结束时间当实际完成时间。未列时间的文件仍有原件链接。完整JSON全部保存在原文归档，不能以此索引中的标量代替完整嵌套内容。</p>
+<table>
+<thead>
+<tr>
+<th>原件</th>
+<th>原记录状态/阶段</th>
+<th>原时间字段（原时区）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-readout-bridge-v1-2026-10-31/readiness/cpu-receipt-r01.json">readiness/cpu-receipt-r01.json</a></td>
+<td>{"status": "passed"}</td>
+<td>{"created_at": "2026-10-31T14:21:02.066608+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-readout-bridge-v1-2026-10-31/runs/formal-r01/controller.json">runs/formal-r01/controller.json</a></td>
+<td>{"status": "completed", "stage": "formal"}</td>
+<td>{"started_at": "2026-10-31T14:23:48.779806+00:00", "finished_at": "2026-10-31T14:27:56.146757+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-readout-bridge-v1-2026-10-31/runs/formal-r01/verification.json">runs/formal-r01/verification.json</a></td>
+<td>{"status": "passed", "stage": "formal"}</td>
+<td>{"verified_at": "2026-10-31T14:27:56.146546+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-readout-bridge-v1-2026-10-31/runs/formal-r01/worker-0/receipt.json">runs/formal-r01/worker-0/receipt.json</a></td>
+<td>{"status": "completed", "stage": "formal"}</td>
+<td>{"started_at": "2026-10-31T14:23:48.850103+00:00", "last_record_at": "2026-10-31T14:27:36.994579+00:00", "finished_at": "2026-10-31T14:27:39.025626+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-readout-bridge-v1-2026-10-31/runs/formal-r01/worker-1/receipt.json">runs/formal-r01/worker-1/receipt.json</a></td>
+<td>{"status": "completed", "stage": "formal"}</td>
+<td>{"started_at": "2026-10-31T14:23:48.850157+00:00", "last_record_at": "2026-10-31T14:27:45.591876+00:00", "finished_at": "2026-10-31T14:27:47.001845+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-readout-bridge-v1-2026-10-31/runs/preflight-r01/controller.json">runs/preflight-r01/controller.json</a></td>
+<td>{"status": "completed", "stage": "preflight"}</td>
+<td>{"started_at": "2026-10-31T14:22:26.797473+00:00", "finished_at": "2026-10-31T14:23:33.413546+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-readout-bridge-v1-2026-10-31/runs/preflight-r01/verification.json">runs/preflight-r01/verification.json</a></td>
+<td>{"status": "passed", "stage": "preflight"}</td>
+<td>{"verified_at": "2026-10-31T14:23:33.413372+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-readout-bridge-v1-2026-10-31/runs/preflight-r01/worker-0/receipt.json">runs/preflight-r01/worker-0/receipt.json</a></td>
+<td>{"status": "completed", "stage": "preflight"}</td>
+<td>{"started_at": "2026-10-31T14:22:26.864417+00:00", "last_record_at": "2026-10-31T14:23:28.840374+00:00", "finished_at": "2026-10-31T14:23:30.191793+00:00"}</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_6">全部原始资产入口</h2>
+<p>本目录在固定提交下共有67个跟踪文件，包含代码、原回答、失败、收据和压缩证据；文件数不是样本数。<a href="../assets/037-cache-formation-readout-bridge-v1-2026-10-31.tsv">逐文件完整账本</a> · <a href="https://github.com/yuxiexiong/acupuncture/tree/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-readout-bridge-v1-2026-10-31">原目录</a>。未复制模型权重、环境或凭据。</p></main></html>

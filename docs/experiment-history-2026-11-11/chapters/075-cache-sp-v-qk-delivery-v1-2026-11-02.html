@@ -1,0 +1,541 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>075．SVQ：共享前缀下V和q/k恢复</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="075svqvqk">075．SVQ：共享前缀下V和q/k恢复</h1>
+<p><a href="../README.zh-CN.html">返回总时间线</a></p>
+<p><strong>时间定位</strong>：已提取运行收据的最早时间锚点（可含预检） 2026-11-02T13:20:45.186669+08:00；不能当作全部子运行起止。</p>
+<p><strong>当时的目的与设计</strong></p>
+<p>在共享首字母面板分别恢复V、q/k和两者联合，检验后续目标选择。</p>
+<p><strong>实际过程、结果与后来更正</strong></p>
+<p>V恢复为4/4/4/10，q/k单独均0，联合12/12/10/12；V后共同首字母48/48，但前三方向非首位目标仍8/8选首条。完整三组结果逐方向保留。</p>
+<p><strong>来源身份</strong>：<code>cache-sp-v-qk-delivery-v1-2026-11-02</code>；本章主体来源提交 <code>7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8</code>。下方原文中的状态是各文件写作时的状态，不能把早期“尚未运行”覆盖后期正式收据，也不能将后期结果倒填进早期设计。</p>
+<h2 id="_1">原设计、执行过程、结果与更正全文</h2>
+<p>以下按“设计与题目 → 工程/执行记录 → 结果/更正 → 其他历史说明”组织；同类内没有可靠时间时保留路径顺序，不冒充严格先后。正文未删段；仅为本章节重排标题层级、把相对链接指向固定提交。原始字节另外完整保存。</p>
+<h3 id="1svq-01vqk-v1">原件 1：SVQ-01：共享首字母面板上的V与q/k恢复 v1</h3>
+<p>原路径：<code>docs/cache-sp-v-qk-delivery-plan-v1-2026-11-02.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-sp-v-qk-delivery-plan-v1-2026-11-02.zh-CN.md">固定提交原文</a> · <a href="../library/621e6b4fe33cdb12.html">单独阅读副本</a>；SHA-256：<code>621e6b4fe33cdb128f731d6abf831200487d4059050394f36c4175acb6a0af5f</code>。</p>
+<hr />
+<h4 id="svq-01vqk-v1">SVQ-01：共享首字母面板上的V与q/k恢复 v1</h4>
+<p>日期2026-11-02。状态：逻辑设计及同一助手自查通过；未实现、未验收、未运行，无新增模型/GPU授权。独立于FXS-01的合同与预算；可先借FXS验收记录数值的实现，但不以其科学结论筛选本轮。</p>
+<h5 id="1">1. 设计卡与证据</h5>
+<p>主线：稀疏激活干预如何经历史状态与后续读取改变回答。本轮问：去除首字母唯一定位目标的条件下，只恢复深层卷积V是否足以恢复正确编号交付，还是q/k恢复也有作用？增量是把P面板上的V恢复充分性，放到实际需要目标选择的SP面板检验。
+证据：FX-01（0188ced、更正67427de）仅在P上全部V恢复48/48严格交付；SP-01（6b6603d、更正67427de）测的是完整q/k/v，三个方向12/12，R0为10/12。SP强制共同首token失败，47/48输出首列编号是合同外观察，不能说FC成功已被因果证明完全由捷径造成。最不利可能：V在SP不充分，或者恢复只改变起点而未恢复目标选择。
+资产：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-shared-prefix-continuation-plan-v1-2026-11-02.zh-CN.md">SP计划</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-shared-prefix-continuation-v1-2026-11-02">SP运行目录</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-fixed-v-delivery-v1-2026-11-02/CONTRACT.zh-CN.md">FX合同</a>。不拼接两面板得结论。当前SP已经见过，不再称未见输入或独立确认；新条件是V和q/k单独恢复。</p>
+<h5 id="2">2. 身份、臂与时间</h5>
+<p>完全复用SP冻结12输入（六情景×f0/f1）、四方向N4146/N1210/R0/C1343、tokenizer/内核/模型manifest及校准数值。Qwen3.5-4B revision 851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a，BF16；L0−1、b+1…n−2形成窗口；评分最后prompt token，无评分/生成注入。
+每输入共享C_nat；每方向四个自然续写臂：
+| 臂 | 深层q/k卷积 | 深层V卷积 | 其他缓存/入口 |
+|---|---|---|---|
+| T_nat | T | T | T |
+| T_V | T | C | T |
+| T_QK | C | T | T |
+| T_F | C | C | T |
+深层G层固定13,14,16,17,18,20,21,22,24,25,26,28,29,30；V包含全部448值头。q/k指短卷积缓冲，不是全注意力KV，也不是当前q/k直接钳制。仅起点一次同输入C供体恢复，其后所有模块及缓存沿真实输出正常更新。混合状态并非原生轨迹，供体可重新带入事实信息。
+沿用SP贪心、最小ID平局、停止{248044,248046}、32新token上限，无其他logit处理。自然臂不强制首字母、不禁停；C/T/F必须逐token重放原结果。R0的已知F失败属于科学表现，不可作为工程失败删除。</p>
+<h5 id="3">3. 主终点与同前缀诊断</h5>
+<p>主终点沿用SP/FC冻结解析器Y_delivery（完整目标且无其他不同编号）与Y_strict（去首尾空白仅目标）。保留多编号、干扰编号、其他编号、提前停止、预算未交付及think/问题片段。罗列某个编号不自动算选择。
+每情景f0/f1都正确才算情景成功。C基线至少5/6；T损伤至少4/6情景两事实未交付。基线不足与效应未迁移分开；不筛输入或改剂量。恢复支持需≥5/6情景满足C正确、T未交付、恢复臂正确；整体≥3/4方向，固定分母。另列错→对/对→对/对→错/错→错及strict；不把自然已对算救回。
+目标选择另报“目标编号”与“首列编号”，只在目标不在首列的四情景八输入上比较这两种解释；目标在首列时二者不可分，不计为反首列策略的证据。全样本主终点不变。不得因看过首列偏差而挑新题。
+首步保存全词表数值logits，报共同首token相对固定停止s0=248046的分差及相对所有竞争者的优势；停止集合最大值单列，不替换固定候选。
+<strong>第二步专设诊断分叉：</strong> 对每个C/T臂完成首步评分后，克隆其更新后的缓存，统一喂SP冻结共同首token，额外做恰好一次前向。读取M=目标第二token分数−最大干扰第二token分数，保存三个候选和全词表原值。共同首token、第二token分词沿用SP，不凭字符判断。诊断分叉不继续生成，不混入自然交付；即使自然首步EOS也运行此分叉。这样不在“碰巧首步正确”的单元上筛样本，不把不同前缀的第二步logits直接相减。共同前缀仍是格式提示，M只说明该提示条件下的选择倾向，不证明原生信息完整。</p>
+<h5 id="4">4. 判读与退出</h5>
+<p>对T_V和T_QK均冻结上述判据，不登记没有依据的方向性预测。T_F重放是参照，不当新预测成功。
+- V支持、QK不支持：本条件下恢复V足以达到交付标准；不能说q/k计算无用或V唯一必要。
+- QK支持、V不支持：对称结论，撤回把P的V充分性推广到SP。
+- 两者支持：两种操作各可恢复，不能把机制解释为互斥。
+- 两者不支持但F支持：所测组合优于单独恢复；不能仅凭二元交付证明内部非线性协同。
+- F参照存在方向性边界或结果混合：如实逐方向报告；不通过改名单、题目、长度救结论。
+连续M和交付不一致时，以自然完整交付决定主判；M只定位共同前缀下的局部差异。V仅在目标首列时成功，不称恢复了可靠目标选择。无论结果如何均结束本轮，不自动按层扫描或重启固定45头支线。</p>
+<h5 id="5">5. 工程与完整预算</h5>
+<p>冻结合同、输入/供体/模型/配置/校准/源码哈希；按浅层、深层S、全注意力KV、q/k卷积、V卷积分组验证来源。所有供体只读，各臂独立clone；验证起点仅替换一次。旧C/T/F与SP首步哈希及自然轨迹一致；诊断分叉在自然共同首token时与自然第二步logits一致，不同前缀不要求一致。记录器关闭、重建与开启结果一致。分词不符或重放不符停止，科学恢复失败不当实现故障。
+正式：12×(1+4×4)=204自然轨迹，60形成，6校准；另204同前缀单步诊断。预检SP01双事实：34自然轨迹、34诊断、10形成、1校准。记录器关闭独立重建C/T4146各一次：2自然轨迹、2诊断、2形成。
+合计72形成、7校准、240自然轨迹（最多7680评分/解码前向）及240诊断前向，总评分/解码上限7920。形成/prefill token前向另记；诊断fork不重复形成，但必须计计算。可复用完全一致自然第二步输出，预算仍按不复用算。独立建议上限1 GPU设备小时、2 CPU核小时、8GiB产物，非实测承诺；预检测量全成本后不足则停止，不自动重试/缩样本。
+输出拟experiments/cache-sp-v-qk-delivery-v1-2026-11-02/：独立合同、资产manifest、代码测试、全部原文/token/停止原因、首两步数值logits与哈希、诊断分叉身份、配对主表、失败记录和全成本receipt。模型权重及缓存不入Git；产物超限按可核验资产清单保存，不删原证据。</p>
+<p>自查与最强反例见<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-v-followup-self-check-v1-2026-11-02.zh-CN.md">必要附件</a>。逻辑通过不等于实现可运行，文档推送不授予模型/GPU运行权。</p>
+<hr />
+<h3 id="2fxs-01-svq-01-v1">原件 2：FXS-01 / SVQ-01：设计自查与交付索引 v1</h3>
+<p>原路径：<code>docs/cache-v-followup-self-check-v1-2026-11-02.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-v-followup-self-check-v1-2026-11-02.zh-CN.md">固定提交原文</a> · <a href="../library/b67a2b3472687aac.html">单独阅读副本</a>；SHA-256：<code>b67a2b3472687aac5ec4a1455453085fb3639f495b88b45c399d39d8fe1295c7</code>。</p>
+<hr />
+<h4 id="fxs-01-svq-01-v1">FXS-01 / SVQ-01：设计自查与交付索引 v1</h4>
+<p>2026-11-02；规范experiment-design-self-check v1。同一助手自查，非独立评审。两个独立问题各有合同、预算、回执；可顺序实施，但科学结果互不设门槛。当前只设计与交付，无新增模型运行授权。</p>
+<ul>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-fx-fixed-score-followup-plan-v1-2026-11-02.zh-CN.md">FXS-01：首步固定候选连续分数补测</a></li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-sp-v-qk-delivery-plan-v1-2026-11-02.zh-CN.md">SVQ-01：SP面板V与q/k恢复及完整交付</a></li>
+</ul>
+<h5 id="_2">证据与改动</h5>
+<p>依据67427de的FX/SP更正、FX合同、SP计划及既有报告。README/RESEARCH_STATUS保留历史路线，最新测量优先；基础审计要求区分架构事实、条件推导与实际作用。截图是评议材料，其中的上卡命令不视为本会话运行授权。
+保留六格连续补测和SP四格；分别立项。修正截图中的四处问题：补测需要模型评分，不能称零新测量；一份随机切分不是零分布；首步可加不能解释整条生成；第二步需共同前缀诊断。主线仍是稀疏干预通过历史状态与后续读取改变回答，不是EOS修复。固定45失败分支不重启，补测只修正既有解释。</p>
+<h5 id="c01c14">C01–C14</h5>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th>FXS-01判定</th>
+<th>SVQ-01判定</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C01</td>
+<td>通过：首步量约束回答恢复解释</td>
+<td>通过：直接检验状态与正确选择关系</td>
+</tr>
+<tr>
+<td>C02</td>
+<td>通过：补缺失连续量，区分可加与非加</td>
+<td>通过：SP未测V/QK独立恢复</td>
+</tr>
+<tr>
+<td>C03</td>
+<td>通过：FX合同、名单、哈希及缺失量明确</td>
+<td>通过：复用SP，不跨面板拼接</td>
+</tr>
+<tr>
+<td>C04</td>
+<td>通过：离散成功可能仅跨阈值，未押协同</td>
+<td>通过：P成功不保证SP成功</td>
+</tr>
+<tr>
+<td>C05</td>
+<td>通过：评分前仅恢复卷积V，单步</td>
+<td>通过：起点一次替换，诊断与自然生成分开</td>
+</tr>
+<tr>
+<td>C06</td>
+<td>通过：旧缓存来源固定，下游正常响应</td>
+<td>通过：未来缓存随真实token更新</td>
+</tr>
+<tr>
+<td>C07</td>
+<td>通过：混合反事实不代表自然联合状态</td>
+<td>通过：q/k卷积不同于注意力KV</td>
+</tr>
+<tr>
+<td>C08</td>
+<td>通过：J仅输出分数非加，不定位内部机制</td>
+<td>通过：恢复充分性不是必要性或原生中介</td>
+</tr>
+<tr>
+<td>C09</td>
+<td>通过：可加、正负非加、混合、精度敏感均有出口</td>
+<td>通过：四种V/QK结果允许共存与部分支持</td>
+</tr>
+<tr>
+<td>C10</td>
+<td>通过：首步分数不替代完整交付</td>
+<td>通过：自然交付主判，M是辅助诊断</td>
+</tr>
+<tr>
+<td>C11</td>
+<td>通过：哈希失败与小效应分开</td>
+<td>通过：R0已知F失败不当工程失败</td>
+</tr>
+<tr>
+<td>C12</td>
+<td>通过：旧记录缺数值，352评分含验收</td>
+<td>通过：新续写无法离线推知，诊断计费</td>
+</tr>
+<tr>
+<td>C13</td>
+<td>通过：六配对情景、已见面板、一份随机参照</td>
+<td>通过：SP已见，四方向不当独立样本</td>
+</tr>
+<tr>
+<td>C14</td>
+<td>通过：补测结束即关闭，不筛头</td>
+<td>通过：明确迁移边界，不自动扩层</td>
+</tr>
+</tbody>
+</table>
+<h5 id="_3">历史错误复查</h5>
+<p>E01保留总问题；E02层号非机制发现；E03范数不是机制份额；E04恒等式只是工具；E05混合槽位不宣称自然联合关系；E06V不代表全部写入；E07恢复非原生路径；E08来源逐臂明确；E09分数和行为共变不证明内部协同；E10分数/EOS/交付分开；E11不推断信息存量；E12一份随机切分非零分布；E13C供体可重新带入事实；E14充分性非必要性；E15禁止FX与SP拼链；E16阴性不是工程错误；E17恢复不撤销全部历史后果；E18SVQ加QK臂避免排除法，FXS不命名剩余机制；E19重放仅工程；E20允许多个解释同时成立；E21不主张首次或新增文献结论；E22配对情景及已见身份明确；E23自查非独立审查；E24只要求有界认识增量；E25不扩层/剂量/名单；E26起点评分恢复测总效果，不叫形成中介。以上逐项适用于两计划，无需扩大矩阵才能满足。</p>
+<h5 id="_4">反方检查与修正</h5>
+<ol>
+<li>首步可加但后续生成不同：合理，FXS只给首步阈值兼容性，不能解释完整交付。</li>
+<li>FIX比单个随机切分更超加：不足以证明特异性，删除零分布/显著性说法，仅报配对差。</li>
+<li>第二步前缀不同或自然EOS导致选择性缺失：加入每臂共同首token的一步诊断，独立缓存分叉、额外240前向，不筛首步成功单元。</li>
+<li>V/QK各失败而F成功可能仅跨门槛：保留这个反例，只说所测联合恢复有效，不说内部协同。</li>
+<li>首列正好是目标：两种策略不可区分，策略分析仅用目标非首列四情景，全样本主终点不变。</li>
+<li>共同前缀提供格式提示、C缓存带入内容：明确条件性，不把成功说成T中原记忆完整。</li>
+<li>已见SP不能成为独立确认：明确是新操作测量及既有面板的适用性检查，不清除选择历史。</li>
+<li>BF16边界决定标签：原dtype保存并传播量化区间；最不利标签翻转单列，不以FP64差分假装高精度原数据。</li>
+</ol>
+<h5 id="_5">预算及最终复查</h5>
+<p>FXS：正式12×25=300，预检2×25=50，开关验收2；共352评分、72形成、7校准。SVQ：204正式+34预检+2开关验收=240自然轨迹；240×32+240诊断=7920评分/解码前向；72形成、7校准。形成和prefill的token计算另按长度记账。两份建议上限分别0.5和1 GPU设备小时，合计1.5小时只是未授权的规划上界。
+逻辑设计均通过；修正后仍回答原定问题。文档公式、预算及链接通过检查；代码、合成判读测试、模型重放、来源哈希及实际速度尚待验收。没有实际实验结果。推送仅为文档交付，不授予模型运行权。</p>
+<hr />
+<h3 id="3svq-01-v-qk-r01">原件 3：SVQ-01（共享首字母面板上的 V 与 q/k 卷积恢复）合同 r01</h3>
+<p>原路径：<code>experiments/cache-sp-v-qk-delivery-v1-2026-11-02/CONTRACT.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-sp-v-qk-delivery-v1-2026-11-02/CONTRACT.zh-CN.md">固定提交原文</a> · <a href="../library/d6687e70c88b405e.html">单独阅读副本</a>；SHA-256：<code>d6687e70c88b405eea5da6154a08b1d64751251ca6f321caad22c990c3d0adb5</code>。</p>
+<hr />
+<h4 id="svq-01-v-qk-r01">SVQ-01（共享首字母面板上的 V 与 q/k 卷积恢复）合同 r01</h4>
+<p>日期：2026-11-02。设计：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-sp-v-qk-delivery-plan-v1-2026-11-02.zh-CN.md">计划 v1</a>（评审撰写，5b6127c）+ <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-v-followup-amendments-v2-2026-11-02.zh-CN.md">修订 v2</a>（032a17c：A1 诊断分叉的历史重放验收；A2 T_F 是参照不是上限、逐输入配对表）+ <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-v-followup-self-check-v1-2026-11-02.zh-CN.md">共同自查</a>。授权：用户 2026-11-02「开始」。SP 面板与 SP-01 结果已见（不是未见输入或独立确认）；新测的是 T_V 与 T_QK。与 FXS-01 独立立项、记账，互不设科学门槛。</p>
+<h5 id="1_1">1. 操作</h5>
+<p>12 条 SP 输入（6 情景 × f0/f1）、四方向 N4146/N1210/R0/C1343、模型/分词器/内核、L0 剂量 −1、形成窗口、worker/GPU 分配全部沿用 SP-01；进程内校准须逐值等于 SP-01 正式校准。每输入共享 C_nat；每方向四个自然续写臂：</p>
+<table>
+<thead>
+<tr>
+<th>臂</th>
+<th>深层 q/k 卷积（通道 0–4095）</th>
+<th>深层 V 卷积（通道 4096–8191，全部 32 个值头）</th>
+<th>其他（浅层、递推 S、全注意力 KV）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T_nat</td>
+<td>T</td>
+<td>T</td>
+<td>T</td>
+</tr>
+<tr>
+<td>T_V</td>
+<td>T</td>
+<td>C</td>
+<td>T</td>
+</tr>
+<tr>
+<td>T_QK</td>
+<td>C</td>
+<td>T</td>
+<td>T</td>
+</tr>
+<tr>
+<td>T_F</td>
+<td>C</td>
+<td>C</td>
+<td>T</td>
+</tr>
+</tbody>
+</table>
+<p>14 个深层 G 层 13,14,16,17,18,20,21,22,24,25,26,28,29,30。q/k 指短卷积缓冲，不是全注意力 KV。恢复只在起点做一次，之后所有缓存沿真实输出正常更新。贪心（argmax）、停止 {248044, 248046}、最多 32 个新 token；不强制、不屏蔽、生成期不注入。混合状态不是原生轨迹，供体可重新带入事实信息。</p>
+<p><strong>同前缀诊断分叉</strong>：每条轨迹做完首步评分后，克隆更新后的缓存，喂入 SP-01 冻结的共同首 token q_shared，恰好一次前向，读取目标第二 token 与两个干扰第二 token 的分数及全词表 logits；分叉不继续生成、不混入自然交付；首步自然停止也照做。M = 目标第二 token − 最大干扰第二 token。共同前缀是格式提示，M 只说明该提示下的选择倾向。</p>
+<h5 id="2_1">2. 判据（无方向性预测）</h5>
+<ul>
+<li>主终点：FC/SP 冻结解析器的 Y_delivery（完整目标、无其他不同编号），同报 Y_strict 与互斥分类。</li>
+<li>前提：C 基线 ≥5/6 情景两事实都正确；T_nat 损伤 ≥4/6 情景两事实都未交付；不满足分别记“基线不足”“效应未迁移”。</li>
+<li><strong>恢复支持</strong>：≥5/6 情景两事实都满足“C 正确、T_nat 未交付、该臂正确”；整体 ≥3/4 方向（固定分母）。<strong>P_SV</strong>＝T_V，<strong>P_SQK</strong>＝T_QK。T_F 用同一规则报告，只作参照。</li>
+<li><strong>T_F 是参照不是上限</strong>（修订 A2）：不降门槛、不排除 R0（SP-01 中 R0 的 T_F 在 SP03-f0、SP06-f1 未交付）；V 或 QK 优于 F 如实报告，不当异常。每方向逐输入配对表：F 对 V、F 对 QK、V 对 QK，各分“仅前者对 / 仅后者对 / 都对 / 都错”。</li>
+<li><strong>目标选择</strong>：只在目标不在首列的 4 情景 8 输入（SP02/03/05/06）上数“输出 = 目标”与“输出 = 首列编号”；目标在首列时两者不可分，不计入。全样本主终点不变。</li>
+<li>首步：共同首 token 相对固定停止 s0 = 248046 的分差、相对全部其他 token 最大值的优势；停止集合最大值单列。</li>
+<li>出口（计划 §4）：V 支持而 QK 不支持 → 本条件下恢复 V 足以交付（不说 q/k 无用或 V 唯一必要）；QK 支持而 V 不支持 → 撤回把 P 面板 V 充分性推广到 SP；两者都支持 → 两种操作各可恢复；两者都不支持而 F 支持 → 所测组合优于单独恢复（二元交付不证内部协同）；F 混合 → 逐方向如实报告。M 与交付不一致时以交付为主判。V 只在目标首列时成功，不称恢复了可靠目标选择。无论结果如何本轮结束，不自动扫层、不重启固定 45 头。</li>
+</ul>
+<h5 id="3_1">3. 预算</h5>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th style="text-align: right;">形成</th>
+<th style="text-align: right;">自然轨迹</th>
+<th style="text-align: right;">解码前向上限</th>
+<th style="text-align: right;">诊断前向</th>
+<th style="text-align: right;">校准</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>预检（SP01-f0/f1，1 worker；首输入另做 C/T4146 重建）</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">36</td>
+<td style="text-align: right;">1152</td>
+<td style="text-align: right;">36</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td>正式（12 输入，2 worker）</td>
+<td style="text-align: right;">60</td>
+<td style="text-align: right;">204</td>
+<td style="text-align: right;">6528</td>
+<td style="text-align: right;">204</td>
+<td style="text-align: right;">6</td>
+</tr>
+<tr>
+<td>合计</td>
+<td style="text-align: right;">72</td>
+<td style="text-align: right;">240</td>
+<td style="text-align: right;">7680</td>
+<td style="text-align: right;">240</td>
+<td style="text-align: right;">7</td>
+</tr>
+</tbody>
+</table>
+<p>形成 token 前向与 prefill 另记在回执。GPU ≤1 设备小时，产物 ≤8 GiB；首两步与诊断的全词表 logits 留在服务器 <code>runs/*/worker-*/tensors/</code>，Git 只提交记录与哈希。预检工程失败可记账后重试一次；正式不重试。</p>
+<h5 id="4_1">4. 工程闸门（任一不过即停止）</h5>
+<p>校准逐值等于 SP-01；worker 分配等于 SP-01；q_shared 与第二 token 由真实分词器重算且等于 SP-01 记录；L0 写入 ≤1%；<strong>重放</strong>：C_nat、T_nat、T_F 与 SP-01 逐 token 相同（首步 logits 哈希、首步后与最终缓存哈希、自然第二步三候选分数）；<strong>诊断重放（修订 A1）</strong>：每方向 T_nat 分叉三候选分数与 SP-01 T_shared 第二步逐位相同，C 与 T_F 在 SP-01 首 token 为 q_shared 的单元上与 SP-01 自然第二步逐位相同，任何首 token 为 q_shared 的臂其分叉与自身自然第二步逐位相同（含全词表哈希）；<strong>组装</strong>：T_V、T_QK、T_F 的 q/k 与 V 通道块逐位来自规定供体，S/KV/浅层哈希 = T，且每层 C 与 T 的 q/k 块、V 块都不相同（恢复不空）；供体不变；生成前无 hook；预检重建一致（轨迹、最终缓存、诊断）。</p>
+<h5 id="5_1">5. 交付</h5>
+<p><code>runs/{preflight,formal}-r01/</code>（记录与回执入 Git，张量在服务器）、<code>analysis/svq-readouts-r01.json</code>、<code>REPORT.zh-CN.md</code>。</p>
+<hr />
+<h3 id="4svq-01-v-qk">原件 4：SVQ-01（共享首字母面板上的 V 与 q/k 卷积恢复）结果报告</h3>
+<p>原路径：<code>experiments/cache-sp-v-qk-delivery-v1-2026-11-02/REPORT.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-sp-v-qk-delivery-v1-2026-11-02/REPORT.zh-CN.md">固定提交原文</a> · <a href="../library/5aa3778c22e7b212.html">单独阅读副本</a>；SHA-256：<code>5aa3778c22e7b2121b8b5ea0f3ddf43eb7332f784104a0666963ed12e1727d53</code>。</p>
+<hr />
+<h4 id="svq-01-v-qk">SVQ-01（共享首字母面板上的 V 与 q/k 卷积恢复）结果报告</h4>
+<p>日期：2026-11-02。<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-sp-v-qk-delivery-v1-2026-11-02/CONTRACT.zh-CN.md">合同 r01</a>；<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-sp-v-qk-delivery-v1-2026-11-02/DECISIONS.zh-CN.md">决策 D1–D5</a>；计划 v1（5b6127c，评审撰写）+ 修订 v2（032a17c）。代码 <code>8147edb</code>，freeze-r01 <code>91fb6f56…25bb</code>。SP 面板与 SP-01 结果已见；本轮新测的是 T_V、T_QK。同一助手实现、运行与撰写。</p>
+<h5 id="1_2">1. 结论（不利的先说）</h5>
+<ol>
+<li><strong>P_SV 不成立（1/4 方向）：在共享首字母面板上，只恢复深层卷积 V 不能恢复正确交付。</strong> 只有 C1343 达到支持（10/12，救回 5/6 情景）；N4146、N1210、R0 都只有 4/12。</li>
+<li><strong>只恢复 V 恢复了“开始回答”，没有恢复“选对目标”。</strong> T_V 首个输出 token 都是共同首字母（每方向 12/12），但在目标不在首列的 8 个输入上，N4146、N1210、R0 都是 <strong>8/8 输出首列编号</strong>，0/8 输出目标。它的 4/12 正确交付全部来自目标恰好排在首列的情景（SP01、SP04）。这与 SP-01 中“强制共同首字母”在干预状态下退回首列编号的规则相同。C1343 例外：目标 6/8、首列 2/8。</li>
+<li><strong>P_SQK 不成立（0/4）：只恢复 q/k 卷积，48/48 未交付</strong>，行为与 T_nat 相同（多数首步停止；R0 两个输入复述记录，记为多编号）。</li>
+<li>参照 T_F（完整卷积恢复）按本轮救回规则 3/4 方向支持（R0 10/12，SP03-f0、SP06-f1 输出首列编号，与 SP-01 逐 token 相同）。逐输入配对表中<strong>没有任何输入是 V 对而 F 错，或 QK 对而 F 错</strong>。</li>
+<li>按计划出口“两者不支持但 F 支持”：<strong>所测的组合（q/k + V 一起恢复）优于任一单独恢复</strong>；二元交付不能证明内部非线性协同，也不能用排除法说“选择靠 q/k”（q/k 单独什么都没恢复）。FX-01 在 P 面板上的“只恢复 V 即 48/48”<strong>不能推广到需要真正选择目标的面板</strong>。</li>
+<li>同前缀诊断与交付一致：喂入共同首字母后，目标第二 token 相对最大干扰的差 M 为正的输入，T_V 只有 4/4/4/10，T_F 12/12/10/12，C 12/12（M 2.5–11.1），T_nat 与 T_QK 4/4/4/5。M 均值：T_V 0.0–0.6（C1343 1.6），T_F 1.4–3.5，T_nat 与 T_QK −0.5 到 0.4。</li>
+<li>工程全部通过，包括修订 A1 的诊断重放：每方向 T_nat 分叉与 SP-01 T_shared 第二步三候选逐位相同（48/48），C 与 T_F 分叉与 SP-01 自然第二步逐位相同（12/12、48/48）。</li>
+</ol>
+<h5 id="2-y_delivery-y_strict-12">2. 主表（Y_delivery / Y_strict，每方向 12）</h5>
+<table>
+<thead>
+<tr>
+<th>方向</th>
+<th>T_nat</th>
+<th>T_V</th>
+<th>T_QK</th>
+<th>T_F</th>
+<th style="text-align: right;">T_V 救回情景</th>
+<th style="text-align: right;">T_F 救回情景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>N4146</td>
+<td>0/0</td>
+<td>4/4</td>
+<td>0/0</td>
+<td>12/12</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">6</td>
+</tr>
+<tr>
+<td>N1210</td>
+<td>0/0</td>
+<td>4/4</td>
+<td>0/0</td>
+<td>12/12</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">6</td>
+</tr>
+<tr>
+<td>R0</td>
+<td>0/0</td>
+<td>4/4</td>
+<td>0/0</td>
+<td>10/10</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr>
+<td>C1343</td>
+<td>0/0</td>
+<td>10/10</td>
+<td>0/0</td>
+<td>12/12</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">6</td>
+</tr>
+</tbody>
+</table>
+<p>C_nat 12/12 严格。目标不在首列的 8 输入上（目标 / 首列 / 其他）：</p>
+<table>
+<thead>
+<tr>
+<th>方向</th>
+<th>T_nat</th>
+<th>T_V</th>
+<th>T_QK</th>
+<th>T_F</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>N4146</td>
+<td>0/0/8</td>
+<td>0/8/0</td>
+<td>0/0/8</td>
+<td>8/0/0</td>
+</tr>
+<tr>
+<td>N1210</td>
+<td>0/0/8</td>
+<td>0/8/0</td>
+<td>0/0/8</td>
+<td>8/0/0</td>
+</tr>
+<tr>
+<td>R0</td>
+<td>0/0/8</td>
+<td>0/8/0</td>
+<td>0/0/8</td>
+<td>6/2/0</td>
+</tr>
+<tr>
+<td>C1343</td>
+<td>0/0/8</td>
+<td>6/2/0</td>
+<td>0/0/8</td>
+<td>8/0/0</td>
+</tr>
+</tbody>
+</table>
+<p>逐输入配对（Y_delivery，仅前者对 / 仅后者对 / 都对 / 都错）：F 对 V：8/0/4/0、8/0/4/0、6/0/4/2、2/0/10/0；F 对 QK：12/0/0/0、12/0/0/0、10/0/0/2、12/0/0/0；V 对 QK：4/0/0/8、4/0/0/8、4/0/0/8、10/0/0/2。</p>
+<p>首步：T_V 与 T_F 的共同首字母都领先全部其他 token（均值 +1.9 到 +2.3 与 +2.1 到 +2.7）；T_nat 与 T_QK 落后 4.4–7.0。</p>
+<h5 id="3_2">3. 执行</h5>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th style="text-align: right;">形成</th>
+<th style="text-align: right;">自然轨迹</th>
+<th style="text-align: right;">实际解码前向</th>
+<th style="text-align: right;">诊断前向</th>
+<th style="text-align: right;">校准</th>
+<th style="text-align: right;">墙钟</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>预检 r01（1 worker）</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">36</td>
+<td style="text-align: right;">115</td>
+<td style="text-align: right;">36</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">57 s</td>
+</tr>
+<tr>
+<td>正式 r01（2 worker）</td>
+<td style="text-align: right;">60</td>
+<td style="text-align: right;">204</td>
+<td style="text-align: right;">739</td>
+<td style="text-align: right;">204</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">124 / 123 s</td>
+</tr>
+</tbody>
+</table>
+<p>合计约 0.08 GPU 设备小时（上限 1）；峰值显存 9.7 GB。形成 token 前向：预检 312、正式 1560。首两步与诊断的全词表 logits 在服务器 <code>runs/*/worker-*/tensors/</code>（正式每 worker 约 130 MB），哈希在 <code>receipt.json</code>。</p>
+<h5 id="4_2">4. 解读与出口</h5>
+<ul>
+<li>与 SP-01、FX-01 合起来看（类比档，跨实验拼接只作解释，不作结论）：干预后的状态在被“推”到开始回答时，会按“取第一个编号”的规则选内容；恢复 V 历史能把模型推回到开始回答，但选择规则仍是首列；只有 q/k 与 V 一起恢复，目标选择才回来。P 面板上 V 的 48/48 很可能正是因为首字母唯一定位了目标（推测档：P 面板未测首列规则）。</li>
+<li>按合同本轮结束；不按层扫描、不重启固定名单。若继续，问题已经从“停嘴”移到“选择”：干预状态下目标条目选择需要卷积 q/k 与 V 的共同恢复，下一步应在选择这一端点上设计可失败的预测，而不是再拆 V。</li>
+</ul>
+<h5 id="5_2">5. 可以说 / 不可以说</h5>
+<table>
+<thead>
+<tr>
+<th>可以说</th>
+<th>不可以说</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SP 面板上只恢复深层卷积 V：首步回到共同首字母 48/48，但目标不在首列时 3/4 方向 8/8 输出首列编号；P_SV 1/4</td>
+<td>V 恢复了目标选择；q/k 无用</td>
+</tr>
+<tr>
+<td>只恢复 q/k 卷积：0/48 交付，P_SQK 0/4</td>
+<td>目标选择由 q/k 承载（q/k 单独无效，不能排除法命名）</td>
+</tr>
+<tr>
+<td>q/k + V 一起恢复（T_F）3/4 方向支持；没有输入是 V 或 QK 对而 F 错</td>
+<td>q/k 与 V 存在内部协同</td>
+</tr>
+<tr>
+<td>FX-01 中“只恢复 V 即可完整交付”不能推广到需要目标选择的面板</td>
+<td>FX-01 的 P 面板结果有误（它在 P 面板上仍成立）</td>
+</tr>
+</tbody>
+</table>
+<h5 id="6-2026-11-02">6. 附录：第二步诊断的位置分解（合同外，事后描述，2026-11-02）</h5>
+<p>用记录中已有的诊断分叉三候选分数（共同首字母后，三个编号的第二 token），按编号在记录中的位置排列。只作线索；没有零分布，没有预注册。</p>
+<ul>
+<li>赢家位置（首/中/末，12 输入）：C 4/4/4；T_nat 与 T_V 在 N4146、N1210、R0 都是 12/0/0；T_F 4/4/4（R0 6/4/2）；C1343 的 T_V 6/2/4。</li>
+<li>目标不在首列的 8 输入上，z(目标) − z(首列)：T_nat 均值 −1.6/−1.8/−1.9/−0.7，T_V −0.9/−1.1/−1.4/+1.0，T_F +2.8/+1.6/+0.3/+2.2，C +7.8。只恢复 V 使目标对首列的差平均上移约 0.6–0.7，但在三个方向仍不够翻转。</li>
+<li><strong>同 8 输入上，目标对另一个非首列干扰：受损的 T_nat 也有 29/32 目标更高</strong>（+0.1 到 +3.1；1 平 2 负），T_V 30/32。目标在末位、干扰在中位的 16 个单元（位置若有“首 &gt; 中 &gt; 末”的梯度会偏向干扰）中，T_nat 仍有 13 个目标更高（1 平 2 负），差多在 1 logit 以内。</li>
+<li>线索：受损状态在共同前缀下<strong>没有完全丢失目标信息</strong>，但有一个首列优势压过了它。这只是描述，不能区分“首列位置优势”与“对首列那个编号/条目的偏好”（f0/f1 中首列编号相同），也不能区分目标信息来自记录里的“目标条目”标签还是别的线索。区分需要独立改变记录顺序与查询目标的配对设计。</li>
+</ul>
+<hr />
+<h3 id="5fxs-01-svq-01-v2-5b6127c-v1">原件 5：FXS-01 / SVQ-01 修订 v2（对 5b6127c 计划 v1 的增补）</h3>
+<p>原路径：<code>docs/cache-v-followup-amendments-v2-2026-11-02.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-v-followup-amendments-v2-2026-11-02.zh-CN.md">固定提交原文</a> · <a href="../library/dee733eabda70572.html">单独阅读副本</a>；SHA-256：<code>dee733eabda70572e7dcee2e980aea7d3189509b1bdfbe94a807af8c65dbc969</code>。</p>
+<hr />
+<h4 id="fxs-01-svq-01-v2-5b6127c-v1">FXS-01 / SVQ-01 修订 v2（对 5b6127c 计划 v1 的增补）</h4>
+<p>2026-11-02。本文件只增补，不改动 v1 计划正文；合同以 v1 + 本文件为准。两个实验的问题、臂、判据、预算与推进顺序（先 FXS、后 SVQ）均不变。</p>
+<h5 id="a1svq">A1（SVQ）诊断分叉的历史重放验收</h5>
+<p>SP-01 正式记录已保存 T_shared（T 状态下强制共同首 token）与自然臂的第二步三个候选分数（目标第二 token 与两个干扰第二 token）。新增工程闸门：
+- 每方向 T_nat 的同前缀诊断分叉，三个候选分数与 SP-01 对应 T_shared 第二步逐位相同；
+- C_nat 与 T_F：在自然首步等于共同首 token 的单元上，诊断分叉三个候选分数与 SP-01 自然第二步逐位相同；首步不同的单元不要求一致；
+- 任一不符按工程失败停止，不当科学结果。
+由此明确：T_nat/C/T_F 的 M 已在 SP-01 中测得，本轮新测量主要来自 T_V 与 T_QK。</p>
+<h5 id="a2svqt_f">A2（SVQ）T_F 是参照，不是上限；逐输入配对表</h5>
+<ul>
+<li>删除“完整恢复构成部分恢复的表现上限”这一假设。R0 的 T_F 在 SP-01 为 4/6 情景成功（SP03-f0、SP06-f1 未交付），不推出 T_V 或 T_QK 不能达到 5/6；恢复更多分量不保证单调改善。</li>
+<li>主判据不变：不降门槛、不排除 R0，不写“整体达标须其余三方向全过”。</li>
+<li>每方向逐输入报告配对表：F 对/V 错、V 对/F 错、都对、都错；QK 同样对 F 报告，另报 V 对 QK。</li>
+<li>V（或 QK）优于 F 是有意义的结果，如实报告，不当异常排除，也不事后解释为工程问题。</li>
+</ul>
+<h5 id="_6">不采纳</h5>
+<ul>
+<li>FXS 不扩到 C2 文件中的四份随机子集：仍不构成可靠零分布，不改变主判；保持一份冻结 U/Ubar 配对参照。</li>
+</ul>
+<h5 id="_7">预算</h5>
+<p>A1 只比较已计费的诊断前向，A2 只是读数；两份上限（0.5、1 GPU 设备小时）不变。本文件不授予模型运行权。</p>
+<hr />
+<h3 id="6svq-01">原件 6：SVQ-01 决策日志</h3>
+<p>原路径：<code>experiments/cache-sp-v-qk-delivery-v1-2026-11-02/DECISIONS.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-sp-v-qk-delivery-v1-2026-11-02/DECISIONS.zh-CN.md">固定提交原文</a> · <a href="../library/88baafacc32e8f14.html">单独阅读副本</a>；SHA-256：<code>88baafacc32e8f145dcd8b8d807e36cc0fb79e96e190e56b47a96d0925d67f4a</code>。</p>
+<hr />
+<h4 id="svq-01">SVQ-01 决策日志</h4>
+<ul>
+<li><strong>D1 计划由评审撰写</strong>（5b6127c），修订 v2（032a17c）A1/A2 纳入。</li>
+<li><strong>D2 runner 复用 SP-01</strong>：直接 import sp_run 的面板、shared_tokens、plan、conditions；生成循环与 SP-01 逐行同构（同一 L.forward、同一喂入），只在首步后加诊断分叉；分叉在独立 deepcopy 上做，不影响自然轨迹（由 C_nat/T_nat/T_F 与 SP-01 逐 token 相同验证）。</li>
+<li><strong>D3 T_V / T_QK 的组装</strong>：按通道块拼接（q/k = 通道 0–4095，V = 4096–8191），不经头名单；逐层逐块核对来源。T_F 沿用 NR 的 restore('010')。</li>
+<li><strong>D4 “恢复支持”用救回计数</strong>：计划 §3 写“C 正确、T 未交付、恢复臂正确”，因此用救回计数（SP-01 的 P_A1 只看臂正确）；前提（基线、损伤）沿用 sp_core。T_F 在本轮按同一救回规则重报，可能与 SP-01 的 P_A1 读法不同，报告中两者分开写。</li>
+<li><strong>D5 首列编号</strong>：由记录文本中三个编号的出现位置确定；测试核对它与面板的 target_position 一致。</li>
+</ul>
+<hr />
+<h2 id="_8">时间、运行与停止收据索引</h2>
+<p>下面是所收集JSON的原有时间字段与状态，不把预计结束时间当实际完成时间。未列时间的文件仍有原件链接。完整JSON全部保存在原文归档，不能以此索引中的标量代替完整嵌套内容。</p>
+<table>
+<thead>
+<tr>
+<th>原件</th>
+<th>原记录状态/阶段</th>
+<th>原时间字段（原时区）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-sp-v-qk-delivery-v1-2026-11-02/readiness/cpu-receipt-r01.json">readiness/cpu-receipt-r01.json</a></td>
+<td>{"status": "passed"}</td>
+<td>{}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-sp-v-qk-delivery-v1-2026-11-02/runs/formal-r01/controller.json">runs/formal-r01/controller.json</a></td>
+<td>{"status": "completed", "stage": "formal"}</td>
+<td>{"started_at": "2026-11-02T05:21:53.581327+00:00", "finished_at": "2026-11-02T05:23:59.954517+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-sp-v-qk-delivery-v1-2026-11-02/runs/formal-r01/verification.json">runs/formal-r01/verification.json</a></td>
+<td>{"status": "passed", "stage": "formal"}</td>
+<td>{"verified_at": "2026-11-02T05:23:59.954323+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-sp-v-qk-delivery-v1-2026-11-02/runs/formal-r01/worker-0/receipt.json">runs/formal-r01/worker-0/receipt.json</a></td>
+<td>{"status": "completed", "stage": "formal"}</td>
+<td>{"started_at": "2026-11-02T05:21:53.676763+00:00", "last_record_at": "2026-11-02T05:23:55.709660+00:00", "finished_at": "2026-11-02T05:23:57.832437+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-sp-v-qk-delivery-v1-2026-11-02/runs/formal-r01/worker-1/receipt.json">runs/formal-r01/worker-1/receipt.json</a></td>
+<td>{"status": "completed", "stage": "formal"}</td>
+<td>{"started_at": "2026-11-02T05:21:53.676923+00:00", "last_record_at": "2026-11-02T05:23:54.624017+00:00", "finished_at": "2026-11-02T05:23:56.661594+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-sp-v-qk-delivery-v1-2026-11-02/runs/preflight-r01/controller.json">runs/preflight-r01/controller.json</a></td>
+<td>{"status": "completed", "stage": "preflight"}</td>
+<td>{"started_at": "2026-11-02T05:20:45.186669+00:00", "finished_at": "2026-11-02T05:21:45.277900+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-sp-v-qk-delivery-v1-2026-11-02/runs/preflight-r01/verification.json">runs/preflight-r01/verification.json</a></td>
+<td>{"status": "passed", "stage": "preflight"}</td>
+<td>{"verified_at": "2026-11-02T05:21:45.277743+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-sp-v-qk-delivery-v1-2026-11-02/runs/preflight-r01/worker-0/receipt.json">runs/preflight-r01/worker-0/receipt.json</a></td>
+<td>{"status": "completed", "stage": "preflight"}</td>
+<td>{"started_at": "2026-11-02T05:20:45.280385+00:00", "last_record_at": "2026-11-02T05:21:39.786684+00:00", "finished_at": "2026-11-02T05:21:41.819123+00:00"}</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_9">全部原始资产入口</h2>
+<p>本目录在固定提交下共有66个跟踪文件，包含代码、原回答、失败、收据和压缩证据；文件数不是样本数。<a href="../assets/075-cache-sp-v-qk-delivery-v1-2026-11-02.tsv">逐文件完整账本</a> · <a href="https://github.com/yuxiexiong/acupuncture/tree/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-sp-v-qk-delivery-v1-2026-11-02">原目录</a>。未复制模型权重、环境或凭据。</p></main></html>

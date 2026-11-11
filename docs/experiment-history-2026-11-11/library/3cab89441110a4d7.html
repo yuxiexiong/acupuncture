@@ -1,0 +1,219 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>缓存形成—读取连接｜CFM-FORM-READ-BRIDGE v1 合同 r01</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="cfm-form-read-bridge-v1-r01">缓存形成—读取连接｜CFM-FORM-READ-BRIDGE v1 合同 r01</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-update-readout-audit-v1-2026-11-01/source/experiments/cache-formation-readout-bridge-v1-2026-10-31/CONTRACT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-update-readout-audit-v1-2026-11-01/source/experiments/cache-formation-readout-bridge-v1-2026-10-31/CONTRACT.zh-CN.md">固定提交原件</a>；SHA-256：<code>3cab89441110a4d76f051d45a461234bba89da07d56d451ec6dcc054cb9085b8</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="cfm-form-read-bridge-v1-r01_1">缓存形成—读取连接｜CFM-FORM-READ-BRIDGE v1 合同 r01</h1>
+<ul>
+<li>编号 <code>CFM-FORM-READ-BRIDGE-v1-20261031</code>；设计 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-update-readout-audit-v1-2026-11-01/source/docs/cache-formation-readout-bridge-plan-v1-2026-10-31.zh-CN.md">形成—读取连接方案 v1 r3</a>（下称"方案"）。</li>
+<li>承接 A5 = <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-update-readout-audit-v1-2026-11-01/source/experiments/cache-formation-mechanism-formation-ab-v2-2026-10-31">CFM-FORM-AB v2</a>（冻结 73e0eedd，结果 181d80a）：同输入、同针、同晚段、同逐步路线、同 B、同统一评分；直接复用其冻结代码 <code>form_ab.py</code>。</li>
+<li>冻结后不改；偏离记入 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-update-readout-audit-v1-2026-11-01/source/experiments/cache-formation-readout-bridge-v1-2026-10-31/IMPLEMENTATION.zh-CN.md">IMPLEMENTATION.zh-CN.md</a>。代码 <code>bridge.py</code>、<code>bridge_analysis.py</code>、<code>test_bridge.py</code>。</li>
+</ul>
+<h2 id="1">1. 对象</h2>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th>取值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>模型、针、输入、时窗</td>
+<td>与 A5 相同：Qwen3.5-4B 851bf6e8 BF16 eager；L0 N4146 −1；VAR03/04、VRD03/04、VRL03/04 × f0/f1；L = b+1…n−2，逐 token</td>
+</tr>
+<tr>
+<td>浅层 / 深层</td>
+<td>0–12 / 13–31；B = 第 1–12 层每步读 C 在 t−1 的过去缓存（A5 定义）</td>
+</tr>
+<tr>
+<td>V</td>
+<td>深层 14 个线性层 G = {13,14,16,17,18,20,21,22,24,25,26,28,29,30} 的 <code>in_proj_qkv</code> 输出中 value 切片（卷积之前），全部 32 头；q/k 切片不动</td>
+</tr>
+<tr>
+<td>冻结 token 集合</td>
+<td>停止 {248044, 248046} ∪ A5 中 C/X0/XB 的非停止赢家（<code>data/frozen-tokens-r01.json</code>，运行前生成）</td>
+</tr>
+</tbody>
+</table>
+<h2 id="2-9">2. 形成条件（每个输入 9 个）</h2>
+<table>
+<thead>
+<tr>
+<th>条件</th>
+<th>针</th>
+<th>B</th>
+<th>G 内 V</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C</td>
+<td>–</td>
+<td>关</td>
+<td>自然（产生 V_C）</td>
+</tr>
+<tr>
+<td>T</td>
+<td>✓</td>
+<td>关</td>
+<td>自然（V_T）</td>
+</tr>
+<tr>
+<td>H（= A5 XB）</td>
+<td>✓</td>
+<td>开</td>
+<td>自然（V_H）</td>
+</tr>
+<tr>
+<td>U</td>
+<td>✓</td>
+<td>关</td>
+<td>逐位置钉为 V_H</td>
+</tr>
+<tr>
+<td>W</td>
+<td>✓</td>
+<td>开</td>
+<td>逐位置钉为 V_T</td>
+</tr>
+<tr>
+<td>TC</td>
+<td>✓</td>
+<td>关</td>
+<td>逐位置钉为 V_C</td>
+</tr>
+<tr>
+<td>CT</td>
+<td>–</td>
+<td>关</td>
+<td>逐位置钉为 V_T</td>
+</tr>
+<tr>
+<td>TR0、TR1</td>
+<td>✓</td>
+<td>关</td>
+<td>逐位置钉为 V_T + ξ；ξ 方向随机，范数逐层逐位置 = ‖V_C − V_T‖；种子 20261031 + 1000·k + crc32(输入 id)</td>
+</tr>
+</tbody>
+</table>
+<p>供体带在第一轮（C、T、H 同步推进）中记录，克隆后固定；第二轮推进其余六个条件。未被钉住的量（k、β、α、q、z、卷积、递推、全注意力、下游残差）都按接收者照常响应。</p>
+<h2 id="3-14">3. 评分（每个输入 14 次，首步，无形成期钩子）</h2>
+<ul>
+<li>C、T_native（T 自身完整缓存）；Y_X = C 浅层 + X 深层，X ∈ {T, H, U, W, TC, CT, TR0, TR1}。</li>
+<li>状态交叉 J(a←S_b)：以 Y_a 为接收者，评分前只把 G 的 14 个 <code>recurrent_states</code> 换成 b 在 τ 的值。四个：J(T←S_U)、J(U←S_T)、J(W←S_H)、J(H←S_W)。</li>
+<li>评分时只装只读记录器：G 层内核驱动量与旧状态项/当前写入项、全注意力层 q/k/v 投影与输出、第 13–31 层出入口残差、最终 norm 的输入 h 与输出。另记录真实最终分母 r = sqrt(mean(h²)+eps)，以及冻结 token 集合上的 FP64 重算值 η。</li>
+</ul>
+<h2 id="4">4. 工程闸门（任一不过即停；不重试、不放宽）</h2>
+<table>
+<thead>
+<tr>
+<th>闸门</th>
+<th>内容</th>
+<th>何时</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A5 重放</td>
+<td>C、T、H 的完整 τ 缓存清单与 A5 的 C、T、XB 逐位相同；B 供体（C 浅层逐位置快照）哈希与 A5 逐位相同；C、T_native、Y_T、Y_H 首步 logits 哈希与 A5 的 C、T_native、X0、XB 逐位相同</td>
+<td>每个输入</td>
+</tr>
+<tr>
+<td>V 操作</td>
+<td>只改 G 层 value 切片；q/k 切片逐位不变；实际写入逐位等于供体；供体带哈希在第二轮前后不变</td>
+<td>每个输入、每一步</td>
+</tr>
+<tr>
+<td>结构</td>
+<td>九个条件第 0 层缓存逐位相同；第 0 层输出：有针条件逐位等于 T，无针条件逐位等于 C；U/TC/TR 浅层 = T，W 浅层 = H，CT 浅层 = C；缓存管理状态相同；B 来源检查每步通过</td>
+<td>每个输入</td>
+</tr>
+<tr>
+<td>评分隔离</td>
+<td>混合缓存浅层 = C、深层 = 本条件；J 只改变 14 个递推状态，其余字段来自接收者；评分时钩子计数等于"只装记录器"的计数；最终 norm 由 h 逐位复算一致；状态哈希相同则 logits 相同</td>
+<td>每个输入</td>
+</tr>
+<tr>
+<td>预检惰性</td>
+<td>关闭记录器重跑 C/T/H 及 4 个评分逐位一致；T←V_T、H←V_H 自身 V 替换逐位等于 T、H；J(T←S_T)、J(H←S_H) 逐位等于 Y_T、Y_H</td>
+<td>预检</td>
+</tr>
+<tr>
+<td>其他</td>
+<td>校准、token、冻结、授权、CPU 收据、权重哈希、钩子移除、调用上限、存储上限</td>
+<td>全程</td>
+</tr>
+</tbody>
+</table>
+<p><strong>诊断（不是停止闸门）</strong>：CPU 按记录的驱动量从共同前缀状态逐步重建 G 层递推状态，端点相对误差 ≤ 1e−5、内核输出相对误差 ≤ 5e−3。失败只标"该诊断不通过"，不改阈值。</p>
+<h2 id="5">5. 读数</h2>
+<p>每个评分：D = max(z[E]) − max(z[非E])；EOS；冻结 token 差（各停止 token − 各冻结非停止 token，以及 248046−248044）；熵 H；两个赢家身份；r；η。</p>
+<p>逐事实先算，再取两事实均值作情景读数，两条原值同时保留：</p>
+<table>
+<thead>
+<tr>
+<th>量</th>
+<th>定义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Δ_B</td>
+<td>Y_T − Y_H</td>
+</tr>
+<tr>
+<td>E_V0 / E_V1</td>
+<td>Y_T − Y_U / Y_W − Y_H</td>
+</tr>
+<tr>
+<td>固定 V 的 B 残余</td>
+<td>Y_T − Y_W，Y_U − Y_H</td>
+</tr>
+<tr>
+<td>状态交叉 (T,U)</td>
+<td>δ = Y_T − Y_U；Q_a = Y_T − J(T←S_U)；Q_b = J(U←S_T) − Y_U；剩余差 J(T←S_U) − Y_U、Y_T − J(U←S_T)</td>
+</tr>
+<tr>
+<td>状态交叉 (W,H)</td>
+<td>δ = Y_W − Y_H；Q_a = Y_W − J(W←S_H)；Q_b = J(H←S_W) − Y_H；剩余差同理</td>
+</tr>
+<tr>
+<td>Δ_full</td>
+<td>Y_T − C</td>
+</tr>
+<tr>
+<td>E_VC0 / E_VC1</td>
+<td>Y_T − Y_TC / Y_CT − C</td>
+</tr>
+<tr>
+<td>E_null,k</td>
+<td>Y_T − Y_TRk</td>
+</tr>
+<tr>
+<td>B×V 交互</td>
+<td>Y_T − Y_U − Y_W + Y_H（只作汇总）</td>
+</tr>
+</tbody>
+</table>
+<p><strong>尺度分解</strong>（方案 r3 §5.1）：z^fix = z·r_X/r_C（C 为同输入同事实）。对上表每个配对效果报告 E_total、E_fix、E_scale = E_total − E_fix（D、冻结 token 差、熵）。这是共同 C 分母下的输出端反事实，不是自然份额；熵的固定尺度值含 BF16 舍入。配对效果的数值界为 2(η_a + η_b)，效果绝对值不超过界时不贴方向词。</p>
+<p><strong>竞争结构</strong>：中心化单位化 logits 的距离 ‖u_a − u_b‖；对 E_V0、E_V1、E_VC0、E_VC1 等效果，若某个冻结 token 差的变化与 D 的变化方向相反、且幅度 ≥ 0.5|D 效果|，记为"与 D 矛盾"。</p>
+<h2 id="6">6. 描述（只作描述，不承担机制通过或不通过）</h2>
+<p>比例档：&lt; 0 反向；[0, 0.3] 弱；(0.3, 0.7) 部分；[0.7, 1.3] 近似；&gt; 1.3 超调。</p>
+<ul>
+<li><strong>B 传递</strong>（Δ_B &gt; 0 时）：r0 = E_V0/Δ_B，r1 = E_V1/Δ_B。描述词按顺序判定：任一反向记"反向"；任一超调记"超调"；两者近似且两残余 ≤ 0.3Δ_B 记"近似传递"；两者都弱记"弱"；一弱一非弱记"背景依赖"；其余记"部分"。</li>
+<li><strong>状态交叉</strong>：仅在 |δ| ≥ 0.3|Δ_B| 时按同一规则描述 Q_a/δ、Q_b/δ；否则只报绝对 Q，标"上游 V 效应弱、比例不稳定"。</li>
+<li><strong>T↔C</strong>（Δ_full &gt; 0 时）：E_VC0/Δ_full、E_VC1/Δ_full 用同一规则描述。并列报告 E_null,0/Δ_full、E_null,1/Δ_full，以及"E_VC0 是否大于两个随机抽样"。</li>
+</ul>
+<p><strong>主张分级（冻结）</strong>：
+- (a) <strong>替换效应</strong>：任何结果都可报告。
+- (b) <strong>"V_C 替换的削弱大于同幅随机位移"</strong>：只作逐情景描述，不作统计检验，不估计随机位移的分布，两个抽样的极值不当门槛。若 E_null 与 E_VC0 同级，只保留 (a)。
+- 任何结果都不称"自然中介""唯一路径""V 解释了全部原生机制"，也不称"完整回答已恢复"。</p>
+<p>方案 §6 的判读表全部适用：V 双向有效但递推交叉弱、一向有效、两向都弱、反向或超调、局部投影大但 J 弱、D 传递但冻结 token 矛盾、情景或事实不一致。T↔C 与 T↔H 互补，不按比例划分机制份额。</p>
+<h2 id="7">7. 规模与停止</h2>
+<ul>
+<li>预检：VAR03-f0，1 个 worker；9 前缀 / 14 评分，加关闭记录器的 C/T/H 3/4、自身 V 2/2、自身 S 0/2，合计 <strong>14 / 22</strong>。</li>
+<li>正式：12 × (9 / 14) = <strong>108 / 168</strong>；2 个 worker（每卡 1 个）。存储上限 16 GiB（每个 worker 8 GiB），代码内断言。</li>
+<li>停止：预检任一闸门不过不进正式；正式任一输入闸门不过即整轮停止，保留已完成记录。固定矩阵完成即停，不因结果加层、加针、加剂量。</li>
+</ul>
+<h2 id="8">8. 失败类型</h2>
+<p>闸门失败为合同执行失败，信息量为零。Δ ≤ 0 或比例不稳定作为结果边界报告。V 弱或反向是科学结果，按方案 §6 撤回加强解释，不调参救。</p></main></html>

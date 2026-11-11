@@ -1,0 +1,193 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CFM-CONV-FACTOR v1 结果报告</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="cfm-conv-factor-v1">CFM-CONV-FACTOR v1 结果报告</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-conv-factor-v1-2026-11-01/REPORT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-conv-factor-v1-2026-11-01/REPORT.zh-CN.md">固定提交原件</a>；SHA-256：<code>5f7cb01905ebc7268ac3b3bf0a72734ec4e6eea3981e6ffa150c1cb54c598d88</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="cfm-conv-factor-v1_1">CFM-CONV-FACTOR v1 结果报告</h1>
+<p>日期：2026-11-01。方案 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-conv-value-qk-readout-plan-v1-2026-11-01.zh-CN.md">v1 r2</a>；<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-mechanism-stage-roadmap-2026-11-01.zh-CN.md">阶段路线图</a> 第 A 步；<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-conv-factor-v1-2026-11-01/CONTRACT.zh-CN.md">合同 r02</a>；<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-conv-factor-v1-2026-11-01/DECISIONS.zh-CN.md">决策日志 D1–D8</a>。freeze-r03 <code>c21bb077…f01a</code>。同一助手实现、运行并撰写，不是独立复核。</p>
+<h2 id="1">1. 结论（坏消息先说）</h2>
+<p><strong>方案预先登记的四条简化描述，按冻结规则全部不成立：</strong> H_V（V 主导）、H_Q（Q 主导）、H_add（Q/V 可加）在 M_T、M_C、N 三个背景和两个主读数（去均值的答案词 cz_a、停止词 cz_s46）上都是 not_supported；H_transfer（动态 D 上 G_N/G_T∈[0.75,1.33]）只有 3/6 情景落入区间，不成立。</p>
+<p><strong>数据呈现的是一个跨背景、跨读数都一致的非相加关系（结果后的现象描述，非预注册预测，也不是已识别的内部机制——尚不知道它来自更新计算、读取关系、归一化还是后续层转换；需另行检验）：</strong></p>
+<ul>
+<li><strong>有针 V 单独就足够：</strong> 只把 F 的 V 段换成 T（Q 干净），复现整块 F 效应。A_V/G：M_T 0.96–1.17，N 0.94–1.06，M_C 1.13–1.71。</li>
+<li><strong>V 已为 T 时 Q 不再起作用：</strong> R_Q/G 在 M_T、N 中为 −0.17 至 +0.06。</li>
+<li><strong>V 干净时，单换 Q 也能推一部分，偏向停止侧：</strong> M_T 中 A_Q/G 停止侧 0.31–0.65，答案侧 0.01–0.33。</li>
+<li>由恒等式 G = A_V + R_Q = A_Q + R_V（推导）：R_V/G 只有 0.35–0.99，交互 I = R_V − A_V ≈ −A_Q 为负。这正是 H_V（另一分量 ≤0.3、移除 ≥0.7）与 H_add（|I/G| ≤0.2）失败的原因。</li>
+</ul>
+<p><strong>方向特异性与行为连接：</strong></p>
+<ul>
+<li>换回干净 V 的效应在 M_T 与 N、两个主读数上都 <strong>6/6 情景稳定超过两条同幅随机方向</strong>；换回干净 Q 没有超过（0–1/6）。8 组中 4 组超过，停步条件未触发。只能说“相对这两条方向”，不是零分布或通道特异性。</li>
+<li><strong>在其余有针背景固定时，换回干净 F_V 足以消除原生评分后半段的首步停止：</strong> N:TC 仍保留有针的 S、全注意力 KV、F 的 Q 段与原生入口 x_T，只换回干净 V，8/12 首步停止变为 0/12（D 降至 −3.2 至 −7.1）；N:CT（只保留有针 V）与 N:TT 停止的是同一批 8 个；N:CC 0/12；随机 V 位移保留 6/12。这不推出 V 独自解释整根针的行为，也不推出后续能恢复正确完整的回答。</li>
+<li>与 LOCAL-READOUT 对照：单删第13层局部 core 变化在 N 中无作用，而 14 个 G 层一起换 F 的 V 段能消除停止。两次操作对象不同，<strong>不能</strong>据此判断是多层共同负责还是少数层关键；层间分工未测。</li>
+</ul>
+<p><strong>执行偏离：</strong> 预检两次失败后修订了数值验收规则（D8）并重新预检，总消耗由原计划 316 次评分增至 364 次；正式 264 次评分与矩阵不变。</p>
+<p><strong>校准：</strong> D_step（x_T + 全 C 深层）6/6 落在登记范围（d 占比 0.10–0.19，交互 −0.12 至 +0.15）：E2 的 chunk 路线结果在逐 token 路线上复现。</p>
+<h2 id="2">2. 执行</h2>
+<table>
+<thead>
+<tr>
+<th>尝试</th>
+<th>结果</th>
+<th style="text-align: right;">评分</th>
+<th style="text-align: right;">模板</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>preflight-r01</td>
+<td>合同执行失败：CPU 步骤的空 <code>CUDA_VISIBLE_DEVICES</code> 被继承（D7）</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>preflight-r02</td>
+<td>工程闸门失败：固定 0.003 重构容差，VRL04-f0 0.00315（D8）</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td>preflight-r03（合同 r02）</td>
+<td>全部闸门通过，37 s</td>
+<td style="text-align: right;">52</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td>formal-r01</td>
+<td>全部闸门通过，2 worker 各 67 s</td>
+<td style="text-align: right;">264</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr>
+<td>合计</td>
+<td>修订上限 364 / 4</td>
+<td style="text-align: right;">364</td>
+<td style="text-align: right;">4</td>
+</tr>
+</tbody>
+</table>
+<p>D8 诊断：preflight-r02 中 308/308 个（格×层）重构误差 / 精确值 BF16 舍入误差 = 1.00，固定阈值量到的是存储舍入；改为“误差 ≤ 1.05×底噪”，正式运行最大比值 1.0026（预检同为 1.0026）。闸门修改不触及任何科学读数，修改前未看任何主读数。</p>
+<p>正式运行闸门：C、M:TTT、N:TT 与 bridge C/Y_T/T_native 逐位一致；M 的 q=v 四角与 COMBO K=T 逐位一致；每格 14 个 G 层 recurrent 内核各 1 次、chunk 0 次；入口钩子每 N 格 1 次；随机位移幅度误差 ~1e−4。</p>
+<h2 id="3-g">3. 读数（情景 = 两事实差的均值；比值 = 情景差 / 情景 G）</h2>
+<table>
+<thead>
+<tr>
+<th>读数·背景</th>
+<th>G 范围</th>
+<th>A_V/G</th>
+<th>R_V/G</th>
+<th>A_Q/G</th>
+<th>R_Q/G</th>
+<th>I/G</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>cz_a·M_T</td>
+<td>−5.03 至 −2.54</td>
+<td>1.02–1.17</td>
+<td>0.67–0.99</td>
+<td>0.01–0.33</td>
+<td>−0.17–−0.02</td>
+<td>−0.48–−0.12</td>
+</tr>
+<tr>
+<td>cz_a·N</td>
+<td>−6.79 至 −3.90</td>
+<td>0.96–1.06</td>
+<td>0.68–0.84</td>
+<td>0.16–0.32</td>
+<td>−0.06–0.04</td>
+<td>−0.38–−0.15</td>
+</tr>
+<tr>
+<td>cz_a·M_C</td>
+<td>−3.37 至 −1.33</td>
+<td>1.27–1.71</td>
+<td>0.55–1.54</td>
+<td>−0.54–0.45</td>
+<td>−0.71–−0.27</td>
+<td>−1.01–−0.01</td>
+</tr>
+<tr>
+<td>cz_s46·M_T</td>
+<td>5.49–8.31</td>
+<td>0.96–1.00</td>
+<td>0.35–0.69</td>
+<td>0.31–0.65</td>
+<td>0.00–0.04</td>
+<td>−0.60–−0.30</td>
+</tr>
+<tr>
+<td>cz_s46·N</td>
+<td>3.82–5.34</td>
+<td>0.94–1.00</td>
+<td>0.59–0.80</td>
+<td>0.20–0.41</td>
+<td>0.00–0.06</td>
+<td>−0.40–−0.17</td>
+</tr>
+<tr>
+<td>cz_s46·M_C</td>
+<td>4.05–7.98</td>
+<td>1.13–1.37</td>
+<td>0.54–0.86</td>
+<td>0.14–0.46</td>
+<td>−0.37–−0.13</td>
+<td>−0.67–−0.32</td>
+</tr>
+<tr>
+<td>D·M_T</td>
+<td>7.95–10.92</td>
+<td>1.00–1.08</td>
+<td>0.53–0.68</td>
+<td>0.32–0.47</td>
+<td>−0.08–0.00</td>
+<td>−0.48–−0.36</td>
+</tr>
+<tr>
+<td>D·N</td>
+<td>6.44–8.47</td>
+<td>0.96–1.04</td>
+<td>0.61–0.77</td>
+<td>0.23–0.39</td>
+<td>−0.04–0.04</td>
+<td>−0.43–−0.22</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>M 背景整块 F 的 D 差复现 COMBO 已知值（G_T 7.95–10.92），不是新发现。</li>
+<li>M_C（S 干净）中 R_Q 为负：V 为 T 时再加 Q_T 反而减弱效应；S 背景改变 Q 的作用方向（描述）。</li>
+<li>逐输入数值、全部 22 格、随机比较逐事实值见 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-conv-factor-v1-2026-11-01/analysis/readouts-r01.json">readouts-r01.json</a>。</li>
+</ul>
+<h2 id="4">4. 可以说 / 不可以说</h2>
+<table>
+<thead>
+<tr>
+<th>可以说</th>
+<th>不可以说</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>在当前评分窗口，14 个深层 G 层 F 的 V 段（最近 3 个位置的卷积前 V）足以复现整块 F 效应，且换回它的效应超过两条同幅随机方向</td>
+<td>V 是“答案内容”或语义载体；整个针效应由 V 承担</td>
+</tr>
+<tr>
+<td>在 S/KV/Q 段/原生入口仍为有针时，只换回干净 F_V，原生评分后半段 8 个首步停止全部消失</td>
+<td>V 决定停止；V 独自解释整根针；形成期 V 替换（BRIDGE CT/TC）与本轮末态 F_V 走同一机制</td>
+</tr>
+<tr>
+<td>Q 段在 V 干净时有部分、偏停止侧的作用，在 V 为 T 时冗余</td>
+<td>Q 无关；q 与 k 的各自作用（本轮捆绑）</td>
+</tr>
+<tr>
+<td>材料作用是非相加的（结果后描述）；S 干净时 Q_T 与 V_T 方向相反（R_Q 为负）</td>
+<td>某个预注册简化描述成立；已找到产生饱和的内部计算；作用分布在多层</td>
+</tr>
+</tbody>
+</table>
+<p>F 只直接保存最近 3 个位置，本轮只评分一步：结论只覆盖首词决策窗口，不外推整段回答，也不推出三步后影响消失（方案 §3.2）。</p>
+<h2 id="5-4">5. 对阶段路线图的含义（路线图 §4，不是运行授权）</h2>
+<p>对应“Q 或联合项重要 / 两向不对称”分支：纯 V 解释不够。进入 B 的候选需要回答的计算问题是——<strong>有针 V 经当前 token 的短卷积进入当前 v（进而进入写入项 βv(kᵀq) 与 S 更新），和有针 q/k 经当前 q/k 改变读写系数，为什么在停止竞争上互相饱和而不是叠加，且 S 背景会改变 Q 的方向？</strong> 本轮已存的 14 层驱动（q/k/v/g/β/core、门控归一化、out_proj、13–31 层残差）可先在 CPU 上区分“当前写入项”与“旧状态读取项”的变化，再决定 B 的针对性干预。一般扰动对手仍保留：V 的超过只针对两条随机方向，入口随机方向（XCHAN）的现象尚未由本轮解释。</p>
+<h2 id="6-2026-11-01">6. 复核后的措辞修订（2026-11-01）</h2>
+<p>外部复核（读取 ceb0708 合同、实现与 12 条记录并复算分析，结果一致；未复核服务器张量）指出三处过强表述：“V 决定停止”需加背景条件；“饱和结构”只是现象描述；“作用分布在多层”未被证明。§1、§4 已据此修改，数值未变。</p></main></html>

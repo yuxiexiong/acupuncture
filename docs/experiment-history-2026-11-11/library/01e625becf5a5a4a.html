@@ -1,0 +1,129 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>作者原码复用：接口实施与验收</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="_1">作者原码复用：接口实施与验收</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/wsp-process-reproduction-v1-2026-11-03/author-code-reuse-r1/INTERFACE-REPORT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-process-reproduction-v1-2026-11-03/author-code-reuse-r1/INTERFACE-REPORT.zh-CN.md">固定提交原件</a>；SHA-256：<code>01e625becf5a5a4a97ac50b4156aa185825c06a61e8f3c53d598df61a2860048</code>。精确字节见原文归档。</p>
+<hr />
+<p><strong>执行口径更新：</strong> 用户已同意实际成功路径，已实现并通过CPU检查；见<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-process-reproduction-v1-2026-11-03/author-code-reuse-r1/SUCCESS-PATH.md">精确清单与副作用审计</a>。下文“待答复”是原检查时的历史状态，正式运行仍未授权。</p>
+<h1 id="_2">作者原码复用：接口实施与验收</h1>
+<p>2026-11-04。正式实验未启动，旧0.8B数学与其他实验不恢复。当前机器可读状态见<code>status.json</code>；本报告明确区分通过项和待验收项。</p>
+<h2 id="_3">已落实的边界</h2>
+<ul>
+<li>作者80段Python代码逐字保存，69条forward请求对象与原件相等；来源固定为4d09ba6。<code>author_actions.py</code>派发前重新核验来源和提取文件，不生成新的痛点、排序、候选、剂量或干预算法。没有新Astra会话，没有最终edit.npz。</li>
+<li>只复用原来经验收的CPU沙箱和数值后端。新增适配是路径、来源哈希、原请求文件编号、原数学评分模块导入和作者builder调用。旧代码与旧实验不热改。broker仅有导入路径与独立source_pass编号的改动，sandbox逐字相同。</li>
+<li>数学评分直接导入原mathqa文件，不再AST删改原模块；未公开mcqa入口若被调用就明确抛异常，不能假装完成循环检测。</li>
+<li>检查点由作者原build_ckpt.py生成；适配器随后核对每个未改张量逐元素一致，改动张量与冻结快照的有效BF16哈希一致。适配器不再写第二套替换/舍入算法。</li>
+<li>实际尝试/成功次数与作者历史文件编号分开，避免略过历史失败后fwd_4变成fwd_3。重复动作ID只能返回已有响应，不能再次执行；未完成动作必须对账。</li>
+</ul>
+<h2 id="_4">验收事实</h2>
+<table>
+<thead>
+<tr>
+<th>检查</th>
+<th>已观测事实</th>
+<th>不代表什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>源码身份</td>
+<td>30文件哈希、80原代码、69请求通过</td>
+<td>不等于50次过程已跑完</td>
+</tr>
+<tr>
+<td>所有成功请求</td>
+<td>34生成、16TF，共50条schema/题号/限制检查通过</td>
+<td>未调用这些真实前向请求</td>
+</tr>
+<tr>
+<td>输入</td>
+<td>16次TF公开长度全部吻合；服务与沙箱token IDs一致，包括关键lens2/lens4</td>
+<td>作者没公开完整input_ids数组，不能宣称与其逐token比对已做</td>
+</tr>
+<tr>
+<td>原评分器</td>
+<td>分数、错误、缺答案、最后boxed与thinking后答案5例通过；依赖版本与公开说明相符</td>
+<td>不提供未公开mcqa诊断能力</td>
+</tr>
+<tr>
+<td>配对统计</td>
+<td>两题、每题两样本夹具按题聚合，delta=.25、SE=.75</td>
+<td>多样本不算更多独立题</td>
+</tr>
+<tr>
+<td>原干预函数</td>
+<td>原clear_edits/mlp_direction_edit/set_subset_edit定义不改，小矩阵方向投影与非选择列保护通过</td>
+<td>没有在真实模型上找针或验证能力</td>
+</tr>
+<tr>
+<td>派发</td>
+<td>原代码/请求不变、source_pass独立、历史失败阻断、正式授权门通过mock检查</td>
+<td>没有自动批准完整原流程</td>
+</tr>
+<tr>
+<td>真实模型短TF</td>
+<td>原版与单坐标工程编辑两次成功；全部未改权重一致，作者builder有效变化恰为1坐标；已用16.8995GPU秒</td>
+<td>不是科学候选或能力实验</td>
+</tr>
+<tr>
+<td>双臂短生成、独立HF数值参考</td>
+<td>当前等待其他项目释放GPU，尚未通过</td>
+<td>不得称全部验收完成</td>
+</tr>
+</tbody>
+</table>
+<p>原始收据在<code>receipts/</code>，派发检查在<code>dispatch-acceptance.json</code>。运行前判据见<code>ACCEPTANCE-CONTRACT.zh-CN.md</code>，没有在见到结果后放宽数值阈值。</p>
+<p>本次CPU夹具首次误把extract返回元组当字符串；修正的是验收调用，原评分器不改，失败日志cpu-r1.log保留。两次短生成都在GPU_BUSY门前退出，未派发、未计成功、未重复TF；占用来自其他项目的<code>.venv-bench</code>正式任务。<code>finish_acceptance.py</code>仅等待空闲卡后续接第三次短服务请求，再做≤600GPU秒独立参考核对，最多等待30分钟；它没有调用作者科学动作或启动正式实验的入口。总体上限3600GPU秒。</p>
+<h2 id="_5">不能机械重放的原日志段</h2>
+<p>原日志19次失败forward保留身份，不人为制造相同故障。另5段Python失败的副作用审计如下：</p>
+<table>
+<thead>
+<tr>
+<th>原记录行</th>
+<th>原错误与已发生副作用</th>
+<th>直接在健康内核重跑的风险</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>15</td>
+<td>第2行NameError，尚未执行函数或写notes</td>
+<td>若成功会把原本未发生的11层干预实际应用</td>
+</tr>
+<tr>
+<td>19</td>
+<td>定义读文件/报告函数并输出配对结果；第17行target19缺失；无权重写入</td>
+<td>不是失败科学干预；函数在后续重新定义，不能把原错误当新结果</td>
+</tr>
+<tr>
+<td>24</td>
+<td>仅状态打印，到第5行target19缺失；无写入</td>
+<td>可作为状态检查，不影响候选</td>
+</tr>
+<tr>
+<td>29</td>
+<td>创建空headstats，到第6行diffH缺失；尚未计算头贡献或修改权重</td>
+<td>若成功会额外执行两层strength2干预，改变后续条件</td>
+</tr>
+<tr>
+<td>37</td>
+<td>读取生成记录、打印比较、开始加载practice；第25行splitlines切断JSONL内部Unicode行分隔符而失败；尚未写splits/方向备份</td>
+<td>后续38原码改为物理行读取并重建这些变量与文件；应保留该原修复</td>
+</tr>
+</tbody>
+</table>
+<p>这些结论来自原始报错行与代码顺序，不是通过造假状态模拟错误。当前dispatcher在历史失败段明确阻断，尚未偷偷实施跳过策略。</p>
+<p>另原147段含<code>original.sum()==107</code>、<code>edited.sum()==656</code>的历史结果断言；这些数字不可能作为新实验成功条件。其余形状、题号互斥、非选择列和权重哈希断言仍是有意义的完整性检查，应保留。原代码中的notes/报告还含作者历史数字，须标为作者文字，新实测另存，不能作为我们的实测结论。</p>
+<p>已向用户提出执行口径选择：复现作者实际成功路径、核对失败副作用后衔接，历史数字断言保留为原始证据而由新结果报告替代；未答复前不改变正式执行口径，更不启动。这里需要讨论的是原日志的执行含义，不是再找理由改算法。</p>
+<h2 id="_6">剩余差异</h2>
+<ol>
+<li>作者私有practice seed映射和完整运行库/硬件未公开。当前按题固定seed并同样本配对，公开采样参数、题目、n、max_tokens不变；不能说随机序列和作者相同。没有接原版输出缓存。</li>
+<li>测量服务是重建后端。hidden/MLP定位、logprob位置、BF16转换需按本次数值验收判据完成；生成激活仍由HF重读实际生成token，作者内部实现未知。最终hidden按现有HF final norm语义披露；关键中间层按公开模块输出读取。</li>
+<li>validator浮点容差为已披露重建值，不因针被拒绝而放宽。当前标准库版本冻结在<code>receipts/environment.json</code>，没有完整作者锁文件可供逐版本对齐。</li>
+<li>固定作者已经选择的代码路径属于事后路径计算复现，不能称独立自动发现。这一点不靠接口验收改变。</li>
+</ol>
+<h2 id="_7">启动预算（方案，未启动）</h2>
+<p>固定作者50成功前向路径：34生成+16TF，合计5,984回答；作者日志的平均长度折算约145.47M输出token，全部达到各自原请求上限则约187.70M。16TF按当前输出格式总计约1.00GB。新的严格路径从新目录开始，不能把旧搜索28pass并入新50pass。</p>
+<p>利用我们已实测的H20长输出速度：48回答约2509token/s，128回答约4349，240–256约4008–4303。按批量作保守粗插值、每臂60秒启动预留，按两卡同时占用计费，生成约15.0–16.2GPU小时、7.6–8.2墙钟小时。32/64批量没有为此新增基准测试，因此不是精确预测或置信区间。</p>
+<p>加入TF、激活读数、构建、CPU分析与速度误差，<strong>整轮粗估16–23GPU小时、9–12墙钟小时；建议启动上限24GPU小时、额外磁盘预留20GB</strong>。排队、未知故障与需要人工决定的科学分歧不包含在墙钟估计内。24是建议预算上限，不是已授权运行或保证在此之内成功。逐请求情景计算见<code>budget-estimate.json</code>。</p>
+<p>启动前仍须：最后两项验收通过；失败动作/历史成绩断言的执行口径明确；新目录、原科学代码哈希、模型/数据/版本清单与正式预算冻结；用户明确启动。本次验收通过本身不触发正式执行。</p>
+<h2 id="_8">自查结论</h2>
+<p>本轮按ACCEPTANCE-CONTRACT完成C01–C14设计自查，结果报告再次核对C08/C10/C11/C13：算法源身份、接口通过、数值通过与科学阳性四者分开。最强反例仍是同源码不同运行时且固定路径借用了作者选择知识；保留该限制，不使用历史正确数填补新结果。工程尚有资源等待项，当前不能写完整验收通过。</p></main></html>

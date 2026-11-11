@@ -1,0 +1,31 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>半小时监控：2026-10-28 03:58（北京时间）</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="2026-10-28-0358">半小时监控：2026-10-28 03:58（北京时间）</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0400.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0400.zh-CN.md">固定提交原件</a>；SHA-256：<code>caaca7e8d247ceed8b6da2fc545c680b7ef43eff7fff354d2c1c741fec64e335</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="2026-10-28-0358_1">半小时监控：2026-10-28 03:58（北京时间）</h1>
+<h2 id="_1">进度和验收</h2>
+<p>A原批次已验收记录 <strong>1,615/2,152</strong>，比03:29增加612条。4B 616/616、2B 616/616均已完成，四个worker退出码0、checks_passed=true，收据哈希与队列记录匹配。9B完成383/920，正在采集：shard0=172/464（PID2308519），shard1=211/456（PID2308520）。实际命令匹配队列；最新记录分别在快照前约11秒、1秒更新。A主队列PID2285813存活。</p>
+<p>B追加0/4,560，状态waiting；PID2295050存活，正常等A完成，未启动模型。队列汇总数1,612比逐worker收据稍早约7秒，本报告采用已核对的收据总数1,615，未按文件数量计数。预检不计入正式分母。</p>
+<p>冻结、授权、CPU验收收据及已完成结果JSON哈希均核对通过；逐条token匹配、hook清理及结果验收字段通过。正在运行worker的整轮checks_passed=false表示尚未终验，不是失败。无非零退出、失活、OOM或写盘错误迹象。本轮未重新读取大型模型或全部压缩轨迹；完整轨迹终验仍由原worker执行。</p>
+<h2 id="eta">ETA</h2>
+<ul>
+<li>A剩余：9B纯采集约24分钟，加终验/交接预留约25–35分钟。</li>
+<li>B前六层补齐：4B约19.6分钟＋2B约20.6分钟，计入加载/核验预留45–50分钟。</li>
+<li>B的4B其余层：纯采集约243分钟，预留4小时15分–4小时40分。</li>
+<li>全部剩余约 <strong>5小时20分–6小时05分</strong>，预计 <strong>09:18–10:02</strong> 完成，与上次09:16–10:04基本一致。</li>
+</ul>
+<p>三模型均已用正式record.total_seconds与原输出token长度更新拟合：4B基于616条，2B616条，9B383条。每阶段取慢卡后串行相加。已完成worker的加载/保存等额外耗时约25–33秒，队列还有终验及切换开销，仍保留12分钟基础余量；上沿用额外12%及20分钟经验余量。这是经验规划区间，不是统计置信区间，也不是硬截止。可视化接图与研究分析另计。</p>
+<h2 id="_2">磁盘</h2>
+<ul>
+<li>工作盘/workspace：95%，可用 <strong>125.50 GiB</strong>，较上次减少0.215 GiB。</li>
+<li>系统盘/：90%，可用 <strong>48.35 GiB</strong>，较上次只减少0.72 MiB。/data/models和/tmp共用此盘，未重复加总。</li>
+<li>本地归档盘可用 <strong>877.4 GiB</strong>，与上次基本不变。df原始证据保存在summary.json。</li>
+<li>A运行目录 <strong>0.576 GiB</strong>，较上次增加0.213 GiB；B约5 KiB。</li>
+<li>剩余5,097条、269,532个输出token。按压缩结果实际大小和长度估计剩余产物 <strong>2.75 GiB</strong>；用已观测最大单条及50%余量预留 <strong>6.27 GiB</strong>，是经验预算而非硬上界。工作盘远高于此需求＋15 GiB余量。</li>
+<li>本地同时保留完整文件和下载包的归档峰值预算约 <strong>13.7 GiB</strong>。本轮磁盘净增长速度约0.44 GiB/小时，按当前趋势约284小时才耗尽，明显晚于队列ETA；资源竞争变化会在下轮重新核实。</li>
+</ul>
+<p><strong>磁盘暂无危险，不需要清理。</strong> 本监控没有删除任何文件。</p>
+<h2 id="_3">负载</h2>
+<p>CPU 44逻辑核，短采样忙碌 <strong>4.7%</strong>，1/5/15分钟load <strong>2.08/2.06/2.08</strong>。可用RAM <strong>462.7 GiB</strong>，无Swap。</p>
+<p>GPU0利用率33%，显存20689/97871 MiB（20.2/95.6 GiB），41°C；GPU1利用率33%，显存20413/97871 MiB（19.9/95.6 GiB），36°C。两卡均为9B采集，上次2B切换到9B后显存增加符合模型变更，未发现其他GPU计算进程。</p>
+<p><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0400.remote.json">远端快照</a> · <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0400.summary.json">ETA与磁盘计算</a></p></main></html>

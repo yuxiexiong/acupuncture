@@ -1,0 +1,47 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>共用口径（所有检索者开工前必读）</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="_1">共用口径（所有检索者开工前必读）</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>docs/literature/vl-cross-model-root-cause-candidates-2026-11-06/00_BRIEF.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/literature/vl-cross-model-root-cause-candidates-2026-11-06/00_BRIEF.zh-CN.md">固定提交原件</a>；SHA-256：<code>aa7b102e918bd5097088db767b4d9338371b3becc125dfb48d8b4096059ca34b</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="_2">共用口径（所有检索者开工前必读）</h1>
+<p>日期：2026-11-06。检索截至 2026-11，重点 2024–2026；含 arXiv 预印本与 CVPR/ICCV/ECCV/NeurIPS/ICML/ICLR/ACL/EMNLP 正式论文。</p>
+<h2 id="_3">我们在找什么</h2>
+<p>为一篇 CCF-A 级论文选题，对象是视觉语言模型（VLM / MLLM / LVLM）。要找的候选必须同时满足两条硬标准：</p>
+<ol>
+<li><strong>现象跨模型</strong>：同一个失败现象，在至少两个不同模型族上被实测到（模型族不同指视觉编码器不同或语言骨干不同，例如 LLaVA 系、Qwen-VL 系、InternVL、PaliGemma/Gemma、Idefics、Phi-vision、MiniGPT/InstructBLIP、闭源 GPT/Gemini/Claude）。</li>
+<li><strong>根因跨模型</strong>：造成该现象的内部原因（某类部件、某种结构性安排、某种训练造成的偏置）也有跨模型证据。证据强度分三级，必须标明：
+   - 因果：对内部部件做干预（激活修补、消融、缩放、编辑）后行为按预期翻转，且在 ≥2 个模型族上做过；
+   - 相关：内部读数与失败相关（探针、注意力图、logit lens），≥2 个模型族；
+   - 论证：只有结构性推理（"因为都用了 X 所以…"），没有内部测量。</li>
+</ol>
+<p>手段是次要的。我们不预设用哪种修复方法；重点是<strong>根因问题本身</strong>。</p>
+<p>优先关注"干净"的失败：模型内部其实有所需信息（探针能读出、对照题能答对），但没用上；以及换提示修不好的失败。纯粹"能力不够"（编码器根本没看到）的也记录，但单独标出。</p>
+<h2 id="_4">每个候选的记录字段（逐项填，没有就写"未找到"）</h2>
+<ul>
+<li><strong>现象</strong>：一句话；用什么基准/任务测的。</li>
+<li><strong>现象的跨模型证据</strong>：哪些模型族、关键数字、出处（论文 + 章节/表号）。</li>
+<li><strong>根因主张</strong>：一句话；位于模型哪一部分。</li>
+<li><strong>根因的跨模型证据</strong>：哪些模型族；证据级别（因果/相关/论证）；出处。</li>
+<li><strong>不同论文对根因的说法是否一致</strong>：若有相互竞争的解释，逐条列出。</li>
+<li><strong>竞争者（已有修法）</strong>：逐个写——谁、方法一句话、在哪些模型上、效果数字、<strong>作者自认的局限或留给未来工作的话（尽量逐字引用原文）</strong>、是否开源代码（给 URL）。</li>
+<li><strong>剩余空间</strong>：最好的已有方法之后，离人类/上限还差多少；哪些条件下现有方法失败。</li>
+<li><strong>便宜办法</strong>：换提示/提高分辨率/换问法是否已被证明修不了。</li>
+<li><strong>数据与基准</strong>：名字、规模、是否公开。</li>
+<li><strong>阅读层级</strong>：每条证据后标 F（取到正文并核对了对应章节或表）、A（只读摘要）、S（只有检索片段）。关键数字必须来自 F。</li>
+</ul>
+<h2 id="_5">纪律</h2>
+<ul>
+<li>标题和摘要片段不算读过。最接近的论文必须取正文（arXiv HTML 版 <code>https://arxiv.org/html/&lt;id&gt;</code> 或 PDF）。</li>
+<li>网页摘要工具可能把你的提问当成引文回显或编造引文。凡是逐字引用，二次核对（例如 <code>curl</code> 取 PDF 后 <code>pdftotext</code>，再 <code>grep</code>）。</li>
+<li>不给等级、分数、"值得做/不值得做"的结论。不写"没人做过"，除非同一句里说明是哪一层（方法层/对象层/结论层）以及查了多少条查询。</li>
+<li>"前人见过这个现象"是先例支持，不是坏消息。坏消息只指两类：事实约束（实测否定了某条路）与竞争解释（同一现象有另一个已发表的解释）。</li>
+<li>每个推断标档位：推导（有论证链）/ 类比（相邻领域证据）/ 推测（需独立验证）。</li>
+<li>轴要分开："多少"、"何时"、"在哪"不能互推。</li>
+<li>找作者留下的开口：<code>future work</code>、<code>leave open</code>、<code>do not distinguish</code>、<code>remains unclear</code>、<code>fails when</code>、<code>limitation</code>。有就摘出来。</li>
+</ul>
+<h2 id="_6">文末必须附的检索日志</h2>
+<ul>
+<li>查询条数与查询清单；</li>
+<li>取到正文的论文清单（带 arXiv 号或 DOI）与只读摘要的清单，分开数；</li>
+<li>没覆盖到的范围（在审稿件、非 arXiv、非英文、闭源模型内部无法验证等）。</li>
+</ul>
+<p>笔记用中文写，论文名、术语、引文保留英文原文。</p></main></html>

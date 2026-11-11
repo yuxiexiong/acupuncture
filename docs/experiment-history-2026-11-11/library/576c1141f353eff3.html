@@ -1,0 +1,248 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CFM-S1 结果报告：原始 C/T 轨迹上 L16–18 递推状态差异的形成、记账与读取</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="cfm-s1-ct-l1618">CFM-S1 结果报告：原始 C/T 轨迹上 L16–18 递推状态差异的形成、记账与读取</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-formation-mechanism-s1-native-trace-v1-2026-10-31/REPORT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-mechanism-s1-native-trace-v1-2026-10-31/REPORT.zh-CN.md">固定提交原件</a>；SHA-256：<code>576c1141f353eff3a00546961f34dc2a200a1f049498bcce87194211f2a28a48</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="cfm-s1-ct-l1618_1">CFM-S1 结果报告：原始 C/T 轨迹上 L16–18 递推状态差异的形成、记账与读取</h1>
+<p>日期：2026-10-30（UTC）。计划 <code>CFM-S1-v1-20261031</code>；合同 r01（冻结提交 f73147b，freeze sha <code>3ece676b…</code>）；运行 preflight-r01、formal-r01；离线记账 <code>analysis/accounts-r01.json</code>。</p>
+<h2 id="0">0. 先说不利的部分</h2>
+<ol>
+<li><strong>合同判读是"两锚点都是 coupled"（6/6 情景，三套阈值设定一致），但这个判读信息量低。</strong> 触发的是抵消比 ≥ 2 这一条（三套账 W&gt;R 次序一致，没有翻转）。合同外、零 GPU 的探索性对照显示，同一套记账用在<strong>无针的自然事实差异</strong>上（同一情景两个事实版本的 C 轨迹配对），抵消比也有 1.95–2.19，主设定下 5/6 同样判 coupled。也就是说，"≥ 2" 这道阈值落在本模型 delta rule 记账的常态水平上。</li>
+<li><strong>这是我写合同时的错误</strong>：抵消比和各项份额只用数值底标定了"非零"，没有用对照条件标定零分布（研究准则 6.3）。判读按合同照实记录，不改；下文凡是和自然差异做比较的内容，都是<strong>探索档</strong>（决策日志第 10、11 条）。</li>
+<li>这些都不是合同执行失败：工程闸门、重建、恒等式全部通过，数据有效。问题出在分支切点的设计上，影响的是"coupled"这个标签能说明什么，不影响下面的数值。</li>
+</ol>
+<h2 id="1">1. 工程验收（全部通过）</h2>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>preflight（VAR01-f0 × C/L0/L12）</td>
+<td>复现、惰性（有无记录器逐字节一致）、捕获一致、重建全部通过；29 s</td>
+</tr>
+<tr>
+<td>formal（36 条，双卡各 1 worker）</td>
+<td>36/36 对 II-B 归档逐值复现（校准、64 个缓存张量清单、首步 logits 哈希 / top5 / 停止优势、候选逐 token 对数概率）；52 s；核验 passed</td>
+</tr>
+<tr>
+<td>内核</td>
+<td>四个函数均为 transformers 5.20.2 的 torch 实现；fla / kernels / causal_conv1d 均未安装</td>
+</tr>
+<tr>
+<td>离线重建（float64）</td>
+<td>状态相对误差最大 8.8×10⁻⁷（容限 10⁻³）；读出最大 2.5×10⁻³（容限 10⁻²，BF16 舍入量级）；数值底 ≤ 1.2×10⁻⁶，所有格子 ‖ΔS‖ 约 2–3，全部可分辨</td>
+</tr>
+<tr>
+<td>恒等式与收缩界</td>
+<td>三项和、Z^W+Z^R 的相对残差 ≤ 1.7×10⁻¹⁵，Δo 两项和 ≤ 6.0×10⁻¹⁵（勘误 2026-10-31：原文把三者统一写成 ≤ 1.7×10⁻¹⁵，由 S1 结果复核指出）；‖ĀX‖/‖X‖ 最大 0.9998</td>
+</tr>
+</tbody>
+</table>
+<p>规模：36 前缀 + 36 末提示读取 + 72 候选；没有新增自由生成。</p>
+<h2 id="2-ii-b">2. 端点（与 II-B 原值相同）</h2>
+<table>
+<thead>
+<tr>
+<th>情景</th>
+<th>C：D / S_fact</th>
+<th>L0 原针：D / S_fact / 首步 EOS</th>
+<th>L12 原针：D / S_fact / 首步 EOS</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VAR01</td>
+<td>−19.5 / 15.07</td>
+<td>1.7 / −0.05 / 2/2</td>
+<td>−10.1 / 1.00 / 0/2</td>
+</tr>
+<tr>
+<td>VAR02</td>
+<td>−16.5 / 21.35</td>
+<td>1.7 / 0.07 / 2/2</td>
+<td>−9.5 / 16.15 / 0/2</td>
+</tr>
+<tr>
+<td>VRD01</td>
+<td>−20.8 / 22.64</td>
+<td>1.1 / 0.57 / 2/2</td>
+<td>−12.9 / 13.66 / 0/2</td>
+</tr>
+<tr>
+<td>VRD02</td>
+<td>−14.9 / 24.87</td>
+<td>1.1 / 0.42 / 2/2</td>
+<td>−9.0 / 9.38 / 0/2</td>
+</tr>
+<tr>
+<td>VRL01</td>
+<td>−21.7 / 5.35</td>
+<td>0.9 / 0.12 / 2/2</td>
+<td>−11.3 / 0.63 / 0/2</td>
+</tr>
+<tr>
+<td>VRL02</td>
+<td>−19.2 / 16.61</td>
+<td>1.6 / −0.25 / 2/2</td>
+<td>−10.3 / 1.63 / 0/2</td>
+</tr>
+</tbody>
+</table>
+<p>D = 首步停止优势（两事实等权），S_fact = 事实敏感度（阶段二定义）。</p>
+<h2 id="3">3. 问题一：新增差异来自哪类运算</h2>
+<p>t_L（末提示 token 更新后）三层合并、两事实合并的份额（对 ΔS 的投影，可为负、可 &gt;1）：</p>
+<table>
+<thead>
+<tr>
+<th>量</th>
+<th>L0 原针（6 情景范围）</th>
+<th>L12 原针</th>
+<th>自然事实差异（探索档）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>‖ΔS‖ / ‖S_C‖</td>
+<td>0.81–0.98（逐层）</td>
+<td>0.72–0.83</td>
+<td>0.03–0.13</td>
+</tr>
+<tr>
+<td>W（累计加性写入账）</td>
+<td>1.50–1.55</td>
+<td>1.35–1.40</td>
+<td>1.13–1.19</td>
+</tr>
+<tr>
+<td>R（累计旧状态处理账）</td>
+<td>−0.48 ~ −0.55</td>
+<td>−0.35 ~ −0.40</td>
+<td>−0.13 ~ −0.19</td>
+</tr>
+<tr>
+<td>T 背景 / C 背景下的 W</td>
+<td>2.00–2.22 / 1.48–1.55</td>
+<td>1.26–1.32 / 1.74–1.94</td>
+<td>1.13–1.18 / 1.12–1.19</td>
+</tr>
+<tr>
+<td>抵消比 (‖Z^W‖+‖Z^R‖)/‖ΔS‖</td>
+<td>2.92–3.10</td>
+<td>2.81–2.98</td>
+<td>1.95–2.19</td>
+</tr>
+</tbody>
+</table>
+<p>读法：</p>
+<ul>
+<li>两个锚点下，原针都让 L16–18 的递推状态改动到干净状态本身的量级（推导：直接测量）。</li>
+<li>在 A/B 定义下，加性写入账总是<strong>超出</strong>实际差异，旧状态处理账与之反向。这一点自然差异也有：delta rule 写入 v 时，会经由 −αβkkᵀS 扣掉状态已能预测的部分，ΔB 与 ΔA·S̄ 天然部分抵消（推导：更新规则的代数结构；合成预演里的 coupled 世界就是这个机制）。原针的特征是抵消<strong>更强</strong>：R 约为自然差异的 2–4 倍，抵消比约 3 对约 2.1（探索档，只有一个对照族）。</li>
+<li>背景依赖：W 份额随记账背景变化 0.4–0.75，但 W&gt;R 的次序在三套账中都不变。L0 在 T 背景下 W 更大，L12 在 C 背景下 W 更大，两个锚点方向相反（描述，未解释）。</li>
+<li>不能把 W 读成"新内容写入的因果贡献"。β、k 同时进入两项，这是共变下的记账，不是两种独立干预的效应（计划 §5）。</li>
+</ul>
+<h2 id="4">4. 问题二：何时形成、撤针后发生什么</h2>
+<p>逐区段每 token 平均的新增项（三层分别报告，下表取范围）：</p>
+<table>
+<thead>
+<tr>
+<th>区段</th>
+<th>L0：‖ΔB‖ / ‖ΔA·S̄‖</th>
+<th>L0：段末 ‖ΔS‖</th>
+<th>L12：‖ΔB‖ / ‖ΔA·S̄‖</th>
+<th>L12：段末 ‖ΔS‖</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>head（3 token）</td>
+<td>0.43–0.55 / 0.12–0.16</td>
+<td>0.74–1.01</td>
+<td>0.66–0.75 / 0.12–0.18</td>
+<td>1.09–1.22</td>
+</tr>
+<tr>
+<td>fact</td>
+<td>1.00–1.54 / 0.54–0.73</td>
+<td>2.37–2.93</td>
+<td>0.74–0.99 / 0.43–0.45</td>
+<td>2.01–2.25</td>
+</tr>
+<tr>
+<td>question</td>
+<td>1.04–1.62 / 0.56–0.83</td>
+<td>2.69–3.18</td>
+<td>0.79–1.08 / 0.48–0.51</td>
+<td>2.25–2.33</td>
+</tr>
+<tr>
+<td>instruction</td>
+<td>0.89–1.62 / 0.50–0.81</td>
+<td>2.90–3.32</td>
+<td>0.68–1.09 / 0.44–0.49</td>
+<td>2.48–2.52</td>
+</tr>
+<tr>
+<td>tail（模板尾）</td>
+<td>0.93–1.55 / 0.50–0.77</td>
+<td>3.03–3.40</td>
+<td>0.77–1.07 / 0.46–0.53</td>
+<td>2.49–2.74</td>
+</tr>
+<tr>
+<td>last（无针）</td>
+<td>1.33–2.05 / 0.56–0.79</td>
+<td>3.04–3.42</td>
+<td>1.23–1.65 / 0.46–0.76</td>
+<td>2.60–2.83</td>
+</tr>
+<tr>
+<td>候选（无针，均值）</td>
+<td>1.63 / 0.87</td>
+<td>3.14</td>
+<td>0.75 / 0.33</td>
+<td>2.51</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>差异不集中在事实陈述期</strong>：针在的每一段，每个 token 都产生大小相近的新写入差异，处理项约为写入项的一半。‖ΔS‖ 在事实段末就到了终值的 73–95%，之后饱和：新写入与旧差异被衰减、修正抵掉大致平衡。</li>
+<li>t_L 处 ΔS 按产生区段分账（对称账，W+R 净值）：head+fact 只占 0.07–0.18，question 到 last 占 0.82–0.93，其中 tail + last 为 0.47–0.74。<strong>这大半是近因结构，不是原针特有</strong>：干净轨迹自身的 t_L 状态就有 37% 来自 tail、22% 来自末提示 token、9% 来自 fact（自身来源分量 P^C）。自然事实差异的 W 中 fact 段份额是 0.14–0.68，tail 仍有 0.23–0.54，说明单个事实 token 的变化也经由后续 token 的驱动量重新写入。</li>
+<li><strong>撤针后差异继续产生</strong>：末提示 token 没有针，单 token 写入差异却是全程最大（L0 1.33–2.05，L12 1.23–1.65）。针撤了，上游其余缓存的差异仍让 L16–18 的 q/k/v/α/β 偏离 C。</li>
+<li><strong>两个锚点在撤针后分开</strong>：候选阶段 L0 的写入差异维持在加针时的水平（1.63，对比 tail 1.31），L12 降到约一半（0.75，对比 tail 0.97）。L0 原针在 L16–18 产生的是撤针后自我维持的驱动量偏离，L12 的则开始消退（描述，6 情景；与 early-input-control 的"异常维持"线索一致，属类比档）。</li>
+<li>L0-T 自身的 t_L 状态里 head+fact 的份额是 0.33，C 只有 0.13：L0 原针下早段内容留存得更多（描述）。</li>
+</ul>
+<h2 id="5">5. 问题三：状态差异是否进入实际读取</h2>
+<ul>
+<li>局部读出差 Δo = ΔSᵀq̄ + S̄ᵀΔq，t_L 处状态部分份额 ρ_state：L0 0.66–0.83（逐层）、0.73–0.78（逐情景合并）；L12 0.79–0.99、0.83–0.91。查询变化不是主体，状态差异确实进入了读出方向。</li>
+<li>‖Δo‖/‖o_C‖：L0 0.66–0.78，L12 0.49–0.53；实测 out_proj 输出差 / 干净输出：L0 1.17–1.35，L12 1.06–1.10。</li>
+<li><strong>但 L16–18 的状态差异解释不了停止</strong>：两个锚点的 ΔS 与读出差量级相近，只有 L0 首步 EOS（L12 的 D 仍为 −9 ~ −13）。这与阶段二"L0 停止不由单组承载"一致：停止不由这一窗口的状态差异大小决定（描述，不是因果检验）。</li>
+</ul>
+<h2 id="6-82">6. 可被后续结果否定的陈述（计划 §8.2）</h2>
+<ol>
+<li><strong>两锚点</strong>（推导 + 描述）：t_L 处 L16–18 的 ΔS 中，head+fact 段产生的净分量只占 0.07–0.18。若第二阶段只在 E 段（模板开始到事实末）开针（四格的 10 臂），t_L 状态差异应明显小于 11 臂、10 臂 ‖ΔS‖/‖ΔS_11‖ &lt; 0.5；只在 L 段开针（01 臂）应重现大部分 t_L 差异。若 10 臂 ≥ 0.5，"差异主要由针在场时的近期写入维持"这一读法即被否定。注意：E 段的针也会通过其他层改变后续 token 的驱动量，所以 10 臂不是"纯早期写入"（推测档）。</li>
+<li><strong>L0 与 L12 不同</strong>（描述 → 推测）：L0 撤针后写入差异不衰减，L12 衰减。预测：四格的 10 臂中，L0 在 L16–18 留下的 t_L 差异占 11 臂的比例高于 L12。若两者相同或 L12 更高，"L0 驱动量偏离自我维持"的读法即被否定。</li>
+<li><strong>抵消强度</strong>（探索档）：原针的抵消比约 3、自然事实差异约 2.1。在第二阶段先补一族零对照（随机方向或其他通道的同剂量针），再判断约 3 是否超出该零分布；在此之前，"原针的写入与处理耦合得比自然差异强"只算线索。</li>
+</ol>
+<h2 id="7-6-7">7. 第二阶段选择（按合同 §6 与计划 §7）</h2>
+<ul>
+<li>合同判读：两锚点都落在计划 §7 第 3 行（两项均大且抵消），对应的第二阶段对照是<strong>原针前段开关 × 后段开关的完整时序四格</strong>（00/10/01/11，每臂自身前向，不拼缓存）。</li>
+<li>但第 0 节已经说明，这一行的触发并不特异。第二阶段在进入四格之前要补的一件事：<strong>给抵消比和 W/R 份额建一个零分布</strong>（随机方向针、其他通道的同剂量针，以及本报告用过的自然事实差异），把合同的描述切点换成"落在零分布之外"的判据。这件事需要新合同和新授权，本阶段没有做。</li>
+<li>四格对两锚点给出不同的预测（第 6 节第 1、2 条），满足计划 §8.3"至少两个解释的不同预测"；它识别的是时段效应，不是独立的 W/R 因果比例（计划 §7 末段）。</li>
+</ul>
+<h2 id="8">8. 范围与限制</h2>
+<ul>
+<li>6 个旧情景、12 输入，都是已经打开过的题，不是独立确认；统计单位是情景，层、头、token、事实版本都不当独立样本。</li>
+<li>只看 L16–18；L19 及以后、KV 路径没有分账（边界残差差值已记录在 <code>boundary</code>）。</li>
+<li>中间状态（事实段末、问题段末）是离线重建，不是内核实测；重建误差在 10⁻⁷ 量级。</li>
+<li>候选只用 teacher forcing，结论只涉及固定候选，不涉及自由回答的完整机制。</li>
+<li>自然事实差异对照是合同外的单一对照族，只用于说明切点不特异，不当零分布。</li>
+</ul>
+<h2 id="9">9. 文件</h2>
+<ul>
+<li>记录与收据：<code>runs/preflight-r01/</code>、<code>runs/formal-r01/</code>（JSON；张量 <code>.pt</code> 不进 git，服务器 <code>runs/*/worker-*/tensors/</code>，归档 <code>/workspace/cfm-s1-ops/archive/runs-r01.tar.zst</code>（6.5 GB，sha256 <code>c57519c3…0714fbcd</code>），每个张量的 sha256 见记录与收据）。</li>
+<li>记账：<code>analysis/accounts-r01.json</code>（重建、恒等式、判读、端点、边界、区段汇总）、<code>analysis/tokens-r01.jsonl.zst</code>（逐 token × 层 × 配对的全部标量，4,416 行）、<code>analysis/heads-r01.pt</code>（逐头数组）。</li>
+<li>探索档：<code>analysis/explore_natural_pair.py</code>、<code>analysis/exploratory-natural-pair-r01.json</code>。</li>
+</ul></main></html>

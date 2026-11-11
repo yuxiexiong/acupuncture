@@ -1,0 +1,318 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>早层输入约束、停止竞争与异常维持：结果报告</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="_1">早层输入约束、停止竞争与异常维持：结果报告</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/early-input-control-v1-2026-10-29/REPORT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-input-control-v1-2026-10-29/REPORT.zh-CN.md">固定提交原件</a>；SHA-256：<code>5214ae0ef98df2cab611636dfdc89eb6bf94a92fa38f50821ecd607daff13a0c</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="_2">早层输入约束、停止竞争与异常维持：结果报告</h1>
+<p>2026-10-29。模型 Qwen3.5-4B（revision 851bf6e），BF16、greedy、最多 128 新 token。全部数字来自盲读锁定后揭盲的标签与机械读数；阅读为模型辅助子代理，不是人类评审。分档：<strong>推导</strong>＝有本实验读数支撑的论证链；<strong>类比</strong>＝相邻证据支持但未在本实验验证；<strong>推测</strong>＝需要独立检验。</p>
+<h2 id="0">0. 先说不利的部分</h2>
+<blockquote>
+<p><strong>2026-10-29 更正</strong>：后续零 GPU 读数 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-stop-knowledge-readout-v1-2026-10-29/RESULTS.zh-CN.md"><code>early-stop-knowledge-readout-v1-2026-10-29</code></a> 显示，早层 ±1 下强制续写两候选的事实敏感度保留比 R 开发 0.03/0.05、确认 0.12/0.11（16/16 未检出）。下文 §0 第 1 条与 §5 中“原猜想在早层未获支持”只对<strong>自由回答的形态</strong>成立；在“题目事实是否仍约束答案”这一层面，<strong>约束被削弱得到支持</strong>，其外显形态是停止而非错答。“知道但停嘴”被否定。</p>
+</blockquote>
+<ol>
+<li><strong>原猜想中“题目信息约束被削弱”这一形态在早层没有出现。</strong> 早层干预造成的异常几乎全部是<strong>停止</strong>（首个 token 即 EOS、空答），不是改答另一事实或跟错题面。改答另一事实、前后矛盾等“约束类”错误集中在<strong>中层</strong>。开发与新题确认一致（预测 C2、C3 成立）。</li>
+<li><strong>早层异常的维持机制本轮测不到。</strong> 早层源回答在第 1 个 token 就结束，k=4/16 分叉全部 NA；撤针三臂只对中后层与旧锚点 L2/N5063 有数据。</li>
+<li><strong>局部替换没有找到任何局部因果贡献</strong>（两类症状 × 两个候选 × 六臂），开发与确认面板一致。</li>
+<li><code>other_fact</code> 中有相当部分是“算错碰巧”（算术题读者报告确认集 14/14 均如此），不能直接读作模型采用了另一事实。</li>
+<li>原生方向只有每层两个通道、共同方向只有两条随机方向；结论限于这个固定面板，不推广到模型总体或其他模型。</li>
+</ol>
+<h2 id="1">1. 工程验收</h2>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th style="text-align: right;">记录</th>
+<th>两 worker exit</th>
+<th>launcher 核验</th>
+<th>逐 worker verify</th>
+<th>本地归档核验</th>
+<th style="text-align: right;">墙钟 h</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>preflight-r02</td>
+<td style="text-align: right;">—</td>
+<td>1 / −15</td>
+<td>失败（手工参照 position_ids 缺失）</td>
+<td>—</td>
+<td>随 Git</td>
+<td style="text-align: right;">0.04</td>
+</tr>
+<tr>
+<td>preflight-r03</td>
+<td style="text-align: right;">99+99</td>
+<td>0 / 0</td>
+<td>失败（我写的授权文件少结尾换行）</td>
+<td>—</td>
+<td>随 Git</td>
+<td style="text-align: right;">0.09</td>
+</tr>
+<tr>
+<td>preflight-r04</td>
+<td style="text-align: right;">99+99</td>
+<td>0 / 0</td>
+<td>passed</td>
+<td>passed</td>
+<td>216 文件哈希一致</td>
+<td style="text-align: right;">0.09</td>
+</tr>
+<tr>
+<td>development-r01</td>
+<td style="text-align: right;">4632</td>
+<td>0 / 0</td>
+<td>passed</td>
+<td>passed</td>
+<td>passed</td>
+<td style="text-align: right;">2.32</td>
+</tr>
+<tr>
+<td>mechanism-development-r01</td>
+<td style="text-align: right;">1210</td>
+<td>0 / 0</td>
+<td>passed</td>
+<td>passed</td>
+<td>passed</td>
+<td style="text-align: right;">0.69</td>
+</tr>
+<tr>
+<td>patch-development-r01</td>
+<td style="text-align: right;">552</td>
+<td>0 / 0</td>
+<td>passed</td>
+<td>passed</td>
+<td>passed</td>
+<td style="text-align: right;">0.26</td>
+</tr>
+<tr>
+<td>confirmation-r01</td>
+<td style="text-align: right;">3480</td>
+<td>0 / 0</td>
+<td>passed</td>
+<td>passed</td>
+<td>passed</td>
+<td style="text-align: right;">2.49</td>
+</tr>
+<tr>
+<td>mechanism-confirmation-r01</td>
+<td style="text-align: right;">1440</td>
+<td>0 / 0</td>
+<td>passed</td>
+<td>passed</td>
+<td>passed</td>
+<td style="text-align: right;">0.93</td>
+</tr>
+<tr>
+<td>patch-confirmation-r01</td>
+<td style="text-align: right;">576</td>
+<td>0 / 0</td>
+<td>passed</td>
+<td>passed</td>
+<td>passed</td>
+<td style="text-align: right;">0.33</td>
+</tr>
+</tbody>
+</table>
+<p>每阶段均核验：身份、冻结（freeze-r03 <code>dc0556c7…</code>）、全部记录与资产哈希、hook 清除、目标权重哈希前后一致、退出码、覆盖完整（计划条数 = 记录条数）。精确同路径候选核对 8/8 通过；一次性整段 forward 差值 0.0026–0.104 nats 仅作数值诊断，是否全部来自 BF16 <strong>未验证</strong>。</p>
+<p>合计墙钟 7.25 h，两卡并行，约 14.5 GPU 小时；未提供单价，不估金额。GPU 已释放。</p>
+<h2 id="2-4632-3480">2. 固定深度比较（开发 4632 + 确认 3480）</h2>
+<p>原版：开发 24/24、确认 24/24 跟随题面事实，三族均可解释，无暂缓题族。</p>
+<p>受影响“条件×基础情景”数（异常＝other_fact / other_wrong / not_delivered 或前后矛盾，仅原版正确输入）：</p>
+<table>
+<thead>
+<tr>
+<th>窗口</th>
+<th>剂量</th>
+<th style="text-align: right;">开发 +</th>
+<th style="text-align: right;">开发 −</th>
+<th style="text-align: right;">确认 +</th>
+<th style="text-align: right;">确认 −</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>早 L0–3 原生</td>
+<td>±1</td>
+<td style="text-align: right;">84/96</td>
+<td style="text-align: right;">95/96</td>
+<td style="text-align: right;">94/96</td>
+<td style="text-align: right;">95/96</td>
+</tr>
+<tr>
+<td>中 L12–15 原生</td>
+<td>±1</td>
+<td style="text-align: right;">48/96</td>
+<td style="text-align: right;">41/96</td>
+<td style="text-align: right;">61/96</td>
+<td style="text-align: right;">67/96</td>
+</tr>
+<tr>
+<td>后 L24–27 原生</td>
+<td>±1</td>
+<td style="text-align: right;">21/96</td>
+<td style="text-align: right;">27/96</td>
+<td style="text-align: right;">42/96</td>
+<td style="text-align: right;">34/96</td>
+</tr>
+<tr>
+<td>早 原生</td>
+<td>±0.5</td>
+<td style="text-align: right;">14/96</td>
+<td style="text-align: right;">21/96</td>
+<td style="text-align: right;">37/96</td>
+<td style="text-align: right;">44/96</td>
+</tr>
+<tr>
+<td>后 原生</td>
+<td>±0.5</td>
+<td style="text-align: right;">4/96</td>
+<td style="text-align: right;">4/96</td>
+<td style="text-align: right;">12/96</td>
+<td style="text-align: right;">7/96</td>
+</tr>
+<tr>
+<td>早 共同方向</td>
+<td>±1</td>
+<td style="text-align: right;">30/48</td>
+<td style="text-align: right;">44/48</td>
+<td style="text-align: right;">41/48</td>
+<td style="text-align: right;">47/48</td>
+</tr>
+<tr>
+<td>后 共同方向</td>
+<td>±1</td>
+<td style="text-align: right;">8/48</td>
+<td style="text-align: right;">5/48</td>
+<td style="text-align: right;">21/48</td>
+<td style="text-align: right;">15/48</td>
+</tr>
+</tbody>
+</table>
+<p>异常形态（早层原生 ±1，原版正确的 192 输入）：not_delivered 开发 157/187、确认 156/181；首 token 即 EOS 开发 120/144、确认 120/143；other_fact 开发 3/0、确认 3/0。中层原生 ±1 的 other_fact + other_wrong：开发 52 条、确认 127 条；早层 5 条、22 条。</p>
+<p>确认预测（冻结于 <code>f0d7914</code>，判定脚本冻结于 <code>2a6b385</code>）：C1 深度排序、C2 早层以停止为主、C3 事实类错误不集中于早层、C4 共同方向同样有深度差——<strong>全部成立</strong>（<code>reading/confirmation-r01/predictions-C1-C4.json</code>）。确认题对早层 ±0.5 的敏感度高于开发题，弱剂量边界随题而变。</p>
+<h2 id="3">3. 发生时段与异常维持</h2>
+<h3 id="_3">早层首步停止（推导）</h3>
+<p>L0/N4146 +1、L2/N5251 −1：full、prefill、prompt_except_last 下 24/24 未交付，prompt_last 下几乎全部交付（开发 24/24 正常；确认 22/24 正常）。<strong>写入提示中除最后位置以外的部分即足以产生首步停止</strong>；只写最后一个提示位置不足以产生。C5 在确认 24/24 成立。</p>
+<p>反例：确认题上 L0/N4146 +1 只在 decode 注入时 12/24 异常（开发 0/24）。所以“只依赖提示前部”只对<strong>首步停止</strong>成立，不能说早层干预只在编码阶段起作用。</p>
+<h3 id="full-k">撤针三臂（原版正确且 full 异常的输入；k 为分叉步）</h3>
+<table>
+<thead>
+<tr>
+<th>条件</th>
+<th>面板</th>
+<th>k</th>
+<th style="text-align: right;">撤针即恢复</th>
+<th style="text-align: right;">仅无针重建恢复</th>
+<th style="text-align: right;">重建仍异常</th>
+<th style="text-align: right;">反向（撤针好、重建坏）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>L2/N5063 +1</td>
+<td>开发锚点</td>
+<td>4 / 16</td>
+<td style="text-align: right;">0 / 0</td>
+<td style="text-align: right;">4 / 4</td>
+<td style="text-align: right;">0 / 0</td>
+<td style="text-align: right;">0 / 0</td>
+</tr>
+<tr>
+<td>L2/N5063 +1</td>
+<td>确认</td>
+<td>4 / 16</td>
+<td style="text-align: right;">2 / 0</td>
+<td style="text-align: right;">18 / 9</td>
+<td style="text-align: right;">0 / 0</td>
+<td style="text-align: right;">0 / 0</td>
+</tr>
+<tr>
+<td>L12/N8296 −1</td>
+<td>开发</td>
+<td>4 / 16</td>
+<td style="text-align: right;">11 / 8</td>
+<td style="text-align: right;">7 / 2</td>
+<td style="text-align: right;">0 / 8</td>
+<td style="text-align: right;">0 / 0</td>
+</tr>
+<tr>
+<td>L12/N8296 −1</td>
+<td>确认</td>
+<td>4 / 16</td>
+<td style="text-align: right;">8 / 5</td>
+<td style="text-align: right;">10 / 4</td>
+<td style="text-align: right;">4 / 13</td>
+<td style="text-align: right;">0 / 0</td>
+</tr>
+<tr>
+<td>L13/N248 +1</td>
+<td>开发</td>
+<td>4 / 16</td>
+<td style="text-align: right;">10 / 6</td>
+<td style="text-align: right;">6 / 3</td>
+<td style="text-align: right;">3 / 6</td>
+<td style="text-align: right;">0 / 3</td>
+</tr>
+<tr>
+<td>L13/N248 +1</td>
+<td>确认</td>
+<td>4 / 16</td>
+<td style="text-align: right;">8 / 9</td>
+<td style="text-align: right;">4 / 2</td>
+<td style="text-align: right;">2 / 5</td>
+<td style="text-align: right;">3 / 1</td>
+</tr>
+<tr>
+<td>L25/N2747 +1</td>
+<td>开发</td>
+<td>4 / 16</td>
+<td style="text-align: right;">2 / 0</td>
+<td style="text-align: right;">0 / 0</td>
+<td style="text-align: right;">21 / 24</td>
+<td style="text-align: right;">1 / 0</td>
+</tr>
+<tr>
+<td>L25/N2747 +1</td>
+<td>确认</td>
+<td>4 / 16</td>
+<td style="text-align: right;">7 / 0</td>
+<td style="text-align: right;">0 / 0</td>
+<td style="text-align: right;">16 / 24</td>
+<td style="text-align: right;">1 / 0</td>
+</tr>
+</tbody>
+</table>
+<p>读法（按冻结规则 r01 §5）：</p>
+<ul>
+<li><strong>受干预历史内部状态参与维持</strong>（撤针不改善、无针重建改善）：L2/N5063 +1 证据最强，开发锚点 4/4、新题确认 18/20（k=4）与 9/9（k=16）。L12、L13 各有一部分。（推导）</li>
+<li><strong>当前持续注入参与维持</strong>（撤针即改善）：L12、L13 在 k=4 时是最常见的一类之一，但比例随面板变化（L12 开发 11 对 7、确认 8 对 10）。（推导）</li>
+<li><strong>已生成文字可能参与维持</strong>（无针重建仍异常）：分叉越晚越多；L25 在 k=16 两个面板均 24/24（C6 成立）。这一读数不能排除“文字历史本身已构成循环”以外的原因，不断言唯一根因。（推导，根因未定）</li>
+<li>反向模式（撤针恢复、重建反而异常）在 L13 出现 3–4 例，作为反例保留。</li>
+</ul>
+<h2 id="4">4. 有限局部替换</h2>
+<p>候选在读机制结果前按规则 r02 冻结（<code>5e8a886</code>），只替换预测步 0 的单一组件输出。</p>
+<p><strong>开发面板</strong>：</p>
+<ul>
+<li>S1 首步停止（L0/N4146 +1，24 输入）：L0 MLP 与 L3 attention 的 repair 均 24/24 仍首步 EOS；reverse 均 0/24；邻近组件同样 24/24；自替换与原回答一致。<strong>无修复、无反向重现。</strong></li>
+<li>S2 内容错误（L13/N248 +1，22 输入）：L13 MLP repair 后异常 16、有针自替换 19、邻近 17；4 例仅候选修复、2 例仅邻近修复、1 例新增异常。L15 attention repair 后异常 18、邻近 19。reverse 0/22；另一事实来源几乎不产生 other_fact。<strong>未见局部特异性修复。</strong></li>
+</ul>
+<p><strong>确认面板</strong>：在全部 24 个确认输入上复验同一 4 个候选（<code>patch-confirmation-r01</code>，第二读者 22/22 一致）。</p>
+<ul>
+<li>S1（L0/N4146 +1）：L0 MLP 与 L3 attention repair 均 24/24 仍首步 EOS，reverse 均 0/24，邻近组件 24/24，另一事实来源 22/22 EOS（2 例长度不匹配 NA）。<strong>复现开发结论：无修复、无反向重现。</strong></li>
+<li>S2（L13/N248 +1）：L13 MLP 有针自替换异常 17、repair 16、邻近 16；3 例仅候选修复、1 例仅邻近修复、2 例新增异常。L15 attention repair 异常 17（与自替换相同）、邻近 18，0 例修复；reverse 1/24 出现矛盾。另一事实来源各 1 例 other_fact。<strong>复现开发结论：无局部特异性修复。</strong></li>
+</ul>
+<p>读法：在“预测位置、单组件”这一局部尺度上，两类症状没有找到所选位点的局部因果贡献；与 §3 中“早层停止由提示前部多位置写入驱动”相容。不排除多位置或多组件的联合作用。</p>
+<h2 id="5">5. 早层猜想推进到哪里</h2>
+<ul>
+<li><strong>得到支持（开发 + 新题确认，预测冻结在前）</strong>：在尺度校准的单通道与共同方向写入下，早层比中后层<strong>更容易让回答脱离任务</strong>，且这种深度差异不只由原生方向造成。</li>
+<li><strong>不支持原表述</strong>：早层脱离任务的主要形态是<strong>停止竞争压过作答</strong>（首步 EOS），而不是“题目信息不再约束答案、改答另一事实”。后一形态更多出现在中层。若坚持“早层削弱题目约束”，需要另行说明为何约束削弱表现为停止而非错答——本实验没有这一证据。</li>
+<li><strong>机制</strong>：早层首步停止由提示前部的写入驱动，单位置写入不足；对能分叉的早层条件（N5063），撤针不恢复而无针重建恢复，支持受干预历史内部状态参与维持。中后层的维持随分叉时间由“当前注入”转向“已生成文字”。</li>
+<li><strong>竞争解释仍在</strong>：①停止/EOS 竞争的直接偏置（早层写入抬高 EOS）与“题目信息可用性下降”在首步读数上尚未分离——本轮没有在首步对比本事实候选与 EOS 的竞争差值以外的内部读数；②与 sink/首 token 形成层相关的解释（相关工作审计 C5）本轮未检验；③L25 的文字维持可能只是循环自持。</li>
+<li><strong>下一步可执行</strong>：在首步同时读出 EOS 优势与两事实候选 logprob 差，检验“事实敏感性保留而停止竞争升高”；对首步停止做多位置（提示前部）替换以定位写入作用的位置范围；对 N5063 型条件扩大可分叉样本。</li>
+</ul>
+<h2 id="6">6. 交付清单</h2>
+<ul>
+<li>原文与 token：<code>exports/*-answers.jsonl.zst</code>（全部 4632+1210+552+3480+1440+576 条记录的原文、token、停止原因、逐步 stop advantage、候选 logprob）；完整原始记录（含逐步读数、校准、写入审计、donor）保存在 gqa-h20 实验目录与本地 zstd 归档，SHA 见 <code>readiness/raw-archive-manifest.json</code> 与 <code>readiness/archive-verify-*.json</code>。</li>
+<li>盲读：<code>reading/*/packets</code>、<code>labels</code>、<code>second-read</code>、<code>lock.json</code>、<code>key.json.zst</code>、<code>joined.json.zst</code>；第二读者一致率开发 263/268、机制 55/55、替换 19/19、确认 279/281、机制确认 68/71（fact 标签）。读者口径分歧（首尾答案冲突、只复述题面、“无法判断”归类）逐条保留在读者报告与 note 中，未以多数票覆盖。</li>
+<li>规则与锁定：<code>readiness/reading-and-selection-rules-r01</code>、<code>patch-candidate-rules-r02</code>、<code>development-interpretation-r01</code>、<code>mechanism-selection-r01/r02</code>、各 stage gate 与正式授权。</li>
+<li>失败与偏离：<code>readiness/preflight-failure-r02.json</code>、<code>preflight-failure-r03.json</code>；EXECUTION 决策日志。</li>
+</ul></main></html>

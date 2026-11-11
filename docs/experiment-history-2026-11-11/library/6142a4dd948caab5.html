@@ -1,0 +1,144 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>合同 r01（草案，未冻结）：跨模型实验 A——固定文字下的历史×当前干预</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="r01-a">合同 r01（草案，未冻结）：跨模型实验 A——固定文字下的历史×当前干预</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cross-model-history-current-v1-2026-11-02/CONTRACT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cross-model-history-current-v1-2026-11-02/CONTRACT.zh-CN.md">固定提交原件</a>；SHA-256：<code>6142a4dd948caab53b7cd90bf7fb3d9bf4c09580aa0dc7379335294a053e7f59</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="r01-a_1">合同 r01（草案，未冻结）：跨模型实验 A——固定文字下的历史×当前干预</h1>
+<p>日期：2026-11-02。依据：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cross-model-foundation-v1-2026-11-02/PLAN.zh-CN.md">PLAN r3</a>（a93917f）§2–§5、§7–§11；<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/f0-receipts-cross-model-2026-11-01">F0 收据</a>。共用代码：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cross-model-foundation-common-v1-2026-11-02"><code>../cross-model-foundation-common-v1-2026-11-02/</code></a>。决策日志：同目录 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cross-model-foundation-common-v1-2026-11-02/DECISIONS.zh-CN.md">DECISIONS</a>。</p>
+<p><strong>状态：草案 r03</strong>（加 m、写入验收与 G9 的 m 误差；r02 代码只编译与 CPU 测试通过，尚未上卡执行）。冻结前必须同时满足：(1) 四模型 F1 预检全部闸门判定完成并登记；(2) §4.1 量程校准产出共同 d_high / d_low；(3) storage-receipt 按 §10.1 公式给出 Q，且实测深包字节数可装下；(4) DECISIONS 中标"待决"的条目已由计划所有者裁决。冻结时记录代码提交哈希与 freeze 文件 sha256。本文件不构成正式采集授权。</p>
+<h2 id="1">1. 身份与环境</h2>
+<table>
+<thead>
+<tr>
+<th>模型键</th>
+<th>路径</th>
+<th>版本身份</th>
+<th>层数 / 隐藏维 / MLP 中间维</th>
+<th>取层（§4）</th>
+<th>取层的 mixer</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>qwen35_4b</td>
+<td>/data/models/Qwen3.5-4B-851bf6e</td>
+<td>HF 851bf6e8…</td>
+<td>32 / 2560 / 9216</td>
+<td>3, 15, 26</td>
+<td>全注意力、全注意力、线性注意力（相邻层均为线性注意力；26 的下一层为全注意力）</td>
+</tr>
+<tr>
+<td>qwen3_4b</td>
+<td>/workspace/models/Qwen3-4B-1cfa9a72</td>
+<td>HF 1cfa9a72…</td>
+<td>36 / 2560 / 9728</td>
+<td>3, 17, 29</td>
+<td>全注意力</td>
+</tr>
+<tr>
+<td>llama32_3b</td>
+<td>/workspace/deployed_regime/models/Llama-3.2-3B-Instruct</td>
+<td>ModelScope 镜像文件哈希（未独立核验 HF 官方权重）</td>
+<td>28 / 3072 / 8192</td>
+<td>2, 13, 22</td>
+<td>全注意力</td>
+</tr>
+<tr>
+<td>falcon_h1_3b</td>
+<td>/workspace/models/Falcon-H1-3B-Instruct-01087ec4</td>
+<td>HF 01087ec4…</td>
+<td>32 / 2560 / 6144</td>
+<td>3, 15, 26</td>
+<td>每层并行 attention + Mamba-2</td>
+</tr>
+</tbody>
+</table>
+<p>环境：<code>/workspace/acupuncture/.venv-bench</code>，torch 2.6.0+cu124，transformers 5.20.2；BF16 权重，<code>attn_implementation="eager"</code>；<code>torch.use_deterministic_algorithms(True, warn_only=True)</code>，<code>CUBLAS_WORKSPACE_CONFIG=:4096:8</code>；batch 1；无采样。Qwen3.5 只用文本路径（<code>Qwen3_5ForConditionalGeneration</code>，与 10-29 资产一致），不启用 MTP。停止集合取各模型 generation_config（Qwen3.5 无此文件时取 config）并并入 tokenizer eos：Qwen3.5 [248044, 248046]，Qwen3 [151643, 151645]，Llama [128001, 128008, 128009]，Falcon [11, 228]。对话模板：Qwen 系 <code>enable_thinking=False</code>；Llama <code>date_string="26 Jul 2024"</code>（模板默认读当天日期，必须固定，D6）；Falcon 无参数。四模型都已验证"模板渲染文本重新分词 == 模板直接分词"。</p>
+<h2 id="2">2. 输入</h2>
+<p><code>panel.py</code>，面板 sha256 <code>e7f9e4f066690f9c2c120e5bb42e872bbcf5d74a34a5812b9114ddda357f4b4e</code>。36 情景（12 开发 / 12 分析 / 12 锁定，每份每任务族 4），每情景 7 行记录（D1），两事实版本互换目标行与一个干扰行的被问值。锁定包使用另一套措辞模板（行格式、引导语、问句、指令均不同）。四模型 token 数：Qwen3.5 174–208、Qwen3 172–207、Llama 185–216、Falcon 194–234，均在 128–256。</p>
+<p>A 指令（主/锁定）：<code>Answer with exactly one of these two options: {c1} or {c2}. Reply with the option only.</code> / <code>Choose one option, {c1} or {c2}, and write only that option.</code> 两候选在同一情景两事实中的显示顺序相同，跨情景正确项先列 18/36。候选续写不加前导空格（助手轮在模板换行之后开始，D2），由"提示+候选"整体分词前缀相等核验；四分词器下候选长度 1–5 token，无切分失败。</p>
+<h2 id="3">3. 操作</h2>
+<ul>
+<li><strong>P / q</strong>：q 为最后一个提示 token（四模型均为模板的换行 token）；P 为其余全部。</li>
+<li><strong>H 操作位置</strong>：字符区间完全落在记录块内的 token（四模型跨界 token 数均为 0）。</li>
+<li><strong>针</strong>：每模型每层 <code>needle_set</code>：原生通道 = <code>random.Random("20261102|&lt;模型键&gt;|&lt;层&gt;|native").sample(range(中间维), 4)</code>；随机方向 j∈{0,1} = 以 <code>sha256("20261102|&lt;模型键&gt;|&lt;层&gt;|dir&lt;j&gt;")</code> 前 15 位十六进制为种子的 float64 标准高斯，单位化。冻结于运行前，与任何输出无关。</li>
+<li><strong>写入</strong>：要求写入范数 N = |d|·s·√H。s = 开发 12 情景 × 2 事实 A 输入的清洁运行中，该层 MLP 前残差（pre-MLP norm 的输入）逐位置 RMS 的中位数，<strong>去掉第 0 位置</strong>（注意力汇点范数异常，D3）。原生针在 down_proj 输入第 c 维加常数 a = sign·N/‖m·W[:,c]‖，m 为 MLP 输出乘子（Falcon 0.078125，其余 1）；方向针在 MLP 模块输出加 sign·N·u。实际写入按位置记录（重算同 dtype 清洁输出求差）。</li>
+<li><strong>四格</strong>：00/01 共享清洁 P 缓存，10/11 共享有针 P 缓存；每格从 deepcopy 出发处理 q；q 之后不注入；候选逐 token 在 deepcopy 上单 token 前向评分。</li>
+<li><strong>已有缓存时只许单 token 前向</strong>（HF 混合层只在 seq_len==1 读恢复状态），引擎断言。</li>
+</ul>
+<h2 id="4">4. 读数</h2>
+<p>主 Y = 两候选完整对数似然的二元 softmax 中正确项的概率；H、C、J 按 PLAN §5 A2。</p>
+<p><strong>预注册次级分析（r03，D9→D17）</strong>：m = log P(正确候选) − log P(错误候选)（两候选完整 token 序列的对数似然差，float32 log_softmax、双精度求差），及其四格差 H_m、C_m、J_m，与 Y 并列报告。预检 r01 干净 m 为 8.4–38.9 奈特，Y 在 0.99984–1.0（真实高置信，不是计算舍入）。m 只增加测量分辨率：m 的变化不自动解释为行为变化；不为打破 Y 饱和而加大剂量。m 的可分辨性以同条件数值噪声底标定（§5 G9 的 m 差；对数似然在该量级有约 0.06–0.25 奈特的 BF16 粒度），低于噪声底的 H_m 报"不可分辨"。m 不进入 PLAN §9.2 的四档判读与 δ，后者只作用于 Y；若计划所有者要为 m 设判读阈值，需在采集前另行写入。</p>
+<p><strong>r03 补充（D17、D19）</strong>：A 保持现任务；正式剂量 d_high=3/4、d_low=3/8（3/8 以 D18 写入验收为准）。校准显示在 3/4 下 Y 变化中位数 ≤1e-4（天花板），m 变化中位数 0.9–7.7 奈特；因此 H_m、C_m、J_m 列为事前固定的次级分析，按情景 cluster 给区间、报告分布。m 的四格结论只在通过 D19 跨路径一致性的模型 × 剂量上进入解释。若正式结果只有 m 改变而 Y 与交付几乎不变，交付表述为"答案相对支持程度的变化及其模型差异"，不写成正确率下降或行为损伤；不为获得翻转追加剂量或换任务。</p>
+<p>其他辅助：首步停止集合概率、贪心首步是否停止、熵、top-32、完整 logits（fp16，轻记录）。分析规则、δ=0.05、四档判读、区间与多重性一律按 PLAN §9，不在此重述、不改。</p>
+<h2 id="5-plan-8-preflight">5. 工程闸门（PLAN §8 映射；预检实测见 PREFLIGHT 报告）</h2>
+<table>
+<thead>
+<tr>
+<th>编号</th>
+<th>检查</th>
+<th>判据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>G1</td>
+<td>权重前后哈希</td>
+<td>相等</td>
+</tr>
+<tr>
+<td>G2</td>
+<td>P 缓存复用 / 重复 prefill</td>
+<td>logits 逐位相等</td>
+</tr>
+<tr>
+<td>G3</td>
+<td>记录器开关</td>
+<td>逐位相等</td>
+</tr>
+<tr>
+<td>G4</td>
+<td>挂钩已装、无激活位置</td>
+<td>逐位相等</td>
+</tr>
+<tr>
+<td>G5</td>
+<td>零剂量全激活</td>
+<td>逐位相等</td>
+</tr>
+<tr>
+<td>G6</td>
+<td>缓存深拷贝隔离</td>
+<td>分支前后共享缓存指纹相等</td>
+</tr>
+<tr>
+<td>G7</td>
+<td>非激活位置</td>
+<td>注入层 MLP 输出改变量严格为 0</td>
+</tr>
+<tr>
+<td>G8</td>
+<td>实际写入验收（r02，D4）</td>
+<td>每个激活位置同时记录目标范数与实际写入向量，报告：范数比、实际写入与目标方向的余弦、带符号投影比、同（输入、层、针）正负剂量的投影比差。PLAN §8.6 的 ≤1% 不放宽：某剂量档若不满足，该档在报告中标"实际写入偏离目标"，分析一律用实际写入量，不把目标剂量当实际剂量；是否仍用于主比较由计划所有者在校准结果出来前裁决</td>
+</tr>
+<tr>
+<td>G9</td>
+<td>分段（P+q）对整段 prefill</td>
+<td>不要求逐位；贪心一致，且 Y 差 ≤0.005、<strong>m 差同时报告</strong>；m 差的最大值作为 m 的数值噪声底（D7、D9）</td>
+</tr>
+<tr>
+<td>G10</td>
+<td>新进程从磁盘快照重算四格</td>
+<td>logits 逐位相等、Y 差 0</td>
+</tr>
+<tr>
+<td>G11</td>
+<td>深包分片关闭—重读—SHA256</td>
+<td>全部一致</td>
+</tr>
+</tbody>
+</table>
+<p>任一 G1–G7、G10、G11 失败：停止该模型 worker，修实现，不改剂量或换模型。</p>
+<h2 id="6">6. 深记录与存储</h2>
+<p>PLAN §7.2–§7.3 与 §10.1 原样适用：384 逻辑格（2 情景、每情景一个事实），局部轨迹位置 = 记录块首、1/3、2/3、末与 q；全层保存 block 输入、MLP 前残差、MLP 写入、最终表示（Falcon 另存 attention 与 SSM 写入）；P 末完整缓存。预检实测单个完整 A 深包字节数见 PREFLIGHT 报告，用于冻结前的容量核算。</p>
+<h2 id="7">7. 规模与停止</h2>
+<p>PLAN §5 A3 与 §11 不变：先开发量程校准（§4.1）、再 S0 小批次（四模型 × 分析集前 3 情景）、过扩容门后补齐。扩容只看工程与容量条件，不看结果。</p></main></html>

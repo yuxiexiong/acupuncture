@@ -1,0 +1,253 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>WSP 在视觉语言模型上的两个应用方向：已有方法、缺口与选题判断</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="wsp">WSP 在视觉语言模型上的两个应用方向：已有方法、缺口与选题判断</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>docs/literature/wsp-vlm-two-directions-assessment-2026-11-05.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/docs/literature/wsp-vlm-two-directions-assessment-2026-11-05.zh-CN.md">固定提交原件</a>；SHA-256：<code>334d2d8216ad8448a7124046077dabc9c3b8cf340236636eff2cfafebc1361e4</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="wsp_1">WSP 在视觉语言模型上的两个应用方向：已有方法、缺口与选题判断</h1>
+<p>日期：2026-11-05。性质：定向文献核查与选题评估；没有运行模型、复现论文或形成可执行实验方案。</p>
+<h2 id="_1">结论</h2>
+<p><strong>优先考虑方向一：图像与典型常识冲突时，修复模型依据当前图像回答的能力。方向二——长推理中的视觉依据丢失——学术上限更高，但作为第一项工作，成功条件更复杂。</strong> 两个问题都有明确学术关注，也都有相当接近的解决方法。不能以“首次不用训练修复 VLM”“首次编辑视觉依据”作为创新。</p>
+<p>本报告沿用用户定义：WSP 是后训练阶段的稀疏权重修补，研究者 AI 根据目标模型的测试反馈反复诊断、提出和修改补丁。最后交付的是冻结的权重补丁。AI 的诊断能力有助于搜索，但不保证存在小而有效的补丁。</p>
+<p>值得追求的成果是：<strong>少量参数的永久修补，能在未见图像上改善正确的证据使用，同时保留已有能力；效果或代价相对于直接近邻有明确优势。</strong> “用了 AI”“参数少”“推理时不加步骤”均不能独立支撑强贡献。</p>
+<h2 id="_2">一、方向一：视觉事实与常识冲突时，模型仍回答常识</h2>
+<h3 id="_3">痛点为什么成立</h3>
+<p>问题不是一般的图像识别分数低，而是模型面对清晰的非典型实例，仍使用典型属性作答。例如图片中兔子有四只耳朵，模型却回答通常的两只。这里的“先验”可能来自语言和视觉学习，不预先断言错误只在语言模块。</p>
+<p><a href="https://arxiv.org/html/2605.17826v2">CounterCount v2</a> 用事实与反事实属性计数对检验这一问题：16 个 VLM 的 MCQ 平均准确率为 91.6% 与 49.5%，人类为 98.9% 与 97.5%。其 554 对样例包含 1,003 张独立图像，覆盖 379 种主体、228 种属性；图像经生成和人工核验，不能当作自然图像总体分布的估计。论文中，提示提醒与局部注意力干预都只有部分改善。</p>
+<p>更早的 <a href="https://vlmsarebiased.github.io/">Vision Language Models are Biased</a> 也在动物、标志、棋盘等任务报告这一现象。因此，贡献空间在于有效修复和泛化，而不是再证明模型会被熟悉外观误导。</p>
+<h3 id="_4">已有方法做到哪了</h3>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>已有成果</th>
+<th>对我们构成的边界</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CounterCount 的提示与注意力调制</td>
+<td>提示提醒平均改善 CF MCQ 4.3 个百分点。注意力调制在 14 个开放权重模型平均改善 3.3 点</td>
+<td>后者使用标注区域，并在 12 种配置中为每个模型选择最好者；作者明确称为上界诊断，不能视作无标注、冻结后的通用修复</td>
+</tr>
+<tr>
+<td><a href="https://aclanthology.org/2025.emnlp-main.1262/">Pixels Versus Priors，EMNLP 2025</a></td>
+<td>用“这一个物体”与“多数这类物体”提示的激活差构造向量，在若干层运行时注入，控制图像与常识的取舍</td>
+<td>正式版报告颜色 99.3%、大小 80.8% 的先验→反事实翻转率，但作用于原本答错的子集；不是所有题的编辑后准确率，也不是冻结的稀疏权重补丁</td>
+</tr>
+<tr>
+<td><a href="https://openaccess.thecvf.com/content/CVPR2025/papers/Yang_Nullu_Mitigating_Object_Hallucinations_in_Large_Vision-Language_Models_via_HalluSpace_CVPR_2025_paper.pdf">Nullu，CVPR 2025</a></td>
+<td>利用真实／幻觉回答对提取 HalluSpace，以投影直接编辑模型权重，降低物体幻觉</td>
+<td>已占据“训练后、静态权重编辑、推理不额外干预”位置</td>
+</tr>
+<tr>
+<td><a href="https://arxiv.org/html/2602.18711v1">HIME</a>、<a href="https://arxiv.org/html/2608.08167v1">Wiener Representation Filtering</a></td>
+<td>分别研究按层选择编辑、连续谱滤波以控制幻觉与能力损失</td>
+<td>层选择和编辑强度的取舍也有近邻；不能仅把全层编辑改成少数层就主张解决了新问题</td>
+</tr>
+<tr>
+<td><a href="https://arxiv.org/html/2609.36440v1">DARE</a></td>
+<td>同时利用真实／幻觉文本差、生成时的状态转变和物体移除的图像对，编辑 FFN 与注意力输出权重</td>
+<td>已有“图像反事实＋生成反馈＋静态权重编辑”，是最需要正面对比的近邻之一；其主评估是物体幻觉与通用感知，不等于解决非典型属性计数</td>
+</tr>
+<tr>
+<td><a href="https://arxiv.org/html/2606.26387v1">VIGIL</a></td>
+<td>用视觉反事实约束配合偏好优化，改善模型对图像的依赖；论文实现使用全参数微调</td>
+<td>“训练目标直接奖励使用视觉证据”也已有方法。若声称修补比训练更划算，需要计入 AI 搜索与试错成本</td>
+</tr>
+</tbody>
+</table>
+<p>CounterCount 数字来自其 v2 第 4 节及附录 C.8；PvP 数字来自正式版表 3 和第 5.3 节，不能与旧 arXiv 摘要的 92.5%／74.6% 混用。各论文模型、数据和指标不同，不做跨论文数值排名。</p>
+<p>PvP 还有一项重要反例：在其颜色和大小任务，模型回答“这张图片”本来就常常正确；反而在问“通常是什么”时，被反事实图像带偏。<strong>修复目标必须尊重问题要求，不能一概压低常识。</strong> 同样一张蓝草莓图片，“这颗是什么颜色”与“草莓通常是什么颜色”应该允许不同正确答案。</p>
+<h3 id="_5">真正剩下的缺口</h3>
+<p>本次直接近邻核查后，仍值得验证的是：<strong>能否用一个冻结的稀疏权重补丁，改善未见实例中的图像条件判断，同时保住正常实例与常识问题的正确性？</strong> 尚未找到上述文献已经完整证明这一组合目标；这不构成全领域“无人做过”的证明。</p>
+<p>缺口的核心不是把答案往“不寻常”方向推，而是让答案随证据正确变化。事实图和反事实图都答对，比反事实题平均涨分更有辨别力。对当前图像的回答正确，同时对一般知识的回答仍正确，才能排除“普遍反常识”补丁。</p>
+<p>从“计数”开始有利于取得明确答案，但只在一种物体、一种数字或一个生成器风格上成功，贡献会很窄。题目可以定位为视觉与先验冲突下的证据使用修复；最终声称的广度必须跟随实际覆盖的对象与属性，不能由计数结果直接推出全部视觉推理改善。</p>
+<h3 id="_6">为什么稀疏权重修补可能有效</h3>
+<p><strong>已有支持：</strong> PvP 表明这类取舍能被内部干预改变；CounterCount 的重加权改善说明部分错误所需的信息已可利用；Nullu 与 DARE 表明相关行为可以通过静态权重编辑改变。<a href="https://arxiv.org/abs/2606.06890v2">Diagnosing Visual Ignorance in VLMs</a> 也报告了中间表征可读出证据与后续输出利用之间的差距。</p>
+<p><strong>我们的推断：</strong> 如果一部分错误来自已有视觉信号在后续计算中被压过，修改少量相关通道的贡献，可能恢复已有能力，不必重新学会完整视觉识别。研究者 AI 可以从失败类型反馈中不断修订候选补丁，而不只照搬一次固定投影。</p>
+<p><strong>未证实的关键：</strong> 内部可读出、某个头必要、动态干预有效，都不推出存在可泛化的稀疏权重补丁。若编码器没有保留可区分的细节，或者正确计算需要分散的大范围改动，少量后端编辑可能无效。少数通道也可能同时服务多个任务，稀疏不自动等于副作用小。</p>
+<h3 id="_7">做出来，贡献够不够大</h3>
+<ul>
+<li><strong>偏弱：</strong> 在 CounterCount 涨几分；只比较原模型；展示几个 AI 找到的神经元；仅报告反事实题，不报告原本正确题的变化。这更像方法移植或案例展示。</li>
+<li><strong>有力：</strong> 对同一目标模型，冻结补丁在未见对象或属性上改善成对正确性，保留普通任务表现；相对 PvP、DARE 等合理适配后的方法，表现出更好的修复效果、能力保留或搜索成本取舍。无需把全部内部机制解释清楚，仍可以是一篇扎实的方法论文。</li>
+<li><strong>更强：</strong> 进一步证明修复的是可推广的证据使用行为，具有跨模型的可重复发现能力，而非一次幸运搜索。跨模型应区分“同一发现流程重新找到补丁”与“同一个补丁直接迁移”，后者不是必要条件。</li>
+</ul>
+<p>若简单提示、PvP 或 DARE 在相同条件下已经取得同等效果和保留能力，而稀疏性没有带来实质优势，就不应继续以“参数更少”包装成大贡献。</p>
+<h2 id="_8">二、方向二：多模态长推理中丢失视觉依据</h2>
+<h3 id="_9">痛点要怎样准确表述</h3>
+<p>关注的是需要反复引用图像信息的推理任务：模型后续推导开始依据自己写下的错误描述，或忽视当前推理仍需要的图像细节，最后答案受损。不能把它笼统写成“想得越久越差”，也不能把视觉注意力降低直接当作失败。</p>
+<p><a href="https://arxiv.org/html/2505.21523v3">More Thinking, Less Seeing?</a> 比较了推理模型与其基座，提出 RH-Bench 与 RH-AUC 来评估推理能力和感知可靠性的取舍。它自己也报告长度影响非单调。论文用预算限制、续写提示和潜在状态引导控制长度；这些操作还会改变生成行为，因此不能将全部差异归因于经过了更多 token。</p>
+<p><a href="https://arxiv.org/html/2604.04207v1">Don’t Blink</a> 提供了重要限定：视觉注意力降低可以伴随准确率改善；风险取决于任务是否持续需要图像、以及模型生成状态。已经提取完所需信息后，继续抽象推导时减少看图可以是正常现象。</p>
+<h3 id="_10">已有方法做到哪了</h3>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>已有成果</th>
+<th>尚未等同于我们想做的事</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://arxiv.org/html/2603.14184v2">VRGA / Deeper Thought, Weaker Aim</a></td>
+<td>用头级视觉注意力特征选出相关视觉 token，在生成时增强；运行方法不要求真实标注区域</td>
+<td>是输入相关的运行时干预；其主要诊断包含 CoT 提示与直接作答的比较，不能直接等同于所有原生长推理模型的预算扩展。结果也非处处获益</td>
+</tr>
+<tr>
+<td><a href="https://arxiv.org/html/2608.04385v1">ReGround</a></td>
+<td>用约 6.8 万条轨迹 SFT，再 GRPO，学习自诊断并重新插入图像。7B 模型 MathVista 68.2→72.0、HallusionBench 64.7→71.5</td>
+<td>已实现可学习的视觉重审。论文效率子集上总 token 为 1.62 倍、延迟为 1.76 倍；细粒度或分散证据仍有局限</td>
+</tr>
+<tr>
+<td>VIGIL</td>
+<td>直接通过训练约束视觉依赖，兼顾视觉任务与文本能力</td>
+<td>并非只能靠推理时插件；“一次改好后正常推理”也有训练路线</td>
+</tr>
+<tr>
+<td>DARE</td>
+<td>静态编辑已纳入自回归过程的状态变化</td>
+<td>不能声称首次考虑生成动态；但物体描述中的局部幻觉转变，与长推理预算下保持视觉依据是不同评估目标</td>
+</tr>
+<tr>
+<td>Don’t Blink 的风险筛选</td>
+<td>用状态特征识别部分危险回答，报告选择性预测收益</td>
+<td>筛掉部分样例后提高保留集准确率，不等同于修好所有样例的模型</td>
+</tr>
+</tbody>
+</table>
+<p>VRGA 的收益随模型和任务变化，例如 Qwen2.5-VL-7B 的 HaloQuest 为 66.67→73.96，而 Qwen3-VL-30B 为 69.20→68.05；不宜用某个最大提升代表普遍稳定改善。上述数字只能在各论文对应设置内部解释。</p>
+<p>ReGround 重新插入图像改变其在序列中的位置与可访问方式。若仍使用相同像素、预处理及视觉编码，它并未凭空补回编码器没读到的信息；不能把“重新看图有效”简单推成“原模型视觉能力完全没有问题”。</p>
+<h3 id="wsp_2">剩下的缺口与 WSP 的机会</h3>
+<p>更有价值的问题是：<strong>能否通过后训练稀疏权重修补，让模型在需要视觉依据的长推理中持续正确利用图像，在保留推理收益的同时减少额外视觉重审的依赖？</strong> 目标不是提高注意力数值，而是改善推理正确性与视觉事实忠实度之间的取舍。</p>
+<p>可行性来自两类已有观察：特定视觉处理路径有可干预性；静态编辑能影响后续自回归行为。我们的假设是，若某些失败来自重复发生的、可定位的计算偏置，固定补丁可能在多个生成步骤反复起作用。</p>
+<p>难点比方向一更大。不同步骤需要的图像区域和信息不同，错误还可能混合早期误读、历史文本污染、真正的推导错误与不合适的推理预算。VRGA 的逐输入选区域、ReGround 的诊断与重插入，都不保证能被一个小的静态补丁替代。泛化的固定“增强视觉”还可能干扰已经进入符号计算的步骤。</p>
+<h3 id="_11">贡献门槛</h3>
+<p>只提升视觉注意力、让模型少想一点，或只在短感知题上减少幻觉，均不足以支撑“修复长推理中的视觉依据”。有分量的结果应当显示：在确实需要多步视觉推理的任务上，补丁提高实际答案质量，保留推理带来的收益，并相对合理预算设置、VRGA、ReGround 等路线有清楚的效果或成本优势。</p>
+<p>若能做到这一点，学术意义较大：它回应多模态测试时计算能否持续带来收益，而不只是部署省几次调用。但这一意义取决于结果，不能仅因标题包含“长推理”就预判贡献更高。</p>
+<h2 id="_12">三、稀疏修补相对已有编辑，究竟特殊在哪</h2>
+<p>必须区分稀疏支持与低秩。设编辑为 ΔW：低秩限制 rank(ΔW)，稀疏支持限制实际发生变化的参数位置；低秩矩阵通常仍可有大量非零元素。少数层、少数方向、少数神经元列和少数标量也不是相同的编辑规模。Nullu / DARE 一类投影不能仅因子空间维度低就称作同一种参数支持稀疏。</p>
+<p>固定补丁也不意味着对所有图片施加同一个常数偏置。在被编辑线性层处，直接增量为 Δy = ΔW·a(x,t)，因原有激活依赖输入和生成位置，效果可以随上下文变化。这是代数事实；是否足以实现正确的情境选择，则仍是待验证假设。</p>
+<p>但参数支持稀疏不是天然优势：稠密的离线编辑同样可以并入原权重，正常推理时不增加运算步骤。我们需要说明较少的改动换来了什么——更好的能力保留、更多未见任务的收益、更低的发现成本或更容易复用的修复流程，而不能只报一个很小的百分比。</p>
+<p>AI 研究者闭环的潜在价值，是根据错误反馈改变补丁位置、作用和强度。若论文只主张应用效果，可把 AI 视为发现工具并完整记录过程；若主张 AI 闭环优于固定算法，则需要对应的比较与重复发现证据。无论哪一种，搜索阶段的评估调用、试错和失败补丁都属于成本，最终测试不能继续给搜索者反馈。</p>
+<h2 id="_13">四、选择建议</h2>
+<table>
+<thead>
+<tr>
+<th>判断维度</th>
+<th>方向一：图像与先验冲突</th>
+<th>方向二：长推理视觉依据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>学术问题</td>
+<td>明确：模型能否根据当前证据纠正典型预期</td>
+<td>重要：更多推理能否保留视觉可靠性</td>
+</tr>
+<tr>
+<td>失败能否清楚识别</td>
+<td>较容易，有成对图像与明确答案</td>
+<td>较难，长度、任务与生成状态交织</td>
+</tr>
+<tr>
+<td>静态稀疏补丁适配依据</td>
+<td>有激活控制与静态编辑两条近邻支持，但尚无充分保证</td>
+<td>有路径干预依据，动态策略能否静态化更不确定</td>
+</tr>
+<tr>
+<td>最大新颖性压力</td>
+<td>PvP 已控制图像／常识取舍，DARE 已做视觉反事实权重编辑</td>
+<td>VRGA、ReGround、VIGIL 等已直接处理视觉依据</td>
+</tr>
+<tr>
+<td>值得做的成果</td>
+<td>泛化的证据使用改善及能力保留，超过输出偏好调节</td>
+<td>保留长推理收益，同时减少视觉失真与修复开销</td>
+</tr>
+<tr>
+<td>当前建议</td>
+<td><strong>优先</strong></td>
+<td><strong>保留候选，不作为首项必做扩展</strong></td>
+</tr>
+</tbody>
+</table>
+<p>推荐研究问题：<strong>研究者 AI 能否通过后训练稀疏权重修补，让 VLM 在视觉事实与典型常识冲突时，更可靠地依据问题要求使用当前图像，并保留既有能力？</strong> 计数可以作为清晰入口，广泛能力改善必须用相应证据支持。</p>
+<p>这项判断并不替代 Acupuncture 已有机制线，也不要求先弄清 WSP 的完整机制。它是独立的应用选题判断。没有为此授权或启动新实验。</p>
+<h2 id="_14">五、核查范围与证据记录</h2>
+<p>检索截止本报告日期，围绕 visual priors / counterfactual counting、activation steering / sparse weight editing / hallucination projection、multimodal long reasoning / visual grounding 三组概念，追查直接方法和重要反例。采用论文正文、正式会议页面及作者项目页；二手解读仅用于发现线索。不是系统综述，也不保证穷尽全部同题工作。</p>
+<table>
+<thead>
+<tr>
+<th>来源</th>
+<th>本次阅读层级／固定版本</th>
+<th>主要用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CounterCount</td>
+<td>arXiv 2605.17826v2；结果、诊断方法与附录</td>
+<td>方向一现象与 oracle 干预边界</td>
+</tr>
+<tr>
+<td>Vision Language Models are Biased</td>
+<td>作者项目页</td>
+<td>已有广泛关注及任务范围；不据其摘要推断编辑效果</td>
+</tr>
+<tr>
+<td>Pixels Versus Priors</td>
+<td>EMNLP 2025 正式 PDF，第 4–5 节、表 1–3</td>
+<td>最直接的取舍控制近邻，区分翻转率与总体正确性</td>
+</tr>
+<tr>
+<td>Nullu</td>
+<td>CVPR 2025 正式来源及 arXiv 2412.13817v2 方法</td>
+<td>静态权重投影已有先例</td>
+</tr>
+<tr>
+<td>HIME</td>
+<td>arXiv 2602.18711v1，方法与评估设置</td>
+<td>层选择和能力保留近邻</td>
+</tr>
+<tr>
+<td>Wiener Representation Filtering</td>
+<td>arXiv 2608.08167v1，方法与评估设置</td>
+<td>连续滤波静态编辑近邻</td>
+</tr>
+<tr>
+<td>DARE</td>
+<td>arXiv 2609.36440v1，第 3–4 节</td>
+<td>AR 信号与视觉反事实结合的静态编辑</td>
+</tr>
+<tr>
+<td>Diagnosing Visual Ignorance</td>
+<td>arXiv 2606.06890v2 摘要</td>
+<td>辅助可行线索，不作为机制或稀疏充分性的证明</td>
+</tr>
+<tr>
+<td>More Thinking, Less Seeing?</td>
+<td>arXiv 2505.21523v3，第 2–5 节</td>
+<td>长推理问题与长度操纵限制</td>
+</tr>
+<tr>
+<td>Deeper Thought, Weaker Aim / VRGA</td>
+<td>arXiv 2603.14184v2，方法与表 3</td>
+<td>运行时视觉重聚焦、非一致收益</td>
+</tr>
+<tr>
+<td>ReGround</td>
+<td>arXiv 2608.04385v1，方法、表 1–3 与效率说明</td>
+<td>学习式视觉重审及其成本</td>
+</tr>
+<tr>
+<td>Don’t Blink</td>
+<td>arXiv 2604.04207v1，分析与选择性预测</td>
+<td>注意力下降不等于能力下降</td>
+</tr>
+<tr>
+<td>VIGIL</td>
+<td>arXiv 2606.26387v1，方法与实现</td>
+<td>训练视觉依赖的近邻</td>
+</tr>
+</tbody>
+</table>
+<p>所有论文数值均为作者报告，未经我们复现。预印本不按已确认会议录用处理；并未对代码与正文一致性做完整审计。报告中的可行性与优先级是基于这些证据的研究判断，尚不是实验结论。</p></main></html>

@@ -1,0 +1,118 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>QSR-01 合同 r01：旧状态读出差异的 S／q／α 分解</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="qsr-01-r01-sq">QSR-01 合同 r01：旧状态读出差异的 S／q／α 分解</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-state-readout-decomposition-v1-2026-11-03/CONTRACT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-state-readout-decomposition-v1-2026-11-03/CONTRACT.zh-CN.md">固定提交原件</a>；SHA-256：<code>7464ef4ab172871a34d99356ee9cc2291eb0eab7035821d96bdc23e8f09748a8</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="qsr-01-r01-sq_1">QSR-01 合同 r01：旧状态读出差异的 S／q／α 分解</h1>
+<p>依据计划 <code>docs/cache-state-readout-decomposition-plan-v1-2026-11-03.zh-CN.md</code> 与自查 <code>docs/cache-qsr-self-check-v1-2026-11-03.zh-CN.md</code>（db43dd84）。授权：2026-11-03 用户“开始”（此前对同一计划说过“同意，直接写合同代码，测试后上卡跑”的工作流）。本合同冻结后记录 freeze 哈希；冻结后任何偏离记入 <code>DEVIATIONS.zh-CN.md</code>，不改本文件。</p>
+<h2 id="1">1. 问题与估计对象</h2>
+<p>QKD-01 测得：t2 竞争步上两臂实际输出差主要落在旧状态读出项 D=αSᵀq。本轮把每个配对的 ΔD <strong>精确</strong>分成 S、q、α 三个单项与一个三阶交互项，判断哪一项承担 ΔD。估计对象是两条已存在运行之间 ΔD 的代数分账，<strong>不是</strong>最终 logit 的归因、自然中介效应或“写坏”的因果证明。</p>
+<h2 id="2-qkd-01-r02">2. 固定条件（全部继承 QKD-01 r02）</h2>
+<p>模型 Qwen3.5-4B revision 851bf6e8…，BF16/eager/batch 1，torch 递推原核（无 fla/kernels/causal_conv1d）。48 条 NA 输入、6 场景、方向 N4146/N1210/R0/C1343；G=[13,14,16,17,18,20,21,22,24,25,26,28,29,30]。六臂 V/F/Rk/Ak/Rrk/Ark 与 QKD 完全相同（μ_k 取 QCO 留一场景估计，r_post,k 取 QKF rpost 与 QKD rpost-r02；k 编辑槽 [1,4)）。不重估、不重抽任何向量。</p>
+<h2 id="3">3. 观测</h2>
+<p>每臂每方向两步：t1＝提示末 token；t2＝强制输入该输入旧 F 答案首 token（QKD C 路线）。在每个 G 层核入口只读捕获 q、k、v、g、β、S（衰减与更新<strong>之前</strong>的副本）、o；FP64 重建 qn=l2norm(q)/√128、α=exp(g)、D/E/W。</p>
+<p><strong>结构性零（合同新增）</strong>：所有臂共享接收者 T 的递推状态，因此 t1 时各臂进入每个 G 层核的 S <strong>逐位相同</strong>，ΔS≡0，X_S=X_I=0；t1 只作参照，不产生 S 份额。t2 时 ΔS 等于 t1 写入差（经衰减），故 t2 的 S 份额含义是“t1 写入不同”，q/α 份额含义是“t2 读取条件不同”。工程闸门：t1 时每层 S 跨六臂 <code>torch.equal</code>；t1 的 X_S、X_I 在 FP64 下恰为 0。</p>
+<h2 id="4">4. 分解与读数</h2>
+<p>配对（前者为 1、后者为 0）：V−F、Rk−V、Ak−F、Rrk−V、Ark−F；同输入/方向/层/头/步。
+X_S=ᾱ δSᵀq̄；X_q=ᾱ S̄ᵀδq；X_α=δα S̄ᵀq̄；X_I=δα δSᵀδq/4；ΔD=ΣX（由四个交叉收缩 S_aᵀq_b 计算）。</p>
+<ul>
+<li>逐头份额 s_j=⟨X_j,ΔD⟩/‖ΔD‖²，不裁剪；同时存各项范数。</li>
+<li>可解析：‖ΔD‖ &gt; 5×(两端原核 D+E+W 重建绝对误差之和)。</li>
+<li>逐例：可解析层-头上 s_j 的中位数；|s_I| 的中位数单列。</li>
+<li>覆盖：逐例可解析比例 ≥0.90 才有效；每场景有效 ≥80% 且六场景齐全，比较才可判；否则该比较“不可判”，列缺失。</li>
+<li>汇总：场景内均值 → 六场景等权。</li>
+</ul>
+<h2 id="5-t2">5. 冻结判读（筛选规则，非显著性；主判断只用 t2）</h2>
+<ol>
+<li><strong>单分量标签</strong> j∈{S,q,α}：等权份额 ≥0.60；比 {S,q,α} 中另两项各高 ≥0.15；≥4/6 场景中 j 的场景均值在 {S,q,α} 中最高且 &gt;0；|s_I| 等权中位数 ≤0.25。否则标“mixed”。</li>
+<li><strong>候选卡</strong>：三个缺口方向（N4146、N1210、R0）上，Rk−V 与 Ak−F 都取得<strong>同一个</strong> j 标签；且在目标非首列子集上，ΔM=M(Rk)−M(V) 的场景均值 &gt;0 的场景 ≥4/6，ΔM=M(Ak)−M(F) 的场景均值 &lt;0 的场景 ≥4/6。全部满足才出卡；部分方向一致只报告范围差异，不追加实验。</li>
+<li>V−F 只作基底解释；C1343 与两随机配对同法完整报告，不要求阴性，进入卡片的解释。</li>
+<li>卡片须写出可失败的双向预测、C1343 预测与随机对照预期；写不出则记“有局部分账，无可准入因果候选”，本轮结束。不在本轮替换 S/q/α。</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>结果</th>
+<th>出口</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S 双侧一致候选</td>
+<td>ΔD 更多由当步状态差（t1 写入差）承担；下一步才考虑其形成的因果检验</td>
+</tr>
+<tr>
+<td>q 或 α 候选</td>
+<td>读取条件是下一对象；撤回预设 S 主导</td>
+</tr>
+<tr>
+<td>mixed / 方向不一致</td>
+<td>简单单项解释不足；交付差异表并停</td>
+</tr>
+<tr>
+<td>局部候选稳定但行为/对照不支持预测</td>
+<td>只完成计算分账</td>
+</tr>
+<tr>
+<td>误差/覆盖不合格</td>
+<td>工程失败或不可解析，不当科学阴性</td>
+</tr>
+</tbody>
+</table>
+<h2 id="6">6. 预注册预测（推测档，看数据前写定）</h2>
+<ul>
+<li>P1：Rk−V 与 Ak−F 在 t2 标签为 S（两臂只差 k；k 只经 t1 写入影响 t2 的 S，t2 的 q 仅经下游残差间接变化）。</li>
+<li>P2：V−F 在 t2 不是 S 单项（V/F 的卷积 q 旧槽直接不同），预测 q 或 mixed。</li>
+<li>P3：随机配对 Rrk−V/Ark−F 与对应 μ 配对标签相同（若同，则不能称共同偏移有独占计算机制）。</li>
+<li>P4：C1343 与缺口方向标签相同（同变化未必跨界）。
+P1 失败即撤回“k 经写入起作用”的读法。</li>
+</ul>
+<h2 id="7">7. 工程闸门（全部在运行中断言，任一失败即停）</h2>
+<ul>
+<li>重放：t1 logits/缓存哈希 == QKF（旧方向）/ QKD C1343 生成首步；t2 固定竞争分差 M 与 QKD 记录<strong>浮点逐位相等</strong>，t2 全词表 bf16 logits 与 QKD 存档逐位相等。</li>
+<li>供体：C/T 哈希前后不变；编辑块检查同 QKD。</li>
+<li>捕获：14 层齐；退出后无 hook、原核恢复；原核接线重放逐位一致。</li>
+<li>误差：D+E+W 重建相对误差 ≤ 继承 QKD-r02 正式阈值 0.0070732（=min(0.02,max(1e-5,2×0.0035366))，从 QKD 预检记录重算，不重定）。</li>
+<li>恒等式：FP64 四项之和与 ΔD 相对差 ≤1e−10，或 ΔD=0 时绝对 ≤1e−12。</li>
+<li>t1 结构零（§3）。</li>
+<li>预检另做观察器关闭重放：t1/t2 argmax、t2 全 logits、缓存哈希逐位相同；两预检输入保存 S 夹具。</li>
+</ul>
+<h2 id="8">8. 预算与停止</h2>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th style="text-align: right;">正式</th>
+<th style="text-align: right;">预检</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>形成（C+4T）</td>
+<td style="text-align: right;">240</td>
+<td style="text-align: right;">10</td>
+</tr>
+<tr>
+<td>形成 token 前向</td>
+<td style="text-align: right;">6375</td>
+<td style="text-align: right;">265（由 QKD 记录逐条求和核对）</td>
+</tr>
+<tr>
+<td>解码前向</td>
+<td style="text-align: right;">2304</td>
+<td style="text-align: right;">192（96 捕获+96 关闭）</td>
+</tr>
+<tr>
+<td>配对×步×方向账本</td>
+<td style="text-align: right;">1920</td>
+<td style="text-align: right;">80</td>
+</tr>
+<tr>
+<td>设备小时上限</td>
+<td style="text-align: right;">0.70</td>
+<td style="text-align: right;">0.10</td>
+</tr>
+</tbody>
+</table>
+<p>最多 2 worker；每 worker 设备秒上限＝阶段上限/worker 数（比求和更严），超限停止调度。存储 ≤20 GiB。心跳每 60 秒写 heartbeat.json。正式授权前从预检外推：每文本秒数均值×48＋2×模型加载，体积＝(预检字节−夹具字节)/2×48；超过 0.70 h 或 20 GiB 即停在预检报告。预检失败保存并停止，<strong>无自动重试</strong>；修复需新版本与授权。正式失败不加时、不改阈值、不删格。</p>
+<h2 id="9">9. 产物</h2>
+<p><code>runs/preflight-r01/</code>、<code>runs/formal-r01/</code>（大张量留服务器，记哈希与字节），<code>analysis/qsr-readouts-r01.json</code>，<code>REPORT.zh-CN.md</code>。</p></main></html>

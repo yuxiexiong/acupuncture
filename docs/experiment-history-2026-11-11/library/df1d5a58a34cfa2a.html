@@ -1,0 +1,90 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>全层单针调查：正式完成，全部原文已交付</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="_1">全层单针调查：正式完成，全部原文已交付</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/layer-survey-toy-v1-2026-10-27/EXECUTION.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-survey-toy-v1-2026-10-27/EXECUTION.zh-CN.md">固定提交原件</a>；SHA-256：<code>df1d5a58a34cfa2a63d3699a1762509a8efc2717200f4fcc14d7160d6ad570c3</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="_2">全层单针调查：正式完成，全部原文已交付</h1>
+<p>2026-10-27北京时间18:01:11正式运行完成，总实耗4小时1分12秒。880个单针条件各八题全部齐全，加24份原版共7,064份；六个worker退出码全0，完整核验及独立技术复核通过。两张GPU已释放，本批半小时巡检acupuncture-2已暂停。全部回答原样保留，未进行语义分析、评分、筛选或功能命名。</p>
+<p>交付：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-survey-toy-v1-2026-10-27/delivery-r01/paired_raw.html">并排原文</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-survey-toy-v1-2026-10-27/delivery-r01/original.raw.jsonl">原版语料</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-survey-toy-v1-2026-10-27/delivery-r01/modified.raw.jsonl">单针语料</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-survey-toy-v1-2026-10-27/monitoring/delivery-verification-r01.json">技术验收</a>。下文保留启动前估计和逐次巡检，历史ETA不代表当前仍在运行。</p>
+<p>2026-10-27北京时间13:59:59正式启动（口头取整14:00）。用户确认“保持文档：最多128，正常结束可提前停止”，沿用原冻结科学设置。两张H20各一个worker，依次共同完成2B、4B、9B。根因及判断/报告诊断继续暂停。</p>
+<p>单针指每次只改一个层的一个通道。每层固定随机十点，分别运行十个单针条件。2B为24层，4B与9B各32层，总计880条件；每条件八题，另有三个模型各八题原版，正式共7,064份。剂量1是合同中的归一化剂量，不是所有激活直接加数字1。每次最多128个新token。</p>
+<h2 id="_3">已完成验收</h2>
+<ul>
+<li>本地CPU：12通过、1项因未安装Torch跳过；远程CPU：13/13通过，无跳过。</li>
+<li>GPU：三模型各22份，总66份技术验收，双卡控制器实测152.792秒；2B/4B/9B各自71.187/79.804/136.332秒（并行时间不能相加当总时长）。所有退出码为0。</li>
+<li>零剂量与撤针后原版逐token相同；钩子覆盖提示和全部生成步；权重前后哈希相同；三模型资产完整哈希与固定下载清单一致。</li>
+<li>两端对66份结果、文件/token哈希和冻结身份复核通过。导出器实际导出全部66条，24条为单针回答、18条为零剂量/恢复技术对照、24条原版；不作语义分析。</li>
+<li>首次启动脚本在模型加载前发生引号转义错误。preflight-r01保留失败日志；改为独立脚本并检查语法后，preflight-r02完成同一冻结实验。无科学设置变化。</li>
+<li>验收完成后本轮worker均退出。2026-10-27 12:51:48（北京时间）快照两张H20均空闲；工作盘可用126.4GiB，模型盘与/tmp所在盘43.6GiB。本轮输出约10.5MiB，正式原始JSON估计约19MiB，含列文件、导出及归档仍远低于1GiB；空间充足。真正开跑前再检查占用。</li>
+</ul>
+<h2 id="eta">正式双卡 ETA</h2>
+<p>依据当前固定代码的GPU实测，两个worker按模型依次运行、每模型各一半条件，包含加载、资产核验、校准和结束核验：</p>
+<table>
+<thead>
+<tr>
+<th>模型</th>
+<th style="text-align: right;">按验收回答长度估算</th>
+<th style="text-align: right;">全部修改回答达到128上限的情景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2B</td>
+<td style="text-align: right;">57.6分钟</td>
+<td style="text-align: right;">96.1分钟</td>
+</tr>
+<tr>
+<td>4B</td>
+<td style="text-align: right;">65.5分钟</td>
+<td style="text-align: right;">166.2分钟</td>
+</tr>
+<tr>
+<td>9B</td>
+<td style="text-align: right;">161.8分钟</td>
+<td style="text-align: right;">174.9分钟</td>
+</tr>
+<tr>
+<td>合计</td>
+<td style="text-align: right;"><strong>约4小时45分</strong></td>
+<td style="text-align: right;"><strong>约7小时17分（口头取整7小时20分）</strong></td>
+</tr>
+</tbody>
+</table>
+<p>每模型只有八份单针回答用于长度估计，不保证880条件的平均长度相同。吞吐实测约21.4/16.4/15.7 token/s；正式开跑后可用真实累计进度更新，不改样本或输出上限。此ETA不含等用户确认、等待GPU或故障修复；最终导出与传回约几十秒至一分钟量级，另记实际耗时。不乘任意安全倍数。128情景也不是对硬件故障等的最坏耗时保证。</p>
+<h2 id="_4">交付与启动边界</h2>
+<p>合同：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-survey-toy-v1-2026-10-27/PROTOCOL.zh-CN.md">PROTOCOL.zh-CN.md</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-survey-toy-v1-2026-10-27/contract.json">contract.json</a>。实测：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-survey-toy-v1-2026-10-27/readiness/gpu-readiness.json">gpu-readiness.json</a>。核心冻结SHA-256：<code>40b9a70d38a848a83c1abaa2f1be0a769ff1c4164771e75169926a1cd919f412</code>。</p>
+<p>正式授权见readiness/survey-authorization-r01.json，绑定原freeze及双卡启动器哈希。实际输出为远程survey-r01，controller PID为2102510，首批2B worker PID为2102511/2102512。启动前两卡均空闲，工作盘可用126.4GiB、模型盘与/tmp可用43.6GiB。</p>
+<p>14:00:43首次技术检查：GPU0已核验32/968条（含原版8条），GPU1已核验39/960条，合计71/7064条；文件/token哈希通过，两个worker真实存活且无错误。首批仅覆盖早层，不能据短回答提前下调完整ETA。初始预计18:45完成；若全部修改回答达到128上限，计算情景为21:17左右。输出当时约4.1MiB，完整归档预算低于1GiB，空间充足。14:02:54复查已增长至136条（GPU0 69、GPU1 67），两卡均在第1层继续产出；无traceback，文件/token核验通过。此时本轮约4.3MiB，本地归档盘可用约873.6GiB。</p>
+<p>双卡启动器本地及远程CPU测试均通过；未改变核心冻结科学代码。每半小时巡检acupuncture-2已ACTIVE，报告进度、ETA与北京时间预计结束点、磁盘和技术异常；旧根因巡检保持暂停。现行状态入口readiness/active-survey.json，启动和逐次巡检证据见readiness/launch-r01.json与monitoring/。本轮继续采集全部原文，不做内容筛选或语义评分。</p>
+<p>抽样模型列约10MiB保存在本地和远程验收目录，Git仅保留其哈希；避免把模型权重上传仓库。原始回答、失败日志、协议与代码入Git。</p>
+<h2 id="2026-10-27-1435">2026-10-27 14:35 半小时巡检</h2>
+<p>2B GPU0为547/968条、67个完整单针条件；GPU1为546/960条、68个完整条件，两卡均在第14层（编号13）。合计1,093/7,064条，比上次增加957条。收据记录的文件/token/128结束规则和钩子计数核验通过；进程身份连续，无traceback或退出错误。4B、9B尚未排到，属正常队列。</p>
+<p>按当前层各卡实测耗时、未见层与未启动模型保留预检估计，14:35时预计剩余约4小时13分，北京时间18:48完成，比初始18:45晚约3分钟；变化来自2B当前层回答时长。若所有剩余回答都达到128上限，计算情景约20:58完成，不作为当前主ETA。完整归档/导出另记实耗。</p>
+<p>工作盘剩余126.4GiB，模型盘和/tmp共用盘43.6GiB，本地归档盘877.4GiB。本轮输出约7.4MiB，按已产出记录平均大小估计剩余原始记录约17.8MiB，含列文件/导出的1GiB预算充足；没有删除文件。首次SSH握手超时，重试成功；实验未中断，无需修复运行代码。证据：monitoring/check-20261027T063451Z.json及summary-20261027T063451Z.json。</p>
+<h2 id="2026-10-27-1504">2026-10-27 15:04 半小时巡检</h2>
+<p>2B全部完成：GPU0为968条、GPU1为960条，240个单针条件及8条基线齐全，两卡退出码0，survey.verify完整核验通过。慢卡实耗3808.85秒（63分29秒），15:03:28完成；控制器随即启动4B。4B GPU0已58/1288条、6个完整单针条件，GPU1已94/1280条、11个完整条件，分别在编号1、2层。全队列合计2,080/7,064条，比上次增加987条；当前进程身份、文件/token和钩子检查通过，无错误或异常退出。9B尚未排到。</p>
+<p>15:04时预计剩余约3小时43分，北京时间18:47至18:48完成，与上次基本一致。2B以实测完结计时；4B当前层用本层实测，其余层和9B仍用预检估计，未用早层短回答推算全程。全部剩余达到128上限的计算情景约20:38完成；归档/导出另记实耗。</p>
+<p>工作盘剩余126.4GiB，模型盘及/tmp共用盘43.6GiB，本地877.4GiB；本轮约17.0MiB，估计剩余原始记录约14.8MiB，含列文件和导出的1GiB预算充足。无空间警报、无删除动作、无须技术修复。证据：monitoring/check-20261027T070429Z.json及summary-20261027T070429Z.json。</p>
+<h2 id="2026-10-27-1533">2026-10-27 15:33 半小时巡检</h2>
+<p>2B维持完整完成，4B两卡持续正常运行：GPU0为571/1288条、70个完整单针条件；GPU1为599/1280条、74个完整条件，均在第15层（编号14）。4B合计1170/2568条（45.6%），全队列3098/7064条，比上次增加1018条，完整单针条件共384个。文件/token/结束规则/钩子核验通过，进程身份连续，收据和日志无技术错误。9B正常等待。</p>
+<p>检查时预计剩余3小时18分16秒，完成点18:51:30（对外取整18:52），比上次推迟4分9秒，来自当前层实测耗时；未见层及9B继续使用预检估计。全部剩余达到128上限的计算情景为20:00:50，并非硬上限。归档与导出另记实际耗时。</p>
+<p>工作盘剩余126.4GiB，模型盘及/tmp共用盘43.6GiB，本地877.4GiB；当前输出约20.1MiB，估计剩余原始记录约11.6MiB，1GiB归档预算充足。无空间警报、无删除、无须修复。证据：monitoring/check-20261027T073313Z.json及summary-20261027T073313Z.json。</p>
+<h2 id="2026-10-27-1602">2026-10-27 16:02 巡检记录补归档</h2>
+<p>本条由16:02保存的远程快照在16:35巡检时补归档，不是再次读取模型。4B GPU0为1052/1288条、130个完整条件；GPU1为1091/1280条、136个完整条件。全队列4071/7064条，较15:33增加973条；完整单针条件506个。两卡进程、文件/token与钩子核验正常，无错误。按当时方法重建剩余2小时53分25秒，预计18:55:53完成；全部剩余128情景为19:27:54。工作盘126.4GiB、模型盘及/tmp共用盘43.6GiB可用，输出23.0MiB。证据：monitoring/check-20261027T080227Z.json及summary-20261027T080227Z.json。</p>
+<h2 id="2026-10-27-1635">2026-10-27 16:35 半小时巡检</h2>
+<p>2B和4B均已完成，四个worker退出码均为0，完整核验通过。4B慢卡实耗4420.04秒（73分40秒），16:17:09结束；控制器16:17:11自动启动9B。当前9B GPU0为379/1288条、46个完整单针条件，在第10层（编号9）；GPU1为340/1280条、42个完整条件，在第9层（编号8）。最后有效记录分别为16:35:27与16:35:29。9B合计719/2568条，全队列5215/7064条（73.8%），较16:02增加1144条，完整单针条件共648个。两个真实worker和控制器存活，文件/token/结束规则/钩子核验通过，无traceback、非零退出或空间警报。</p>
+<p>当前预计剩余2小时9分04秒，北京时间18:44:39完成（对外取整18:45），比16:02估计提前11分14秒、比15:33已报告估计提前6分51秒。已完成阶段只记实耗；当前层按实测均时，未见层仍保留预检118.375 token/条的长度假设。9B GPU1实测约70毫秒/token，慢于预检约63毫秒，因此仅按每卡实际速度校正耗时，未把早层短回答外推全程。校正前算法为18:32:50；独立审计以最近40条计时复算约18:44至18:45，支持本次主ETA。若所有剩余回答均达到128上限，计算情景为18:56:22，非保证的硬上限。归档与导出另记实际耗时。</p>
+<p>工作盘剩余126.4GiB，模型盘与/tmp共用盘43.6GiB，本地归档盘877.4GiB；本轮输出36.6MiB，按实际记录大小估计剩余原始记录约5.3MiB，1GiB归档预算充足。没有删除文件、没有改变冻结设置、无须修复。证据：monitoring/check-20261027T083534Z.json及summary-20261027T083534Z.json。</p>
+<h2 id="2026-10-27-1705">2026-10-27 17:05 半小时巡检</h2>
+<p>2B、4B仍为完整完成，四个退出码均0且完整核验通过。9B GPU0为729/1288条、90个完整单针条件，正在第19层（编号18），较上次新增350条；GPU1为596/1280条、74个完整条件，正在第15层（编号14），新增256条。最后有效记录分别为17:05:38、17:05:37。9B合计1325/2568条；全部5821/7064条（82.4%），增加606条，完整单针条件共724个。真实进程持续运行，文件/token/结束规则/钩子与冻结身份核验通过，没有实验错误或空间警报。</p>
+<p>按原有校速方法，GPU0预计剩余66分19秒、GPU1剩余94分38秒；整轮取较慢卡，预计北京时间18:40:19完成（约18:40），较上次提前4分19秒。变化来自本半小时的实际进展与当前层耗时；未见层仍按预检118.375 token/条估长。GPU0当前层仅一条的均时不稳定，但不决定整轮ETA；GPU1当前层已有36条。独立算术复核得到约18:40:10，一致。全部剩余达到128上限的计算情景约18:48:01，非硬上限；归档导出另计。</p>
+<p>工作盘可用126.4GiB，模型盘与/tmp共用盘43.6GiB，本地877.4GiB；输出38.7MiB，剩余原始记录估计3.6MiB，1GiB归档预算充足。首次工具审批超时后重试成功，下载快照时另有一次SSH握手超时，重试成功；均未中断实验，不属于模型运行bug。本轮没有修改科学设置或运行代码、没有删除文件。证据：monitoring/check-20261027T090541Z.json及summary-20261027T090541Z.json。</p>
+<h2 id="2026-10-27-1732">2026-10-27 17:32 半小时巡检</h2>
+<p>2B、4B保持完整完成；四个worker退出码0，完整核验通过。9B GPU0为1143/1288条、141个完整单针条件，正在第29层（编号28），较上次新增414条；GPU1为900/1280条、112个完整条件，正在第23层（编号22），新增304条。两卡最后有效记录均在17:32:20。9B合计2043/2568条，全部6539/7064条（92.6%），新增718条，完整单针条件813个。控制器与两个实际worker身份连续，文件/token、结束规则、钩子及冻结核验通过，无技术错误或空间警报。</p>
+<p>按同一ETA方法，GPU0剩余约16分24秒、GPU1约51分30秒；整轮预计北京时间18:23:52完成（取整18:24），比上次提前16分27秒。原因是本段实际任务完成快于之前对未见层的估计；剩余未见层继续保留预检118.375 token/条长度假设，并按各卡实测速度换算，未改变科学设置。全部剩余达到128上限的情景约18:29:18，非硬上限；归档导出另记实耗。</p>
+<p>工作盘可用126.4GiB，模型及/tmp共用盘43.6GiB，本地877.4GiB；本轮输出41.0MiB，剩余原始记录估计1.5MiB，1GiB归档预算充足。本轮连接顺利，无须修复、无删除。证据：monitoring/check-20261027T093221Z.json及summary-20261027T093221Z.json。</p>
+<h2 id="2026-10-27-1802">2026-10-27 18:02 完成巡检与原文交付</h2>
+<p>控制器于18:01:11完成，六个worker均completed、退出码全0，正式计算总实耗14471.851秒（4小时1分12秒）。2B为1928条、240个单针条件；4B为2568条、320个条件；9B为2568条、320个条件。上述每个模型的条数均含八条原版，合计7064条、880个单针条件全部完整。较17:32新增525条，剩余ETA为0；实际完成比上次预计18:23:52提前22分41秒，比初始预计提前43分45秒。</p>
+<p>最后阶段GPU0完成9B的1288条和160个条件，17:41:14结束；GPU1完成1280条和160个条件，18:01:09结束。18:02:18真实进程/GPU检查确认本轮控制器及所有worker已退出，两张GPU均无计算进程、显存占用为0。没有正式运行错误、异常退出或需要修复的bug，冻结代码和科学设置未改变。原execution.json为不可变启动快照，最终状态以controller.json及各worker完成收据为准。</p>
+<p>完整正式目录、控制器记录、验收数据和验收前历史失败记录已取回本地。归档包SHA-256为<code>0c7dacd44dd14e597388c864845fbbf41c8af348dd34cafde7fd39e20fa85eec</code>；7195个文件逐一与归档清单核对通过，已有相同文件保留。抽样权重列保存在本地和远程，Git只保存哈希清单。正式运行目录约42.6MiB，原文导出约50.4MiB；工作盘可用126.4GiB、模型盘及/tmp共用盘43.6GiB、本地归档盘877.4GiB，空间充足，没有删除文件。</p>
+<p>export_survey.py已对六个分片执行survey.verify并导出全部原文；独立CPU复核再次通过。冻结身份、授权、题目、文件/token哈希、钩子移除及权重恢复证据完整；whole_survey_complete=true，7040条修改回答与24条原版齐全，880个条件各有八个不同题号。18:10:06完成本地交付核验；取回、导出及复核不计入上述正式计算实耗。没有阅读回答语义、分析、评分、筛选或命名人格/功能区。</p>
+<p>交付文件为<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-survey-toy-v1-2026-10-27/delivery-r01/paired_raw.html">并排原文</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-survey-toy-v1-2026-10-27/delivery-r01/original.raw.jsonl">原版语料</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-survey-toy-v1-2026-10-27/delivery-r01/modified.raw.jsonl">单针语料</a>及<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-survey-toy-v1-2026-10-27/delivery-r01/all.records.jsonl">全部记录</a>。证据：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-survey-toy-v1-2026-10-27/monitoring/check-20261027T100218Z.json">完成快照</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-survey-toy-v1-2026-10-27/monitoring/summary-20261027T100218Z.json">完成摘要</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-survey-toy-v1-2026-10-27/monitoring/archive-local-receipt-r01.json">归档核验</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-survey-toy-v1-2026-10-27/monitoring/delivery-verification-r01.json">交付核验</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-survey-toy-v1-2026-10-27/delivery-r01/export_receipt.json">导出收据</a>。readiness/active-survey.json已更新为delivered，acupuncture-2心跳已设为PAUSED。根因、判断/报告诊断及其他暂停实验未恢复。</p></main></html>

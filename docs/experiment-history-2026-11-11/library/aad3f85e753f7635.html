@@ -1,0 +1,39 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>三项能力基准快速对照：2026-10-26</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="2026-10-26">三项能力基准快速对照：2026-10-26</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/PROTOCOL.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/qwen35-neuron-steering-2026-10-25/benchmark-quick-2026-10-26/PROTOCOL.zh-CN.md">固定提交原件</a>；SHA-256：<code>aad3f85e753f7635e4a92604024ac5d19b2f0813c11254fe8e7bffdb856e340b</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="2026-10-26_1">三项能力基准快速对照：2026-10-26</h1>
+<h2 id="material-passport">Material Passport</h2>
+<ul>
+<li>状态：运行前固定的快速抽样方案；结果须以运行收据为准。</li>
+<li>用户授权：让原版千问 4B 和 EVO 版完成 RACE、GSM8K、LogiQA 2.0，比较分数差距。</li>
+<li>EVO 的实际含义：既有动态激活干预版，不是永久改写权重的 checkpoint。</li>
+</ul>
+<h2 id="_1">固定设计</h2>
+<ul>
+<li>模型：Qwen/Qwen3.5-4B，revision <code>851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a</code>。</li>
+<li>干预：零起始索引 L14 N8949 +1、L13 N7956 -1；复用既有 probe.py；每题由原版计算完整提示的 residual 尺度，再用于 EVO 的 prefill 和 decode。不调整剂量。</li>
+<li>每个基准 100 道英文测试题，seed 20261026；RACE 为 M/H 29/71，且每篇最多一道题。样本与来源哈希在生成回答前固定。</li>
+<li>同一题的两版模型输入、硬件、精度、模板、生成设置相同；模型参数存储独立，逐题新对话。</li>
+<li>BF16、eager attention、greedy、thinking=false。选择题最多 64 个新 token；GSM8K 最多 512 个新 token；两版相同，不按结果追加预算。</li>
+<li>修正此前终止配置：同时识别模型 EOS 248044 和 tokenizer 的 <code>&lt;|im_end|&gt;</code> 248046，正式运行前验证 token 映射。</li>
+<li>计划在空闲 H20 GPU 0 跑 RACE/LogiQA，GPU 1 跑 GSM8K；每个进程包含原版和 EVO 两个独立模型对象。运行前再次检查空闲状态。硬超时每任务 3600 秒。</li>
+</ul>
+<h2 id="_2">验证与报告</h2>
+<ul>
+<li>启动前验证资产哈希、两实例参数初值相同且无共享存储、零剂量与撤销干预控制。</li>
+<li>保存每题两版原始文本、token、终止原因、提示哈希、尺度/偏移、耗时、答案解析及正误。</li>
+<li>选择题按明确的选项回答解析，数学按 <code>####</code> 后的最终数值解析；不从无关长文本随意寻找正确答案。</li>
+<li>解析失败、拒答、截断仍保留在 100 题分母；另报无效回答和截断计数、配对的对转错/错转对。</li>
+<li>在任何正式回答产生前增加一个选择题诊断：只观察生成第一次 forward 时 A/B/C/D 对应 token 的分数，记录限制为四个字母时的最高分选项；不改变实际生成、不增加 forward。它与严格生成答案的主分数分开报告，用于判断格式失控是否掩盖了部分选项辨别能力，不能冒充完整选项似然评测。</li>
+<li>报告这 100 题子集的正确率与差值，不冒充全量 benchmark 或官方榜单分数；不凭这些能力题直接判断 evil。</li>
+<li>既有 24 题语料及停止收据保留不变；本次结果使用独立目录。</li>
+</ul>
+<h2 id="_3">吞吐修订记录（正式数学结果产生前）</h2>
+<ul>
+<li>串行数学实测每对约 46–56 秒；完成 8 对后停止并完整归档到 <code>serial-math-attempt/</code>，这些行不计入正式数学分数。</li>
+<li>独立 fla-core 0.3.2 短测的稳定阶段 64 token 约 3.90 秒，没有显示明显收益，正式评测不采用该依赖或改变内核。</li>
+<li>数学改用 batch size 16；仍为同一组 100 题、相同提示、剂量和 512 token 预算。每题校准仍单独使用原版的未填充完整输入，生成时左填充且逐行施加独立偏移。</li>
+<li>开始正式数学采集前，须通过单题/批量的两条不同长度控制题、零剂量、撤销干预及输出终止检查。保留批量返回的填充 token，但不把结束后的填充计为回答。</li>
+<li>阅读和逻辑继续既有 batch size 1 运行；各基准内部原版与 EVO 的设置完全一致。不同批量配置不合并为一个总分。</li>
+</ul></main></html>

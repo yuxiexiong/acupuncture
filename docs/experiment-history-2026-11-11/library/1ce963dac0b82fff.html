@@ -1,0 +1,93 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>C2 方案：固定 45 头名单能否跨干预方向工作 v1</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="c2-45-v1">C2 方案：固定 45 头名单能否跨干预方向工作 v1</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>docs/cache-c2-fixed-list-cross-direction-plan-v1-2026-11-01.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-c2-fixed-list-cross-direction-plan-v1-2026-11-01.zh-CN.md">固定提交原件</a>；SHA-256：<code>1ce963dac0b82ffff3ed258b6b52d98cf9d782baf03a5b7a3bb328ac4c7ad011</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="c2-45-v1_1">C2 方案：固定 45 头名单能否跨干预方向工作 v1</h1>
+<p>2026-11-01。身份：正式实验方案（同一助手自查，非独立审查）；按用户 2026-11-01 确认的三处修订写成，授权“写方案、写合同代码、上卡跑”。依据：C1-P 结果 965cc9f 与更正 c48b2ce；跨通道实验（XCHAN）f38b00e 的方向定义、注入实现与写入量审计。</p>
+<h2 id="1">1. 问题与定位</h2>
+<p>C1-P 显示：由旧数据得出的固定 45 头名单（FIX）在 6 个新情景上、对原针 L0/N4146/−1 保留了约全部停止侧 V 效应。本轮问：<strong>同一份 FIX 在不同干预方向下是否仍承担 V 效应？</strong> 即它是只适用于原针的材料，还是所测几个方向共享的材料集合。这是 C 阶段的适用边界检验；阶段 B 的计算解释仍未完成，本轮不提供机制解释。</p>
+<h2 id="2-c1-p">2. 三处修订（相对 C1-P 复核文档的草案）</h2>
+<ol>
+<li><strong>主检验 = FIX，配它自己的逐层配平随机子集。</strong> 每输入 4 组随机 45 头，各层头数与 FIX 相同，按 SHA256(<code>C2-FIXU-v1|输入|j|层|头</code>) 定序取前若干，名单在任何评分前冻结（<code>data/fix-random-r01.json</code>）。自适应 H（按各方向自己的 N:TT 参考运行、F_V 局部路径算法选出）只作次要比较。</li>
+<li><strong>预注册预测：</strong> 依据 XCHAN 中原生通道与随机方向的深层 ΔV 方向相似（余弦中位数 0.68–0.75）、整块 V 替换效果相近，登记预测“FIX 在 R0、R1 上也通过主判据”。这只是有依据的预测：整体 V 相似不保证起作用的部分落在同一份 45 头上。失败与不可判条件见 §5。</li>
+<li><strong>幅度 = 复用旧构造 + 实际写入验收。</strong> 原生通道按 dose·scale/‖W_down 列‖ 加在 down_proj 输入通道，随机方向按单位向量 × dose·scale 加在 L0 MLP 输出；二者 L0 残差写入的名义范数都等于 |dose|·scale。沿用 XCHAN 的 <code>write_audit</code> 记录 BF16 后实际写入范数，要求与目标相对误差 ≤1%。<strong>只匹配 L0 写入范数，不匹配深层 V 变化或输出效应</strong>，不得按输出结果调剂量。</li>
+</ol>
+<h2 id="3">3. 对象与操作</h2>
+<ul>
+<li>输入：C1-P 的 12 条 P 系列提示（P01–P06 × f0/f1），现已是见过的输入，但未参与 FIX 的制定。不复用旧提示的缓存。</li>
+<li>方向（均为 L0、剂量 −1、晚段 b+1…n−2）：N_L00_C4146_D-1（锚点）、N_L00_C1210_D-1、R0_L00_D-1、R1_L00_D-1（XCHAN <code>directions-r01.json</code>，哈希校验）。</li>
+<li>校准：每情景 f0 上下文按旧 <code>calibrate</code> 规则，f0/f1 共用；须逐值等于 C1-P 记录的校准。</li>
+<li>每输入：形成 C 一次，每个方向形成 T 一次（5 次形成）。评分：C_native；每方向 T_native|d、N:TT|d、N:CC|d、N:CT|d、N:CFIX|d、N:CUF1–4|d、N:CH|d（10 格）。N 背景 = C 浅层 + T_d 深层 S/KV，decoder13 入口 = T_native|d 的 x_T；Q 一律为 C；V 按头替换，四槽复制。</li>
+</ul>
+<h2 id="4">4. 估计量</h2>
+<p>Z = 去词表均值 logit；停止 248046 为主，答案候选 a（C_native 非停止赢家，各方向共用）为次。对每方向：F = Z(N:CT) − Z(N:CC)；X = Z(N:CFIX) − Z(N:CC)；U_j = Z(N:CUFj) − Z(N:CC)；E = X − median_j U_j。次要：H = Z(N:CH) − Z(N:CC)。情景先平均两事实原始差。</p>
+<h2 id="5">5. 冻结判据（逐方向、逐侧）</h2>
+<p>令符号 s = +1（停止侧）或 −1（答案侧，针压低答案词），对 F、X、E 乘以 s 后用同一规则：</p>
+<ul>
+<li>F 足够：s·F 情景均值 ≥1，且两事实 s·F &gt; 0；否则该情景“全 V 效应不足”。</li>
+<li>保留：s·X 均值 ≥ 0.5 × s·F 均值，且两事实 s·X &gt; 0。</li>
+<li>优势：s·E 均值 ≥ 0.2，且两事实 s·E &gt; 0。</li>
+</ul>
+<p>情景三条同时满足为通过。每方向：≥5/6 通过 → <strong>支持</strong>；F 足够情景 &lt;5 → <strong>无法充分检验</strong>；保留 ≥5/6 但优势不足 → <strong>子集有效但无对照优势</strong>；否则 → <strong>名单未兑现</strong>。主判断 = 每方向停止侧 FIX。预测“随机方向也迁移”成立当且仅当 R0 与 R1 停止侧均为支持。答案侧与 H 臂同式、只作次要报告，不救主判断。</p>
+<table>
+<thead>
+<tr>
+<th>结果</th>
+<th>可更新的判断</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FIX 在原生通道和随机方向都支持</td>
+<td>支持该材料集合在所测方向间共享；削弱原针专属解释。不得外推“任意同幅写入都汇聚到同一组头”，也不证明一般饱和。</td>
+</tr>
+<tr>
+<td>某方向 F 足够但 FIX 未兑现</td>
+<td>限制 FIX 的共享范围，支持子集作用依赖干预方向。</td>
+</tr>
+<tr>
+<td>某方向 F 不足</td>
+<td>该方向无法检验名单迁移，不据此认定原生通道特殊。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="6">6. 闸门（任一不过 → 停止，记工程失败）</h2>
+<ol>
+<li>来源：输入、FIX、FIX 随机名单、XCHAN 方向文件哈希；校准逐值等于 C1-P 记录。</li>
+<li>写入：每方向 BF16 后名义写入范数与 |dose|·scale 相对误差 ≤1%。</li>
+<li>重放：每方向 N:TT logits 逐位等于 T_native|d；锚点 N4146 的 T_native、N:CC、N:CT、N:CFIX logits 逐位等于 C1-P 正式运行的对应格。</li>
+<li>布局：第13层每个子集格的每个值头 v 逐位等于同方向 N:CT（选中）或 N:CC（未选中）。</li>
+<li>命中：每格 14 个 G 层 recurrent 内核各 1 次、chunk 0 次；N 格入口钩子 1 次。</li>
+<li>自适应 H：选头重算 v、out_proj 相对误差 ≤0.02，名单写入不可改文件后才评分 N:CH。</li>
+<li>预检：R0 方向全集子集 = N:CT、空集子集 = N:CC（逐位）。</li>
+</ol>
+<h2 id="7">7. 预算与停止</h2>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th style="text-align: right;">形成</th>
+<th style="text-align: right;">评分</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>预检（P01-f0/f1，每条 41 格 + R0 全集/空集）</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">86</td>
+</tr>
+<tr>
+<td>正式（12 × 41）</td>
+<td style="text-align: right;">60</td>
+<td style="text-align: right;">492</td>
+</tr>
+<tr>
+<td>合计上限</td>
+<td style="text-align: right;">70</td>
+<td style="text-align: right;">578</td>
+</tr>
+</tbody>
+</table>
+<p>0 模板、0 生成；GPU ≤1.5 小时；存储 ≤8 GiB。结果不利不改阈值、不换题、不改头数、不加方向或剂量。</p>
+<h2 id="8">8. 自查要点</h2>
+<p>C01 主线不变（干预→历史→输出），本轮是 C 阶段边界检验；C02 新增“同一子集跨方向因果作用”，不能由 XCHAN 整块 V 结果推出；C04 保留“整体相似但子集不同”的反例；C08 不作效率、特异性或一般饱和结论；C10 停止/答案分侧且按效应方向写判据（修正 C1-P 的遗漏）；C11 工程失败、F 不足、名单未兑现分开；C12 每格都有用途，锚点复用 C1-P 做跨运行复现；C13 输入已见、FIX 与随机名单先冻结；C14 无论结果，下一步须另立方案，不自动扩方向。E12：随机子集与随机方向都不构成零分布；E22：P 系列已见、6 情景同模板。</p></main></html>

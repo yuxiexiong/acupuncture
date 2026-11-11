@@ -1,0 +1,315 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>003．四项固定能力面板</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="003">003．四项固定能力面板</h1>
+<p><a href="../README.zh-CN.html">返回总时间线</a></p>
+<p><strong>时间定位</strong>：已提取运行收据的最早时间锚点（可含预检） 2026-10-26T04:49:13.165415+08:00；不能当作全部子运行起止。</p>
+<p><strong>当时的目的与设计</strong></p>
+<p>把能力检查固定为MMLU、ARC-C、GSM8K和HumanEval，分别比较同一题的原版与双针回答；采用已核验旧结果复用时保留来源。</p>
+<p><strong>实际过程、结果与后来更正</strong></p>
+<p>完成1400对题。选择题分数、数学答案提取、代码pass@1及截断分别报告；本章完整保留各任务分母、结果表与复用说明，不能把严格格式零分解释为所有知识消失。</p>
+<p><strong>来源身份</strong>：<code>capability-screen-v3-2026-10-26</code>；本章主体来源提交 <code>7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8</code>。下方原文中的状态是各文件写作时的状态，不能把早期“尚未运行”覆盖后期正式收据，也不能将后期结果倒填进早期设计。</p>
+<h2 id="_1">原设计、执行过程、结果与更正全文</h2>
+<p>以下按“设计与题目 → 工程/执行记录 → 结果/更正 → 其他历史说明”组织；同类内没有可靠时间时保留路径顺序，不冒充严格先后。正文未删段；仅为本章节重排标题层级、把相对链接指向固定提交。原始字节另外完整保存。</p>
+<h3 id="1-evo">原件 1：四项能力小面板：原版与 EVO 对照</h3>
+<p>原路径：<code>experiments/capability-screen-v3-2026-10-26/PROTOCOL.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/capability-screen-v3-2026-10-26/PROTOCOL.zh-CN.md">固定提交原文</a> · <a href="../library/134cd77f227b8460.html">单独阅读副本</a>；SHA-256：<code>134cd77f227b8460ce37e7266413ac9b9b5d30e83713989fbfeba1591fb4e0c8</code>。</p>
+<hr />
+<h4 id="evo">四项能力小面板：原版与 EVO 对照</h4>
+<p>用户于 2026-10-26 明确要求：数学、代码各扩到 100 题，停止此前全量实验，按小面板重新运行并测量 ETA 和实际用时。此次授权覆盖以下 1,400 对题目；一小时仍为希望达到的量级，不是已经验证的耗时或强停阈值。</p>
+<table>
+<thead>
+<tr>
+<th>任务</th>
+<th style="text-align: right;">每版题数</th>
+<th>主评分</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MMLU</td>
+<td style="text-align: right;">1,000</td>
+<td>acc，按原完整测试集的学科题数加权</td>
+</tr>
+<tr>
+<td>ARC-Challenge</td>
+<td style="text-align: right;">200</td>
+<td>acc_norm，完整选项似然按字符数归一化</td>
+</tr>
+<tr>
+<td>GSM8K</td>
+<td style="text-align: right;">100</td>
+<td>strict-match，另报固定 flexible-extract</td>
+</tr>
+<tr>
+<td>HumanEval</td>
+<td style="text-align: right;">100</td>
+<td>pass@1，官方测试每份 3 秒</td>
+</tr>
+</tbody>
+</table>
+<p>每道题原版与 EVO 同题配对，共 2,800 个题目—条件单元。分别报告原版分数、EVO 分数、下降百分点（原版减 EVO，负值保留）和 95% 配对 bootstrap 区间。MMLU 按学科分层抽样并保留完整测试集学科权重；其余任务固定随机抽样。先独立选择题目，再检查旧运行是否已经完成该题，不能根据答案、长短或完成情况选题。</p>
+<h5 id="_2">复用与不变项</h5>
+<p>复用 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/capability-damage-v2-2026-10-26/protocol.json">v2 的固定模型与推理设置</a>：Qwen3.5-4B 固定 revision、BF16/eager、实际 forward batch=1、greedy、无聊天模板，GSM8K 最多 2,048 新 token、HumanEval 最多 1,024 新 token。停止 token 和任务停止字符串、few-shot 提示及官方评分规则保持一致。</p>
+<p>EVO 仍为动态激活干预：零起始 L14/N8949 +1、L13/N7956 −1；逐题以原版公共提示校准，提示与生成全程注入。没有永久权重修改，也没有新的剂量、位置或机制实验。</p>
+<p>仅复用 v2 中完整且两臂均成功的同题记录，必须匹配完整题目内容、源协议、引擎与数值设置，并记录原文件、回执及 SHA-256。保留旧原文，不修改旧输出。未完成记录不当作答错；旧运行按用户要求中断，不能把它称为全量完成，也不能声称已获得被中断进程的最终权重恢复检查。新运行继续执行自己的资产、权重与钩子恢复核验。</p>
+<h5 id="_3">执行与计时</h5>
+<p>两张 H20 对互不重叠的题目分工，每题两臂在同一张卡依次计算。优先执行生成任务，并让两张卡从数学和代码分别开始，以尽早获得两种任务的耗时样本。任务队列与顺序以冻结的 <code>protocol.json</code> 和启动回执为准。</p>
+<p>ETA 使用各任务已完成的完整配对耗时和未完成数量；显示样本数、截断比例、两卡剩余队列和不确定范围。只有短回答或少数样本时标注为初步估计；不把早结束样本均值当作可靠全程速度，不因到一小时而丢弃慢题。数学和代码各 100 题可能使本轮明显超过一小时。</p>
+<p>计时分别记录：新一轮启动到评分完成的实际等待时间、新推理用时、复用旧结果数量，以及复用部分历史计算时间。新一轮墙钟时间不能包装成“所有 1,400 对均从零计算”的性能。</p>
+<p>HumanEval 沿用已验证的禁网、非 root、资源受限沙箱与官方测试。CPU 收尾仅在新面板依赖完整时运行；禁止重复启动旧收尾。基础设施失败保留为未完成，不记为模型答错，不自动重试或更改已冻结设置。</p>
+<h5 id="_4">证据与状态</h5>
+<p>本轮题目、抽样与权重见 <code>panel_manifest.json</code>；旧结果复用来源见 <code>reuse_manifest.json</code>；冻结设置与代码哈希见 <code>protocol.json</code>。实际状态以 <code>worker-0.json</code>、<code>worker-1.json</code>、各输出收据及 CPU 收尾收据为准。旧实验停止证据保存在 v2 的 <code>user-stop-20261026-r01/</code>。</p>
+<p>抽样成绩不称为官方全量成绩；能力损伤与“evil”行为不是同一个测量。固定面板供日常比较，反复用于调参后属于开发证据。当前报告必须区分准备、运行、完成与复用，只有原文、官方评分及分母核验齐备才发布最终分数。</p>
+<hr />
+<h3 id="2">原件 2：四项能力小面板最终结果</h3>
+<p>原路径：<code>experiments/capability-screen-v3-2026-10-26/RESULTS.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/capability-screen-v3-2026-10-26/RESULTS.zh-CN.md">固定提交原文</a> · <a href="../library/4127d88fb059f87e.html">单独阅读副本</a>；SHA-256：<code>4127d88fb059f87e1f8c4a29d344a0639ef95d24a2eefcbf763f4e1a38ed9ff7</code>。</p>
+<hr />
+<h4 id="_5">四项能力小面板最终结果</h4>
+<p>2026-10-26 北京时间 05:29:23，四项原版/EVO 对照及官方 HumanEval 沙箱评分全部完成。1,400 对、2,800 个题目—条件单元齐全，没有基础设施失败。逐题评分、复用来源、冻结文件哈希及新任务的目标权重/钩子恢复检查通过，见<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/capability-screen-v3-2026-10-26/validation/final-score-audit.json">独立审计</a>。</p>
+<p>这轮观察到四项任务表现均明显下降，数学与代码损伤尤其大。它量化了当前干预下的能力损伤；“evil”的行为含义与因果机制仍需单独测量。本轮 EVO 是推理时动态激活干预，没有永久改写模型权重。</p>
+<h5 id="_6">最终分数</h5>
+<p>下降百分点 = 原版分数 − EVO 分数。以下为事前固定英文子集，不是官方全量成绩。</p>
+<table>
+<thead>
+<tr>
+<th>任务</th>
+<th style="text-align: right;">每版题数</th>
+<th style="text-align: right;">原版</th>
+<th style="text-align: right;">EVO</th>
+<th style="text-align: right;">下降百分点</th>
+<th style="text-align: right;">下降的 95% 配对区间</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MMLU</td>
+<td style="text-align: right;">1,000</td>
+<td style="text-align: right;">67.99%</td>
+<td style="text-align: right;">29.74%</td>
+<td style="text-align: right;">38.26</td>
+<td style="text-align: right;">34.39–42.08</td>
+</tr>
+<tr>
+<td>ARC-Challenge</td>
+<td style="text-align: right;">200</td>
+<td style="text-align: right;">65.00%</td>
+<td style="text-align: right;">38.00%</td>
+<td style="text-align: right;">27.00</td>
+<td style="text-align: right;">20.00–34.00</td>
+</tr>
+<tr>
+<td>GSM8K</td>
+<td style="text-align: right;">100</td>
+<td style="text-align: right;">88.00%</td>
+<td style="text-align: right;">0.00%</td>
+<td style="text-align: right;">88.00</td>
+<td style="text-align: right;">81.00–94.00</td>
+</tr>
+<tr>
+<td>HumanEval</td>
+<td style="text-align: right;">100</td>
+<td style="text-align: right;">53.00%</td>
+<td style="text-align: right;">4.00%</td>
+<td style="text-align: right;">49.00</td>
+<td style="text-align: right;">39.00–59.00</td>
+</tr>
+</tbody>
+</table>
+<p>MMLU 覆盖 57 个学科，按原完整测试集各学科题数加权；未加权的正确数为 680/1,000 与 297/1,000。ARC 使用完整选项似然按字符数归一化后的 acc_norm；GSM8K 主指标为 strict-match；HumanEval 每题生成一次，以官方测试计算 pass@1。区间使用固定种子 20261026、10,000 次配对 bootstrap，MMLU 按学科分层并保持原学科权重；审计已复算一致。</p>
+<p>配对记录也保留了“原对→改错”和“原错→改对”：MMLU 为 480/97 对，ARC 为 60/6 对，GSM8K 为 88/0 对，HumanEval 为 49/0 对。这说明总体损伤不等于每一道题都变差。各任务分数不汇总为一个未经定义的总分。</p>
+<h5 id="_7">解释与诊断</h5>
+<p>MMLU 与 ARC 直接比较选项似然，不依赖模型生成一个可解析的答案字母。因此，本轮损伤无法仅由自由回答的格式变化解释。数学的固定 flexible-extract 口径同样是 88%→0%，但有限题目上的零分仍不能证明模型内部所有数学推理能力均已消失。</p>
+<table>
+<thead>
+<tr>
+<th>诊断</th>
+<th style="text-align: right;">原版</th>
+<th style="text-align: right;">EVO</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GSM8K 达到生成上限</td>
+<td style="text-align: right;">0/100</td>
+<td style="text-align: right;">5/100</td>
+</tr>
+<tr>
+<td>GSM8K 主评分解析失败</td>
+<td style="text-align: right;">0/100</td>
+<td style="text-align: right;">2/100</td>
+</tr>
+<tr>
+<td>HumanEval 达到生成上限</td>
+<td style="text-align: right;">1/100</td>
+<td style="text-align: right;">16/100</td>
+</tr>
+<tr>
+<td>HumanEval 测试失败（不含语法错误）</td>
+<td style="text-align: right;">46/100</td>
+<td style="text-align: right;">88/100</td>
+</tr>
+<tr>
+<td>HumanEval 语法错误</td>
+<td style="text-align: right;">1/100</td>
+<td style="text-align: right;">8/100</td>
+</tr>
+</tbody>
+</table>
+<p>截断与执行分类可能重叠，不能相加。保留全部题目按冻结规则评分，没有删除截断题，也没有把基础设施故障计成模型答错。HumanEval 的 200 次正式执行没有基础设施失败；成功、错误答案、语法错误、超时及隔离五项控制均达到预期结果。</p>
+<p>GSM8K 中 9 题曾在本项目历史评测中出现，单列为 7/9→0/9；其余 91 题为 <strong>81/91（89.01%）→0/91</strong>，下降 89.01 个百分点，95% 配对区间 82.42–94.51。这里的“未暴露”只指本项目历史评测未使用，不能排除模型预训练接触过公开题目。</p>
+<h5 id="_8">实际耗时与以后预算</h5>
+<table>
+<thead>
+<tr>
+<th>时间点或环节</th>
+<th>实测</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>启动</td>
+<td>北京时间 04:49:13</td>
+</tr>
+<tr>
+<td>两路 GPU 均完成</td>
+<td>05:29:09</td>
+</tr>
+<tr>
+<td>官方执行与最终评分均完成</td>
+<td>05:29:23</td>
+</tr>
+<tr>
+<td>启动到评分完成</td>
+<td><strong>40 分 10 秒</strong>（2,409.880 秒）</td>
+</tr>
+<tr>
+<td>GPU 完成后的 CPU 收尾</td>
+<td>13.658 秒，其中 HumanEval 6.744 秒、汇总评分 3.076 秒</td>
+</tr>
+</tbody>
+</table>
+<p>本次新计算 <strong>682 对</strong>，复用旧全量中经过逐文件核验的 <strong>718 对 MMLU</strong>。40 分 10 秒是本次启动后的墙钟时间，包含模型加载、推理和自动评分，不包含此前模型/环境准备及此后的独立审计、归档、GitHub 同步时间。</p>
+<p>718 对复用数据的历史日志累计为 551.212 worker 秒，包含配对校准与写回；按本次分片，两卡各约 275.6 秒。把这部分加回现有队列，并保持当前收尾耗时，全部 1,400 对从头计算的参考值为 <strong>44.76 分钟，约 45 分钟</strong>。这是依据实测成本的推算，没有另跑一轮验证。</p>
+<p>任务成本可用两卡累计 worker 时间除以 2 来比较，但它不是各阶段真实墙钟时间。完整重新计算的参考成本为 MMLU 6.10、ARC 4.09、GSM8K 16.83、HumanEval 13.85 个双卡等效分钟，包含各任务加载。两卡完成时间相差 7.20 分钟，静态分片的不均衡使实际总等待更长。</p>
+<p>以后使用相同 4B、两张 H20、现成环境与相同设置，建议整套预留 <strong>50–60 分钟</strong>。约 55 分钟的预算可分为 MMLU 7 分钟、ARC 5 分钟、数学 20 分钟、代码 17 分钟、自动收尾及队列不均衡余量 6 分钟。该分配仅用于排期，不改变冻结题数或输出上限。新的干预若使生成更长、或服务器资源变化，耗时仍可能超过一小时；换成 9B 或单卡须重新估时。</p>
+<p>完整计时与推算依据见 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/capability-screen-v3-2026-10-26/timing-summary.json">timing-summary.json</a>。此前 RUN_STATUS 中的 ETA 保留为历史预测，最终实际完成时间以本报告为准。</p>
+<h5 id="_9">协议、完整性与证据</h5>
+<p>源模型为 <code>Qwen/Qwen3.5-4B@851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a</code>。BF16/eager、实际 forward batch=1、greedy、few-shot 提示、停止规则及评分保持冻结设置；数学/代码上限分别为 2,048/1,024 新 token。EVO 为零起始 L14/N8949 +1、L13/N7956 −1，在 down_proj 输入逐题按原版公共提示残差尺度校准，并在提示与生成全程注入。完整定义见<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/capability-screen-v3-2026-10-26/PROTOCOL.zh-CN.md">协议</a>与 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/capability-screen-v3-2026-10-26/protocol.json">protocol.json</a>。</p>
+<p>先独立抽样，再检查旧记录是否可复用，没有按答案或已完成顺序挑选题目。新 8 份任务收据均完成，目标 down_proj 权重前后哈希一致，钩子已移除；这不是对每个模型张量重新计算哈希的全模型证明。718 对复用记录与旧文件逐字节一致，题目、设置、来源回执与源协议哈希均已核验；旧全量被中断，仍缺少旧进程最终整轮权重恢复证明，这一限制不会因复用而消失。</p>
+<ul>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/capability-screen-v3-2026-10-26/finish-r01/scores/summary.json">最终分数</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/capability-screen-v3-2026-10-26/finish-r01/scores/scores.jsonl">逐题评分</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/capability-screen-v3-2026-10-26/finish-r01/receipt.json">收尾回执</a>。</li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/capability-screen-v3-2026-10-26/finish-r01/humaneval-execution.jsonl">HumanEval 逐份执行结果</a>及同目录执行收据、控制结果。</li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/capability-screen-v3-2026-10-26/validation/final-score-audit.json">独立评分审计</a>与<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/capability-screen-v3-2026-10-26/validation/audit_final_scores.py">只读审计脚本</a>。</li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/capability-screen-v3-2026-10-26/panel_manifest.json">抽样清单</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/capability-screen-v3-2026-10-26/reuse_manifest.json">复用清单</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/capability-screen-v3-2026-10-26/archive-manifest.json">归档清单</a>。</li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/capability-screen-v3-2026-10-26/completed-evidence-r01.tar.gz">完整原文与运行证据包</a>：1,442 个文件、2,705,609 字节；SHA-256 <code>af952fb4c12ec835de7b1cbd4ee2712914708d3278caf3f09b9852569b563396</code>。逐文件哈希、大小、路径及完整分母均核验通过，无残留 partial。原始输出位于包内 <code>outputs/*/*.jsonl</code>，关键小文件同时保存在当前目录结构。</li>
+</ul>
+<p>最终 summary SHA-256 为 <code>6dd5e69bed64d5fade71b7354c8c7999fe4902aca155a7fde803e66362cbb7bb</code>；逐题 scores SHA-256 为 <code>9e1306231a433c494022ab4ffada14ad9e5ae3a031cd2f9dc929b27737347def</code>。</p>
+<p>旧全量仍保持用户要求的停止状态：10,034 对完整 MMLU、1 份 partial 及停止证据已归档，其余三项未启动。旧 MMLU 已完成部分原版 68.21%、EVO 28.72%，但其长度排序前缀不是随机完整测试集，不能作为全量分数或与新加权抽样成绩直接配对。旧证据见 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/capability-damage-v2-2026-10-26/user-stop-20261026-r01">停止目录</a>，不恢复旧运行。</p>
+<p>当前结论限于这组固定题目、模型版本与动态干预。重复用同一面板调参后，它属于开发证据；本轮能力结果本身既不测量主动有害建议或敌意发生率，也不能把两个通道认定为“道德神经元”。</p>
+<hr />
+<h3 id="3-eta">原件 3：本轮已完成：最终状态与历史 ETA</h3>
+<p>原路径：<code>experiments/capability-screen-v3-2026-10-26/RUN_STATUS.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/capability-screen-v3-2026-10-26/RUN_STATUS.zh-CN.md">固定提交原文</a> · <a href="../library/b9a147329460afef.html">单独阅读副本</a>；SHA-256：<code>b9a147329460afef40089e65cabf78e77e2a910aeab7b95fbad2399bbc95454e</code>。</p>
+<hr />
+<h4 id="eta">本轮已完成：最终状态与历史 ETA</h4>
+<p><strong>最终状态（2026-10-26）：</strong> 北京时间 05:29:23 全部推理、HumanEval 官方隔离执行及评分完成，1,400 对/2,800 单元完整，无基础设施失败。独立审计和完整原文归档通过。原版/EVO 为 MMLU 67.99%/29.74%、ARC 65%/38%、GSM8K 88%/0%、HumanEval 53%/4%；下降 38.26、27、88、49 个百分点。详见<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/capability-screen-v3-2026-10-26/RESULTS.zh-CN.md">最终报告</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/capability-screen-v3-2026-10-26/finish-r01/receipt.json">最终收据</a>和<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/capability-screen-v3-2026-10-26/archive-manifest.json">归档清单</a>。</p>
+<p>启动到自动评分完成实测 <strong>40 分 10 秒</strong>，包含复用 718 对；全部重新计算约 <strong>44.76 分钟（成本推算）</strong>，未来同配置预算 <strong>50–60 分钟</strong>。下文完整保留启动时的早期预测和未完成状态，均为历史快照，不代表当前状态。</p>
+<h5 id="eta_1">历史：启动与初步 ETA</h5>
+<p>2026-10-26 北京时间 04:49:13 已启动两个 GPU worker（1375855、1375856）与 CPU 收尾（1375857）。任务为 MMLU 1,000、ARC-C 200、GSM8K 100、HumanEval 100；共 1,400 对、2,800 个条件单元。</p>
+<p>已冻结独立抽样与复用清单。718 对 MMLU 与旧记录完全一致，可复用；其余 682 对新计算。数学和代码分别在两张卡上先执行，随后交换分片，最后完成选择题。原模型、干预、精度、停止规则和生成上限未改。</p>
+<p>04:53:06 核对两 worker 均存活，数学完成 15 对、代码 8 对，平均配对耗时分别 13.64 秒、20.07 秒。代码已有长度上限回答，另有一题仍在生成。初步规划整轮约 40–60 分钟，含选择题、CPU 沙箱和评分余量；这是少量实测后的估计，不是保证或统计置信区间。原始时点与数值见 <code>validation/eta-initial.json</code>。随后日志确认数学 18 对、代码 12 对，平均耗时升至约 20.47 秒和 26.30 秒；将初步整轮估计修正为约 45–65 分钟，即北京时间约 05:35–05:55，见 <code>validation/eta-update-r02.json</code>。这是早期估计，后续以实时回执为准。</p>
+<p>旧全量于 04:43 停止，10,034 对完整 MMLU 和部分记录保留。旧运行没有全量成绩；新运行也尚未产生最终成绩。复用的历史计算时间与本次启动后的墙钟时间分开，不能将本次速度称为从零计算全部 1,400 对的速度。</p>
+<p>启动依据：<code>launch.json</code>、<code>protocol.json</code>、<code>panel_manifest.json</code>、<code>reuse_manifest.json</code>、<code>validation/deployment.json</code>。后台任务状态：<code>worker-0.json</code>、<code>worker-1.json</code>、<code>outputs/*/receipt.json</code>。CPU 收尾：<code>finish-r01/receipt.json</code>；最终成绩预计保存至 <code>finish-r01/scores/summary.json</code>，逐题评分为同目录 <code>scores.jsonl</code>，代码执行证据为 <code>finish-r01/humaneval-execution.jsonl</code>。这些最终文件尚未生成，不能把等待回执视为完成。</p>
+<p>每半小时巡检已切换至本轮。不得重启旧全量，不重复启动新收尾，不因到一小时而删题、截短一方回答或把基础设施失败计成答错。</p>
+<hr />
+<h2 id="_10">时间、运行与停止收据索引</h2>
+<p>下面是所收集JSON的原有时间字段与状态，不把预计结束时间当实际完成时间。未列时间的文件仍有原件链接。完整JSON全部保存在原文归档，不能以此索引中的标量代替完整嵌套内容。</p>
+<table>
+<thead>
+<tr>
+<th>原件</th>
+<th>原记录状态/阶段</th>
+<th>原时间字段（原时区）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/capability-screen-v3-2026-10-26/finish-launch.json">finish-launch.json</a></td>
+<td>{}</td>
+<td>{}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/capability-screen-v3-2026-10-26/finish-r01/humaneval-execution.jsonl.receipt.json">finish-r01/humaneval-execution.jsonl.receipt.json</a></td>
+<td>{"status": "completed"}</td>
+<td>{"created_utc": "2026-10-25T21:29:19.924532+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/capability-screen-v3-2026-10-26/finish-r01/receipt.json">finish-r01/receipt.json</a></td>
+<td>{"status": "completed"}</td>
+<td>{"started_utc": "2026-10-25T20:49:13.165415+00:00", "checked_utc": "2026-10-25T21:29:13.189293+00:00", "ended_utc": "2026-10-25T21:29:23.012506+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/capability-screen-v3-2026-10-26/finish-r01/scores/summary.json">finish-r01/scores/summary.json</a></td>
+<td>{"status": "completed", "scope": "Fixed screening panel; not full benchmark scores."}</td>
+<td>{"created_utc": "2026-10-25T21:29:22.823986+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/capability-screen-v3-2026-10-26/launch.json">launch.json</a></td>
+<td>{"status": "launched"}</td>
+<td>{"started_utc": "2026-10-25T20:49:13.132688+00:00", "ended_utc": "2026-10-25T20:49:13.134181+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/capability-screen-v3-2026-10-26/outputs/arc_challenge-shard0-r01/receipt.json">outputs/arc_challenge-shard0-r01/receipt.json</a></td>
+<td>{"status": "completed"}</td>
+<td>{"started_utc": "2026-10-25T21:17:58.122739+00:00", "ended_utc": "2026-10-25T21:21:56.503522+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/capability-screen-v3-2026-10-26/outputs/arc_challenge-shard1-r01/receipt.json">outputs/arc_challenge-shard1-r01/receipt.json</a></td>
+<td>{"status": "completed"}</td>
+<td>{"started_utc": "2026-10-25T21:23:24.640827+00:00", "ended_utc": "2026-10-25T21:27:37.402512+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/capability-screen-v3-2026-10-26/outputs/gsm8k-shard0-r01/receipt.json">outputs/gsm8k-shard0-r01/receipt.json</a></td>
+<td>{"status": "completed"}</td>
+<td>{"started_utc": "2026-10-25T20:49:13.202687+00:00", "ended_utc": "2026-10-25T21:07:03.144842+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/capability-screen-v3-2026-10-26/outputs/gsm8k-shard1-r01/receipt.json">outputs/gsm8k-shard1-r01/receipt.json</a></td>
+<td>{"status": "completed"}</td>
+<td>{"started_utc": "2026-10-25T21:07:33.822678+00:00", "ended_utc": "2026-10-25T21:23:23.839269+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/capability-screen-v3-2026-10-26/outputs/humaneval-shard0-r01/receipt.json">outputs/humaneval-shard0-r01/receipt.json</a></td>
+<td>{"status": "completed"}</td>
+<td>{"started_utc": "2026-10-25T21:07:03.956941+00:00", "ended_utc": "2026-10-25T21:16:25.540643+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/capability-screen-v3-2026-10-26/outputs/humaneval-shard1-r01/receipt.json">outputs/humaneval-shard1-r01/receipt.json</a></td>
+<td>{"status": "completed"}</td>
+<td>{"started_utc": "2026-10-25T20:49:13.202055+00:00", "ended_utc": "2026-10-25T21:07:33.037105+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/capability-screen-v3-2026-10-26/outputs/mmlu-shard0-r01/receipt.json">outputs/mmlu-shard0-r01/receipt.json</a></td>
+<td>{"status": "completed"}</td>
+<td>{"started_utc": "2026-10-25T21:16:26.367763+00:00", "ended_utc": "2026-10-25T21:17:57.338201+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/capability-screen-v3-2026-10-26/outputs/mmlu-shard1-r01/receipt.json">outputs/mmlu-shard1-r01/receipt.json</a></td>
+<td>{"status": "completed"}</td>
+<td>{"started_utc": "2026-10-25T21:27:38.205866+00:00", "ended_utc": "2026-10-25T21:29:08.609682+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/capability-screen-v3-2026-10-26/timing-summary.json">timing-summary.json</a></td>
+<td>{"status": "completed_read_only_timing_audit", "scope": "Timing and output-length diagnostics only. No score assessment, inference, retries, launches, or frozen-code changes."}</td>
+<td>{"created_utc": "2026-10-25T21:32:43.607178+00:00", "remote_collection_utc": "2026-10-25T21:31:54.146727+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/capability-screen-v3-2026-10-26/validation/final-score-audit.json">validation/final-score-audit.json</a></td>
+<td>{"status": "passed"}</td>
+<td>{"audit_utc": "2026-10-25T21:31:31.377890+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/capability-screen-v3-2026-10-26/validation/old-partial-and-timing-audit-20261026.json">validation/old-partial-and-timing-audit-20261026.json</a></td>
+<td>{"status": "read_only_audit_no_new_inference"}</td>
+<td>{}</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_11">全部原始资产入口</h2>
+<p>本目录在固定提交下共有68个跟踪文件，包含代码、原回答、失败、收据和压缩证据；文件数不是样本数。<a href="../assets/003-capability-screen-v3-2026-10-26.tsv">逐文件完整账本</a> · <a href="https://github.com/yuxiexiong/acupuncture/tree/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/capability-screen-v3-2026-10-26">原目录</a>。未复制模型权重、环境或凭据。</p></main></html>

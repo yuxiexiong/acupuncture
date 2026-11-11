@@ -1,0 +1,445 @@
+# 135．WSP v9 B累计50轮及C目标变更
+
+[返回总时间线](../README.zh-CN.md)
+
+**时间定位**：版本/记录日期 2026-11-05；未从所选收据确定完整运行起止，不据目录名补写时刻。
+
+**当时的目的与设计**
+
+沿原线程、W0、候选与累计费用跨30轮接续，B完成50；C的50轮授权后来被30轮停止指令覆盖。
+
+**实际过程、结果与后来更正**
+
+B11月6日04:25结束，主分数55/116→57/116，正确320→325/464，修5错0，选R38。22例诊断中原5修复仅3保留相对改善，不能据官方分数称稳健MLP增益已确认。C30最终情况单列。
+
+**来源身份**：`wsp-vlm-mechanism-repair-v9x50-2026-11-05`；本章主体来源提交 `2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274`。下方原文中的状态是各文件写作时的状态，不能把早期“尚未运行”覆盖后期正式收据，也不能将后期结果倒填进早期设计。
+
+## 逐轮候选完整账目
+
+- [Qwen-v9-B逐轮目的、改动和结果](../rounds/Qwen-v9-B.md)
+
+
+## 原设计、执行过程、结果与更正全文
+
+以下按“设计与题目 → 工程/执行记录 → 结果/更正 → 其他历史说明”组织；同类内没有可靠时间时保留路径顺序，不冒充严格先后。正文未删段；仅为本章节重排标题层级、把相对链接指向固定提交。原始字节另外完整保存。
+
+### 原件 1：WSP v9 B：50轮结束与完整归档
+
+原路径：`experiments/wsp-vlm-mechanism-repair-v9x50-2026-11-05/B-closeout/FINAL.zh-CN.md`。 [固定提交原文](https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9x50-2026-11-05/B-closeout/FINAL.zh-CN.md) · [单独阅读副本](../library/610fe820e5572a8f.md)；SHA-256：`610fe820e5572a8f7cf351c5bd34cb73f7006b170d0d224d6a6fef950dc4c399`。
+
+---
+
+#### WSP v9 B：50轮结束与完整归档
+
+2026-11-06。B已完成50个不同、非零候选的完整开发评价，提交50轮机制报告并冻结实际最佳R38；04:25:45（北京时间）监督器返回停止收据。远端B服务PID1959329退出，GPU0释放，无待处理动作。本次交付没有新增模型调用、重载、修补或扩轮。C仍是30轮评价完成、研究者容量失败停止，报告/冻结/退出未完成；未恢复C或旧2B/8B/Gemma。
+
+**结论：有小幅开发集改善，但没有建立稳健的MLP增量收益或一般空间推理修复机制。** 官方最佳分数保留；诊断复测不用于重排、替换官方分数或制造新的全量指标。
+
+##### 官方结果与冻结身份
+
+模型为Qwen/Qwen3-VL-4B-Instruct，固定revision `ebb281ec70b05090aa6165b016eac8ec08e71b17`；同一开发集58个来源组、464条输入，BF16、SDPA、greedy、batch64及原评分规则。116个B0联合条件不是116个独立来源组。
+
+| 项目 | W0 | 原30轮最佳R14 | 50轮最佳R38 |
+|---|---:|---:|---:|
+| 主修复分数 | 55/116，47.4138% | 56/116，48.2759% | 57/116，49.1379% |
+| 全体正确 | 320/464 | 322/464 | 325/464 |
+| 相对W0修对/改错 | — | 2/0 | 5/0 |
+
+R38比W0提高1.7241个百分点主分数，全体正确率提高1.0776个百分点。原始B0:T0 joint仍为27/58；新增主分数来自T1。R48虽有327/464、8修对1改错，但主分数56/116低于R38，依原规则不选它。
+
+冻结候选：`c-84ca0f976010174a0a5618921b42963491d8ae388a333a69989ffb479ca8cbcd`。从W0独立构造，L24 self_attn.o_proj的头13输出列1664:1792乘1.5，L34 mlp.down_proj列1057清零，总计330,240个实际标量。其他参数保持W0。完整参数清单、原始/修改内容hash及稀疏文件hash见[冻结收据](https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9x50-2026-11-05/B-closeout/records/frozen-candidate.json)。冻结为开发选优产物，**未做本次归档后的新模型重载或独立确认**。
+
+##### 复测与机制结论的边界
+
+最终对22个已见案例重新配对测量W0和R38。原官方5个修复中3个保留相对改善；B-10840的候选复测答错，B-518494的W0自己也复测答对。面板为3修对0改错，不是重新评价全部464题。三个保留修复也涉及候选或W0数字logit平分，不能推出对数值扰动稳健。
+
+重合的15个诊断案例，两次诊断的回答、数字logit和全部捕获相同；因此应保留正式批量评价与诊断之间的差异，不以“随机波动”解释掉，也未识别其具体计算原因。
+
+尤其是：仅放大注意力头的R23已有324/464、56/116。组合R38相对它唯一新增的官方正确案例就是未通过诊断复测的B-10840。因此，**在所选补丁上，额外修改MLP比仅改注意力头带来的稳健行为增益尚未证实**。这不是“MLP没有影响”：内部读数和干预支持局部、输入依赖的数值答案竞争作用，但不支持唯一成功方向、唯一必要零方向或串行空间中介机制。随机方向与匹配头对照的反例保留。
+
+研究者完整解释见[机制报告原文](https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9x50-2026-11-05/B-closeout/records/work/mechanism_report_50.md)，50轮包括负结果和对照见[候选表](https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9x50-2026-11-05/B-closeout/records/work/final_experiment_table_50.md)、[完整机器可读总结](https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9x50-2026-11-05/B-closeout/records/work/final_experiment_summary_50.json)、[最终复测](https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9x50-2026-11-05/B-closeout/records/work/selected_best_repeat_audit_50.json)。该报告是研究者自述；本交付是同一助手的离线核验，不称独立科学审查。没有独立新数据、跨模型或分支C确认。
+
+##### 交付验收与原始证据
+
+- [离线核验](https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9x50-2026-11-05/B-closeout/verification.json)：20,415个远端文件逐文件字节数/SHA256一致，50个不同非零候选、W0+50共51次完整评价、23,664条回答重新评分一致；按保护条件与原平分规则重新选优，得到同一个冻结候选。报告候选、state.best、state.frozen和冻结manifest一致。无未完成动作。
+- [所有原始评价与候选清单](https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9x50-2026-11-05/B-closeout/evaluations-and-candidates.json.gz)：保留完整回答、token/评分记录、候选、轮次与报告，没有缩短回答。
+- [完整研究者轨迹](https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9x50-2026-11-05/B-closeout/researcher-trace.tar.gz)：3,827个本地文件逐字节核验，含348回合、原始事件、请求响应、失败/拒绝和用量收据。[轨迹文件哈希](https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9x50-2026-11-05/B-closeout/local-researcher-files.json)。
+- 全部远端原始目录（含所有内部数组、失败动作、稀疏候选和历史30轮检查点）已完整取回本地`external/wsp-vlm-mechanism-repair-v9-2026-11-05/archive-B50-2026-11-06/`，远端原路径保持不变。二进制权重及大型捕获不放Git；[逐文件清单](https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9x50-2026-11-05/B-closeout/remote-files.json)与[交付包清单](https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9x50-2026-11-05/B-closeout/delivery-manifest.json)记录来源、大小和SHA256。
+- [停止与C状态快照](https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9x50-2026-11-05/B-closeout/stop-and-C-status.json)、[B停止收据](https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9x50-2026-11-05/B-closeout/records/local/receipt-B.json)、[续跑完成收据](https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9x50-2026-11-05/B-closeout/records/local/continuation-B.json)。原30轮检查点保留，50轮使用新报告与冻结。
+
+重做离线验证（不加载模型）：
+
+```bash
+python3 experiments/wsp-vlm-mechanism-repair-v9x50-2026-11-05/B-closeout/verify.py external/wsp-vlm-mechanism-repair-v9-2026-11-05/archive-B50-2026-11-06/remote/B
+```
+
+##### 用量、磁盘与未完成事项
+
+[成本记录](https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9x50-2026-11-05/B-closeout/cost.json)：正式目标样本计账25,200，目标token计账8,334,417，远端Python220.37秒；研究者348回合，累计62,712,200 token（输入62,455,073，其中缓存58,057,344；输出257,127）。这些包含重复上下文，不是账单金额。启动至停止约9.25小时，包含研究者/API/工具等待，不能当作GPU忙碌小时。
+
+工程预算另记：首轮失败保存64条批量生成；通过验收69条生成、3条测量、2次加载。失败轮未在收据完整分项计账，保留失败收据和原始回放，不当作零成本。归档/离线验收新增模型调用为0。冻结候选的全新模型重载确认尚未执行。
+
+04:39快照工作盘143.40 GiB可用，B约1.81 GiB、C约1.88 GiB，均远低于12 GiB分支预算，全盘余量超过20 GiB；未清理远端证据。完整取回和压缩只增加本地归档，不删除远端文件。
+
+B本次交付完成，不自动扩至51轮。C报告仍因格式错误未接受，随后turn167容量失败，监督器退出但broker存活；turn143/167无用量回执，不能当零。C旧50轮授权仍被覆盖，不启动C31–50。半小时心跳保留到两分支全部交付，不能因B结束删除。
+
+---
+
+### 原件 2：All 50 completed development repair rounds
+
+原路径：`experiments/wsp-vlm-mechanism-repair-v9x50-2026-11-05/B-closeout/records/work/final_experiment_table_50.md`。 [固定提交原文](https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9x50-2026-11-05/B-closeout/records/work/final_experiment_table_50.md) · [单独阅读副本](../library/809c6a9259b1f0dd.md)；SHA-256：`809c6a9259b1f0dd2928bed99b22b5a8073c764c868593c9fceb337e11b46e3d`。
+
+---
+
+#### All 50 completed development repair rounds
+
+Official evaluation results only. Diagnostics never rerank candidates.
+W0: 320/464 correct; repair score 55/116; primary B0:T0 joint 27/58.
+Selected automatically: round 38. Full candidate IDs and case-level changes are in final_experiment_summary_50.json.
+
+| Round | Edit/control | Correct /464 | Repairs | Regressions | Repair score | Primary joint /58 | Worst cell delta | Changed scalars | Delta L2 | Commit / evaluation |
+|---:|---|---:|---:|---:|---:|---:|---:|---:|---:|---|
+| 1 | L34 c1057 zero | 323 | 3 | 0 | 0.482758621 | 27 | 0.000000000 | 2560 | 1.17998245615 | turn-0027 / turn-0028 |
+| 2 | L34 c1057 half | 323 | 3 | 0 | 0.482758621 | 27 | 0.000000000 | 2560 | 0.589991228076 | turn-0032 / turn-0033 |
+| 3 | L34 c1057 enhance | 321 | 1 | 0 | 0.474137931 | 27 | 0.000000000 | 2560 | 0.590172813895 | turn-0037 / turn-0038 |
+| 4 | L34 remove parallel | 321 | 1 | 0 | 0.474137931 | 27 | 0.000000000 | 2517 | 0.115027721062 | turn-0041 / turn-0042 |
+| 5 | L34 retain parallel | 323 | 3 | 0 | 0.482758621 | 27 | 0.000000000 | 2559 | 1.17435653281 | turn-0044 / turn-0045 |
+| 6 | L34 transfer c2020 | 320 | 0 | 0 | 0.474137931 | 27 | 0.000000000 | 2552 | 1.17432609055 | turn-0053 / turn-0054 |
+| 7 | L34 transfer c2277 | 320 | 0 | 0 | 0.474137931 | 27 | 0.000000000 | 2553 | 1.17428706303 | turn-0056 / turn-0057 |
+| 8 | L34 transfer c2958 | 319 | 0 | 1 | 0.465517241 | 27 | -0.017241379 | 2553 | 1.17448008002 | turn-0059 / turn-0060 |
+| 9 | L34 random delta seed105701 | 320 | 0 | 0 | 0.474137931 | 27 | 0.000000000 | 2559 | 1.17452469007 | turn-0062 / turn-0063 |
+| 10 | L34 random delta seed105702 | 322 | 2 | 0 | 0.482758621 | 27 | 0.000000000 | 2559 | 1.17438743355 | turn-0065 / turn-0066 |
+| 11 | L34 random delta seed105703 | 321 | 1 | 0 | 0.474137931 | 27 | 0.000000000 | 2559 | 1.17441463474 | turn-0068 / turn-0069 |
+| 12 | L34 geometry control seed105704 | 323 | 3 | 0 | 0.482758621 | 27 | 0.000000000 | 2560 | 1.17435012201 | turn-0072 / turn-0073 |
+| 13 | L34 geometry control seed105705 | 323 | 3 | 0 | 0.482758621 | 27 | 0.000000000 | 2560 | 1.17435533875 | turn-0075 / turn-0076 |
+| 14 | L34 geometry control seed105706 | 322 | 2 | 0 | 0.482758621 | 27 | 0.000000000 | 2559 | 1.17435640726 | turn-0078 / turn-0079 |
+| 15 | L32 c619 half | 323 | 3 | 0 | 0.482758621 | 27 | 0.000000000 | 2560 | 0.544594544599 | turn-0084 / turn-0085 |
+| 16 | L32 c619 zero | 323 | 3 | 0 | 0.482758621 | 27 | 0.000000000 | 2560 | 1.0891890892 | turn-0091 / turn-0092 |
+| 17 | L32 c619 enhance | 321 | 1 | 0 | 0.474137931 | 27 | 0.000000000 | 2560 | 0.544661563523 | turn-0096 / turn-0097 |
+| 18 | L23 c3537 half | 322 | 3 | 1 | 0.474137931 | 27 | 0.000000000 | 2560 | 0.582150554639 | turn-0102 / turn-0103 |
+| 19 | L23 c3537 zero | 321 | 4 | 3 | 0.474137931 | 27 | -0.017241379 | 2560 | 1.16430110928 | turn-0106 / turn-0107 |
+| 20 | L23 c3537 enhance | 322 | 2 | 0 | 0.474137931 | 27 | 0.000000000 | 2560 | 0.581959456459 | turn-0111 / turn-0112 |
+| 21 | L24 head13 half | 322 | 3 | 1 | 0.482758621 | 27 | -0.017241379 | 327680 | 5.40297494781 | turn-0120 / turn-0122 |
+| 22 | L24 head13 zero | 324 | 5 | 1 | 0.482758621 | 27 | -0.017241379 | 327680 | 10.8059498956 | turn-0127 / turn-0128 |
+| 23 | L24 head13 enhance | 324 | 4 | 0 | 0.482758621 | 27 | 0.000000000 | 327680 | 5.40286835508 | turn-0131 / turn-0132 |
+| 24 | L24 head24 matched-half control | 321 | 1 | 0 | 0.474137931 | 27 | 0.000000000 | 327680 | 5.40330141479 | turn-0135 / turn-0136 |
+| 25 | L24 head24 matched-full control | 322 | 2 | 0 | 0.482758621 | 27 | 0.000000000 | 327680 | 10.8060571201 | turn-0139 / turn-0140 |
+| 26 | L24 head13 remove parallel | 322 | 2 | 0 | 0.482758621 | 27 | 0.000000000 | 277277 | 0.351931251629 | turn-0143 / turn-0144 |
+| 27 | L24 head13 retain parallel | 323 | 4 | 1 | 0.482758621 | 27 | -0.017241379 | 327669 | 10.8002324624 | turn-0149 / turn-0150 |
+| 28 | L23 c3537 + L32 c619 zero | 323 | 6 | 3 | 0.474137931 | 27 | -0.017241379 | 5120 | 1.59434310771 | turn-0156 / turn-0157 |
+| 29 | L23 c3537 + L34 c1057 zero | 322 | 5 | 3 | 0.474137931 | 27 | -0.017241379 | 5120 | 1.65769589186 | turn-0163 / turn-0164 |
+| 30 | L32 c619 + L34 c1057 zero | 325 | 5 | 0 | 0.482758621 | 27 | 0.000000000 | 5120 | 1.60583046081 | turn-0169 / turn-0170 |
+| 31 | L24 head 13 x 0.5; L34 MLP column 1057 x 0.5 | 323 | 4 | 1 | 0.482758621 | 27 | -0.017241379 | 330240 | 5.43509226563 | turn-0218 / turn-0219 |
+| 32 | L24 head 13 x 0.5; L34 MLP column 1057 x 0 | 324 | 5 | 1 | 0.482758621 | 27 | -0.017241379 | 330240 | 5.53032520595 | turn-0226 / turn-0227 |
+| 33 | L24 head 13 x 0.5; L34 MLP column 1057 x 1.5 | 321 | 2 | 1 | 0.474137931 | 27 | -0.017241379 | 330240 | 5.43511198017 | turn-0232 / turn-0233 |
+| 34 | L24 head 13 x 0; L34 MLP column 1057 x 0.5 | 323 | 5 | 2 | 0.474137931 | 27 | -0.017241379 | 330240 | 10.8220442984 | turn-0238 / turn-0239 |
+| 35 | L24 head 13 x 0; L34 MLP column 1057 x 0 | 323 | 5 | 2 | 0.474137931 | 27 | -0.017241379 | 330240 | 10.8701845313 | turn-0244 / turn-0245 |
+| 36 | L24 head 13 x 0; L34 MLP column 1057 x 1.5 | 322 | 4 | 2 | 0.474137931 | 27 | -0.017241379 | 330240 | 10.8220541995 | turn-0250 / turn-0251 |
+| 37 | L24 head 13 x 1.5; L34 MLP column 1057 x 0.5 | 324 | 4 | 0 | 0.482758621 | 27 | 0.000000000 | 330240 | 5.43498630279 | turn-0256 / turn-0257 |
+| 38 (selected) | L24 head 13 x 1.5; L34 MLP column 1057 x 0 | 325 | 5 | 0 | 0.491379310 | 27 | 0.000000000 | 330240 | 5.53022106784 | turn-0262 / turn-0263 |
+| 39 | L24 head 13 x 1.5; L34 MLP column 1057 x 1.5 | 324 | 4 | 0 | 0.482758621 | 27 | 0.000000000 | 330240 | 5.43500601771 | turn-0268 / turn-0269 |
+| 40 | L24 head 24 x 1.443879588373811 | 322 | 3 | 1 | 0.482758621 | 27 | -0.017241379 | 327680 | 5.40239320087 | turn-0274 / turn-0275 |
+| 41 | L24 head 24 x 0.5561204116261893; L34 MLP column 1057 x 0.5 | 322 | 2 | 0 | 0.482758621 | 27 | 0.000000000 | 330240 | 5.43541680355 | turn-0280 / turn-0281 |
+| 42 | L24 head 24 x 0.5561204116261893; L34 MLP column 1057 x 0 | 322 | 2 | 0 | 0.482758621 | 27 | 0.000000000 | 330240 | 5.5306441556 | turn-0286 / turn-0287 |
+| 43 | L24 head 24 x 0.1122408232523787; L34 MLP column 1057 x 0.5 | 320 | 0 | 0 | 0.474137931 | 27 | 0.000000000 | 330240 | 10.8221513634 | turn-0292 / turn-0293 |
+| 44 | L24 head 24 x 0.1122408232523787; L34 MLP column 1057 x 0 | 323 | 3 | 0 | 0.482758621 | 27 | 0.000000000 | 330240 | 10.8702911221 | turn-0298 / turn-0299 |
+| 45 | L24 head 24 x 1.443879588373811; L34 MLP column 1057 x 0.5 | 323 | 4 | 1 | 0.482758621 | 27 | -0.017241379 | 330240 | 5.43451395674 | turn-0304 / turn-0305 |
+| 46 | L24 head 24 x 1.443879588373811; L34 MLP column 1057 x 0 | 323 | 4 | 1 | 0.482758621 | 27 | -0.017241379 | 330240 | 5.52975685665 | turn-0310 / turn-0311 |
+| 47 | L24 head 13 x 0.5; L32 MLP column 619 x 0.5 | 323 | 4 | 1 | 0.482758621 | 27 | -0.017241379 | 330240 | 5.43035187669 | turn-0317 / turn-0318 |
+| 48 | L24 head 13 x 0; L32 MLP column 619 x 0 | 327 | 8 | 1 | 0.482758621 | 27 | -0.017241379 | 330240 | 10.8607037534 | turn-0323 / turn-0324 |
+| 49 | L24 head 24 x 0.5561204116261893; L32 MLP column 619 x 0.5 | 322 | 2 | 0 | 0.482758621 | 27 | 0.000000000 | 330240 | 5.4306766979 | turn-0329 / turn-0330 |
+| 50 | L24 head 24 x 0.1122408232523787; L32 MLP column 619 x 0 | 321 | 1 | 0 | 0.482758621 | 27 | 0.000000000 | 330240 | 10.8608104373 | turn-0335 / turn-0336 |
+
+---
+
+### 原件 3：Task B: 50-round mechanistic repair report
+
+原路径：`experiments/wsp-vlm-mechanism-repair-v9x50-2026-11-05/B-closeout/records/work/mechanism_report_50.md`。 [固定提交原文](https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9x50-2026-11-05/B-closeout/records/work/mechanism_report_50.md) · [单独阅读副本](../library/409670b9cd1f2012.md)；SHA-256：`409670b9cd1f2012654f6c3fe371cf3b5980419d2ca50ddd0790bd7003141e02`。
+
+---
+
+#### Task B: 50-round mechanistic repair report
+
+##### 1. Decision and strength of evidence
+
+Automatic selection: **round 38**, `c-84ca0f976010174a0a5618921b42963491d8ae388a333a69989ffb479ca8cbcd`.
+
+Retain the automatic R38 selection for freezing without diagnostic reranking. The evidence supports local, context-dependent causal effects on numerical answer competition and a small official seen-development gain. It does not establish a robust incremental benefit of the selected pair over its head-only control, a shared spatial-success direction, a uniquely necessary zero-aligned component, serial spatial mediation, or general spatial-reasoning repair.
+
+The original 30-round selection and freeze remain archived. This report supersedes that selection only for the reopened 50-round experiment; it does not rewrite the earlier evidence. All 50 candidate identities and content signatures were verified as distinct, with complete evaluations under the same protocol. No further repair was proposed after round 50.
+
+##### 2. Exact selected intervention
+
+Base: `w0-72b28080bcd9951ceeeebfb62a5fd532cb3d52e4714ea3baedea3796b650ed06`. Layer, head, and channel indices are the recorded zero-based indices; column ranges are half-open.
+
+- `model.language_model.layers.24.self_attn.o_proj.weight[:, 1664:1792]`: multiply the W0 head-13 output block by **1.5**. This changes 327,680 scalars.
+- `model.language_model.layers.34.mlp.down_proj.weight[:, 1057:1058]`: replace the W0 output column by **zero**. This changes 2,560 scalars.
+- All other parameters remain W0. Vision weights are untouched.
+- Values are rounded to BF16 using round-to-nearest, ties-to-even. Total support is **330,240**, with delta L2 **5.530221067838229**.
+
+The two committed tensor content hashes are:
+- L24: `d6a502373294dcc941ebd579e4b94bffeb35837d533665a5fa93f6d1a1827d33`
+- L34: `55fc8c1d36a72eb2cfd9f12b67fa1d2ce62575ef3d3ce7defb216b847b47e685`
+
+Fresh CPU reconstruction verified both saved replacement blocks against canonical W0, exact BF16 rounding, support, delta norm, and equality outside the edited regions. It did not stage or commit another candidate. See `selected_weight_audit_50.json`, `round38_provenance.json`, and commit/evaluation actions 262/263.
+
+##### 3. Official behavioral outcome—not a repeat-adjusted score
+
+| Metric | W0 | R38 |
+|---|---:|---:|
+| Correct prompts | 320/464 | 325/464 |
+| Accuracy | 68.9655% | 70.0431% |
+| Repair score, joint B0 pairs across T0/T1 | 55/116 | 57/116 |
+| Primary B0:T0 joint | 27/58 | 27/58 |
+| B0:T1 joint | 28/58 | 30/58 |
+| B1:T0 joint | 29/58 | 29/58 |
+| B1:T1 joint | 31/58 | 32/58 |
+| Format errors / truncated outputs | 0 / 0 | 0 / 0 |
+
+There are five official wrong-to-correct changes, no correct-to-wrong changes, and three wrong-to-wrong changes. All eight are shown below. Selected-cell accuracy does not decrease. Across all 50 candidates, the largest observed cell loss is one of 58 examples, within the unchanged 0.035 protection limit; every full evaluation has zero format errors and zero truncations.
+
+Round 48 has higher raw accuracy (327/464), but repair score 56/116, eight repairs and one regression. It is **not** the automatic best. Neither raw accuracy nor diagnostic answers were substituted for the selection rule.
+
+##### 4. Fresh paired audit: decisive qualifications
+
+Actions 341 and 342 remeasured R38 and W0 on 22 cases: the fixed 15-case panel plus all additional official R38 answer changes. Action 343 verified the full artifacts, complete generations, capture hashes, and input/chat hashes. This selected diagnostic panel is not a held-out set or a replacement 464-prompt evaluation.
+
+| Case | Gold | Official W0 -> R38 | Fresh W0 -> R38 | Official change | Fresh margin (new minus old), W0 / R38 |
+|---|---:|---|---|---|---|
+| B-10840:subset:T1:B0 | 0 | 1 -> 0 | 1 -> 1 | repair | -0.5 / -0.25 |
+| B-508641:subset:T1:B0 | 1 | 2 -> 1 | 2 -> 1 | repair | -0.25 / 0 |
+| B-518494:total:T1:B0 | 3 | 4 -> 3 | 3 -> 3 | repair | 0 / 0.5 |
+| B-445896:subset:T1:B1 | 0 | 2 -> 1 | 2 -> 1 | wrong to wrong | -0.25 / 0.25 |
+| B-485772:subset:T1:B1 | 2 | 3 -> 2 | 3 -> 2 | repair | -0.25 / 0 |
+| B-277920:subset:T1:B0 | 0 | 4 -> 3 | 3 -> 3 | wrong to wrong | 0 / 0.75 |
+| B-372918:total:T0:B1 | 8 | 7 -> 8 | 7 -> 8 | repair | 0 / 0.5 |
+| B-188190:subset:T0:B0 | 4 | 1 -> 2 | 1 -> 2 | wrong to wrong | 0 / 0.5 |
+
+Only three of the five official repair contrasts reproduce in this fresh pair of diagnostic runs:
+`B-508641:subset:T1:B0`, `B-485772:subset:T1:B1`, and `B-372918:total:T0:B1`.
+The first two have tied candidate logits for the new and old answers. The third has tied W0 logits. Reproduction on these runs is not evidence of robustness to numerical or input perturbations.
+
+The official zero repair on `B-10840:subset:T1:B0` does **not** reproduce: both models answer 1; W0 and R38 have 1-minus-0 margins +0.5 and +0.25. On `B-518494:total:T1:B0`, the official contrast is 4 to gold 3, but both fresh runs answer 3. W0 also changes 4 to 3 on `B-277920:subset:T1:B0`, where both answers are wrong.
+
+There are no correctness regressions in this 22-case fresh pair, and no truncated generations. This does not establish zero repeat regressions over all 464 prompts. No repeat-adjusted aggregate score is reported.
+
+For the overlapping 15 cases, fresh candidate and W0 answers, digit logits, and all captures exactly match their respective earlier diagnostic runs. This preserves rather than explains away the evaluation-versus-diagnostic discrepancies. Identical input/chat hashes do not identify their computational cause.
+
+###### Incremental benefit over head-only enhancement
+
+R23, the head-13 x1.5 single-component control, obtains 324/464 and repair score 56/116. R38 has just one additional official correctness gain over R23: the non-reproducing zero repair on `B-10840:subset:T1:B0`. Both diagnostic runs answer 1; the head-only margin +1.0 falls to +0.25 under the pair without crossing zero.
+
+A second official head-only-to-pair change, `B-129884:subset:T1:B0`, changes 3 to 0 with gold 5: neither is correct. It was not included in the fresh 22-case W0-versus-R38 panel. Thus the selected pair's incremental behavioral advantage over its head-only control is not robustly established. See `selected_head_only_comparison_50.json`.
+
+##### 5. Internal observations and their limits
+
+The earlier investigation used same-image failure/success prompt contrasts, correct-answer controls, and last-prompt captures. L34 channel 1057 was strongly associated with answer 1: recorded median activation was 22.125 for 21 answer-one cases versus approximately 0.333 for 18 answer-zero cases. Correct-one cases also activated it. Prompt-form projection controls did not eliminate answer-content confounding; the small zero-answer contrast set had weak leave-one-out alignment. These observations do not identify a spatial-error detector or a shared spatial-success representation.
+
+Temporary last-token interventions changed numerical margins and sometimes thresholded answers. Permanent weight-column edits act at all positions; they must not be equated with a last-token-only intervention. The visible outcome is context-dependent answer competition, not uniform suppression of the token 1.
+
+For selected R38:
+- L23 MLP inputs and layer outputs exactly match W0 on all 22 fresh cases.
+- All checked captures before the edited L34 output match head-only R23 on the 15 cases with a head-only reference.
+- The other seven cases lack that head-only reference; they are not counted as passes.
+- These checks support correct intervention ordering. They do not establish head-specific attention routing or path-specific mediation.
+
+Correct-one controls remain important negatives: on `B-242725:subset:T0:B0`, R38 changes the 1-minus-0 margin from 5.75 to 5.25 while keeping answer 1; on `B-538866:total:T0:B0`, it increases that margin from 17.75 to 18.0. The wrong answer 3 on `B-170386:subset:T1:B0` persists. The original failure on `B-538866:subset:T0:B0` also remains answer 1 with unchanged 1-minus-0 margin 3.25. No general spatial repair follows.
+
+##### 6. What the first 30 rounds established—and did not
+
+The original experiment tested L34 attenuation/enhancement, projection removal/retention, activity-matched transfers, random perturbations, geometry-matched controls, alternative MLP columns, head-13 edits, a norm-matched head-24 control, and paired MLP edits.
+
+Key counterevidence is retained:
+- Removing the proposed parallel component did not reproduce the zebra repairs, whereas retaining it did; its removal was not necessary.
+- Geometry-matched random-retention controls also repaired the same zebra cases. This weakens uniqueness claims for the proposed success direction and leaves generic attenuation as a live alternative.
+- Global activity matching did not supply a good conditional eligible-column match; thresholds were not relaxed to manufacture one.
+- L23 interventions incurred total-count regressions, and effects on downstream MLP activations occurred in both wrong and correct-one cases.
+- Previous paired edits showed interactions and partial redundancy, but no path-specific mediation test was performed.
+- Clarification and other prompt changes did not consistently resolve the failure behavior.
+
+The original automatically selected R14 was itself a geometry-matched control, with 322/464 and repair score 56/116. Its original report, repeat audit, full ledger, and freeze record remain intact. The exact original evidence, including prior diagnostic disagreements, is linked by the preserved 30-round manifest rather than silently relabeled as evidence for R38.
+
+##### 7. Fixed continuation: rounds 31–50
+
+The continuation plan was fixed after seeing the first 30 rounds, with SHA-256
+`2d855d36dc1a1d33bcea52b18b3f1fe8c13c498b99901bffb0fbceb6f3bf36d0`.
+
+- R31–R39: the 3 x 3 combination of head-13 factors 0.5, 0, 1.5 and L34-column factors 0.5, 0, 1.5.
+- R40: a norm-matched head-24 enhancement-only anchor.
+- R41–R46: head-24 attenuation/enhancement controls combined with half/zero L34 output.
+- R47–R50: head-13/head-24 attenuation controls combined with half/zero L32 channel 619.
+
+Each was reconstructed independently from W0; no cumulative editing or retuning after round 50 occurred. Head-24 factors were fixed from pre-rounding edit-norm matching: 0.5561204116261893, 0.11224082325237872, and 1.4438795883738107. BF16 rounding leaves small actual norm differences; exact equality after rounding is not claimed.
+
+The complete 50-row table is `final_experiment_table_50.md`; the machine-readable ledger preserves every repair, regression, wrong-to-wrong change, cell delta, candidate ID, and action reference in `final_experiment_summary_50.json`.
+
+Dose tests did not establish a specific shared spatial computation. Under head-13 enhancement, L34 factors 0, 0.5, 1, 1.5 give zebra-case 1-minus-0 margins 0.25, 0.75, 1.0, 1.25; all diagnostic answers remain 1. Correct-one controls also move, and the total-count control can move in the opposite direction. R43 is a useful negative: 320/464, no repairs or regressions, and only one wrong-to-wrong change.
+
+##### 8. Matched-head and alternative-MLP comparisons
+
+Let m be a recorded digit-logit margin. The conditional MLP effect is
+`m(head + MLP edit) - m(head edit)`.
+Where both single-edit measurements exist, factorial interaction is
+`m(head + MLP edit) - m(head edit) - m(MLP edit) + m(W0)`.
+
+The matched-head contrast below subtracts the head-24 conditional effect from the head-13 conditional effect, over the same 15 cases and three margins. It does not compare raw paired margins without accounting for the head-only effect.
+
+| Head-13 / norm-matched head-24 rounds | Correct | Repairs | Regressions | Maximum absolute conditional differences: 1-0, 1-2, 3-0 |
+|---|---|---|---|---|
+| 31 / 41 | 323 / 322 | 4 / 2 | 1 / 0 | 0.25, 0.5, 0.25 |
+| 32 / 42 | 324 / 322 | 5 / 2 | 1 / 0 | 0.25, 0.375, 0.25 |
+| 34 / 43 | 323 / 320 | 5 / 0 | 2 / 0 | 0.25, 0.375, 0.25 |
+| 35 / 44 | 323 / 323 | 5 / 3 | 2 / 0 | 0.5, 0.25, 0.375 |
+| 37 / 45 | 324 / 323 | 4 / 4 | 0 / 1 | 0.25, 0.5, 0.25 |
+| 38 / 46 | 325 / 323 | 5 / 4 | 0 / 1 | 0.25, 0.375, 0.375 |
+| 47 / 49 | 323 / 322 | 4 / 2 | 1 / 0 | 0.5, 0.5, 0.25 |
+| 48 / 50 | 327 / 321 | 8 / 1 | 1 / 0 | 0.5, 0.375, 0.375 |
+
+The largest observed absolute matched-head conditional differences are 0.5, 0.5, and 0.375 for the three margins. Such small observed differences do not demonstrate equivalence, numerical noise, or a uniquely spatial head-13-to-MLP pathway. Whole-development answer counts can differ at decision boundaries.
+
+Four cross-MLP comparisons at identical head settings compare L34 channel 1057 with L32 channel 619. Their maximum absolute differences in the three conditional margins are:
+- R31/R47: 0.5, 0.5, 0.75; both have 323/464.
+- R35/R48: 0.5, 1.25, 1.625; 323 versus 327/464.
+- R41/R49: 0.25, 0.75, 0.875; both have 322/464.
+- R44/R50: 0.75, 1.25, 1.75; 323 versus 321/464.
+
+These MLP-column edits are **not norm-matched to each other**. They are alternative-component comparisons, not evidence of an isolated layer effect.
+
+Standalone R2/R3 diagnostics were unavailable. Interactions needing those anchors remain null; conditional effects and dose comparisons do not fill in the missing measurements. Existing evaluation-versus-diagnostic discrepancies in the L32 half-edit reference also remain a limitation. Full records are in `matched_head_L34_pairs_31_46.json` and `matched_L32_and_cross_MLP_comparisons_50.json`.
+
+##### 9. Continuation diagnostic disagreements
+
+Every entry below is retained separately from official scoring. These are comparisons on the fixed 15-case panel, not whole-development repeat tests.
+
+| Round | Official-evaluation versus diagnostic answer disagreements on the fixed 15-case panel |
+|---:|---|
+| 31 | B-538866:subset:T0:B1 |
+| 32 | None |
+| 33 | None |
+| 34 | None |
+| 35 | None |
+| 36 | None |
+| 37 | None |
+| 38 | B-10840:subset:T1:B0 |
+| 39 | None |
+| 40 | B-10840:subset:T1:B0; B-3805:subset:T1:B1 |
+| 41 | B-10840:subset:T1:B0; B-3805:subset:T1:B1 |
+| 42 | B-3805:subset:T1:B1 |
+| 43 | None |
+| 44 | B-10840:subset:T1:B0 |
+| 45 | B-10840:subset:T1:B0 |
+| 46 | None |
+| 47 | None |
+| 48 | B-101422:subset:T0:B1 |
+| 49 | B-10840:subset:T1:B0; B-3805:subset:T1:B1 |
+| 50 | B-10840:subset:T1:B0; B-3805:subset:T1:B1 |
+
+Per-round diagnostic audits preserve complete answers, margins, capture metadata, ordering checks, and identified or missing interaction references. The final 22-case selected audit additionally documents the W0 disagreements described above.
+
+##### 10. Scope, independence, and stopping
+
+There are 58 image groups, 464 correlated prompts, and 116 correlated B0 total/subset pairs across templates. Fifty candidates were examined on development data. The fixed continuation is not independent of the first-stage evidence, and the selected diagnostic panel is not an unbiased estimate of generalization. No independent-prompt significance claim is made.
+
+No held-out or branch-C evaluation, independent confirmation, or completed independent scientific review is claimed. The primary B0:T0 joint metric never improved in this search. Passing the observed protection constraints does not establish preservation on unseen inputs.
+
+All 50 planned rounds are complete. Diagnostic findings were not used to replace official selection, conceal unsuccessful tests, or create a 51st candidate. Report submission and freezing are separate harness steps; this evidence packet alone does not assert that either has already succeeded.
+
+##### 11. Reproducibility packet
+
+New files:
+- `mechanism_report_50.md` and `mechanism_report_50.json`
+- `final_experiment_summary_50.json` and `final_experiment_table_50.md`
+- `final_evidence_manifest_50.json`
+- `completion_verification_50.json`
+- `selected_weight_audit_50.json`
+- `selected_head_only_comparison_50.json`
+- `selected_best_final_audit_plan_50.json`
+- `selected_best_repeat_audit_50.json`
+
+The manifest hashes the preserved original sources, continuation provenance and replacement blocks, commit/evaluation/diagnostic artifacts, referenced continuation/final capture arrays, and new reports. It excludes its own hash to avoid self-reference. The original 30-round manifest entries were verified unchanged before these files were created.
+
+**Bottom line:** a small official development gain with boundary-sensitive, context-dependent numerical effects; no established general spatial mechanism and no robustly demonstrated incremental behavioral benefit of the selected pair over its head-only control.
+
+---
+
+### 原件 4：新版WSP v9 B/C：累计50轮的授权续跑
+
+原路径：`experiments/wsp-vlm-mechanism-repair-v9x50-2026-11-05/README.zh-CN.md`。 [固定提交原文](https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9x50-2026-11-05/README.zh-CN.md) · [单独阅读副本](../library/7cbe435f811959be.md)；SHA-256：`7cbe435f811959bea3a7843f6b360622fb6d134a116e6096ff5b91d39a0df1c5`。
+
+---
+
+#### 新版WSP v9 B/C：累计50轮的授权续跑
+
+**2026-11-06更新：B已完成50轮、报告、冻结与退出，完整证据已离线核验并交付，见[B50最终归档](https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9x50-2026-11-05/B-closeout/FINAL.zh-CN.md)。C最新目标是30轮；评价已完成但收尾容量失败，尚未冻结，旧C50授权无效，不自动重试。下文为原始50轮续跑工程记录。**
+
+2026-11-05，用户在本聊天明确指示“全部加到50轮”。范围为正在运行的新版Qwen3-VL-4B B/C，各累计50个不同非零候选的完整开发评价，已有轮次计入；不是另跑50轮。旧2B/8B/Gemma继续停止。半小时汇报保留。
+
+##### 实施方式与身份
+
+当前进程已载入30轮合同，原数值工程验收绑定源码hash。本版本复用既有v8续跑器，在原v9完成30轮、提交机制报告和冻结、服务退出且无未完成/待处理动作后，自动接续同一Astra线程完成31—50轮。等待器现时是否已启动看`continuation-{B,C}.json`；真正进入31轮以后看远端`broker-50-ready.json`和动作收据。不得把排队写成新增轮次已完成。
+
+不修改原v9源码、config、identity或freeze.json，也不打断进行中的动作。远端仍使用`external/wsp-vlm-mechanism-repair-v9-2026-11-05/{B,C}`。W0、评分缓存、全部候选、完整回答与研究者累计usage延续；不重放基线或旧候选。每分支边界重新加载一次模型，Python内存变量清空，工作文件/提案/激活仍在；明确通知同一研究者从已有文件重建变量，禁止重放不明动作。
+
+原30轮state/config/identity/冻结收据/机制报告逐字节核对后保存在`checkpoint-round30/`；旧活动冻结/报告文件移出活动位置，确保50轮提交新报告。原合同身份保持，显式生效上限写入`round-limit-amendment.json`。本地原结束收据另保存在本目录`checkpoint-round30-{B,C}/`，会话turn编号不重置。模型/候选存储与评价代码沿用已通过真实验收的v9。
+
+用户追加轮数后，只把repair_rounds变为50，并按50/30向上取整扩大累计forwards、samples、target_tokens、researcher_tokens上限。B/C样本上限分别116000/640000；研究者累计token上限各83,333,334（含缓存输入，不等于费用）。动作/研究者回合仍各2000、CPU仍36000秒；存储仍各12GiB，全盘至少20GiB。科学条件、保护、修改支持上限及失败停止规则全部不变。原配置通过数值就绪门后，由独立续跑器应用这份授权预算修订；原工程验收不是对50轮成绩的背书。
+
+实测工作盘可用145.56GiB（北京时间20:43附近），当前B14轮、C13轮。100个候选即便每个达到4M临时支持、每坐标12字节，总计约4.47GiB；实际保存远低于该极端估算。每分支12GiB仍覆盖提案/捕获/日志，继续按实测增长控制，无需额外清理证据、共享环境或其他项目。不能仅靠此候选估算取消存储guard。
+
+##### 实现验收与操作
+
+新增CPU检查覆盖实际v9计数30→50、缓存评价不计新增、不重复前向、50轮后阻止第51个完整候选、必须新机制报告后冻结、边界归档字节一致及其他限制保持。原v9两分支真实工程验收仍有效；新续跑控制器单独测试，尚未跨过30轮的真实执行身份以收据为准。复用的v8早期“远端导入本地专用run_rounds”错误已避免：只在本地run函数导入。
+
+本地启动：`python -u continue50.py --task B`，C同理；每分支仅启动一次。脚本等待正常30轮边界，失败或提前停止不擅自恢复。新observer启动前再次检查指定GPU空闲，无未完成动作；不确定启动不重试。所有失败保留。
+
+监控需同时读本目录续跑状态和原v9运行状态。原`monitor.py`/监督收据中的30是历史字段；有效总授权目标为50，进入续跑后以amendment/ready回执中的50为准。旧服务在轮数cap触发时错误字符串仍写Thirty，实际比较使用生效合同50；不为改提示文字热改已验收的服务。第50轮后的新机制报告、冻结、原始回答/动作/成本归档交付完成后删除心跳，不自动扩轮或模型。
+
+##### 设计卡与自查
+
+主线/问题保持：AI依据失败自主发现内部定向修补，改善B/C完整回答并控制损伤。增量为用户明确增加20个开发候选机会，继续检验尚未解决的定位/方向/副作用；不是追加独立确认。已有反例包括B随机方向复现部分修复、C改善视觉margin却损伤usual，均保留。操作对象、固定/响应路径、估计对象和判读沿用[原v9计划](https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9-2026-11-05/PLAN.zh-CN.md)。达到50或明确失败/预算耗尽即停止，不保证追平旧词语编辑。
+
+依据`experiment-design-self-check` v1，同一助手自查，非独立审查。
+
+| 项 | 判定与理由 |
+|---|---|
+| C01 | 通过：仍回答内部修补与行为问题，不换研究目标。 |
+| C02 | 通过：在原先未解决假设及反证基础上追加有限搜索，不能把更多轮数本身当发现。 |
+| C03 | 通过：复用v9全部数据、代码、工程验收及v8续跑器。 |
+| C04 | 通过：当前弱增益、随机对照及任务取舍明确保留，不承诺收益。 |
+| C05 | 通过：只改累计轮数/部分资源上限，修补算子和诊断接口不变。 |
+| C06 | 通过：同W0、同输入、同生成，干预后下游仍自然响应。 |
+| C07 | 通过：沿用绑定权重禁止等边界；模型重载不改变静态候选身份。 |
+| C08 | 通过：行为最佳与机制报告分开，追加开发不形成确认因果或泛化。 |
+| C09 | 通过：保留原有预测/对照要求，不指定新的方向或配方。 |
+| C10 | 通过：仍用完整D修复分数和保护，不用测量次数替代轮次或正确率。 |
+| C11 | 通过：失败/早停保留，等待器遇到异常不强行继续或重放。 |
+| C12 | 通过：用户明确追加20候选；无基线重跑，累计成本不清零，模型边界重载另记。 |
+| C13 | 通过：原30轮身份与报告归档，50轮新增授权单独留痕，D仍是开发。 |
+| C14 | 通过：50轮后结束并交付，负结果不自动扩实验。 |
+
+相关历史错误：E03不以更细/更多轮数保证有效；E10完整回答为主；E12对照匹配边界保留；E16不把阴性改叫工程错误；E22开发选优不能称确认；E23测试/授权/等待/已执行分开；E24不要求每轮完整机制；E25有限预算且不顺带恢复模型。其他缓存专用操作本次不涉及，其余原v9自查维持。
+
+反方复查：追加轮数受当前结果启发，存在更多开发选优机会，所以不得声称预注册50轮或独立统计确认；30轮报告不能充当50轮报告，归档后强制重新提交；只改文件不能改变已载入进程，因此在可核验边界由新observer应用显式修订；内存重置会有重建成本，已在同一研究者提示中说明，不声称无中断热切换。逻辑自查通过，工程与真实进入续跑状态分别按收据。
+
+**20:50实测：** 本地和服务器各2项CPU边界检查通过；两个等待器已启动并存活（B PID79119、C PID79120），均为`waiting_for_original_30_rounds`，未打断当前进程。半小时心跳已更新为累计50轮，保留原自动化ID。实际追加轮次尚未开始；后续以续跑与模型动作收据为准。
+
+证据：[授权及生效上限](https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9x50-2026-11-05/authorization.json)、[本地验收](https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9x50-2026-11-05/acceptance-local.json)、[服务器验收](https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9x50-2026-11-05/acceptance-remote.json)、[启动与自动化核验](https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9x50-2026-11-05/activation-receipt.json)、[续跑器](https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9x50-2026-11-05/continue50.py)、[CPU检查](https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9x50-2026-11-05/test_transition.py)。
+
+---
+
+
+## 时间、运行与停止收据索引
+
+下面是所收集JSON的原有时间字段与状态，不把预计结束时间当实际完成时间。未列时间的文件仍有原件链接。完整JSON全部保存在原文归档，不能以此索引中的标量代替完整嵌套内容。
+
+| 原件 | 原记录状态/阶段 | 原时间字段（原时区） |
+|---|---|---|
+| [B-closeout/stop-and-C-status.json](https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9x50-2026-11-05/B-closeout/stop-and-C-status.json) | {} | {"time_unix": "2026-11-05T20:39:45.775185+00:00"} |
+| [B-closeout/verification.json](https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9x50-2026-11-05/B-closeout/verification.json) | {"model_calls": 0} | {} |
+| [activation-receipt.json](https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9x50-2026-11-05/activation-receipt.json) | {} | {"time_unix": "2026-11-05T12:51:11.694427+00:00"} |
+| [waiter-launch-B.json](https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9x50-2026-11-05/waiter-launch-B.json) | {"status": "waiter_launched"} | {"time_unix": "2026-11-05T12:50:53.067566+00:00"} |
+| [waiter-launch-C.json](https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9x50-2026-11-05/waiter-launch-C.json) | {"status": "waiter_launched"} | {"time_unix": "2026-11-05T12:50:53.076497+00:00"} |
+
+## 全部原始资产入口
+
+本目录在固定提交下共有51个跟踪文件，包含代码、原回答、失败、收据和压缩证据；文件数不是样本数。[逐文件完整账本](../assets/135-wsp-vlm-mechanism-repair-v9x50-2026-11-05.tsv) · [原目录](https://github.com/yuxiexiong/acupuncture/tree/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9x50-2026-11-05)。未复制模型权重、环境或凭据。

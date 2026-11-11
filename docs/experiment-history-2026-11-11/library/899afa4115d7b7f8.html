@@ -1,0 +1,135 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>WSP 交接：前向服务已重建并通过双模型数值验收（FA-01）</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="wsp-fa-01">WSP 交接：前向服务已重建并通过双模型数值验收（FA-01）</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/wsp-process-reproduction-v1-2026-11-03/HANDOFF-2026-11-03-fa01.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-process-reproduction-v1-2026-11-03/HANDOFF-2026-11-03-fa01.zh-CN.md">固定提交原件</a>；SHA-256：<code>899afa4115d7b7f888ae2b68b94c305d0b7da8aa459e7acc4e3ef594075b32c0</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="wsp-fa-01_1">WSP 交接：前向服务已重建并通过双模型数值验收（FA-01）</h1>
+<p>2026-11-03。接手方：后续由 Astra 继续。本页只记工程状态；<strong>没有启动任何 50-pass 搜索，没有应用作者补丁，没有任何 WSP 效果结论。</strong></p>
+<h2 id="1">1. 本阶段完成</h2>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th>状态</th>
+<th>证据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>前向服务重建 <code>forward_service.py</code></td>
+<td>完成</td>
+<td>生成（vLLM、逐题固定种子、<code>both</code> 双卡配对、按题聚类配对 SE、wrong→right 计数、notice 004 口径的失败分类）；teacher-forced（HF+显式钩子：token_logprobs、topk≤50、hidden_states、mlp_act、full-attention 概率，右填充，6 GB 预估拒绝）；生成激活（重读 prompt+前 8192 答案 token）；快照→BF16 检查点构建</td>
+</tr>
+<tr>
+<td>请求校验 CPU 单测</td>
+<td>通过</td>
+<td><code>test_forward_service.py</code></td>
+</tr>
+<tr>
+<td>验收合同</td>
+<td>冻结 9ae5c36，r2 修订 cbb4b68</td>
+<td><code>FORWARD_ACCEPTANCE_CONTRACT.zh-CN.md</code>（含偏离日志 D1–D3）</td>
+</tr>
+<tr>
+<td>判据离线预演</td>
+<td>每条判据均演示可过/可不过</td>
+<td><code>receipts/fa01-demo-r2.json</code></td>
+</tr>
+<tr>
+<td>0.8B 验收</td>
+<td>r1 合同执行失败（零信息）；r2 <strong>8/8 通过</strong></td>
+<td><code>receipts/fa01-0p8b-r1-receipt.json</code>、<code>receipts/fa01-0p8b-r2-receipt.json</code></td>
+</tr>
+<tr>
+<td>4B 验收</td>
+<td><strong>8/8 通过</strong>（一次）</td>
+<td><code>receipts/fa01-4b-r1-receipt.json</code></td>
+</tr>
+</tbody>
+</table>
+<p>关键读数（夹具仅工程用，不进入任何搜索端）：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align: right;">0.8B</th>
+<th style="text-align: right;">4B</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>F2 跨引擎平均 |Δlogprob|（门槛 0.05）</td>
+<td style="text-align: right;">0.020</td>
+<td style="text-align: right;">0.031</td>
+</tr>
+<tr>
+<td>F2 |Δ|&gt;0.5 比例（门槛 1%）</td>
+<td style="text-align: right;">0%</td>
+<td style="text-align: right;">0.57%</td>
+</tr>
+<tr>
+<td>F2 负对照（50% 噪声夹具，须不过）</td>
+<td style="text-align: right;">0.112 / 3.8%，不过 ✓</td>
+<td style="text-align: right;">0.092 / 2.9%，不过 ✓</td>
+</tr>
+<tr>
+<td>F3 编辑版跨引擎</td>
+<td style="text-align: right;">0.020 / 0.05%</td>
+<td style="text-align: right;">0.029 / 0.66%</td>
+</tr>
+<tr>
+<td>F6 float32 填充最大差（门槛 1e-3）</td>
+<td style="text-align: right;">4.4e-5</td>
+<td style="text-align: right;">6.0e-4</td>
+</tr>
+<tr>
+<td>F7 A/A 配对差（≤2.5 SE）</td>
+<td style="text-align: right;">0（64/64 逐字同）</td>
+<td style="text-align: right;">+0.016±0.016（62/64 逐字同）</td>
+</tr>
+<tr>
+<td>F8 生成激活一致（门槛 2e-2）</td>
+<td style="text-align: right;">3.6e-9</td>
+<td style="text-align: right;">1.46e-2</td>
+</tr>
+<tr>
+<td>bf16 批次零分布 p99 / max</td>
+<td style="text-align: right;">0.108 / 0.33</td>
+<td style="text-align: right;">0.125 / 0.90</td>
+</tr>
+<tr>
+<td>32k token teacher-forced（2 层残差+1 层 mlp+logprob）</td>
+<td style="text-align: right;">2.1 s，8.1 GB</td>
+<td style="text-align: right;">5.1 s，17.2 GB</td>
+</tr>
+<tr>
+<td>生成吞吐 256 题×1×4096 token</td>
+<td style="text-align: right;">1.40 万 tok/s，截断 98.4%</td>
+<td style="text-align: right;">0.51 万 tok/s，截断 64.5%</td>
+</tr>
+</tbody>
+</table>
+<p>截断比例只是 4096 上限下的工程观测，不是数学成绩，也不是 32k 协议下的结果。</p>
+<h2 id="2">2. 新发现的工程事实（影响后续设计）</h2>
+<ol>
+<li><strong>vLLM 在 Qwen3.5（GDN）上不逐 token 确定。</strong> 同一引擎同顺序重跑 16 条只有 5 条逐字相同；单独 vs 成批 0/1；<code>VLLM_BATCH_INVARIANT=1</code> 报 "not supported for GDN_ATTN"（<code>receipts/fa01-determinism-probe.txt</code>）。但 FA-01 里两臂同时起新引擎跑同批时 64/64、62/64 相同。何时确定未查明。含义：<code>both</code> 只在分叉前共享随机数，配对降低方差的程度不可保证；配对 SE 从实测算，不引入偏倚。作者 notice 002 有同类承认。</li>
+<li><strong>HF 读取走 torch 回退实现</strong>（无 fla / causal_conv1d），对 32k 单条仍可用（上表）；未测满 1024 条/524288 token 的 teacher-forced 耗时。</li>
+<li>bf16 批形状数值差在 4B 更大（max 0.90 nat），F2 只能抓模板/权重/层号这类大错，分辨不了小于约 0.08 nat 平均效应的权重差异。</li>
+</ol>
+<h2 id="3">3. 开放项（未解决，不要当已知）</h2>
+<ul>
+<li>4B 的 F2/F6/F8 余量明显小于 0.8B；F8 的 1.46%（同一读取器、成批 vs 逐条）成因未查明，0.8B 同项为 3.6e-9。推测为 bf16 批形状数值，<strong>未验证</strong>。</li>
+<li>资源账：0.8B 工程累计未精确计时，含 r1、float32 诊断、排错预跑与确定性探针，保守估计已接近每模型 0.5 GPUh 准备上限；4B 约 68.7 + 615 +（A/A 第二卡约 136）≈ 820 GPU 秒。</li>
+</ul>
+<h2 id="4">4. 下一步（尚未做）</h2>
+<ol>
+<li><strong>编辑器接入</strong>：Codex CLI + ChatGPT 登录目前只在用户 Mac 上验证过（探针 cwd <code>/private/tmp</code>）；本机与 H20 服务器均无 codex。需二选一：服务器装 codex 并 <code>codex login --device-auth</code>，或 harness 跑在 Mac 上经 ssh 调用服务器沙箱/前向服务。</li>
+<li><strong>harness</strong>：独立上下文、40 轮续接、notes.md 回显、外部 50 forward / 300 Python 账本、CPU 硬超时、断点恢复、notice 001–004 按原轮次注入、全过程记录、<code>/work/eval_prompt_format.txt</code>。前向服务的调用入口：<code>forward_service.py serve --profile {0p8b|4b} --request R --k K --work W --archive A [--snapshot S]</code>，快照先经 <code>snapshot_edits.py</code> 校验。</li>
+<li><strong>建议的锚点检查（需用户批准，约 1–2 GPUh，v1 原计划未含）</strong>：观察端把作者公开补丁装到 0.8B，MATH500 上对照原版/补丁，核对作者 7.9%→48.1%、截断 93%。不进搜索端。</li>
+<li>终验数据、GPQA 授权、IFEval/多选评分链仍未准备。</li>
+</ol>
+<h2 id="5">5. 位置</h2>
+<ul>
+<li>代码：本目录 <code>forward_service.py</code>、<code>forward_acceptance.py</code>、<code>test_forward_service.py</code>、<code>fa01_env.sh</code>（运行时环境变量）。</li>
+<li>服务器副本：<code>/workspace/acupuncture/external/wsp/code-fa01/</code>；验收输出 <code>/workspace/acupuncture/external/wsp/fa01-{0p8b-r1,0p8b-r2,4b-r1}/</code>、排错预跑 <code>fa01-preflight/</code>；候选检查点缓存 <code>external/wsp/forward-ckpt-cache/</code>（按快照清单哈希）。</li>
+<li>Python：<code>/workspace/acupuncture/.venv-wsp/bin/python</code>，先 <code>. fa01_env.sh</code>。</li>
+</ul></main></html>

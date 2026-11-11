@@ -1,0 +1,112 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>QCD-01（形成期注入覆盖 × 剂量）合同 r01：设计 v2</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="qcd-01-r01-v2">QCD-01（形成期注入覆盖 × 剂量）合同 r01：设计 v2</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-coverage-dose-v1-2026-11-02/CONTRACT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-coverage-dose-v1-2026-11-02/CONTRACT.zh-CN.md">固定提交原件</a>；SHA-256：<code>657d66bf33c0aba4b686bba83df93937c921e80a509396b4754023797ba301c1</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="qcd-01-r01-v2_1">QCD-01（形成期注入覆盖 × 剂量）合同 r01：设计 v2</h1>
+<p>日期：2026-11-02。设计依据：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-coverage-dose-plan-v1-2026-11-02.zh-CN.md">计划 v1</a>（评审撰写，c030d28）+ 评审与助手两轮往返后的修订（本节即设计 v2，取代 v1 中被修订的部分）。授权：用户 2026-11-02「你直接按照这个设计，然后写合同代码，测试上卡」。QC-01 的 NA/LA 文本与结果已见；新政策与交叉来源条件此前无输出。</p>
+<h2 id="0-v1-v2">0. 相对计划 v1 的修订（v2）</h2>
+<ol>
+<li><strong>阶段 G 闸门不再要求逐对零翻转</strong>（v1 §3.3 第 2、3 条作废）：BF16 级供体差异下，宽窗口已有 21–41/216 格 |M| ≤ 0.375，逐格零翻转不是测量能支持的必要条件。改为挂在本轮结论上的阻断判据（§4.1），逐格翻转全部公开不阻断。</li>
+<li><strong>阶段 G 缩小</strong>：全部 108 文本都做交叉来源，但只跑必需的臂（T_b、T_s 各换入 C_b / C_s 的 V；统一切分窄窗 T_u 只用 C_b，与阶段 S 的 N1 合一）；不跑 T_s 的 F。</li>
+<li><strong>剂量阻断只卡 A、Q</strong>（v1 §5 的逐步 1% 改为只报告）；P 与逐步差异实测报告，并限定措辞：只说“范数和 / 平方和近似匹配”，P 差异大时写明单步幅度不同。</li>
+<li><strong>不持久化快照</strong>：阶段 S 重算宽切分预填与 C_b，并与阶段 G 记录的哈希逐位比对；新增成本计入预算。</li>
+<li>阶段 S 另重新形成 B1、N1 缓存（不生成），供单元内剂量比较，并核对与阶段 G 哈希相同。</li>
+</ol>
+<h2 id="1-dataplan-r01jsonqcd_make_planpy-qc-token">1. 文本与窗口（data/plan-r01.json，qcd_make_plan.py 由 QC 冻结输入与 token 审计生成）</h2>
+<p>QC-01 的 NA（按名、问题在记录后）与 LA（标签、问题在记录后）各 54 条，共 108 个文本；不补 LB/NB，不选子集。零基位置：b_b = 记录行末，p = b_b+1，e = n−2（末个注入位置），L = e−p+1 ∈ {26, 27}（LA 54 条全为 27；NA 33 条 27、21 条 26）。窗口：B = [p, e]；N = [e−19, e]（= QC 窄窗，b_s = e−20）；E20 = [p, p+19]（含问题与指令前部，与 N 重叠 40−L 位）。</p>
+<h2 id="2">2. 形成、恢复与生成</h2>
+<p>模型、方向（N4146、N1210、R0、C1343，L0）、深层 G 层、恢复与生成规则沿用 QC/NQ；校准用六份 NQ-01 场景原值。</p>
+<ul>
+<li>阶段 G（每文本）：C_b（宽切分：预填至 b_b，逐 token 形成 B）；C_s（窄切分：预填至 b_s，逐 token 形成 N）；每方向 T_b（宽切分，B 全注入，剂量 −1）、T_s（窄切分，N 全注入）、T_u（宽切分，B 逐 token 但只在 N 注入）。臂：C_b、C_s 自然；T_b 的 nat / V←C_b / V←C_s / F←C_b；T_s 的 nat / V←C_s / V←C_b；T_u 的 nat / V←C_b / F←C_b。共 14 形成、42 条轨迹。</li>
+<li>阶段 S（每文本，宽切分，供体统一 C_b）：五项新政策 × 四方向，各 nat 与 V←C_b：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>政策</th>
+<th>窗口</th>
+<th>正倍率 a（剂量 −a）</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>B1 / N1</td>
+<td>B / N</td>
+<td>1</td>
+<td>来自阶段 G（T_b / T_u）</td>
+</tr>
+<tr>
+<td>E1</td>
+<td>E20</td>
+<td>1</td>
+<td>主比较 E1 vs N1：等长、同单步幅度、不同位置</td>
+</tr>
+<tr>
+<td>N-A / N-Q</td>
+<td>N</td>
+<td>L/20 / √(L/20)</td>
+<td>范数和 / 平方和配平 B1</td>
+</tr>
+<tr>
+<td>B-A / B-Q</td>
+<td>B</td>
+<td>20/L / √(20/L)</td>
+<td>范数和 / 平方和配平 N1</td>
+</tr>
+</tbody>
+</table>
+<p>V 恢复 = 14 层卷积 V 通道 [4096, 8192) 取供体，q/k、S、KV、浅层取接收者；F = 整个深层卷积取供体。恢复只在读出前一次；贪心、停止 {248044, 248046}、32 新 token，不强制不屏蔽；同前缀诊断分叉照旧。</p>
+<h2 id="3">3. 实际剂量（只读审计）</h2>
+<p>每个注入位置在冻结注入 hook 前后各挂一个只读 hook：原生通道记录该通道实际 BF16 激活改变 δa（及其余通道未变、局部 down_proj 输出差的影子 GEMV，不写回）；R0 记录 MLP 输出的实际改变向量 u。单步实际范数 ||u_t||（原生 = |δa|·||W[:,c]||）；A = Σ||u_t||，Q = Σ||u_t||²，P = max||u_t||。</p>
+<h2 id="4-qcd_corepy">4. 判据（冻结，qcd_core.py）</h2>
+<h3 id="41-g">4.1 阶段 G 闸门（阻断）</h3>
+<p>对比（左 → 右）的逐格差 d = Y_V(右) − Y_V(左)，场景净差 = 9 格之和。稳定类别：≥5/6 场景净差 &gt; 0 且总净差 ≥6/54 → 右优；对称为左优；否则无。每个模板 × 方向，B 对 N 的稳定类别在以下五种组合下必须<strong>完全相同</strong>：K1 T_b←C_b 对 T_s←C_s（QC 原样）；K2 T_b←C_s 对 T_s←C_s；K3 T_b←C_b 对 T_s←C_b；K4 T_b←C_s 对 T_s←C_b；K5 T_b←C_b 对 T_u←C_b（统一切分 = 阶段 S 的 B1 对 N1）。任一不同 → 闸门失败，阶段 S 不开跑，只交付数值敏感性报告。同时公开（不阻断）：每对逐格翻转（按场景、目标位置、方向分组）、ΔM、ΔE 分布、M 在两边 |M| ≤ 0.5 内的符号翻转数。</p>
+<h3 id="42-s">4.2 阶段 S</h3>
+<ul>
+<li>适用性（NQ 规则）：C_b 面板合格（每模板 ≥5/6 场景各 ≥8/9）；每政策 × 方向损伤迁移（≥4/6 场景各 ≥6/9 为 C 对且 nat 错）。比较两边都适用才判。</li>
+<li>剂量阻断：E1/N1 要求每文本 A、Q 相对差 ≤1%；B1/N-A 与 B-A/N1 卡 A；B1/N-Q 与 B-Q/N1 卡 Q。不过 → 该比较“剂量未配平”，不下科学结论（工程未达目的，不当阴性）。P 与 E1/N1 逐步差只报告。</li>
+<li>六个预定比较：B1/N1、E1/N1（主位置比较）、B1/N-A、B1/N-Q、B-A/N1、B-Q/N1；每模板 × 方向给稳定类别、配对四格、Y_V、Y_nat、恢复增量差 ΔR。跨方向模式：某非“无”类别在固定 4 方向中 ≥3 个。</li>
+<li>剂量优先解释（按方向，仅在 B1/N1 稳定的方向）：N-A、N-Q 向 B1 靠近且 B-A、B-Q 向 N1 靠近，四个配平差的绝对值都 ≤ 原 B1/N1 差的 25%，且 E1/N1 不稳定 → 剂量优先；前两条成立但 E1/N1 稳定 → 位置与剂量共同影响；否则非剂量解释。</li>
+<li>结论措辞按计划 v1 §6.3；稳定类别是最小可报告一致模式，不是显著性。若改善主要来自 Y_nat 上升，先报告损伤减轻。</li>
+</ul>
+<h2 id="5">5. 预算</h2>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th style="text-align: right;">形成</th>
+<th style="text-align: right;">自然轨迹</th>
+<th style="text-align: right;">解码上限</th>
+<th style="text-align: right;">诊断</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>预检（NA/LA-NQ01-ABC-A 各一文本，G+S 全部；LA 上重建 C_b/T_b4146）</td>
+<td style="text-align: right;">86</td>
+<td style="text-align: right;">166</td>
+<td style="text-align: right;">5312</td>
+<td style="text-align: right;">166</td>
+</tr>
+<tr>
+<td>G 正式（108 文本，2 worker）</td>
+<td style="text-align: right;">1512</td>
+<td style="text-align: right;">4536</td>
+<td style="text-align: right;">145152</td>
+<td style="text-align: right;">4536</td>
+</tr>
+<tr>
+<td>S 正式（108 文本，2 worker；含 B1/N1 重新形成 864 次）</td>
+<td style="text-align: right;">3024</td>
+<td style="text-align: right;">4320</td>
+<td style="text-align: right;">138240</td>
+<td style="text-align: right;">4320</td>
+</tr>
+</tbody>
+</table>
+<p>预填：G 每文本 2 次，S 每文本 1 次。无新校准。GPU 硬上限 8 设备小时（G ≤3，S ≤5），产物 ≤48 GiB；张量留服务器。预检工程失败可记账后重试一次；正式不重试。</p>
+<h2 id="6">6. 工程闸门（任一不过即停止）</h2>
+<p>计划与 token：plan == 由 QC 冻结资产生成；提示 token 哈希、b_b、b_s、n 与 QC 一致。<strong>QC 重放</strong>（审计 hook 装着）：C_b = QC 宽 C_nat；C_s = QC 窄 C_nat；T_b 的 nat/V←C_b/F←C_b = QC 宽 T_nat/T_V/T_F；T_s 的 nat/V←C_s = QC 窄 T_nat/T_V（token、首步与缓存哈希、诊断逐位）。组装来源逐块核对；窗口前缓存不被形成修改；生成前无 hook；原生针不改其他通道；预检重建一致；阶段 S 重算的 base_b、C_b 与重新形成的 B1、N1 哈希等于阶段 G。</p>
+<h2 id="7">7. 出口</h2>
+<p>无论结果，本轮结束；不拆层、不重开 45 头、不扩模型/剂量/长度。</p></main></html>

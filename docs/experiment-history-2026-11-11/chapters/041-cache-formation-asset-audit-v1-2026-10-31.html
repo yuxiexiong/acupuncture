@@ -1,0 +1,606 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>041．FORM-AB来源与实际停止赢家核对</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="041form-ab">041．FORM-AB来源与实际停止赢家核对</h1>
+<p><a href="../README.zh-CN.html">返回总时间线</a></p>
+<p><strong>时间定位</strong>：版本/记录日期 2026-10-31；未从所选收据确定完整运行起止，不据目录名补写时刻。</p>
+<p><strong>当时的目的与设计</strong></p>
+<p>核对旧张量、logits和动态停止赢家，查看已有读数是否漏了实际竞争token。</p>
+<p><strong>实际过程、结果与后来更正</strong></p>
+<p>12份张量/记录哈希、72份logits复算通过；VRL04固定对比漏了最强停止token的相对变化。缺少的逐步驱动不能从端点补造，原审计全文保留。</p>
+<p><strong>来源身份</strong>：<code>cache-formation-asset-audit-v1-2026-10-31</code>；本章主体来源提交 <code>7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8</code>。下方原文中的状态是各文件写作时的状态，不能把早期“尚未运行”覆盖后期正式收据，也不能将后期结果倒填进早期设计。</p>
+<h2 id="_1">原设计、执行过程、结果与更正全文</h2>
+<p>以下按“设计与题目 → 工程/执行记录 → 结果/更正 → 其他历史说明”组织；同类内没有可靠时间时保留路径顺序，不冒充严格先后。正文未删段；仅为本章节重排标题层级、把相对链接指向固定提交。原始字节另外完整保存。</p>
+<h3 id="1form-ab-r01">原件 1：FORM-AB 已有资产离线核对：设计与自查 r01</h3>
+<p>原路径：<code>experiments/cache-formation-asset-audit-v1-2026-10-31/SELF_CHECK.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-asset-audit-v1-2026-10-31/SELF_CHECK.zh-CN.md">固定提交原文</a> · <a href="../library/b37a916fd832c80b.html">单独阅读副本</a>；SHA-256：<code>b37a916fd832c80b2f4eafaa3ab703a3dab6c1132d18526c5250caa9b123ae67</code>。</p>
+<hr />
+<h4 id="form-ab-r01">FORM-AB 已有资产离线核对：设计与自查 r01</h4>
+<p>2026-10-31；规范 experiment-design-self-check v1；同一助手自查，非独立审查。使用 academic-research-suite 实验规划/证据核查流程。逻辑审查通过；文件可达、内容和计算验收待执行。仅 CPU 读取既有数据，无模型加载/前向/GPU，无新干预。</p>
+<h5 id="_2">设计卡（分析前冻结）</h5>
+<ol>
+<li>主线：解释稀疏激活干预怎样改变写入、旧状态处理和读取，导致大回答变化。本轮核对 A5 的实际测量能否与 A1/A3 连接，明确缺口；不以 EOS 取代主线。</li>
+<li>增量：将“据称保存”推进到实际文件/字段/哈希核对，并用已有全词表输出区分固定竞争对变化与 max 赢家变化；不再重复声称 B 恢复比例。</li>
+<li>来源：固定 181d80a 的 FORM-AB 合同、实现、源码、两 worker 收据、12 条记录和既有张量；资产盘点 r2、基础知识审计；本地已归档 S2/S3 合同/提取证据。最不利证据：VRL04 的 D 与 m 读数不一致、混合评分 EOS 0/12、S3 供体10而 A5 为C、面板不同。</li>
+<li>操作：不改变模型。逐个核验12个张量SHA256和结构，CPU weights_only 加载，每次释放；不导入运行引擎。检查 delta0/r0、供体位置/层/字段、深层末端状态和 logits；对照保存源码。针仍为 L0 N4146 −1、晚段；不生成缺失张量。</li>
+<li>估计对象：主要比较 X0 与 XB，另保留 C/T_native/XA/XAB。逐输入重算 D、EOS、C固定e<em>/c</em>的m、赢家身份。定义 gE=max_E z−z[e<em>]、gN=max_nonE z−z[c</em>]，恒等式 D=m+gE−gN；故 B效果 D0−DB=(m0−mB)+(gE0−gEB)−(gN0−gNB)。这是输出端算术分解，不是内部机制归因。两事实平均后形成六情景描述，逐事实保留，不做显著性检验。</li>
+<li>判读：固定对与D同向，支持竞争差异不只体现为换赢家；不一致则禁止单一固定停止方向解释。恒等式不是新发现；实测分量才约束当前解释。字段存在但仅末端，不能重建每步写入；不可达/哈希失败为审计缺口，不当科学阴性。若有完整轨迹也只列可分析量，不自动启动新探索。</li>
+<li>复用与成本：只读既有约8.9GB张量，顺序CPU核验/解析；保留小型JSON提取和源文件，不复制整套权重/张量入Git。网络、核验、提取单列；12输入不是12独立情景。已见面板、事后探索，非留出确认。</li>
+<li>退出：完成12条或记录明确不可达/损坏即报告覆盖；不为缺失量重跑模型。没有逐步深层驱动/读取时，停止在“缺测量”，不把范数热点当中介。</li>
+</ol>
+<h5 id="c01c14">C01–C14</h5>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th>判定与理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C01</td>
+<td>通过：设计卡1以形成—读取—回答链为主，输出竞争是诊断。</td>
+</tr>
+<tr>
+<td>C02</td>
+<td>通过：核实资产实际可用性及哪种输出竞争发生改变，支持下一轮有依据地指定缺失测量。</td>
+</tr>
+<tr>
+<td>C03</td>
+<td>通过：固定原收据/代码与A1/A3/A5，使用K08/K13读出与max边界。</td>
+</tr>
+<tr>
+<td>C04</td>
+<td>通过：明确VRL04、混合EOS及供体/面板不一致反例，不预选V主导。</td>
+</tr>
+<tr>
+<td>C05</td>
+<td>通过：只读固定旧张量；形成τ与评分末token区分。</td>
+</tr>
+<tr>
+<td>C06</td>
+<td>通过：无新固定/阻断；A5原操作的当前响应和深层历史照常演化，混合评分身份保留。</td>
+</tr>
+<tr>
+<td>C07</td>
+<td>通过：不拼换共享变量、不从末端状态倒推出唯一驱动。</td>
+</tr>
+<tr>
+<td>C08</td>
+<td>通过：输出分解不称内部路径归因；文件存在不称测量完备。</td>
+</tr>
+<tr>
+<td>C09</td>
+<td>通过：不同竞争分量有可区分结果；不将写入/读取假说强制互斥。</td>
+</tr>
+<tr>
+<td>C10</td>
+<td>通过：D、m、EOS与交付分开；无自由回答和事实候选就不报告恢复。</td>
+</tr>
+<tr>
+<td>C11</td>
+<td>通过：哈希/算术失败与科学阴性分开；不新设效果阈值。</td>
+</tr>
+<tr>
+<td>C12</td>
+<td>通过：全部旧数据/CPU；缺失仅列清单，没有模型回放。</td>
+</tr>
+<tr>
+<td>C13</td>
+<td>通过：固定来源，12输入/6已见情景；提取结果和命令保留，自查非独立复现。</td>
+</tr>
+<tr>
+<td>C14</td>
+<td>通过：完整轨迹允许后续有界离线工作，末端资产不足则具体列缺测量，不能默认继续扫层。</td>
+</tr>
+</tbody>
+</table>
+<h5 id="_3">历史错误覆盖与反方复查</h5>
+<p>E01/E02/E03/E04：不换主线、不赋层号天然意义、不称小幅针；算术分解非机制发现。E05/E06/E07/E08：本轮无变量拼换，不声称A5恢复回原生路径，明确C供体。E09/E10/E11/E12：竞争分解非内部因果，分数非交付/信息存量，相减不消除一般损伤。E13/E14/E15：S3供体10、已见01/02与A5 C供体03/04不能直接拼链，末端承载不等于形成来源。E16/E17/E18/E19：读取失败不算阴性，入口抵消不撤销针，剩余不自动命名；恒等式仅验收。E20/E21：候选可并存，不作领域首次主张，本轮不做新文献新颖性评估。E22/E23：六情景、事后分析、同助手审查明确。E24/E25：允许有限增量，不加网格。E26：沿用统一浅层评分隔离，只讨论深层末态在该背景下的效果。</p>
+<p>最强反例1：D与m一致仍可能由非语义扰动产生。处理：只报告竞争结构，不声称内容机制。
+最强反例2：末端状态与logits同变不能证明V介导。处理：必须把逐步驱动/读取与介入连接列为缺口，不做相关性到中介的升级。
+最强反例3：代码声明保存不保证文件存在。处理：分开“合同/代码”“收据”“实际哈希/加载”三档，无法读取不伪造通过。
+与上一方案比较：不执行倒序层恢复、不扩大针数、不补跑V替换；承接资产盘点5.2的第一二步，先检验已有材料的可解释边界。
+复查结论：通过本轮离线核对的逻辑审查；没有授予GPU或新模型计算权限。结果文件须另报实际完成范围。</p>
+<hr />
+<h3 id="2cfm-form-ab-v2-r01">原件 2：缓存形成机制｜CFM-FORM-AB v2 合同 r01</h3>
+<p>原路径：<code>experiments/cache-formation-asset-audit-v1-2026-10-31/source/CONTRACT.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-asset-audit-v1-2026-10-31/source/CONTRACT.zh-CN.md">固定提交原文</a> · <a href="../library/27f15c58e76179d3.html">单独阅读副本</a>；SHA-256：<code>27f15c58e76179d3730776832a93ab14577f680fae8002a5f1fab7eec0ab262a</code>。</p>
+<hr />
+<h4 id="cfm-form-ab-v2-r01">缓存形成机制｜CFM-FORM-AB v2 合同 r01</h4>
+<ul>
+<li>编号 <code>CFM-FORM-AB-v2-20261031</code>；设计 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/docs/cache-formation-mechanism-next-step-plan-v2-2026-10-31.zh-CN.md">下一步实验方案 v2</a>（8a993c4，下称"方案"）。</li>
+<li>本合同把方案落成可执行的定义；与方案不同之处只有 §4 的路线修订与 §6 的"进一步削弱"阈值，均在 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-asset-audit-v1-2026-10-31/source/IMPLEMENTATION.zh-CN.md">IMPLEMENTATION.zh-CN.md</a> 决策日志登记。冻结后不改；偏离一律记入决策日志。</li>
+<li>代码：<code>form_ab.py</code>（运行与闸门）、<code>form_analysis.py</code>（读数与判读）、<code>test_form_ab.py</code>（CPU 测试）。</li>
+</ul>
+<h5 id="1-e2">1. 对象（全部继承 E2，不重新挑选）</h5>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th>取值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>模型与内核</td>
+<td>Qwen3.5-4B 851bf6e8，BF16，eager，transformers 5.20.2 torch 参考内核（与 CFM-S1–S3、E2 相同，运行时记录 <code>kernel_identity</code>）</td>
+</tr>
+<tr>
+<td>针</td>
+<td>L0 N4146，剂量 −1；阶段一 <code>masked_injection</code> 的写入算术；校准逐值等于 II-B 归档</td>
+</tr>
+<tr>
+<td>输入</td>
+<td>E2 的 VAR03、VAR04、VRD03、VRD04、VRL03、VRL04 × f0/f1（12 个）；token、区段标签、b 来自 E2 冻结的 <code>data/segments-heldout-r01.json</code></td>
+</tr>
+<tr>
+<td>时窗</td>
+<td>L = {b+1,…,τ}，τ = n−2；针、A、B 只在 L 内；x[n−1] 无针，只用于评分</td>
+</tr>
+<tr>
+<td>层</td>
+<td>浅层 0–12，深层 13–31；B 处理第 1–12 层；A 作用于第 13 层解码层的输入残差</td>
+</tr>
+</tbody>
+</table>
+<h5 id="2">2. 五个形成条件</h5>
+<table>
+<thead>
+<tr>
+<th>条件</th>
+<th>针</th>
+<th>A</th>
+<th>B</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+</tr>
+<tr>
+<td>T（即 X0 的形成轨迹）</td>
+<td>✓</td>
+<td>–</td>
+<td>–</td>
+</tr>
+<tr>
+<td>XA</td>
+<td>✓</td>
+<td>✓</td>
+<td>–</td>
+</tr>
+<tr>
+<td>XB</td>
+<td>✓</td>
+<td>–</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>XAB</td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+</tr>
+</tbody>
+</table>
+<h5 id="3">3. 执行路线与操作定义</h5>
+<p><strong>路线</strong>：五个条件共用位置 0…b 的一次干净整段前向（这段在所有条件中都无针）；L 内每个位置 t 依次以单 token 前向推进 C、T、XA、XB、XAB。</p>
+<ul>
+<li><strong>A</strong>：δ0(t) = float32(r0_T(t)) − float32(r0_C(t))，r0 为第 0 层解码层完整输出残差，取自同一步的 C 与 T。在 XA、XAB 中，第 13 层解码层入口（input_layernorm 之前）执行 r13 ← BF16(float32(r13) − δ0(t))。δ0 不预先舍入；每次记录 ‖δ0‖、实际改变量、舍入残差。</li>
+<li><strong>B</strong>：在 XB、XAB 的位置 t 前向之前，把第 1–12 层的全部缓存字段（线性层的递推状态与卷积缓冲；全注意力层位置 0…t−1 的 K/V）替换为 C 在边界 t−1 处对应字段的克隆。当前位置的 q/k/v、门、更新与输出照常计算，下一位置重新替换。深层历史不动。</li>
+<li><strong>评分</strong>：τ 之后构造 M_score(X) = C 的第 0–12 层 + X 的第 13–31 层（E2 的 <code>transplant</code>），移除全部钩子，从独立深拷贝输入 x[n−1]，取首步全词表 logits。评分 6 次：C、T_native（T 自身完整缓存）、X0（C 浅层 + T 深层）、XA、XB、XAB。不做候选强制、不做自由生成。</li>
+</ul>
+<h5 id="4">4. 工程闸门（任一不过即停；不重试、不放宽）</h5>
+<p><strong>路线修订（方案 §4.2-2）</strong>：方案要求新路径与 E2 逐位一致，并写明"若 chunk/step 路径导致不一致，预检停止……数值路线修订另行记录后才重审"。冻结前的工程探针（<code>readiness/probe-r01.json</code>，只跑 C、T，不含任何 X 条件）显示：E2 的整段路径在本环境逐位重现 E2；逐步路径<strong>不</strong>逐位一致（缓存清单与 logits 哈希不同），D 差为 C 0.0、T 0.0625。B 只能逐位置执行，因此逐位重放在构造上不可达。本合同把该闸门拆为 R0 与 R：</p>
+<table>
+<thead>
+<tr>
+<th>闸门</th>
+<th>内容</th>
+<th>何时</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>R0 来源</td>
+<td>E2 整段路径的 C、T（L0·01）：τ 缓存清单 + 首步 token/D/logits 哈希/top5 与 E2 记录<strong>逐位</strong>相同</td>
+<td>预检</td>
+</tr>
+<tr>
+<td>R 路线容差</td>
+<td>逐步路径的 C、T_native、X0 三个首步 D 与 E2 的 00、L0·01、a 之差都 ≤ 0.05 × Δ_E2（Δ_E2 = D_a − D_00，取自同一输入的 E2 记录，且须 &gt; 0）。0.05 在探针之前写入代码</td>
+<td>每个输入</td>
+</tr>
+<tr>
+<td>时序</td>
+<td>每一步 XA/XB/XAB 的第 0 层输出与 T 逐位相同；B 在 t=b+1 逐位惰性；A 在 XA/XAB 中恰好作用 |L| 次，其他条件 0 次</td>
+<td>每个输入</td>
+</tr>
+<tr>
+<td>B 来源</td>
+<td>每个 B 步后：全注意力层位置 0…t−1 的 K/V 逐位等于供体；卷积缓冲左移一位后逐位等于供体末段；供体哈希在步前步后不变</td>
+<td>每个输入</td>
+</tr>
+<tr>
+<td>结构</td>
+<td>五条件第 0 层缓存逐位相同；XA 浅层 = T 浅层；XAB 浅层 = XB 浅层；缓存管理状态相同</td>
+<td>每个输入</td>
+</tr>
+<tr>
+<td>评分隔离</td>
+<td>混合缓存浅层清单 = C、深层清单 = 本条件；管理状态相同；评分时钩子计数等于裸模型基线；状态哈希相同则 logits 必须相同</td>
+<td>每个输入</td>
+</tr>
+<tr>
+<td>惰性钩子</td>
+<td>安装未激活的 A 钩子重跑 C、T：缓存清单与首步 logits 逐位等于正式 C、T</td>
+<td>预检</td>
+</tr>
+<tr>
+<td>其他</td>
+<td>校准、token 哈希、冻结、授权、CPU 收据、权重哈希与钩子移除（同 E2）</td>
+<td>全程</td>
+</tr>
+</tbody>
+</table>
+<p>这些闸门只验操作与数值，不以效应方向为通过条件。</p>
+<h5 id="5">5. 读数</h5>
+<p>每个输入、每个评分格：D = max(z[E]) − max(z[非E])，E = {248044, 248046}；EOS = 实际 argmax ∈ E；固定 token 对比 m = z[e<em>] − z[c</em>]，e<em>、c</em> 为 C 评分中停止集合内、外的最大者；记录各格两个 max 的 token 身份。</p>
+<p>情景层面：D 为两事实均值，同时保留两条原始值。Δ = D_X0 − D_C。</p>
+<table>
+<thead>
+<tr>
+<th>量</th>
+<th>定义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A|B0</td>
+<td>D_X0 − D_XA</td>
+</tr>
+<tr>
+<td>A|B1</td>
+<td>D_XB − D_XAB</td>
+</tr>
+<tr>
+<td>B|A0</td>
+<td>D_X0 − D_XB</td>
+</tr>
+<tr>
+<td>B|A1</td>
+<td>D_XA − D_XAB</td>
+</tr>
+<tr>
+<td>AB</td>
+<td>D_X0 − D_XAB</td>
+</tr>
+<tr>
+<td>I</td>
+<td>D_XAB − D_XA − D_XB + D_X0</td>
+</tr>
+<tr>
+<td>R_k</td>
+<td>上述差 / Δ（Δ ≤ 0 时不定义，不贴标签）</td>
+</tr>
+</tbody>
+</table>
+<p>同样的量对 m 另算一套（解释辅助，不替代 D）。</p>
+<p><strong>描述尺度（不是显著性）</strong>：R &gt; 1 越过干净基线的反转；0.7 ≤ R ≤ 1 强削弱；0.3 &lt; R &lt; 0.7 部分削弱；−0.3 ≤ R ≤ 0.3 弱；R &lt; −0.3 增强。弱不等于零效应。本面板没有效应量的零分布（方案 E25 固定五条件、不加对照矩阵）；报告路线容差 |ΔD|/Δ_E2 作为数值底参照，不作为零分布。</p>
+<h5 id="6">6. 判读（按情景，可并存，不贴整模型单一标签）</h5>
+<table>
+<thead>
+<tr>
+<th>行</th>
+<th>判定式（bands 按 §5）</th>
+<th>可以支持</th>
+<th>不应推出</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>B 两背景强、A 两背景弱</td>
+<td>B|A0、B|A1 强；A|B0、A|B1 弱</td>
+<td>持续把浅层过去状态置为干净，会大幅减少深层最终效应；入口抵消不足以产生同等改变</td>
+<td>原生唯一历史通路；α 主导</td>
+</tr>
+<tr>
+<td>A 两背景强、B 两背景弱</td>
+<td>对称</td>
+<td>已发生浅层响应后，入口减法仍大幅改变深层效应</td>
+<td>针直接传到底；浅层无作用</td>
+</tr>
+<tr>
+<td>两者部分、联合进一步削弱</td>
+<td>A|B0、B|A0 部分，且 R_AB − max(R_A|B0, R_B|A0) &gt; 0.3</td>
+<td>两类操作都有影响，单独不足以替代联合</td>
+<td>把比例相加成自然份额</td>
+</tr>
+<tr>
+<td>单独都强、联合不再明显增加</td>
+<td>A|B0、B|A0 强，且 R_AB − max(…) ≤ 0.3</td>
+<td>存在多个有效干预入口</td>
+<td>两条独立冗余承载路径</td>
+</tr>
+<tr>
+<td>条件依赖</td>
+<td>(A|B0、B|A0 弱且 AB 强或反转) 或 某操作在一个背景弱、在另一背景至少部分</td>
+<td>形成效应对操作组合有条件依赖</td>
+<td>由 I 命名 K/V 或递推交互</td>
+</tr>
+<tr>
+<td>增强或反转</td>
+<td>五个 R 中任一为增强或反转</td>
+<td>被改动的形成条件可能原先限制了输出效应，或操作造成新的状态组合</td>
+<td>把异号改称支持；调剂量救假说</td>
+</tr>
+<tr>
+<td>全弱</td>
+<td>A|B0、B|A0、AB 都弱</td>
+<td>两项操作在统一背景中都未大幅削弱既有深层效应</td>
+<td>把剩余叫"浅层同位置放大"；自动换层换模型</td>
+</tr>
+<tr>
+<td>事实版本不一致</td>
+<td>任一事实 Δ ≤ 0，或五个差在两事实间的档位或符号不同</td>
+<td>形成依赖与输入有关</td>
+<td>用均值掩盖</td>
+</tr>
+</tbody>
+</table>
+<p>另报：情景间符号不一致（各差）；赢家切换（X0/XA/XB/XAB 中两个 max 的 token 身份是否变化）；D 与固定对比的 I/Δ 是否落在不同档位。后两者出现时，D 的交互不定位到任何内部运算。</p>
+<h5 id="7">7. 规模与停止</h5>
+<ul>
+<li>预检：VAR03-f0，1 个 worker；R0 的 2 前缀 + 2 评分、五条件 5 前缀 + 6 评分、惰性钩子重跑 2 前缀 + 2 评分，合计 <strong>9 前缀 / 10 评分</strong>（方案 §8 上限）。</li>
+<li>正式：12 输入 × (5 前缀 + 6 评分) = <strong>60 / 72</strong>；2 个 worker，每卡 1 个（实测每输入约 17 s，多 worker 无收益）。代码在运行中按上限断言。</li>
+<li>停止：预检任一闸门不过不进正式；正式任一输入闸门不过即整轮停止，保留已完成记录，不自动重跑。固定面板完成即停，不因结果扩题、加剂量或换层。</li>
+</ul>
+<h5 id="8">8. 保存</h5>
+<p>每个输入：记录 JSON（全部评分、审计、闸门、清单、E2 来源路径）；张量文件（逐位置 δ0、r0_C、r0_T；逐位置 B 供体 = C 的第 1–12 层缓存；五条件 τ 处深层完整缓存；6 个评分的全词表 logits）。哈希写入 worker 收据。</p>
+<h5 id="9">9. 失败类型</h5>
+<ul>
+<li>任何闸门失败：合同执行失败，信息量为零，不报告为科学阴性。</li>
+<li>Δ ≤ 0 或事实版本不一致：作为结果边界报告。</li>
+<li>全弱：没拿到"操作足以削弱"的证据，按方案结束本分支，不是"形成与浅层历史无关"的证据。</li>
+</ul>
+<hr />
+<h3 id="3form-ab-r01">原件 3：FORM-AB 旧数据与内部张量核对 r01</h3>
+<p>原路径：<code>experiments/cache-formation-asset-audit-v1-2026-10-31/REPORT.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-asset-audit-v1-2026-10-31/REPORT.zh-CN.md">固定提交原文</a> · <a href="../library/4c3c764bead2069c.html">单独阅读副本</a>；SHA-256：<code>4c3c764bead2069c68b1f6d23d41ce1735d0181253befd8ba38224da184eeeaf</code>。</p>
+<hr />
+<h4 id="form-ab-r01_1">FORM-AB 旧数据与内部张量核对 r01</h4>
+<p>2026-10-31。已完成 CPU 离线核对；模型加载、前向、生成、新干预、GPU 使用均为零。同一助手自查及复算，不是独立模型复现。先完成<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-asset-audit-v1-2026-10-31/SELF_CHECK.zh-CN.md">设计卡、自查及反方检查</a>，再读取张量。来源固定为 <code>181d80ad62ea2e6dcc18948609b91e957e4ff899</code> 的 FORM-AB v2；不以当前 main 替换历史定义。</p>
+<h5 id="1">1. 核对结论</h5>
+<p>12/12 份服务器张量与固定提交中两 worker 收据的 SHA-256 相符；对应12份记录哈希相符，服务器收据内容与 Git 固定来源一致。实际大小 <strong>8,705,112,400 字节（8.705 GB / 8.107 GiB）</strong>。此前“约8.9GB”为执行报告近似值，以本次精确计数为准。</p>
+<p>全部张量以 <code>map_location='cpu', weights_only=True</code> 加载。逐位置 delta0 与保存的 r0_T−r0_C 精确相符；位置范围/供体数量、浅层1–12和深层13–31覆盖通过。72份全词表 logits（12输入×6评分）的 D、m、两类赢家、argmax 与原始记录一致；输出分解恒等式通过。脚本CPU核验与提取墙钟10.283秒，不含连接、传输和文档整理。没有调用原实验引擎。</p>
+<p>六情景各两事实，是六个已见情景的探索性复算。不能将72个输出、层、位置或张量字段当独立样本。本次未重新逐步验证原运行钩子，只核对其归档结果、源码及旧闸门记录。</p>
+<h5 id="2_1">2. 实际保存了什么，不能从中得到什么</h5>
+<table>
+<thead>
+<tr>
+<th>实际内容（本次加载验证）</th>
+<th>覆盖</th>
+<th>可以接上的证据</th>
+<th>缺口</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>delta0、r0_C、r0_T</td>
+<td>每输入27–30个晚段位置，hidden=2560</td>
+<td>确认A使用的L0当步完整残差差分已保存</td>
+<td>不包含L1–12受针接收者逐步响应，不是每层驱动轨迹</td>
+</tr>
+<tr>
+<td>干净浅层供体</td>
+<td>共338个位置快照；每份24字段，层1–12；含递推、卷积或KV</td>
+<td>B供体的来源/范围可检查</td>
+<td>不是XB/X0受针浅层轨迹；本次未逐字段重算原内部tensor哈希，但整文件哈希已核验</td>
+</tr>
+<tr>
+<td>五条件深层末态 C/T/XA/XB/XAB</td>
+<td>每份38字段，层13–31，共60份层组状态</td>
+<td>A5形成操作与末端效应可核对；T对应X0的深层来源</td>
+<td>没有逐步深层递推状态和驱动；末态不能反演唯一形成过程</td>
+</tr>
+<tr>
+<td>深层全注意力KV</td>
+<td>层15/19/23/27/31；保留整个前缀位置的K/V</td>
+<td>可在不前向的条件下进一步查看已存各位置K/V差异</td>
+<td>这些是全注意力KV，不是A1所指线性层卷积前V；没有查询/实际注意力权重，不能据此推出读取作用</td>
+</tr>
+<tr>
+<td>深层线性层卷积与递推末态</td>
+<td>14个线性层的末端卷积缓冲（宽4）与递推矩阵</td>
+<td>末端状态/最近窗口的有限内容可以比较</td>
+<td>卷积缓冲不是完整投影历史；递推末态不能唯一恢复每步V、k/β/α或旧状态处理</td>
+</tr>
+<tr>
+<td>六评分全词表logits</td>
+<td>C/T_native/X0/XA/XB/XAB，各248320项</td>
+<td>可直接核对输出竞争结构，见§3</td>
+<td>没有评分时每层q/z、更新前后状态、模块输出和残差轨迹；没有自由回答、事实候选评分</td>
+</tr>
+</tbody>
+</table>
+<p>深层末态在评分前保存的语义由源码确认：<code>score</code> 对缓存独立深拷贝后评分，不原地更新形成缓存。全词表输出与这些缓存同属原记录，不等于本次从缓存重新算出输出。</p>
+<p>旧资产补充：S2的01/02面板在L16–18保存过q/k/v、门、局部读取及完整Mτ，已有CPU复算报告；这些不是A5的03/04面板，也没有B条件，不能填充本轮缺测。S3源码在运行时捕获供体投影以实施替换，但其正式写盘记录是读数、位移/距离与认证；不能把内存中的<code>refs</code>当作已经归档的逐步供体张量。此项为保存代码核对，不声称搜索了服务器所有可能副本。</p>
+<h5 id="3-d">3. 输出端新增认识：固定对比为什么与D不同</h5>
+<p>沿用原合同：D=max停止logit−max非停止logit；m=z[e<em>]−z[c</em>]，e<em>/c</em>是C中的停止/非停止赢家。令gE=max停止−z[e<em>]，gN=max非停止−z[c</em>]。则D=m+gE−gN。表内是X0−XB、两事实均值，单位为原始logit差，没有另换比例分母。</p>
+<table>
+<thead>
+<tr>
+<th>情景</th>
+<th style="text-align: right;">B削弱D</th>
+<th style="text-align: right;">固定对比变化</th>
+<th style="text-align: right;">停止集合选择差额变化</th>
+<th style="text-align: right;">非停止集合选择差额变化</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VAR03</td>
+<td style="text-align: right;">8.062500</td>
+<td style="text-align: right;">9.000000</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">-0.937500</td>
+</tr>
+<tr>
+<td>VAR04</td>
+<td style="text-align: right;">5.359375</td>
+<td style="text-align: right;">10.015625</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">-4.656250</td>
+</tr>
+<tr>
+<td>VRD03</td>
+<td style="text-align: right;">6.375000</td>
+<td style="text-align: right;">9.656250</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">-3.281250</td>
+</tr>
+<tr>
+<td>VRD04</td>
+<td style="text-align: right;">9.078125</td>
+<td style="text-align: right;">10.296875</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">-1.218750</td>
+</tr>
+<tr>
+<td>VRL03</td>
+<td style="text-align: right;">6.093750</td>
+<td style="text-align: right;">4.015625</td>
+<td style="text-align: right;">2.078125</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>VRL04</td>
+<td style="text-align: right;">5.875000</td>
+<td style="text-align: right;">0.750000</td>
+<td style="text-align: right;">4.968750</td>
+<td style="text-align: right;">0.156250</td>
+</tr>
+</tbody>
+</table>
+<p>最后三列相加等于第二列。它们是输出算术分量，不是写入/历史/读取的自然贡献，也不是解释方差；不宣称统计显著性。</p>
+<p><strong>VRL04最关键的修正：</strong> 干净固定e*是248044 <code>&lt;|endoftext|&gt;</code>，但X0、XB实际停止赢家均为248046 <code>&lt;|im_end|&gt;</code>。因此B前后并没有发生停止赢家切换！B降低了<code>&lt;|im_end|&gt;</code>相对固定<code>&lt;|endoftext|&gt;</code>的优势，产生4.96875的选择差额变化，占D变化约84.6%（仅这个算术比例）。原固定m并没有覆盖当前最强停止token。D和m分歧不等于D虚假，也不支持“只有max换赢家造成的假象”。另一部分非停止差额只有0.15625。两事实分别保留在机器结果，不用均值掩盖。</p>
+<p>更广泛地，X0→XB的停止赢家12/12不变；非停止赢家10/12改变，只有VRL03两事实保持“灯”。VAR/VRD的X0非停止赢家均为248068 <code>&lt;think&gt;</code>；XB变为“电影”“可以”“不能”“周二”等开头。VRL04的C非停止赢家是<code>**</code>，X0为<code>&lt;think&gt;</code>，XB为“甲”或“根据”。token身份由已有tokenizer文件离线解码，见<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-asset-audit-v1-2026-10-31/token-identity.json">token身份与哈希</a>。这说明当前竞争涉及停止token、格式/思考标记与回答开头；<strong>不能把“非停止赢家”直接叫正确答案，不能从单token宣布正常交付或推理恢复。</strong></p>
+<p>VAR/VRD固定对比变化大于D变化，非停止集合选择差额抵消其中一部分；VRL03/04还有停止集合内部竞争变化。所有六情景B都削弱D，仍支持原A5的条件性作用；现在能更具体说明其输出读数的构成，尚未识别内部语义或计算原因。</p>
+<p>原行为边界复核：C/X0/XB/XAB首步EOS均0/12，T_native为8/12，XA为2/12。本次没有自由生成，不称修复回答。</p>
+<h5 id="4_1">4. 证据能接到哪里，具体缺哪些测量</h5>
+<p><strong>可保留并细化的连接：</strong> 指定浅层历史固定操作 → 深层末态在统一干净浅层背景下的效应变化 → 实际停止/非停止竞争关系变化。前两段沿用A5的受控证据，本次新增末端资产完整性与输出竞争分解，不重复登记为独立新干预。</p>
+<p><strong>仍不能接上：</strong> A5的B → 哪部分深层V/旧状态处理变化 → 哪种实际读取 → 输出。A1/S3与A5存在面板、前史供体（10对C）、原生/混合评分差别；同为L0 N4146−1不足以消除这些差别。</p>
+<table>
+<thead>
+<tr>
+<th>缺失量</th>
+<th>为何需要</th>
+<th>已有数据能否替代</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>同A5输入、时序与数值路径下，T和XB的深层卷积前V、卷积后q/k/v、α/β及旧状态</td>
+<td>区分写入变化与旧状态处理；卷积前V才与A1操作对象对应</td>
+<td>不能；末态或旧S2三层轨迹不能代替。无需默认补五条件全层全时段，范围须由下一份设计指定</td>
+</tr>
+<tr>
+<td>同一评分背景下的查询/门、局部实际读出、残差/最终隐状态</td>
+<td>检查形成差异怎样被实际读到并影响输出竞争</td>
+<td>全词表logits只给终点；不能逆向恢复中间量</td>
+</tr>
+<tr>
+<td>针对候选变化的匹配介入比较</td>
+<td>让“某内部变化伴随输出变化”推进为条件性介导证据</td>
+<td>增加观测轨迹本身仍不够；下一轮须单独设计，不能许诺补录即证明V</td>
+</tr>
+<tr>
+<td>与原生任务行为对齐的评价</td>
+<td>判断竞争改变是否关系到完整回答与事实利用</td>
+<td>本轮无自由回答/候选评分，不能补造</td>
+</tr>
+</tbody>
+</table>
+<p>这些是测量缺口，不是已批准的GPU采集清单。当前不扩针、不倒序切层、不重建模型。已有深层KV位置序列仍可支持有界离线描述，但只找差异最大位置不能接通上述缺口，因此不默认继续扫热点。</p>
+<h5 id="5_1">5. 审查与验收结束状态</h5>
+<p>C01/C02/C08/C10/C14按结果复查仍通过：主线未变；新增的是资产可信度和真实竞争结构约束；未把算术比例升级为路径比例或把输出开头升级为任务恢复。最不利事实保留：缺深层动态量、无行为修复证据、单针单模型、面板已见、S3背景不对齐。</p>
+<p>设计逻辑自查通过；12份张量与12条记录来源/结构及72份logits读数验收通过；没有实施或验收新模型实验。结果与原始记录、schemas、每事实分解见<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-asset-audit-v1-2026-10-31/result.json.gz">result.json.gz</a>，复算代码见<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-asset-audit-v1-2026-10-31/audit_cpu.py">audit_cpu.py</a>，执行记录见<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-asset-audit-v1-2026-10-31/execution.log">execution.log</a>。Git固定来源副本在source/；原张量仍在服务器原路径，不进Git。</p>
+<hr />
+<h3 id="4cfm-form-ab-v2">原件 4：CFM-FORM-AB v2 实现说明与决策日志</h3>
+<p>原路径：<code>experiments/cache-formation-asset-audit-v1-2026-10-31/source/IMPLEMENTATION.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-asset-audit-v1-2026-10-31/source/IMPLEMENTATION.zh-CN.md">固定提交原文</a> · <a href="../library/e0945596d5533dbf.html">单独阅读副本</a>；SHA-256：<code>e0945596d5533dbf80a7b0e842d13c55e6bb5d0875882a2ac3cb985d1a5791af</code>。</p>
+<hr />
+<h4 id="cfm-form-ab-v2">CFM-FORM-AB v2 实现说明与决策日志</h4>
+<table>
+<thead>
+<tr>
+<th>文件</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>form_ab.py</code></td>
+<td>五个形成条件（共用 0…b 整段前缀，L 内逐 token 推进）、A 钩子、B 替换、统一评分、全部闸门、冻结/授权/worker/控制器/核验</td>
+</tr>
+<tr>
+<td><code>form_analysis.py</code></td>
+<td>合同 §5 读数与 §6 判读；<code>selftest</code> 演示每一行判读都能成立、也能不成立，Δ ≤ 0 不贴标签</td>
+</tr>
+<tr>
+<td><code>test_form_ab.py</code></td>
+<td>小号随机 Qwen3.5（8 层；针在第 0 层，B 覆盖第 1–4 层含一层全注意力，A 在第 5 层入口）上的 CPU 测试</td>
+</tr>
+<tr>
+<td><code>readiness/path_probe.py</code></td>
+<td>冻结前工程探针：只跑 C、T，比较 E2 整段路径与逐步路径（无任何 X 条件）</td>
+</tr>
+<tr>
+<td><code>readiness/real_smoke.py</code></td>
+<td>冻结前真实模型闸门演示：VAR03-f0 完整 <code>run_item</code>，只输出闸门结果与 E2 已知端点，不输出 X 格读数</td>
+</tr>
+</tbody>
+</table>
+<h5 id="_4">决策日志</h5>
+<ol>
+<li><strong>路线修订（偏离方案 §4.2-2，影响"与 E2 是同一个数值实验"这一表述）。</strong> B 必须逐位置执行；Qwen3.5 线性层多 token 时调用 <code>torch_chunk_gated_delta_rule</code>、单 token 时调用 <code>torch_recurrent_gated_delta_rule</code>，两者算法不同，全注意力的矩阵形状也不同。探针 <code>readiness/probe-r01.json</code>（2026-10-31 11:49 UTC，GPU0，只跑 C、T）：E2 整段路径的 C、T 逐位重现 E2；逐步路径的缓存清单与 logits 哈希都不同，D 差 C 0.0、T 0.0625（Δ_E2 = 17.2）。方案对这种情况的规定是"预检停止……数值路线修订另行记录后才重审"。本合同在冻结前登记修订：R0（整段路径逐位溯源，预检）+ R（逐步路径对 E2 三端点的 0.05 × Δ_E2 容差，每个输入）。0.05 写在 <code>form_ab.PATH_TOL</code>，在探针之前确定：<code>probe-r01.json</code> 的 <code>tolerance_preset</code>（0.8609 = 0.05 × 17.22）是探针运行时从该常量算出的。所有可以逐位做到的闸门（时序、B 来源、结构、评分隔离、惰性钩子）仍为逐位。<strong>重审由同一助手完成，不是独立审查</strong>；用户可以否决这一修订，届时本轮数据只能作为修订路线下的结果。</li>
+<li>五个条件共用 0…b 的一次整段前缀：这段在所有条件中都无针（E2 的 L0·01 掩码在这段为 0），因此共享不改变任何条件的定义。</li>
+<li>评分只做首步，不调用 <code>S3.run_once</code>（它会做候选强制，方案 §4.1 不增加）。<code>form_ab.score</code> 与 <code>run_once</code> 首步逐位一致，由 CPU 测试 <code>test_score_matches_run_once</code>、<code>test_x0_equals_e2_style_cell_a</code> 检查。</li>
+<li>评分时"无钩子"按"每个模块的钩子数等于裸模型基线"判（真实模型基线为 0 个带钩模块，见 <code>readiness/smoke-r01.json</code>），避免把框架自带钩子误判为失败。</li>
+<li>B 的独立验证：CPU 测试 <code>test_b_definition_independent</code> 不经过 B 的替换代码，直接按定义构造"C 在 τ−1 的缓存 + 带针单步 τ"，其浅层清单须等于 XB 的浅层清单。</li>
+<li>合同 §6 "联合进一步削弱"需要一个数：方案未给，取 R_AB − max(R_A|B0, R_B|A0) &gt; 0.3（与弱档宽度相同），冻结前写定。</li>
+<li>2 个 worker（每卡 1 个）：真实模型每输入约 17 s（含预检的惰性重跑），12 输入单卡也只需约 3 分钟，多 worker 无收益。</li>
+<li>冻结前真实模型闸门演示（<code>readiness/smoke-r01.json</code>）：VAR03-f0 全部闸门通过，16.6 s，峰值显存 9.5 GB，张量 0.69 GB/输入。脚本不打印、不保存 XA/XB/XAB 读数；正式运行从头重算，不复用这次演示的任何结果。</li>
+</ol>
+<h5 id="_5">运行记录</h5>
+<ul>
+<li>preflight-r01：2026-10-31 11:58 UTC，1 worker，40 s，通过（R0 整段路径对 E2 逐位；惰性钩子逐位；9 前缀/10 评分）。</li>
+<li>formal-r01：2026-10-31 11:59–12:01 UTC，2 worker（每卡 1 个），119 s，12/12 输入全部闸门通过，60 前缀/72 评分。</li>
+<li>判读：<code>analysis/form-ab-readouts-r01.json</code>（冻结的 <code>form_analysis.py run</code>）。</li>
+<li>张量文件（逐位置供体、δ0、深层缓存、全词表 logits，共约 8.9 GB）不进 git，留在服务器 <code>/workspace/acupuncture/experiments/cache-formation-mechanism-formation-ab-v2-2026-10-31/runs/*/worker-*/tensors/</code>，哈希在各 worker 的 <code>receipt.json</code>。</li>
+</ul>
+<h5 id="_6">测试</h5>
+<p>见 <code>readiness/cpu-receipt-r01.json</code>。</p>
+<hr />
+<h2 id="_7">时间、运行与停止收据索引</h2>
+<p>下面是所收集JSON的原有时间字段与状态，不把预计结束时间当实际完成时间。未列时间的文件仍有原件链接。完整JSON全部保存在原文归档，不能以此索引中的标量代替完整嵌套内容。</p>
+<table>
+<thead>
+<tr>
+<th>原件</th>
+<th>原记录状态/阶段</th>
+<th>原时间字段（原时区）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-asset-audit-v1-2026-10-31/result.json">result.json</a></td>
+<td>{"status": "completed", "model_calls": 0}</td>
+<td>{}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-asset-audit-v1-2026-10-31/verification.json">verification.json</a></td>
+<td>{"status": "passed", "model_calls": 0}</td>
+<td>{}</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_8">全部原始资产入口</h2>
+<p>本目录在固定提交下共有13个跟踪文件，包含代码、原回答、失败、收据和压缩证据；文件数不是样本数。<a href="../assets/041-cache-formation-asset-audit-v1-2026-10-31.tsv">逐文件完整账本</a> · <a href="https://github.com/yuxiexiong/acupuncture/tree/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-asset-audit-v1-2026-10-31">原目录</a>。未复制模型权重、环境或凭据。</p></main></html>

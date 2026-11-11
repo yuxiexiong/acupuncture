@@ -1,0 +1,112 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Gemma 3 4B：v8/v9 两版 B/C 各30轮</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="gemma-3-4bv8v9-bc-30">Gemma 3 4B：v8/v9 两版 B/C 各30轮</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/wsp-vlm-c30-user-stop-handoff-2026-11-06/after/v8/README.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-c30-user-stop-handoff-2026-11-06/after/v8/README.zh-CN.md">固定提交原件</a>；SHA-256：<code>71131dafcd6876bd04abca1d029f9fcfe27a8982f3e4c45a16d128973510fab7</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="gemma-3-4bv8v9-bc-30_1">Gemma 3 4B：v8/v9 两版 B/C 各30轮</h1>
+<p>用户2026-11-05确认两模型×两版×B/C各30轮后，本次明确“那就先Gemma吧。你直接把Gemma上卡排队。”本次范围仅Gemma四组，共120个不同非零候选的完整开发评估；Qwen2B/8B不启动。此前Gemma旧C50轮队列和暂停标记保留。</p>
+<p>执行状态以 <code>audit/activation.json</code> 和远端各组 <code>queue-status.json</code> 为准；排队、CPU检查、真实GPU验收、正式基线及搜索完成分别记录。逻辑自查为同一助手完成，不是独立审查。</p>
+<h2 id="_1">设计卡</h2>
+<ol>
+<li><strong>主线与问题。</strong> AI自主依据VLM失败选择非梯度稀疏静态修补。将Qwen3-VL-4B上两套已实际执行的方法分别移到Gemma，检查其开发收益、损伤与内部诊断证据是否仍出现。不是缓存写入—读取线，不借用该线证据。</li>
+<li><strong>增量。</strong> 跨家族检验原方法的适用范围；不把多一个模型或30次候选本身叫机制发现。已有Qwen结果不能提供Gemma的原版失败、合法收益或机制证据。</li>
+<li><strong>来源与反例。</strong> 复用 <code>wsp-vlm-open-repair-v8-2026-11-05/PLAN.zh-CN.md</code>、<code>wsp-vlm-mechanism-repair-v9-2026-11-05/PLAN.zh-CN.md</code>、旧Gemma适配和CPU收据、固定B/C开发数据。Qwen v8 B联合指标改善但整体净收益较小、粗调未触及多数错误；v9内部诊断不保证胜过开放修改。Gemma可能无改善或损伤过大。</li>
+<li><strong>操作。</strong> 固定 <code>google/gemma-3-4b-it</code> revision <code>093f9f388b31de276ce2de164bdc2081324b9767</code>，原始官方权重、BF16、SDPA、greedy、128新token、batch64。Gemma原生模板和896×896单图/256视觉tokens；不用Qwen模板、坐标或权重补丁。每组独立W0、研究者上下文、候选、预算和目录。两版不串接权重：v9仍从W0开始。</li>
+<li><strong>固定与响应。</strong> B58来源组/464输入；C64组/2560输入。四组复用相应原图、标签、顺序、评分和逐格保护；移除旧Qwen预测。Gold不进入目标模型提示。修改后下游正常生成。临时内部hook仅为诊断；最终候选是普通推理可加载的静态补丁。</li>
+<li><strong>比较与判读。</strong> 每组以本模型同批量完整W0为对照，按普通提示joint及既有保护选优，同时报告全输入正确率、修对/改错、各条件和完整回答。有效改善只支持本模型本开发任务的可修补性；无改善/保护失败保留。工程失败不是科学阴性。跨模型或v8/v9分数差不能唯一归因于架构/内部诊断：模板、基线、搜索轨迹与合法修改范围均不同。正式比较30轮机会须对照Qwen前30轮原规则保留状态，不能与50轮最优混为公平比较。</li>
+<li><strong>范围与成本。</strong> 四组各30个不同非零候选完成全部D计轮，失败改善/未过保护亦计；诊断、部分评估、原版和重复权重不计。每组2000动作/研究者轮次、36000 CPU秒、50M研究者累计tokens；B样本/前向上限69600、C384000，token上限分别293990400/1622016000。无总墙钟截止，单次研究者900秒、CPU300秒。四组纯W0+30完整候选为187488条自然生成，非总耗时预测；工程、诊断与失败另计。每组工程两次加载，v8各132生成+2内部前向，v9各133生成+5内部前向；正式服务另加载一次。研究者沿用既有ChatGPT登录的gpt-6-astra/max，无API回退。</li>
+<li><strong>退出。</strong> 每组30轮后按版本原冻结规则结束；v9先记录机制报告再冻结。早停、预算耗尽、工程/控制器失败保留证据，不自动重试、不追加轮数。v8未完整结束时v9不自动绕过。Qwen2B须另按届时磁盘和用户指令推进。</li>
+</ol>
+<h2 id="_2">两版区别与必要适配</h2>
+<ul>
+<li><strong>v8：</strong> 保留开放合法参数修改范围、原内部measure接口和行为选优；允许原版中的词嵌入/输出和统一缩放。30轮自动冻结。</li>
+<li><strong>v9：</strong> 保留禁止embedding/绑定输出/最终decoder norm/整张张量统一缩放、内部向量/diagnose接口、事前预测和对照引用、独立机制报告。修正Gemma旧checkpoint名称下最终norm与输出排除映射，不能因名称不同绕过限制。</li>
+<li><strong>共同工程变化：</strong> 两版使用既有精确稀疏绝对FP32值存储，重建后检查完整内容hash及实际BF16参数；不保存有舍入误差的算术差分。v8只移植存储/磁盘检查，不新增v9诊断能力或修改限制。源文件与适配来源见 <code>source-provenance.json</code>、<code>source-manifest.json</code>、<code>reuse.json</code>。</li>
+<li><strong>图像身份：</strong> <code>input</code>是原图，历史<code>preview</code>仍具有Qwen预览来源标记，不能称Gemma预处理输出；CPU/GPU验收均另核原生Gemma实际输入。</li>
+</ul>
+<h2 id="_3">排队、资源与验收</h2>
+<p>四组远端目录：<code>/workspace/acupuncture/external/wsp-vlm-gemma3-{v8,v9}-2026-11-05-r02/{B,C}/</code>。对应代码为同名 <code>experiments/</code> 目录。两版分别执行 <code>queue_run.py --task B/C --server</code>；本机去掉<code>--server</code>为独立研究控制器。启动只执行一次，不重用不明状态目录。</p>
+<p>先等待已有Qwen4B v9 B/C及其已授权50轮续跑完整结束，避免30轮重载空档被新任务抢卡；然后v8 B/C竞争空卡，v8两组完整结束后v9 B/C进入。取得共享GPU文件锁后再次确认无计算进程、显存&lt;128MiB、利用率0。工程验收在隔离子进程执行，成功后新进程阶段加载同配置做本组完整W0；不抢占、不杀旧任务。现有任务若异常停滞，Gemma保持等待，不能自行恢复或结束旧任务。</p>
+<p>每组运行目录12GiB，全盘至少20GiB；工程/临时合计按6GiB预留，四组48+6+20=74GiB，再为现有Qwen任务约21GiB可能增长预留，总约95GiB。23:17工作盘实测144.076GiB，足够本轮；权重已下载且共享，不复制四套。单组领取GPU前至少38GiB可用，搜索每动作检查存储。此为预算，不保证任意研究者工作文件都能容纳；超限停，不删除证据。</p>
+<p>CPU：离线回归、原生处理器有图/无图、真实meta架构、共享权重映射及官方文件hash。GPU：严格checkpoint加载、固定batch64重复、单题/批量输入身份、原生processor输入一致、静态三个标量的稀疏重建/回滚/重载、logit与hook数值。v9追加按模块名对应完整向量的直接hook核对、禁止动作检查、二进制capture服务读回。研究者图像/持久会话传输复用未改动controller的既有真实收据并核hash；不冒充本轮新测。新验收绑定任务、合同、证据、权重和本版代码hash，未通过不得搜索。</p>
+<h2 id="c01c14-v1">C01–C14 自查（规范v1）</h2>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th>判定与理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C01</td>
+<td>通过：保留AI自主静态修补B/C，跨模型不换为缓存/EOS课题。</td>
+</tr>
+<tr>
+<td>C02</td>
+<td>通过：新增Gemma上收益/代价与内部证据的适用边界，不以数量冒充认识。</td>
+</tr>
+<tr>
+<td>C03</td>
+<td>通过：原v8/v9合同、代码、数据、旧Gemma适配及收据均复用并冻结。</td>
+</tr>
+<tr>
+<td>C04</td>
+<td>通过：Qwen粗调有限收益、v9可能无优势、Gemma可能失败均明确。</td>
+</tr>
+<tr>
+<td>C05</td>
+<td>通过：各组独立W0静态修改；临时诊断与最终补丁分离。</td>
+</tr>
+<tr>
+<td>C06</td>
+<td>通过：任务/评分固定，Gemma采用自己原生输入，下游自然响应。</td>
+</tr>
+<tr>
+<td>C07</td>
+<td>通过：共享LM头按真实alias合一；禁止动作同时覆盖checkpoint与runtime名。</td>
+</tr>
+<tr>
+<td>C08</td>
+<td>通过：开发修补、内部证据、泛化分开；两版/跨模型差不是单因素因果效果。</td>
+</tr>
+<tr>
+<td>C09</td>
+<td>通过：研究者选择失败诊断及预测，v9保留原事前证据要求，不预写位置。</td>
+</tr>
+<tr>
+<td>C10</td>
+<td>通过：完整D自然回答与损伤为终点，诊断logit不替代答案。</td>
+</tr>
+<tr>
+<td>C11</td>
+<td>通过：CPU/GPU实现失败与合法无改善分开；保留失败，不自动救结果。</td>
+</tr>
+<tr>
+<td>C12</td>
+<td>通过：旧数据不能提供Gemma回答；只跑授权四组，模型共享、诊断有界、验收计账。</td>
+</tr>
+<tr>
+<td>C13</td>
+<td>通过：独立目录与研究者会话、源/hash、原回答/失败/预算保留；原D仍是开发。</td>
+</tr>
+<tr>
+<td>C14</td>
+<td>通过：正负结果约束跨家族适用性；120轮为上限，不自动扩2B或加轮。</td>
+</tr>
+</tbody>
+</table>
+<p>历史错误：E01主线稳定；E02不移植Qwen层号；E03相同绝对支持非相同有效扰动；E04内部算术不当发现；E10/E11答案/读数分开；E12保护不能消除全部损伤；E14不混必要充分；E16保留阴性；E20两版差异非互斥原因；E21方法复用不称首创；E22同源开发非独立确认，重复问法非独立样本；E23自查/验收/排队/完成分开；E24允许有界证据；E25不扩矩阵。E05–E09、E13、E15、E17–E19、E26的缓存拆换/形成读取操作本轮不涉及，输入与路径的一般风险由C05–C08覆盖。</p>
+<p>反方检查与处理：①两版成功仍可能是同D选优→仅报开发结果，后续未见材料仍缺；②Gemma失败可能源于输入适配→先核原生processor、模型/数值与回滚，失败停线；③把v9存储移到v8可能偷带限制/工具→v8保留原service/backend，只有存储guard和候选内容hash更新，合同targeted=false；④共享权重旧名称可绕过排除→CPU测试和真实工程均核Gemma canonical名；⑤排队能抢30→50重载空档→先检查旧任务完成50；⑥两版从前版补丁继续会混淆→每组W0及研究者会话独立；⑦30轮对50轮不公平→对齐30轮机会，另列历史50；⑧磁盘预算不是运行保证→按实测检查并保留超限失败。</p>
+<p>设计结论：在上述方法复用和开发证据范围内通过；同一助手自查，非独立审查。当前用户已明确授权排队及上卡；GPU验收和结果分别以实际收据为准。本轮未扩大Qwen2B/8B授权。</p>
+<h2 id="r02">r02 启动修正</h2>
+<p>首次四个本机控制器并发SSH握手时，服务器关闭两条连接，两组按失败停线；另外两组仍在等旧Qwen。核对全部四组均无engineering/search目录、无Gemma模型/GPU/研究者调用后，仅停止本任务的等待进程。首次代码、日志和状态保留原目录。本r02使用新代码/输出/启动身份，串行SSH握手并复用连接；只对只读查询和同ID幂等状态/请求写入最多重试3次，不重试研究者付费调用、不重放目标模型动作。新增测试证明重试的命令/载荷身份不变。模型、数据、预算、两版差别和排队顺序不变；C05/C08/C11/C13及E23重新检查通过，逻辑自查不是独立审查。</p>
+<h2 id="2026-11-05">单卡效率更新（用户追加指示，2026-11-05）</h2>
+<p>用户要求查阅既有单卡优化研究、尽可能提高GPU使用效率。本节覆盖上文固定batch64及其固定工程调用计数；数据/解码/两版修改范围/30轮不变。依据：v7r2 <code>batch_trials.json</code> 的Qwen C实测32/64/128/256分别43.97/45.94/46.48/45.22输入/秒；v9耗时审计中生成阶段可达99%–100%利用率，但研究者回合占60%–67%、工具往返约20%。这些不是Gemma实测，不能直接承诺同速或全程满卡。</p>
+<p><strong>冻结的有界校准：</strong> v8 B/C各自在同一张空闲H20、原版W0上，用按condition/template/arm/order轮转取得的256条开发输入（不按正确率筛选），32条预热，然后batch32/64/128/256各两遍；每次CUDA同步后计包括编码/拷贝的端到端时间、输入/秒、峰值allocated/reserved显存、跨批量token差异和同批量重复一致性。上档前按既有峰值外推、12GiB余量及90%总显存保护判断是否跳过；未预料的OOM或同批量不重复视为工程失败，停线，不悄悄降配置继续。最多2080条额外工程生成/任务，共4160，不计搜索轮次。选择重复一致且保留至少12GiB显存、达到实测最快吞吐95%的最小批量；不按任务正确率选择。</p>
+<p>B/C分别冻结所选批量；v9同任务复用v8选择，不重复调参。两版都从同一Gemma W0开始，以选定批量完整重测自身基线，验收同时核对两版同制度W0答案。批量可能改变答案，故保留差异而不把它当修补收益；与旧Qwen比较须注明各模型执行制度，不能声称纯架构效果。</p>
+<p>工程重复验证的样本数n=max(64,所选batch)。v8每组生成2n+4+校准样本、内部前向6次；v9每组生成2n+5、内部前向9次；模型加载仍工程2次、正式1次/组。所有原始工程输出保留。每组验收收据保存实际计数、所选batch并绑定；启动器读取selected-config，不沿用旧base里的64。</p>
+<p><strong>减少实际空转：</strong> 已加入实验专用SSH复用、串行握手；在复用连接上响应轮询从5秒降到1秒。所有读/写均为持久不可变动作ID或幂等状态，不自动重试研究者调用。同一次measure/diagnose请求在候选上下文内完成全部逐样本前向，只装载一次静态候选、末尾回滚；每条前向/捕获仍按原顺序、batch1、原数值设置执行。CPU检查上下文进入/退出次数，真实工程另核两个输入的单独/合并候选上下文读数完全相等、结束后W0逐值恢复；不声称已测得节省量。未更换推理后端、量化、Astra模型/推理档位或研究策略，不添加无研究用途的计算填空。</p>
+<p><strong>C01–C14复查：</strong> C01通过：效率服务原四组修补；C02通过：科学增量仍为跨家族适用性，性能测量只是工程；C03通过：使用原批量实测和耗时账本；C04通过：更大batch未必更快且Gemma结果未知；C05通过：只冻结执行批量并合并相同候选的装卸；C06通过：任务/生成固定、同批量W0比较，诊断逐样本不变；C07通过：绑定权重和回滚保持；C08通过：性能/开发收益/机制证据分开，不称纯架构因果；C09通过：吞吐/显存/重复性决定配置，不由任务分数选；C10通过：正式终点仍完整D自然回答；C11通过：OOM/重复性/数值等价失败停线且留原件；C12通过：仅两任务有界校准，v9复用，不循环扩大batch范围；C13通过：原始输出、调用数、选定配置与代码hash冻结；C14通过：速度无改进仍可采用安全配置，性能不决定扩研究预算。</p>
+<p>新增历史错误复查：E03显存占用不等于效率、支持数不等于扰动；E10吞吐不替代科学指标；E19数值等价验收非发现；E22工程样本不是新独立研究样本；E23校准待运行不写成实测结果；E25不引入无限batch/架构调参。其余沿上文，缓存专用项仍不适用。</p>
+<p>反方：①挑最快可能挑到数值有利批量→选择完全不看正确率，保留输出差异且重测同制度W0；②Gemma与Qwen吞吐相同是假设→新模型实测、无速度承诺；③合并上下文会遗留hook/候选→每次measure仍自行finally移除hook，真实逐值/回滚验收；④研究者等待仍会使GPU空闲→如实记录，不能靠无用计算或改变研究策略宣称全程100%。逻辑自查通过；此更新尚无Gemma GPU性能结果。r02此前仅完成CPU准备、尚未启动队列，旧r02校准前代码封存在audit/pre-throughput-source.tar.gz；最终冻结源码以更新后的source-manifest为准。</p>
+<p><strong>实际排队核验：</strong> 2026-11-05T23:58:56.489065+08:00，两组远端队列与本地控制器均存活；状态waiting_existing_qwen4b / waiting_server，Gemma GPU验收/性能校准/正式搜索尚未开始。最终本地及服务器离线测试39项全过，原生处理器/meta CPU检查通过；工作盘可用约143.94GiB。见<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-c30-user-stop-handoff-2026-11-06/after/v8/audit/activation.json">audit/activation.json</a>。</p></main></html>

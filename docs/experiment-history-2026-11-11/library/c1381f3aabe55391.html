@@ -1,0 +1,66 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>WIN-01 决策记录</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="win-01">WIN-01 决策记录</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/window-recovery-win01-v1-2026-11-04/DECISIONS.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/window-recovery-win01-v1-2026-11-04/DECISIONS.zh-CN.md">固定提交原件</a>；SHA-256：<code>c1381f3aabe55391fcad101f4261d887a13d34344a173b0f37e9d134fe9c4cf4</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="win-01_1">WIN-01 决策记录</h1>
+<p>冻结前做出的、设计稿 v2 没有覆盖或与之不同的决定。冻结后的偏离另记 DEVIATIONS。</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>决定</th>
+<th>原因</th>
+<th>影响</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D1</td>
+<td>编号任务的自然回答保持 32 个 token，不按设计稿 v2 §3 统一为 128</td>
+<td><code>y_full</code> 定义在 32 个 token 上；NVB 链的 <code>natural</code> 已冻结，改它会破坏与 NCC 的逐位桥接</td>
+<td>两任务生成长度仍不同（128 对 32）。R1 §3 显示事实失败从开头就错，影响预计小，但不排除</td>
+</tr>
+<tr>
+<td>D2</td>
+<td>两任务各用本家族的形成实现：事实为单次前缀前向加位置掩码，编号为 0..b 一次前向再逐 token 形成</td>
+<td>保住与阶段二、NCC 的逐位桥接；每个任务内三种窗口只差加针位置</td>
+<td>跨任务比较时形成实现不同，只在数值噪声级别上不同，记为限制</td>
+</tr>
+<tr>
+<td>D3</td>
+<td>事实正确性改用盲读，不用自动判读</td>
+<td>自动判读未过事先门槛（Y 一致率 0.881、κ 0.556，见 prep/PREP）</td>
+<td>盲读约 1,336 条（W 块 1,152＋B 块 184），不含复用的阶段二标签</td>
+</tr>
+<tr>
+<td>D4</td>
+<td>R_all＋KV_pre 只在 W_all 下做</td>
+<td>W_post 下 0..b 的 KV 本来就等于 C（构造），做了等于 R_all；W_pre 下不是本卡的主比较</td>
+<td>M5 只回答全前缀背景里的归属</td>
+</tr>
+<tr>
+<td>D5</td>
+<td>B 块的 Bx_all 只用于位置对齐的 22 对</td>
+<td>卷积缓冲与 KV 都和位置有关</td>
+<td>44 个接收者</td>
+</tr>
+<tr>
+<td>D6</td>
+<td>编号桥接对准 NCC 正式记录（C、L0 的 T 与 TS）</td>
+<td>NCC 自身已逐位桥接到 CGV、NVB、LVK，这里是传递性桥接</td>
+<td>无</td>
+</tr>
+<tr>
+<td>D7</td>
+<td>同一道题内文本完全相同的回答共用一个标签；已从逐位桥接格（W_all 的 T、R_all、KV_all、R+KV_all 与 C）沿用阶段二标签的文本，出现在其他格时不重读</td>
+<td>阶段二本身就按"同题同文本读一次"去重；同一文本在同一题下按同一规则只有一个正确标签</td>
+<td>实际新读条数少于 1,336；按文本记账，报告给出复用与新读的条数</td>
+</tr>
+<tr>
+<td>D8</td>
+<td>盲读说明直接写入阶段二统一规则（RULE.txt 全文），不另设事后归一步骤</td>
+<td>让读者在阅读时就按"以最后一个明确结论为准"判读</td>
+<td>规则文本 sha256 记入 build.json</td>
+</tr>
+</tbody>
+</table></main></html>

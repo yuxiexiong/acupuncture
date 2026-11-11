@@ -1,0 +1,111 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>QC-01 设计自查 v1</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="qc-01-v1">QC-01 设计自查 v1</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>docs/cache-query-layout-coverage-self-check-v1-2026-11-02.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-query-layout-coverage-self-check-v1-2026-11-02.zh-CN.md">固定提交原件</a>；SHA-256：<code>e4eac205da4f95a528f661dc1aa68ced6812404fe6a3eba26ada8b9ca1f34cd4</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="qc-01-v1_1">QC-01 设计自查 v1</h1>
+<p>2026-11-02；对应 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-query-layout-coverage-plan-v1-2026-11-02.zh-CN.md">计划</a>。本文件是作者自查，不是独立评审。依据 experiment-design-self-check.zh-CN.md 与 cache-mechanism-known-basics-audit-2026-10-31.zh-CN.md。状态：逻辑设计可交付；实现、分词、数值、重放验收均未执行；无新增模型运行授权。</p>
+<h2 id="_1">设计卡</h2>
+<ul>
+<li>核心：稀疏激活干预经缓存历史与读取如何改变完整回答；本地问题是 V 恢复效果的模板/覆盖依赖。</li>
+<li>增量：把 NQ/SP 两处同时变化拆成配对四模板，加同文本覆盖干预；不寻找新通道。</li>
+<li>证据/反证：NQ 多方向 V 可恢复；SP 多方向不行；R0 是例外，不能概括选择完好。</li>
+<li>操作：同提示 C 供体恢复深层卷积 V 或全部 q/k/v，一次恢复，其余状态 T，后续正常响应。</li>
+<li>估计量：自然完整交付、配对恢复增量与错选模式；分数为独立诊断。</li>
+<li>边界：覆盖与剂量未分开，布局与上下文未分开；没有纯语义或存储位置识别。</li>
+<li>成本：复用 NQ，五组新策略；总 1297 形成、3545 轨迹、3545 诊断，预计 1.1–1.5 GPU 小时，拟上限 2。</li>
+<li>出口：稳定政策差异才支持后续专门控制；无差异/不可判如实停止，不自动扫层。</li>
+</ul>
+<h2 id="c01c14">C01–C14</h2>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th>判断与理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C01 核心问题</td>
+<td>通过。解释完整回答恢复的条件，不以 EOS 修复取代研究问题。</td>
+</tr>
+<tr>
+<td>C02 有用增量</td>
+<td>通过。新增同文本窗口对照，可区分跨模板差异与覆盖政策差异；不声称区分覆盖内容和剂量。</td>
+</tr>
+<tr>
+<td>C03 复用资产</td>
+<td>通过。NB 复用 NQ，校准直接复用六份；新 LA 不是旧 SP，不冒充历史重放。</td>
+</tr>
+<tr>
+<td>C04 假设</td>
+<td>条件通过。窗口与共同首 token 须真实分词验收；无旧校准值或边界跨 token 时停止冻结/实现。</td>
+</tr>
+<tr>
+<td>C05 操作定义</td>
+<td>通过。每臂供体文本、通道、时刻、未恢复状态、一次恢复后更新均明确。</td>
+</tr>
+<tr>
+<td>C06 路径</td>
+<td>通过。生成期无注入；诊断分叉不改变自然轨迹；查询前置仍改变上下文历史。</td>
+</tr>
+<tr>
+<td>C07 耦合</td>
+<td>通过但有限制。共享尺度消除逐提示剂量校准变化，不能消除窗口长度造成的总剂量变化。</td>
+</tr>
+<tr>
+<td>C08 归因</td>
+<td>通过。仅比较覆盖政策/模板条件；V 成功不能推出选择原本完好，失败不能推出信息丢失。</td>
+</tr>
+<tr>
+<td>C09 可区分结果</td>
+<td>通过。指定方式、覆盖、混合、无差异和不适用均有出口，未用结果决定追加臂。</td>
+</tr>
+<tr>
+<td>C10 终点</td>
+<td>通过。自然完整交付为主，严格交付并列；首位/多编号/截断分开，诊断不是交付。</td>
+</tr>
+<tr>
+<td>C11 阴性与工程</td>
+<td>通过。工程重放失败停止；C 能力或损伤迁移不足为不可判，不记科学阴性。</td>
+</tr>
+<tr>
+<td>C12 成本</td>
+<td>通过。列形成、预检、旧样本重放、重建、诊断及解码；实测 token 数仍须冻结，预算不是运行授权。</td>
+</tr>
+<tr>
+<td>C13 见过的数据</td>
+<td>通过。披露共享旧六场景、旧 NB、预检样本；54 条不当独立样本，无未经标定的 Q 支持标签。</td>
+</tr>
+<tr>
+<td>C14 累积与退出</td>
+<td>通过。回答模板条件边界，稳定差异后才另立剂量区分；不恢复已关闭名单筛选。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_2">相对上一设计的修订</h2>
+<p>相对 NQ-01：不是把“标签→按名、后置→前置”捆成一次比较。增加 LB/NA/LA 配对，并在 NA/LA 增加同文本 tail 策略。沿用四臂、六场景和自然交付读数。采纳共享 NQ 参照尺度；旧 NB 只抽样重放。截图所说“得到覆盖效应/位置效应”收紧为政策与布局条件效应，保留剂量、上下文和标签文本变化限制。</p>
+<h2 id="_3">历史错误检查</h2>
+<ul>
+<li>E03：同一注入系数不等于相同总扰动；必须报窗口与范数，不能叫完全剂量匹配。</li>
+<li>E07/E14：恢复充分性不等于原生必要性或唯一承载路径。</li>
+<li>E10/E11：首步停不停、共同前缀诊断、完整交付不同；分数不证明内容完整。</li>
+<li>E12：Q 的数值精度界不是查询无关零分布；不发“支持”标签。</li>
+<li>E13：供体必须同提示；标签条件的不同目标本来改变记录，不把它包装成固定记录查询实验。</li>
+<li>E15：SP 的 q/k/v 结果与其他面板 V-only 结果不能拼成一个已验证机制链。</li>
+<li>E20：模板、覆盖、剂量和上下文可以共同起作用；不强迫唯一解释。</li>
+<li>E22：六个旧场景的新条件不是独立未见面板；聚合按场景。</li>
+<li>E23/E26：本自查未运行代码或模型；形成期注入与评分期恢复分开。</li>
+</ul>
+<h2 id="_4">对抗性自查与修订</h2>
+<ol>
+<li><strong>反例：tail 下 T_nat 已经答对，TV 也答对。</strong> 若只看 TV 会误认修复改善。已加入 T_nat、配对恢复增量和损伤迁移门；该情形不支持 V 修复更强。</li>
+<li><strong>反例：缩短窗口减小剂量，任何短窗口都有效。</strong> 本实验不能排除。已撤去“问题语义被干预”的结论；记录剂量，仅下一合同可区分。</li>
+<li><strong>反例：NB 比 NA-tail 好，是查询在前改变了历史形成，而非绝对位置。</strong> 保留布局复合解释；不称纯位置效应。</li>
+<li><strong>反例：标签本身改变所有记录表征。</strong> 这是指定方式的操作组成；不声称同记录文本跨标签/按名。只在 broad/tail 对里要求逐字同文。</li>
+<li><strong>反例：TF 失败但 TV 成功。</strong> 不把 TF 当性能上限，保留成对异常与全数据，不删方向。</li>
+<li><strong>反例：只有两个方向适用且都成功。</strong> 不能报告“全通过”；全局分母固定 4，报告 2/4 适用且不可完成预定跨方向结论。</li>
+<li><strong>反例：新模板干净能力不足后换一种说法。</strong> 不允许本轮调模板救结果；记不可判，修订需独立版本。</li>
+<li><strong>反例：复用 NQ 是软件版本漂移导致的假差异。</strong> 加六场景指定样本逐位重放及源码/revision/校准哈希；失败停止复用，不静默重算。</li>
+<li><strong>反例：≥8/9 的离散规则隐藏小幅连续改善。</strong> 同时保留全部计数、配对四格与分差；不把未达标签当零效应，也不临时改阈值。</li>
+</ol>
+<p>自查结论：上述已知逻辑漏洞已通过限定估计对象和固定比较规则处理；仍不能识别纯剂量/语义因果，也不声称可识别。该限制不使实验空洞：它能判断跨模板差异能否在同文本改变覆盖政策时复现，决定是否值得进一步解耦。实现和 GPU 运行仍待另外授权与验收。</p></main></html>

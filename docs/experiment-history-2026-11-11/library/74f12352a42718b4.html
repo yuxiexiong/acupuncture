@@ -1,0 +1,150 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>B4（非 FIX G 层值头读出对 FIX 主效应的条件性依赖）结果报告</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="b4-fix-g-fix">B4（非 FIX G 层值头读出对 FIX 主效应的条件性依赖）结果报告</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-b4-nonfix-readout-v1-2026-11-02/REPORT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-b4-nonfix-readout-v1-2026-11-02/REPORT.zh-CN.md">固定提交原件</a>；SHA-256：<code>74f12352a42718b4564ba7ae62caaa12d6bce919e05db2974bfa3a507b6b6f84</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="b4-fix-g-fix_1">B4（非 FIX G 层值头读出对 FIX 主效应的条件性依赖）结果报告</h1>
+<p>日期：2026-11-02。<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-b4-nonfix-readout-v1-2026-11-02/CONTRACT.zh-CN.md">合同 r01</a>；<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-b4-nonfix-readout-v1-2026-11-02/DECISIONS.zh-CN.md">决策 D1–D5</a>；方案 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-b4-nonfix-readout-dependence-plan-v2-2026-11-02.zh-CN.md">v2</a> + <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-b4-nonfix-readout-dependence-plan-v3-2026-11-02.zh-CN.md">v3</a>。代码 <code>d25d3f1</code>，freeze-r01 <code>dee9d345…3d43</code>。输入已见，操作结果未见。同一助手实现、运行与撰写。</p>
+<h2 id="1">1. 结论（不利的先说）</h2>
+<ol>
+<li><strong>P1 不成立：钳回非 FIX G 层值头的读出后，停止侧主效应基本不降。</strong> ρ_K 的方向均值为 0.88（N4146）、0.94（N1210）、0.96（R0）、0.90（R1），逐输入 0.82–1.14；24/24 个情景在两个事实上都是“未降低”（ρ_K &gt; 0.8），四档标签全部为“未达改变门槛”。轴 A 的跨方向结论为<strong>未降低</strong>。</li>
+<li><strong>按合同出口：未达门槛，不能据此把机制定位回 FIX。</strong> 钳回只覆盖 403 个非 FIX 的 G 层值头；五个全注意力层和所有 MLP 照常响应，可能承载了替代路径或补偿。</li>
+<li><strong>轴 B 是条件依赖</strong>：R0、R1 判为“与两参照接近”（各 5/6 情景），N4146、N1210 没有形成方向标签。K 比参照多降的幅度不足 0.2。联合结论（强降低且超过两个参照）不成立。</li>
+<li><strong>P2 成立：冻结下游的影子预测相当准确。</strong> |ρ_K − ρ_shadow| ≤ 0.25 在 24/24 情景成立，逐输入最大差分别为 0.24、0.13、0.11、0.08。上卡前冻结的影子值是 0.93–1.00。在这个操作下，下游没有把非 FIX 头的读出变化放大成停止效应。</li>
+<li><strong>两条预测指向相反，P2 胜出。</strong> P1 的依据是 B3-P1 账目里的“跨组表达”（它解释的是两组主效应之间的<strong>对齐能量</strong>）；这次直接干预表明，这部分跨组表达对<strong>停止侧主效应</strong>几乎不承重。之前把描述性账目当作承重线索，这一推断被否定了。</li>
+</ol>
+<h2 id="2-12">2. 主要读数（停止侧，12 输入均值）</h2>
+<table>
+<thead>
+<tr>
+<th>方向</th>
+<th style="text-align: right;">X</th>
+<th style="text-align: right;">ρ_K</th>
+<th style="text-align: right;">ρ_K_early</th>
+<th style="text-align: right;">ρ_K_late</th>
+<th style="text-align: right;">ρ_M_nat</th>
+<th style="text-align: right;">ρ_M_rand</th>
+<th style="text-align: right;">ρ_shadow</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>N4146</td>
+<td style="text-align: right;">3.36</td>
+<td style="text-align: right;">0.88</td>
+<td style="text-align: right;">0.90</td>
+<td style="text-align: right;">0.94</td>
+<td style="text-align: right;">0.86</td>
+<td style="text-align: right;">1.01</td>
+<td style="text-align: right;">1.00</td>
+</tr>
+<tr>
+<td>N1210</td>
+<td style="text-align: right;">3.18</td>
+<td style="text-align: right;">0.94</td>
+<td style="text-align: right;">0.99</td>
+<td style="text-align: right;">0.95</td>
+<td style="text-align: right;">0.99</td>
+<td style="text-align: right;">0.99</td>
+<td style="text-align: right;">0.94</td>
+</tr>
+<tr>
+<td>R0</td>
+<td style="text-align: right;">2.38</td>
+<td style="text-align: right;">0.96</td>
+<td style="text-align: right;">0.88</td>
+<td style="text-align: right;">1.05</td>
+<td style="text-align: right;">0.93</td>
+<td style="text-align: right;">0.94</td>
+<td style="text-align: right;">0.93</td>
+</tr>
+<tr>
+<td>R1</td>
+<td style="text-align: right;">3.40</td>
+<td style="text-align: right;">0.90</td>
+<td style="text-align: right;">0.88</td>
+<td style="text-align: right;">0.97</td>
+<td style="text-align: right;">0.91</td>
+<td style="text-align: right;">0.99</td>
+<td style="text-align: right;">0.93</td>
+</tr>
+</tbody>
+</table>
+<p>K0 与 CC 逐位相同（ρ = 0）。两个 M 臂在 48/48 个单元上都匹配成功。</p>
+<h2 id="3">3. 次要读数（描述，无预注册门槛）</h2>
+<ul>
+<li><strong>答案侧变化比停止侧大得多</strong>：FIX 让干净首词的去均值 logit 下降 3.3–3.9；K 之后只下降 2.0–2.3，即约四成的答案侧压低依赖非 FIX 读出。但 <strong>M_nat 也有相近的作用</strong>（下降 2.2–2.7），M_rand 几乎没有（3.3–4.0）。所以这里不能区分“依赖这份响应”和“对跨输入移植的自然方向敏感”。这与 C2 的“答案侧不由固定名单承载”一致，只作描述。</li>
+<li><strong>首步停止数下降</strong>（12→6、12→7、12→6；R0 6→0），原因是答案候选的 logit 被部分恢复，而停止 logit 基本没变；它反映的是竞争对手变强，不是停止侧主效应变弱。M_nat 也有类似变化（9、12、0、7）。</li>
+</ul>
+<h2 id="4">4. 执行</h2>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th style="text-align: right;">形成</th>
+<th style="text-align: right;">评分</th>
+<th style="text-align: right;">校准</th>
+<th style="text-align: right;">墙钟</th>
+<th style="text-align: right;">产物</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>预检 r01</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">74</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">45 s</td>
+<td style="text-align: right;">0.08 GB</td>
+</tr>
+<tr>
+<td>正式 r01（2 worker）</td>
+<td style="text-align: right;">60</td>
+<td style="text-align: right;">444</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">94 / 94 s</td>
+<td style="text-align: right;">0.50 GB</td>
+</tr>
+<tr>
+<td>合计 / 上限</td>
+<td style="text-align: right;">70 / 70</td>
+<td style="text-align: right;">518 / 518</td>
+<td style="text-align: right;">7 / 7</td>
+<td style="text-align: right;">≈0.07 GPU·h / 0.5</td>
+<td style="text-align: right;">0.58 / 2 GiB</td>
+</tr>
+</tbody>
+</table>
+<p>全部闸门通过：校准与 GPU 分配等于 B3；C_native、T_native、N:CC、N:CFIX 与 B3 逐位一致；K0 = CC；hook 每层每次一次，Counter 读到的正是 hook 的输出，FIX 行从未被写，被钳回的行与供体逐位相同；审计路径 F.linear(pre) 与模型 out_proj 逐位相同。M 匹配：投影幅度误差 ≤0.3%，out_proj 审计 2.3–3.4%（门槛 5%），λ 落在 0.71–1.13。预检一次通过，没有使用重试。</p>
+<h2 id="5">5. 对课题的含义与下一步（未设计、未授权）</h2>
+<ul>
+<li>固定45头的停止侧主效应，<strong>不靠非 FIX G 层值头的后续读出来维持</strong>（在本操作下最多 4–12%）。结合影子预测，非 FIX 头读出变化的直接贡献本来就小，下游也没有放大它。</li>
+<li>剩下的承载候选是：FIX 头自己在各层的读出，以及全注意力/MLP 对这些读出的响应。其中最便宜的一步是互补的影子估计：在 B3 记录上从最终 h 减去 <strong>FIX 头块</strong>的直接贡献，看 X 还剩多少（零 GPU）。如果大部分 X 就是 FIX 头的直接写入，那么下一项因果检验的对象就很明确了；如果不是，承载者就在 MLP/注意力的响应里。</li>
+<li>答案侧对非 FIX 读出更敏感，但 M_nat 混淆了它，需要单独设计，不并入停止侧主线。</li>
+</ul>
+<h2 id="6">6. 可以说 / 不可以说</h2>
+<table>
+<thead>
+<tr>
+<th>可以说</th>
+<th>不可以说</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>在 N 背景与本钳回方式下，FIX 停止侧主效应对非 FIX G 层值头的后续读出只有很弱的依赖（保留 82–114%）</td>
+<td>主效应只靠 FIX 头</td>
+</tr>
+<tr>
+<td>冻结下游影子预测在本操作下与实测相差 ≤0.25（24/24）</td>
+<td>下游在任何操作下都不响应</td>
+</tr>
+<tr>
+<td>B3-P1 的跨组表达账目对停止主效应不承重</td>
+<td>跨组表达不存在或不重要（它承载的是对齐能量）</td>
+</tr>
+<tr>
+<td>答案侧有更大的变化，但 M_nat 也有</td>
+<td>答案侧依赖非 FIX 读出（未区分）</td>
+</tr>
+</tbody>
+</table></main></html>

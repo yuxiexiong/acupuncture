@@ -1,0 +1,1063 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>034．CFM-S3：更新变量的介入拆分</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="034cfm-s3">034．CFM-S3：更新变量的介入拆分</h1>
+<p><a href="../README.zh-CN.html">返回总时间线</a></p>
+<p><strong>时间定位</strong>：已提取运行收据的最早时间锚点（可含预检） 2026-10-31T15:17:38.565696+08:00；不能当作全部子运行起止。</p>
+<p><strong>当时的目的与设计</strong></p>
+<p>24单元×130条件，分别去掉或保留卷积前V、门、k等变量，同时记录停止侧、事实侧与自然回答。</p>
+<p><strong>实际过程、结果与后来更正</strong></p>
+<p>晚段停止侧去V比例L0 0.62–0.76、L12 0.66–0.89；只留V为1.06–1.11和0.58–0.93；去衰减门接近0。干净更新和读取后仍留52%–62%分数效应，但EOS从12到0。所有指标保留各自含义，不把分数比例称完整答案解释率。</p>
+<p><strong>来源身份</strong>：<code>cache-formation-mechanism-s3-route-intervention-v3-2026-10-31</code>；本章主体来源提交 <code>7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8</code>。下方原文中的状态是各文件写作时的状态，不能把早期“尚未运行”覆盖后期正式收据，也不能将后期结果倒填进早期设计。</p>
+<h2 id="_1">原设计、执行过程、结果与更正全文</h2>
+<p>以下按“设计与题目 → 工程/执行记录 → 结果/更正 → 其他历史说明”组织；同类内没有可靠时间时保留路径顺序，不冒充严格先后。正文未删段；仅为本章节重排标题层级、把相对链接指向固定提交。原始字节另外完整保存。</p>
+<h3 id="1cfm-s3-v3-r01">原件 1：缓存形成机制｜CFM-S3 v3｜实验合同 r01（缓存写入变量的介入式拆解）</h3>
+<p>原路径：<code>experiments/cache-formation-mechanism-s3-route-intervention-v3-2026-10-31/CONTRACT.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-mechanism-s3-route-intervention-v3-2026-10-31/CONTRACT.zh-CN.md">固定提交原文</a> · <a href="../library/d43e5a7f3054db4f.html">单独阅读副本</a>；SHA-256：<code>d43e5a7f3054db4fa92a7fb7bb66cba3025a9ca88b0c84111e8b8138712cef60</code>。</p>
+<hr />
+<h4 id="cfm-s3-v3-r01">缓存形成机制｜CFM-S3 v3｜实验合同 r01（缓存写入变量的介入式拆解）</h4>
+<ul>
+<li>设计：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-formation-mechanism-s3-route-intervention-design-v3-2026-10-31.zh-CN.md"><code>docs/cache-formation-mechanism-s3-route-intervention-design-v3-2026-10-31.zh-CN.md</code></a> 草案 r3（main edad525），经两轮审查。编号 <code>CFM-S3-v3-20261031</code>。</li>
+<li>依赖：S2 冻结代码与 formal-r01 记录（84 条，收据哈希逐条核验）；S1、阶段一、阶段二的原语。</li>
+<li>授权：用户 2026-10-31 "现在写代码合同测试然后上卡开跑"。阶段一、二的规则同样适用。</li>
+</ul>
+<h5 id="1-0">1. 本轮主张的范围（设计 §0）</h5>
+<p>只主张<strong>在本合同写明的替换条件下</strong>，把哪些模型变量及其组合换成参照值，会削弱、保留或不影响停嘴（D、首步 EOS）与事实使用（S_fact）。<strong>不主张</strong>原生运行的完整作用路径、补偿已被排除、直接与间接作用已分开；做完本轮也不宣布核心问题已完整回答。</p>
+<h5 id="2">2. 对象</h5>
+<p>模型、校准、输入 token、针、内核与 S1、S2 相同。两锚点 × 12 输入。被介入运行恒为 11（E、L 都开针）。介入层：针所在层之后的全部层。</p>
+<table>
+<thead>
+<tr>
+<th>窗口</th>
+<th>位置</th>
+<th>供体</th>
+<th>完备时应逐位等于</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>E</td>
+<td>0..b</td>
+<td>00</td>
+<td>01</td>
+</tr>
+<tr>
+<td>L</td>
+<td>b+1..n−2</td>
+<td>10</td>
+<td>10</td>
+</tr>
+</tbody>
+</table>
+<p>首受影响层组：L0 → L1–L3；L12 → L13–L15。</p>
+<h5 id="3-130">3. 变量组与格（每个锚点 × 输入 130 格）</h5>
+<p>组：V = <code>in_proj_qkv</code> v 通道；R = <code>in_proj_a</code>；K = <code>in_proj_qkv</code> k 通道 + <code>in_proj_b</code>；Qc = <code>in_proj_qkv</code> q 通道；KV = 全注意力 <code>k_proj</code>、<code>v_proj</code>。替换都在投影输出上进行，值取自同一 worker 内重新计算、并已逐值复现 S2 记录的原生参照运行。</p>
+<p>每个窗口（56 格）：</p>
+<table>
+<thead>
+<tr>
+<th>类</th>
+<th>格</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>完备</td>
+<td>五组全为供体（闸门）</td>
+</tr>
+<tr>
+<td>撤除</td>
+<td>单组 5；组合 {R,K}、{V,R,K}、{V,K}</td>
+</tr>
+<tr>
+<td>只留</td>
+<td>单组 5；同上组合 3（被留组钉在 11 原运行值，其余为供体）</td>
+</tr>
+<tr>
+<td>随机零对照</td>
+<td>上述 16 个撤除/只留格各 2 次（撤除：在原运行值上加同幅随机方向；只留：在供体值上加同幅随机方向；幅度 = 该处 ‖供体 − 11 值‖，逐位置、逐层、逐组）</td>
+</tr>
+<tr>
+<td>位置打乱零对照</td>
+<td>单组撤除 5 格各 1 次（供体值在窗口内按错位排列插入）</td>
+</tr>
+<tr>
+<td>层范围</td>
+<td>五组全为供体，只在首组 / 只在其后各层；各配 2 次随机零对照（五组全部加同幅随机）</td>
+</tr>
+</tbody>
+</table>
+<p>撤针后族（11 与 10 各 5 格）：从该运行自身 Mτ 出发，撤针后各位置在递推函数实参（q、k、v、g、β）、<code>in_proj_z</code>、全注意力 <code>q_proj</code>、<code>k_proj</code>、<code>v_proj</code> 上替换为 00 的值。写更新 Wr = 线性层 k、v、g、β 与注意力 k、v；读取 Rd = 线性层 q、z 与注意力 q_proj（查询与门）。格：Wr、Rd、两者都换，以及"两者都换"的 2 次随机零对照。</p>
+<p>规模：每单元 4 条参照 + 1 条惰性检查 + 130 格 = 135 条短运行；24 单元 = 3,240 条。每条为一次前缀（撤针后族不重算前缀）、末提示 token 与两条候选的 teacher forcing，没有自由生成。formal 用 8 个 worker（每卡 4 个；batch 1 独立进程，数值与单进程相同，见阶段二 speed-trial）。</p>
+<h5 id="4-worker">4. 硬闸门（任一不过即停该 worker 并整轮停止；不重试、不改阈值）</h5>
+<ol>
+<li><strong>参照复现</strong>：每单元的 00、10、01、11 参照对 S2 formal-r01 记录逐值相同（64 张量清单、首步 logits 哈希 / top5 / 停止优势、候选逐 token 对数概率）；校准对 II-B 逐值相同。</li>
+<li><strong>钩子惰性</strong>：钩子全部安装、无任何替换时，11 的清单与首步 logits 逐位不变。</li>
+<li><strong>完备性</strong>：每单元 E、L 的完备格逐位等于 01 / 10（清单、首步 logits、候选）。</li>
+<li>每个形成格至少执行了一次替换；撤针后格不改变 Mτ。</li>
+<li>内核身份、钩子移除、权重哈希不变（同 S1）。</li>
+<li>preflight（VAR01-f0 × 两锚点，11 个固定格）全部通过才进 formal。</li>
+</ol>
+<h5 id="5-r3-8s3_analysispy">5. 读数与四步判断（设计 r3 §8；<code>s3_analysis.py</code> 常量）</h5>
+<p>读数在情景（base）层面：D = 两事实首步停止优势均值；S_fact = 两事实候选对数似然差之差；另报首步 EOS 数。Y_T = 11，Y_ref = 窗口参照（撤针后族为 00），Δ = Y_ref − Y_T。</p>
+<ul>
+<li>撤除、层范围、撤针后：恢复量 N = (Y_格 − Y_T)/Δ；只留：保留量 S = (Y_ref − Y_格)/Δ。</li>
+<li><strong>分母</strong>：|Δ| 不超过该格随机零对照绝对变化的 95% 分位时，不报比例，记"分母不可分辨"。
+1. <strong>有方向效应</strong>：值 &gt; 同条件零对照同方向值的 95% 分位（同锚点、窗口、读数、格，6 情景 × 抽取次数合并，线性插值）。撤除单组另用位置打乱零对照，两种零对照结论相反时该格只作描述。
+2. <strong>量</strong>：逐情景点值。
+3. <strong>区间</strong>：≥ 0.8 接近完整；0.2–0.8 部分；≤ 0.2 很少。
+4. <strong>判决</strong>：分辨率 r = 零对照同方向 95% 分位（截到 ≥ 0）。</li>
+<li>单组"必经且足够"：N、S 都有方向且都接近完整 → 支持；N 或 S 为很少且其 r ≤ 0.5 → 反驳；否则证据不足。</li>
+<li>联合（V 对 {R,K}、V × K）：单独撤除两方都只部分或很少、合并撤除接近完整且有方向；或单独只留两方都很少、合并只留接近完整且有方向 → 支持。一方单独接近完整且有方向、另一方很少且 r ≤ 0.5 → 反驳。否则证据不足。交互 I = 合并 − 单方之和，逐情景报告。</li>
+<li>层范围"接近完整"：同"必经且足够"的单侧版本。</li>
+<li>撤针后"效应在干净后续条件下仍存在"：保留量 1 − N_both ≥ 0.2 → 支持；N_both 接近完整、有方向且 r ≤ 0.5 → 反驳；否则证据不足。Wr × Rd 交互 |I| ≤ 0.2 才陈述主效应。</li>
+<li>所有判决逐情景报告；不设"多数情景成立"的总判决。</li>
+<li>诊断（不作判决）：替换位移与 ‖G_供体 − G_T‖ 之比；撤针时各层缓存到参照、到 11 的距离；答案位置最终隐状态在停止方向（lm_head 中第一个停止 token 行减去 00 的最高非停止 token 行）上的投影。</li>
+</ul>
+<h5 id="6">6. 事先登记的预测（推测档；结果出来前冻结）</h5>
+<p>设计 r3 删去了 r1 的预测表，P0 也没有做离线局部分析（见实现说明第 4 条），所以下列都是推测，没有定量理论预测：</p>
+<table>
+<thead>
+<tr>
+<th>编号</th>
+<th>预测</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P1</td>
+<td>停嘴（D）的原效应主要在 L 窗口：L0 的 L 窗口 Δ 可分辨，E 窗口 Δ 不可分辨或很小（依据：S2 中 L0 的 01 首步 EOS 10/12，10 为 0/12）</td>
+</tr>
+<tr>
+<td>P2</td>
+<td>L0 的事实使用（S_fact）在 E 窗口有可分辨的 Δ（依据：S2 中 L0-10 的 S_fact 降到 ≤ 5.3）</td>
+</tr>
+<tr>
+<td>P3</td>
+<td>两锚点、两读数中，任何单组都不"必经且足够"；联合（V 对 {R,K} 或 V × K）至少在一个读数上被支持</td>
+</tr>
+<tr>
+<td>P4</td>
+<td>L0 撤针后（post11）停嘴在干净后续条件下不能维持（"仍存在"被反驳）</td>
+</tr>
+<tr>
+<td>P5</td>
+<td>L0 E 窗口 S_fact 的层范围"首组接近完整"被支持</td>
+</tr>
+</tbody>
+</table>
+<h5 id="7">7. 失败类型与停止</h5>
+<ul>
+<li>闸门失败：合同执行失败，信息量为零。</li>
+<li>判决"证据不足"：没拿到结果，不是负面证据。</li>
+<li>预测不符：照实报告。</li>
+<li>停止：preflight 不过不进 formal；formal 任一单元闸门失败即整轮停止；规模不得超出 §3。</li>
+</ul>
+<hr />
+<h3 id="2cfm-s3-v3">原件 2：CFM-S3 v3 结果报告：缓存写入变量的介入式拆解</h3>
+<p>原路径：<code>experiments/cache-formation-mechanism-s3-route-intervention-v3-2026-10-31/REPORT.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-mechanism-s3-route-intervention-v3-2026-10-31/REPORT.zh-CN.md">固定提交原文</a> · <a href="../library/f723c71595262a8c.html">单独阅读副本</a>；SHA-256：<code>f723c71595262a8c3bcf65134837de779bf3a8a0cda0469889ed770b208361f3</code>。</p>
+<hr />
+<h4 id="cfm-s3-v3">CFM-S3 v3 结果报告：缓存写入变量的介入式拆解</h4>
+<p>日期：2026-10-31（UTC）。合同 r01；冻结 freeze-r02（3cfc4f3，sha <code>638be1b8…</code>）；运行 preflight-r02、formal-r01；判读 <code>analysis/s3-judgments-r01.json</code>。</p>
+<p>所有结论都只在合同写明的替换条件下成立，不是原生运行的完整作用路径，也不排除拼接补偿（合同 §1）。</p>
+<h5 id="0">0. 先说不利的部分</h5>
+<ol>
+<li><strong>只有 L 窗口的停嘴（D）分辨得清；事实使用（S_fact）大多是"证据不足"。</strong> 在 S_fact 和 E 窗口上，同幅随机零对照本身就造成很大的回答变化（同方向 95% 分位常在 1 以上），原效应 Δ 又常常不超过零对照的幅度。所以这些格既不能支持也不能反驳。S2 发现的"L0 早段针破坏事实使用"，这一轮没有拆开，核心问题的事实使用一半仍未回答。</li>
+<li><strong>预测 P4</strong>：按合同的分数判据失败，即停止分数偏移在干净后续条件下保留 52–62%；但这一格的首步 EOS 是 0/12，<strong>实际停嘴已经没有了</strong>（勘误见第 3 节）。<strong>P5 未得到支持</strong>：6 个情景中 5 个证据不足、1 个支持。<strong>P3 部分不符</strong>：L12 的 S_fact 在 L 窗口，有 2 个情景中 V 单组判"必经且足够"。</li>
+<li><strong>联合规则的措辞问题</strong>：合同把联合支持条件写成"单独撤除两方都只部分<strong>或很少</strong>"，而设计 r3 原文是"都只部分恢复"。L0 停嘴的"V 对 {R,K} 联合"按冻结合同判为支持 5/6，但实际数值是：撤除 V 恢复 0.62–0.76，撤除 {R,K} 恢复 ≈ 0，两者一起撤除恢复 0.79–0.88。也就是 V 为主，{R,K} 只在与 V 一起撤除时才贡献 0.1–0.2，并不是"两方各自部分承载"。判读照合同记录，解读以第 2 节的数值为准。</li>
+<li>preflight-r01 是合同执行失败（文件匹配 bug），修正后重新冻结为 r02（决策日志第 9 条）。</li>
+</ol>
+<h5 id="1">1. 工程验收（全部通过）</h5>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>preflight-r02</td>
+<td>2 单元 × 11 格，56 s</td>
+</tr>
+<tr>
+<td>formal-r01</td>
+<td>24 单元 × 130 格 = 3,120 格，另加每单元 4 条参照与 1 条惰性检查；8 worker；634 s</td>
+</tr>
+<tr>
+<td>参照复现</td>
+<td>96 条参照（每单元 00/10/01/11）对 S2 formal-r01 记录逐值相同</td>
+</tr>
+<tr>
+<td>钩子惰性</td>
+<td>24/24 逐位不变</td>
+</tr>
+<tr>
+<td>完备性</td>
+<td>48/48（每单元 E、L 两窗口）逐位重现 01 / 10：缓存清单、首步 logits、候选分数</td>
+</tr>
+<tr>
+<td>失配诊断</td>
+<td>插入位移 / ‖G_供体 − G_T‖ 在 0.69–1.02 之间，没有格远离原生值</td>
+</tr>
+</tbody>
+</table>
+<h5 id="2-l-d">2. 主结果：L 窗口的停嘴（D）</h5>
+<p>L 窗口的原效应 Δ：L0 为 −17.6 到 −15.7，L12 为 −9.4 到 −4.3。撤除格的随机零对照 95% 分位 ≤ 0.09，只留格 ≤ 0.40。</p>
+<table>
+<thead>
+<tr>
+<th>格</th>
+<th>L0：N 或 S（6 情景范围）</th>
+<th>L12：N 或 S</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>撤除 V</td>
+<td>0.62–0.76</td>
+<td>0.66–0.89</td>
+</tr>
+<tr>
+<td>只留 V</td>
+<td><strong>1.06–1.11</strong></td>
+<td>0.58–0.93</td>
+</tr>
+<tr>
+<td>撤除 R</td>
+<td>0.00–0.03</td>
+<td>−0.18–0.02</td>
+</tr>
+<tr>
+<td>只留 R</td>
+<td>0.01–0.02</td>
+<td>−0.02–0.02</td>
+</tr>
+<tr>
+<td>撤除 K</td>
+<td><strong>−0.20 – −0.13</strong></td>
+<td>−0.01–0.20</td>
+</tr>
+<tr>
+<td>只留 K</td>
+<td>0.20–0.28</td>
+<td>−0.04–0.09</td>
+</tr>
+<tr>
+<td>撤除 {R,K}</td>
+<td>−0.13–0.04</td>
+<td>−0.09–0.18</td>
+</tr>
+<tr>
+<td>只留 {R,K}</td>
+<td><strong>0.37–0.48</strong></td>
+<td>−0.04–0.05</td>
+</tr>
+<tr>
+<td>撤除 {V,R,K}</td>
+<td>0.79–0.88</td>
+<td>0.66–0.85</td>
+</tr>
+<tr>
+<td>只留 {V,R,K}</td>
+<td>0.92–1.01</td>
+<td>0.59–0.86</td>
+</tr>
+<tr>
+<td>撤除 {V,K}</td>
+<td>0.79–0.86</td>
+<td>0.69–0.88</td>
+</tr>
+<tr>
+<td>撤除 Qc</td>
+<td>0.06–0.28</td>
+<td>−0.05–0.29</td>
+</tr>
+<tr>
+<td>撤除 KV</td>
+<td>−0.06–0.02</td>
+<td>0.17–0.42</td>
+</tr>
+<tr>
+<td>只留 KV</td>
+<td>0.09–0.18</td>
+<td>0.15–0.42</td>
+</tr>
+<tr>
+<td>层范围：只在首组撤除</td>
+<td>0.03–0.43</td>
+<td>−0.13–0.36</td>
+</tr>
+<tr>
+<td>层范围：只在其后各层撤除</td>
+<td><strong>0.98–1.01</strong></td>
+<td>0.77–1.05</td>
+</tr>
+</tbody>
+</table>
+<p>判读（逐情景计数，合同规则）：</p>
+<ul>
+<li>L0：R、K、Qc、KV 单组都被反驳（6/6）；V 单组证据不足（6/6，因为撤除只到"部分"）；层范围"其后各层接近完整"支持 6/6，"首组接近完整"反驳 4/6、证据不足 2。</li>
+<li>L12：R、K、Qc 单组反驳 6/6，KV 反驳 3、证据不足 3；V 证据不足 6；"其后各层"支持 5/6。</li>
+</ul>
+<p><strong>在这些替换条件下，停嘴由什么承载</strong></p>
+<ol>
+<li><strong>写入内容 v 是主要载体。</strong> 晚段针在 v 上留下的变化，在其余写缓存变量都回到参照时，单独就能保住 L0 的全部停嘴效应（S_V 1.06–1.11）、L12 的大部分（0.58–0.93）。只撤除 v，就能恢复 0.6–0.9。</li>
+<li><strong>保留方式 α 不起作用</strong>：撤除或只留 R 都在零附近。</li>
+<li><strong>写入—擦除耦合 (k, β) 不是必经的，但在 L0 是部分冗余的第二载体。</strong> 在 L0 上，只撤除 K 时停嘴反而更强一点（N_K 为负）；只留 {R,K} 时仍能保住 37–48%，只留 K 保住 20–28%。也就是说，(k, β) 的变化本身也能产生一部分停嘴，但当 v 的变化存在时，去掉它并不减弱效应。L12 上 (k, β) 两侧都接近零。</li>
+<li><strong>L12 另有注意力 KV 的部分作用</strong>（撤除 0.17–0.42、只留 0.15–0.42），L0 上没有。</li>
+<li><strong>位置</strong>：停嘴的承载者在首受影响层组之后的各层，而不是首组本身。只在其后各层撤除，L0 恢复 0.98–1.01，L12 恢复 0.77–1.05；只在首组撤除，最多恢复 0.43。</li>
+</ol>
+<h5 id="3-11-00">3. 撤针后：干净后续条件下效应还剩多少（11 → 00 供体）</h5>
+<table>
+<thead>
+<tr>
+<th>锚点 · 读数</th>
+<th>两者都换的恢复量 N_both</th>
+<th>只换写更新</th>
+<th>只换读取</th>
+<th>交互</th>
+<th>首步 EOS（原 / 两者都换 / 只换写更新 / 只换读取）</th>
+<th>判读</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>L0 · D</td>
+<td>0.38–0.48（分数偏移保留 0.52–0.62）</td>
+<td>0.03–0.21</td>
+<td>−0.05–0.06</td>
+<td>0.17–0.42（5/6 &gt; 0.2）</td>
+<td>12 / <strong>0</strong> / 4 / 12（共 12）</td>
+<td>分数偏移"仍存在"支持 6/6；交互大，只陈述组合</td>
+</tr>
+<tr>
+<td>L12 · D</td>
+<td>0.35–0.62（分数偏移保留 0.38–0.65）</td>
+<td>0.09–0.40</td>
+<td>0.05–0.33</td>
+<td>−0.12–0.19</td>
+<td>0 / 0 / 0 / 0（原运行就不停嘴）</td>
+<td>分数偏移"仍存在"支持 6/6；交互基本可忽略</td>
+</tr>
+<tr>
+<td>S_fact、post10</td>
+<td>多数分母不可分辨</td>
+<td>——</td>
+<td>——</td>
+<td>——</td>
+<td>——</td>
+<td>大多证据不足</td>
+</tr>
+</tbody>
+</table>
+<p><strong>勘误（2026-10-31，用户复核指出）</strong>：本节初稿写"停嘴效应仍有一半左右保留"。实际保留的是<strong>相对干净运行的停止分数偏移</strong>；在"两者都换"格里，L0 的首步 EOS 由 12/12 降到 0/12。准确结论是：</p>
+<ul>
+<li>遗留缓存在干净的后续写更新与读取条件下，仍造成明显的停止分数偏移（约一半），但这份残余<strong>不足以让本批输入继续首步停止</strong>。这是"状态残余怎样跨过行为阈值"的信息，不是"仅靠遗留内容就能维持停嘴"。</li>
+<li>L0 上，只换写更新时已有 8/12 不再首步停止（EOS 4/12），只换读取时仍是 12/12；两者一起换，分数恢复约 40%，全部 12 个输入都不再首步停止。不能说每个输入都必须联合替换：多数输入只换写更新就够了，联合替换才覆盖到本批全部输入。L12 上两者在分数上大体可加；L12 的原运行本身就不停嘴，它的结果解释的是停止倾向，不是停止行为。</li>
+</ul>
+<h5 id="4-s_fact">4. 事实使用（S_fact）</h5>
+<ul>
+<li>能分辨的只有 L12 的 L 窗口：撤除 V 恢复 0.39–1.02，只留 V 保留 0.75–1.30（V 单组支持 2/6、证据不足 4）；R、Qc 反驳 5/6，K、KV 反驳 4/6。</li>
+<li>其余格（L0 的两个窗口、L12 的 E 窗口）原效应与零对照同量级，大多证据不足。S2 中 L0 早段针造成的事实丢失，这一轮的变量分组拆不开。</li>
+</ul>
+<h5 id="5-6">5. 预测对照（合同 §6，推测档）</h5>
+<table>
+<thead>
+<tr>
+<th>编号</th>
+<th>预测</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P1</td>
+<td>停嘴的原效应主要在 L 窗口</td>
+<td>成立：L0 的 L 窗口 Δ 为 −17.6 到 −15.7，E 窗口为 −2.7 到 0.3</td>
+</tr>
+<tr>
+<td>P2</td>
+<td>L0 的 S_fact 在 E 窗口有可分辨的 Δ</td>
+<td>描述上成立（5/6 情景 Δ 超过分母门槛），但各格判读多为证据不足</td>
+</tr>
+<tr>
+<td>P3</td>
+<td>没有单组"必经且足够"，联合至少在一个读数上成立</td>
+<td>部分不符：L12 S_fact L 窗口 V 支持 2/6；联合在 L0 停嘴上按合同判支持 5/6，但见第 0 节第 3 条</td>
+</tr>
+<tr>
+<td>P4</td>
+<td>L0 停嘴在干净后续条件下不能维持</td>
+<td>按合同的分数判据<strong>失败</strong>（停止分数偏移保留 52–62%）；按行为，首步 EOS 0/12，与 P4 一致</td>
+</tr>
+<tr>
+<td>P5</td>
+<td>L0 E 窗口 S_fact 的首组接近完整</td>
+<td>未得到支持：证据不足 5、支持 1</td>
+</tr>
+</tbody>
+</table>
+<h5 id="6_1">6. 这一轮回答了什么、没回答什么</h5>
+<p><strong>回答了</strong>（在指定替换条件下，只针对停嘴）：晚段干预使模型停嘴，主要靠它改变了更深层写进递推状态与卷积的<strong>内容 v</strong>，而不是改变旧信号的保留（α）。写入—擦除耦合 (k, β) 在 L0 上是能单独产生部分效应、但不必经的第二条通道。撤针后，在后续写更新与读取都干净的条件下，留存内容仍造成约一半的停止分数偏移，但不足以维持首步停止（EOS 0/12）。另外，"只留 V"能保住全部首步停止（12/12），"只撤除 V"消除全部首步停止（0/12）；V 在所有相关层一起被控制，因此不能据此判定 V 是最初原因，也没有解释 V 里改变了什么信息。</p>
+<p><strong>没回答</strong>：</p>
+<ul>
+<li>事实使用的承载变量。同幅随机零对照的损伤太大，分不清。下一步若要拆这一半，需要损伤更小、但仍与真实替换同幅的零对照（例如取自其他输入的原生值），或更强的原效应条件。这需要新设计。</li>
+<li>原生运行的完整作用路径与补偿排除；写入与处理各自的直接、间接作用；单层定位；跨模型推广。</li>
+</ul>
+<h5 id="7_1">7. 文件</h5>
+<ul>
+<li>运行：<code>runs/preflight-r01/</code>（失败，保留）、<code>runs/preflight-r02/</code>、<code>runs/formal-r01/</code>（收据、核验与计划；每单元记录打包为 <code>runs/formal-r01/records-r01.tar.zst</code>）。完整运行目录与原始记录留在服务器，并归档于 <code>/workspace/cfm-s3-ops/archive/runs-r01.tar.zst</code>（sha256 <code>0510d66e…20e504afa</code>）。</li>
+<li>判读：<code>analysis/s3-judgments-r01.json</code>（逐情景四步判断、交互、撤针后族、诊断、情景级读数表）。</li>
+</ul>
+<hr />
+<h3 id="3cfm-s3-v3-r3">原件 3：缓存形成机制｜CFM-S3 v3 设计草案 r3：缓存写入变量的介入式拆解</h3>
+<p>原路径：<code>docs/cache-formation-mechanism-s3-route-intervention-design-v3-2026-10-31.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-formation-mechanism-s3-route-intervention-design-v3-2026-10-31.zh-CN.md">固定提交原文</a> · <a href="../library/32289eee3a2ccd0f.html">单独阅读副本</a>；SHA-256：<code>32289eee3a2ccd0f45d10672f98abc2646a832510f388bb82178fde1f4af2811</code>。</p>
+<hr />
+<h4 id="cfm-s3-v3-r3">缓存形成机制｜CFM-S3 v3 设计草案 r3：缓存写入变量的介入式拆解</h4>
+<blockquote>
+<p>状态：设计草案 r3，未冻结、未授权运行。拟替代 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-formation-mechanism-s3-readout-behavior-plan-v2-2026-10-31.zh-CN.md">CFM-S3 v2</a>。尚未登记到计划索引。新增 GPU 为 0。
+r2 按 2026-10-31 对 r1（ad712bd）的审查修订；r3 按对 r2（099a7e3）的审查修订。修订对照见第 10 节。</p>
+</blockquote>
+<h5 id="0_1">0. 本轮能主张什么</h5>
+<p>本轮可以主张的是：<strong>在明确写出的替换条件下，把哪些模型变量及其组合换成参照值，会削弱、保留或不影响哪一种回答效应（停嘴、事实使用）</strong>，以及撤针后几种后续计算控制方式下效应还剩多少。</p>
+<p>本轮<strong>不主张</strong>：这些就是原干预产生持续效应的唯一自然路径；拼接造成的补偿已被排除；写入改变与旧状态处理改变各自的直接、间接作用已被分开。</p>
+<p>这已经超出 S1、S2 的差异观察：每个结论都由一次介入产生，并落在回答终点上。但做完这一轮，<strong>也不能宣布核心问题已经完整回答</strong>：它推进的是"哪些变量的改变对回答有因果影响、哪些需要联合"，不能单靠这些混合替换证明原生运行的完整作用路径。</p>
+<h5 id="1-p0">1. 理论基础：源码推出的完备性（推导档，P0 逐位检验）</h5>
+<p>答案位置访问之前位置的途径只有三条：</p>
+<table>
+<thead>
+<tr>
+<th>通道</th>
+<th>写入缓存的源码张量（每层、每个位置）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>递推状态 S</td>
+<td>线性层卷积后的 k、v，<code>in_proj_a</code>（→ α），<code>in_proj_b</code>（→ β）</td>
+</tr>
+<tr>
+<td>卷积缓冲</td>
+<td>线性层 <code>in_proj_qkv</code> 的卷积前输出；经卷积进入随后 3 个位置的 q/k/v</td>
+</tr>
+<tr>
+<td>KV 缓存</td>
+<td>全注意力层 <code>k_proj</code>（经 k_norm、RoPE）与 <code>v_proj</code></td>
+</tr>
+</tbody>
+</table>
+<p>MLP、残差和 norm 没有跨位置状态。线性层的 z、全注意力层 <code>q_proj</code> 输出的查询与门，在一个位置上只影响该位置的残差。</p>
+<p><strong>推论</strong>：若在窗口 W 的全部位置、针所在层之后的全部层，把线性层 <code>in_proj_qkv</code>（q、k、v 三个通道）、<code>in_proj_a</code>、<code>in_proj_b</code> 以及全注意力层 <code>k_proj</code>、<code>v_proj</code> 的输出，全部替换为供体运行同位置的值，那么 W 之后每个位置的全部计算，都逐位等于"供体在 W 内、原运行在 W 外"的那条原生运行（见第 2 节）。这条推论在 P0 用 S2 已有的原生运行逐位检验，不通过即停。</p>
+<h5 id="2_1">2. 供体与参照：逐窗口写死</h5>
+<p>位置记号沿用 S2：b 为最后一个事实 token；E = 0..b；L = b+1..n−2；τ = prompt[:−1] 末；之后是末提示 token 与候选。介入层：针所在层之后的全部层（L0 针为 L1–L31，L12 针为 L13–L31）。</p>
+<table>
+<thead>
+<tr>
+<th>介入</th>
+<th>被介入运行</th>
+<th>供体</th>
+<th>完备时应逐位等于</th>
+<th>为什么对齐</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>E 窗口</td>
+<td>11</td>
+<td><strong>00</strong>（E 段位置）</td>
+<td>01</td>
+<td>00 与 01 在 0..b 逐位相同（S2 已认证 12/12×2 锚点）；E 段之前无历史</td>
+</tr>
+<tr>
+<td>L 窗口</td>
+<td>11</td>
+<td><strong>10</strong>（L 段位置）</td>
+<td>10</td>
+<td>11 与 10 在 0..b 逐位相同（S2 已认证），L 段替换的是"相同早段历史下，晚段针造成的改变"</td>
+</tr>
+<tr>
+<td>撤针后族（第 5 节）</td>
+<td>11 或 10</td>
+<td><strong>00</strong>（撤针后位置）</td>
+<td>——</td>
+<td>见第 5 节</td>
+</tr>
+</tbody>
+</table>
+<p>L 窗口不能用 00 作供体：10 在 L 段的投影本身就带着 E 段针留下的历史，与 00 不同（S2 已测到）。</p>
+<h5 id="3">3. 变量分组（不拆共享变量）</h5>
+<table>
+<thead>
+<tr>
+<th>组</th>
+<th>源码张量</th>
+<th>递推更新中的作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>V</td>
+<td><code>in_proj_qkv</code> 的 v 通道</td>
+<td>只进修正量 e = v − m</td>
+</tr>
+<tr>
+<td>R</td>
+<td><code>in_proj_a</code>（α）</td>
+<td>对旧状态整体衰减</td>
+</tr>
+<tr>
+<td>K</td>
+<td><code>in_proj_qkv</code> 的 k 通道 + <code>in_proj_b</code>（β）</td>
+<td>同时决定写在哪、写多重、从旧记忆取什么并擦掉多少；不拆</td>
+</tr>
+<tr>
+<td>Qc</td>
+<td><code>in_proj_qkv</code> 的 q 通道</td>
+<td>经卷积进入随后 3 个位置的查询</td>
+</tr>
+<tr>
+<td>KV</td>
+<td>全注意力 <code>k_proj</code>、<code>v_proj</code></td>
+<td>写入 KV 缓存</td>
+</tr>
+</tbody>
+</table>
+<p>在卷积之前分组，卷积的时间混合随组走，组与组不重叠。五组的并集恰好是第 1 节推论里的全部张量。</p>
+<h5 id="4">4. 形成族：每一格写清固定什么、允许什么</h5>
+<p>符号：Y 为行为读数；Y_T 为被介入运行（11）原值；Y_ref 为该窗口的参照（E：01；L：10）；Δ = Y_ref − Y_T 为该窗口的原效应。</p>
+<table>
+<thead>
+<tr>
+<th>格</th>
+<th>窗口 W 内、介入层上，组 G 的取值</th>
+<th>其余四组的取值</th>
+<th>允许自由响应的</th>
+<th>估计量</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>完备性</td>
+<td>五组全为供体</td>
+<td>——</td>
+<td>W 外全部</td>
+<td>必须 Y = Y_ref 且缓存逐位相同</td>
+</tr>
+<tr>
+<td>撤除 G</td>
+<td><strong>供体值</strong></td>
+<td>原运行自身计算（随上游变化而变）</td>
+<td>其余四组、W 外全部、全部读取变量</td>
+<td><strong>撤除恢复量</strong> N_G = (Y_格 − Y_T) / Δ</td>
+</tr>
+<tr>
+<td>只留 G</td>
+<td><strong>钉在 G_T</strong>（11 原运行记录值）</td>
+<td><strong>供体值</strong></td>
+<td>W 外全部、全部读取变量</td>
+<td><strong>保留量</strong> S_G = (Y_ref − Y_格) / Δ</td>
+</tr>
+<tr>
+<td>层范围（首组）</td>
+<td>五组全为供体，只在首受影响层组</td>
+<td>原运行自身计算（其余层）</td>
+<td>下游各层全部</td>
+<td>首受影响层组写缓存变量的撤除恢复量</td>
+</tr>
+<tr>
+<td>层范围（其后）</td>
+<td>五组全为供体，只在首组之后各层</td>
+<td>首组保持原运行</td>
+<td>同上</td>
+<td>更深层写缓存变量的撤除恢复量</td>
+</tr>
+</tbody>
+</table>
+<p>首受影响层组：L0 针为 L1–L3，L12 针为 L13–L15（到下一个全注意力层为止）。</p>
+<p>方向：N_G = 1 表示撤除 G 后完全回到参照；S_G = 1 表示只留 G_T 时原效应完全保留；S_G = 0 表示原效应完全消失。两个量方向各自定义，不共用一个公式。</p>
+<p><strong>这些估计量的含义与边界</strong></p>
+<ul>
+<li>撤除 G：其余组随上游残差自由变化，所以 N_G 是"把 G 固定为供体值时的总响应"，包含其余组对此的反应。若上游其他变化最终都经过 G，N_G 也会很高。因此 N_G 高说明 G 是效应必经的变量之一，<strong>不说明 G 是最初原因</strong>。</li>
+<li>只留 G：G_T 来自原运行的历史，与被供体值改变后的上游残差不配套，这是一个混合反事实。S_G 高说明"原干预在 G 上留下的那份值，在其余写缓存变量都回到参照时，仍足以维持效应"，不说明自然运行里只有 G 在起作用。</li>
+<li>撤除 G 与只留 G 的读法见第 8 节的四步判断；那里的"完整""部分""很少"都是指定替换条件下的量，不是对自然路径的认证。</li>
+</ul>
+<h6 id="_2">预先保留的组合格（进入主矩阵，不靠"总和不闭合"触发）</h6>
+<p>交互项可以相互抵消，单组之和对得上也不代表没有联合机制。核心问题恰好是"写入改变与旧状态处理改变是否需要共同作用"，所以下列组合格事先进入主矩阵：</p>
+<table>
+<thead>
+<tr>
+<th>组合</th>
+<th>撤除</th>
+<th>只留（钉在原运行值，其余为供体）</th>
+<th>对应的联合解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>内容 × 处理：{V} 对 {R, K}</td>
+<td>撤除 {R, K}；撤除 {V, R, K}</td>
+<td>只留 {R, K}；只留 {V, R, K}</td>
+<td>写进的内容与旧状态的保留、擦除是否必须同时改变</td>
+</tr>
+<tr>
+<td>V × K</td>
+<td>撤除 {V, K}</td>
+<td>只留 {V, K}</td>
+<td>S1、S2 在同起点就看到写入与擦除反向抵消，k、β 与 v 是否必须同时改变</td>
+</tr>
+</tbody>
+</table>
+<p>由这些格与单组格可得两组交互：撤除侧 I_N = N_{V,R,K} − N_V − N_{R,K}（以及 N_{V,K} − N_V − N_K），只留侧同理。交互逐情景报告。</p>
+<p>未覆盖的组合（R × K、与 Qc、KV 的组合）写明未检验，不据单组结果推断它们不存在交互。
+- 本草案不再使用"直接作用""间接作用"这两个名称。</p>
+<h5 id="5">5. 撤针后族：后续计算的控制对照</h5>
+<p>被介入运行从自身的 Mτ 出发，此后所有缓存<strong>正常更新</strong>。替换只发生在撤针后的位置（末提示 token 与候选），在卷积<strong>之后</strong>、递推函数的实际输入上替换，因此旧卷积缓冲对被替换变量的影响一并被覆盖。</p>
+<table>
+<thead>
+<tr>
+<th>因子</th>
+<th>替换的变量（撤针后位置、介入层）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>写更新 Wr</td>
+<td>线性层卷积后的 k、v、α、β；全注意力层写入的 K、V</td>
+</tr>
+<tr>
+<td>读取 Rd</td>
+<td>线性层卷积后的 q 与输出门 z；全注意力层查询与输出门</td>
+</tr>
+</tbody>
+</table>
+<p>做 Wr × Rd 的 2×2 全析因（四格，其中"都不换"即原运行），供体为 00。</p>
+<ul>
+<li>"两者都换"格：后续的写更新和读取条件都取干净值，剩余效应只能来自 Mτ 中已存内容在这些干净条件下被读出、再经残差和 MLP 的传递。</li>
+<li>四格给出两个主效应和一个交互项。<strong>交互项必须报告</strong>；交互不可忽略时，不把差值分配成"写入贡献""读取贡献"。</li>
+<li>Wr 同时含内容 v 与处理变量 α、k、β，所以它叫"写更新"，不叫"写入"。是否再拆分，看主结果再定，不进本轮。</li>
+<li>这些都是控制策略之间的对照差，不是纯路径效应。</li>
+</ul>
+<p>在 11 和 10 上各做一套：10 对应"只有早段针、撤针早"的情形，即 L0 事实丢失的那一臂。</p>
+<h5 id="6_2">6. 零对照：标定同幅改动的一般损伤</h5>
+<table>
+<thead>
+<tr>
+<th>零对照</th>
+<th>怎样构造</th>
+<th>对应的真实格</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>同幅随机方向</td>
+<td>在同样的组、位置、层上，把原值沿随机单位方向移动，幅度等于该处真实替换的位移 ‖供体 − 原值‖；每格 2 次抽取，跨输入合并成分布</td>
+<td>全部撤除格（T 背景）与只留格（供体背景），含预留组合格；撤针后"两者都换"</td>
+</tr>
+<tr>
+<td>位置打乱</td>
+<td>把供体在窗口内的值按位置打乱后插入：值都是真实值，时间对不上</td>
+<td>撤除 G</td>
+</tr>
+</tbody>
+</table>
+<p>零对照只用于第 8 节第一步（是否存在有方向的效应）和第四步（分辨率是否足够下"反驳"），<strong>不作为机制存在与否的分界</strong>：随机扰动本身可能造成很大损伤，超过它只说明效应有方向，落在它之内也可能只是分辨不出。两种零对照都不是完美的零分布：随机方向可能离分布更远、损伤更大；位置打乱保留了值的分布，但可能仍携带部分内容。两者的结果都报告；若二者给出相反结论，相应的格只作描述，不作判读。</p>
+<h5 id="7_2">7. 诊断（不作判决）</h5>
+<p>以下只用来标记异常、帮助解读，不据此宣布"原路径"或"补偿"：</p>
+<ul>
+<li><strong>失配</strong>：每次替换都记录"该位置本来会算出的值"G′，报告 ‖G_插入 − G′‖ / ‖G_T − G_供体‖。比值远大于 1 的格，说明混合状态离任一原生运行都很远，结论降档。</li>
+<li><strong>内部恢复</strong>：撤针时各层缓存、答案位置各层组之后的残差、L16–18 状态，与参照、与原运行各自的距离。</li>
+<li><strong>读出方向</strong>：答案位置最终残差在"停止方向"（输出层 lm_head 中 EOS 行与最高非停止 token 行之差）和"事实方向"（两候选首个分叉 token 的 lm_head 行之差）上的投影，与行为读数对照。</li>
+</ul>
+<p><strong>单向用处</strong>：若行为恢复了，而读出方向上的投影同时远离原运行和参照，这是存在别的路线的线索，应报告。反过来，内部向参照恢复<strong>不能</strong>认证原路径，因为补偿也可能收敛到相近的表示。</p>
+<h5 id="8">8. 判断规则：四步分开，逐情景报告</h5>
+<p>每个（锚点、窗口、读数、格）分四步判断，每步结果都报告，前一步的结论不替代后一步。</p>
+<ol>
+<li><strong>是否存在有方向的效应</strong>：格的回答变化方向与预期一致（撤除格朝参照，只留格保持原效应），且其幅度超出同条件零对照中<strong>同方向</strong>变化的 95% 分位。不满足 → 记"未见有方向效应"，不等于"机制不存在"。</li>
+<li><strong>量</strong>：N 或 S 的点值，逐情景列出，另报六情景范围与中位数。</li>
+<li><strong>是否接近完整</strong>（预先定义的区间）：≥ 0.8 为"接近完整"，0.2–0.8 为"部分"，≤ 0.2 为"很少"。</li>
+<li><strong>支持、反驳还是证据不足</strong>：
+   - 先算分辨率 r = 零对照同方向变化的 95% 分位 / |Δ|。r &gt; 0.5 时，该格对"很少"无法与"部分"区分，凡依赖"很少"的结论一律记"证据不足"。
+   - 只有当第 1 步成立、第 3 步落在相应区间时，才记"支持"；只有当 r ≤ 0.5 且第 3 步为"很少"时，才记"反驳"。其余记"证据不足"。</li>
+</ol>
+<p><strong>解释与所需结果</strong>（"完整""很少"均指第 3 步区间，且都要满足第 4 步的条件）：</p>
+<table>
+<thead>
+<tr>
+<th>待检验的解释</th>
+<th>决定性格</th>
+<th>支持</th>
+<th>反驳</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>V 必经且足够</td>
+<td>撤除 V、只留 V</td>
+<td>N_V、S_V 都接近完整</td>
+<td>N_V 或 S_V 很少</td>
+</tr>
+<tr>
+<td>R 必经且足够</td>
+<td>撤除 R、只留 R</td>
+<td>同上（R）</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>K 必经且足够</td>
+<td>撤除 K、只留 K</td>
+<td>同上（K）</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>内容与处理须共同改变</td>
+<td>撤除 {V}、{R, K}、{V, R, K}；只留同组</td>
+<td>单独撤除 V 或 {R, K} 都只部分恢复，而撤除 {V, R, K} 接近完整；或只留 V、只留 {R, K} 都保留很少，只留 {V, R, K} 接近完整</td>
+<td>单独一方（V 或 {R, K}）就接近完整，且另一方很少</td>
+</tr>
+<tr>
+<td>V 与 K 须共同改变</td>
+<td>撤除、只留 {V}、{K}、{V, K}</td>
+<td>同上，以 V、K 代入</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>查询变量（Qc）、更新变量（V、R、K）、KV 三类的相对作用</td>
+<td>三类各自的撤除与只留</td>
+<td>逐类报告四步结果</td>
+<td>——</td>
+</tr>
+<tr>
+<td>停嘴与事实使用由不同变量承载</td>
+<td>两读数各自的上表结果</td>
+<td>两读数中被"支持"的变量或窗口不同</td>
+<td>两读数结果相同</td>
+</tr>
+<tr>
+<td>撤针后效应在干净后续条件下仍存在</td>
+<td>撤针后族"两者都换"</td>
+<td>第 1 步成立，且保留量至少为"部分"</td>
+<td>保留量很少且 r ≤ 0.5</td>
+</tr>
+<tr>
+<td>撤针后效应依赖写更新还是读取条件</td>
+<td>Wr × Rd 四格</td>
+<td>交互可忽略时才陈述主效应</td>
+<td>交互大：只陈述组合</td>
+</tr>
+<tr>
+<td>首受影响层组的写缓存变量必经</td>
+<td>层范围（首组）</td>
+<td>恢复量接近完整</td>
+<td>恢复量很少且 r ≤ 0.5</td>
+</tr>
+</tbody>
+</table>
+<p>关于第六行：Qc 改变的是怎样读取递推状态，V、K 本身也经过短卷积，所以三类变量的比较<strong>不能</strong>据此分出"递推机制"与"非递推机制"。Qc 有效不排除递推状态参与，V、K 有效也不排除卷积历史参与。</p>
+<p>失配、内部恢复、读出方向只作诊断（第 7 节）。</p>
+<h5 id="9">9. 规模与顺序</h5>
+<p>每个（锚点、输入）：</p>
+<table>
+<thead>
+<tr>
+<th>族</th>
+<th>格数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>形成族（E、L 各一套）</td>
+<td>完备 1 + 撤除 5 + 只留 5 + 预留组合 6 + 零对照（随机 2 次 × 16 格 + 打乱 1 次 × 5 格）= 54；× 2 窗口 = 108</td>
+</tr>
+<tr>
+<td>层范围</td>
+<td>2 × 2 窗口 = 4</td>
+</tr>
+<tr>
+<td>撤针后族（11、10 各一套）</td>
+<td>3 个非平凡格 + 随机零对照 2 次 = 5；× 2 = 10</td>
+</tr>
+<tr>
+<td>参照原生运行的全层变量捕获</td>
+<td>00、10、01、11 各一次</td>
+</tr>
+</tbody>
+</table>
+<p>合计约 122 条 × 24 ≈ 2.9k 条短运行，约 3 GPU-h；双卡每卡 4 worker 墙钟约 45 分钟。</p>
+<ol>
+<li><strong>P0（零 GPU）</strong>
+   - 第 1 节推论逐行对照源码写成证明。
+   - 小模型 CPU 测试：替换钩子无替换时逐位惰性；完备性格逐位等于参照（E→01、L→10）；"只留 G"格中 G 逐位等于 G_T；撤针后族在卷积后替换时，旧卷积缓冲对被替换变量不再起作用。
+   - 用 S2 的 L16–18 驱动量做离线局部分析，提出第 8 节各项的方向性预测（推测档）。
+   - 冻结判据与预测，提交并记录哈希。</li>
+<li><strong>P1（开发面板）</strong>：两锚点 × 现有 6 情景 × 2 事实。完备性格先跑、单独过闸：任何一格不逐位等于参照，整轮停止。</li>
+<li><strong>P2（确认面板）</strong>：validation-r01 中另外 6 个未用于 CFM 的情景，先做干净审核，再只跑 P1 中判出必经或足够的组对应的格、完备性与零对照，用 P1 冻结的预测检验。</li>
+</ol>
+<h5 id="10-r1">10. 对 r1 审查的修订对照</h5>
+<table>
+<thead>
+<tr>
+<th>审查意见</th>
+<th>r2 的处理</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>充分性方向写反</td>
+<td>撤除恢复量 N 与保留量 S 分开定义，方向各自写明（第 4 节）</td>
+</tr>
+<tr>
+<td>供体 C 含糊，完备性论证不成立</td>
+<td>E 窗口供体 00、参照 01；L 窗口供体 10、参照 10；对齐依据是 S2 的逐位认证（第 2 节）</td>
+</tr>
+<tr>
+<td>"只留 G"让 G 自由计算，不等于保留 G_T</td>
+<td>改为把 G 钉在 G_T，并写明这是混合反事实（第 4 节）</td>
+</tr>
+<tr>
+<td>"钉住两组"差值不是原干预的间接作用</td>
+<td>删去直接/间接命名与该格；每格列出固定、允许、估计量（第 4 节）</td>
+</tr>
+<tr>
+<td>路径真实性判据不能排除补偿</td>
+<td>降为诊断；删去"能回答原路径还是补偿"；只保留单向用处（第 0、7 节）</td>
+</tr>
+<tr>
+<td>撤针后对照受旧卷积缓冲影响、"缓存保持 T"含糊、"只换写入"命名不准、差值不能直接分配</td>
+<td>改在卷积后替换；明确从 Mτ 出发正常更新；改名"写更新"；做 2×2 全析因并报告交互（第 5 节）</td>
+</tr>
+<tr>
+<td>反射零对照在 T 背景下是同向两倍位移，且结构化反向不是零分布</td>
+<td>删去反射；改为同幅随机方向（多次抽取）加位置打乱，并写明二者局限（第 6 节）</td>
+</tr>
+<tr>
+<td>1.7k 完整矩阵中哪些格有区分力不清楚</td>
+<td>第 8 节逐项列出决定性格</td>
+</tr>
+<tr>
+<td>（r2 审查）判定表把"超过随机对照"当成必经/足够、"落在其内"当成反驳</td>
+<td>改为四步判断：有方向效应、量、是否接近完整、支持/反驳/证据不足；反驳需分辨率 r ≤ 0.5（第 8 节）；零对照不作机制分界（第 6 节）</td>
+</tr>
+<tr>
+<td>（r2 审查）交互全部条件补跑，可能漏掉核心联合机制</td>
+<td>内容 × 处理（V 对 R、K）与 V × K 的组合格事先进入主矩阵；未覆盖组合写明（第 4 节）</td>
+</tr>
+<tr>
+<td>（r2 审查）"Qc 或 KV 有效 = 非递推机制"分类不准</td>
+<td>删去该分类，只比较查询、更新变量、KV 三类变量的作用，并写明不能据此分出递推与非递推（第 8 节）</td>
+</tr>
+</tbody>
+</table>
+<h5 id="11">11. 仍然不能回答的</h5>
+<ul>
+<li>原干预产生持续效应的唯一自然路径；拼接补偿的排除。</li>
+<li>写入改变与旧状态处理改变各自的直接、间接作用。</li>
+<li>k 向量内部"写在哪"与"擦掉什么"的份额：架构上是同一变量。</li>
+<li>单层定位、跨模型推广、自由生成中的文本反馈路径。</li>
+<li>递推机制与非递推机制的划分：查询、更新变量、KV 三类变量都与递推状态和卷积历史相互交织。</li>
+<li>做完本轮后，核心问题的"形成—延续—读取—回答"机制仍未完整回答；本轮只给出指定替换条件下哪些变量改变有因果影响、哪些需要联合。</li>
+</ul>
+<h5 id="12">12. 借用的工作（未重新核对出处，正式计划前按七步查重核实）</h5>
+<p>因果中介分析与路径特定效应：Pearl (2001)；语言模型上的中介分析：Vig et al. (2020)；交换介入：Geiger et al.；路径修补：Wang et al. (2022)、Goldowsky-Dill et al. (2023)；Gated DeltaNet（2412.06464）；WriteSAE（2605.12770）；transformers 5.20.2 Qwen3.5 源码。</p>
+<hr />
+<h3 id="4cfm-s3-v3">原件 4：CFM-S3 v3 实现说明与决策日志</h3>
+<p>原路径：<code>experiments/cache-formation-mechanism-s3-route-intervention-v3-2026-10-31/IMPLEMENTATION.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-mechanism-s3-route-intervention-v3-2026-10-31/IMPLEMENTATION.zh-CN.md">固定提交原文</a> · <a href="../library/0f25d341518f8cf7.html">单独阅读副本</a>；SHA-256：<code>0f25d341518f8cf7fbbb7fe317bef991b28f07c17867115d4dca98d8d7d6f3c2</code>。</p>
+<hr />
+<h4 id="cfm-s3-v3_1">CFM-S3 v3 实现说明与决策日志</h4>
+<p>日期：2026-10-31。合同 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-mechanism-s3-route-intervention-v3-2026-10-31/CONTRACT.zh-CN.md">CONTRACT.zh-CN.md</a> r01；设计草案 r3（edad525）。</p>
+<h5 id="_3">文件</h5>
+<table>
+<thead>
+<tr>
+<th>文件</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>s3_intervene.py</code></td>
+<td><code>Intervener</code>（投影输出钩子与撤针后递推实参替换、捕获）、<code>run_once</code>（与 S1/S2 相同的原生路径）、格表 <code>cells_for</code>、零对照构造、闸门、冻结/授权/worker/控制器/核验</td>
+</tr>
+<tr>
+<td><code>s3_analysis.py</code></td>
+<td>情景级读数、四步判断、联合与交互、撤针后判读、诊断；<code>selftest</code> 为合成预演</td>
+</tr>
+<tr>
+<td><code>test_s3.py</code></td>
+<td>小号随机 Qwen3.5 上的 CPU 测试</td>
+</tr>
+</tbody>
+</table>
+<h5 id="1-transformers-5202-modeling_qwen3_5py">完备性的依据（设计 §1，逐行对照 transformers 5.20.2 <code>modeling_qwen3_5.py</code>）</h5>
+<ul>
+<li>线性层：<code>in_proj_qkv</code> 输出经 <code>update_conv_state</code>（预填充时原样保存）与 <code>causal_conv1d_fn</code> 得到 q/k/v；<code>in_proj_a</code> → g；<code>in_proj_b</code> → β；<code>in_proj_z</code> 只进 <code>norm(core_attn_out, z)</code>。递推状态由 <code>torch_chunk_gated_delta_rule(q, k, v, g, β)</code> 产生；卷积缓冲保存的是卷积前的 <code>mixed_qkv</code>。</li>
+<li>全注意力层：<code>q_proj</code> 输出查询与门（门只乘在本位置的注意力输出上）；<code>k_proj</code> 经 <code>k_norm</code>、RoPE，与 <code>v_proj</code> 一起由 <code>past_key_values.update</code> 写入缓存。</li>
+<li>解码层其余部分（norm、MLP、残差）都是逐位置计算。</li>
+<li>因此，窗口内位置对窗口外位置的全部影响，都经过 {qkv 三通道, a, b}（线性层）与 {k, v}（注意力层）。CPU 测试在小模型上验证：五组全换回逐位等于参照，任意少一组则不等。</li>
+</ul>
+<h5 id="_4">决策日志</h5>
+<ol>
+<li><strong>供体值在每个 worker 内重新计算</strong>，并对 S2 formal-r01 记录逐值复现后才使用。S2 只保存了 L16–18 的驱动量，不足以作全层供体。</li>
+<li><strong>零对照幅度</strong>按"每个位置、每层、每组"的 ‖供体 − 11 值‖ 计算；组内跨模块（如 K 的 k 通道与 β）合并成一个向量取随机单位方向。</li>
+<li><strong>层范围格补了随机零对照</strong>（设计 r3 §9 的规模表没有列，但 §8 要求它按 r 下判），每单元多 8 格，合计由 122 增至 130 格。</li>
+<li><strong>P0 的离线局部因子分析没有做</strong>：合同 §6 的预测因此全部登记为推测档。这是对设计 §9 P0 第三项的偏离，影响是预测没有局部计算支撑。</li>
+<li><strong>撤针后族的判读映射</strong>：设计 §8 写"第 1 步成立且保留量至少为部分"。撤针后零对照是在原运行上加同幅随机后续扰动，它度量的是恢复量，所以第 1 步应用在恢复量 N_both 上：支持"仍存在"只要求保留量 ≥ 0.2；反驳要求 N_both 接近完整、超出零对照且 r ≤ 0.5（合同 §5）。</li>
+<li><strong>失配诊断</strong>的分母取该格实际涉及的组与层上的 ‖G_供体 − G_T‖²。</li>
+<li><strong>读出方向诊断</strong>只做停止方向。事实方向需要候选首个分叉 token，部分情景两候选前几个 token 相同，答案位置的单一方向不良定义，因此不做；事实使用直接看候选分数。</li>
+<li>formal 每卡 4 个 worker。阶段二的 speed-trial 已证明 batch 1 多进程与单进程逐字节相同。</li>
+</ol>
+<h5 id="_5">运行记录与偏离</h5>
+<table>
+<thead>
+<tr>
+<th>运行</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>preflight-r01（freeze-r01，f62b9cf）</td>
+<td><strong>合同执行失败</strong>：读取 S2 记录时 <code>worker-*</code> 同时匹配到 <code>worker-0.log</code> 文件，NotADirectoryError，未产生任何格。原始目录保留在服务器 <code>runs/preflight-r01/</code>。</td>
+</tr>
+</tbody>
+</table>
+<ol start="9">
+<li><strong>r02（偏离记账）</strong>：新增 <code>worker_dirs</code>，只返回目录；<code>s3_analysis.load</code> 有同样的匹配，一并修正。补测试：目录旁有 .log 文件时只返回目录；在含 S2 运行的服务器测试树上，<code>load_s2_records</code> 能读出 84 条。判据、格、规模不变。新冻结 freeze-r02、CPU 收据 r02、授权 preflight-r02。</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>运行</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>preflight-r02（freeze-r02，3cfc4f3）</td>
+<td>passed；2 单元 × 11 格；56 s</td>
+</tr>
+<tr>
+<td>formal-r01（freeze-r02）</td>
+<td>passed；24 单元、3,120 格、48/48 完备性逐位；8 worker；634 s</td>
+</tr>
+<tr>
+<td>判读 r01</td>
+<td>完成；见报告</td>
+</tr>
+</tbody>
+</table>
+<ol start="10">
+<li><strong>判读时发现的合同措辞问题</strong>：联合支持条件写成"两方都只部分或很少"，比设计 r3 的"都只部分"宽。判读按冻结合同执行；报告第 0 节第 3 条与第 2 节按数值说明了实际结构。</li>
+</ol>
+<h5 id="_6">测试与预演</h5>
+<p>见 <code>readiness/cpu-receipt-r02.json</code>（r01 为首轮）。</p>
+<hr />
+<h3 id="5cfm-s3-v3">原件 5：缓存形成机制｜CFM-S3 v3｜缓存写入变量的介入式拆解</h3>
+<p>原路径：<code>experiments/cache-formation-mechanism-s3-route-intervention-v3-2026-10-31/README.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-mechanism-s3-route-intervention-v3-2026-10-31/README.md">固定提交原文</a> · <a href="../library/210b1d5a6f7f11e8.html">单独阅读副本</a>；SHA-256：<code>210b1d5a6f7f11e83a2f04c5df1536df57840d0aab9ac0e668b9eb3f443714f4</code>。</p>
+<hr />
+<h4 id="cfm-s3-v3_2">缓存形成机制｜CFM-S3 v3｜缓存写入变量的介入式拆解</h4>
+<p>设计：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-formation-mechanism-s3-route-intervention-design-v3-2026-10-31.zh-CN.md"><code>docs/cache-formation-mechanism-s3-route-intervention-design-v3-2026-10-31.zh-CN.md</code></a>（草案 r3，编号 <code>CFM-S3-v3-20261031</code>）；前置 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-mechanism-s2-formation-test-v3-2026-10-31">CFM-S2</a>。</p>
+<ul>
+<li>合同：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-mechanism-s3-route-intervention-v3-2026-10-31/CONTRACT.zh-CN.md">CONTRACT.zh-CN.md</a></li>
+<li>实现与决策日志：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-mechanism-s3-route-intervention-v3-2026-10-31/IMPLEMENTATION.zh-CN.md">IMPLEMENTATION.zh-CN.md</a></li>
+<li>结果报告：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-mechanism-s3-route-intervention-v3-2026-10-31/REPORT.zh-CN.md">REPORT.zh-CN.md</a></li>
+<li>冻结 <code>freeze-r02.json</code>（<code>freeze-r01.json</code> 对应失败的 preflight-r01）；授权与测试 <code>readiness/</code>；运行 <code>runs/</code>；判读 <code>analysis/</code></li>
+</ul>
+<p>本实验不保存大张量；参照运行的全层变量只在 worker 内存中使用，每条记录只存回答读数与诊断。</p>
+<hr />
+<h2 id="_7">时间、运行与停止收据索引</h2>
+<p>下面是所收集JSON的原有时间字段与状态，不把预计结束时间当实际完成时间。未列时间的文件仍有原件链接。完整JSON全部保存在原文归档，不能以此索引中的标量代替完整嵌套内容。</p>
+<table>
+<thead>
+<tr>
+<th>原件</th>
+<th>原记录状态/阶段</th>
+<th>原时间字段（原时区）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-mechanism-s3-route-intervention-v3-2026-10-31/readiness/cpu-receipt-r01.json">readiness/cpu-receipt-r01.json</a></td>
+<td>{"status": "passed"}</td>
+<td>{"created_at": "2026-10-31T07:16:40.756195+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-mechanism-s3-route-intervention-v3-2026-10-31/readiness/cpu-receipt-r02.json">readiness/cpu-receipt-r02.json</a></td>
+<td>{"status": "passed"}</td>
+<td>{"created_at": "2026-10-31T07:19:22.351848+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-mechanism-s3-route-intervention-v3-2026-10-31/runs/formal-r01/controller.json">runs/formal-r01/controller.json</a></td>
+<td>{"status": "completed", "stage": "formal"}</td>
+<td>{"started_at": "2026-10-31T07:21:39.287922+00:00", "finished_at": "2026-10-31T07:32:12.998684+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-mechanism-s3-route-intervention-v3-2026-10-31/runs/formal-r01/verification.json">runs/formal-r01/verification.json</a></td>
+<td>{"status": "passed", "stage": "formal"}</td>
+<td>{"verified_at": "2026-10-31T07:32:12.998466+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-mechanism-s3-route-intervention-v3-2026-10-31/runs/formal-r01/worker-0/receipt.json">runs/formal-r01/worker-0/receipt.json</a></td>
+<td>{"status": "completed", "stage": "formal"}</td>
+<td>{"started_at": "2026-10-31T07:21:39.366253+00:00", "last_record_at": "2026-10-31T07:32:08.027040+00:00", "finished_at": "2026-10-31T07:32:10.260812+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-mechanism-s3-route-intervention-v3-2026-10-31/runs/formal-r01/worker-1/receipt.json">runs/formal-r01/worker-1/receipt.json</a></td>
+<td>{"status": "completed", "stage": "formal"}</td>
+<td>{"started_at": "2026-10-31T07:21:40.365876+00:00", "last_record_at": "2026-10-31T07:31:06.879794+00:00", "finished_at": "2026-10-31T07:31:09.093061+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-mechanism-s3-route-intervention-v3-2026-10-31/runs/formal-r01/worker-2/receipt.json">runs/formal-r01/worker-2/receipt.json</a></td>
+<td>{"status": "completed", "stage": "formal"}</td>
+<td>{"started_at": "2026-10-31T07:21:41.366509+00:00", "last_record_at": "2026-10-31T07:32:08.022548+00:00", "finished_at": "2026-10-31T07:32:10.250087+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-mechanism-s3-route-intervention-v3-2026-10-31/runs/formal-r01/worker-3/receipt.json">runs/formal-r01/worker-3/receipt.json</a></td>
+<td>{"status": "completed", "stage": "formal"}</td>
+<td>{"started_at": "2026-10-31T07:21:42.368258+00:00", "last_record_at": "2026-10-31T07:31:44.332028+00:00", "finished_at": "2026-10-31T07:31:46.622548+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-mechanism-s3-route-intervention-v3-2026-10-31/runs/formal-r01/worker-4/receipt.json">runs/formal-r01/worker-4/receipt.json</a></td>
+<td>{"status": "completed", "stage": "formal"}</td>
+<td>{"started_at": "2026-10-31T07:21:43.369994+00:00", "last_record_at": "2026-10-31T07:32:02.813451+00:00", "finished_at": "2026-10-31T07:32:05.074938+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-mechanism-s3-route-intervention-v3-2026-10-31/runs/formal-r01/worker-5/receipt.json">runs/formal-r01/worker-5/receipt.json</a></td>
+<td>{"status": "completed", "stage": "formal"}</td>
+<td>{"started_at": "2026-10-31T07:21:44.369512+00:00", "last_record_at": "2026-10-31T07:30:54.501977+00:00", "finished_at": "2026-10-31T07:30:56.569607+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-mechanism-s3-route-intervention-v3-2026-10-31/runs/formal-r01/worker-6/receipt.json">runs/formal-r01/worker-6/receipt.json</a></td>
+<td>{"status": "completed", "stage": "formal"}</td>
+<td>{"started_at": "2026-10-31T07:21:45.370512+00:00", "last_record_at": "2026-10-31T07:32:01.753964+00:00", "finished_at": "2026-10-31T07:32:03.996641+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-mechanism-s3-route-intervention-v3-2026-10-31/runs/formal-r01/worker-7/receipt.json">runs/formal-r01/worker-7/receipt.json</a></td>
+<td>{"status": "completed", "stage": "formal"}</td>
+<td>{"started_at": "2026-10-31T07:21:46.371066+00:00", "last_record_at": "2026-10-31T07:30:58.113938+00:00", "finished_at": "2026-10-31T07:31:00.325120+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-mechanism-s3-route-intervention-v3-2026-10-31/runs/preflight-r01/controller.json">runs/preflight-r01/controller.json</a></td>
+<td>{"status": "failed", "stage": "preflight"}</td>
+<td>{"started_at": "2026-10-31T07:17:38.565696+00:00", "finished_at": "2026-10-31T07:17:59.569724+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-mechanism-s3-route-intervention-v3-2026-10-31/runs/preflight-r01/worker-0/receipt.json">runs/preflight-r01/worker-0/receipt.json</a></td>
+<td>{"status": "failed", "stage": "preflight"}</td>
+<td>{"started_at": "2026-10-31T07:17:38.641005+00:00", "finished_at": "2026-10-31T07:17:56.014644+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-mechanism-s3-route-intervention-v3-2026-10-31/runs/preflight-r02/controller.json">runs/preflight-r02/controller.json</a></td>
+<td>{"status": "completed", "stage": "preflight"}</td>
+<td>{"started_at": "2026-10-31T07:20:03.112208+00:00", "finished_at": "2026-10-31T07:20:59.130977+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-mechanism-s3-route-intervention-v3-2026-10-31/runs/preflight-r02/verification.json">runs/preflight-r02/verification.json</a></td>
+<td>{"status": "passed", "stage": "preflight"}</td>
+<td>{"verified_at": "2026-10-31T07:20:59.130844+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-mechanism-s3-route-intervention-v3-2026-10-31/runs/preflight-r02/worker-0/receipt.json">runs/preflight-r02/worker-0/receipt.json</a></td>
+<td>{"status": "completed", "stage": "preflight"}</td>
+<td>{"started_at": "2026-10-31T07:20:03.188307+00:00", "last_record_at": "2026-10-31T07:20:53.320210+00:00", "finished_at": "2026-10-31T07:20:55.422221+00:00"}</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_8">全部原始资产入口</h2>
+<p>本目录在固定提交下共有152个跟踪文件，包含代码、原回答、失败、收据和压缩证据；文件数不是样本数。<a href="../assets/034-cache-formation-mechanism-s3-route-intervention-v3-2026-10-31.tsv">逐文件完整账本</a> · <a href="https://github.com/yuxiexiong/acupuncture/tree/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-mechanism-s3-route-intervention-v3-2026-10-31">原目录</a>。未复制模型权重、环境或凭据。</p></main></html>

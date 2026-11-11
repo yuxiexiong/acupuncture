@@ -1,0 +1,104 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>F0 收据 2：历史协议回放对照（L2/N5063 +1）的资产定位</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="f0-2l2n5063-1">F0 收据 2：历史协议回放对照（L2/N5063 +1）的资产定位</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>docs/f0-receipts-cross-model-2026-11-01/historical-replay-assets-receipt.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/f0-receipts-cross-model-2026-11-01/historical-replay-assets-receipt.zh-CN.md">固定提交原件</a>；SHA-256：<code>b1b872d6434a52bbdbe396a9ddea8b67b401f9d4064888c28d57b076ff24c175</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="f0-2l2n5063-1_1">F0 收据 2：历史协议回放对照（L2/N5063 +1）的资产定位</h1>
+<p>日期：2026-11-01。对象：PLAN r2 §8.1 "历史协议回放对照"所需的旧资产：输入、模板、剂量定义、精度、模型 revision、代码实现、解码与 k 定义、运行收据。方法：ssh 只读列目录与读 JSON；本地读仓库 <code>experiments/early-input-control-v1-2026-10-29/</code> 的 CONTRACT/EXECUTION/REPORT。没有运行模型。</p>
+<h2 id="1">1. 结论</h2>
+<p><strong>回放资产齐全，可以执行；但有两项与新协议的差异必须写进合同。</strong></p>
+<h2 id="2-workspaceacupunctureexperimentsearly-input-control-v1-2026-10-2965g-runs-37m-exports">2. 资产清单（服务器 <code>/workspace/acupuncture/experiments/early-input-control-v1-2026-10-29/</code>，6.5G runs + 3.7M exports）</h2>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th>位置</th>
+<th>身份</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>代码冻结</td>
+<td><code>freeze-r03.json</code></td>
+<td>sha256 <code>dc0556c76c10820b71597d42b26939b3967e7b543168775a701a64058a463aca</code>；文件内列出 control_engine.py、execution.py、experiment.py、task_data.py、launch.py、preflight.py 等 12 个代码文件与 data/*.json 的逐文件 sha256。机制阶段两个 run 的 <code>controller.json</code> / <code>execution.json</code> / <code>worker-*/authorization.json</code> 均绑定该 freeze_sha256，<code>freeze_path: freeze-r03.json</code></td>
+</tr>
+<tr>
+<td>模型</td>
+<td><code>worker-0/metadata.json</code></td>
+<td><code>model_class: Qwen3_5ForConditionalGeneration</code>，<code>model_path: /data/models/Qwen3.5-4B-851bf6e</code>（= HF 851bf6e，见收据 1），dtype bfloat16，softmax float32，attention_backend eager，batch 1</td>
+</tr>
+<tr>
+<td>环境</td>
+<td>同上</td>
+<td>torch 2.6.0+cu124，transformers 5.20.2，cuda 12.4，cudnn 90100（= <code>.venv-bench</code>）</td>
+</tr>
+<tr>
+<td>解码</td>
+<td><code>contract.json.generation</code></td>
+<td>max_new_tokens 128，greedy，thinking false，EOS 集合 <code>[248044, 248046]</code>，<code>branch_budget_includes_prefix: true</code>，<code>fork_steps: [4, 16]</code></td>
+</tr>
+<tr>
+<td>输入</td>
+<td><code>data/development.json</code>、<code>data/confirmation.json</code>、<code>data/anchors.json</code>（哈希在 freeze-r03）</td>
+<td><strong>中文</strong>提示 + 固定中文指令（"请用中文简短回答，通常一至三句话……"）；anchors 来自 <code>layer-survey-toy-v1-2026-10-27/questions.json</code></td>
+</tr>
+<tr>
+<td>针</td>
+<td><code>selection.json</code>、<code>data/directions.json</code></td>
+<td>层 0–3/12–15/24–27，每层 2 个原生通道 + 10 候选；L2 的 selected 是 [5251, 575]，<strong>N5063 在 L2 候选表内</strong>，作为"开发锚点/历史针"进入机制阶段（REPORT 表格标"开发锚点"）</td>
+</tr>
+<tr>
+<td>机制阶段运行</td>
+<td><code>runs/mechanism-development-r01/</code>（1,210 记录）、<code>runs/mechanism-confirmation-r01/</code>（1,440 记录）</td>
+<td>每个 worker 下 <code>branch-comparisons/&lt;输入&gt;__N_L02_C5063_D+1__fork004|016.json</code>；开发 16 个文件、确认 48 个文件。确认集 48 个中 <code>completed</code> 29、<code>not_applicable</code> 19（源提前 EOS 或未到 k）</td>
+</tr>
+<tr>
+<td>分支记录结构</td>
+<td>例 <code>CAR01-f0-required__N_L02_C5063_D+1__fork004.json</code></td>
+<td>键：<code>status, key, fork_step, prefix_token_sha256, actual_token_union, branches{continue, withdraw, rebuild}</code></td>
+</tr>
+<tr>
+<td>其余针</td>
+<td>同目录</td>
+<td>N_L00_C4146_D+1、N_L02_C5251_D−1、N_L12_C8296_D−1、N_L13_C248_D+1、N_L25_C2747_D+1 各 48 个确认文件，可一并回放</td>
+</tr>
+<tr>
+<td>盲读与裁决</td>
+<td><code>reading/mechanism-*/lock.json</code>、<code>readiness/mechanism-selection-r01.json</code>（status locked，绑定 freeze 与 joined.json 哈希）</td>
+<td>行为标签来自盲读，不是机械解析</td>
+</tr>
+<tr>
+<td>导出</td>
+<td><code>exports/mechanism-*-answers.jsonl.zst</code></td>
+<td>答案文本导出</td>
+</tr>
+</tbody>
+</table>
+<h2 id="3-k-contract-97107">3. 旧协议的 k 与分支定义（CONTRACT §97–§107 原文要点）</h2>
+<ul>
+<li>分叉边界：前 k−1 个生成 token 已增量读入，第 k 个已选出但尚未读入模型。</li>
+<li>continue：full 历史状态，继续原针；withdraw：同一 full 历史状态，关闭原针；rebuild：无针增量重建同一文字历史的状态，无针。</li>
+<li>各分支先读入相同的第 k 个 token，在自由选择下一个 token 前记录可比较的预测，随后各自自由生成。</li>
+<li>已 EOS 或未达 k：记不适用，不强行生成、不填零、不换分叉步。每分支已有前缀 + 后续生成总长 ≤ 128。</li>
+</ul>
+<p><strong>与 PLAN r2 §6 的映射</strong>：pending token 定义逐字相同（"第 k 个已选出但尚未送入"）；三臂定义相同。可做显式边界映射，无需"数字相同当操作相同"的担心。</p>
+<h2 id="4">4. 必须写进回放合同的两项差异</h2>
+<ol>
+<li><strong>输入语言</strong>：旧协议是中文提示与中文指令；PLAN r2 §3 主面板是英文。回放只能用旧的中文输入（PLAN §8.1 已规定"用原来的输入/模板"），因此回放结果与新面板<strong>不共享任何输入</strong>，只校验协议与实现，不校验跨语言。</li>
+<li><strong>剂量定义</strong>：旧针是 ±1 "原生剂量"（按 10-27 toy 的参考尺度），PLAN r2 §4 是按有效投影列范数与残差 RMS 配平的 d。回放必须用旧的剂量实现（freeze-r03 的 control_engine.py），不能换成新配平；两者的实际 Δresidual 要各自记录，不比较。</li>
+<li><strong>分支长度</strong>：旧的分支总长 ≤128（含前缀），新协议源 80 / 派生 64。回放按旧值。</li>
+<li><strong>行为标签</strong>：旧结果是盲读标签；PLAN §6 新协议用机械解析。回放时若用机械解析重判旧文本，要与旧盲读标签一并报告，不替换。</li>
+</ol>
+<h2 id="5-f1-plan-81">5. 执行所需的最小步骤（F1 内，PLAN §8.1）</h2>
+<ol>
+<li>锁定：复制 <code>freeze-r03.json</code> 清单，对服务器上 12 个代码文件与 data/*.json 重算 sha256，与冻结值逐一比对；对 <code>/data/models/Qwen3.5-4B-851bf6e/config.json</code> 比对 <code>ddc63e1c…</code>。</li>
+<li>选 <code>data/development.json</code> 中按情景 ID 排序的前 4 个完整开发情景（PLAN §8.1），在 <code>.venv-bench</code> 内用旧 <code>execution.py</code> 路径对 N_L02_C5063_D+1 跑 k=4/16 的 continue/withdraw/rebuild（共享源 ≤20 条生成）。</li>
+<li>比较：生成 token 序列与旧 <code>branch-comparisons</code> 文件的 <code>prefix_token_sha256</code>、<code>actual_token_union</code>、各分支首步预测逐位比对；不一致按 §4 的差异清单先排工程。</li>
+<li>记录：输出 <code>readiness/historical-replay-r01.json</code>，含 freeze 比对、模型哈希、逐条比对结果；不进入 A/B 主估计。</li>
+</ol>
+<h2 id="6">6. 边界</h2>
+<ul>
+<li>没有打开任何旧结果的内容做重新判读；只核对了文件存在、键结构与 status 计数。</li>
+<li><code>freeze-r03.json</code> 中代码文件哈希<strong>未</strong>在本次重算（只读了冻结清单与 run 收据的绑定）；步骤 1 要做。</li>
+<li>旧实验的 worker 日志与 <code>.runtime</code> 目录未查。</li>
+<li>本收据不授权运行；回放属于 F1。</li>
+</ul></main></html>

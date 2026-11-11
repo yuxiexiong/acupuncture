@@ -1,0 +1,100 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>B3-P1（主效应对齐的建立过程）结果报告</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="b3-p1">B3-P1（主效应对齐的建立过程）结果报告</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-b3p1-early-alignment-v1-2026-11-01/REPORT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-b3p1-early-alignment-v1-2026-11-01/REPORT.zh-CN.md">固定提交原件</a>；SHA-256：<code>8b2ca5a1b3d485ab0e35cecb44bc06de0403efc02940691debbc2d7d0ebb4446</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="b3-p1_1">B3-P1（主效应对齐的建立过程）结果报告</h1>
+<p>日期：2026-11-01。<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-b3p1-early-alignment-v1-2026-11-01/CONTRACT.zh-CN.md">合同 r01</a>；<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-b3p1-early-alignment-v1-2026-11-01/DECISIONS.zh-CN.md">决策 D1–D5</a>；<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-b3p1-early-alignment-plan-v2-2026-11-01.zh-CN.md">计划 v2</a>。代码 <code>c52e471</code>，freeze-r01 <code>67d799b3…d8d5</code>。0 模型调用、0 GPU；CPU 268 秒（单核）。<strong>已见数据上的探索分析。</strong> 同一助手实现、运行与撰写。</p>
+<h2 id="1">1. 结论（不利的先说）</h2>
+<ol>
+<li><strong>出口 (2)：得不出可区分的计算预测，本条记录分析分支到此结束。</strong> FIX 的所有冻结跨方向标签都不是集中型：S_MLP 在子表和主表上都是“分布式”，同一步占比都是“混合”，头块在子表和主表上也都是“混合”；原空间与投影空间一致，不存在投影敏感。按合同，不递补、不扩窗、不用同一方法再筛。</li>
+<li><strong>P1（跨步集中）不成立，而且有符号的结果方向相反</strong>：同一步项的有符号和（1318–1419）<strong>超过</strong>净对齐能量（1059–1222），跨步项的有符号和是<strong>负的</strong>（−161 到 −258）。也就是说，对齐能量是由“同一步两组增量彼此同向”逐层叠加出来的，跨步项总体在抵消。绝对占比判为“混合”（0.34–0.45），是因为跨步项正负两边的绝对值都很大。我原来的预测依据（“第13层直接写入正交，所以必须靠跨步继承”）错了。</li>
+<li><strong>但“同一步”在这里不等于“独立写入”</strong>（计划 v1 已经提醒过）：从第14层起，每一步的 α_j、β_j 是同一个模块分别对已经改变的残差 a、b 的响应。只要模块对输入的响应有共同的主导方向，α_j 和 β_j 就会同向，哪怕 a、b 本身并不完全同向。这个账目区分不了“两组各自写入同一方向”和“同一个下游运算把两种输入变化映射到同一方向”。</li>
+<li><strong>P2 成立（头块为“混合”）</strong>。描述上，跨组项在四个方向上都大于本组项：子表 15–29 对 7–10，主表 140–174 对 50–91。第13层只有本组头块（闸门：其余头逐位不变）；第14层基本是本组主导（R1：‖α^A‖ 2.41，‖α^B‖ 0.34）；到第17–18层，A 的历史变化经由 B 头表达的部分已经接近本组（第18层 ‖α^B‖ 2.96，‖α^A‖ 3.89），其对 ΔC 的贡献（22.5）大于本组项（6.0）。</li>
+</ol>
+<h2 id="2-fix12">2. 主要读数（FIX，12 输入均值）</h2>
+<table>
+<thead>
+<tr>
+<th>方向</th>
+<th style="text-align: right;">净对齐（终点）</th>
+<th style="text-align: right;">同一步有符号和</th>
+<th style="text-align: right;">跨步有符号和</th>
+<th style="text-align: right;">同一步绝对占比</th>
+<th style="text-align: right;">S_MLP</th>
+<th style="text-align: right;">负增量</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>N4146</td>
+<td style="text-align: right;">1211</td>
+<td style="text-align: right;">1372</td>
+<td style="text-align: right;">−161</td>
+<td style="text-align: right;">0.34</td>
+<td style="text-align: right;">0.61</td>
+<td style="text-align: right;">−28</td>
+</tr>
+<tr>
+<td>N1210</td>
+<td style="text-align: right;">1173</td>
+<td style="text-align: right;">1408</td>
+<td style="text-align: right;">−235</td>
+<td style="text-align: right;">0.45</td>
+<td style="text-align: right;">0.62</td>
+<td style="text-align: right;">−15</td>
+</tr>
+<tr>
+<td>R0</td>
+<td style="text-align: right;">1059</td>
+<td style="text-align: right;">1317</td>
+<td style="text-align: right;">−258</td>
+<td style="text-align: right;">0.40</td>
+<td style="text-align: right;">0.61</td>
+<td style="text-align: right;">−14</td>
+</tr>
+<tr>
+<td>R1</td>
+<td style="text-align: right;">1222</td>
+<td style="text-align: right;">1419</td>
+<td style="text-align: right;">−196</td>
+<td style="text-align: right;">0.43</td>
+<td style="text-align: right;">0.65</td>
+<td style="text-align: right;">−14</td>
+</tr>
+</tbody>
+</table>
+<p>13–18 层子表：净对齐 37–64；同一步有符号和 51–98，跨步有符号和 −14 到 −33；S_MLP 0.36–0.40；同一步绝对占比 0.55–0.60。</p>
+<p>逐步（R1）：cos(α_j,β_j) 在第13层为 −0.01，第14层 0.12–0.28，第17层 0.49–0.61，第18层 MLP 0.83；之后多数步骤在 0.5–0.9。能量增长集中在少数步骤：第18层 mixer（+28）、第23层 mixer（+89）、第27层 mixer（+77）、第28–30层 MLP（+68、+77、+140）、第31层 MLP（+396）。</p>
+<p>共同收缩复核（从向量直接计算）：沿 c 的份额为 4.2–10.8%，cos⊥ 为 0.70–0.77，与冻结前从标量算出的值一致。</p>
+<p>随机切分 U1、U2：模式相近，同一步有符号和为正、跨步有符号和为负；多数跨方向标签是“条件依赖”或“混合”。</p>
+<h2 id="3">3. 执行</h2>
+<p>闸门全部通过：B3 哈希一致；BF16 闭合；入口相同；逐步求和与 M 求和误差 ≤2.7e-16；主表终点与 B3-P0 的 aligned 完全一致；第13层其余头的 gated_norm_out 逐位不变；W_o·gno 与实际增量的相对误差 ≤0.022（闸门 0.05）；头块三项求和精确。头块余项（BF16 舍入）的范数为 0.02–0.11，相对于头块分量很小。</p>
+<h2 id="4">4. 合同外的后续想法（推测档，未设计、未授权）</h2>
+<p>第 1.3 条那个无法区分的问题，可以变成一个可检验的计算假说：<strong>“共享下游响应”</strong>。即后续模块的输入—输出映射（雅可比）有少数主导输出方向，所以对两种不同的输入变化给出同向的响应。它和替代解释“两组历史编码了相同的内容”的预测不同：前者预测随机输入扰动经过同一模块后也会变得同向，后者不预测。对 MLP 步骤，这可以用已加载的 MLP 权重在 CPU 上做（在 h₀₀ 处求雅可比，比较 cos(Ja,Jb)、cos(Ju,Jv)）。对 G/attention 层，需要缓存，必须上 GPU。按合同出口 (2)，本轮不自动开这条线；是否立项，由你决定。</p>
+<h2 id="5">5. 可以说 / 不可以说</h2>
+<table>
+<thead>
+<tr>
+<th>可以说</th>
+<th>不可以说</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>对齐能量在有符号意义上主要来自同一步两组增量同向，跨步项总体为负</td>
+<td>两组头独立写入同一方向</td>
+</tr>
+<tr>
+<td>第13层两组直接写入正交；从第14层起，同一步增量逐渐同向</td>
+<td>对齐是在第17–18层“产生”的</td>
+</tr>
+<tr>
+<td>第17层起，A 的历史变化有相当部分经由 B 头的读出表达，反之亦然</td>
+<td>已定位到产生对齐的具体运算</td>
+</tr>
+<tr>
+<td>冻结标签全部是分布式/混合，本分析分支到此结束</td>
+<td>不存在可检验的机制（见 §4 的推测假说）</td>
+</tr>
+</tbody>
+</table></main></html>

@@ -1,0 +1,13 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>C1-P 决策日志</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="c1-p">C1-P 决策日志</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-head-rule-prospective-v1-2026-11-01/DECISIONS.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-head-rule-prospective-v1-2026-11-01/DECISIONS.zh-CN.md">固定提交原件</a>；SHA-256：<code>f5c6d51065a6d8931707a9a9194abad6a1c9a4acbfbf25f3f99614152a43f07f</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="c1-p_1">C1-P 决策日志</h1>
+<ul>
+<li><strong>D1 段落规则（冻结前）</strong>：旧冻结 <code>segment_spans</code> 要求提示含“\n问题：”和“\n请根据”，新提示只有后者。按方案 §2 实现同构规则：fact = 记录行 + 换行；逐 token 按首字符归段；跨段即停止。CPU 预演 12/12 无跨段（n 59–61，b 31–33）。</li>
+<li><strong>D2 校准（冻结前，方案 r2 §9.1）</strong>：每情景在 f0 上下文上用 <code>engine.calibrate</code> 计算一次，f0/f1 共用；不沿用旧题校准值。</li>
+<li><strong>D3 进程内选头冻结</strong>：选头在同一 worker 进程内完成：参考格评分后计算名单，写入不可改的 <code>selections/{id}.json</code> 并把哈希写入收据，然后才评分子集格。名单只依赖参考运行（N:TT、C/T 缓存），不依赖任何子集结果。</li>
+<li><strong>D4 预检形成不跨运行复用</strong>：方案原写“预检供体复用”，实现为正式运行重新形成全部 12 输入（总形成 28 = 4 + 24），避免跨运行缓存搬运；已写入方案 r2 §9.3。</li>
+<li><strong>D5 N 格组装</strong>：由形成的 C、T 缓存直接组装（深拷贝 T，浅层 0–12 换成 C），不需要模板前向。</li>
+<li><strong>D6 写错文件（实现期）</strong>：一次把测试代码写进了 <code>c1p_analysis.py</code>，覆盖了分析脚本；发现后移为 <code>test_c1p.py</code> 并重写分析脚本，均在任何运行前完成。</li>
+</ul></main></html>

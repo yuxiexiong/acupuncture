@@ -1,0 +1,705 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>133．WSP v9：内部诊断与受限修补</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="133wsp-v9">133．WSP v9：内部诊断与受限修补</h1>
+<p><a href="../README.zh-CN.html">返回总时间线</a></p>
+<p><strong>时间定位</strong>：版本/记录日期 2026-11-05；未从所选收据确定完整运行起止，不据目录名补写时刻。</p>
+<p><strong>当时的目的与设计</strong></p>
+<p>相比v8更强调内部测量和机制报告，禁止embedding/绑定输出、最终norm及整张统一缩放等操作；同B/C开发集与评分。</p>
+<p><strong>实际过程、结果与后来更正</strong></p>
+<p>初始各30轮，后续授权曾改累计50；B延续到50，C后来明确改30并用户收尾。两版搜索空间不同，不能用分数高低单独判断粗改或细改孰优。</p>
+<p><strong>来源身份</strong>：<code>wsp-vlm-mechanism-repair-v9-2026-11-05</code>；本章主体来源提交 <code>2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274</code>。下方原文中的状态是各文件写作时的状态，不能把早期“尚未运行”覆盖后期正式收据，也不能将后期结果倒填进早期设计。</p>
+<h2 id="_1">原设计、执行过程、结果与更正全文</h2>
+<p>以下按“设计与题目 → 工程/执行记录 → 结果/更正 → 其他历史说明”组织；同类内没有可靠时间时保留路径顺序，不冒充严格先后。正文未删段；仅为本章节重排标题层级、把相对链接指向固定提交。原始字节另外完整保存。</p>
+<h3 id="1wsp-vlm-v9-bc-30">原件 1：WSP-VLM v9：内部证据驱动的 B/C 各30轮修补</h3>
+<p>原路径：<code>experiments/wsp-vlm-mechanism-repair-v9-2026-11-05/PLAN.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9-2026-11-05/PLAN.zh-CN.md">固定提交原文</a> · <a href="../library/c5f298a48240e4d2.html">单独阅读副本</a>；SHA-256：<code>c5f298a48240e4d24977203077cc2dd126895f386df317b20d661b9f5aafda0f</code>。</p>
+<hr />
+<h4 id="wsp-vlm-v9-bc-30">WSP-VLM v9：内部证据驱动的 B/C 各30轮修补</h4>
+<h5 id="material-passport">Material Passport</h5>
+<p>2026-11-05；academic-research-suite / experiment-agent run。设计及反方自查为同一助手完成，非独立审查。用户授权新版B/C工程验收后各30轮，每30分钟汇报；并再次明确“新版 B/C 验收后启动；旧队列不恢复”。本版不恢复2B/8B/Gemma，也不修改其暂停标记。运行状态以audit及启动收据为准。</p>
+<h5 id="_2">设计卡与对齐</h5>
+<p>主线：AI依据模型失败自主发现并执行有用的静态定向修补。本轮问题：恢复内部诊断要求并改善工具后，Astra能否在同一4B的B/C任务上建立可检验的内部定位证据，并改善完整回答而控制损伤？新增信息是新的发现过程及定向补丁的证据；不是同一旧补丁重放，不是跨模型或独立新数据确认。</p>
+<p>依据：<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/docs/wsp-c-directional-repair-method-roadmap-v1-2026-11-05.zh-CN.md">方法对齐审计</a>、v8完整搜索和原作者原始任务。B旧方法主要成组缩放；C词语编辑/模块校准有开发收益，尚无MLP失败方向。原数学方法并未硬定MLP；本版同样不给层号、方向、通道或算子答案。MLP、注意力、视觉及融合内部组件均可由AI选择。</p>
+<p>模型沿用Qwen/Qwen3-VL-4B-Instruct，revision <code>ebb281ec70b05090aa6165b016eac8ec08e71b17</code>。BF16、SDPA、greedy、128新token、原处理器及模板、原D输入顺序、batch64不变。B为58来源组/464输入；C为64组/2560输入。原始数据与共享权重只读复用；每分支新目录从W0开始。工程首先重放v8相同batch64前64条并核对实际token/输入身份；正式完整W0仍重测一次，不把旧batch1差异当修补效果。</p>
+<p>固定任务、数据、权重身份、生成协议、保护和标量预算；AI自行选择失败分类、对照、模块、坐标、方向、支持、强度及可检验预测。静态修改后所有下游自然响应；临时hook仅限诊断，不能当最终补丁。新增便捷接口读取AI选择层的残差输出和MLP down_proj输入完整向量，保留token位置；也支持通用模块捕获、临时替换和自构造问法。diagnose把teacher-forced内部读数与独立普通生成一起返回；临时hook不进入自由生成，两者不冒充同一自然轨迹。主要定位建议答案前，同任务同金标的成功/失败对照，跨问法与来源核对；具体对照由AI决定。</p>
+<p>恢复排除embedding/绑定输出、最终解码norm、整张张量乘常数，包括单个norm的统一缩放。禁止目标模型梯度训练、修改评估和逐题外部路由。软件同时在save_edit和commit检查动作范围；BF16缩放以舍入区间核验，不能只靠FP32比率判断。保持原版及全部失败证据。</p>
+<h5 id="_3">循环、选择与证据身份</h5>
+<p>完整回答指标沿用v8：普通提示joint为选优指标；同问法/顺序/提示控制格最大下降.035，格式/截断各&lt;=.01；平分选更少实际标量。分报全题、修对/改错、各条件及C五条件全对。来源组是统计单位。较低logit损失、相似激活或稀疏本身不等于有效回答或机制发现。</p>
+<p>每分支30个内容不同、非零静态候选的完整D评估，包括失败及随机/强度对照；诊断和局部生成另计预算、不充数。AI可以在30轮内分配对照，并可因真实阻塞诚实停止；不因涨分少自动扩预算。原作者50批次与本版30完整候选仍不是相同资源合同，明确不称逐条复刻。</p>
+<p>每个commit在评价前提交失败行为、组件假设、预期变化、剂量、对照计划、对比输入ID及已有测量引用。targeted角色必须引用真实内部capture；diagnostic/control角色允许先做有预期的探索性试改。软件核查来源/完整性，<strong>不因引用存在就认定解释成立</strong>。行为最佳候选按原评分保存，机制报告单列，允许判定不支持。第30轮停止新完整候选，允许整理证据后mechanism_report→freeze。报告须对应实际最佳，保留反例、失败、控制和未支持主张；自述不是独立科学审查。</p>
+<p>若宣称方向选择和通道选择各有贡献，要求对应的同通道随机方向、同方向匹配随机通道证据，匹配实际有效支持、扰动和开发选择机会；AI可根据具体主张选择必要比较，不强制无意义的全矩阵。强度、局部生成/完整D、选优机会及全部成本分别记录。普通修补效应、内部定位支持和独立泛化是三个不同结论。</p>
+<p>本轮是已探索4B上的方法开发。当前D及已经看过的H不可改称封存测试；新来源组独立确认尚未具备，不接入已见H自动出“确认成功”。30轮完成后先冻结补丁并交付，独立确认需新材料身份核验后另行实施。跨模型前瞻检验需冻结程序及未暴露目标模型，不能用本轮替代。</p>
+<h5 id="_4">资源、存储与停止</h5>
+<p>B GPU0、C GPU1；启动前检查指定卡无其他计算进程，不抢占。Astra Max沿用现有ChatGPT登录，无API fallback。各2000动作/研究者轮次、36000 CPU秒、研究者5000万token；目标样本/前向上限分别69600/384000，token预约分别293990400/1622016000。无整段墙钟截止，单次研究者900秒、CPU300秒用于挂起检测。实际加载、工程、失败、诊断、自然生成、等待占卡和研究者usage均记账；上限不是预计实耗。旧12小时/48GPUh不自动套入。</p>
+<p>基于旧C约46输入/秒，固定D基线+30候选的纯生成量级约B5分钟、C29分钟；不是总ETA，未包含诊断、权重装载、AI思考和等待，启动后按实测更新。工程每分支64条batch重放、5条单样本生成和3次内部前向、2次模型加载，另有隔离/文件验收；真实失败另存新目录，不重写旧回执。</p>
+<p>存储采用W0加索引与绝对FP32替换值，按实际位差保存，不存有舍入误差的算术差分，不再每候选复制整张FP32矩阵。重建后完整内容SHA和BF16权重逐位验收。候选与失败提案均用此格式；工作区临时数组仍支持原Python操作。完整诊断向量保存为FP32 NPY，反馈只带路径、hash、形状和位置，不重复展开成巨大JSON。</p>
+<p>每分支运行目录预算12GiB，操作前保留最大下一次有界capture及128MiB余量；整个文件系统至少保留20GiB。达到预算停止新增操作、保存证据，不自动删结果。原30轮每候选临时支持最多4M，按索引8字节+值4字节，B/C60份极端上限约2.68GiB；12GiB/分支还覆盖提案、激活、回答和工作区。整体另预留约6GiB工程/临时空间，合计30GiB加20GiB文件系统余量。不是无限制原始轨迹全层全token采集。</p>
+<p>磁盘审计：旧C1020文件、109清单全部SHA复核后，849重复副本硬链接去重，实际回收82469568512字节（76.81GiB），171唯一inode。全路径、内容hash及清单不变，未删候选。工作盘余量约147GiB；8B/Gemma权重下载已完成并计入该占用。上述50GiB总预留后仍约97GiB缓冲，无需额外清理编译缓存或其他项目。未来其他写入会变化，每30分钟重新测量。旧硬链接资产保持不可变；后续编辑新建文件，禁止原地写。</p>
+<h5 id="c01c14">C01–C14 自查</h5>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th>判定与理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C01</td>
+<td>通过：仍为B/C行为修补，内部定位服务于修补，不换成无限机制扫描。</td>
+</tr>
+<tr>
+<td>C02</td>
+<td>通过：补上旧过程没有的失败对照与定向修改证据，可得有效阴性。</td>
+</tr>
+<tr>
+<td>C03</td>
+<td>通过：复用模型、D、旧基线/代码及作者原始方法；新工程接口另验。</td>
+</tr>
+<tr>
+<td>C04</td>
+<td>通过：旧C粗调有效，MLP未必为瓶颈；不承诺精细一定更好。</td>
+</tr>
+<tr>
+<td>C05</td>
+<td>通过：静态权重、teacher-forced读数、临时干预和自由生成分开标识。</td>
+</tr>
+<tr>
+<td>C06</td>
+<td>通过：输入/评分固定，下游自然响应；诊断问法不替换完整D。</td>
+</tr>
+<tr>
+<td>C07</td>
+<td>通过：绑定输出禁止，支持/扰动/影响分开；方向可带语义混杂。</td>
+</tr>
+<tr>
+<td>C08</td>
+<td>通过：引用核查不等于因果审查，机制报告与行为最佳分开。</td>
+</tr>
+<tr>
+<td>C09</td>
+<td>通过：要求事前预测及对照计划，主张决定必要随机/强度比较。</td>
+</tr>
+<tr>
+<td>C10</td>
+<td>通过：完整回答为主，内部读数只作线索，不用logit替代成绩。</td>
+</tr>
+<tr>
+<td>C11</td>
+<td>通过：工程失败停止该启动；负收益、证据不足或早停如实保留。</td>
+</tr>
+<tr>
+<td>C12</td>
+<td>通过：先CPU/旧证据，新增向量是旧档缺失；30轮授权内计全成本及磁盘。</td>
+</tr>
+<tr>
+<td>C13</td>
+<td>通过：新版本、新输出、hash、真实重载验收；4B与旧D明确是开发。</td>
+</tr>
+<tr>
+<td>C14</td>
+<td>通过：不胜粗调或定位不支持均可结束，不自动加轮次/模型。</td>
+</tr>
+</tbody>
+</table>
+<p>历史错误：E01不换问题；E02不指定天然层；E03稀疏不等于小扰动；E04线性分账非发现；E10完整回答终点；E11方向非语义存量；E12随机/损伤匹配；E14不混必要充分；E16保留负结果；E20允许多因素；E21方法已知不称首创；E22已见数据不称确认；E23设计/工程/运行分开；E24不要求每轮完整机制；E25对照随主张。E05–E09、E13、E15、E17–E19、E26涉及缓存拼接/形成读取，本版未执行；相邻风险由C05–C08处理。</p>
+<p>与v8相比，保持任务/基线协议/行为评分/30候选计数；恢复动作排除与定位证据责任，新增顺手的内部向量读取、单独机制报告及精确稀疏存储。比路线文档收窄本次执行到4B开发，未把将来跨模型确认装进一次30轮。</p>
+<p>反方检查：①填表可以伪装机制，故只机器核查来源，最终科学审查另列；②最低capture次数不能保证诊断，故指令要求有意义对照与预测，不据一次调用宣布完成；③对比问法可能编码词身份，须跨例/反例且不得声称唯一病因；④更细不一定胜旧法，允许失败；⑤读取位置/轴可能错，真实hook对照逐值验；⑥稀疏差分可能舍入，改存绝对值并逐位重建；⑦文件去重可能破坏候选，先全SHA再原子替换并全引用复核；⑧第30轮自动冻结会阻断总结，改为停止新完整候选后允许报告；⑨数值批量差异以同batch基线及实际重放处理。</p>
+<p>结论：逻辑设计通过；实现/真实验收状态按audit，不用这份文档替代。当前用户授权有效，旧暂停队列不恢复。</p>
+<hr />
+<h3 id="2">原件 2：原始文档</h3>
+<p>原路径：<code>experiments/wsp-vlm-mechanism-repair-v9-2026-11-05/RESEARCHER.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9-2026-11-05/RESEARCHER.md">固定提交原文</a> · <a href="../library/4e31e8a1bc90879b.html">单独阅读副本</a>；SHA-256：<code>4e31e8a1bc90879b7e3684c544fa2dd51ae179cf4eec01ae6bbbce182dfe10ae</code>。</p>
+<hr />
+<p>You are the researcher, using gpt-6-astra with max reasoning. Your task is to
+improve this VLM by understanding a concrete failure and making targeted static
+weight changes. The human fixes data access, evaluation and resources, but has
+NOT supplied a failure mechanism, layer, neuron list, direction or edit formula.
+You must choose and revise these using actual evidence. No successful repair is
+required. Never substitute superficial parameter sweeps for the requested study.</p>
+<p>WHAT COUNTS
+Diagnose failures and comparable successes. Identify candidate neurons, heads,
+directions or circuits. State a falsifiable behavioral prediction before editing.
+Test the prediction and several meaningful strengths. Distinguish correlation,
+causal intervention, a useful static patch, and generalization. A direction read
+from hidden states is not automatically a cause. If claiming direction AND channel
+selection matter, use suitable matched random-direction and random-channel tests;
+otherwise limit your claim. Include actual BF16 support/norm and control damage.
+Direct weight probes can help localization without a complete mechanism first,
+but label them diagnostic. Final evidence must explain why the chosen components
+and operation help, or honestly say evidence is incomplete/negative. A numeric
+score improvement alone is not a mechanism finding.</p>
+<p>RULES
+- Start from W0. No prior patch, layer recipe or original-author solution is given.
+- Embeddings/tied output and final decoder norm are excluded. Multiplying an
+  entire tensor by a scalar is excluded, including individual norm weights.
+- All other real model parameter locations are available; MLP is not mandated.
+  Compute your own non-gradient edits using NumPy. No model training/autograd,
+  unmetered inference, altered evaluation, gold in model prompts, external routing,
+  or changing model/tokenizer/decoding/architecture. Report any supervised fitting.
+- Static candidates must run ordinary complete generation with no diagnostic hooks.
+  Existing development data are seen: do not claim independent generalization.
+- Do not assume a single shared failure, or name a module's function from its ID.</p>
+<p>WORKING LOOP
+1. Read complete W0 answers and raw success/failure examples. Group actual errors
+   and choose a concrete, consequential failure. Keep normal successes as controls.
+2. Build comparable contrasts. Preserve task meaning and gold when comparing
+   success/failure rewordings. Comparing different correct tasks can encode a
+   legitimate task switch; answer position, word identity and difficulty confound
+   raw activation differences. Test competing interpretations across examples.
+3. Measure internal vectors in candidate modules, usually before the answer.
+   Inspect relevant projection columns, candidate directional writes and their
+   input-dependent activations when appropriate. Architecture and linear algebra
+   are tools, not discoveries. Probe a reasonable range rather than only 8 arbitrary
+   coordinates. AI selects locations and coordinates, never a precomputed ranking.
+4. Record prediction, evidence and intended control; calculate and commit an edit.
+   Test predicted behavioral effects, dose and counterexamples. Complete fixed-D
+   evaluation is used for every candidate considered for best. Read repaired AND
+   worsened IDs, not just summary scores. Retain invalidated hypotheses.
+5. Within 30 distinct nonzero full-D candidate evaluations, reserve meaningful
+   tests for your best explanation; do not spend all rounds on tiny scale tweaks.
+   Measurements, diagnostic generations and subset probes are separately budgeted,
+   not counted as full candidate rounds. Controls and failed full evaluations count.
+   Aim for 30 substantive rounds, but stop honestly for a real blocker/exhaustion;
+   never fabricate hypotheses or duplicate weights to reach a number.
+6. At the round cap synthesize a mechanism_report about the selected best candidate,
+   including controls, negative findings and limits, then freeze. The service only
+   validates evidence references/completeness; it does not certify your causal story.</p>
+<p>TOOLS
+Explain evidence, next action and predicted observation, then return exactly ONE
+fenced <code>python</code> or <code>forward</code> block. Python persists on CPU and has NumPy as np.
+<code>catalog()</code>, NAMES, <code>load_original(name)</code>, <code>load(name)</code>, <code>save_edit(name,array)</code>,
+<code>drop_edit(name)</code>, <code>edited()</code> read/stage existing parameters. <code>EVIDENCE</code> is the
+allowed bundle directory; <code>ARTIFACTS</code> contains complete returned JSON and NPY arrays.
+Use np.load(..., allow_pickle=False). No framework/model execution in Python.
+Save relevant computed directions, channel lists, rankings and comparisons in
+/work with sufficient provenance; summarize paths in your report. Array saving
+uses exact absolute FP32 values against W0, preserving effective BF16 weights.</p>
+<p>Forward operations:
+- status; evidence (optional ids); image(request_id,kind=input|preview);
+  catalog; runtime_catalog. The latter lists real runtime modules/shapes.
+- measure(candidate,ids,spec): one teacher-forced forward per ID, no generation.
+  spec={"layers":[AI-chosen decoder layer indices],"token_positions":"last_prompt"}
+  conveniently captures each layer's residual output and MLP down_proj INPUT.
+  <code>token_positions</code> can be explicit nonnegative positions; inspect returned actual
+  token IDs/prompt length/image positions. Layer indices are zero-based actual
+  module indices. Continuations are explicitly teacher-forced, not natural traces.
+  Generic spec.capture entries support module, where=input|kwargs|output, path,
+  optional token_positions or flat_indices. Do not use decoder token axes on vision.
+  spec.continuation and score_token_ids are available. Spec.interventions supports
+  module/where/path/explicit flat_indices/values and operation=add|replace|scale;
+  these only affect this forward and never become a static candidate.
+  Returned captures include array_file relative to ARTIFACTS, SHA256, original
+  shape, selected_shape and token_positions. Load arrays in Python, not via text.
+- diagnose: same fields/readout as measure, PLUS ordinary free generation for
+  each input. Costs TWO forwards per ID. Readout is teacher-forced; generation
+  has no temporary hooks and is scored as diagnostic only. With a continuation,
+  readout sees it but generation starts from the unchanged user prompt.
+  Both measure/diagnose accept optional text_overrides mapping existing input IDs
+  to new diagnostic user questions. Original images remain fixed, full-D evaluation
+  unchanged. These custom questions are diagnostics, not independently graded tests.
+- commit(parent,rationale,evidence): commit immutable candidate. Parent=current.
+  evidence must contain strings failure_behavior, component_hypothesis,
+  expected_change, dose, control_plan; contrast_ids (&gt;=2 allowed input IDs),
+  measurement_actions (previous successful action IDs), role=targeted|diagnostic|control.
+  A targeted role requires actual recorded internal captures. Diagnostic/control
+  edits may precede localization; they never count as validated mechanism evidence.
+- checkout(candidate): revert current; staging clears, Python variables do not.
+- evaluate(candidate, optional ids): W0/parent/candidate paired full generation.
+  Omit ids for fixed full-D evaluation and automatic behavior-only best selection.
+- accept(candidate): same frozen behavioral score/protection rule.
+- mechanism_report(report): strings candidate, failure_behavior, internal_evidence,
+  causal_tests, counterevidence, scope, verdict; action_ids cite successful records.
+  The candidate must be the actual selected best before freeze. Negative or
+  unsupported verdicts are legitimate. Discuss any divergence from your predictions.
+- freeze: save best plus report, end. stop(reason): honest early stop. Plain final
+  reply also ends the session. artifact(name,offset,length&lt;=12000) pages saved JSON.</p>
+<p>EVALUATION AND RESOURCES
+B is total/spatially conditioned counts; C is visual/usual size under original,
+counterfactual and no-image conditions. These descriptions do not prescribe causes.
+Read EVIDENCE/bundle.json. Fixed full D: B 58 source groups/464 inputs, C 64/2560.
+Ordinary-prompt joint correctness is the selection endpoint, averaged over wording/
+order then source groups. Per wording/order/prompt cell max loss=.035 vs W0;
+format/truncation each&lt;=.01. Ties prefer fewer effective changed scalars. Report all
+conditions, overall answers, repaired/worsened IDs and C five-way correctness.
+Max effective scalar support: temporary4,000,000/final1,000,000 relative to W0,
+not parent; tied storage counts once. 30 unique full candidate rounds each branch;
+2000 actions/researcher turns; CPU36000s; researcher50M tokens; no session wall cap.
+Each diagnostic batch&lt;=64 IDs; each forward&lt;=2M captured/intervened elements.
+All calls, failures, model load/idle time and storage count. Run allocation12GiB,
+filesystem reserve20GiB. Do not download/copy models or accumulate dense snapshots.
+Stop instead of deleting evidence or expanding budgets. This is development-method
+research, not an unseen-model or independent-test success claim.</p>
+<hr />
+<h3 id="3c">原件 3：C：从词语与模块调节走向内部定向修补，并检验发现流程的跨模型适用性</h3>
+<p>原路径：<code>docs/wsp-c-directional-repair-method-roadmap-v1-2026-11-05.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/docs/wsp-c-directional-repair-method-roadmap-v1-2026-11-05.zh-CN.md">固定提交原文</a> · <a href="../library/6f84ea9bdcb8c40d.html">单独阅读副本</a>；SHA-256：<code>6f84ea9bdcb8c40d6f4dc4a4926bbdc235da5744015e7bd9f7338eab802836f3</code>。</p>
+<hr />
+<h4 id="c">C：从词语与模块调节走向内部定向修补，并检验发现流程的跨模型适用性</h4>
+<h5 id="_5">身份与直接回答</h5>
+<p>日期：2026-11-05。academic-research-suite / experiment-agent 方法规划；同一助手设计与自查，非独立审查。本次仅阅读已存证据、核对源码和公开原文，无新模型/GPU调用，未改变已授权的2B/8B队列。路线逻辑通过；数值执行合同与真实模型工程验收未完成，不作为可直接开跑的实验包。</p>
+<p><strong>当前C没有发现“具体失败行为对应的MLP内部方向及写入通道”。它已有有效的词语表示编辑与模块缩放，尚未完成失败对照→内部方向→通道写入→定向权重修补这一链条。</strong> 工具可以计算并保存特定列的方向修改，但这种能力尚未用于本轮C，不能把“可做”写成“已发现”。</p>
+<p>本路线将用户目标理解为：固定一套AI发现与验证程序，让它在新模型上分别找出有效补丁。不是把4B的层号、token ID、方向坐标或权重差分直接复制到其他模型。对每个模型使用事先允许的开发数据属于方法内校准；观察最终测试后再改方法属于新的开发。有限测试不能保证“所有新模型都有效”，应报告预先确定的模型范围、失败及成功率。</p>
+<h5 id="1-c">1. 当前C实际做了什么</h5>
+<p>核对资产：<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-open-repair-v8x50-2026-11-05/closeout-evidence.json.gz">完整搜索证据</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-open-repair-v8x50-2026-11-05/closeout-summary.json">结算</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-open-repair-v8-2026-11-05/RESEARCHER.md">研究者工具说明</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-open-repair-v8-2026-11-05/backend.py">后端</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-open-repair-v8-2026-11-05/weights.py">候选保存代码</a>。模型Qwen3-VL-4B-Instruct；最终选择第45轮<code>c-556e560bdc90cca68fd2622fa57651d2e7fc071f2dd83d39ea866c91f3b393f0</code>，实际改变35,792个BF16标量。</p>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>具体内容</th>
+<th>能否称为失败相关MLP方向修补</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>词语表示</td>
+<td>pictured→image、bigger→larger、normally→typically各0.5的保范数混合；-world→world为0.25</td>
+<td>数学上改变了embedding方向，但不是从失败激活提取的MLP残差写入方向；原生绑定输出权重同步变化</td>
+</tr>
+<tr>
+<td>视觉模块</td>
+<td>主merger的norm weight/bias×0.85；deepstack merger 2的norm weight/bias×1.15</td>
+<td>模块内部输入缩放；不能称整条视觉输出统一缩放，更不是指定神经元输出方向</td>
+</tr>
+<tr>
+<td>语言模块</td>
+<td>层18–23的input_layernorm.weight×1.025</td>
+<td>注意力输入归一化缩放，不是MLP down_proj列编辑</td>
+</tr>
+</tbody>
+</table>
+<p>最终清单无语言MLP的gate/up/down投影修改。本轮163个请求中只有1次measure：在第5轮词语补丁背景上测2条输入，捕获四处视觉norm输出形状及各前8个坐标；未测语言MLP通道写入，也未用临时内部干预。因而此前“C是整层MLP统一缩放”的概括应更正为上表。</p>
+<p>当前收益保留：64来源组、2,560输入，联合分58.20%→70.70%，全部回答88.52%→90.20%，50修对/7改错；属于开发集最佳选择。第5轮仅词语编辑已到67.58%，不把剩余改善按简单相减解释成独立模块贡献。上述归档SHA256为<code>9192a03b6b6de5512e4c6f5f96e69a0ec5dc1f000aaa3fd9ebea0fcea93b4840</code>；本次复核冻结清单、请求以及修改标量分项合计。</p>
+<p>MIT原数学案例在<a href="https://github.com/RikiyaT/lm_understand-logs/blob/4d09ba6d6a7e891dd8063974dfe81b3d78e3494f/exp8_math/runs/p50c/work_notes/final_report.md">最终报告</a>给出两层各64个写入通道及方向补丁；其<a href="https://github.com/RikiyaT/lm_understand-logs/blob/4d09ba6d6a7e891dd8063974dfe81b3d78e3494f/exp8_math/runs/p50c/turns/t001/prompt.txt">任务提示</a>明确禁止embedding/输出层修改和整张张量乘常数。我们采用更开放的合同，不能把两者当成同限制的公平搜索比较。其案例提供方法先例，不证明C有同样的方向或定位位置，也不支持本路线的原创性主张。</p>
+<h5 id="1a-wsp">1A. 与原数学WSP的分叉发生在哪里</h5>
+<p><strong>主要分叉是研究合同、工具便利性和完成判据；不是没有接入Astra，也不是人类没有提前指定神经元。</strong> B/C实际启动记录均配置<code>-m gpt-6-astra</code>、<code>model_reasoning_effort="max"</code>，见<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-open-repair-v8x50-2026-11-05/researcher-launch-config-audit.json">两分支启动命令及原始文件hash</a>。这证明本地请求配置，不另声称独立验证了服务端模型内部身份。</p>
+<p>原作者没有要求必须改MLP，更没有事先给出层15/19。原始任务要求找出失败的内部原因，允许神经元、注意力头、方向或回路；最终MLP位置与方向由研究过程产生。因此“没改MLP所以没有复现”不够准确；应为“没有复现由内部诊断支持的定向修补发现流程”。</p>
+<table>
+<thead>
+<tr>
+<th>环节</th>
+<th>原数学案例的明确要求/能力</th>
+<th>我们实际合同/实现</th>
+<th>后果与证据边界</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>研究目的与证据</td>
+<td>提示中WHAT COUNTS要求理解网络、识别相关组件；HOW TO WORK要求先诊断、因果定位、预测行为和多强度检验</td>
+<td>RESEARCHER要求解释依据和预期，但允许直接试改；没有最终内部定位证据的必交项</td>
+<td>一般涨分搜索可以完成任务；不能因此把补丁有效写成内部机制已发现</td>
+</tr>
+<tr>
+<td>可接受动作</td>
+<td>拒绝embedding/输出层、最终norm，以及仅给整张张量乘一个常数的修改</td>
+<td>v2 §3.2明确不沿用embedding/最终norm排除；只排除整个网络统一缩放或输出温度，单个norm张量缩放仍允许</td>
+<td>B的成品缩放及C的embedding/模块缩放在我们的任务中合法，却不符合原案例这部分动作约束</td>
+</tr>
+<tr>
+<td>内部测量</td>
+<td>生成时可一起保存残差与MLP down_proj输入，关联答案/评分；teacher-forced直接提供hidden_states/mlp_act及自构造文本</td>
+<td>evaluate不附内部激活；measure另行选模块、输入/输出和索引。只接受现有证据ID，可附continuation；无同等方便的任意新图文对照入口</td>
+<td>能测MLP、能按列改方向，但需要更多手工组合；未证明工具不足是agent不深入的唯一或主要原因</td>
+</tr>
+<tr>
+<td>轮数</td>
+<td>50次forward工具批次，可分配给诊断、强度/对照及新题确认</td>
+<td>后续按用户授权变成先30、再50个不同非零补丁＋完整开发评价；诊断不算完成一轮</td>
+<td>数字相同不代表同预算或同研究程序。该规则更强调交付补丁评价数量；没有对照实验，不能断言它造成粗调</td>
+</tr>
+<tr>
+<td>选优与最终证据</td>
+<td>提示要求在未参与选优的题上确认，并最终评估不可见基准</td>
+<td>accept检查固定开发分数、逐格保护、格式/截断及标量数；没有内部测量/定位预测的验收项，返回development_only=True</td>
+<td>最佳候选有开发收益，不自动具备机制证据或独立泛化证据；原总方案的独立确认阶段尚不能被本轮结算替代</td>
+</tr>
+</tbody>
+</table>
+<p>分叉有直接文本记录：<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/docs/wsp-vlm-ai-repair-plan-v2-2026-11-05.zh-CN.md">v2方案</a>§2把定位和试改改为交替，§3.2写“探针不是必经阶段”并明确放开原作者的部分排除项；<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-open-repair-v8-2026-11-05/RESEARCHER.md">研究者说明</a>沿用了开放任务；<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-open-repair-v8-2026-11-05/service.py">服务accept实现</a>执行行为选优；<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-open-repair-v8-2026-11-05/run_rounds.py">轮数指令</a>将完整补丁评估定义为一轮。这是有记录的应用设计改变，不是偷偷发生的数值错误，也不能归咎于用户要求AI自主选点。</p>
+<p><strong>需要纠正的设计混淆：不替AI指定层号/神经元，与不要求它交出内部诊断证据，是两件独立的事。</strong> 前者应保留；若目标是原作者式机制导向修补，后者需要恢复。直接试改可以作为诊断，也不应要求每轮先证明完整机制；但最终报告必须区分仅行为涨分的补丁与有内部定位证据的补丁，不能因分数合格就把研究流程也判为复现成功。</p>
+<p>实际轨迹符合这一合同偏向：B的50个候选均为成组统一缩放，仅2次内部measure；C的50个候选围绕词语表示及模块校准，仅1次内部measure。C的+12.50个百分点联合开发收益仍成立。没有实验支持“恢复内部测量就一定提高更多”；原数学模型的重复/截断瓶颈也不同于B/C，不能把作者的大幅涨分全部归因于编辑粒度。</p>
+<p>后续应由Astra自行提出失败假设、选择可比对照、决定测哪些模块、计算方向/通道和剂量、根据反例修订；执行框架负责提供顺手的测量工具并核查证据是否齐全。不是人类先给它失败方向再让它代算。原作者同样禁用梯度；缺少autograd不是不能做这种方向修补的理由。下面MLP路线是一项有边界的候选实现，并非原方法唯一合法路径。新方法的跨模型目标是迁移这一发现程序，而非复制4B补丁。本次只审计和规划，不热修改已经启动的会话。</p>
+<h5 id="2-c">2. 怎样先找到C的具体失败，再找方向</h5>
+<p>主问题保持为：改善模型按问题选择视觉证据或通常知识的回答行为，同时保留该看图时的能力及正常控制。词语不稳、视觉识别错误、答案顺序偏好、错误使用图像或常识，可能同时存在；不预设全体模型都“视觉太强”，也不先把某层命名为证据切换层。</p>
+<p>建议让AI按以下证据约束自由选择诊断，不由人预填层号或通道名单：</p>
+<ol>
+<li><strong>先读同一模型的W0完整成功与失败。</strong> 分开原图/反事实图、视觉/通常/无图、问法与顺序。若目标缺陷不明显，记录接近天花板或其他错误，不强行找一个坏方向。不得只把失败子集用作最终评估分母。</li>
+<li><strong>构造可比的行为对照。</strong> 一个起点是同图、同对象、同任务含义、同目标答案下的等义问法，其中模型有成功也有失败；可复用当前T0/T1作为开发线索，但不硬编码pictured/image为全模型规则。参考问法本身必须由图像/任务语义审核，而不能只因模型答对就判定等义。若没有足够可比对照，报告该路线缺证据，不用不同任务的答案差替代。</li>
+<li><strong>在答案出现前采集候选层状态和MLP down_proj输入。</strong> 按每模型真实模板定位问题末端等语义边界，不硬搬token索引；同一比较使用统一的采样位置与归约规则。生成后或带答案teacher-forced状态可作附加诊断，不能充当答案前故障的证据。</li>
+<li><strong>跨来源、跨问法检查候选方向。</strong> 用开发中的一部分来源估计，另一部分检查；对象身份、答案标签/顺序及问法表面形式要分层或平衡。纯T0−T1差异可能只是词语表示，纯视觉问法−通常问法差异可能是正确任务切换，都不是失败方向的充分定义。</li>
+</ol>
+<p>必须保留的反证：若候选只识别某个词、某个对象、某个答案位置，换等义问法/对象就失效，不把它称为通用证据选择机制；若跨输入只有预测相关、干预无效，则仅是相关读数。不能把所有失败混合相减后，把平均方向当成共同根因。</p>
+<h5 id="3">3. 从候选方向到通道写入，再到静态补丁</h5>
+<p>若AI在某层得到单位候选方向u，并已有同任务失败/参考对照，则可用下面的已有思路作候选排序。令a是MLP down_proj的实际输入，W是该投影矩阵，第j个通道的方向写入为：</p>
+<p><code>write_j = a_j × (uᵀ W[:,j])</code></p>
+<p>配对平均写入差为：</p>
+<p><code>score_j = mean_pairs(a_failure,j − a_reference,j) × (uᵀ W[:,j])</code></p>
+<p>必须保留符号，不能只按激活或权重范数取最大。这个分解是对给定u的线性投影账本，不自动证明通道致错；u仍可能混入语义或词语因素。跨层向量没有天然相同坐标或含义，分别估计，不直接对齐编号。</p>
+<p>AI随后根据测量提出有限候选集合、符号和强度，保存预测与反例。主要定向臂建议保持embedding/输出层和统一整张张量缩放不变，以便明确检验内部定向编辑；旧词语/缩放方案仍是有效性能参照，不因新研究目标而作废。MLP是本路线的首个候选接口，找不到有效MLP补丁时允许该分支失败，不能用另一个接口的收益冒充MLP假设成功。</p>
+<p>一个可用而非唯一的静态操作是，对选中通道J：</p>
+<p><code>W'[:,j] = W[:,j] − α u (uᵀ W[:,j]),  j ∈ J</code></p>
+<p>其余列不变；α与J由固定程序中的开发选择产生，不照抄MIT的层15/19、64通道或α=6。α=1删除选中列在u上的分量；α&gt;1还会反转该分量，不能都称为“消除”。局部固定a时新增写入为：</p>
+<p><code>Δy = −α u Σ(j∈J) (uᵀ W[:,j]) a_j</code></p>
+<p>方向固定，但效果随输入的通道激活而变化。这解释了它与统一缩放的操作区别，也说明它仍是无逐题路由的静态补丁；不保证仅对失败题起效。完整运行时a及下游均可变化，因此局部公式不能证明全程机制等价。</p>
+<p>最小判别证据包括：候选方向/通道改变后的预期行为，等有效BF16改动支持及扰动量级的预定随机对照，以及正常控制的损伤。若同时宣称方向与通道选择都提供信息，应分别比较同通道随机方向、同方向匹配随机通道；它们回答不同问题，不拿一个对照同时证明两件事。随机候选也按相同开发选择机会与保护规则处理，不能筛坏随机或只给主方法调剂量。随机重复数、支持档位和剂量网格在数值合同冻结，当前不以一个随机结果宣布统计优越。</p>
+<p>现有<code>measure</code>为teacher-forced单次forward，干预后返回logits/续写分数，<code>output_tokens=0</code>。它足够做有限候选诊断，不能冒充带干预的自然完整生成。后续主终点直接使用已保存静态候选的普通完整生成与重载核验；若确需临时激活干预完整生成，须先单独实现并验收该接口。本路线不因工具名称叫measure就假定能力已齐全。</p>
+<h5 id="4-4b">4. 怎样避免只在已探索的4B上后拟合</h5>
+<p>固定程序P允许接收“新模型W0＋规定的开发材料”，产出“模型特有的补丁或诚实停止”。P包含研究者提示、工具、失败分类规则、方向/通道候选产生方式、允许的适应动作、模型调用与标量预算、选择/保护规则及停止条件。AI可以在这些边界内依据开发反馈调整；固定程序不要求所有模型出现同样解释或相同层位。</p>
+<p><strong>数据外推和模型外推都要隔离：</strong></p>
+<ul>
+<li>4B的旧D、已查看H及所有现有改写均算方法开发材料；把它们用于构建P是合理的，但任何在4B上的后续分析都明确为开发，不回头标成事前预测。</li>
+<li>新来源组按整组图像/对象组合划分为发现D、候选选择V、封存测试T，近重复图像与同源变体不跨组。最终T含未用于选择的问法，并保留全部任务控制。具体数量按目标效果与损伤精度确定，不能给未经盘点的新数据编数量。</li>
+<li>先在已知开发模型上把P做到可复核，再冻结其版本与hash；在读取目标模型科学结果之前锁定模型集合、身份、适配规则和T。新模型的D/V反馈可用于P内部校准，但研究者不能读取T。</li>
+<li>如在看到某新模型结果后人工改P，该模型成为新版本的开发模型；下一个尚未用于修改的新模型检验新版本。记录所有失败、未产生补丁、工程阻塞及接近天花板情况，不能只保留成功模型。</li>
+<li>同族不同规模只能支持同族范围；若要声称跨家族适用，必须事先包含独立家族。各模型内相对其W0比较，逐模型报告，不用汇总正增益掩盖失败。固定AI随机种子可检验一次流程实例，稳定性主张还需要预定独立研究者会话并计入成本。</li>
+</ul>
+<p>当前<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-c-scale-v1-2026-11-05/README.zh-CN.md">2B/8B队列</a>沿用旧开放搜索合同与同一个64组开发面板。该安排可提供旧方法的同族重复证据，但不能改名为此新定向方法的前瞻检验，也不是新数据终验。本次不暂停、重启或改写它们。</p>
+<p>完全不使用目标模型行为反馈的零样本补丁迁移是另一项更强主张，需要另定义映射与验证。本路线不把每模型内重新诊断叫零样本迁移，也不因为用目标D/V就称测试后拟合。</p>
+<h5 id="5">5. 应当与什么比、怎样判读</h5>
+<p>保持C的普通提示联合指标，同时分报五条件、问法/顺序、全部单题正确率、修对/改错与五条件全对。所有统计以来源组为独立单位；新模型接近天花板时报告可修错误数量与损伤，不能要求每模型达到相同百分点提升。</p>
+<p>必要参照：各模型W0；同模型同预算的旧开放修补方法（或冻结的词语/模块校准基线）；足以检验所宣称定位贡献的匹配随机对照。若主张超出当前特定任务，还需独立正常能力面板；仅通过C内控制不能称广泛能力保持。现阶段不自动展开LoRA、跨任务大全或全部架构消融。</p>
+<table>
+<thead>
+<tr>
+<th>观察</th>
+<th>能增加什么认识</th>
+<th>不能说什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>内部候选预测和定向干预均成立，静态补丁在T有效且优于匹配随机</td>
+<td>在该模型/任务上有可用的内部定向修补证据</td>
+<td>唯一自然根因、所有模型有效</td>
+</tr>
+<tr>
+<td>方向预测成立，静态补丁无效或损伤过大</td>
+<td>局部信号不足以形成合格静态修补</td>
+<td>因预测成立就宣称修复成功</td>
+</tr>
+<tr>
+<td>新补丁有效，但不优于随机或简单校准</td>
+<td>参数可调，但尚未证明内部定位带来增量</td>
+<td>强行归功于通道选择或更细粒度</td>
+</tr>
+<tr>
+<td>只在特定词语/旧对象有效</td>
+<td>局部适用范围或开发过拟合</td>
+<td>问题范围机制已普遍修复</td>
+</tr>
+<tr>
+<td>多个预先固定新模型的T有效</td>
+<td>P在所测模型集合的前瞻适用性</td>
+<td>对所有未来模型保证有效</td>
+</tr>
+<tr>
+<td>无可比对照、工程失败、无有效候选</td>
+<td>分别记录证据不足、工程阻塞、有限搜索阴性</td>
+<td>混成一个科学失败或自动扩预算</td>
+</tr>
+</tbody>
+</table>
+<h5 id="6">6. 阶段、预算与退出</h5>
+<p>先完成现有资产的CPU审计、来源分组、程序P的文本合同和模块映射；再做有限真实工程验收；之后才是定向修补开发与冻结后的新模型验证。各阶段分别记录，不把全部主张压成一次实验。</p>
+<p>本文件是方法路线，不虚构可执行的GPU小时数。执行合同必须补齐：新材料清单及封存hash、目标模型列表/版本和暴露历史、研究者身份/会话数、诊断层/位置覆盖上限、候选数/剂量/随机对照数、D/V/T组数、标量与实际扰动预算、效应/损伤判据、模型加载/诊断/候选完整评估/失败恢复/重载/测试的总账。每模型成本为这些项目之和，计入研究者等待期间实际占卡；不能沿用旧C“50轮”替代诊断与确认预算。</p>
+<p>新增测量的必要性：现有C没有语言MLP通道激活与完整候选方向，CPU不能从已有8坐标捕获恢复缺失信息；新模型的对应关系及新数据泛化也不能由4B输出推得。仅在相应阶段真正缺证据时申请运行，不同时上全部模型。无有效配对、无合格补丁或预算耗尽允许停止；不自动扩层、加模型或放宽保护。</p>
+<h5 id="7">7. 设计卡、自查与反方复核</h5>
+<p>设计编号C-DIR-METHOD-v1；依据<code>experiment-design-self-check</code> v1。主线为AI改善C且控制损伤；本轮问题为如何从当前词语/模块调节形成可前瞻验证的内部定向修补流程。增量是明确缺失测量、候选写入账本、因果判别与双重外推隔离。操作定义及固定/响应项见§2–3；终点与判读见§5；资源与停止见§6。理论公式与MIT案例已知，C上方向/通道及跨模型有效性待测。</p>
+<p>相对旧<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/docs/wsp-vlm-bc-continuation-v1-2026-11-05.zh-CN.md">开放修补方案</a>：保留AI选点、静态补丁、完整回答及保护；新增内部定向主臂、匹配定位参照和方法版本外推边界；旧有效embedding/缩放结果作为基线保留，不追溯判无效；不向已排队2B/8B注入新规则。</p>
+<table>
+<thead>
+<tr>
+<th>自查项</th>
+<th>判定与理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C01</td>
+<td>通过：仍修C的证据使用行为，内部定位服务于修补而不另立无限机制调查。</td>
+</tr>
+<tr>
+<td>C02</td>
+<td>通过：从仅有开发涨分推进到可检验的内部定向编辑与方法外推。</td>
+</tr>
+<tr>
+<td>C03</td>
+<td>通过：复用完整C证据、现有工具与MIT先例；缺失激活明列。</td>
+</tr>
+<tr>
+<td>C04</td>
+<td>通过：词语编辑已有效、MLP未必是病因、新模型可能无同一缺陷。</td>
+</tr>
+<tr>
+<td>C05</td>
+<td>通过：区分embedding、norm、MLP输出列、临时干预与静态补丁。</td>
+</tr>
+<tr>
+<td>C06</td>
+<td>通过：同模型W0起点；局部方向操作后下游自然响应，完整生成另验。</td>
+</tr>
+<tr>
+<td>C07</td>
+<td>通过：注明绑定权重及下游耦合，不把少数列称为行为隔离。</td>
+</tr>
+<tr>
+<td>C08</td>
+<td>通过：相关方向、投影分账、干预效应和泛化分层陈述，不宣称唯一机制。</td>
+</tr>
+<tr>
+<td>C09</td>
+<td>通过：词语记忆、答案偏好、一般扰动等替代解释有对应比较。</td>
+</tr>
+<tr>
+<td>C10</td>
+<td>通过：完整联合/单题/损伤保持主位，teacher-forced信号只做诊断。</td>
+</tr>
+<tr>
+<td>C11</td>
+<td>通过：近天花板、无对照、工程失败与科学阴性分开。</td>
+</tr>
+<tr>
+<td>C12</td>
+<td>通过（路线层面）：先CPU，每项新增测量有用途；数值预算未冻结，不启动。</td>
+</tr>
+<tr>
+<td>C13</td>
+<td>通过（路线层面）：来源组、模型暴露历史、D/V/T和程序版本隔离明确；封存材料待建。</td>
+</tr>
+<tr>
+<td>C14</td>
+<td>通过：允许定向路线失败或不胜简单校准，不自动继续。</td>
+</tr>
+</tbody>
+</table>
+<p>相关历史错误：E01保持修补目的；E02不硬搬层号；E03标量数/范数/行为影响分开；E04投影账本不当发现；E10不以logit代替回答；E11相关方向不等于语义存量；E12不用保护净差代替个体损伤且随机对照匹配；E14不混必要充分与自然原因；E16保留失败；E20多原因可共存；E21无新颖性宣称；E22来源组与目标模型测试隔离；E23自查/工程/运行分开；E24不等完整机制才承认有用修补；E25对照随主张而定，不全套扩展。E05–E09、E13、E15、E17–E19、E26中的缓存拼接/形成读取操作本路线没有执行，相邻归因风险由C05–C08处理。</p>
+<p>反方检查与修正：①同图换任务的差异可完全正确，故不直接当失败方向；②固定问法差仍可能只编码词汇，故跨问法/对象检查且保留旧词语基线；③采到答案后状态可泄露标签，主要定位限定答案前；④激活修复不能保证静态实现，最终必须静态完整生成/重载；⑤更精细可能不胜粗调，负结果允许；⑥新模型内校准不等于零样本，P及封存T边界写清；⑦现有2B/8B已按旧法开始，不能事后升级为新法确认；⑧数据划分与预算没完成，结论仅为路线通过，数值执行就绪不通过，当前不申请开跑。</p>
+<p>最终复查：仍回答“如何做更有针对性且可在新模型前瞻检验的C修补”；未把发现MLP方向说成已有结果，未承诺普适有效。本次无运行代码修改、无模型调用。可检查的下一交付是程序P与数据/工程清单的冻结合同，不是立即增加同类50轮。</p>
+<hr />
+<h3 id="4-bc">原件 4：新版 B/C 已启动：首次运行核验</h3>
+<p>原路径：<code>experiments/wsp-vlm-mechanism-repair-v9-2026-11-05/EXECUTION.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9-2026-11-05/EXECUTION.zh-CN.md">固定提交原文</a> · <a href="../library/bc864ca31f52ce5c.html">单独阅读副本</a>；SHA-256：<code>bc864ca31f52ce5cc4b793e502e02cb65134733ddad00a1226332fc0a231f1c0</code>。</p>
+<hr />
+<h4 id="bc">新版 B/C 已启动：首次运行核验</h4>
+<p>北京时间 2026-11-05 19:12:39。用户本聊天授权新版B/C各30轮，并再次明确“新版 B/C 验收后启动；旧队列不恢复”。旧2B/8B/Gemma暂停状态未改。</p>
+<p>代码/合同与验收证据已提交 <code>10377a0215a6f7c51e49cb954c257c0095ca07f2</code>。源码与真实工程收据逐文件hash一致；本地/服务器各35项离线检查通过；真实工程B/C各10项检查通过，失败r01和修正r02证据均保留。</p>
+<table>
+<thead>
+<tr>
+<th>分支</th>
+<th style="text-align: right;">GPU</th>
+<th style="text-align: right;">远端服务PID</th>
+<th style="text-align: right;">本地监督PID</th>
+<th style="text-align: right;">原版完整基线</th>
+<th style="text-align: right;">已完成修补轮</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>B</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1852061</td>
+<td style="text-align: right;">53326</td>
+<td style="text-align: right;">464/464</td>
+<td style="text-align: right;">0/30</td>
+</tr>
+<tr>
+<td>C</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1852016</td>
+<td style="text-align: right;">53327</td>
+<td style="text-align: right;">2560/2560</td>
+<td style="text-align: right;">0/30</td>
+</tr>
+</tbody>
+</table>
+<p>两条Astra Max会话均已真实返回动作并收到服务反馈，开始读取W0状态和开发证据；不是仅创建排队脚本。初始调用回执见 <code>audit/startup-researcher-B</code>、<code>audit/startup-researcher-C</code>。此时尚无新的完整修补候选，也没有新机制或改善结论；基线、诊断不计入30轮。后续实时状态以运行目录为准，本文件是不可变启动快照。</p>
+<p>磁盘核验：工作盘余量 <strong>147.08 GiB</strong>。旧C全哈希去重回收76.81GiB；所有候选/提案路径与内容保持一致。新版B/C总运行预算24GiB，工程/临时预留约6GiB，另留20GiB全盘余量，仍约97GiB缓冲。8B与Gemma权重下载完成并已计入当前占用，所以<strong>本轮无需再清理编译缓存或其他项目</strong>。</p>
+<p>每30分钟心跳 <code>wsp-v9-b-c-30</code> 已ACTIVE，汇报完成量/增量、实际内部测量、最佳行为结果、反例/异常、目标样本与研究者usage、GPU/磁盘及有依据的ETA。没有实测研究者/诊断节奏时不把纯生成分钟数当总完成时间。独立确认新材料未准备，所有本轮成绩仍是已探索4B上的开发结果。</p>
+<p>证据：<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9-2026-11-05/audit/startup-monitor.json">启动快照</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9-2026-11-05/audit/engineering-B.json">B工程验收</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9-2026-11-05/audit/engineering-C.json">C工程验收</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9-2026-11-05/audit/dedup-v8-C/receipt.json">旧C去重结果</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9-2026-11-05/freeze.json">冻结合同</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9-2026-11-05/PLAN.zh-CN.md">设计与自查</a>。</p>
+<hr />
+<h3 id="5wsp-v9bc30">原件 5：WSP v9：B/C各30轮，内部诊断与精确稀疏存储</h3>
+<p>原路径：<code>experiments/wsp-vlm-mechanism-repair-v9-2026-11-05/README.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9-2026-11-05/README.zh-CN.md">固定提交原文</a> · <a href="../library/29a350373414dc55.html">单独阅读副本</a>；SHA-256：<code>29a350373414dc552fe236ddcc147e6106b3ee042be4775864fddcac3d126d17</code>。</p>
+<hr />
+<h4 id="wsp-v9bc30">WSP v9：B/C各30轮，内部诊断与精确稀疏存储</h4>
+<p>用户已授权新版4B B/C在工程验收后启动，各30轮，半小时汇报；并明确旧2B/8B/Gemma不恢复。模型为Qwen3-VL-4B-Instruct，不是另换Qwen3.5。此轮为4B方法开发；没有独立新数据或跨模型成功结果。</p>
+<ul>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9-2026-11-05/PLAN.zh-CN.md">合同与C01–C14自查</a></li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9-2026-11-05/RESEARCHER.md">实际发送给Astra Max的指令</a></li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9-2026-11-05/backend.py">内部捕获接口</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9-2026-11-05/service.py">证据与行为选优</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9-2026-11-05/weights.py">精确稀疏存储</a></li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9-2026-11-05/engineering.py">工程验收程序</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9-2026-11-05/test_v9.py">新增针对性检查</a></li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9-2026-11-05/monitor.py">只读进度脚本</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9-2026-11-05/run_rounds.py">启动器</a></li>
+</ul>
+<p>与v8相比：恢复embedding/输出、最终norm和整张张量缩放排除；AI仍自由选择内部模块/方向/通道；新增按token取完整向量、自构造诊断问法、关联自由回答和二进制激活文件。每个修改先记录预期、对照和证据引用；行为最佳与机制报告分开，机器不替AI/审查者证明因果解释。30轮后允许总结再冻结，不要求伪造成功。</p>
+<p>旧C1020份张量逐文件SHA核验后，无损去重849副本，实际回收76.81GiB；所有候选/提案路径、字节内容、109份清单不变。新版保存W0基础上的索引和<strong>绝对FP32替换值</strong>，不用可能引入舍入误差的减法差分；重载检查完整内容hash与实际BF16权重。失败提案也保留。旧快照不可原地修改。</p>
+<p>当前工作盘约147GiB可用，8B/Gemma下载已完成并包括在占用内。新版各12GiB运行预算，另计工程/临时约6GiB，加至少20GiB全盘余量；约97GiB额外缓冲，因此不再清理旧编译缓存、其他实验或共享模型。实际磁盘持续巡检，预算耗尽保留证据停止。</p>
+<p>执行目录：远端<code>/workspace/acupuncture/external/wsp-vlm-mechanism-repair-v9-2026-11-05/{B,C}</code>；B物理GPU0、C物理GPU1。Mac启动器及独立Astra会话在本版本<code>search-B</code>/<code>search-C</code>。所有新候选从W0开始，数据/评分沿用原D，batch64完整W0重新核对。旧实验暂停标记不改。</p>
+<p>本地和服务器均35项离线检查通过。首轮真实验收的检查脚本错误地按hook注册顺序配对向量，现按模块名修正；首轮B/C各64条原版批量重放已通过，失败源文件和日志保留。实际新验收与正式启动状态见 <code>audit/</code>、<code>launch-*.json</code>、<code>supervisor-*.json</code>，以收据为准，不以本文当作已运行结果。</p>
+<p>半小时监控：<code>wsp-v9-b-c-30</code>。只读已有记录，汇报各完成/30、内部测量、最佳分数、异常、实际样本/研究者usage、GPU和磁盘，结束后归档并停止；不会恢复旧队列。</p>
+<p><strong>真实工程验收已通过：</strong> B/C分别69条自然生成、3次内部前向、两次模型加载；10项检查通过。完整向量与直接hook逐值一致，稀疏文件重建逐位一致，异常回滚及模型重载后答案一致。运输/图片会话验收复用未改动控制器的既有真实收据，其余本轮实测。首轮失败各64条生成、2次前向、1次加载另计。正式启动另见下方收据。</p>
+<hr />
+<h2 id="_6">时间、运行与停止收据索引</h2>
+<p>下面是所收集JSON的原有时间字段与状态，不把预计结束时间当实际完成时间。未列时间的文件仍有原件链接。完整JSON全部保存在原文归档，不能以此索引中的标量代替完整嵌套内容。</p>
+<table>
+<thead>
+<tr>
+<th>原件</th>
+<th>原记录状态/阶段</th>
+<th>原时间字段（原时区）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9-2026-11-05/audit/dedup-v8-C/progress.json">audit/dedup-v8-C/progress.json</a></td>
+<td>{"stage": "hashing"}</td>
+<td>{"time_unix": "2026-11-05T10:49:49.865170+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9-2026-11-05/audit/dedup-v8-C/receipt.json">audit/dedup-v8-C/receipt.json</a></td>
+<td>{"status": "verified"}</td>
+<td>{"time_unix": "2026-11-05T10:50:20.112383+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9-2026-11-05/audit/engineering-B-r01/receipt.json">audit/engineering-B-r01/receipt.json</a></td>
+<td>{"status": "failed"}</td>
+<td>{}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9-2026-11-05/audit/engineering-B-r02/capture-summary.json">audit/engineering-B-r02/capture-summary.json</a></td>
+<td>{}</td>
+<td>{}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9-2026-11-05/audit/engineering-B-r02/receipt.json">audit/engineering-B-r02/receipt.json</a></td>
+<td>{"status": "complete"}</td>
+<td>{}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9-2026-11-05/audit/engineering-C-r01/receipt.json">audit/engineering-C-r01/receipt.json</a></td>
+<td>{"status": "failed"}</td>
+<td>{}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9-2026-11-05/audit/engineering-C-r02/capture-summary.json">audit/engineering-C-r02/capture-summary.json</a></td>
+<td>{}</td>
+<td>{}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9-2026-11-05/audit/engineering-C-r02/receipt.json">audit/engineering-C-r02/receipt.json</a></td>
+<td>{"status": "complete"}</td>
+<td>{}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9-2026-11-05/audit/engineering-launch-B-r02.json">audit/engineering-launch-B-r02.json</a></td>
+<td>{}</td>
+<td>{"time_unix": "2026-11-05T11:05:09.464432+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9-2026-11-05/audit/engineering-launch-B.json">audit/engineering-launch-B.json</a></td>
+<td>{}</td>
+<td>{"time_unix": "2026-11-05T11:01:53.738578+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9-2026-11-05/audit/engineering-launch-C-r02.json">audit/engineering-launch-C-r02.json</a></td>
+<td>{}</td>
+<td>{"time_unix": "2026-11-05T11:05:09.478100+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9-2026-11-05/audit/engineering-launch-C.json">audit/engineering-launch-C.json</a></td>
+<td>{}</td>
+<td>{"time_unix": "2026-11-05T11:01:53.752575+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9-2026-11-05/audit/monitoring/20261105T1408-summary.json">audit/monitoring/20261105T1408-summary.json</a></td>
+<td>{}</td>
+<td>{"time_unix": "2026-11-05T14:08:29.536092+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9-2026-11-05/audit/monitoring/20261105T1440-summary.json">audit/monitoring/20261105T1440-summary.json</a></td>
+<td>{}</td>
+<td>{"time_unix": "2026-11-05T14:41:17.162619+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9-2026-11-05/audit/monitoring/20261105T1509-summary.json">audit/monitoring/20261105T1509-summary.json</a></td>
+<td>{}</td>
+<td>{"time_unix": "2026-11-05T15:08:56.753447+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9-2026-11-05/audit/monitoring/20261105T1542-summary.json">audit/monitoring/20261105T1542-summary.json</a></td>
+<td>{}</td>
+<td>{"time_unix": "2026-11-05T15:41:20.585396+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9-2026-11-05/audit/monitoring/20261105T1614-summary.json">audit/monitoring/20261105T1614-summary.json</a></td>
+<td>{}</td>
+<td>{"time_unix": "2026-11-05T16:14:18.956637+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9-2026-11-05/audit/monitoring/20261105T1642-summary.json">audit/monitoring/20261105T1642-summary.json</a></td>
+<td>{}</td>
+<td>{"time_unix": "2026-11-05T16:39:34.633187+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9-2026-11-05/audit/monitoring/20261105T1712-B-commit-rejections/turn0216-receipt.json">audit/monitoring/20261105T1712-B-commit-rejections/turn0216-receipt.json</a></td>
+<td>{}</td>
+<td>{}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9-2026-11-05/audit/monitoring/20261105T1712-summary.json">audit/monitoring/20261105T1712-summary.json</a></td>
+<td>{}</td>
+<td>{"time_unix": "2026-11-05T17:09:35.709281+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9-2026-11-05/audit/monitoring/20261105T1742-summary.json">audit/monitoring/20261105T1742-summary.json</a></td>
+<td>{}</td>
+<td>{"time_unix": "2026-11-05T17:39:37.090435+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9-2026-11-05/audit/monitoring/20261105T1812-summary.json">audit/monitoring/20261105T1812-summary.json</a></td>
+<td>{}</td>
+<td>{"time_unix": "2026-11-05T18:10:30.403989+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9-2026-11-05/audit/monitoring/20261105T1842-summary.json">audit/monitoring/20261105T1842-summary.json</a></td>
+<td>{}</td>
+<td>{"time_unix": "2026-11-05T18:41:36.237220+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9-2026-11-05/audit/monitoring/20261105T1912-summary.json">audit/monitoring/20261105T1912-summary.json</a></td>
+<td>{}</td>
+<td>{"time_unix": "2026-11-05T19:09:45.737463+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9-2026-11-05/audit/monitoring/20261105T1942-summary.json">audit/monitoring/20261105T1942-summary.json</a></td>
+<td>{}</td>
+<td>{"time_unix": "2026-11-05T19:39:45.160321+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9-2026-11-05/audit/monitoring/20261105T2012-summary.json">audit/monitoring/20261105T2012-summary.json</a></td>
+<td>{}</td>
+<td>{"time_unix": "2026-11-05T20:09:49.144716+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9-2026-11-05/audit/monitoring/20261105T2110-summary.json">audit/monitoring/20261105T2110-summary.json</a></td>
+<td>{}</td>
+<td>{"time_unix": "2026-11-05T21:09:50.356878+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9-2026-11-05/audit/monitoring/20261105T2140-summary.json">audit/monitoring/20261105T2140-summary.json</a></td>
+<td>{}</td>
+<td>{"time_unix": "2026-11-05T21:39:38.569352+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9-2026-11-05/audit/monitoring/20261105T2210-summary.json">audit/monitoring/20261105T2210-summary.json</a></td>
+<td>{}</td>
+<td>{"time_unix": "2026-11-05T22:09:34.130058+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9-2026-11-05/launch-B.json">launch-B.json</a></td>
+<td>{}</td>
+<td>{"time_unix": "2026-11-05T11:10:22.139115+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9-2026-11-05/launch-C.json">launch-C.json</a></td>
+<td>{}</td>
+<td>{"time_unix": "2026-11-05T11:10:21.941075+00:00"}</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_7">全部原始资产入口</h2>
+<p>本目录在固定提交下共有245个跟踪文件，包含代码、原回答、失败、收据和压缩证据；文件数不是样本数。<a href="../assets/133-wsp-vlm-mechanism-repair-v9-2026-11-05.tsv">逐文件完整账本</a> · <a href="https://github.com/yuxiexiong/acupuncture/tree/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9-2026-11-05">原目录</a>。未复制模型权重、环境或凭据。</p></main></html>

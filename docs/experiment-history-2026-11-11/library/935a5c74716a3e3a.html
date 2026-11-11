@@ -1,0 +1,26 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DWR-01 r01 执行合同</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="dwr-01-r01">DWR-01 r01 执行合同</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-donor-write-readout-v1-2026-11-07/CONTRACT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-donor-write-readout-v1-2026-11-07/CONTRACT.zh-CN.md">固定提交原件</a>；SHA-256：<code>935a5c74716a3e3ac315ec27a24a1b1484779793c40cc464dc5174b2428a1a68</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="dwr-01-r01_1">DWR-01 r01 执行合同</h1>
+<p>2026-11-07。执行依据为<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-donor-write-readout-plan-v1-2026-11-07.zh-CN.md">已交付计划</a>及<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-donor-write-readout-self-check-v1-2026-11-07.zh-CN.md">设计自查</a>，两者的科学问题、端点、臂、门槛与退出分支不变。旧文件中的“未授权”记录的是交付当时状态，由本次明确授权更新，不追改历史。</p>
+<h2 id="_1">授权与边界</h2>
+<p>用户本次原话：“那就把运行器、CPU测试、数值验收和冻结都补齐，预检通过后直接上卡跑正式实验。显存够就并行，不够就排队，按计划预算执行，跑完分析结果、更新论文并推送 GitHub，再跟我汇报。”</p>
+<p>允许本卡 CPU、首次预检、至多一次纯工程修复预检以及验收通过后的正式运行。授权不覆盖新材料、9B、额外层/时刻/剂量扫描。失败保留，不换端点救假设。预检/正式均保留每个端点与DWB逐token及t2 logits SHA桥接、每个O/F的零用途补丁逐位检查、来源缓存完整性、权重与钩子检查。</p>
+<h2 id="_2">固定实现</h2>
+<ul>
+<li><code>dwr_run.py</code>复用DWB形成、LVK <code>LHook/t1L</code>、SRU <code>RHook/read_use</code>，不修改旧冻结代码。两个方向、6场景48输入；每方向348完整有序配对。</li>
+<li>O=L11o，F=L11d；每对首token相同且非停止。t2使用各分支自然首token，G14联合D/E/DE用途替换；原生当前层S2保留。更高层输入和之后轨迹自然响应，不能称所有驱动固定。</li>
+<li>4176新读取反事实+792端点重放+144 C0/L00身份参照=5112完整轨迹；936次t1前向、144份形成、792次零用途t2。自然生成沿用32-token及原解析器。原函数的<code>trajectories</code>计数排除首步停止，完整实验数以记录中<code>n_runs</code>为准。</li>
+<li>正式场景原顺序按worker编号交错分配，最多两worker，各占一张可用GPU；显存需达到旧运行器下限及两倍本预检峰值。无空位就等待，不能终止其他项目。</li>
+<li>预检每场景按接收者ID排序选第一名、其全部同场景供体、两个方向全臂。形成所有场景缓存计入开销；不按现有效果抽样。</li>
+<li>冻结包括本卡代码、合同、自查、计划及旧依赖、旧参考记录哈希。授权和运行回执使用既有<code>exp.write</code>规范序列化，避免DWB旧轮授权字节不一致问题。</li>
+</ul>
+<h2 id="_3">统计与结局</h2>
+<p>D_tr、6场景bootstrap 10000次种子20261106、2000次供体标签置换与原解析器不变。G和W按接收者计算配对D_tr差；R为AL/BD冲突配对上的自身恢复<strong>逐对差</strong>，在场景层重抽，分母168/方向。R的点估计按配对加权，不将48个接收者等权代替168对比例。原始逐对变化保留。</p>
+<p>M=.25；lo≥M达到量级，hi<M低于量级，其余不可判，lo=hi=M单列边界不可判。交付比例分母348/臂，须≥.90且相对接收端点下降≤.05。两侧达到量级并且R下界>0及交付通过才能判同端点双向连接；其余严格按计划§5分支报告。两方向、三用途、所有区间全部交付；D/E之差也做配对区间。不能用标签置换排除供体相关幅度效应。开发材料不冒充独立确认。</p>
+<h2 id="_4">数值与工程放行</h2>
+<p>CPU测试包含原SRU的torch原核零补丁逐位对齐、FP64误差≤1e-5、DE局部参照、返回S2为原生更新，以及实面板计数/并行分区、合成全供体/自身/固定输出、方向分叉、缺失拒收、截断解析与结局边界。CPU通过后冻结。上卡预检全臂验收后，按本预检的形成、续写、复制和保存时间外推正式；预计超过正式预算则不启动。</p>
+<h2 id="_5">资源</h2>
+<p>首次预检≤900 GPU进程秒；最多一次工程修复预检≤900；正式≤7200；总≤9000（2.5 GPU进程小时）。模型加载、身份校验、失败、保存、FP64与重建计入。正式双worker各至多3600秒，单worker至多7200；保守墙钟终止约束保证合计预算。只杀本卡worker。输出上限2 GiB/worker，不存大模型/缓存张量。任何工程修复另留失败目录、偏离说明和新冻结，不覆盖旧证据。</p>
+<p>最终交付：运行源码与CPU记录、freeze/authorization/preflight/formal回执、全部原始回答、冻结分析、报告、论文及缺口同步、Git提交和远端核对。成功只表示协议内测量完成，不预设科学阳性。</p></main></html>

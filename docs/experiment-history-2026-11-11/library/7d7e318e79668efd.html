@@ -1,0 +1,138 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>KHC-01 作者自查记录</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="khc-01">KHC-01 作者自查记录</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>docs/cache-khc-self-check-v1-2026-11-03.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-khc-self-check-v1-2026-11-03.zh-CN.md">固定提交原件</a>；SHA-256：<code>7d7e318e79668efd91d7422fa144d2ff7875035d09c747143844096e93925c93</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="khc-01_1">KHC-01 作者自查记录</h1>
+<p>日期2026-11-03；规范<code>experiment-design-self-check v1</code>；对象：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-k-history-carrier-plan-v1-2026-11-03.zh-CN.md">第一步设计及第二步交接规则</a>。依据<code>da97f3be</code>的KRD合同、报告、r02回执与实现，现行README/研究状态、知识审计和用户最新意见。<strong>同作者自查，不是独立评审。逻辑设计通过；新实现和模型验收未做，未运行、无GPU授权。</strong></p>
+<h2 id="_1">设计卡与前一设计比较</h2>
+<p>八项设计卡见计划§1。本轮问题是固定供体Q时，已知k修复的历史效应由S/KV单项还是联合承接；直接增量是为具体更新计算选择需要保留的载体，不是再次寻找最大分量。</p>
+<table>
+<thead>
+<tr>
+<th>依据</th>
+<th>保留</th>
+<th>调整与原因</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>KRD</td>
+<td>混合背景、双向k修复/致错、随机加入、C1343、C/N两路线</td>
+<td>把H拆成S×KV，Q固定供体；新00对应旧01，不能混成原始接收者</td>
+</tr>
+<tr>
+<td>最新截图</td>
+<td>两步推进、第一步有限载体检查、第二步计算连接</td>
+<td>第一阶段不要求单项胜出；擦除项两个k须说明；两项替换只重放同背景t1 k节点，不重放整个卷积编辑</td>
+</tr>
+<tr>
+<td>KRD失败经验</td>
+<td>所有旧结果与反例</td>
+<td>不继承绝对转移量“特异”标签；不归因未搬运残差；不由余量跳回V损伤</td>
+</tr>
+<tr>
+<td>内部草稿</td>
+<td>复用旧端点以节约预算</td>
+<td>增计5原端点C捕获，且正式重放全部旧C端点、预检重放旧N端点；不能只统计新增格</td>
+</tr>
+</tbody>
+</table>
+<h2 id="c01c14">C01–C14</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>判定及理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C01</td>
+<td>通过。§1/6保持稀疏干预→计算→历史→回答主线；不改为余量相关性或普通缓存分类。</td>
+</tr>
+<tr>
+<td>C02</td>
+<td>通过。§3两个新格回答已知联合因果作用能否由指定载体承接；§6限定一次检查并交接具体计算。</td>
+</tr>
+<tr>
+<td>C03</td>
+<td>通过。§2固定KRD来源及旧SK/NR边界，复用源码事实，未重复验证架构存在。</td>
+</tr>
+<tr>
+<td>C04</td>
+<td>通过。随机也搬运、C1343不跨行为边界、N4146不对称均进入范围，S较强仅是可失败预测。</td>
+</tr>
+<tr>
+<td>C05</td>
+<td>通过。§3固定时间、层、缓存类型、Q实际入口、供体同题同方向，明确00与旧01对应。</td>
+</tr>
+<tr>
+<td>C06</td>
+<td>通过。Q始终供体，卷积仍接收者且t2/t3可直接作用；其余节点自然响应，不声称形成路径已被隔离。</td>
+</tr>
+<tr>
+<td>C07</td>
+<td>通过。S/KV不是独立来源；人工拼接可能失配，只判节点交换效果。第二步共享k用途未被直接解释成纯写入。</td>
+</tr>
+<tr>
+<td>C08</td>
+<td>通过。§5只在固定供体Q下谈承接；比例不称自然中介份额、必要充分或信息恢复。</td>
+</tr>
+<tr>
+<td>C09</td>
+<td>通过。§5容许单项、联合、混合、小条件缺口、异号；§6不以单项胜出作为继续研究门槛。</td>
+</tr>
+<tr>
+<td>C10</td>
+<td>通过。C的M与N的Y分开、32与48分母分开；净改对不冒充逐个原修复案例搬运。</td>
+</tr>
+<tr>
+<td>C11</td>
+<td>通过。旧端点接线逐位校验与科学幅度阈值分开；工程失败停止，弱效应不自动换面板。</td>
+</tr>
+<tr>
+<td>C12</td>
+<td>通过。旧数据缺两个部分交换；只新增12条件/输入×方向，明确复用及所有捕获、重放、形成预算。</td>
+</tr>
+<tr>
+<td>C13</td>
+<td>通过。旧freeze及来源映射、同token取Q、深拷贝、6场景重复结构、已见面板及失败attempt明列。</td>
+</tr>
+<tr>
+<td>C14</td>
+<td>通过。结果决定后续需观测S、KV或联合载体，不决定k机制是否“值得研究”；不自动扩层/头/槽或启动第二阶段。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="e01e26">历史错误E01–E26</h2>
+<ul>
+<li>E01/E02：保留主线和冻结层组，不把原架构事实或选点当实验发现。</li>
+<li>E03/E12：相同输入范数/旧槽贡献不等于下游等强；随机只比较可判条件缺口，绝对效应与比例同时保留。</li>
+<li>E04/E09：代数交互是读数，不能自动说明内部协同；二值天花板可导致非加和。</li>
+<li>E05/E06/E08：每格来源完整列出，既不把S代表全部历史，也不把第二步擦除/写入混合k当自然分离功能。</li>
+<li>E07/E13/E14/E15：同题供体也可带入有用材料；双向阳性只支持条件交换作用，未接回原生扎针背景。</li>
+<li>E10/E11：M、Y、错误类别分开，不用状态距离或候选分差替代自然完整答案/语义存量。</li>
+<li>E16/E18：无效或小缺口不推出剩余路径成立；工程失败不是科学阴性。</li>
+<li>E17/E26：卷积残留仍在接收者，后续直接通路保留；剩余差异不按排除法归给卷积。</li>
+<li>E19：旧端点复现仅作接线检查，不作为新增机制证据。</li>
+<li>E20/E24：S/KV可以共同有效，不强迫互斥；不要求单轮解释完整核心问题。</li>
+<li>E21：无方法首创/领域首次主张，不为四格形式做新颖性包装。</li>
+<li>E22/E23：已见面板，旧控制不算独立重复；同作者检查不叫独立审查；第二步交接不是已冻结设计。</li>
+<li>E25：第一步不加Q第二档，不拆层槽；随机去除未新增的原因和适用限制公开，旧资料保留。</li>
+</ul>
+<h2 id="_2">反方检查与修正</h2>
+<ol>
+<li><strong>固定供体Q已经产生一部分效应，再用原r作为基线会重复归因。</strong> 修正为新00=旧01，h=M11−M00；原端点g另报。新四格的控制必须全部在同Q背景，不挪用旧10。</li>
+<li><strong>只换S或KV无效，可能是另一载体补偿，不能淘汰机制。</strong> 使用完整2×2与条件效应；联合有效单项弱明确是合格结果。单项弱不推出该载体不重要。</li>
+<li><strong>单项在供体Q下有效，不代表接收者原q或第二步自由q下有效。</strong> 所有结论带Q条件；后续计算方案需重新定义其读取背景，禁止直接拼链。</li>
+<li><strong>旧00/11自然控制可能与新实现不一致。</strong> 冻结旧记录映射，正式C全量逐位重放，预检旧N完整重放；失败即停，不能只看分差相近。复用不是新增独立证据。</li>
+<li><strong>两个分母：原始端点缺口与固定Q后的H缺口可能相差很大。</strong> 主载体比例只用h，|h|&lt;0.5停止比例解释；不能因为KRD总体缺口大就保证当前可判。Y端点无缺口也禁止除零。</li>
+<li><strong>共同/随机h不同，比例也不能彻底消除混杂。</strong> 绝对量、h、比例及场景并列；只保留加入侧可对齐比较，无“共同必须更特异”的门槛，不把除法等同损伤配平。</li>
+<li><strong>即使预期全成立，也可能是混合状态补偿，而非自然形成链。</strong> 本轮承诺就是条件性载体作用；实际形成计算留第二步检验。这个边界仍提供后续计算测量的明确对象。</li>
+<li><strong>第一步会不会继续变成热点搜索？</strong> 只做一次，不拆缓存内部；混合结果就保留联合。若无法接到具体计算问题则停止，不凭“还可更细”追加。</li>
+<li><strong>两项k替换不等于原始修复，工程比较对象错了怎么办？</strong> §6预先限定同背景同一步完整k节点替换为参照；第二步未授权/未实现，不把这一连接说成已验证。</li>
+</ol>
+<p>修正后复查C01/C02/C05/C06/C08/C10/C12/C14均通过。没有以放宽旧QSR/KRD判据换取新计划通过。</p>
+<h2 id="_3">已完成与待完成</h2>
+<p>本次完成文档与来源核对、CPU条件枚举/格映射/预算、1000组合成2×2代数和零缺口出口检查、10个相对链接检查，均通过；未进行模型前向。具体预算为正式2304条新自然轨迹；正常含预检2496，含一次预检重试最多2688；decode分别85472/91840，形成及预填另列；设备GPU硬上限1.5小时，尚无执行授权。</p>
+<p>尚未完成swap_S/KV实现、模型逐位桥接、设备同址比较、源缓存隔离以及实耗验收。逻辑通过不意味着GPU-ready。第二步只是一份交接要求，必须依据第一步结果单独完成完整设计、自查和授权。</p></main></html>

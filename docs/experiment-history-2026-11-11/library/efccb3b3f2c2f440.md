@@ -1,0 +1,99 @@
+# WSP 磁盘清理候选与预算纠正
+
+历史原件；不是本次提出的假设、论证或运行要求。
+
+原路径：`experiments/wsp-process-reproduction-v1-2026-11-03/engineering-r2/resource-audit/REPORT.zh-CN.md`。来源：[固定提交原件](https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-process-reproduction-v1-2026-11-03/engineering-r2/resource-audit/REPORT.zh-CN.md)；SHA-256：`efccb3b3f2c2f44087c50115bb831d59a602cf655d130a4ec41a1401e8de95a5`。精确字节见原文归档。
+
+---
+
+# WSP 磁盘清理候选与预算纠正
+
+2026-11-03。用户要求先提供清单，不删原始实验数据、不启动搜索。本轮对服务器仅执行读取、目录统计及 /proc 引用检查；**删除 0 文件，新增模型/GPU 运行 0，正式搜索仍为 0/50**。记录：[服务器清单](https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-process-reproduction-v1-2026-11-03/engineering-r2/resource-audit/server-inventory.json)、[只读统计脚本](https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-process-reproduction-v1-2026-11-03/engineering-r2/resource-audit/read_only_inventory.py)、[作者工作量复算](https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-process-reproduction-v1-2026-11-03/engineering-r2/resource-audit/author-workload.json)。
+
+## 结论与纠正
+
+上一版把 400/600 GB 设置成正式启动空间门槛，并建议额外 1 TB，依据不足，应撤回这个默认要求。它来自“50 次都返回最大 6 GB”等压力情景，不能代表作者实际的混合调用。24/60 GPU 小时同样是极端停止上限，不是正常预计消耗；不能把它们当成复现已经被证明需要的预算。
+
+当前 /workspace 实际空闲 **225.99 GB（210.47 GiB）**。优先清理候选可回收约 **44.07 GB**；加入已被 r2 替代的旧 4B 文本导出，合计约 **52.51 GB**，届时空闲约 **278.50 GB**。仅按作者同量级负载规划，当前空间已经足以进入正式运行前准备，无须先购置 1 TB。独立编辑器可能选择不同规模的分析，所以这不是保证任意合法调用序列都能装下。
+
+当前执行配置仍保持原样且关闭；本轮不改服务器配置、不运行清理。旧 JSON 中的 400/600 GB 和 24/60 小时属于待修订的旧门槛，不能据此再宣称缺少 1 TB 或必须消耗这些 GPU 小时。
+
+## 第一批候选：44.07 GB
+
+表中 GB 均为十进制。路径共同前缀 `P=/workspace/acupuncture/external/wsp`。容量按实际分配块及硬链接计数估算；不直接把 `du` 显示值相加。执行前还需再次确认没有新任务占用。
+
+|路径|预计实际可释放|为何可列为候选|必须保留|
+|---|---:|---|---|
+|`P/forward-ckpt-cache/`|19.92 GB|4 份物化完整模型副本：空编辑基线或工程单坐标编辑；源模型和 validated snapshots 均在。两种单坐标模型已有 CPU 重建相同 SHA256 的验收|原始模型、所有 snapshots；先把各 `build.json`/哈希留在缓存之外|
+|`P/fa01-0p8b-r1/ckpt/`|3.06 GB|旧验收的基线/合成 fixture checkpoint，原始权重及两个快照完整保留|整个失败 run 的日志、receipt、fixture/empty snapshot；保留构建记录|
+|`P/fa01-0p8b-r2/ckpt/`|3.06 GB|验收重跑的可重建完整副本，与 r1 有相同的记录哈希|成功验收证据、快照及构建记录|
+|`P/fa01-4b-r1/ckpt/`|16.87 GB|两份 4B 完整副本；已有基线及 fixture snapshot|原始权重、验收数据、快照及构建记录|
+|`P/uv-cache/`|**1.17 GB**|下载/构建缓存；共有约 10.83 GB 分配块，但约 9.66 GB 与缓存外安装文件硬链接，删缓存并不能释放那部分|`.venv-wsp` 和其环境冻结记录；不改安装后的依赖|
+
+合计 **44.0745 GB**，预计空闲由 225.99 增至约 **270.06 GB**。checkpoint 的容量包含少量可复用配置文件；将几 KB 的构建记录另存后，回收量几乎不变。不能直接只删权重却留下有效 `build.json` 标记，否则旧加载器可能误判缓存已就绪；若之后授权执行，按缓存条目清除并先保留来源记录。
+
+这里没有把 `fa01-*` 整个目录列为删除对象。构建收据指向的 10 个 snapshot manifest 与其中列出的文件均存在；本轮核了来源与文件存在，未额外扫描 42 GB 权重来重新验证每个旧副本的内容。两种工程单坐标 checkpoint 的 SHA256 重建验证可见[上一轮收据](https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-process-reproduction-v1-2026-11-03/engineering-r2/receipts/checkpoint-rebuild.json)。
+
+## 第二批候选与不建议现在动的目录
+
+|对象|容量/可释放|判断|
+|---|---:|---|
+|`P/text-Qwen3.5-4B/` 旧导出|8.43 GB|候选。其 receipt 与 r2 均来自同一个 `/data/models/Qwen3.5-4B-851bf6e`，text tensors 已有 bitwise verified 收据；旧 tokenizer class 为 Qwen2Tokenizer，当前使用 Qwen3_5Tokenizer 的 `text-Qwen3.5-4B-r2`。先归档旧 config/tokenizer/export receipt，只清旧派生副本；当前 r2 和 raw 一律保留|
+|`P/vllm-cache/` + `P/flashinfer-cache/`|约 0.87 GB|可重新编译，但收益小、会增加后续冷启动；建议保留|
+|`P/rustup/tmp/`、`P/cargo-mirror/`|约 0.064 / 0.560 GB|小额可重下载候选，不值得作为主要清理对象；工具链本体保留|
+|`/workspace/miniconda/pkgs/`|约 1.74 GB；按硬链接算最多约 0.73 GB|共享包缓存，不直接整目录删除；如后续需要，只用包管理器的安全清理方式，并排除环境软链接依赖|
+|`/workspace/hf_cache/`|约 189.09 GB 分配块；删除整个树理论最多释放约 179.17 GB|共享模型/数据下载资产，**不列入第一批**。当前没有发现打开 fd/maps 引用，不代表其他项目不再需要；后台任务队列仍存在，不能擅自清除|
+|`/root/.cache/pip/` + `/root/.cache/uv/`|约 0.073 GB|位于根盘，不会增加 /workspace 的空闲空间，收益很小|
+
+`/data` 和 `/workspace` 是不同文件系统：清 `/data` 或 `/root` 不能解决 /workspace 的容量问题。不要把 `/root/.cache/pypoetry/virtualenvs` 当成可丢弃下载缓存，它实际存放运行环境。
+
+## 不清理的原始资料与运行资产
+
+- `/workspace/acupuncture/experiments/`（约 140 GiB），包括名为 `cache-*` 的机制实验目录。这里的 cache 指模型状态，不是可随手清理的软件下载缓存。
+- 其他项目的 `/workspace/cross-model-asr/`、`claude-jump/`、`jevrep/`、`deployed_regime/` 等研究目录。年份旧、体积大或名字带 archive，都不等于可以删。
+- WSP `fa01-*` 和 `engineering-r2-*` 的原始数组、回答、日志、失败、receipt、输入、快照及来源清单。
+- 原始模型、当前文本导出、practice、作者固定来源、`.venv-wsp`、CUDA 兼容层及必要编译工具。
+
+## 为什么空间要求应下调
+
+按固定作者来源 `RikiyaT/lm_understand-logs@4d09ba6d6a7e891dd8063974dfe81b3d78e3494f` 的 p50c 成功调用统计：
+
+|项目|作者日志对应负载|
+|---|---:|
+|成功调用|50 = 34 generate + 16 teacher_forced|
+|16 次 TF 返回数组 payload，按接口 dtype 复算|约 **1.001 GB**|
+|最大的单次 TF|约 **260.84 MB**|
+|首次生成的汇总激活，按 float32 复算|约 **18.48 MB**|
+|生成回答数（both 两模型均计入）|5,984|
+|生成 token 总量，以日志 mean_tokens×generations 估算|约 145.47M|
+
+这不是读取作者磁盘得出的精确占用：TF dtype 使用已核对接口约定，gen 激活按 float32 估算，`.npy` header/元数据未计；回答、token IDs、分析中间量、候选和快照也另计。即使如此，它足以否定“每个 pass 默认需要 6 GB”的规划方式。
+
+举例说明快照尺度，**仅用于 observer 预算，不给研究编辑器提示编辑方向**：若一次保留两个同尺寸 MLP 矩阵的 float32 文件，0.8B 约 29.36 MB，4B 约 188.74 MB；保留 50 份分别约 1.47 / 9.44 GB。完整推理 checkpoint 在当前实现中是可丢弃的私有派生缓存，不应再按每轮永久保留整个模型估算。
+
+更合适的暂定工作额度是 **0.8B 新增 50 GB、4B 新增 100 GB，另留共享盘 50 GB 余量**。按这个保守但非极端的工作额度，两者全部保留约需 200 GB，当前 226 GB 已覆盖；先清第一批可再增加约 44 GB 缓冲。额度用于监测/暂停，不是对任意自由搜索的完备保证，也不意味着可以删除原始证据腾位置。本轮不把这些额度写入运行配置。
+
+## 为什么仍然是小时级 GPU，但不应默认 24/60 小时
+
+50 pass 不是生成 50 个回答。作者实际有 33 次 both，加首次 original，共运行 67 个模型臂，生成了约 5,984 条长答案、1.45 亿 tokens。这解释了为什么过程复现不可能仅凭一次短验收的秒级耗时来预计。
+
+按我们已有 FA-01 的 **4,096-token 短输出吞吐**线性外推：
+
+- 0.8B：145.47M / 14,045 token/s ≈ **2.88 GPU 小时，仅解码**。
+- 4B：145.47M / 5,124 token/s ≈ **7.89 GPU 小时，仅解码**。
+
+还需加模型装载、checkpoint 构建、前缀处理、TF/激活重读和长输出降速。若按每模型臂约 80 秒冷启动做说明性估算，67 臂额外约 1.49 GPU 设备小时；实际冷启动可变，也不能将 CPU 构建和空闲卡等待混称成 GPU 计算。作为排期参考，**0.8B 约 4–8、4B 约 10–20 GPU 小时**比上一版更贴近作者同量级负载；这是有条件的粗估区间，不是长序列实测、上限承诺或本轮运行授权。
+
+当前调度器的 `gpu_seconds` 是“预留卡数 × 服务进程墙钟”，包含加载及部分 CPU 阶段，不是 GPU 利用率积分；both 的 HF 激活顺序重读阶段也仍按两张卡记账，因此还会高估真正繁忙的 GPU 时间。后续启用前应将预留设备时间与实际推理阶段分开报告，本轮不改代码。
+
+两张卡并行时，GPU 小时不等于实际等候小时：两卡各运行 1 小时合计 2 GPU 小时；但编辑器推理、CPU 分析和串行阶段又会增加日历时间。作者日志报告的成功 forward 总墙钟时间约 9.10 小时，硬件/并行方式未公开，不能直接换算成本机 GPU 小时。
+
+旧 24/60 的问题是将接近“50 轮全部最大生成”的极端包络当成默认预算，并把保守预留描述成了实际资源缺口。现在撤回这种默认解释；未来正式运行前要同步修订旧配置，按实际累计设备秒、token 数、磁盘增量报告，不能拿旧数字当成必需消耗。
+
+## 资源修订自查
+
+本轮是只读资源核算，不新增科研操作。设计卡：问题是既有复现方案的实际资源需要；增量是硬链接修正后的清理容量和作者实际负载；依据见 JSON；操作仅文件/进程元数据读取和已公开日志复算；估计对象是可回收磁盘与条件性计算时间；阴性/不确定对象保留，不通过清原始数据或减少 pass 来制造可行性；成本 0 GPU；输出清单后停止，不自动清理或搜索。
+
+C01/C02 通过：保持独立过程复现，纠正资源估算而不缩任务；C03/C04 通过：使用现有收据和作者负载，承认自由搜索/32k 吞吐未知；C05/C06/C07 不适用科研干预与路径耦合，读取对象明确且无模型改变；C08/C09/C10 通过：不作机制归因，不把目录大小当可释放空间或短吞吐当长序列实测；C11 通过：预算不足只表示暂停，不表示方法无效；C12/C13 通过：不新增 GPU，数据保留，来源与估计分开；C14 通过：新证据撤回过大的默认门槛，而非继续扩容/加预算。对应既有自查 E23/E25：不混淆计划、实测、授权，也不为穷尽合法极端情况而无限预留。
+
+最强反例：编辑器实际输出可能远大于作者日志。处理是将 50/100 GB 与 4–8/10–20 GPU 小时明确标成工作额度/粗估，保留暂停机制，不能承诺一定完成；不再把理论最大值当默认启动前提。属于同一助手自查，不是独立评审。原始实验资料不删、50-pass 不启动的用户边界继续有效。

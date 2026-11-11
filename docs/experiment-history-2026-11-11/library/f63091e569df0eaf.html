@@ -1,0 +1,103 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>缓存形成机制｜原生事实信号分析 v1：分析计划（冻结后再算）</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="v1">缓存形成机制｜原生事实信号分析 v1：分析计划（冻结后再算）</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-formation-mechanism-fact-signal-native-v1-2026-10-31/ANALYSIS_PLAN.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-mechanism-fact-signal-native-v1-2026-10-31/ANALYSIS_PLAN.zh-CN.md">固定提交原件</a>；SHA-256：<code>f63091e569df0eafc7da9d0a3d4a4be6b26b4c46c25d016ebe6e6ee578f33e8f</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="v1_1">缓存形成机制｜原生事实信号分析 v1：分析计划（冻结后再算）</h1>
+<ul>
+<li>日期：2026-10-31。零 GPU，只读 CFM-S2 formal-r01 的已有资产（84 条轨迹的 L16–18 驱动量与读出，84 份完整 Mτ）以及 S2 记录里的候选分数。</li>
+<li>授权：用户 2026-10-31"认可，写分析计划然后直接算"。所在方向是用户提出的工作假说与三点补充（见下）。</li>
+<li>本计划在计算之前提交。判读规则以提交时的文本为准，不按结果修改。</li>
+</ul>
+<h2 id="1">1. 要回答的问题</h2>
+<p>在<strong>同一运行条件</strong>下，模型对两种事实（f0 与 f1）的区别，在以下各处怎样变化：</p>
+<ol>
+<li>撤针时（τ）的全层缓存，包括 32 层的递推状态与全注意力 KV；</li>
+<li>L16–18 每一步的新 value v、旧记忆预测 m = (αS_{t−1})ᵀk̂、实际修正量 e = v − m，以及读出 o = S_tᵀq̂。</li>
+</ol>
+<p>并据此在三种情况之间作<strong>约束性</strong>判断：</p>
+<ul>
+<li>情况 I：value 里的事实区别已经变弱；</li>
+<li>情况 II：value 里还在，但在减去旧记忆预测后、实际修正中变弱，即"匹配关系"假说；</li>
+<li>情况 III：局部读出里事实区别仍在，但候选分数对事实不敏感。</li>
+</ul>
+<p>本分析是约束，不是因果证明。所有结果都是在原生轨迹上的描述，不改动任何前向计算。</p>
+<h2 id="2">2. 记号与量</h2>
+<ul>
+<li>条件 X：00（干净）、10、01、11，两个锚点 L0/C4146/−1、L12/C3621/−1。情景：VAR01、VAR02、VRD01、VRD02、VRL01、VRL02，f0 与 f1 位置对齐。</li>
+<li>事实区别：D_X(·) = 量(f0 运行) − 量(f1 运行)，同一条件、同一位置、同一层与头。</li>
+<li><strong>参照方向</strong>：干净运行的事实区别 D_C。理由：干净模型用这份区别答对了题。</li>
+<li>对任一量，把位置、头（以及适用时的矩阵元素）合并后，报告三项：</li>
+<li><strong>保留系数</strong> ρ = Σ⟨D_X, D_C⟩ / Σ‖D_C‖²，即沿干净方向保留了多少；</li>
+<li><strong>方向余弦</strong> cos = Σ⟨D_X, D_C⟩ / √(Σ‖D_X‖² · Σ‖D_C‖²)；</li>
+<li><strong>范数比</strong> r = √(Σ‖D_X‖² / Σ‖D_C‖²)。</li>
+<li>位置类：</li>
+<li>F = 第一个 f0/f1 不同 token 到 b（事实段末）；</li>
+<li>post = b+1..n−2（问句、指令、模板尾）；</li>
+<li>last = 末提示 token；</li>
+<li>cand = 候选位置。</li>
+</ul>
+<p>第一个不同 token 之前的位置，事实区别恒为 0，不计入。</p>
+<h2 id="3-m">3. 分析一：撤针时全层的事实区别（Mτ）</h2>
+<ul>
+<li>递推状态：对每个线性层 ℓ，D_X = S_ℓ(f0) − S_ℓ(f1)（32 头 × 128 × 128），在 τ 处计算 ρ、cos、r。</li>
+<li>KV：对每个全注意力层，F 位置的 K、V 与 post 位置的 K、V 分开计算 ρ、cos、r。</li>
+<li>卷积缓冲（最后 3 个 post 位置）只作报告，不入判读。</li>
+<li>产出：两锚点 × 三个带针条件 × 6 情景的"事实区别随深度"曲线。</li>
+</ul>
+<p>判读规则（事先写死）：</p>
+<ul>
+<li>对每个（锚点、条件、情景），<strong>首个弱化层</strong>定义为从 L1 起、递推状态 ρ ≤ 0.5 的第一层；若没有，记"未弱化"。</li>
+<li>KV 在 F 位置的 ρ 单独报告。KV 写入后不衰减、不擦除，所以 F 位置 KV 的 ρ 低，只能来自 F 写入时的差别，不能来自后续保留或擦除（推导档）。</li>
+</ul>
+<h2 id="4-l1618-vmeo">4. 分析二：L16–18 每一步的 v、m、e、o</h2>
+<ul>
+<li>由 S2 记录的驱动量，用 S1 的 float64 递推重建每步状态（S2 已验证：与内核暴露状态的误差 ≤ 界的 1.25%）。按源码约定：k̂、q̂ 经 l2 归一化，q 乘 d_k^{−1/2}；α = exp(g)。</li>
+<li>每步计算 v、m = (α_t S_{t−1})ᵀk̂_t、e = v − m、o = S_tᵀq̂_t（按头），对每个量求 D_X 及 ρ、cos、r。</li>
+<li>位置类分开报告 F、post、last、cand；判读用"post + last"合并（事实必须经这些位置才能到达答案）。三层分开报告，判读用三层合并。</li>
+</ul>
+<p>判读规则（事先写死；条件 X ∈ {10, 01, 11}，与 00 比较）：</p>
+<table>
+<thead>
+<tr>
+<th>情况</th>
+<th>条件</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>I value 已弱</td>
+<td>ρ_v ≤ 0.5</td>
+</tr>
+<tr>
+<td>II value 仍在，修正中变弱</td>
+<td>ρ_v &gt; 0.5，且 ρ_e ≤ 0.5 · ρ_v</td>
+</tr>
+<tr>
+<td>II′ 写入仍在，读出中变弱</td>
+<td>ρ_v &gt; 0.5、ρ_e &gt; 0.5 · ρ_v，且 ρ_o ≤ 0.5</td>
+</tr>
+<tr>
+<td>III 局部读出仍在，候选不敏感</td>
+<td>ρ_o &gt; 0.5，且候选事实敏感度比 S_fact(X)/S_fact(00) ≤ 0.5</td>
+</tr>
+<tr>
+<td>未分类</td>
+<td>其余</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>0.5 是描述性切点，所有连续值同时报告。cos 与 r 用于说明 ρ 的变化是方向偏转还是幅度缩小，不进判读。</li>
+<li>若分析一显示事实区别在 L16 之前已经弱化（首个弱化层 &lt; 16），则 L16–18 的情况 I 只读作"进入本窗口时已弱"，<strong>不</strong>判为"形成端问题"。这是用户补充第 1 点。</li>
+</ul>
+<h2 id="5">5. 与回答的联系</h2>
+<ul>
+<li>每个（锚点、条件、情景）并列给出：候选事实敏感度比 S_fact(X)/S_fact(00)（S2 记录的候选分数）、分析一的首个弱化层、分析二的 ρ_v、ρ_m、ρ_e、ρ_o。</li>
+<li>不计算相关系数，不作因果解读，只逐点并列（用户补充第 3 点）。</li>
+</ul>
+<h2 id="6">6. 不能回答的</h2>
+<ul>
+<li>任何因果结论：差异在哪里变弱，不等于那里是损失的原因。</li>
+<li>L16–18 之外各层每一步的 v、m、e：只有 Mτ 状态，没有逐步驱动量。</li>
+<li>以干净方向为参照，可能漏掉带针条件下以新方向编码、但模型仍可用的事实信息；正交残差 r 与 cos 会报告，但无法判断其是否可用。</li>
+</ul></main></html>

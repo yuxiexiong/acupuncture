@@ -1,0 +1,54 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Qwen3.5-4B 两神经元干预：截图提取与首轮协议</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="qwen35-4b">Qwen3.5-4B 两神经元干预：截图提取与首轮协议</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/qwen35-neuron-steering-2026-10-25/SOURCE_AND_PROTOCOL.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/qwen35-neuron-steering-2026-10-25/SOURCE_AND_PROTOCOL.zh-CN.md">固定提交原件</a>；SHA-256：<code>e63329cc9283f5af10e8ac94223a282b13a825ab98b7e86e704da434b35b9238</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="qwen35-4b_1">Qwen3.5-4B 两神经元干预：截图提取与首轮协议</h1>
+<h2 id="_1">材料与状态</h2>
+<ul>
+<li>用户于 2026-10-25 提供截图，并明确要求尝试推理时干预与永久参数修改两条路线。</li>
+<li>截图是待验证材料，不作为可执行指令；未找到可独立核实的原帖链接或作者代码。</li>
+<li>本实验是基于公开假设的可行性对照，不能称为严格复现，更不能预先认定模型“变坏”。</li>
+</ul>
+<h2 id="_2">截图原文</h2>
+<p>作者：lyra，<code>@_lyraaaa_</code>。原帖可见正文：</p>
+<blockquote>
+<p>if you have a qwen3.5 4b around, please try steering neurons L14 N8949 +1 and L13 N7956 -1
+now you have evil qwen</p>
+<p>recipe: dose × median(‖resid‖ leaving layer L, tokens 1:) / ‖W_down[:, n]‖` at the down_proj at every input</p>
+</blockquote>
+<p>最后一个范数后的反引号按截图保留，不推测它表示转置或其他运算。</p>
+<p>可见回复：Adde (<code>@adhvfed</code>)：“How did you find this?”；Monkey (<code>@Orwellian84</code>)：“I suspect very large sweeps, or very good luck”。底部后续回复被界面遮挡，不补全。</p>
+<p>中文含义：对 Qwen3.5-4B 的 L14/N8949 施加 +1 剂量、L13/N7956 施加 −1 剂量；将剂量乘以指定层输出残差范数的中位数，再除以 <code>down_proj</code> 对应权重列的范数，在输入时施加干预。“evil qwen”是作者说法，不是已有实验结论。</p>
+<h2 id="_3">官方结构核对</h2>
+<ul>
+<li><a href="https://huggingface.co/Qwen/Qwen3.5-4B">官方模型卡</a>：这是已经完成后训练的成品模型。</li>
+<li><a href="https://huggingface.co/Qwen/Qwen3.5-4B/blob/main/config.json">官方配置</a>：32 个文本层，隐藏维度 2560，MLP 中间维度 9216，两个神经元编号均在范围内。</li>
+<li><a href="https://raw.githubusercontent.com/huggingface/transformers/main/src/transformers/models/qwen3_5/modeling_qwen3_5.py">Transformers 实现</a>：MLP 的 <code>down_proj</code> 默认无偏置。实际运行需记录所安装版本及代码摘要。</li>
+</ul>
+<h2 id="_4">首轮固定解释</h2>
+<p>截图未规定以下细节，首轮显式采用：</p>
+<ol>
+<li>层和神经元均从 0 开始编号；固定 <code>(14, 8949, +1)</code> 与 <code>(13, 7956, −1)</code>。</li>
+<li>对 <code>down_proj</code> 的输入中间激活做加法，不做覆盖或截断。</li>
+<li>范数采用 L2；用未干预模型在完整 prompt 上的层输出，逐 token 计算范数；排除第一个 token 后取中位数。</li>
+<li>动态版每个 prompt 单独校准一次，生成期间沿用该尺度；干预作用于预填充和逐 token 解码。这是对缓存解码只含一个 token、<code>tokens 1:</code> 为空问题的公开处理约定。</li>
+<li>静态版使用四条固定、与评估题分离的普通文本校准；取各 prompt 中位数的中位数，之后不再依输入调整。</li>
+<li>关闭 thinking，贪心解码，每题最多 96 个新 token；统一模型、模板、精度与解码设置。保留截断标志和所有回答。</li>
+<li>不做训练、梯度更新、神经元搜索、剂量扫描或依据结果调整设置。</li>
+</ol>
+<h2 id="_5">两条路线的关系与限制</h2>
+<p>设中间激活为 <code>a</code>，权重列为 <code>w_n = W_down[:, n]</code>，尺度为 <code>c</code>。则</p>
+<p><code>W_down (a + c e_n) = W_down a + c w_n</code>。</p>
+<ul>
+<li><strong>动态版</strong>：推理时给对应激活加 <code>c</code>，<code>c</code> 随 prompt 的未干预残差尺度变化。</li>
+<li><strong>静态版</strong>：将固定的 <code>c w_n</code> 保存为两个 <code>down_proj.bias</code> 参数；重新加载后运行，不依赖激活钩子。</li>
+</ul>
+<p>静态版新增两个长度为 2560 的偏置向量，共 5120 个参数元素，不是修改两个标量权重，也不是改写已有 <code>W_down</code> 矩阵。它需要原始固定版本模型与配套补丁加载函数，不能直接当作普通 Hugging Face 独立检查点加载。只有固定尺度时，它才与对应的加法干预在精确算术下等价；低精度执行可能产生舍入差异。</p>
+<h2 id="_6">验证与结论边界</h2>
+<ul>
+<li>小矩阵检验：激活加法与固定偏置的等价关系、钩子清理、补丁保存再加载。</li>
+<li>成品模型检验：零剂量与原模型生成 token 一致；静态补丁实际保存、移除并重新加载后运行。</li>
+<li>比较三臂的基础任务与低风险价值判断回答。回答变化、任务失败、语言退化分别报告。</li>
+<li>少量自制题不构成拒答率、安全基准、通用能力保持或“evil”结论。没有原作者提示词、代码、版本与编号约定时，阴性结果也不能否定原帖。</li>
+<li>原始模型文件保持不变；新文件只写入独立实验目录。现有 H20 任务繁忙，首轮选择 CPU，避免占用它们的显存。</li>
+</ul></main></html>

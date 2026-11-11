@@ -1,0 +1,692 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>094．QSR：旧状态读出的S、q和α分解</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="094qsrsq">094．QSR：旧状态读出的S、q和α分解</h1>
+<p><a href="../README.zh-CN.html">返回总时间线</a></p>
+<p><strong>时间定位</strong>：已提取运行收据的最早时间锚点（可含预检） 2026-11-03T02:12:47.985640+08:00；不能当作全部子运行起止。</p>
+<p><strong>当时的目的与设计</strong></p>
+<p>把旧状态读出差拆成状态、查询和衰减因素，记录全部组合和场景。</p>
+<p><strong>实际过程、结果与后来更正</strong></p>
+<p>冻结结局为mixed，没有生成单一计算候选。完整分解表保留，不能写为已完成行为归因。</p>
+<p><strong>来源身份</strong>：<code>cache-state-readout-decomposition-v1-2026-11-03</code>；本章主体来源提交 <code>7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8</code>。下方原文中的状态是各文件写作时的状态，不能把早期“尚未运行”覆盖后期正式收据，也不能将后期结果倒填进早期设计。</p>
+<h2 id="_1">原设计、执行过程、结果与更正全文</h2>
+<p>以下按“设计与题目 → 工程/执行记录 → 结果/更正 → 其他历史说明”组织；同类内没有可靠时间时保留路径顺序，不冒充严格先后。正文未删段；仅为本章节重排标题层级、把相对链接指向固定提交。原始字节另外完整保存。</p>
+<h3 id="1qsr-01-sq">原件 1：QSR-01：旧状态读出差异的 S／q／α 分解</h3>
+<p>原路径：<code>docs/cache-state-readout-decomposition-plan-v1-2026-11-03.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-state-readout-decomposition-plan-v1-2026-11-03.zh-CN.md">固定提交原文</a> · <a href="../library/8cc0157550db26cd.html">单独阅读副本</a>；SHA-256：<code>8cc0157550db26cd46d15a83fe75efc6f3c419b7e0774f1f4a34df730bc3e039</code>。</p>
+<hr />
+<h4 id="qsr-01-sq">QSR-01：旧状态读出差异的 S／q／α 分解</h4>
+<h5 id="material-passport">Material Passport</h5>
+<p>2026-11-03；v1；academic-research-suite / experiment-agent / plan。依据提交 <code>ab265fd1</code>；状态：<strong>逻辑设计通过作者自查，工程待验收、未运行、无新增模型/GPU授权</strong>。本次只交付计划和<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-qsr-self-check-v1-2026-11-03.zh-CN.md">自查</a>。同一作者自查，不是独立评审。截图中的“上卡跑”不作为本轮授权。</p>
+<h5 id="1">1. 设计卡：目的、增量与边界</h5>
+<ol>
+<li><strong>主线</strong>：解释少数通道干预怎样改变写入、旧状态处理与后续读取，最终造成显著回答变化。本轮问题：已验证有行为作用的共同 k 偏移，其后续旧状态读出差异主要由 S、q、α 哪个分量或组合承担？</li>
+<li><strong>增量</strong>：QKD 已测得实际差异集中在 D=αSᵀq，但没有区分 S 与读取条件。新增跨臂 Sᵀq 收缩量，区分这些来源，为后续因果检验选对象；不是重新发现乘法公式，也不承诺本轮证明致错机制。</li>
+<li><strong>依据与反例</strong>：QCO/QKF 的共同偏移与 k 去除可修复；QKD 的 H 主导预测失败；C1343 相似几何与局部模式却多数臂正确；随机扰动也致错。最新 CPU 结果只支持 F 参照余量的事后区分能力，不支持“均匀削弱”。</li>
+<li><strong>操作</strong>：复用 QKD 六臂和原形成条件，只读捕获 t1、强制共同前缀 t2 的真实递推输入，离线进行两端对称分解；没有向模型注入分解项。</li>
+<li><strong>估计对象</strong>：两条已存在运行间 ΔD 的精确代数分账及其与行为差异的描述性对应；不是最终 logit 的精确归因、自然中介效应或状态写入原因。</li>
+<li><strong>判读</strong>：预先固定单分量候选准入、混合/抵消、跨方向不一致和不可解析出口，见§5；没有候选同样是有效结果。</li>
+<li><strong>范围/成本</strong>：48条已见输入、6场景、4方向、6臂、固定14层；旧完整答案全部复用。缺的是跨臂状态收缩，旧 D/q/α 不能唯一反推出；预算含重建与预检，见§7。</li>
+<li><strong>退出</strong>：只交付分账、候选预测卡或停止理由。因果替换单独设计和授权；不自动扫层、头、槽、剂量、模型，不重开45头。</li>
+</ol>
+<h5 id="2">2. 来源与纠正</h5>
+<p>固定依据为 <code>ab265fd1</code> 中的下列文件；将来运行需冻结其实际文件哈希，不随 main 静默更换：</p>
+<ul>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-k-computation-diagnostic-v1-2026-11-03/CONTRACT.zh-CN.md">QKD 合同</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-k-computation-diagnostic-v1-2026-11-03/REPORT.zh-CN.md">报告</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-k-computation-diagnostic-v1-2026-11-03/qkd_run.py">执行代码</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-k-computation-diagnostic-v1-2026-11-03/runs/formal-r02/worker-0/receipt.json">正式回执0</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-k-computation-diagnostic-v1-2026-11-03/runs/formal-r02/worker-1/receipt.json">回执1</a>。freeze-r02 为 <code>d634dd865beb0d4d6b4fbface22c2c27dd3886f237e76431e89e09ef335c1a13</code>。</li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-k-computation-diagnostic-v1-2026-11-03/ANALYSIS-target-vs-first.zh-CN.md">最新 CPU 分析及更正</a>：目标不在首列时，N1210/R0 的 F 余量 AUROC 为0.91/0.85，降幅按“错误更大”评分为0.29/0.39。它们是已见数据上的描述，不能包装为独立预测验证。</li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-qk-component-factor-v1-2026-11-02/REPORT.zh-CN.md">QKF报告</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-common-offset-v1-2026-11-02/REPORT.zh-CN.md">QCO报告</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-mechanism-known-basics-audit-2026-10-31.zh-CN.md">知识审计</a>。沿用现有公式，不作方法首创主张。</li>
+</ul>
+<p>本计划不继承 QKD 报告中的过强表述：残差范数比0.91–0.98不是“只有2%–9%因果解释量”；D 的变化不自动等于此前写入变化。C1343 的 Ark 为47/48，不能把所有臂都称无损伤。随机去除的 J 主导不推广到随机加入。原始 logit 变化与居中变化并列，主要行为量用固定候选分差，不据此断言首列从未被加强。</p>
+<h5 id="3">3. 冻结范围、六臂与时间</h5>
+<p>模型 Qwen3.5-4B revision <code>851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a</code>；继承 torch2.6.0+cu124、transformers5.20.2、BF16/eager/batch1、原 NA 布局、B1窗口、−1形成强度与校准。输入/token/排除项完全继承 QKD 48条，方向 N4146/N1210/R0/C1343。</p>
+<p>G=<code>[13,14,16,17,18,20,21,22,24,25,26,28,29,30]</code>。每输入一次共享预填，形成同输入 C 与四个 T；每臂深拷贝同接收者。G卷积 V 四槽取 C，递推 S、注意力 KV、其余状态取对应 T。F 仍是混合参照，不是全干净模型。</p>
+<table>
+<thead>
+<tr>
+<th>臂</th>
+<th>G q/k缓冲来源及编辑</th>
+<th>本轮作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>V</td>
+<td>T，不编辑</td>
+<td>损伤参照</td>
+</tr>
+<tr>
+<td>F</td>
+<td>C，不编辑</td>
+<td>q/k也恢复的混合参照</td>
+</tr>
+<tr>
+<td>Rk</td>
+<td>T的k减共同偏移μ_k</td>
+<td>去除修复</td>
+</tr>
+<tr>
+<td>Ak</td>
+<td>C的k加μ_k</td>
+<td>加入反向作用</td>
+</tr>
+<tr>
+<td>Rrk</td>
+<td>T的k减冻结r_post,k</td>
+<td>随机去除</td>
+</tr>
+<tr>
+<td>Ark</td>
+<td>C的k加冻结r_post,k</td>
+<td>随机加入</td>
+</tr>
+</tbody>
+</table>
+<p>缓冲 <code>[1,8192,4]</code>，q=<code>[0,2048)</code>，k=<code>[2048,4096)</code>；k编辑槽<code>[1,4)</code>，其余槽不变。μ、r_post、C1343配平张量复用QKD/QKF/QCO已有哈希，不重估、不重抽。6%是继承的旧槽贡献工程配平容差，不代表下游强度相等。</p>
+<p>只观测两步：t1输入末提示token；t2所有臂输入该输入旧F答案的首token，与QKD共同前缀路线一致。t2即主竞争诊断步；t1是时间参照。即使某臂自然首步会停止，t2也只是强制前缀诊断。无自然新生成、无t3、无前缀搜索。旧F首token缺失或不符既有记录，按来源失败处理，不临时换字母。</p>
+<p>捕获固定G的所有32个值头，不按结果选层/头。q/k按原核从16头广播、L2归一化，q再除√128；α=exp(g)。S必须是核入口、衰减和原地更新之前的副本。捕获q、α、S、D及实际o和全词表logits；保留k/v/β以重建原D/E/W。hook在gated RMSNorm/z/out_proj之前。所有下游正常响应，未显式编辑不等于q、α或其他状态固定。</p>
+<h5 id="4">4. 两端对称分解与读数</h5>
+<p>配对按“后者为0、前者为1”：V−F、Rk−V、Ak−F、Rrk−V、Ark−F。同输入、同方向、同层/头、同t；不跨自然分叉轨迹拼变量。</p>
+<p>设横杠为端点均值，δ为1−0，D_j=α_j S_jᵀq_j。精确中点展开为：</p>
+<ul>
+<li>X_S = ᾱ δSᵀ q̄；</li>
+<li>X_q = ᾱ S̄ᵀ δq；</li>
+<li>X_α = δα S̄ᵀ q̄；</li>
+<li>X_I = (δα δSᵀ δq)/4；</li>
+<li>ΔD = X_S + X_q + X_α + X_I。</li>
+</ul>
+<p>本三线性中点差展开的二阶项抵消；剩余三阶交互单列、不分摊。不能把X_I小写成“所有生物/网络交互小”，也不能把X_S叫“纯写入损伤”。它只表明当时S的数值差承担了多少D差异。两端互换时各项反号，是同一分账的对称性，不算额外证据。</p>
+<p>实现只需各配对的四种S_aᵀq_b（a,b∈{0,1}），再计算四项。S可在单输入内暂存CPU、收缩后释放；正式持久化收缩量、q/α、四项、D/E/W/o、误差和来源哈希。两预检输入保留S夹具供重建；不把全量S塞入Git。</p>
+<p>逐头主读数：s_j=〈X_j,ΔD〉/‖ΔD‖²（j=S/q/α/I），同时报范数、夹角和重建残差。份额允许负数或超过1，不裁剪。逐例先取可解析层-头的中位数，再场景内均值，最后六场景等权；各项中位数不必相加为1，精确求和只在同一头上检查。全层头表保留；不跨层直接加原始向量。</p>
+<p><strong>与截图建议的明确差别</strong>：本轮投影轴是实测局部ΔD，不是未经定义的“最终目标减首列方向”。从每层o到最终logits存在非线性；不新增反传、logit lens或多次输出替换来假装精确投影。真实目标分差M与局部分账并列作描述，因果连接留给下一轮。这样保留“分清状态内容与读取条件”的增量，而不提前声称哪项已经压低了最终目标分数。</p>
+<p>行为参照沿用QKD/QKF逐输入完整答案Y_full与原错误身份，不重新分类、不删除复述/前缀/截断后才评估。t2的M沿用目标编号分支token减首列，目标首列时减第二列；旧、新M需重放一致。主要行为关联单列目标非首列32条；全48及首列子集另报。按场景、方向列每例的ΔM、Y转移和分账，不用派生48条当独立样本算显著性。F余量只称F参照量；本轮不重新优化错误预测器。</p>
+<h5 id="5">5. 冻结判读与候选准入</h5>
+<p>这些阈值是事前的<strong>筛选规则</strong>，不是显著性检验、效应份额的因果解释或GPU授权。主判断只用t2；t1完整报告但不能在t2失败后替代主步救结果。</p>
+<ol>
+<li>可解析覆盖：每例至少90%的14×32层-头可解析才进入份额汇总；每场景至少80%的输入有效，且六场景都有合格均值。任一配对/方向不满足则该比较不可判，列出全部缺失，不按完整案例冒充全体。</li>
+<li>单分量标签：j∈{S,q,α}的场景等权份额≥0.60、比另两个各高≥0.15，且至少4/6场景中j最高并为正；同时交互的逐例绝对份额中位数再场景等权≤0.25，才标“局部j候选”。否则标混合/抵消/无单项，不强制选最大项。</li>
+<li>三个有恢复缺口方向中，同一个j须在Rk−V与Ak−F两侧均取得上述标签；相应目标非首列子集ΔM分别在至少4/6场景为正、为负，才可出一张跨这三个方向的候选卡。V−F只作基底解释，不能替代双侧条件。只有部分方向一致则报告范围差异，本轮不自动追加一个缩水因果实验。</li>
+<li>C1343和两随机配对用同样分解/标签完整报告，不要求它们阴性。C1343同模式且答案正确，只支持“同变化未必跨界”；不同模式则保留不同背景路径。随机同模式时不能声称共同偏移具有独占计算机制。对照是否解释得通必须进入卡片，不按不利结果删掉。</li>
+<li>卡片必须说明局部分量与ΔM尚未因果连接，并给出可失败的双向预测、C1343预测和随机对照预期；不能只有“j最大所以j致错”。若无法从结果提出这种预测，记录“有局部分账，无可准入因果候选”，本轮结束。</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>结果</th>
+<th>本轮认识与出口</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S取得双侧一致候选</td>
+<td>D差更多由当步状态差承担；后续才考虑其形成/更新的因果检验，不宣称写坏已证实</td>
+</tr>
+<tr>
+<td>q或α取得候选</td>
+<td>读取条件是更明确的下一对象；撤回预设S主导</td>
+</tr>
+<tr>
+<td>交互/抵消大、两侧或方向不一致</td>
+<td>简单单项解释不足；交付差异表并停，不扫层救解释</td>
+</tr>
+<tr>
+<td>局部候选稳定但行为/对照不支持可失败预测</td>
+<td>只完成计算分账，不进入因果替换</td>
+</tr>
+<tr>
+<td>误差/覆盖不合格</td>
+<td>工程失败或不可解析，不能当科学阴性</td>
+</tr>
+</tbody>
+</table>
+<p>后续因果准入卡仅写：对象、t1或t2、固定G全组、操作前后计算节点、接收者背景、修复与反向预测、C1343/随机预测、失败时撤回什么。<strong>不在本轮替换S/q/α，不把已有卡片当完整因果实验计划。</strong> 通过后仍需下一份具体设计及其自查与适用授权。</p>
+<h5 id="6">6. 工程验收和证据保存</h5>
+<p>CPU先核对输入、token、环境、μ/r、旧答案和回执哈希。QKD的S只瞬时使用，既有收缩不提供本轮全部交叉项；若服务器有未入库完整S且可核验，则同定义离线复用，省下对应重建并记录，不能静默混用来源。</p>
+<p>合成FP64矩阵验上述恒等式、端点反转、单变量相同、零门/零差及抵消：相对L2误差≤1e−10，零差用绝对1e−12。预算与矩阵计数由独立的算术表达式核对，不照抄上一轮启动器验收字段。</p>
+<p>拟预检固定<code>NA-NQ01-ABC-A</code>、<code>NA-NQ02-ABC-B</code>；两输入全六臂四方向跑两步，另从同缓存关闭观察器重放两步。要求token预测、logits、缓存哈希逐位相同；C/T和所有可得QKD t1/t2锚点逐位相同。观察器不写缓存，供体哈希前后不变。原核接线重放同顺序逐位一致；FP64展开不要求与BF16逐位。</p>
+<p>继承QKD-r02实际冻结分账阈值：从其verification/freeze读取精确值（约0.0071），不重新用新数据放宽；D+E+W重建误差按原定义验收。新增四项之和对FP64 D1−D0须满足合成检验容差。ΔD范数≤两端原核重建绝对误差之和的5倍时，份额标不可解析；这只是保守数值尺度，不说误差都来自D。所有失败格留存。</p>
+<p>本轮无自动重试；预检失败保存并停止，修复需另记版本及适用授权。正式失败不得加时、改阈值或删格继续宣布成功。实现验收须核实当前原核、q缩放、S入口与32头映射；本次计划的CPU检查不能替代模型预检。</p>
+<h5 id="7">7. 完整拟预算与执行边界</h5>
+<p>不假设缓存仍可复用；全部按重建计。每输入C+四T共5形成；六臂四方向共24条件，每条件只做t1/t2两次模型前向。没有完整新生成、没有自然分支重复前向、没有梯度反传。局部原核重算与FP64收缩另计耗时，不伪装成零成本。</p>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th style="text-align: right;">正式</th>
+<th style="text-align: right;">预检（含观察器关闭重放）</th>
+<th style="text-align: right;">全轮上限</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>输入/共享预填次数</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">50</td>
+</tr>
+<tr>
+<td>C+四T形成次数</td>
+<td style="text-align: right;">240</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">250</td>
+</tr>
+<tr>
+<td>形成token前向</td>
+<td style="text-align: right;">6375</td>
+<td style="text-align: right;">265</td>
+<td style="text-align: right;">6640</td>
+</tr>
+<tr>
+<td>预填token量</td>
+<td style="text-align: right;">1452</td>
+<td style="text-align: right;">61</td>
+<td style="text-align: right;">1513</td>
+</tr>
+<tr>
+<td>六臂四方向条件</td>
+<td style="text-align: right;">1152</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">1200</td>
+</tr>
+<tr>
+<td>模型解码/条件前向</td>
+<td style="text-align: right;">2304</td>
+<td style="text-align: right;">192（96捕获+96关闭）</td>
+<td style="text-align: right;">2496</td>
+</tr>
+<tr>
+<td>配对×时间账本</td>
+<td style="text-align: right;">1920</td>
+<td style="text-align: right;">80</td>
+<td style="text-align: right;">2000</td>
+</tr>
+<tr>
+<td>捕获原核接线重算（14层每步）</td>
+<td style="text-align: right;">32256</td>
+<td style="text-align: right;">1344</td>
+<td style="text-align: right;">33600</td>
+</tr>
+<tr>
+<td>新完整生成轨迹</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>GPU设备小时硬上限</td>
+<td style="text-align: right;">0.70</td>
+<td style="text-align: right;">0.10</td>
+<td style="text-align: right;">0.80</td>
+</tr>
+</tbody>
+</table>
+<p>形成/预填token数继承旧清单，运行前必须从冻结token重新求和；不符先更正预算再冻结，不在完成后补账。预计0.3–0.5设备小时只是参照QKD的估计，不承诺；收缩、S临存、拷贝、重算、模型加载及落盘都计入设备占用时间。最多2worker，设备秒求和；CPU归档时间另报。预检实测速率若外推超过0.80小时或20GiB产物上限，停在预检报告，不能自行缩样本或增限。达到上限停止调度并保存记录；进程/计数/设备秒/字节至少每60秒更新。</p>
+<p>正式产物拟目录<code>experiments/cache-state-readout-decomposition-v1-2026-11-03/</code>：合同/freeze、来源哈希、CPU检查、预检/正式回执、逐例逐头分账、不可解析清单、行为关联表、结果及偏差、候选卡或停止理由。原始小文本入Git，大张量服务器路径+哈希+字节数。<strong>本次不生成运行器、authorization或实验结果，不连接服务器、不运行模型。</strong></p>
+<hr />
+<h3 id="2qsr-01-r01-sq">原件 2：QSR-01 合同 r01：旧状态读出差异的 S／q／α 分解</h3>
+<p>原路径：<code>experiments/cache-state-readout-decomposition-v1-2026-11-03/CONTRACT.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-state-readout-decomposition-v1-2026-11-03/CONTRACT.zh-CN.md">固定提交原文</a> · <a href="../library/7464ef4ab172871a.html">单独阅读副本</a>；SHA-256：<code>7464ef4ab172871a34d99356ee9cc2291eb0eab7035821d96bdc23e8f09748a8</code>。</p>
+<hr />
+<h4 id="qsr-01-r01-sq">QSR-01 合同 r01：旧状态读出差异的 S／q／α 分解</h4>
+<p>依据计划 <code>docs/cache-state-readout-decomposition-plan-v1-2026-11-03.zh-CN.md</code> 与自查 <code>docs/cache-qsr-self-check-v1-2026-11-03.zh-CN.md</code>（db43dd84）。授权：2026-11-03 用户“开始”（此前对同一计划说过“同意，直接写合同代码，测试后上卡跑”的工作流）。本合同冻结后记录 freeze 哈希；冻结后任何偏离记入 <code>DEVIATIONS.zh-CN.md</code>，不改本文件。</p>
+<h5 id="1_1">1. 问题与估计对象</h5>
+<p>QKD-01 测得：t2 竞争步上两臂实际输出差主要落在旧状态读出项 D=αSᵀq。本轮把每个配对的 ΔD <strong>精确</strong>分成 S、q、α 三个单项与一个三阶交互项，判断哪一项承担 ΔD。估计对象是两条已存在运行之间 ΔD 的代数分账，<strong>不是</strong>最终 logit 的归因、自然中介效应或“写坏”的因果证明。</p>
+<h5 id="2-qkd-01-r02">2. 固定条件（全部继承 QKD-01 r02）</h5>
+<p>模型 Qwen3.5-4B revision 851bf6e8…，BF16/eager/batch 1，torch 递推原核（无 fla/kernels/causal_conv1d）。48 条 NA 输入、6 场景、方向 N4146/N1210/R0/C1343；G=[13,14,16,17,18,20,21,22,24,25,26,28,29,30]。六臂 V/F/Rk/Ak/Rrk/Ark 与 QKD 完全相同（μ_k 取 QCO 留一场景估计，r_post,k 取 QKF rpost 与 QKD rpost-r02；k 编辑槽 [1,4)）。不重估、不重抽任何向量。</p>
+<h5 id="3_1">3. 观测</h5>
+<p>每臂每方向两步：t1＝提示末 token；t2＝强制输入该输入旧 F 答案首 token（QKD C 路线）。在每个 G 层核入口只读捕获 q、k、v、g、β、S（衰减与更新<strong>之前</strong>的副本）、o；FP64 重建 qn=l2norm(q)/√128、α=exp(g)、D/E/W。</p>
+<p><strong>结构性零（合同新增）</strong>：所有臂共享接收者 T 的递推状态，因此 t1 时各臂进入每个 G 层核的 S <strong>逐位相同</strong>，ΔS≡0，X_S=X_I=0；t1 只作参照，不产生 S 份额。t2 时 ΔS 等于 t1 写入差（经衰减），故 t2 的 S 份额含义是“t1 写入不同”，q/α 份额含义是“t2 读取条件不同”。工程闸门：t1 时每层 S 跨六臂 <code>torch.equal</code>；t1 的 X_S、X_I 在 FP64 下恰为 0。</p>
+<h5 id="4_1">4. 分解与读数</h5>
+<p>配对（前者为 1、后者为 0）：V−F、Rk−V、Ak−F、Rrk−V、Ark−F；同输入/方向/层/头/步。
+X_S=ᾱ δSᵀq̄；X_q=ᾱ S̄ᵀδq；X_α=δα S̄ᵀq̄；X_I=δα δSᵀδq/4；ΔD=ΣX（由四个交叉收缩 S_aᵀq_b 计算）。</p>
+<ul>
+<li>逐头份额 s_j=⟨X_j,ΔD⟩/‖ΔD‖²，不裁剪；同时存各项范数。</li>
+<li>可解析：‖ΔD‖ &gt; 5×(两端原核 D+E+W 重建绝对误差之和)。</li>
+<li>逐例：可解析层-头上 s_j 的中位数；|s_I| 的中位数单列。</li>
+<li>覆盖：逐例可解析比例 ≥0.90 才有效；每场景有效 ≥80% 且六场景齐全，比较才可判；否则该比较“不可判”，列缺失。</li>
+<li>汇总：场景内均值 → 六场景等权。</li>
+</ul>
+<h5 id="5-t2">5. 冻结判读（筛选规则，非显著性；主判断只用 t2）</h5>
+<ol>
+<li><strong>单分量标签</strong> j∈{S,q,α}：等权份额 ≥0.60；比 {S,q,α} 中另两项各高 ≥0.15；≥4/6 场景中 j 的场景均值在 {S,q,α} 中最高且 &gt;0；|s_I| 等权中位数 ≤0.25。否则标“mixed”。</li>
+<li><strong>候选卡</strong>：三个缺口方向（N4146、N1210、R0）上，Rk−V 与 Ak−F 都取得<strong>同一个</strong> j 标签；且在目标非首列子集上，ΔM=M(Rk)−M(V) 的场景均值 &gt;0 的场景 ≥4/6，ΔM=M(Ak)−M(F) 的场景均值 &lt;0 的场景 ≥4/6。全部满足才出卡；部分方向一致只报告范围差异，不追加实验。</li>
+<li>V−F 只作基底解释；C1343 与两随机配对同法完整报告，不要求阴性，进入卡片的解释。</li>
+<li>卡片须写出可失败的双向预测、C1343 预测与随机对照预期；写不出则记“有局部分账，无可准入因果候选”，本轮结束。不在本轮替换 S/q/α。</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>结果</th>
+<th>出口</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S 双侧一致候选</td>
+<td>ΔD 更多由当步状态差（t1 写入差）承担；下一步才考虑其形成的因果检验</td>
+</tr>
+<tr>
+<td>q 或 α 候选</td>
+<td>读取条件是下一对象；撤回预设 S 主导</td>
+</tr>
+<tr>
+<td>mixed / 方向不一致</td>
+<td>简单单项解释不足；交付差异表并停</td>
+</tr>
+<tr>
+<td>局部候选稳定但行为/对照不支持预测</td>
+<td>只完成计算分账</td>
+</tr>
+<tr>
+<td>误差/覆盖不合格</td>
+<td>工程失败或不可解析，不当科学阴性</td>
+</tr>
+</tbody>
+</table>
+<h5 id="6_1">6. 预注册预测（推测档，看数据前写定）</h5>
+<ul>
+<li>P1：Rk−V 与 Ak−F 在 t2 标签为 S（两臂只差 k；k 只经 t1 写入影响 t2 的 S，t2 的 q 仅经下游残差间接变化）。</li>
+<li>P2：V−F 在 t2 不是 S 单项（V/F 的卷积 q 旧槽直接不同），预测 q 或 mixed。</li>
+<li>P3：随机配对 Rrk−V/Ark−F 与对应 μ 配对标签相同（若同，则不能称共同偏移有独占计算机制）。</li>
+<li>P4：C1343 与缺口方向标签相同（同变化未必跨界）。
+P1 失败即撤回“k 经写入起作用”的读法。</li>
+</ul>
+<h5 id="7_1">7. 工程闸门（全部在运行中断言，任一失败即停）</h5>
+<ul>
+<li>重放：t1 logits/缓存哈希 == QKF（旧方向）/ QKD C1343 生成首步；t2 固定竞争分差 M 与 QKD 记录<strong>浮点逐位相等</strong>，t2 全词表 bf16 logits 与 QKD 存档逐位相等。</li>
+<li>供体：C/T 哈希前后不变；编辑块检查同 QKD。</li>
+<li>捕获：14 层齐；退出后无 hook、原核恢复；原核接线重放逐位一致。</li>
+<li>误差：D+E+W 重建相对误差 ≤ 继承 QKD-r02 正式阈值 0.0070732（=min(0.02,max(1e-5,2×0.0035366))，从 QKD 预检记录重算，不重定）。</li>
+<li>恒等式：FP64 四项之和与 ΔD 相对差 ≤1e−10，或 ΔD=0 时绝对 ≤1e−12。</li>
+<li>t1 结构零（§3）。</li>
+<li>预检另做观察器关闭重放：t1/t2 argmax、t2 全 logits、缓存哈希逐位相同；两预检输入保存 S 夹具。</li>
+</ul>
+<h5 id="8">8. 预算与停止</h5>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th style="text-align: right;">正式</th>
+<th style="text-align: right;">预检</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>形成（C+4T）</td>
+<td style="text-align: right;">240</td>
+<td style="text-align: right;">10</td>
+</tr>
+<tr>
+<td>形成 token 前向</td>
+<td style="text-align: right;">6375</td>
+<td style="text-align: right;">265（由 QKD 记录逐条求和核对）</td>
+</tr>
+<tr>
+<td>解码前向</td>
+<td style="text-align: right;">2304</td>
+<td style="text-align: right;">192（96 捕获+96 关闭）</td>
+</tr>
+<tr>
+<td>配对×步×方向账本</td>
+<td style="text-align: right;">1920</td>
+<td style="text-align: right;">80</td>
+</tr>
+<tr>
+<td>设备小时上限</td>
+<td style="text-align: right;">0.70</td>
+<td style="text-align: right;">0.10</td>
+</tr>
+</tbody>
+</table>
+<p>最多 2 worker；每 worker 设备秒上限＝阶段上限/worker 数（比求和更严），超限停止调度。存储 ≤20 GiB。心跳每 60 秒写 heartbeat.json。正式授权前从预检外推：每文本秒数均值×48＋2×模型加载，体积＝(预检字节−夹具字节)/2×48；超过 0.70 h 或 20 GiB 即停在预检报告。预检失败保存并停止，<strong>无自动重试</strong>；修复需新版本与授权。正式失败不加时、不改阈值、不删格。</p>
+<h5 id="9">9. 产物</h5>
+<p><code>runs/preflight-r01/</code>、<code>runs/formal-r01/</code>（大张量留服务器，记哈希与字节），<code>analysis/qsr-readouts-r01.json</code>，<code>REPORT.zh-CN.md</code>。</p>
+<hr />
+<h3 id="3qsr-01-r01-sq">原件 3：QSR-01 报告 r01：旧状态读出差异的 S／q／α 分解</h3>
+<p>原路径：<code>experiments/cache-state-readout-decomposition-v1-2026-11-03/REPORT.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-state-readout-decomposition-v1-2026-11-03/REPORT.zh-CN.md">固定提交原文</a> · <a href="../library/3bb858dcfb4f41f2.html">单独阅读副本</a>；SHA-256：<code>3bb858dcfb4f41f2b45ed5c4478b6e8e9bd59c520fb981e9d0c914c7ef4c8f5a</code>。</p>
+<hr />
+<h4 id="qsr-01-r01-sq_1">QSR-01 报告 r01：旧状态读出差异的 S／q／α 分解</h4>
+<p>合同 <code>CONTRACT.zh-CN.md</code>（freeze-r01 <code>03ec3427…</code>，代码 f1fabf1/274d390）。预检 <code>runs/preflight-r01</code>、正式 <code>runs/formal-r01</code> 均 verification passed。判读 <code>analysis/qsr-readouts-r01.json</code>。大张量（6.8 GB，逐臂 q/α/D/E/W/o、逐配对四收缩与四项）与两预检输入的 S 夹具留服务器 <code>/workspace/acupuncture/experiments/cache-state-readout-decomposition-v1-2026-11-03/runs/*/worker-*/{tensors,fixtures}</code>，哈希在回执里。</p>
+<h5 id="0">0. 坏消息先说</h5>
+<ol>
+<li><strong>没有候选卡；预注册 P1 未通过。</strong> Rk−V 在三个缺口方向全部是 mixed（S 份额 0.376/0.572/0.573，未到 0.60）；Ak−F 只有 2/3 方向取得 S 标签（N4146 为 0.433）。按合同 §5 出口：“简单单项解释不足；交付差异表并停”，本轮不进入因果替换。</li>
+<li><strong>“S 占大头”不特异。</strong> 随机加入 Ark−F 在 4/4 方向都取得 S 标签，且 S 份额（0.65–0.82）<strong>高于</strong>共同偏移的 Ak−F（0.43–0.66）；不致错的 C1343 方向上 Rk−V、Ak−F、Rrk−V、Ark−F 也全是 S。所以 S 主导是“t1 改 k → t2 读出差”的一般形态，不是共同偏移或致错方向独有的计算特征。</li>
+<li><strong>随机去除 Rrk−V 在三个缺口方向不可判</strong>（有效 30/22/33 条，若干场景有效比例 0–0.33）。这是可解析覆盖不足（ΔD 太小），不是阴性证据。</li>
+<li>在 k 配对的 t1 上覆盖全为 0（全部不可判）。t1 本来只作参照；原因推测是 t1 时 k 只进写入、不进读出，ΔD 很小（<strong>推测</strong>，未单独核）。</li>
+</ol>
+<h5 id="1_2">1. 工程闸门（全部通过）</h5>
+<ul>
+<li>重放：t1 logits/缓存哈希 == QKF/QKD；t2 竞争分差 M 与 QKD <strong>浮点逐位相等</strong>；t2 全词表 bf16 logits 与 QKD 存档逐位相等（48×4×6 = 1152 格）。</li>
+<li>t1 结构零：每层 S 跨六臂 <code>torch.equal</code>；t1 的 X_S、X_I 恰为 0。</li>
+<li>FP64 四项恒等式：所有层-头相对误差 ≤1e−10（或 ΔD=0 时绝对 ≤1e−12）。</li>
+<li>D+E+W 重建误差 max 0.00373 ≤ 继承阈值 0.00707；原核接线逐位一致；供体哈希不变；预检观察器关闭重放逐位一致。</li>
+<li>计数：形成 240、形成 token 6375、解码前向 2304，全部等于合同预算。设备时间 558+444 = 1002 s（0.28 h，上限 0.70 h）。预检 73 s。</li>
+</ul>
+<p>自查中抓到并在冻结前修复的一处：初版用 <code>(A10+A11−A00−A01)/2</code> 计算 δS 项。在浮点下 S 两端相同时它不恰为 0（合成测试给出 1.8e−17），会让 t1 结构零闸门误报。已改为先做配对差再求和。</p>
+<h5 id="2-t2-1">2. t2 主表（场景等权份额；逐例为可解析层-头的中位数，不要求相加为 1）</h5>
+<table>
+<thead>
+<tr>
+<th>方向</th>
+<th>配对</th>
+<th>标签</th>
+<th style="text-align: right;">S</th>
+<th style="text-align: right;">q</th>
+<th style="text-align: right;">α</th>
+<th style="text-align: right;">|I|</th>
+<th style="text-align: right;">S 最高场景数</th>
+<th style="text-align: right;">目标非首列 ΔM 均值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>N4146</td>
+<td>V−F</td>
+<td>mixed</td>
+<td style="text-align: right;">0.333</td>
+<td style="text-align: right;">0.382</td>
+<td style="text-align: right;">0.006</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">1/6（q 5/6）</td>
+<td style="text-align: right;">−3.86</td>
+</tr>
+<tr>
+<td></td>
+<td>Rk−V</td>
+<td>mixed</td>
+<td style="text-align: right;">0.376</td>
+<td style="text-align: right;">0.273</td>
+<td style="text-align: right;">0.006</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">6/6</td>
+<td style="text-align: right;">+2.77</td>
+</tr>
+<tr>
+<td></td>
+<td>Ak−F</td>
+<td>mixed</td>
+<td style="text-align: right;">0.433</td>
+<td style="text-align: right;">0.269</td>
+<td style="text-align: right;">0.005</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">6/6</td>
+<td style="text-align: right;">−3.77</td>
+</tr>
+<tr>
+<td></td>
+<td>Rrk−V</td>
+<td>不可判</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;">−0.26</td>
+</tr>
+<tr>
+<td></td>
+<td>Ark−F</td>
+<td><strong>S</strong></td>
+<td style="text-align: right;">0.648</td>
+<td style="text-align: right;">0.216</td>
+<td style="text-align: right;">0.001</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">6/6</td>
+<td style="text-align: right;">−2.77</td>
+</tr>
+<tr>
+<td>N1210</td>
+<td>V−F</td>
+<td>mixed</td>
+<td style="text-align: right;">0.520</td>
+<td style="text-align: right;">0.341</td>
+<td style="text-align: right;">0.002</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">6/6</td>
+<td style="text-align: right;">−2.58</td>
+</tr>
+<tr>
+<td></td>
+<td>Rk−V</td>
+<td>mixed</td>
+<td style="text-align: right;">0.572</td>
+<td style="text-align: right;">0.266</td>
+<td style="text-align: right;">0.002</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">6/6</td>
+<td style="text-align: right;">+1.99</td>
+</tr>
+<tr>
+<td></td>
+<td>Ak−F</td>
+<td><strong>S</strong></td>
+<td style="text-align: right;">0.639</td>
+<td style="text-align: right;">0.236</td>
+<td style="text-align: right;">0.002</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">6/6</td>
+<td style="text-align: right;">−2.43</td>
+</tr>
+<tr>
+<td></td>
+<td>Rrk−V</td>
+<td>不可判</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;">−0.24</td>
+</tr>
+<tr>
+<td></td>
+<td>Ark−F</td>
+<td><strong>S</strong></td>
+<td style="text-align: right;">0.806</td>
+<td style="text-align: right;">0.139</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">6/6</td>
+<td style="text-align: right;">−1.71</td>
+</tr>
+<tr>
+<td>R0</td>
+<td>V−F</td>
+<td>mixed</td>
+<td style="text-align: right;">0.484</td>
+<td style="text-align: right;">0.332</td>
+<td style="text-align: right;">0.003</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">6/6</td>
+<td style="text-align: right;">−2.76</td>
+</tr>
+<tr>
+<td></td>
+<td>Rk−V</td>
+<td>mixed</td>
+<td style="text-align: right;">0.573</td>
+<td style="text-align: right;">0.236</td>
+<td style="text-align: right;">0.002</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">6/6</td>
+<td style="text-align: right;">+2.05</td>
+</tr>
+<tr>
+<td></td>
+<td>Ak−F</td>
+<td><strong>S</strong></td>
+<td style="text-align: right;">0.632</td>
+<td style="text-align: right;">0.209</td>
+<td style="text-align: right;">0.001</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">6/6</td>
+<td style="text-align: right;">−2.59</td>
+</tr>
+<tr>
+<td></td>
+<td>Rrk−V</td>
+<td>不可判</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;">−0.56</td>
+</tr>
+<tr>
+<td></td>
+<td>Ark−F</td>
+<td><strong>S</strong></td>
+<td style="text-align: right;">0.796</td>
+<td style="text-align: right;">0.126</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">6/6</td>
+<td style="text-align: right;">−1.77</td>
+</tr>
+<tr>
+<td>C1343</td>
+<td>V−F</td>
+<td>mixed</td>
+<td style="text-align: right;">0.559</td>
+<td style="text-align: right;">0.324</td>
+<td style="text-align: right;">0.003</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">6/6</td>
+<td style="text-align: right;">−2.75</td>
+</tr>
+<tr>
+<td></td>
+<td>Rk−V</td>
+<td><strong>S</strong></td>
+<td style="text-align: right;">0.607</td>
+<td style="text-align: right;">0.249</td>
+<td style="text-align: right;">0.004</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">6/6</td>
+<td style="text-align: right;">+2.44</td>
+</tr>
+<tr>
+<td></td>
+<td>Ak−F</td>
+<td><strong>S</strong></td>
+<td style="text-align: right;">0.661</td>
+<td style="text-align: right;">0.238</td>
+<td style="text-align: right;">0.003</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">6/6</td>
+<td style="text-align: right;">−2.29</td>
+</tr>
+<tr>
+<td></td>
+<td>Rrk−V</td>
+<td><strong>S</strong></td>
+<td style="text-align: right;">0.767</td>
+<td style="text-align: right;">0.131</td>
+<td style="text-align: right;">0.001</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">6/6</td>
+<td style="text-align: right;">−1.43</td>
+</tr>
+<tr>
+<td></td>
+<td>Ark−F</td>
+<td><strong>S</strong></td>
+<td style="text-align: right;">0.816</td>
+<td style="text-align: right;">0.133</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">6/6</td>
+<td style="text-align: right;">−0.86</td>
+</tr>
+</tbody>
+</table>
+<p>t1：V−F 四方向都是 q 标签（q 0.98–0.995）。这是结构性的：t1 时 ΔS≡0，V/F 只差卷积 q/k，所以只有 q（和极小的 α）能出现。k 配对在 t1 全部不可判。</p>
+<p>候选卡（合同 §5.2）：三个缺口方向 ΔM 条件都满足（Rk−V 正、Ak−F 负，均为 6/6 场景）；但“Rk−V 与 Ak−F 取同一 j 标签”在 0/3 方向成立 → <strong>candidate = null</strong>。</p>
+<h5 id="3_2">3. 预注册预测对账</h5>
+<ul>
+<li><strong>P1（Rk−V 与 Ak−F 在 t2 标为 S）：未通过。</strong> Rk−V 0/3 方向，Ak−F 2/3 方向。按合同写定的后果，撤回“k 只经 t1 写入起作用、读出差全由 S 承担”的单项读法。保留的描述性事实：S 在 6/6 场景都是三项里最大的，但同时有 0.21–0.27 的 q 份额。两臂只差 k，所以这部分 q 差异只能来自 t1 输出改变后下游残差的间接变化（<strong>推导</strong>：同一层、同一 t2 token 下，q 只依赖该层输入残差和卷积旧槽）。α 份额 ≤0.006，交互项 ≈0：衰减门不承担任何差异。</li>
+<li><strong>P2（V−F 在 t2 不是 S 单项）：通过</strong>，四方向 mixed。N4146 上 q 略高于 S（5/6 场景 q 最高），其余三方向 S 最高但不到 0.60。</li>
+<li><strong>P3（随机配对与 μ 配对标签相同）：部分。</strong> Ark−F 4/4 为 S，Ak−F 3/4 为 S（N4146 mixed）。Rrk−V 在缺口方向不可判，无法对比。方向上的结论：随机 k 加入产生的读出差<strong>更</strong>偏向 S。</li>
+<li><strong>P4（C1343 与缺口方向同标签）：部分。</strong> C1343 上 k 配对全为 S，且份额都高于同配对的缺口方向；缺口方向 Rk−V 全为 mixed。</li>
+</ul>
+<h5 id="4_2">4. 能说什么、不能说什么</h5>
+<p>能说的：</p>
+<ul>
+<li>在 t2 竞争步上，k 编辑造成的旧状态读出差 ΔD，最大一块来自 t1 写入后 S 的数值差（S 份额 0.38–0.66），其次是下游间接改变的 q（0.21–0.27）。衰减 α 与三阶交互可以忽略。</li>
+<li>这个形态在致错方向与 C1343（不致错）上、在共同偏移与随机方向上都出现。随机与 C1343 的 S 份额还更高。</li>
+</ul>
+<p>不能说的：</p>
+<ul>
+<li>不能说“S 被写坏导致错误”：S 主导在不致错的对照上一样成立，且份额不是本轮行为差异的区分量。</li>
+<li>不能说“共同偏移有独占的状态计算机制”：随机加入的形态一样、甚至更强。</li>
+<li>局部分账与 ΔM 没有因果连接；份额是 ΔD 的代数分账，不是 logit 归因。</li>
+</ul>
+<p>一条描述性观察（未预注册，<strong>推测</strong>档，不作结论）：从致错的 μ 配对到随机配对，再到 C1343，S 份额递增、q 份额递减。致错配对恰好是 q 份额相对最大的那些。这只是一条可以单独设计检验的线索；本轮按合同不追加实验。</p>
+<h5 id="5_1">5. 出口</h5>
+<p>合同 §5 表“mixed / 方向不一致”行：简单单项解释不足，交付差异表并停。本轮不进入 S/q/α 替换；下一步需另立设计与授权。</p>
+<hr />
+<h3 id="4qsr-01">原件 4：QSR-01 决策日志（冻结前）</h3>
+<p>原路径：<code>experiments/cache-state-readout-decomposition-v1-2026-11-03/DECISIONS.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-state-readout-decomposition-v1-2026-11-03/DECISIONS.zh-CN.md">固定提交原文</a> · <a href="../library/80dec0a8fe79579e.html">单独阅读副本</a>；SHA-256：<code>80dec0a8fe79579ea42501b935d5942796bf7d9bcfb108d5ca067a86da94ffaf</code>。</p>
+<hr />
+<h4 id="qsr-01">QSR-01 决策日志（冻结前）</h4>
+<ul>
+<li>Q1 计划 §5.2“至少 4/6 场景中 j 最高并为正”：比较集合取 {S,q,α}，交互项不参与“最高”比较（交互单独由 |s_I|≤0.25 约束）。</li>
+<li>Q2 计划未写 t1 的 S 结构性零；本合同补写并加闸门（用户已同意）。t1 的 S/I 份额恒为 0，t1 标签只作参照。</li>
+<li>Q3 “比另两个各高≥0.15”同取 {S,q,α}。</li>
+<li>Q4 t2 重放除 M 逐位外，加比 QKD 存档的 bf16 全词表 logits（QKD 只存了 bf16）。</li>
+<li>Q5 设备秒上限按 worker 均分强制（每 worker 0.35 h），比“设备秒求和≤0.70 h”更严；预检 1 worker 0.10 h。</li>
+<li>Q6 外推公式写死于 qsr_run.extrapolate，偏保守（预检文本含观察器关闭重放与夹具保存）。</li>
+<li>Q7 持久化：每臂每步 qn/α/β/D/E/W/o/误差，每配对每步四个收缩 A_ab 与四项 X；只在预检保存 S 夹具。全部 FP32 存档，判读用运行内 FP64 统计。</li>
+<li>Q8 行为量 Y_full 取 QKF（旧方向）与 QKD（C1343）完整答案，不重新生成。</li>
+</ul>
+<hr />
+<h2 id="_2">时间、运行与停止收据索引</h2>
+<p>下面是所收集JSON的原有时间字段与状态，不把预计结束时间当实际完成时间。未列时间的文件仍有原件链接。完整JSON全部保存在原文归档，不能以此索引中的标量代替完整嵌套内容。</p>
+<table>
+<thead>
+<tr>
+<th>原件</th>
+<th>原记录状态/阶段</th>
+<th>原时间字段（原时区）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-state-readout-decomposition-v1-2026-11-03/readiness/cpu-receipt-r01.json">readiness/cpu-receipt-r01.json</a></td>
+<td>{"status": "passed"}</td>
+<td>{}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-state-readout-decomposition-v1-2026-11-03/runs/formal-r01/controller.json">runs/formal-r01/controller.json</a></td>
+<td>{"status": "completed", "stage": "formal"}</td>
+<td>{"started_at": "2026-11-02T18:15:06.213899+00:00", "finished_at": "2026-11-02T18:24:36.691769+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-state-readout-decomposition-v1-2026-11-03/runs/formal-r01/verification.json">runs/formal-r01/verification.json</a></td>
+<td>{"status": "passed", "stage": "formal"}</td>
+<td>{"verified_at": "2026-11-02T18:24:36.691553+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-state-readout-decomposition-v1-2026-11-03/runs/formal-r01/worker-0/receipt.json">runs/formal-r01/worker-0/receipt.json</a></td>
+<td>{"status": "completed", "stage": "formal"}</td>
+<td>{"started_at": "2026-11-02T18:15:10.538030+00:00", "last_record_at": "2026-11-02T18:24:26.052056+00:00", "finished_at": "2026-11-02T18:24:28.393062+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-state-readout-decomposition-v1-2026-11-03/runs/formal-r01/worker-1/receipt.json">runs/formal-r01/worker-1/receipt.json</a></td>
+<td>{"status": "completed", "stage": "formal"}</td>
+<td>{"started_at": "2026-11-02T18:15:10.351056+00:00", "last_record_at": "2026-11-02T18:22:32.171330+00:00", "finished_at": "2026-11-02T18:22:34.513238+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-state-readout-decomposition-v1-2026-11-03/runs/preflight-r01/controller.json">runs/preflight-r01/controller.json</a></td>
+<td>{"status": "completed", "stage": "preflight"}</td>
+<td>{"started_at": "2026-11-02T18:12:47.985640+00:00", "finished_at": "2026-11-02T18:14:11.705017+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-state-readout-decomposition-v1-2026-11-03/runs/preflight-r01/verification.json">runs/preflight-r01/verification.json</a></td>
+<td>{"status": "passed", "stage": "preflight"}</td>
+<td>{"verified_at": "2026-11-02T18:14:11.704754+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-state-readout-decomposition-v1-2026-11-03/runs/preflight-r01/worker-0/receipt.json">runs/preflight-r01/worker-0/receipt.json</a></td>
+<td>{"status": "completed", "stage": "preflight"}</td>
+<td>{"started_at": "2026-11-02T18:12:52.245433+00:00", "last_record_at": "2026-11-02T18:14:04.140932+00:00", "finished_at": "2026-11-02T18:14:05.618773+00:00"}</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_3">全部原始资产入口</h2>
+<p>本目录在固定提交下共有95个跟踪文件，包含代码、原回答、失败、收据和压缩证据；文件数不是样本数。<a href="../assets/094-cache-state-readout-decomposition-v1-2026-11-03.tsv">逐文件完整账本</a> · <a href="https://github.com/yuxiexiong/acupuncture/tree/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-state-readout-decomposition-v1-2026-11-03">原目录</a>。未复制模型权重、环境或凭据。</p></main></html>

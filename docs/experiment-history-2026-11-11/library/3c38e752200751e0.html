@@ -1,0 +1,22 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>v7r1：连接中断恢复与批内权重复用</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="v7r1">v7r1：连接中断恢复与批内权重复用</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/wsp-vlm-open-repair-v7r1-2026-11-05/README.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-open-repair-v7r1-2026-11-05/README.zh-CN.md">固定提交原件</a>；SHA-256：<code>3c38e752200751e0f46c888a326d91a5bfe101ec6f5d93670cf7d8d10520dafc</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="v7r1_1">v7r1：连接中断恢复与批内权重复用</h1>
+<p><strong>13:18追加：当前权威队列改为<code>sequence-r2.json</code>，入口<code>recovery_r2.py</code>。</strong> 首版恢复启动的shell后台任务仍持有SSH管道，30秒超时导致本机队列退出；远端broker PID 1711513实际仍在等待，已核实并复用，不重启。r2只修启动/核对：C用Python Popen显式断开stdin/stdout/stderr并新建会话。真实短CPU脱离启动检查4.95秒返回，子进程持续15秒；无模型或研究者调用。原预算未重置。首版失败栈/队列及r2检查见audit。批处理的真实数值验收仍待原评估完成，尚未声称通过。</p>
+<p>2026-11-05 12:53启动快照。继承v7、B/C推进方案及用户“bug直接修复”授权。<strong>B原有候选评估仍在运行；新恢复进程只等待其锁和完整回执，不重复原调用。C尚未启动。</strong> 当前队列以本目录sequence.json为准；旧v7/sequence.json保留其stopped_on_error历史状态。</p>
+<h2 id="_1">发现与处理</h2>
+<ul>
+<li>本机SSH在约31分钟后报Connection reset by peer，研究者流程停止；远端原评估仍由timeout保护运行。保留原stderr、异常栈、请求、停止回执于audit。没有将通信失败解释为候选失败。</li>
+<li>原实现每道题都校验、读取、装载及恢复同一整张候选张量；AI只改一个标量时也会反复处理整张词嵌入矩阵。本次不是增加修补算子：候选张量、输入、生成、评分均不变，只将同一批评价包在一次candidate上下文内。内层同候选复用，跨候选嵌套拒绝，整批异常仍恢复W0。</li>
+<li>新broker使用持久inbox/action/response。短SSH仅传输JSON和读取状态，网络断开不结束远端计算。同ID/同内容可确认投递，已执行回执直接读取，未完成动作不重放。</li>
+<li>B等待旧观察者锁释放且每个已登记动作都有回执，然后加载同一配置、状态、候选与预算。研究者续接原thread和累计token/轮数，从第19轮继续；告知Python变量因重启丢失，已有work、提案和测量文件保留。<strong>没有提供新的选点或修改配方。</strong></li>
+<li>B继续沿用约14:00的原始截止，不补回断线/等待时间。C在B退出后独立最多2小时，从W0开始；技术异常仍停止队列，正常结束或预算耗尽继续C。</li>
+</ul>
+<h2 id="_2">验收状态</h2>
+<p>29项本机离线测试通过，增加同候选嵌套、跨候选拒绝及恢复检查。初次本机缺复制的config.template.json（1项错误）、服务器缺原数学解析器文件（4项错误）均保留日志；补齐本机模板后通过。服务器不运行研究者解析器，实际解析仍在本机。</p>
+<p><strong>真实批处理一致性尚待执行。</strong> B原完整评估结束并释放锁后，新broker先用该候选前两条既有输出比较自然生成token、输入/模板hash和图像尺寸，再检查异常退出后的W0自然输出；共3次工程前向，费用计入剩余共享工程预算并记录batch_acceptance.json。通过后才允许新的研究者动作，C也检查这一验收和源文件hash。不把离线通过冒充真实通过，不把等待状态叫作修复成功。</p>
+<h2 id="_3">自查</h2>
+<p>这是实现修复，未修改原实验设计、标签、终点、保护界限或预算，仍沿用v7 PLAN及C01–C14。关键复查：C03保留原版本/raw；C05/C06候选值完全相同、生成等价须实测；C08不作能力/机制结论；C11先验收再继续；C12保留原开始时间、失败费用及全部额度；C13未给研究者H；C14不扩预算。自查不是独立审查。</p>
+<p>反方风险：连接恢复不能猜测动作是否完成，因此锁未释放或缺回执时只等；Python变量重建由AI自行处理；批内复用可能掩盖回滚错误，因此真实同候选输出和异常W0检查为硬门槛；完整评估若耗尽B预算，允许B无可用结果，不能重置计时。尚未证明补丁有效，也未进行独立泛化确认。</p>
+<p>启动：本机recovery.py；远端broker.py；原run目录和配置仍在v7，所有原始回答持续写原目录。代码及恢复证据单独放v7r1，未替换正在运行的v7源文件。以后监控同时读两版本的队列和回执。</p></main></html>

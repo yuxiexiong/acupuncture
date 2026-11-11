@@ -1,0 +1,101 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Gemma 18:53巡检</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="gemma-1853">Gemma 18:53巡检</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/wsp-vlm-gemma3-v9-shared-admission-2026-11-06/heartbeat-1853/REPORT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-gemma3-v9-shared-admission-2026-11-06/heartbeat-1853/REPORT.zh-CN.md">固定提交原件</a>；SHA-256：<code>92e686f1cdf3540425829520bb53c436602d22fb1575d2f8ae8070a2fd0d2f39</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="gemma-1853_1">Gemma 18:53巡检</h1>
+<p>远端18:53:41快照：v9 C29/30，较18:24增加3轮；30份完整评分含W0逐SHA通过。原broker2386898/controller45613正常，没有新故障。18:57已提交并首次派发第30候选评价，尚未以部分生成计完成。本次只读核验和CPU分析，没有改变搜索、模型或协议。</p>
+<table>
+<thead>
+<tr>
+<th>组</th>
+<th style="text-align: right;">完整轮数</th>
+<th>W0→合格最佳主分数</th>
+<th style="text-align: right;">全体正确率</th>
+<th style="text-align: right;">修对/改错</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>v8 B</td>
+<td style="text-align: right;">30</td>
+<td>16.3793%→21.5517%</td>
+<td style="text-align: right;">46.3362%</td>
+<td style="text-align: right;">20/7</td>
+<td>已冻结退出、交付</td>
+</tr>
+<tr>
+<td>v8 C</td>
+<td style="text-align: right;">30</td>
+<td>33.9844%→37.5%</td>
+<td style="text-align: right;">79.4141%</td>
+<td style="text-align: right;">20/13</td>
+<td>已冻结退出、交付</td>
+</tr>
+<tr>
+<td>v9 B</td>
+<td style="text-align: right;">30</td>
+<td>16.3793%→16.3793%</td>
+<td style="text-align: right;">43.5345%</td>
+<td style="text-align: right;">0/0</td>
+<td>选择W0；收尾额度失败已退出、归档；报告/冻结缺项按用户豁免，不重启</td>
+</tr>
+<tr>
+<td>v9 C</td>
+<td style="text-align: right;">29（+3）</td>
+<td>33.9844%→36.328125%</td>
+<td style="text-align: right;">79.7265625%</td>
+<td style="text-align: right;">22/7</td>
+<td>新选R28，最后一轮在途，尚未冻结</td>
+</tr>
+</tbody>
+</table>
+<p>R28是原L15 MLP64列补丁的61列互补部分，恢复3个高能量列到W0；156137个有效BF16标量、L2=2.068849。其全体正确率高于v8 C，不能把主分数较低概括为所有指标更低。保护最差格no_image_usual下降3.125pp，通过；格式9/2560、截断0。</p>
+<h2 id="_1">新对照与诊断</h2>
+<table>
+<thead>
+<tr>
+<th>轮</th>
+<th>操作</th>
+<th style="text-align: right;">主分数</th>
+<th style="text-align: right;">修对/改错</th>
+<th style="text-align: right;">保留9条参考修复</th>
+<th style="text-align: right;">visual净变化，B0 / 全部提示臂</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>27</td>
+<td>仅3高能量列分量</td>
+<td style="text-align: right;">32.421875%</td>
+<td style="text-align: right;">9/14</td>
+<td style="text-align: right;">4/9</td>
+<td style="text-align: right;">−2 / −1</td>
+</tr>
+<tr>
+<td>28</td>
+<td>其余61列分量</td>
+<td style="text-align: right;">36.328125%</td>
+<td style="text-align: right;">22/7</td>
+<td style="text-align: right;">6/9</td>
+<td style="text-align: right;">+5 / +10</td>
+</tr>
+<tr>
+<td>29</td>
+<td>原64列补丁的共同输入方向分量</td>
+<td style="text-align: right;">32.421875%</td>
+<td style="text-align: right;">13/11</td>
+<td style="text-align: right;">2/9</td>
+<td style="text-align: right;">−3 / −1</td>
+</tr>
+</tbody>
+</table>
+<p>逐ID计算见control-recheck，原响应压缩保留。9条参考来自已见开发结果，不是独立确认。高能量3列未集中保留预期收益，61列反而成为最佳；共同输入方向虽解释记录输入的大部分平方幅度，却未保留大部分参考修复。不能把写入能量、输入解释率直接当行为修复能力。</p>
+<p>turn139/140对R28的7条既有探针：prompt hash和MLP输入7/7一致，实际写入增量与补丁预测余弦0.999728–0.999882，证明局部修改确实实施。与正式缓存答案6/7一致；C125正式Ring、逐条诊断Camera，原注册修复未复现；C288修复和C455保留复现。不能说全部机制预期通过。正式batch32和逐条诊断路径差异仍在，不能据此称缓存损坏、权重漂移或已确认唯一原因，也不自动否定同batch正式分数。归一化后增量明显放大是这些捕获点上的观测，不证明唯一自然失败机制。</p>
+<h2 id="_2">资源、成本和时间</h2>
+<p>18:53目标累计77330样本/20414661 tokens/97.769 CPU秒，研究者turn139累计22490438 tokens；稍后turn142累计23174454，截点分别保留。历史额度失败99无单次usage，不填0。v9工程每组133生成/142前向另计，不计修补轮。measure/diagnose次数以remote actions为准，调用本身不证明机制。</p>
+<p>本窗124–139已完成Astra整回合953.20秒（含API排队/上下文/输出，不是纯思考）；完整评价652.31秒、diagnose10.09秒、Python17.21秒、提交11.03秒，工具等待84.25秒。最后3次完整评价各约217秒；最近7个候选间隔8.32/5.41/10.91/9.00/15.46/5.42/6.20分钟，含诊断/研究者，排除账户中断。最后一轮已经在评价，科学评价剩余预计数分钟；机制报告/冻结另计，不能承诺收尾时间。</p>
+<p>GPU0仅本C占15620MiB，整卡余81881MiB（79.96GiB），采样0%，此时处于研究者/诊断交替阶段，显存不构成阻碍。GPU1其他项目三进程约43.5GiB、采样100%，未干预。工作盘117.206GiB（较18:23减少3.652）；v9 C2.717GiB（+0.305），B1.218GiB不变，不能把全盘减少归因于本组。均低于12GiB且全盘高于20GiB，无清理。两版源码各24项无漂移。</p>
+<p>四组对比和最终原始档案仍是交付必需项；所有分数为开发选择，非独立泛化。完成后另核对30轮、最终报告/冻结及实际退出，再归档并更新本报告的完成边界。</p>
+<h2 id="1900">19:00完成边界更新</h2>
+<p>turn142完整评价已返回，预算确认30/30，最终最佳保持R28。R30残余输入分量主34.765625%、全体79.3359375%、修对24改错19，保留7/9参考修复，与事前“少于6/9”预测不符。累计79890样本/21090336目标tokens/98.289CPU秒；研究者142累计23174454，收尾新增用量另核。当前尚在报告/冻结收尾，不把完成评价称为已退出。原始响应及completion-recheck保留。</p></main></html>

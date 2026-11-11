@@ -1,0 +1,150 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>可视化工具分享与讨论复查（2026-10-27）</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="2026-10-27">可视化工具分享与讨论复查（2026-10-27）</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>docs/literature/x-visualization-updates-2026-10-27.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/literature/x-visualization-updates-2026-10-27.zh-CN.md">固定提交原件</a>；SHA-256：<code>e74f670fab77e01614b2082d30c1cdd8788df6c53038d92c266a7a582ccf7140</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="2026-10-27_1">可视化工具分享与讨论复查（2026-10-27）</h1>
+<p>核查截止：2026-10-27 17:38，北京时间。本轮只读重访 lyra 的工具截图帖、演示视频帖、仓库发布回复及相关分支，核查分享所指向的代码和网页。未安装工具、未点击生成、未运行模型或重跑作者测试。X 动态排序与折叠限制了覆盖，不将可见评论称为全量导出。</p>
+<p><strong>值得注意的增量有四类：Lyra 的 attention-head／token 视图、mfstuff 的逐 token 调试器、Neuralese 的可复现工作台，以及一个可直接在网页选择 Qwen 神经元的 HF Space。它们展示的测量量并不相同。</strong></p>
+<h2 id="1-recipe">1. 与刚才 recipe 核查相比，哪些才是新增</h2>
+<table>
+<thead>
+<tr>
+<th>工具</th>
+<th>本轮固定版本</th>
+<th>新旧关系</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>lyramakesmusic/neuron-explorer</code></td>
+<td><code>e566e83e3f9fe00f85438231a788f90e83e2af43</code></td>
+<td>与刚才 recipe 核查相同；相对 10/26 本地可视化审查所用 <code>ddb144e…</code>，attention-head 等功能是实质代码增量。本轮补测量定义，不称为刚才之后再次更新</td>
+</tr>
+<tr>
+<td><code>makefunstuff/qwen-neurons</code></td>
+<td><code>2a780d8a2fdc3735bac13987da93148a8683102c</code></td>
+<td>与刚才相同；新增讲清 debugger、地图、热图与连线含义</td>
+</tr>
+<tr>
+<td><code>0thernes/neuralese</code></td>
+<td><code>0134e4bbc3fa0cbe3a174b46ef5ad200b4ca3699</code></td>
+<td>上轮 <code>853f544…</code> 为 v6；本次 README／release 为 v13.0.1，有实质更新</td>
+</tr>
+<tr>
+<td><code>fa-0/altered_models</code></td>
+<td><code>9a90aa7ad0bca3d5a95cd6fe8bbd42add85a2001</code></td>
+<td>昨天评论新分享的 HF Space；本轮首次核对源码与实际 UI</td>
+</tr>
+</tbody>
+</table>
+<p>此前的 recipe 和搜索方法不重复展开，见<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/literature/x-recipe-updates-2026-10-27.zh-CN.md">配方增量报告</a>。</p>
+<h2 id="2-lyra-token">2. Lyra：从神经元地图扩展到注意力头与具体 token</h2>
+<p><a href="https://x.com/_lyraaaa_/status/2114211024962498831">演示原帖</a>、<a href="https://x.com/_lyraaaa_/status/2114211027986624718">仓库发布回复</a>、<a href="https://github.com/lyramakesmusic/neuron-explorer/tree/e566e83e3f9fe00f85438231a788f90e83e2af43">固定版本</a>。</p>
+<table>
+<thead>
+<tr>
+<th>新功能</th>
+<th>实际表示什么</th>
+<th>不能直接解释成什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>attention heads 进入 3D 地图</td>
+<td>每层面板内，每条横线代表一个头，可选中、高亮并关联神经元</td>
+<td>横线的空间位置是索引布局，不是功能或语义距离</td>
+</tr>
+<tr>
+<td>q/k/v/o 四角色连线</td>
+<td>分别查看查询、匹配、搬运及输出所对应的权重投影联系</td>
+<td>尚不是特定输入下已验证的因果路径</td>
+</tr>
+<tr>
+<td>当前 token 的头写入强度</td>
+<td>头经输出投影写入 residual 的向量范数，用本层参考最大值缩放着色</td>
+<td>不是 attention 概率，也不是对答案正确性的贡献</td>
+</tr>
+<tr>
+<td>token→token 视图</td>
+<td>普通全注意力显示 softmax；线性 Gated DeltaNet 显示有符号 effective weights，并按绝对值和归一化</td>
+<td>后者含负数，不能当普通概率矩阵</td>
+</tr>
+<tr>
+<td><code>attn_drive</code></td>
+<td>在指定 token 处，将目标 MLP 通道的 <code>SiLU(gate) × up</code> 局部线性化，分解头和源 token 的驱动</td>
+<td>不是实际关闭某个头之后测得的变化；代码固定该 token 的 norm 尺度</td>
+</tr>
+</tbody>
+</table>
+<p>直接代码：<a href="https://github.com/lyramakesmusic/neuron-explorer/blob/e566e83e3f9fe00f85438231a788f90e83e2af43/explorer/static/map3d.js#L101-L161">头的地图布局</a>、<a href="https://github.com/lyramakesmusic/neuron-explorer/blob/e566e83e3f9fe00f85438231a788f90e83e2af43/explorer/runtime.py#L140-L147">写入强度</a>、<a href="https://github.com/lyramakesmusic/neuron-explorer/blob/e566e83e3f9fe00f85438231a788f90e83e2af43/explorer/runtime.py#L198-L251">两类 token 权重</a>、<a href="https://github.com/lyramakesmusic/neuron-explorer/blob/e566e83e3f9fe00f85438231a788f90e83e2af43/explorer/runtime.py#L275-L308">局部线性化</a>。</p>
+<p>相较早期只看某个通道的词和回答，新版本能够显示某个头在指定 token 的读取权重、写入 residual 的强度，以及与下游神经元的权重候选联系。代码定义已经可查，但本轮没有独立检验 effective-weight 重建误差或局部线性近似精度。</p>
+<p>另有 agent 聊天历史持久化和 Codex 后端选项；不再只是 Claude CLI 接口。原有 MLP <code>writes</code> 布局、权重 top-24 connections、fires、logit/steer lens 和回答 embeddings 不算此次重新新增的地图原理。<a href="https://github.com/lyramakesmusic/neuron-explorer/blob/e566e83e3f9fe00f85438231a788f90e83e2af43/explorer/server.py#L1266-L1304">聊天历史</a>、<a href="https://github.com/lyramakesmusic/neuron-explorer/blob/e566e83e3f9fe00f85438231a788f90e83e2af43/explorer/server.py#L1622-L1643">Codex 后端</a></p>
+<h2 id="3-mfstuff-token">3. mfstuff：把可视化做成逐 token 调试器</h2>
+<p><a href="https://x.com/mfstuff_/status/2114871438461251693">X 分享</a>、<a href="https://github.com/makefunstuff/qwen-neurons/blob/2a780d8a2fdc3735bac13987da93148a8683102c/README.md">固定 README</a>。</p>
+<p>本轮最值得补充的是 <strong>Debugger</strong>：每层显示当前 token 的六个最强通道，可设断点、固定关注通道、看变化曲线、调剂量或覆盖激活；暂停时重跑当前序列，再查看下一 token 概率。仓库有实现和演示，本轮没有启动该工具，因此不保证所有按钮在本机环境运行正常。<a href="https://github.com/makefunstuff/qwen-neurons/blob/2a780d8a2fdc3735bac13987da93148a8683102c/README.md#L170-L180">调试器说明</a></p>
+<p>同一工具有三种容易混淆的视觉元素：</p>
+<ul>
+<li><strong>地图位置与颜色。</strong> 横向按层、层内按神经元编号排成网格，不是语义聚类。默认颜色是 down-projection 列范数，也可显示缓存激活极值；不能把静态截图颜色称为当前模型的思考内容。<a href="https://github.com/makefunstuff/qwen-neurons/blob/2a780d8a2fdc3735bac13987da93148a8683102c/qwen_neurons/static/explorer.js#L26-L33">位置</a>、<a href="https://github.com/makefunstuff/qwen-neurons/blob/2a780d8a2fdc3735bac13987da93148a8683102c/qwen_neurons/weights.py#L279-L293">颜色</a></li>
+<li><strong>橙／蓝连线。</strong> 来自源通道输出方向与目标 gate/up 读取方向的投影评分，再将两种评分平均。它们是作者所称 virtual weights，未包含特定输入下完整非线性状态；不是直接测得的兴奋／抑制因果边。<a href="https://github.com/makefunstuff/qwen-neurons/blob/2a780d8a2fdc3735bac13987da93148a8683102c/qwen_neurons/lens.py#L102-L116">连接公式</a></li>
+<li><strong>逐 token 热图。</strong> fires 面板确实可以显示输入文本中的激活，也能回看 C4 样本中的最高／最低激活片段。但是颜色按各段文本除首 token 后的最大绝对激活归一化，跨文本不能只凭深浅比较强弱。作者缓存范围为一个 C4 validation shard 的前 4096 篇、各 64 token。<a href="https://github.com/makefunstuff/qwen-neurons/blob/2a780d8a2fdc3735bac13987da93148a8683102c/qwen_neurons/static/explorer.js#L279-L282">前端归一化</a>、<a href="https://github.com/makefunstuff/qwen-neurons/blob/2a780d8a2fdc3735bac13987da93148a8683102c/README.md#L126-L135">语料范围</a></li>
+</ul>
+<p>其 head 分数主要来自输出／value 投影的权重信息；所查代码没有 Lyra 新版那套完整 q/k/v/o 角色和具体 token effective-weight 重建。不能因为都叫 explorer，就认为展示的是同一种测量。</p>
+<h2 id="4-neuralese">4. Neuralese：更新为更完整的实验工作台，但仍有模型边界</h2>
+<p>这是上轮评论已提过的工具，本轮检查发现版本明显前进。GitHub 实时分支返回 v13.0.1 的提交 <code>0134e4…</code>，时间为 10/27 14:51:03 北京时间；相对上轮固定版本，compare 显示 ahead 108、behind 0、193 个文件变化。搜索网页缓存仍可能显示 v7，本记录以分支 SHA 为准。</p>
+<p>公开的新内容包括：</p>
+<ul>
+<li>权重 SHA-256、实验 manifest、编辑重放、运行记录差异、状态导入导出。</li>
+<li>node-level ACDC-style 搜索、causal scrubbing-lite、带控制任务的 probes、head 消融统计；README 明确没有 edge-level pruning。</li>
+<li>自带语料导入、原版／修改版计分板、Notebook 和 HTML 报告。</li>
+<li>对 stored author results、stored+live、live consistency checks 作区别，并提示模型改变后旧结果可能失效。</li>
+<li>新模型 HUB 及多平台 release 安装包；发布制品存在不等于本轮验证了安装和运行。</li>
+</ul>
+<p><strong>白盒操作仍是 TinyStories 1M／3M／8M。</strong> 新增 GPT-2／DistilGPT-2 属于生成模式，ONNX 嵌入、OCR、语音和图像模型也不等于接入任意大语言模型内部。没有 Qwen3.5-4B 白盒支持证据。作者测试通过的数量属于其记录，本轮未重跑。</p>
+<p>来源：<a href="https://github.com/0thernes/neuralese/blob/0134e4bbc3fa0cbe3a174b46ef5ad200b4ca3699/README.md">固定 README</a>、<a href="https://github.com/0thernes/neuralese/blob/0134e4bbc3fa0cbe3a174b46ef5ad200b4ca3699/zoo.js">模型列表</a>、<a href="https://github.com/0thernes/neuralese/compare/853f544560be75982e8750418017a4f1b43cdcb5...0134e4bbc3fa0cbe3a174b46ef5ad200b4ca3699">版本比较</a>、<a href="https://github.com/0thernes/neuralese/releases/tag/v13.0.1">v13.0.1 发布页</a>。部署分支 <code>6b7578fa24c8c61204d7667ddf613231ebc1b93e</code> 的提交信息指向上述源码版本。</p>
+<h2 id="5-fa-0-qwen">5. fa-0 的在线 Qwen 工具：选择界面不等于激活图</h2>
+<p><a href="https://x.com/Farjad_Ahmed/status/2114730114055348300">评论分享</a>的短链接，本轮浏览器已确认跳转至 <a href="https://huggingface.co/spaces/fa-0/altered_models">Qwen3.5 Architecture Explorer</a>。实际页面已加载，可见层结构、剂量、预设和 Generate 按钮；HF 当时显示 Running on Zero。没有点击生成。</p>
+<p>源码实际加载 <code>Qwen/Qwen3.5-4B</code> BF16，并用 GPU 生成函数和动态 hook 做干预，因此不只是静态教学网页。但是：</p>
+<ol>
+<li>96×96 MLP 网格的颜色是<strong>选中状态、方向和剂量</strong>，没有读取当前 token 的自然激活。它是可点击的 MLP 通道坐标选择器，不是实时脑活动图。</li>
+<li>结构图统一画 Attention／GQA，未分别表现混合注意力各模块的真实运行关系。</li>
+<li>所谓 Hostility score 只是英文词表命中占比，不是经过验证的行为评判。</li>
+<li>干预尺度取自<strong>层输入的 pre-hook</strong>，每次 forward 重算；与原帖 leaving-layer residual，以及 Lyra 固定参考尺度的实现都需区分，不能当作严格相同的复现。</li>
+<li>页面中“self-concept neurons”和超过某个剂量即损坏等说明是作者界面文案，未见对应完整验证制品。</li>
+</ol>
+<p>来源：<a href="https://huggingface.co/spaces/fa-0/altered_models/blob/9a90aa7ad0bca3d5a95cd6fe8bbd42add85a2001/app.py">固定 app.py</a>、<a href="https://huggingface.co/api/spaces/fa-0/altered_models">HF 元数据</a>。平台 Running 只证明当时服务状态；真实生成是否正确本轮未测。</p>
+<h2 id="6">6. 评论区新补到的讨论：哪些已有实现，哪些还只是想法</h2>
+<table>
+<thead>
+<tr>
+<th>讨论</th>
+<th>本轮核到的内容</th>
+<th>证据级别</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>自动遍历候选</td>
+<td>Adrian Endres 10/27 06:51 称用本地 Qwen 基线，根据提示自动遍历神经元直到得到工作版本</td>
+<td><a href="https://x.com/AdrianEndres4/status/2114852456383295699">新评论</a>未附源码、停止规则和失败统计；不能与 mfstuff 已有实现及失败记录等量齐观</td>
+</tr>
+<tr>
+<td>空间布局优于列表</td>
+<td>Monkey 分享另一种层间点云和正负连线；lyra 回复强调位置、形状对其使用体验的意义</td>
+<td>10/26 的旧讨论，本轮新补齐。<a href="https://x.com/Orwelian84/status/2114458434074710401">两张图</a>、<a href="https://x.com/_lyraaaa_/status/2114483024779981294">作者回复</a>。图上可见 not causal wiring 标识；本分支未见可核验源码／完整测量定义</td>
+</tr>
+<tr>
+<td>VR 里穿行神经元</td>
+<td>评论者提议做成 VR 体验</td>
+<td><a href="https://x.com/rishpoddar/status/2114361770060231163">提议</a>是想法，未见交付工具；不是本轮新发布软件</td>
+</tr>
+<tr>
+<td>更小／更大／不同模型</td>
+<td>仓库发布帖有人问小 Qwen 和跨架构推广，截图帖有人问更大模型</td>
+<td><a href="https://x.com/tealsea90/status/2114349127068950730">小模型</a>、<a href="https://x.com/EddieOakwood/status/2114440179394236838">跨模型</a>、<a href="https://x.com/confidencechaos/status/2114793405238673877">更大模型</a>。本轮所查相关分支未得到完整通用适配证明</td>
+</tr>
+</tbody>
+</table>
+<p>逐 token 显示激活移动的建议此前已经收录，本轮不重新算新发现。上表区分了新评论、旧评论新补录与已有实现；未将视觉吸引力或支持接口本身当成机制验证。</p>
+<h2 id="7">7. 运行成本与证据定义</h2>
+<p>Lyra 的公开缓存浏览无需先重跑完整扫描；真实 fires、attention、steering 需要加载模型。其批量扫描环境与日常浏览不是同一要求。mfstuff 将静态权重地图、词索引和连接分析放在独立 CPU 进程，仍需要权重文件；首次索引约 11 分钟、70 MB 是作者报告，不是本机保证。<a href="https://github.com/lyramakesmusic/neuron-explorer/blob/e566e83e3f9fe00f85438231a788f90e83e2af43/README.md#L13-L40">Lyra 使用说明</a>、<a href="https://github.com/makefunstuff/qwen-neurons/blob/2a780d8a2fdc3735bac13987da93148a8683102c/README.md#L133-L135">mfstuff CPU 索引说明</a></p>
+<p>本轮确认的进展是具体测量与操作界面变丰富：权重地图、自然激活、token 读取／写入、局部归因和干预结果可以被放在同一工作台。但这些仍是不同证据，不能统称为已经看见完整的思考回路。</p></main></html>

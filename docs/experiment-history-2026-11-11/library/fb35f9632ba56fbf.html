@@ -1,0 +1,149 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Qwen 与 Gemma v8：为什么开发修补收益不同</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="qwen-gemma-v8">Qwen 与 Gemma v8：为什么开发修补收益不同</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/wsp-cross-model-v8-audit-2026-11-06/REPORT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-cross-model-v8-audit-2026-11-06/REPORT.zh-CN.md">固定提交原件</a>；SHA-256：<code>fb35f9632ba56fbff2735506043f36c232431985ed2fee3ce17e1b3ff732a9e4</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="qwen-gemma-v8_1">Qwen 与 Gemma v8：为什么开发修补收益不同</h1>
+<p>2026-11-06。仅复算既有原始评价、不可变候选清单与修补轮收据；无新模型/GPU调用，不改正在运行的 Gemma v9 C，不追加轮次。本报告回答 v8 第一版跨模型比较；不冒充尚未完成的 v8/v9 四组最终比较。</p>
+<h2 id="_1">结论</h2>
+<p>不能概括为“Qwen 有效、Gemma 无效”。Gemma B 的30轮主分数增幅等于Qwen B50轮、超过Qwen B前30轮；Gemma C也有合格开发改善，但明显小于Qwen C。已有结果支持两模型上分别搜索得到开发收益；尚不支持一个冻结的诊断—修改规则跨模型稳定地产生相同收益，也未证明方法不能跨模型。</p>
+<p>C差距最明确的证据是：<strong>实际搜索动作并不匹配；Gemma把26/30候选用于decoder norm，只有1个词嵌入候选，而且它做幅度放大，未复测Qwen早期成功的同义词方向混合。Gemma最佳修补主要改善反事实常识回答，视觉回答改善很少，且控制题损伤更多。</strong> 因而模型差异、候选策略、研究者自适应轨迹混在一起，不能把它们统称为“模型不支持修复”。</p>
+<h2 id="1-30">1. 按相同30轮机会比较</h2>
+<p>主分数是普通提示下两类相关答案同时正确的joint，不能与全体单条正确率混用。B58来源组/464输入，C64来源组/2560输入；重复问法不是独立样本。脚本核验两模型同任务全部request ID和标签逐项相同；原生模板、图像处理及batch设置不同（Qwen64、Gemma32），未控制为纯架构比较。</p>
+<table>
+<thead>
+<tr>
+<th>运行</th>
+<th style="text-align: right;">W0主分数</th>
+<th style="text-align: right;">前30轮合格最佳</th>
+<th style="text-align: right;">提升pp</th>
+<th>W0→所选全体正确率</th>
+<th style="text-align: right;">修对/改错</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Qwen B</td>
+<td style="text-align: right;">47.4138%</td>
+<td style="text-align: right;">50.0000%</td>
+<td style="text-align: right;">2.5862</td>
+<td>68.9655%→69.1810%</td>
+<td style="text-align: right;">7/6</td>
+</tr>
+<tr>
+<td>Gemma B</td>
+<td style="text-align: right;">16.3793%</td>
+<td style="text-align: right;">21.5517%</td>
+<td style="text-align: right;">5.1724</td>
+<td>43.5345%→46.3362%</td>
+<td style="text-align: right;">20/7</td>
+</tr>
+<tr>
+<td>Qwen C</td>
+<td style="text-align: right;">58.2031%</td>
+<td style="text-align: right;">70.3125%</td>
+<td style="text-align: right;">12.1094</td>
+<td>88.5156%→90.1563%</td>
+<td style="text-align: right;">49/7</td>
+</tr>
+<tr>
+<td>Gemma C</td>
+<td style="text-align: right;">33.9844%</td>
+<td style="text-align: right;">37.5000%</td>
+<td style="text-align: right;">3.5156</td>
+<td>79.1406%→79.4141%</td>
+<td style="text-align: right;">20/13</td>
+</tr>
+</tbody>
+</table>
+<p>Qwen B最终50轮为52.5862%，+5.1724pp；Qwen C最终为70.7031%，+12.5pp。不能用Qwen50轮最佳与Gemma30轮最佳直接作等预算比较。Qwen C第5轮仅embedding改动已到67.578125%，第30→50轮仅再加0.390625pp；较少20轮不能单独解释C的大部分差距。Gemma B所选R24最后6轮未替代，C所选R23最后7轮未替代，只是当前路线的短平台，不是全搜索空间上限。</p>
+<h2 id="2">2. 最关键的不对齐：并未试过相同的词嵌入操作</h2>
+<p>Qwen C R1把 pictured 词向量向范数匹配的 image 方向混合0.5，再保留原pictured行范数；R3–R5继续加入bigger→larger、normally→typically、-world→world的保范数混合。R5仅embedding张量改变，主分数已+9.375pp。这是完整候选对照，不是对最终补丁的成分因果分摊。</p>
+<p>Gemma C R4仅把 image/pictured 两个绑定embedding行乘1.25：方向保持、幅度改变；主分数33.59375%，低于W0的33.984375%。普通反事实视觉题恰好修1错1，普通usual题正确性不变。该阴性结果只否定这一候选的开发收益，不否定词向量方向混合，也不否定所有embedding修补。两模型embedding均绑定输出头，不能把观察到的效果唯一归给输入词义或attention。</p>
+<p>Gemma C30个候选组成：投影接口norm3个、embedding幅度1个、decoder norm26个。26个norm覆盖全层、分层、子层、单层及剂量/反向/分支控制，均是实际不同候选；但30个候选不等于30种独立修复机制。后半段聚焦layer7的post_attention_layernorm，最终有效gain1.075、2549个BF16标量改变。没有Qwen四词方向混合对应的Gemma候选。</p>
+<p>据此可以说，当前AI搜索的分支选择具有明显路径依赖，操作类别虽开放，实际覆盖不同。不能说Gemma已经充分试过Qwen成功路线且证明无效；也不能反过来保证试同类混合就会成功。当前是同一开放流程各运行一次的比较，没有多次独立研究者搜索来分离模型和搜索轨迹的贡献。</p>
+<h2 id="3-gemma">3. 修复落到的行为不同，Gemma控制损伤更重</h2>
+<p>按同30轮所选方案，普通提示B0的反事实条件逐ID比较：</p>
+<table>
+<thead>
+<tr>
+<th>模型与候选</th>
+<th style="text-align: right;">反事实usual修对/改错</th>
+<th style="text-align: right;">反事实visual修对/改错</th>
+<th style="text-align: right;">全体修对/改错</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Qwen C R30</td>
+<td style="text-align: right;">13/0</td>
+<td style="text-align: right;">20/0</td>
+<td style="text-align: right;">49/7</td>
+</tr>
+<tr>
+<td>Gemma C R23</td>
+<td style="text-align: right;">8/0</td>
+<td style="text-align: right;">3/1</td>
+<td style="text-align: right;">20/13</td>
+</tr>
+</tbody>
+</table>
+<p>Gemma的主要目标收益来自反事实usual，visual净增仅2/256；同时B0无图usual净损失3条、B1无图usual净损失2条。因此其小joint收益伴随更多正常条件损伤。Qwen同30轮的普通反事实两类都有明确改善，全部49次修对与7次改错中，目标B0两类贡献33次修对且0改错。两者并非同一个失败行为被等强度修好。</p>
+<p>Gemma C18/30候选被逐格准确率保护拒绝，Qwen C前30轮为1/30（全部50轮4/50）。这个差别与各自实际搜索策略相关，不能作为架构因果结论。它支持：Gemma这条广泛norm/强度路线，常把目标收益与控制损伤同时带来。<strong>但保护不是主要“藏分”原因：Gemma所有候选不论是否合格，最高主分数也只有37.890625%（R20），仅比合格最佳高0.390625pp。</strong> 放松保护并不能从现有候选得到Qwen级的大增幅。</p>
+<h2 id="4">4. 起点更低是真的，但不能直接诊断“缺能力所以修不了”</h2>
+<p>C普通提示W0准确率：</p>
+<table>
+<thead>
+<tr>
+<th>条件</th>
+<th style="text-align: right;">Qwen</th>
+<th style="text-align: right;">Gemma</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>无图通常大小</td>
+<td style="text-align: right;">85.9375%</td>
+<td style="text-align: right;">77.7344%</td>
+</tr>
+<tr>
+<td>原图通常大小</td>
+<td style="text-align: right;">97.6563%</td>
+<td style="text-align: right;">89.0625%</td>
+</tr>
+<tr>
+<td>原图视觉大小</td>
+<td style="text-align: right;">100.0000%</td>
+<td style="text-align: right;">95.7031%</td>
+</tr>
+<tr>
+<td>反事实图通常大小</td>
+<td style="text-align: right;">75.3906%</td>
+<td style="text-align: right;">64.0625%</td>
+</tr>
+<tr>
+<td>反事实图视觉大小</td>
+<td style="text-align: right;">82.0313%</td>
+<td style="text-align: right;">67.5781%</td>
+</tr>
+</tbody>
+</table>
+<p>这些是本任务、原生输入与执行制度下的差异，不是一般模型能力排行，也没有把视觉识别、常识、指令理解的原因分离。</p>
+<p>同一256个反事实配对中：Qwen两问都对149、usual错/visual对61、usual对/visual错44、两问都错2；Gemma对应87、86、77、6。Gemma绝大多数失败配对仍有一侧答对，而不是两侧全不会。因而“Gemma基础更差”能描述起点，却不足以解释为什么当前修补收益更少，更不能推出无法修复。</p>
+<p>Gemma显式scope提示B1反事实usual为57.8125%、visual65.625%，均低于普通B0的64.0625%、67.578125%；更明确文字并未统一改善。它与“只需把视觉cue加大就能普遍修复”的简单解释不一致，但不单独识别内部原因。</p>
+<h2 id="5">5. 目前能说到哪里</h2>
+<ul>
+<li>已观察：同流程在两模型均找到v8开发改善；B增幅没有跨模型失效；C的收益/损伤和实际候选路线不同。</li>
+<li>最有直接支持的差距解释：Gemma未覆盖Qwen那类早期有效词方向混合；实际norm路线对目标visual帮助少且控制损伤多。二者共同限制本次搜索产出。</li>
+<li>尚未分离：模型/tokenizer/原生输入与batch设置、研究者选择哪条路线、剂量与实际功能扰动、单次搜索偶然性，各自贡献多少。</li>
+<li>尚未证明：冻结的失败诊断能跨模型可靠选中有效方向；某个失败行为具有唯一内部通道；开发选择能泛化到独立数据。细致测量或参数真实发生变化，本身不补齐这些证据。</li>
+</ul>
+<p>这是现有数据的回顾审计，不是新增实验设计或执行授权。要回答同类操作是否跨模型有效，需要匹配操作含义与重新确认；本次不把建议自动变成新GPU任务。已授权Gemma v9 C继续原30轮，后续四组比较另交付，不把本v8报告当最终四组收尾。</p>
+<h2 id="_2">复核与证据</h2>
+<p><code>analyze.py</code>使用Python标准库流式读取原始tar归档，按不可变repair-round收据而非旧自动报告复建30轮，核对候选ID、完整评分、相同标签与来源ID；从scored逐条重算分条件修对/改错及配对基线。<code>audit.json</code>保存源SHA、全部候选、选择收据、有效修改张量、说明和分条件计数。重新运行不调用模型。</p>
+<p>注意v8恢复前早停时自动生成的result/trajectory曾停在4轮；那些文件保持历史身份。本分析用最终state、30份repair-round收据及31份完整评价，不能用旧自动报告判断最终结果。最终冻结与停止核验沿用已交付heartbeat-1010/1140。</p>
+<p>反方复查：①将分数低当无效→以各自W0和B反例纠正；②只归因轮数→对齐30且保留Qwen后20轮增幅；③把所有embedding视作同一操作→区分方向混合与幅度放大；④将候选族覆盖当充分搜索→只报告实际覆盖；⑤用保护门槛掩盖模型差→核所有候选最高分；⑥把paired数量当独立样本→来源64组、重复问法保留；⑦把开发选择当独立泛化→明确未验证；⑧把基线差解释成唯一根因→列出输入、执行与策略混杂。此为同助手证据自查，不是独立审稿。</p>
+<p>既有来源：
+- <code>experiments/wsp-vlm-open-repair-v8x50-2026-11-05/closeout-evidence.json.gz</code>
+- <code>experiments/wsp-vlm-gemma3-shared-gpu-2026-11-06/heartbeat-1010/B-remote-evidence.tar.gz</code>
+- <code>experiments/wsp-vlm-gemma3-v9-shared-admission-2026-11-06/heartbeat-1140/C-remote-evidence.tar.gz.part000/001</code>（分析使用同SHA的本地拼接件）
+- 两版原协议及上述交付报告，Gemma真实batch校准收据覆盖README历史batch64文字。</p></main></html>

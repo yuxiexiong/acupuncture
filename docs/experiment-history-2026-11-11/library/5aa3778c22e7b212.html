@@ -1,0 +1,187 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SVQ-01（共享首字母面板上的 V 与 q/k 卷积恢复）结果报告</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="svq-01-v-qk">SVQ-01（共享首字母面板上的 V 与 q/k 卷积恢复）结果报告</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-sp-v-qk-delivery-v1-2026-11-02/REPORT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-sp-v-qk-delivery-v1-2026-11-02/REPORT.zh-CN.md">固定提交原件</a>；SHA-256：<code>5aa3778c22e7b2121b8b5ea0f3ddf43eb7332f784104a0666963ed12e1727d53</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="svq-01-v-qk_1">SVQ-01（共享首字母面板上的 V 与 q/k 卷积恢复）结果报告</h1>
+<p>日期：2026-11-02。<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-sp-v-qk-delivery-v1-2026-11-02/CONTRACT.zh-CN.md">合同 r01</a>；<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-sp-v-qk-delivery-v1-2026-11-02/DECISIONS.zh-CN.md">决策 D1–D5</a>；计划 v1（5b6127c，评审撰写）+ 修订 v2（032a17c）。代码 <code>8147edb</code>，freeze-r01 <code>91fb6f56…25bb</code>。SP 面板与 SP-01 结果已见；本轮新测的是 T_V、T_QK。同一助手实现、运行与撰写。</p>
+<h2 id="1">1. 结论（不利的先说）</h2>
+<ol>
+<li><strong>P_SV 不成立（1/4 方向）：在共享首字母面板上，只恢复深层卷积 V 不能恢复正确交付。</strong> 只有 C1343 达到支持（10/12，救回 5/6 情景）；N4146、N1210、R0 都只有 4/12。</li>
+<li><strong>只恢复 V 恢复了“开始回答”，没有恢复“选对目标”。</strong> T_V 首个输出 token 都是共同首字母（每方向 12/12），但在目标不在首列的 8 个输入上，N4146、N1210、R0 都是 <strong>8/8 输出首列编号</strong>，0/8 输出目标。它的 4/12 正确交付全部来自目标恰好排在首列的情景（SP01、SP04）。这与 SP-01 中“强制共同首字母”在干预状态下退回首列编号的规则相同。C1343 例外：目标 6/8、首列 2/8。</li>
+<li><strong>P_SQK 不成立（0/4）：只恢复 q/k 卷积，48/48 未交付</strong>，行为与 T_nat 相同（多数首步停止；R0 两个输入复述记录，记为多编号）。</li>
+<li>参照 T_F（完整卷积恢复）按本轮救回规则 3/4 方向支持（R0 10/12，SP03-f0、SP06-f1 输出首列编号，与 SP-01 逐 token 相同）。逐输入配对表中<strong>没有任何输入是 V 对而 F 错，或 QK 对而 F 错</strong>。</li>
+<li>按计划出口“两者不支持但 F 支持”：<strong>所测的组合（q/k + V 一起恢复）优于任一单独恢复</strong>；二元交付不能证明内部非线性协同，也不能用排除法说“选择靠 q/k”（q/k 单独什么都没恢复）。FX-01 在 P 面板上的“只恢复 V 即 48/48”<strong>不能推广到需要真正选择目标的面板</strong>。</li>
+<li>同前缀诊断与交付一致：喂入共同首字母后，目标第二 token 相对最大干扰的差 M 为正的输入，T_V 只有 4/4/4/10，T_F 12/12/10/12，C 12/12（M 2.5–11.1），T_nat 与 T_QK 4/4/4/5。M 均值：T_V 0.0–0.6（C1343 1.6），T_F 1.4–3.5，T_nat 与 T_QK −0.5 到 0.4。</li>
+<li>工程全部通过，包括修订 A1 的诊断重放：每方向 T_nat 分叉与 SP-01 T_shared 第二步三候选逐位相同（48/48），C 与 T_F 分叉与 SP-01 自然第二步逐位相同（12/12、48/48）。</li>
+</ol>
+<h2 id="2-y_delivery-y_strict-12">2. 主表（Y_delivery / Y_strict，每方向 12）</h2>
+<table>
+<thead>
+<tr>
+<th>方向</th>
+<th>T_nat</th>
+<th>T_V</th>
+<th>T_QK</th>
+<th>T_F</th>
+<th style="text-align: right;">T_V 救回情景</th>
+<th style="text-align: right;">T_F 救回情景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>N4146</td>
+<td>0/0</td>
+<td>4/4</td>
+<td>0/0</td>
+<td>12/12</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">6</td>
+</tr>
+<tr>
+<td>N1210</td>
+<td>0/0</td>
+<td>4/4</td>
+<td>0/0</td>
+<td>12/12</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">6</td>
+</tr>
+<tr>
+<td>R0</td>
+<td>0/0</td>
+<td>4/4</td>
+<td>0/0</td>
+<td>10/10</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr>
+<td>C1343</td>
+<td>0/0</td>
+<td>10/10</td>
+<td>0/0</td>
+<td>12/12</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">6</td>
+</tr>
+</tbody>
+</table>
+<p>C_nat 12/12 严格。目标不在首列的 8 输入上（目标 / 首列 / 其他）：</p>
+<table>
+<thead>
+<tr>
+<th>方向</th>
+<th>T_nat</th>
+<th>T_V</th>
+<th>T_QK</th>
+<th>T_F</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>N4146</td>
+<td>0/0/8</td>
+<td>0/8/0</td>
+<td>0/0/8</td>
+<td>8/0/0</td>
+</tr>
+<tr>
+<td>N1210</td>
+<td>0/0/8</td>
+<td>0/8/0</td>
+<td>0/0/8</td>
+<td>8/0/0</td>
+</tr>
+<tr>
+<td>R0</td>
+<td>0/0/8</td>
+<td>0/8/0</td>
+<td>0/0/8</td>
+<td>6/2/0</td>
+</tr>
+<tr>
+<td>C1343</td>
+<td>0/0/8</td>
+<td>6/2/0</td>
+<td>0/0/8</td>
+<td>8/0/0</td>
+</tr>
+</tbody>
+</table>
+<p>逐输入配对（Y_delivery，仅前者对 / 仅后者对 / 都对 / 都错）：F 对 V：8/0/4/0、8/0/4/0、6/0/4/2、2/0/10/0；F 对 QK：12/0/0/0、12/0/0/0、10/0/0/2、12/0/0/0；V 对 QK：4/0/0/8、4/0/0/8、4/0/0/8、10/0/0/2。</p>
+<p>首步：T_V 与 T_F 的共同首字母都领先全部其他 token（均值 +1.9 到 +2.3 与 +2.1 到 +2.7）；T_nat 与 T_QK 落后 4.4–7.0。</p>
+<h2 id="3">3. 执行</h2>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th style="text-align: right;">形成</th>
+<th style="text-align: right;">自然轨迹</th>
+<th style="text-align: right;">实际解码前向</th>
+<th style="text-align: right;">诊断前向</th>
+<th style="text-align: right;">校准</th>
+<th style="text-align: right;">墙钟</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>预检 r01（1 worker）</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">36</td>
+<td style="text-align: right;">115</td>
+<td style="text-align: right;">36</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">57 s</td>
+</tr>
+<tr>
+<td>正式 r01（2 worker）</td>
+<td style="text-align: right;">60</td>
+<td style="text-align: right;">204</td>
+<td style="text-align: right;">739</td>
+<td style="text-align: right;">204</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">124 / 123 s</td>
+</tr>
+</tbody>
+</table>
+<p>合计约 0.08 GPU 设备小时（上限 1）；峰值显存 9.7 GB。形成 token 前向：预检 312、正式 1560。首两步与诊断的全词表 logits 在服务器 <code>runs/*/worker-*/tensors/</code>（正式每 worker 约 130 MB），哈希在 <code>receipt.json</code>。</p>
+<h2 id="4">4. 解读与出口</h2>
+<ul>
+<li>与 SP-01、FX-01 合起来看（类比档，跨实验拼接只作解释，不作结论）：干预后的状态在被“推”到开始回答时，会按“取第一个编号”的规则选内容；恢复 V 历史能把模型推回到开始回答，但选择规则仍是首列；只有 q/k 与 V 一起恢复，目标选择才回来。P 面板上 V 的 48/48 很可能正是因为首字母唯一定位了目标（推测档：P 面板未测首列规则）。</li>
+<li>按合同本轮结束；不按层扫描、不重启固定名单。若继续，问题已经从“停嘴”移到“选择”：干预状态下目标条目选择需要卷积 q/k 与 V 的共同恢复，下一步应在选择这一端点上设计可失败的预测，而不是再拆 V。</li>
+</ul>
+<h2 id="5">5. 可以说 / 不可以说</h2>
+<table>
+<thead>
+<tr>
+<th>可以说</th>
+<th>不可以说</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SP 面板上只恢复深层卷积 V：首步回到共同首字母 48/48，但目标不在首列时 3/4 方向 8/8 输出首列编号；P_SV 1/4</td>
+<td>V 恢复了目标选择；q/k 无用</td>
+</tr>
+<tr>
+<td>只恢复 q/k 卷积：0/48 交付，P_SQK 0/4</td>
+<td>目标选择由 q/k 承载（q/k 单独无效，不能排除法命名）</td>
+</tr>
+<tr>
+<td>q/k + V 一起恢复（T_F）3/4 方向支持；没有输入是 V 或 QK 对而 F 错</td>
+<td>q/k 与 V 存在内部协同</td>
+</tr>
+<tr>
+<td>FX-01 中“只恢复 V 即可完整交付”不能推广到需要目标选择的面板</td>
+<td>FX-01 的 P 面板结果有误（它在 P 面板上仍成立）</td>
+</tr>
+</tbody>
+</table>
+<h2 id="6-2026-11-02">6. 附录：第二步诊断的位置分解（合同外，事后描述，2026-11-02）</h2>
+<p>用记录中已有的诊断分叉三候选分数（共同首字母后，三个编号的第二 token），按编号在记录中的位置排列。只作线索；没有零分布，没有预注册。</p>
+<ul>
+<li>赢家位置（首/中/末，12 输入）：C 4/4/4；T_nat 与 T_V 在 N4146、N1210、R0 都是 12/0/0；T_F 4/4/4（R0 6/4/2）；C1343 的 T_V 6/2/4。</li>
+<li>目标不在首列的 8 输入上，z(目标) − z(首列)：T_nat 均值 −1.6/−1.8/−1.9/−0.7，T_V −0.9/−1.1/−1.4/+1.0，T_F +2.8/+1.6/+0.3/+2.2，C +7.8。只恢复 V 使目标对首列的差平均上移约 0.6–0.7，但在三个方向仍不够翻转。</li>
+<li><strong>同 8 输入上，目标对另一个非首列干扰：受损的 T_nat 也有 29/32 目标更高</strong>（+0.1 到 +3.1；1 平 2 负），T_V 30/32。目标在末位、干扰在中位的 16 个单元（位置若有“首 &gt; 中 &gt; 末”的梯度会偏向干扰）中，T_nat 仍有 13 个目标更高（1 平 2 负），差多在 1 logit 以内。</li>
+<li>线索：受损状态在共同前缀下<strong>没有完全丢失目标信息</strong>，但有一个首列优势压过了它。这只是描述，不能区分“首列位置优势”与“对首列那个编号/条目的偏好”（f0/f1 中首列编号相同），也不能区分目标信息来自记录里的“目标条目”标签还是别的线索。区分需要独立改变记录顺序与查询目标的配对设计。</li>
+</ul></main></html>

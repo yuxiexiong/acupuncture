@@ -1,0 +1,310 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>痛点候选七步查重：转向／稀疏干预把损伤写进混合模型的递推状态</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="_1">痛点候选七步查重：转向／稀疏干预把损伤写进混合模型的递推状态</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>docs/literature/painpoint-recurrent-state-steering-audit-2026-11-05.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/literature/painpoint-recurrent-state-steering-audit-2026-11-05.zh-CN.md">固定提交原件</a>；SHA-256：<code>345074b1f538a719af373518eb0ea2c7ff04e49e893aaa34c71310c6179ccee1</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="_2">痛点候选七步查重：转向／稀疏干预把损伤写进混合模型的递推状态</h1>
+<p>2026-11-05。检索由本会话的子代理执行（WebSearch + WebFetch），主会话整理。<strong>不是穷尽综述；候选痛点仍是推测档，查重结果只回答"先例给到哪里、提纯空在哪里"，不回答"值不值"。</strong> 对应论文工作稿 §8（三件分开的事之一）与 §9。</p>
+<h2 id="_3">候选主张（查重对象）</h2>
+<p>在含 Gated DeltaNet 递推层的混合模型（Qwen3.5／Qwen3-Next 一类）上，激活转向或稀疏激活干预会把损伤写进固定大小的递推状态 S；S 不像 KV 可以逐 token 丢弃或重算，所以针对 KV 污染的修复（按 token 门控/裁剪注意力贡献、驱逐被转向的 KV 条目）在这类架构上不适用；要修，得知道损伤经哪个写入／读取操作进入状态。痛的人：在混合架构上做 persona／安全／能力转向的人，以及做缓存级防御的人。</p>
+<h2 id="2026-11-05">更正（2026-11-05 同日，按青蒿素判据重排）</h2>
+<p>第一版把先例按"已占／削弱／最近邻"三值归类，先例被当成坏消息报。按本项目的判据（青蒿入药几千年，提取出青蒿素是贡献；先例引来当现象普遍性的支持，不当否证；只禁具体过度声明，不缩小课题），下面改成三列表。另一处事实错误：第一版写 2603.16335 "作者自认是推断、未测量"。核原文：§5.3 写的是 "This provides causal evidence that the model computes its behavioral commitments … propagates them through the GatedDeltaNet recurrent state"，§6 写 "GatedDeltaNet recurrent layers 'compile' behavioral decisions during prefill into the recurrent state"，<strong>没有 hedging</strong>；但其"因果证据"是 prefill-only 有效、decode-only 为零的时序对比，没有对递推状态做任何干预或测量，没有持久性读数，没有定位到写入／读取。代码公开（github.com/zactheaipm/qwenscope，SAE 在 HF）。</p>
+<h2 id="_4">三列表</h2>
+<h3 id="_5">先例支持（青蒿入药：现象有人见过，没人提纯）</h3>
+<table>
+<thead>
+<tr>
+<th>先例</th>
+<th>给了什么</th>
+<th>没给什么（我们的落点）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2603.16335 Behavioral Steering in a 35B MoE（正文；代码公开）</td>
+<td>生产级混合模型 Qwen3.5-35B-A3B 上，prefill 期转向有效、decode 期为零，作者归因递推状态承诺；α 超 5 全崩，副作用按方向不按幅度</td>
+<td>对递推状态零干预、零测量；无持久性；无写入／读取定位。<strong>可直接复用其代码与方向做转向型对照</strong></td>
+</tr>
+<tr>
+<td>2609.04434 Attention Recalls / Recurrence Controls（摘要）</td>
+<td>persona／语言 70–80% 经递推通道；检索经 KV</td>
+<td>干净交换，无干预后的损伤与修复</td>
+</tr>
+<tr>
+<td>2601.01972 HiSPA（摘要，EMNLP'26 Findings）</td>
+<td>短触发串不可逆覆写 Mamba 状态，Jamba／Nemotron-3 混合同样崩</td>
+<td>无修复；非转向；非 GDN。证明"状态可被持久污染"且"没人会修"</td>
+</tr>
+<tr>
+<td>2609.32942 The Key Handoff（摘要）</td>
+<td>末注意力层之后的递推层仍可写入事实并改答案</td>
+<td>干净写入，无损伤</td>
+</tr>
+<tr>
+<td>2609.33093 How Linear Attention Remembers（正文）</td>
+<td>干扰由后续写入与目标方向重叠决定；future work 列了"选择性门控／刷新／分区递推写入"三种修法，未做</td>
+<td>近邻自己点名的开口；写入重叠机制可借用作我们的解释工具</td>
+</tr>
+<tr>
+<td>2609.32102 Residual Streams Read, Recurrent States Remember（摘要）</td>
+<td>明说"恢复／持久／因果使用需分别测量"</td>
+<td>同上，开口由近邻点名</td>
+</tr>
+<tr>
+<td>2609.30950、2609.38169、2610.15139（摘要）</td>
+<td>混合／delta-rule 状态中的误差按通道衰减率持久、长解码累积</td>
+<td>量化误差不是转向损伤，但同一承载机制</td>
+</tr>
+<tr>
+<td>clehaxze RWKV-7 gemlog（正文，非同行评审）</td>
+<td>直接编辑递推状态改事实，200 token 后仍有效，同实体属性串扰</td>
+<td>非 GDN、非混合、非转向向量</td>
+</tr>
+<tr>
+<td>实务抱怨：persona-lab（Qwen3.5-4B）、llama.cpp 分支 PR、atlas PR#1132、2604.11120</td>
+<td>转向后敌意／切语言／循环；KV 跨请求泄漏；"SSM 状态是否需分键未处理"；Qwen3.5 对转向 ASR 反常低且无解释</td>
+<td>没人归因到递推状态。这是"痛在、没人知道痛在哪"的直接证据</td>
+</tr>
+<tr>
+<td>2404.05971、2609.04721（Zamba2 写入点转向，无公开代码）、WriteSAE 2605.12770</td>
+<td>SSM／混合上转向与写入编辑可做</td>
+<td>都没测持久性与损伤</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_6">事实约束与竞争解释（必打基线，不是否证）</h3>
+<table>
+<thead>
+<tr>
+<th>约束</th>
+<th>内容</th>
+<th>我们必须做什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2605.07755 Error Control Dynamics（正文前 100k，NeurIPS'26）</td>
+<td>仿射 SSM（Mamba 系）注入的状态误差经全局对角衰减自然收缩；<strong>未测 DeltaNet</strong></td>
+<td>持久性必须在 GDN 上实测；本项目 CFM-S1 的"L0 撤针后不衰减、L12 衰减"是现成对表数据，尚未对表</td>
+</tr>
+<tr>
+<td>2609.33093、2510.19861</td>
+<td>检索类行为经 KV，递推不补偿</td>
+<td>痛点只写 persona／安全／风格转向，不写检索</td>
+</tr>
+<tr>
+<td>HELIX 2602.17691</td>
+<td>只改约 10% 注意力层即可绕开 Mamba-2 层漂移</td>
+<td>回避式解法是必比基线：若 S 损伤是问题，注意力层转向以什么代价绕开</td>
+</tr>
+<tr>
+<td>CLASP、SpectralGuard</td>
+<td>状态污染可检测</td>
+<td>我们的位置在检测之后：修复经哪个操作</td>
+</tr>
+<tr>
+<td>2605.10664 GCAD</td>
+<td>KV 级修复在注意力模型有效</td>
+<td>"在混合架构失效"必须演示，不能假定</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_7">谁会因此改做法</h3>
+<ul>
+<li>在 Qwen3.5／Qwen3-Next 一类模型上做转向的人（含 2603.16335 代码的使用者）：知道损伤写进 S 且不随 KV 驱逐消失后，转向窗口与层类型的选择会变。</li>
+<li>推理引擎：vLLM 已给混合模型状态块清零（PR #56524）；atlas PR#1132 明问"SSM 状态是否需按转向向量分键"。答案决定缓存分键策略。</li>
+<li>防御作者（CLASP／SpectralGuard 一线）：从检测走到修复需要知道损伤落在写入项、擦除项还是读取。</li>
+</ul>
+<h3 id="_8">结论（改写）</h3>
+<p>现象层先例充分：生产级混合模型上 prefill 转向经递推状态承诺已被观察（2603.16335），persona 落在递推通道（2609.04434），状态可被持久污染且无人修（HiSPA）。<strong>提纯空着</strong>：转向损伤在 GDN 状态中的持久性读数、KV 级修复在混合架构上失效的演示、损伤落在哪个写入／读取操作——三件近邻自己点名未做（2609.33093 future work、2609.32102）。两条必打基线：Mamba 系自然衰减（2605.07755）与注意力层回避（HELIX）。</p>
+<p><strong>对论文的含义（主会话判断）：</strong> 痛点从推测档升到可写，缺的是本项目自己的两条证据：转向型（非单坐标）干预在 S 中的持久性，与 KV 级修复在同一受针运行上失效的直接演示；2603.16335 的公开代码可作转向型对照的起点。单坐标 down_proj 干预到转向向量的迁移是<strong>类比档</strong>。不在 NWR-01 范围内，是否立项另议。禁的只有一句："首次发现递推状态可被污染"。</p>
+<h2 id="_9">命中表（按步）</h2>
+<h3 id="1">步 1 抽象阶梯</h3>
+<p>查询：<code>activation steering Mamba state space steering vector persistent effect recurrent state</code>；<code>steering vectors RWKV OR Mamba OR "linear attention" "representation engineering" hybrid</code>；<code>activation patching Mamba causal intervention SSM state</code>；arXiv API <code>steering AND (DeltaNet|linear attention|state space|Mamba|RWKV) AND (activation|intervention)</code>。</p>
+<table>
+<thead>
+<tr>
+<th>命中</th>
+<th>说了什么</th>
+<th>对主张</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2404.05971 Does Transformer Interpretability Transfer to RNNs（正文）</td>
+<td>Mamba-2.8B/RWKV-v5 上 CAA 有效略弱；状态转向与残差转向不可加，解释为"残差转向已经影响状态"；未测持久</td>
+<td>支持前提，未量化</td>
+</tr>
+<tr>
+<td>2602.22719 Activation Subspace Bottlenecks（摘要）</td>
+<td>Mamba 系 7 模型 Δ 敏感子空间缩放转向；无持久／副作用分析</td>
+<td>无关</td>
+</tr>
+<tr>
+<td>2609.32102 Residual Streams Read, Recurrent States Remember（摘要）</td>
+<td>Mamba-1/2/3 状态 Jacobian lens + 状态转向；"恢复／持久／因果使用需分别测量"</td>
+<td>支持"空着"</td>
+</tr>
+<tr>
+<td>2609.04721 Locating and Steering Refusal Beyond Attention（正文前 100k）</td>
+<td>Falcon-Mamba-7B、RWKV-6、Zamba2-7B；拒绝方向加在 SSM 块写入点；开环误拒 86%</td>
+<td>部分削弱：写入点转向已有；无持久分析</td>
+</tr>
+<tr>
+<td>2603.16335 Behavioral Steering in a 35B MoE（正文）</td>
+<td>Qwen3.5-35B-A3B；decode-only 无效、prefill-only 有效，§5.3 写成"causal evidence … propagates through the GatedDeltaNet recurrent state"，无 hedging，但证据只是时序对比，未干预或测量状态；α&gt;5 崩；代码公开</td>
+<td>先例支持（第一版误写"作者自认推断"，已更正）</td>
+</tr>
+<tr>
+<td>2602.17691 HELIX（摘要）</td>
+<td>Granite 4.0 H 只在 ~10% 注意力层转向，称足以纠正 Mamba-2 层漂移</td>
+<td>削弱弱：回避式解法</td>
+</tr>
+<tr>
+<td>2605.12770 WriteSAE（正文前 100k）</td>
+<td>GDN/Mamba-2/RWKV-7 写入矩阵 SAE；Qwen3.5-0.8B 三个 cache 位置替换写入；持久性只由遗忘门公式隐含</td>
+<td>已知近邻，未测持久</td>
+</tr>
+<tr>
+<td>2606.11386、2609.11063（摘要）</td>
+<td>与 SSM 状态持久无关</td>
+<td>无关</td>
+</tr>
+</tbody>
+</table>
+<h3 id="2">步 2 方法论单独搜</h3>
+<p>查询：<code>"state space" OR Mamba "prompt injection" persistence recurrent state contamination error accumulation</code>；<code>linear RNN SSM perturbation contractive Lyapunov "error propagation" Mamba-2 "gated delta"</code>；arXiv API <code>("hidden state"|"recurrent state") AND (poisoning|contamination|persistent) AND (Mamba|"state space"|"linear attention"|hybrid)</code>；<code>"Hidden State Poisoning" defense OR "state reset"</code>。</p>
+<table>
+<thead>
+<tr>
+<th>命中</th>
+<th>说了什么</th>
+<th>对主张</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2601.01972 HiSPA（摘要）</td>
+<td>短触发串不可逆覆写 Mamba 状态；Jamba/Nemotron-3-Nano 混合同样崩；无修复</td>
+<td>占"输入侧状态污染持久"</td>
+</tr>
+<tr>
+<td>2603.12206 CLASP、2603.12414 SpectralGuard（摘要）</td>
+<td>逐 token 分类／谱半径监控，只检测</td>
+<td>占"检测"；"修复经哪个操作"空</td>
+</tr>
+<tr>
+<td>2605.07755 Error Control Dynamics（正文前 100k）</td>
+<td>Mamba/Mamba-3 经全局对角衰减收缩注入误差；token-gated RNN 放大；未测 DeltaNet</td>
+<td>削弱 (b)</td>
+</tr>
+<tr>
+<td>2609.30950、2609.38169、2610.15139（摘要）</td>
+<td>混合／delta-rule 状态量化误差按通道衰减率持久、长解码累积</td>
+<td>蕴含"写进 S 的扰动按衰减率留存"</td>
+</tr>
+<tr>
+<td>vLLM PR #56524</td>
+<td>混合模型 Mamba 状态块分配时清零防跨请求污染</td>
+<td>工程侧已意识到状态残留</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3">步 3 蕴含检索</h3>
+<p>查询：<code>hybrid model attention vs recurrent layers ablation retrieval dominated by attention Jamba Zamba Nemotron-H</code>；<code>steering prefill only OR "prefix steering" vs generation persistence recurrent</code>；<code>steering Mamba decays OR half-life OR fades after intervention</code>。</p>
+<table>
+<thead>
+<tr>
+<th>命中</th>
+<th>说了什么</th>
+<th>对主张</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2609.04434（摘要）</td>
+<td>检索只经 KV；语言／persona 经递推（70–80%）</td>
+<td>支持：persona 转向落在递推通道</td>
+</tr>
+<tr>
+<td>2609.33093（正文）</td>
+<td>递推替换恢复 &lt;1–3.6%、KV 96–100%；干扰由后续写入与目标方向重叠决定；未测衰减</td>
+<td>削弱检索类；写入重叠机制可借用</td>
+</tr>
+<tr>
+<td>2510.19861（摘要）</td>
+<td>Jamba-Mini/RecurrentGemma 去注意力检索归零</td>
+<td>削弱：检索无人痛</td>
+</tr>
+<tr>
+<td>2609.32942 The Key Handoff（摘要）</td>
+<td>末注意力层后的递推层仍可写入事实改答案</td>
+<td>支持：递推是可查询记忆</td>
+</tr>
+<tr>
+<td>2610.04967 Prefix Steering、2609.11020（摘要）</td>
+<td>transformer 上单 token 前缀转向持续影响；KV 轨迹移植改 persona</td>
+<td>相邻，transformer 侧</td>
+</tr>
+</tbody>
+</table>
+<h3 id="4">步 4 同义术语枚举</h3>
+<p>词表：steering vector / activation addition / ActAdd / CAA / RepE / concept vector / ITI / activation patching / SAE steering / control vector / cache steering / state steering / write-site；Mamba(-1/2/3) / RWKV(-5/6/7) / GLA / DeltaNet / Gated DeltaNet / Jamba / Zamba / Samba / Hymba / Qwen3-Next / Qwen3.5 / Nemotron-H / Nemotron 3 / Falcon-H1 / Granite 4 H / Bamba / MiniMax-01 / RecurrentGemma / Griffin / xLSTM。组合查询见子代理记录。命中：clehaxze.tw gemlog 2026-04-12（非同行评审，正文）：RWKV-7 直接编辑递推状态改事实、200 token 后仍有效、同实体属性串扰。其余架构除 2609.04721（Zamba2）、2602.17691（Granite 4 H）外无转向工作。中文检索无命中。</p>
+<h3 id="5-semantic-scholar">步 5 引用链（Semantic Scholar）</h3>
+<table>
+<thead>
+<tr>
+<th>源</th>
+<th>被引</th>
+<th>相关的</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2605.10664</td>
+<td>8</td>
+<td>无一涉及 SSM／递推／混合</td>
+</tr>
+<tr>
+<td>2609.33093</td>
+<td>0</td>
+<td>—</td>
+</tr>
+<tr>
+<td>2609.04434</td>
+<td>4</td>
+<td>2609.32942、2610.26830</td>
+</tr>
+<tr>
+<td>2605.12770</td>
+<td>2</td>
+<td>2609.25053 LatentPort、2610.28753</td>
+</tr>
+<tr>
+<td>2601.01972</td>
+<td>2</td>
+<td>CLASP、SpectralGuard</td>
+</tr>
+<tr>
+<td>2404.05971</td>
+<td>12</td>
+<td>2609.32102、2609.04721、WriteSAE；无混合模型转向持久性工作</td>
+</tr>
+</tbody>
+</table>
+<h3 id="6">步 6 对抗式检索</h3>
+<ul>
+<li>(a) 有人在 Mamba／混合上转向并报告持久效应或修复？无多轮／持久测量；最近 2603.16335（推断）、2609.04721（只报误拒）。未被占。</li>
+<li>(b) delta-rule 擦除项会自然冲掉扰动？无 GDN 扰动注入实验。2605.07755 证 Mamba 系全局衰减收缩（未含 DeltaNet）；由 2609.33093 可推：与后续 key 正交的扰动不被 delta 项擦、只随 α 衰减 —— 推导档，无人测。</li>
+<li>(c) 行为主要由 KV 决定？检索类：是。persona／语言／风格：否（2609.04434、2609.32942）。痛点在 persona／安全转向上成立，在检索类不成立。</li>
+<li>(d) 实务抱怨：见结论段；存在但无人归因到递推状态。</li>
+</ul>
+<h3 id="7">步 7 边界申报</h3>
+<ul>
+<li>Semantic Scholar 被引滞后；Google Scholar、OpenReview 未查，在审稿件未覆盖。</li>
+<li>非 arXiv：Research Square 两篇（rs-10023075、rs-11201314 "Where the Answer Is Born"，GDN 0.8B/27B 因果干预）只有标题，正文取不到。</li>
+<li>非英文：仅一条中文查询；日／韩／俄未查。</li>
+<li>检索截至 2026-11-04 的 arXiv 列表；2611 月内投稿可能未索引。</li>
+<li>未读完：2605.10664 附录 J、WriteSAE 后 60k、2609.04721 后 166k、2605.07755 后 59k。</li>
+</ul>
+<h3 id="_10">真正取到正文的</h3>
+<p>2605.10664（前 100k）、2605.12770（前 100k）、2404.05971、2609.04721（前 100k）、2605.07755（前 100k）、2609.33093、2603.16335、2604.11120（前 100k）、clehaxze gemlog、persona-lab README、llama.cpp 分支 PR#1、atlas PR#1132。其余只有摘要。</p></main></html>

@@ -1,0 +1,124 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>B3-P0（平方范数账目）结果报告</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="b3-p0">B3-P0（平方范数账目）结果报告</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-b3p-energy-ledger-v1-2026-11-01/REPORT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-b3p-energy-ledger-v1-2026-11-01/REPORT.zh-CN.md">固定提交原件</a>；SHA-256：<code>bfb544d1135334c9003ff2a46a6d6da023ab696007e871b8cdece6420a5fbfa3</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="b3-p0_1">B3-P0（平方范数账目）结果报告</h1>
+<p>日期：2026-11-01。<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-b3p-energy-ledger-v1-2026-11-01/CONTRACT.zh-CN.md">合同 r01</a>；<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-b3p-energy-ledger-v1-2026-11-01/DECISIONS.zh-CN.md">决策 D1–D6</a>。代码 <code>490378b</code>，freeze-r01 <code>892055b2…bf31</code>。数据：B3 正式运行（f2ad7d8）。0 模型前向、0 GPU；CPU 71 秒墙钟，8.7 核分钟。<strong>已见数据上的探索分析</strong>（执行者冻结前看过部分逐层总量，D1）。同一助手实现、运行与撰写。</p>
+<h2 id="1">1. 结论（不利的先说）</h2>
+<ol>
+<li><strong>没有单分支干预候选（出口：no_candidate）。</strong> 账目最集中的分支是第31层 MLP（FIX 情景份额中位数 0.33），但只在 1/4 个方向上达到 ≥5/6 情景（各方向分别为 4、5、2、4），没有通过；其余分支份额 ≤0.03。按合同不递补，本路线给不出单分支的尺度干预预测。</li>
+<li><strong>尺度超加和来自两组主效应向量对齐，而不是向量交互。</strong> FIX 切分在 4/4 方向上分类为 <code>aligned_main</code>：对齐项 2⟨a,b⟩ = 1059–1222，<strong>大于</strong>整个 K(‖h‖²)（529–932），份额为 1.30–2.00。向量交互项是<strong>负的</strong>（−279 到 −530），抵消了一部分。也就是说，两组历史变化在最终表示里各自造成的改变 a、b 方向相近（cos ≈ 0.72–0.78），合起来的长度超过分别变化之和；非加性的向量交互反而在压低范数。</li>
+<li><strong>对齐几乎全部发生在停止读出方向之外</strong>（停止单位方向上的对齐只占 0.1–0.3%）。这把 B3 里“分子增加，但尺度增长更多”具体化为：两组主效应共享一个与停止读出基本正交的方向，叠加后抬高最终 RMS。属于推导档：是精确恒等式下的分解，不是因果结论。</li>
+<li><strong>P1、P2 都成立，但 P2 有明显混淆。</strong> P1：对齐份额 ≥0.5 出现在 4/4 方向。P2：FIX 的 cos(a,b) 在 4/4 方向上高于两个随机切分（0.72–0.78 对 0.38–0.53；逐输入看为 11/12）。但随机 45 头的主效应小得多（‖a‖ ≈ 10–13，FIX ≈ 24–28），cos 虽然与尺度无关，却依赖信噪比：信号弱、特异成分多的小向量，cos 天然更低。<strong>P2 不能读作“FIX 特殊”。</strong></li>
+<li>随机切分在合同意义上 <code>not_formable</code>：每方向有 2–5 个输入的 K(‖h‖²) ≤ 0，所以份额与分类都不成立；均值只作描述（对齐 292–499，交互 −152 到 −268）。</li>
+</ol>
+<h2 id="2-fix12">2. 终点分解（FIX，12 输入均值）</h2>
+<table>
+<thead>
+<tr>
+<th>方向</th>
+<th style="text-align: right;">K(‖h‖²)</th>
+<th style="text-align: right;">对齐 2⟨a,b⟩</th>
+<th style="text-align: right;">向量交互</th>
+<th style="text-align: right;">对齐份额</th>
+<th style="text-align: right;">cos(a,b)</th>
+<th style="text-align: right;">K(r)</th>
+<th style="text-align: right;">K(z)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>N4146</td>
+<td style="text-align: right;">932</td>
+<td style="text-align: right;">1211</td>
+<td style="text-align: right;">−279</td>
+<td style="text-align: right;">1.30</td>
+<td style="text-align: right;">0.72</td>
+<td style="text-align: right;">0.130</td>
+<td style="text-align: right;">−1.71</td>
+</tr>
+<tr>
+<td>N1210</td>
+<td style="text-align: right;">866</td>
+<td style="text-align: right;">1173</td>
+<td style="text-align: right;">−307</td>
+<td style="text-align: right;">1.35</td>
+<td style="text-align: right;">0.76</td>
+<td style="text-align: right;">0.124</td>
+<td style="text-align: right;">−0.94</td>
+</tr>
+<tr>
+<td>R0</td>
+<td style="text-align: right;">529</td>
+<td style="text-align: right;">1059</td>
+<td style="text-align: right;">−530</td>
+<td style="text-align: right;">2.00</td>
+<td style="text-align: right;">0.76</td>
+<td style="text-align: right;">0.071</td>
+<td style="text-align: right;">−0.95</td>
+</tr>
+<tr>
+<td>R1</td>
+<td style="text-align: right;">799</td>
+<td style="text-align: right;">1222</td>
+<td style="text-align: right;">−423</td>
+<td style="text-align: right;">1.53</td>
+<td style="text-align: right;">0.78</td>
+<td style="text-align: right;">0.112</td>
+<td style="text-align: right;">−1.56</td>
+</tr>
+</tbody>
+</table>
+<h2 id="3-r1fix">3. 逐层轨迹（描述；R1，FIX）</h2>
+<ul>
+<li><strong>对齐不是在最后几层出现的</strong>：第 17 层 cos(a,b) 已到 0.58，第 18 层起稳定在 0.72–0.81；对齐项从第 17 层起持续增长（20 → 64 → … → 1222）。</li>
+<li>向量交互从第 17 层起为负，并持续加深（第 29 层约 −573）。K(‖h‖²) 在第 18–28 层为负，第 29 层起才转正，因为对齐项的增长超过了交互项。</li>
+<li>这修正了我冻结前看逐层总量（D1）时的直觉：终点在后几层“变成正的”，是长期存在的对齐项最终超过负交互，<strong>不是</strong>后几层新产生了超加和。</li>
+</ul>
+<h2 id="4-mlp">4. 分支与 MLP（描述）</h2>
+<ul>
+<li><strong>分支归属</strong>：对齐项和交互项都分布在第 17–31 层的多个分支上。第31层 MLP 占比最大（对齐约 454–467，交互约 +278 到 +284），其次是第 23、27、28 层 mixer 和第 28–30 层 MLP，各自几十到一百出头。</li>
+<li><strong>MLP 产生/继承</strong>（第 14–31 层可判，第 13 层因 K 太小不可判）：各层 MLP 在可加输入上<strong>自己产生的</strong>交互贡献普遍为负（第 18–30 层为 −10 到 −136）；第31层是巨大的两项相消：继承 +1723、产生 −1439，净 +284。读法：MLP 的非线性在这里普遍是次加和的（压缩），第31层 MLP 的正交互来自它继承的输入交互，大于它自身的压缩。</li>
+<li><strong>第31层可加供体反事实</strong>（FP64 精确，含 MLP31 的真实响应）：清零 attention31 的向量交互，使 K(r) 下降 9–48%，K(z) 向 0 移动（例如 R1 从 −1.57 到 −0.86）；清零 MLP31 的交互，使 K(r) 下降 25–35%。但两者都会移动停止分子（|Δp₁₁|/r₁₁ 最大 0.26–0.70 logit，超过 0.1）。值得注意的是：attention31 自己的账目交互很小（+16/−6），清零它却能大幅改变 K(‖h‖²)，因为 MLP31 会对它作出响应。这正说明冻结下游的账目不等于真实响应（评审第 3 点）。这些数字只作描述，没有通过候选规则，不是预测卡。</li>
+</ul>
+<h2 id="5">5. 执行</h2>
+<p>全部工程闸门通过：B3 哈希一致；BF16 逐层闭合；四格入口相同；FP64 下伸缩和、能量恒等式、归属求和的误差都为 0（BF16 数值的乘积与求和在 FP64 中精确）；z 重算误差 ≤0.064；MLP 单格重算相对误差 ≤0.0195（闸门 0.03）；第31层 FP64 路径 ≤0.0056。</p>
+<p>一次零信息执行失败已记账：第一次启动时，计划文档没有同步到服务器，冻结报错；而冻结与运行被一起放进后台，没有及时发现。修正同步后重新冻结运行，期间没有执行任何分析、没有看到任何结果。</p>
+<h2 id="6">6. 出口与下一问题</h2>
+<p>按合同 §6：无候选，且 FIX 为 <code>aligned_main</code> → <strong>不做分支干预；下一问题改为“两组主效应为什么对齐”。</strong> 几个具体的子问题（都没有设计、没有授权）：</p>
+<ul>
+<li>对齐方向是什么：a、b 的公共分量是否就是各自 ⟨a, c⟩ &lt; 0 的那部分（沿 −c 收缩，这是 P1 的推测依据，尚未检验）。</li>
+<li>P2 的信噪比混淆：要比较 FIX 与随机切分的对齐，需要主效应大小匹配的参照（例如按 ‖a‖ 匹配的随机头集合，或同样有强主效应的另一组头）。</li>
+<li>对齐从第 17–18 层开始，正好落在 N 背景深层的第一批 G 层之后；它是否由 T 历史在多个头上共享的同一方向造成。这是可以检验的假设，尚未检验。</li>
+</ul>
+<h2 id="7">7. 可以说 / 不可以说</h2>
+<table>
+<thead>
+<tr>
+<th>可以说</th>
+<th>不可以说</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FIX/其余的最终 RMS 超加和，在精确账目上完全由两组主效应向量对齐承担，向量交互为负</td>
+<td>对齐是因果机制，或已定位到某个运算</td>
+</tr>
+<tr>
+<td>对齐几乎全部在停止读出方向之外</td>
+<td>其余头带来的是“无关信息”</td>
+</tr>
+<tr>
+<td>对齐从第 17–18 层起已存在</td>
+<td>第31层产生了超加和</td>
+</tr>
+<tr>
+<td>FIX 的 cos(a,b) 高于所测两个随机切分</td>
+<td>FIX 更特殊（主效应大小没有匹配）</td>
+</tr>
+<tr>
+<td>单分支可加供体不能只改尺度而保持停止分子不动（第31层两个分支精确计算的结果）</td>
+<td>不存在任何尺度干预</td>
+</tr>
+</tbody>
+</table></main></html>

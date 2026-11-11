@@ -1,0 +1,282 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>已有数据分析：针的有效剂量、S2 同起点反应与 S3 输出效应</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="s2-s3">已有数据分析：针的有效剂量、S2 同起点反应与 S3 输出效应</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-intervention-chain-analysis-v1-2026-10-31/REPORT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-intervention-chain-analysis-v1-2026-10-31/REPORT.zh-CN.md">固定提交原件</a>；SHA-256：<code>9534d79d68304cb817bbfc3b7202fe7bf0fa4f8a0f57fecabe5aab4bf7a1c41d</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="s2-s3_1">已有数据分析：针的有效剂量、S2 同起点反应与 S3 输出效应</h1>
+<p>日期：2026-10-31。状态：<strong>本次分析已完成，非实验计划。</strong> 使用 academic-research-suite 的证据综合流程与 ponytail 的最小脚本原则；同一助手分析和自查，不是独立复现团队。</p>
+<p>后续综合：已与固定提交4240e55的事实信号分析合并评估，见<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-mechanism-research-direction-decision-v1-2026-10-31.zh-CN.md">当前课题推进判断</a>第3及6节。<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-intervention-chain-analysis-v1-2026-10-31/fact-signal-integration-audit.json">综合复核表</a>保存对方JSON的36行及本次汇总：只有8行进入其“v保留而e变弱”判据。该复核不改变本报告实测数值，也不是新增张量提取或模型运行。</p>
+<p>总问题：局部激活干预为什么引起显著回答变化，历史状态的形成、更新与读取在其中承担什么作用？撤针是现有数据的条件，不是总目标。本次没有构造模型，没有模型前向、反向或新生成，没有使用 GPU。只读取旧记录、两份已有目标权重张量，并在 CPU 上重建保存的局部递推。</p>
+<h2 id="1">1. 分析完成了什么</h2>
+<ul>
+<li>核验正式收据中的156个文件哈希（108份S2/S3记录及48份S2认证）；核验可用的22项冻结源码/合同依赖。</li>
+<li>读取并逐一核验84份S2轨迹张量哈希和84条记录对应的校准哈希，重建48个同起点比较 × 3层（L16–18）。144个首步的写入项、处理作用与净状态差与原S2分析一致。</li>
+<li>S3的96个原生参照与S2在提示哈希、事实边界、首步记录、候选token及逐token分数上完全对应。</li>
+<li>核对两个针的目标权重矩阵与正式metadata的SHA-256一致，用CPU复算注入常数；不加载完整模型。</li>
+<li>CPU提取/递推脚本耗时72.854秒，不含下载、核查和报告。状态重建最大相对误差8.768e−7；raw读取最大相对误差0.002489，均在原协议容限内。</li>
+</ul>
+<p>这些是计算与来源核验，不是机制假说被证明。六个基础情景各两个事实版本；token、层、头不算独立样本。所有新的跨阶段综合是探索性分析，没有改动S1–S3判据或新增显著性检验。</p>
+<p>来源与复算：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-intervention-chain-analysis-v1-2026-10-31/result.json">机器结果</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-intervention-chain-analysis-v1-2026-10-31/joined-by-scenario.csv">逐情景连接表</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-intervention-chain-analysis-v1-2026-10-31/native-chain.json">完整逐步计算量</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-intervention-chain-analysis-v1-2026-10-31/source-manifest.json">源文件哈希清单</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-intervention-chain-analysis-v1-2026-10-31/extract_cpu.py">CPU提取脚本</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-intervention-chain-analysis-v1-2026-10-31/analyze.py">本地对齐脚本</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-intervention-chain-analysis-v1-2026-10-31/cpu-execution.log">执行日志</a>。</p>
+<h2 id="2">2. 针到底有多大：已核实的值和无法恢复的值</h2>
+<p>冻结注入代码在 MLP down-projection 前给一个通道加常数：</p>
+<p><code>offset = BF16(dose × reference_scale / ‖W[:,channel]‖)</code>。</p>
+<p><code>reference_scale</code> 是干净校准运行中，该层输出残差向量范数在除首token外各位置的中位数；不是当前token的范数，也不是该神经元自然激活的标准差。这里dose=−1。</p>
+<table>
+<thead>
+<tr>
+<th>量（12输入范围）</th>
+<th style="text-align: right;">L0/C4146</th>
+<th style="text-align: right;">L12/C3621</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>干净参考残差尺度</td>
+<td style="text-align: right;">2.673–2.881</td>
+<td style="text-align: right;">8.672–8.905</td>
+</tr>
+<tr>
+<td>目标权重列范数，CPU FP32复算</td>
+<td style="text-align: right;">0.440035</td>
+<td style="text-align: right;">0.470326</td>
+</tr>
+<tr>
+<td>BF16加法常数，CPU复算</td>
+<td style="text-align: right;">−6.5625 至 −6.0625</td>
+<td style="text-align: right;">−18.875 至 −18.5</td>
+</tr>
+<tr>
+<td>常数乘权重列得到的输出向量范数</td>
+<td style="text-align: right;">2.668–2.888</td>
+<td style="text-align: right;">8.701–8.877</td>
+</tr>
+<tr>
+<td>上项 / 干净参考尺度</td>
+<td style="text-align: right;">0.9982–1.0024</td>
+<td style="text-align: right;">0.9969–1.0034</td>
+</tr>
+<tr>
+<td>仅早段针的位置数</td>
+<td style="text-align: right;">16–28</td>
+<td style="text-align: right;">16–28</td>
+</tr>
+<tr>
+<td>仅晚段针的位置数</td>
+<td style="text-align: right;">27–33</td>
+<td style="text-align: right;">27–33</td>
+</tr>
+<tr>
+<td>两段都开的位置数</td>
+<td style="text-align: right;">43–57</td>
+<td style="text-align: right;">43–57</td>
+</tr>
+</tbody>
+</table>
+<p><strong>结论：这是一个坐标稀疏、但校准有效幅度约为该层参考残差尺度的干预，而且重复作用于多个token。没有依据把它称为“一次微小扰动”。</strong> 这不证明所有效应都只是普通损伤，也不排除方向和历史的特定作用；它撤销的是“小针必然被模型异常放大”这个未经检验的前提。跨层绝对数值不能直接比较功能强弱。</p>
+<p><strong>实际精度缺口：</strong> 本批S2的<code>masked_injection</code>只保存了位置和次数，没有保存每个token加法前后的目标激活。上表是冻结公式与权重、校准值恢复的常数及其线性映射，不是逐token实际差分的精确测量。BF16加法还会舍入，down-projection也有数值误差；CPU FP32列范数也不冒充GPU原日志。因此无法恢复每步实际的 <code>changed−original</code>、每步扰动/当前残差的比值，或相对自然通道激活的倍数。这一缺口不能用校准日志填造。校准来源与注入函数已随源文件保存。</p>
+<h2 id="3-s2">3. S2同起点：针插入后的第一步已经能解释什么</h2>
+<p>比较01/00是在干净前史下开启晚段针；11/10是在已有早段针前史下开启同一晚段针。每一对都共享其自己的旧状态，两个比较之间的旧状态可以不同。观察点为固定b+1，未挑最大效应时刻。</p>
+<p>以下数值先在每个输入内合并L16–18全部头，再平均同情景的两个事实版本，最后报告六情景中位数（范围）。相对变化统一为该变量的差异范数/参照变量范数，不把不同变量的比值当传递增益。</p>
+<table>
+<thead>
+<tr>
+<th>首步计算量</th>
+<th style="text-align: right;">L0，01/00</th>
+<th style="text-align: right;">L0，11/10</th>
+<th style="text-align: right;">L12，01/00</th>
+<th style="text-align: right;">L12，11/10</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>卷积前V相对变化</td>
+<td style="text-align: right;">.368（.248–.427）</td>
+<td style="text-align: right;">.648（.554–.698）</td>
+<td style="text-align: right;">.552（.478–.580）</td>
+<td style="text-align: right;">.586（.532–.626）</td>
+</tr>
+<tr>
+<td>进入递推的v相对变化</td>
+<td style="text-align: right;">.137（.085–.153）</td>
+<td style="text-align: right;">.293（.260–.335）</td>
+<td style="text-align: right;">.179（.160–.196）</td>
+<td style="text-align: right;">.207（.188–.219）</td>
+</tr>
+<tr>
+<td>旧预测变化/新v变化的范数比</td>
+<td style="text-align: right;">.342（.310–.440）</td>
+<td style="text-align: right;">.649（.594–.788）</td>
+<td style="text-align: right;">.356（.287–.402）</td>
+<td style="text-align: right;">.385（.358–.429）</td>
+</tr>
+<tr>
+<td>旧状态处理作用/加性写入变化的范数比</td>
+<td style="text-align: right;">.456（.395–.489）</td>
+<td style="text-align: right;">.562（.538–.634）</td>
+<td style="text-align: right;">.495（.460–.513）</td>
+<td style="text-align: right;">.437（.400–.503）</td>
+</tr>
+<tr>
+<td>写入变化与处理作用的余弦</td>
+<td style="text-align: right;">−.426</td>
+<td style="text-align: right;">−.508</td>
+<td style="text-align: right;">−.454</td>
+<td style="text-align: right;">−.547</td>
+</tr>
+<tr>
+<td>合成净状态差/加性写入变化的范数比</td>
+<td style="text-align: right;">.906（.885–.924）</td>
+<td style="text-align: right;">.865（.800–.951）</td>
+<td style="text-align: right;">.892（.840–.922）</td>
+<td style="text-align: right;">.846（.835–.877）</td>
+</tr>
+</tbody>
+</table>
+<p>计算关系是 <code>m=(αS旧)ᵀk</code>、<code>e=v−m</code>，再用e更新。公式不是发现，实测方向与大小才是这里的证据。</p>
+<p>每一对首步的S旧相同，因此该步m差异来自当前α/k对共同旧状态的不同处理和读取；两个前史比较之间的S旧则不同。m差异变大不等于“记忆内容损坏了相应倍数”，也不是独立旧状态贡献。</p>
+<p><strong>第一点：共同起点的旧状态处理作用，在这一步抵消了一部分加性写入差异。</strong> 不是“两项同向把扰动放大”；上述合并净差小于单独写入差。只看v或加性B会误述真实更新。但这不证明旧状态处理对回答有保护作用：局部状态范数与回答相关方向不是同一个终点。</p>
+<p><strong>第二点：早段历史改变了模型对后来同一针设置的反应。</strong> 为避免参照范数不同造成假象，再比较绝对差异范数：L0中，11/10首步的v差异是01/00的1.68–2.70倍；旧预测m差异为2.66–4.51倍；raw读取差异为1.22–2.05倍。L12对应v差异为1.16–1.24倍，raw读取为1.29–1.52倍。这里比较的是局部有限差分的背景依赖，不是旧历史的独立贡献比例。</p>
+<p>这比“写入和处理都变了”多说明了一步：先前干预留下的历史，会改变后续针在实际计算中的表现，并非只能作为一个与新扰动独立相加的残留量。仍不能由此指定某个唯一门或某层是原发机制。</p>
+<h2 id="4-s3">4. 与S3输出效应接起来，能接到哪一步</h2>
+<h3 id="41">4.1 先纠正两个容易把链条接错的位置</h3>
+<ol>
+<li><strong>S3的V在卷积前，S2公式中的v在卷积之后。</strong> S3 R也是<code>in_proj_a</code>输出，K是卷积前k通道加<code>in_proj_b</code>输出；它们分别经模型计算形成α、k、β。不能把S3效果直接说成只交换了公式里的独立写入项。当前逐步表同时保留卷积前V和递推v，避免混用。</li>
+<li><strong>S3晚段L格对齐的是11/10，不是01/00，更不是11/00。</strong> L供体为10，接收者为11，两者共同保留早段针。01/00提供另一种前史下的原生反应证据，没有对应的同背景S3单组干预格。E格的供体/参照另有定义，不混入这一连接。</li>
+</ol>
+<h3 id="42">4.2 同一比较中的过程与输出</h3>
+<table>
+<thead>
+<tr>
+<th>11/10晚段比较</th>
+<th style="text-align: right;">L0</th>
+<th style="text-align: right;">L12</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>原生首步局部raw读取相对变化，六情景中位数</td>
+<td style="text-align: right;">.372</td>
+<td style="text-align: right;">.305</td>
+</tr>
+<tr>
+<td>末提示位置局部raw读取相对变化，中位数</td>
+<td style="text-align: right;">.661</td>
+<td style="text-align: right;">.468</td>
+</tr>
+<tr>
+<td>原生停止优势D增加，六情景范围</td>
+<td style="text-align: right;">+15.70 至 +17.64</td>
+<td style="text-align: right;">+4.31 至 +9.41</td>
+</tr>
+<tr>
+<td>原生首步EOS：10 → 11</td>
+<td style="text-align: right;">0/12 → 12/12</td>
+<td style="text-align: right;">0/12 → 0/12</td>
+</tr>
+<tr>
+<td>S3换回晚段V后，D向10的恢复量</td>
+<td style="text-align: right;">.617–.765</td>
+<td style="text-align: right;">.655–.892</td>
+</tr>
+<tr>
+<td>S3只留晚段V，D相对10的保留量</td>
+<td style="text-align: right;">1.057–1.109</td>
+<td style="text-align: right;">.582–.932</td>
+</tr>
+<tr>
+<td>S3换回晚段V后，首步EOS</td>
+<td style="text-align: right;">0/12</td>
+<td style="text-align: right;">0/12</td>
+</tr>
+<tr>
+<td>S3只换回晚段R，D恢复量</td>
+<td style="text-align: right;">−.002 至 .030</td>
+<td style="text-align: right;">−.178 至 .017</td>
+</tr>
+<tr>
+<td>S3只换回晚段K，D恢复量</td>
+<td style="text-align: right;">−.195 至 −.134</td>
+<td style="text-align: right;">−.007 至 .204</td>
+</tr>
+</tbody>
+</table>
+<p>D是停止token相对最强非停止token的logit优势。恢复/保留量沿用S3定义，是替换条件下的效果描述，不是自然机制占比。S3原零对照与分辨率限制仍然适用，本次不以描述比值覆盖其原判据。</p>
+<p><strong>可以接起来的认识：</strong> 同一晚段针改变原生V及实际更新/读取；在相同输入和前史的S3对照里，恢复这条卷积前V通道能显著改变停止端点。它是有过程证据支撑的条件性因果通道，不只是两份不相干的现象表。</p>
+<p><strong>不能接成的结论：</strong> S2只详细观测L16–18，而S3 V替换覆盖针之后全部相关线性层。无法说L16–18的某个写入变化贡献了上述恢复量，也无法排除替换后的其他变量响应或补偿。S3记录了输出、缓存距离等诊断，没有保存这些替换格的完整逐步内部轨迹。因此“自然变化出现在哪里”与“哪个改变使输出恢复”之间仍有一个明确的中介范围缺口。</p>
+<h3 id="43">4.3 有两个实质反例，限制了“幅度越大，行为越大”的解释</h3>
+<ul>
+<li>L0中，受早段历史影响，晚段开针的首步v和raw读取差异比干净前史更大；但其最终D增量不是一致更大。六情景中，11/10的D增量/01/00为0.70–1.08，且末提示raw读取的绝对差异反而为后者的0.92–0.99倍。不能用首步幅度直接预测停止。</li>
+<li>在干净前史下，L12的首步递推v相对变化在六个配对情景中均大于L0；最终D增量却均更小，L12没有首步EOS。跨锚点还有位置、方向和尺度差异，不能据此分配原因，但足以反驳“只比较这一局部相对范数就能解释停止强弱”。</li>
+</ul>
+<p>首步到末提示之间包含27–33个晚段注入位置、不同输入token及后续更新。差异变大不能读成一次扰动的单步增益；D的显著连续变化也说明，不能把L0效应仅写成“微小分数变化恰好过阈值”。</p>
+<h3 id="44">4.4 已有层范围格进一步约束解释，但不是自然路径认证</h3>
+<p>L0的S3晚段实验中，只恢复首个受影响层组L1–L3的全部变量，D恢复量为.025–.432；恢复其后各层的全部受控变量，D恢复量为.979–1.015。L12相应范围为−.130–.362与.769–1.047。</p>
+<p>这说明已有条件性输出恢复并不要求把首组也恢复，也不能用“首组就是全部原因”来解释。它支持把注意力放在后续传播与读取怎样形成输出效应；<strong>不证明首组对原生路径不重要，也不证明这些后层本来就是独立起因</strong>，因为它们可能承接上游效应，且替换多个变量可以补偿。</p>
+<h3 id="45-v">4.5 对“V解除停止但事实没有恢复”的一次解释纠正</h3>
+<p>该现象成立，但<strong>不能把恢复到00的事实水平作为S3晚段V格必须达到的目标</strong>：它的供体和参照是10，已经经历早段针；L0的10本身事实敏感度就很低。</p>
+<table>
+<thead>
+<tr>
+<th>L0情景</th>
+<th style="text-align: right;">干净00的S_fact</th>
+<th style="text-align: right;">晚段参照10的S_fact</th>
+<th style="text-align: right;">换回晚段V后的S_fact</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VAR01</td>
+<td style="text-align: right;">15.075</td>
+<td style="text-align: right;">−.021</td>
+<td style="text-align: right;">−.073</td>
+</tr>
+<tr>
+<td>VAR02</td>
+<td style="text-align: right;">21.351</td>
+<td style="text-align: right;">1.339</td>
+<td style="text-align: right;">.242</td>
+</tr>
+<tr>
+<td>VRD01</td>
+<td style="text-align: right;">22.643</td>
+<td style="text-align: right;">5.257</td>
+<td style="text-align: right;">3.220</td>
+</tr>
+<tr>
+<td>VRD02</td>
+<td style="text-align: right;">24.871</td>
+<td style="text-align: right;">.965</td>
+<td style="text-align: right;">9.506</td>
+</tr>
+<tr>
+<td>VRL01</td>
+<td style="text-align: right;">5.350</td>
+<td style="text-align: right;">.132</td>
+<td style="text-align: right;">.109</td>
+</tr>
+<tr>
+<td>VRL02</td>
+<td style="text-align: right;">16.607</td>
+<td style="text-align: right;">−.111</td>
+<td style="text-align: right;">.231</td>
+</tr>
+</tbody>
+</table>
+<p>所以它不能单独证明“V只管停嘴、事实必由另一条存储损伤机制负责”。VRD02还超过了其晚段参照10，显示混合条件下不能简单作功能分工。真正需要解释的是：早段、晚段和当前读取如何共同产生不同的候选事实响应；此处S_fact仍不是自由回答正确率。</p>
+<h2 id="5">5. 当前最有依据的解释</h2>
+<p><strong>在当前设置中，针以一个固定方向、参考残差尺度量级的校准扰动，反复进入多个位置的残差计算。它改变下游投影与历史形成；已有历史又改变后来插针的局部响应。实际更新中，新信号变化与旧预测/处理变化有部分抵消。最后的输出效应取决于这些差异怎样被后续计算读取和映射，不能只用插了几个坐标、哪个账目更大或哪处范数增长来解释。</strong></p>
+<p>其中，剂量定义、重复位置、原生局部变化及替换效应有实测/源码支持；“它们通过哪条具体原生计算关系造成停止方向的强变化”仍未识别。已支持的部分不是完整根因，也不能推广成跨模型普遍机制。</p>
+<h2 id="6">6. 最关键还缺什么，下一步的判断</h2>
+<p><strong>最关键缺的是：原生V及旧状态处理造成的更新/读取差异，如何经过后续层变成最终回答相关的方向；同一连接是否解释S3恢复，而不仅是混合替换造成补偿。</strong></p>
+<p>这个缺口现在已经具体化为：</p>
+<ul>
+<li>注入附近缺少逐token实际加法差分和连续原生形成记录，剂量精度有上面明确的边界；不能由L16–18反推前面。</li>
+<li>S2原生过程覆盖局部三层，S3输出干预覆盖全部后续层；没有相同中介范围、相同位置的完整过程—输出对应。</li>
+<li>最后一个提示token和候选评分按CFM协议均无针，因而这次分析仍不能代替“回答位置继续开针”的完整效应解释。</li>
+</ul>
+<p><strong>现在最值得补的是上述过程到输出的连接，不是再确认写入和处理都变了，也不是再增加恢复/移植/中和矩阵。</strong> 本轮数据已足以否定“少数坐标所以微小”“旧处理与新写入必然同向放大”“局部幅度决定输出”“S3换V就是独立写入贡献”这些读法，尚不足以指定唯一原生机制。</p>
+<p>下一笔模型计算只有在能明确对应这段缺口、并区分原生传递解释与条件性恢复时才值得投入。若只能再得到不同层的变化幅度或另一组恢复比例，应停止该方案。这里不提出新GPU运行，也不把继续计算当成本次完成的条件。</p>
+<h2 id="7">7. 复算与资产说明</h2>
+<p>源数据固定身份为S2 <code>69e140d81dcb101b98dbea43bbc392b9e08b7663</code>、S3正式执行 <code>25b6055be4c0cb1a0e4d4cb4b1dc6f4473378c6a</code>；本次从归档主机取回源码和JSON，并以正式收据、冻结清单核验。原始张量留在服务器，本地保存路径与哈希；目标权重仅CPU读取，没有复制进本目录。</p>
+<p>本地复算：<code>PYTHONDONTWRITEBYTECODE=1 python analyze.py</code>。CPU提取脚本在已有归档主机以<code>CUDA_VISIBLE_DEVICES='' PYTHONDONTWRITEBYTECODE=1 python extract_cpu.py /workspace/acupuncture</code>运行，输出为native-chain.json；它只加载已保存张量和两份目标权重矩阵，不初始化模型。下载源码中的历史运行授权只作历史证据，不是本轮授权。</p>
+<p>本次开发核验曾因误用<code>control_engine.digest</code>的紧凑JSON分隔符而触发校准哈希断言；核对S2实际调用的<code>experiment.digest</code>后改用默认分隔符，84/84校准哈希通过。是本次核对脚本的序列化错误，不是旧数据或实验变更；未改来源文件。最终检查见<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-intervention-chain-analysis-v1-2026-10-31/verification.json">verification.json</a>。</p>
+<p>自审：未把36/144层记录当独立样本；未将S2局部层与S3全层替换等同；未混淆卷积前V和递推v；未把BF16常数当逐token精确扰动；未把D和S_fact当自由回答；未将描述性恢复量当因果百分比。没有新增文献查重或原创性主张，已有related work比较仍见<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-mechanism-research-direction-decision-v1-2026-10-31.zh-CN.md">课题推进判断</a>。</p></main></html>

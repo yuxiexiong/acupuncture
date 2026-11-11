@@ -1,0 +1,47 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>内部轨迹本地归档核验</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="_1">内部轨迹本地归档核验</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/layer-trace-extension-v1-2026-10-28/archive-r01/ARCHIVE.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/archive-r01/ARCHIVE.zh-CN.md">固定提交原件</a>；SHA-256：<code>7aec97f0443793b5e701cf07cda3a0af97f75b7b79634c07c36b562d4ec4fba3</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="_2">内部轨迹本地归档核验</h1>
+<p>北京时间 2026-10-28 14:23，A/B/C 全部下载并核验通过。<strong>7,632 条唯一正式记录，缺失、额外、重复均为 0。</strong> 56 条预检单列，不进入正式三维展示。</p>
+<table>
+<thead>
+<tr>
+<th>模型</th>
+<th>注入覆盖</th>
+<th style="text-align: right;">正式记录</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Qwen3.5-2B</td>
+<td>L0–L5</td>
+<td style="text-align: right;">920</td>
+</tr>
+<tr>
+<td>Qwen3.5-4B</td>
+<td>L0–L31</td>
+<td style="text-align: right;">4,872</td>
+</tr>
+<tr>
+<td>Qwen3.5-9B</td>
+<td>L0–L5</td>
+<td style="text-align: right;">920</td>
+</tr>
+<tr>
+<td>Llama-3.1-8B-Instruct</td>
+<td>L0–L5</td>
+<td style="text-align: right;">920</td>
+</tr>
+</tbody>
+</table>
+<p>共取回 15,496 个原始运行文件，2,724,784,628 字节（2.538 GiB），保存在各实验 <code>archive-r01/execution-r01</code>。原远端结果及原本地历史快照保持原样；未下载模型权重、未运行推理或新实验，也没有另存一份大型 tar。</p>
+<p>核验直接复用各实验冻结 <code>verify_worker</code> 的纯 CPU 逻辑：逐份 record、压缩 trace、metadata/calibration SHA-256；来源身份、token 与 provenance；所有层 × attention/MLP/residual 及全部应有输入位置；有限数值与零范数未定义规则；同前缀独立 cache 参照；零剂量/撤针预检；针前 prompt 不变；hook 清理和存档目标权重前后哈希。另核对 worker exit 0、queue 收据哈希、来源精确集合和实际文件集合。全部合同、冻结源和授权哈希亦已对齐；没有重新散列大型模型。</p>
+<p>图中的数值比较是同一输入前缀下的干预分支与无针参照。原版自由生成回答另由既有来源联结，不能把两条已分叉的自由回答直接按序号相减。每条轨迹观察模型全部层；这里的归档通过不等于因果机制已确证。</p>
+<ul>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/archive-r01/combined-verification.json">总核验摘要</a></li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-layer-mechanism-v1-2026-10-28/archive-r01/verification.json">A 逐文件哈希及 worker 核验</a></li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/archive-r01/verification.json">B 逐文件哈希及 worker 核验</a></li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/llama31-early-layer-trace-v1-2026-10-28/archive-r01/verification.json">C 逐文件哈希及 worker 核验</a></li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/archive-r01/verify_archive.py">可复跑的纯 CPU 核验脚本</a></li>
+</ul></main></html>

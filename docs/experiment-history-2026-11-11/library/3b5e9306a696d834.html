@@ -1,0 +1,65 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>2026-10-28 06:04（北京时间）内部轨迹巡检</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="2026-10-28-0604">2026-10-28 06:04（北京时间）内部轨迹巡检</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0604.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0604.zh-CN.md">固定提交原件</a>；SHA-256：<code>3b5e9306a696d834ca32a3d6dd981b9db5c2f5236d394ddeb677d4803bfd5240</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="2026-10-28-0604_1">2026-10-28 06:04（北京时间）内部轨迹巡检</h1>
+<p>只读一次巡检并有限修正监控字段兼容；没有启动/停止/重跑实验或修改远端文件。A/B/C身份与授权、CPU收据、已完成worker退出码/收据哈希核对通过；新正式记录的JSON哈希和验收标志通过，不重复解压大型trace或重hash模型。</p>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th style="text-align: right;">已完成</th>
+<th>状态</th>
+<th style="text-align: right;">本轮增量</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A：原始轨迹</td>
+<td style="text-align: right;">2152/2152</td>
+<td>completed</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>B：前六层补齐</td>
+<td style="text-align: right;">608/608</td>
+<td>completed</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>B：4B L6–L31</td>
+<td style="text-align: right;">1008/3952（525+483）</td>
+<td>running</td>
+<td style="text-align: right;">501（238+263）</td>
+</tr>
+<tr>
+<td>C：Llama前六层</td>
+<td style="text-align: right;">0/920</td>
+<td>waiting，GPU预检未开始</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>唯一正式合计</td>
+<td style="text-align: right;">3768/7632</td>
+<td>49.4%</td>
+<td style="text-align: right;">+501</td>
+</tr>
+</tbody>
+</table>
+<p>Qwen2B/4B/9B前六层各920条已完成。当前两个worker均进行到L12的不同既有通道，不代表L12已全部完成。最新记录距快照1.6/2.7秒，PID2327488/2327489命令匹配；B父PID2295050、C等待父PID2326329实例身份一致。所有已完成worker退出0；未发现失活、OOM、写盘错误或其他失败。</p>
+<h2 id="eta">ETA</h2>
+<p>A、B前六层剩余0。4B全层剩余约194.0–223.9分钟，Qwen预计09:18–09:48结束。C自身GPU预检及正式采集尚未开始，继续使用未实测60–90分钟追加预算。总剩余254.0–313.9分钟，预计10:18–11:18结束；不含接图与研究分析。</p>
+<p>本轮4B拟合0.1871+0.13151×输出token秒，基于1928正式记录；用已知剩余来源长度、按较慢卡估算。总体结束窗口与上轮10:19–11:23相比略提前，因运行稳定推进及拟合更新。区间为规划浮动范围，非置信区间或停止期限。</p>
+<h2 id="_1">磁盘</h2>
+<ul>
+<li>/workspace/acupuncture：96%，可用124.70GiB，较上次-0.181GiB。</li>
+<li>/data/models和/tmp同属系统分区：90%，可用48.35GiB，变化-0.0010GiB，只计一次。</li>
+<li>本地归档盘：/dev/disk3s5  1948455240 1000000000 920000000    53% 3407266 9213034720    0%   /System/Volumes/Data；可用877.38GiB，变化+0.000GiB。</li>
+<li>只统计三运行目录：A=0.761GiB，B=0.602GiB，C=5049字节；本轮B增长0.179GiB，A/C无增长。</li>
+<li>剩余产物按长度估算1.65GiB；按实测较大trace加余量预留4.82GiB，Llama仍使用9B代理并另计预检。工作盘高于此预算+15GiB余量，无缺口。本地归档峰值预留12.37GiB。</li>
+<li>当前净消耗趋势约361.9小时才耗尽，远晚于实验ETA；风险判定：当前安全。没有删除文件。</li>
+</ul>
+<h2 id="_2">负载</h2>
+<p>44逻辑核，CPU忙碌4.6%；1/5/15分钟load=[2.11, 2.09, 2.03]。可用RAM=462.3GiB，Swap总量/使用均0。</p>
+<p>GPU0：28%，11235/97871MiB，40℃，PID2327488；GPU1：27%，10575/97871MiB，35℃，PID2327489。两进程均为4B全层采集；无额外Explorer或Llama GPU进程。</p>
+<p>证据：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0604.remote.json">远端只读快照</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0604.summary.json">计算与分片明细</a>。初次监控查询误将B授权按A/C字段读取而退出，修正后成功；这是监控字段兼容问题，不是实验失败。</p></main></html>

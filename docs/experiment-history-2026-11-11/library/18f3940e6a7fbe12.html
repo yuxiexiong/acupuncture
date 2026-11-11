@@ -1,0 +1,23 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DWC-01 执行合同 r01</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="dwc-01-r01">DWC-01 执行合同 r01</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-write-read-confirm-v1-2026-11-07/CONTRACT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-write-read-confirm-v1-2026-11-07/CONTRACT.zh-CN.md">固定提交原件</a>；SHA-256：<code>18f3940e6a7fbe12e41624cd574e0d90c71c042b14967eba5727b31ee869d491</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="dwc-01-r01_1">DWC-01 执行合同 r01</h1>
+<p>2026-11-07。执行身份：<code>DWC-01-INDEPENDENT-CONFIRM-r01</code>。</p>
+<h2 id="_1">授权与范围</h2>
+<p>用户最新指令：“实现，然后做测试，然后一切确定之后直接上卡开始跑就行。上卡的原则还跟以前一样，如果我卡上有任务，确认显存显存足够的话允许并行。”因此本卡实现、CPU验收、模型数值预检、冻结及通过后的正式运行已获授权；设计阶段“先不跑”的历史记录保留，不再作为当前禁止。授权仅覆盖<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-write-read-confirm-plan-v1-2026-11-07.zh-CN.md">既定方案</a>的本轮，不扩模型、方向、层、样本或门槛。</p>
+<h2 id="_2">科学合同</h2>
+<p>完整沿用方案§1–7：96独立基础情境、固定六族，每族16；9主输入/情境、8主供体/接收者；固定24情境额外18干净供体，三路预测平衡。主方向N4146，第二方向N1210；O/F局部写入端点、t2输出用途D/E、32-token自然续写。读取不替换持久原生S2，t3起无钩子。旧LVK/SRU算子不改。</p>
+<p>主统计逐接收者D_tr、逐情境均值、固定六族等权。族内整情境配对重抽20000次、种子2026110703；不调用旧2^n符号枚举。M=.25；F/G_D/W_D达到量级且R_D&gt;0，并满足方案交付/可达护栏，才确认该方向。正向但跨M单独标量级未确认。诊断与主矩阵分离，全部位置/实体/编号读数报告，不选择赢家。停止和截断保留分母，不用输出筛题。</p>
+<h2 id="_3">材料与来源</h2>
+<p><code>materials.py</code>明确有限颜色×名词词表、六模板和随机种子派生规则。正式96与预检6各用不重叠实体；共306个实体。新文本总1458条：正式1296（864主＋432诊断供体），工程162。旧168提示查重路径/hash在<code>data/materials-r01.json</code>，实体/题目/记录/绑定重叠为零。编号token允许复用；目标总体是这些固定词表与结构规则的新实例，不称自然任务分布。</p>
+<p><code>accept_materials.py</code>仅CPU分词；账本1458条全部通过，提示58–64token，B1窗口26–28token，同场景最后4个缓存token一致。材料、配对、账本均在新模型输出前固定。任何后续文本改动必须另版本，不能保留“独立确认”标签而隐去改动。旧族校准与leave-one-family-out向量直接复用；不在新题估计。</p>
+<h2 id="_4">实现与验收</h2>
+<p>新运行器复用DWR循环、原LVK LHook及SRU RHook。6个旧接收者完整DWR矩阵618轨迹先逐token及已有t2摘要重放；6新预检情境完整矩阵6642轨迹，合计7260。新面板只验证工程身份、零用途、FP64&lt;=1e-5、供体只读、原生S2和钩子卸载，不以科学阳性放行。</p>
+<p>首token自然停止时，不执行t2钩子，读取臂标<code>unreachable_noop</code>并记录原端点输出；全体计划轨迹均计数。O/F首token不同则各自继续，不中止、不筛选。旧重放函数保留原行为，其历史轨迹计数漏记首步停止的差额单列；不修改旧冻结源码。实际forward、完整计划轨迹、可达零用途检查三个计数分开验收。</p>
+<p>CPU测试包括真实文本几何/固定输出零转移、全跟随、三路平衡、分层配对bootstrap、判读边界、缺失拒收、截断、不可达不调用模型、原写入和读取数值恒等式。依赖CPU验收另查所有旧freeze、旧结果、校准/向量、参考核和新token账本。CPU通过不是模型数值通过，预检结果不是正式结果。</p>
+<h2 id="_5">预算、运行与停止</h2>
+<p>正式81648轨迹、3024形成、21168端点t1、最多18144零用途t2；真实token硬计数由账本与<code>limits</code>冻结。正式16 GPU进程小时；预检1.5小时；最多一次纯工程修复预检1.5小时；总19小时。失败与模型加载、缓存形成、数值检查和存盘均计入。最多两worker、每卡一个，整情境分配，族和诊断均衡。两worker每个8小时；单worker16小时。</p>
+<p>预检每族完整诊断情境实测耗时×16，并将全部正式情境按更贵诊断矩阵计费、按最大实际形成窗口增幅放大，加两次加载开销。预测超16小时则停止报告，不减样本/删臂/放宽上限。预检只读性能/工程状态，不计算效应作为放行条件。</p>
+<p>每卡启动前空闲至少49152MiB且≥预检峰值两倍；检查现有任务，只在符合时共卡，不终止他人进程。空闲不足等待。每worker输出上限2GiB，缓存张量不入Git。控制器只终止自己的worker。正式不做中途效应检验、不因弱效应扩样；不完整运行不称完成确认。</p>
+<p>自查见<code>DESIGN.zh-CN.md</code>；实际CPU、冻结、预检及正式状态以不可覆写回执为准。</p></main></html>

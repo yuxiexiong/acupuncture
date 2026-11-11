@@ -1,0 +1,193 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>NSR-01 方案：受损深层 S 能否把损伤带进干净运行</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="nsr-01-s">NSR-01 方案：受损深层 S 能否把损伤带进干净运行</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>docs/cache-native-s-reverse-v1-2026-11-03/PLAN.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-native-s-reverse-v1-2026-11-03/PLAN.zh-CN.md">固定提交原件</a>；SHA-256：<code>1a368abe1c806c9cb8dd296f6886e4ddf17c4ffb1e906d2fddae2d4a73b918cd</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="nsr-01-s_1">NSR-01 方案：受损深层 S 能否把损伤带进干净运行</h1>
+<p>2026-11-03。<strong>设计稿，未冻结、未实现、未运行，无 GPU 授权。</strong> 依据：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-native-carrier-comparison-v1-2026-11-03/REPORT.zh-CN.md">NCC-01 报告</a>（main <code>182ed60</code>）及 2026-11-03 讨论。档位：<strong>推导</strong>＝有论证链；<strong>类比</strong>＝相邻证据支持；<strong>推测</strong>＝待验证。</p>
+<h2 id="1">1. 问题</h2>
+<p>NCC-01 发现：在第一个回答 token 之前，只把深层递推 S 换成干净的，L0（0→48）和 L12（31→48）的完整回答都全部恢复。这说明"恢复 S 足够"，但没有说明受损的 S 本身带着损伤相关的效应。</p>
+<p>本轮反过来问：<strong>以干净运行 C 为接收者，只把深层 S 换成同一输入受针运行 T 的 S，干净运行会不会出现与原生受损运行相应的异常（停止、错选编号或其他）？两针是否一样？</strong></p>
+<ul>
+<li>本轮得到的是双向干预证据中的另一个方向。即使受损 S 让干净运行出错，也<strong>不能单独区分</strong>"S 单独承载损伤""多组冗余""贴近阈值"和"拼接失配"。§3 的失配对照只能排除其中一部分。</li>
+<li>不扫描层组，不拆 S 的内部因子。</li>
+</ul>
+<h2 id="2">2. 已有事实（数据前）</h2>
+<ul>
+<li>NCC-01：C 48/48；L0 的 T 为 0/48（47 条第一步停止，1 条同时给出多个编号）；L12 的 T 为 31/48，17 条错误中 14 条同时给出正确编号和其他编号，3 条只给错编号。</li>
+<li>NCC-01 的恢复方向：L0 上 TS、TJ 为 48，TV 为 16（开头恢复、答案多选错），TK 为 3；L12 上四个单组都是 48。</li>
+<li>S 来自干净供体，可能重新带入有用信息，也可能补偿其他受损计算。恢复足够，不等于 S 是唯一损伤源，也不证明受损运行原本完整保存了答案。</li>
+</ul>
+<h2 id="3">3. 操作</h2>
+<p>沿用 NCC-01 的模型、面板（LVK 新面板 48 条）、两个针（L0/N4146/−1、L12/C3621/−1）、形成流程、切点 τ（处理最后一个提示 token 之前）和生成设置（贪心，最多 32 个新 token，不加针、不挂钩子、不强制前缀）。接收者为同一输入的 C，在 τ 一次性替换以下内容，其余全部保持 C：</p>
+<table>
+<thead>
+<tr>
+<th>格</th>
+<th>接收者</th>
+<th>来自哪里</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>CS</strong></td>
+<td>C</td>
+<td>该针 T 的 G 层 S</td>
+<td><strong>主臂</strong>：受损 S 单独能否带入损伤</td>
+</tr>
+<tr>
+<td>CV</td>
+<td>C</td>
+<td>该针 T 的 G 层卷积 V 通道</td>
+<td>比较：受损 V 历史</td>
+</tr>
+<tr>
+<td>CK</td>
+<td>C</td>
+<td>该针 T 的深层 KV</td>
+<td>比较：受损注意力历史</td>
+</tr>
+<tr>
+<td>CJ</td>
+<td>C</td>
+<td>该针 T 的全部深层缓存（卷积 q/k/V＋S＋KV）</td>
+<td>参照：全部深层受损、浅层干净</td>
+</tr>
+<tr>
+<td><strong>CSx</strong></td>
+<td>C</td>
+<td><strong>另一条输入的 C</strong> 的 G 层 S（同场景内按 ID 排序的下一条，末条取首条）</td>
+<td><strong>失配对照</strong>：干净但不匹配的 S，与针无关</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>G、深层 KV 层和 V 通道切片与 NCC-01 完全相同（G = {13,…,30} 的 14 层，KV = {15,19,23,27,31}，V_LO = 4096）。</li>
+<li>递推 S 的形状与序列长度无关，所以 CSx 可以直接移植；卷积缓冲和 KV 与位置相关，不做跨输入移植。</li>
+<li><strong>为什么加入 CV、CK、CJ</strong>：NCC-01 在 L12 上三个单组都能全部恢复。只有 CS 时，如果 CS 出错，无法判断是 S 的问题还是"任何深层组受损都会让干净运行出错"。三个比较格让本轮能看到损伤在各组之间怎样分布。</li>
+<li><strong>为什么加入 CSx</strong>：它检验"把任何不属于这条输入的 S 放进去都会出错"这一失配解释。若 CSx 与 CS 出错相近，CS 的效应就不能归给针的损伤。CSx 只排除内容失配，不排除"受损 S 与干净浅层之间的失配"。</li>
+</ul>
+<p>每条输入的轨迹：C 一条（桥接）；两针的 T 各一条（桥接）；两针各 CS、CV、CK、CJ 四条；CSx 一条（与针无关）。共 12 条。</p>
+<h2 id="4">4. 读数</h2>
+<ul>
+<li><strong>主读数</strong>：自然完整回答 Y（<code>y_full</code>，全 48 条）。每格报告正确数，相对 C 的改坏、改对与净变化，涉及场景数，以及场景等权比例。</li>
+<li><strong>异常类型</strong>（每条错误归入一类，定义冻结）：</li>
+<li><strong>停止</strong>：第一步就停止，或输出为空；</li>
+<li><strong>错选编号</strong>：输出中出现列出的编号，但不含目标编号；</li>
+<li><strong>混合编号</strong>：同时出现目标编号和其他列出的编号；</li>
+<li><strong>其他</strong>：没有出现任何列出的编号。</li>
+</ul>
+<p>逐类与同针 T 的异常分布比较。L0 的 T 以"停止"为主，L12 的 T 以"混合编号"为主。
+- <strong>首步描述</strong>（同 NCC-01）：B = z₁[f] − max_{j≠f} z₁[j]，z₁[f]，最高停止 logit，最高非停止竞争 logit，首 token 分类（编号开头、引导语、停止、其他）。首步分差只作描述，不作回答正确性的代理。
+- <strong>汇总</strong>：逐输入、六场景等权；场景分层 bootstrap（2000 次，种子 20261103，所有格共用同一组重抽索引）给出描述性区间。两针比较用同输入的配对差。不算机制比例，不设"成立/失效"总标签。</p>
+<h2 id="5">5. 解释边界（不是自动选下一轮的阈值）</h2>
+<table>
+<thead>
+<tr>
+<th>观察</th>
+<th>能得出的认识</th>
+<th>不能得出的</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CS 出错明显，异常类型与同针 T 相近，CSx 基本不出错</td>
+<td>受损 S 能把与该针损伤相应的效应带进干净运行，与 NCC-01 的恢复方向合起来，构成 S 的双向干预证据</td>
+<td>S 是唯一或自然的损伤载体；冗余、阈值、受损 S 与干净浅层的失配都没有排除</td>
+</tr>
+<tr>
+<td>CS 与 CSx 出错相近</td>
+<td>外来 S 本身就足以扰乱干净运行，CS 的效应不能归给针的损伤</td>
+<td>受损 S 无作用</td>
+</tr>
+<tr>
+<td>CS 基本不出错</td>
+<td>受损 S 单独不足以在干净背景中造成该针的异常；损伤需要与浅层、入口或其他深层组共同作用</td>
+<td>S 与损伤无关（NCC-01 已显示恢复 S 足够）</td>
+</tr>
+<tr>
+<td>CS 出错但异常类型与 T 不同（如 L0 出现错选而非停止）</td>
+<td>S 带入了部分效应，症状形态由其他部分决定</td>
+<td>把类型差异归给某个未操作的部件</td>
+</tr>
+<tr>
+<td>L12 上 CS、CV、CK 都出错</td>
+<td>多个深层组受损都能在干净运行中造成异常，与 NCC-01"多个修复入口"相应</td>
+<td>区分"多组冗余"与"任一组都能造成损伤"以外的机制</td>
+</tr>
+<tr>
+<td>L12 上只有 CJ 出错</td>
+<td>损伤需要多组共同受损才能在干净背景中出现</td>
+<td>指定哪几组</td>
+</tr>
+</tbody>
+</table>
+<p>措辞限制：任何阳性都是混合缓存干预的总效果；本轮不做必要性或因果份额主张；结果只限这两个针、已见面板和这个切点。</p>
+<h2 id="6">6. 工作预测（数据前登记，只写方向，不是预定结论）</h2>
+<ul>
+<li><strong>CS（L0）</strong>：出现较多错误，并以停止为主。依据：NCC-01 中恢复 S 消除了 47 条停止（推测）。</li>
+<li><strong>CS（L12）</strong>：出现错误，以混合或错选编号为主（推测）。</li>
+<li><strong>CSx</strong>：错误明显少于 CS（推测）。若不成立，CS 的解释按 §5 第二行处理。</li>
+<li><strong>CV、CK、CJ</strong>：不作方向预测，只报告。</li>
+</ul>
+<h2 id="7">7. 工程验收（实现时断言，任一失败即停）</h2>
+<ol>
+<li><strong>来源与桥接</strong>：形成 hash 等于 LVK/CGV；C、两针 T 的 t1 bf16 logits 与自然 token 等于 NCC-01 正式记录（NCC-01 的 C、T 本身已桥接到 CGV/NVB）。</li>
+<li><strong>替换</strong>：目标张量等于供体（V 只换 [V_LO:]），其余张量和缓存簿记逐位等于接收者 C；形状和 dtype 一致；供体与接收者前后不变。CSx 的供体输入 ID 和来源 hash 写入记录。</li>
+<li><strong>自换</strong>：以 C 自己为供体时（S、J 两组），缓存不变、t1 等于 C（只在预检中做）。</li>
+<li>布局、停止集合与解析器一致；冻结前在真实模型上跑一个预检输入，全部闸门须通过。</li>
+<li>6.2 演示：每种异常类型和各解释情形都在合成数据上演示能被满足、也能不被满足。</li>
+</ol>
+<h2 id="8">8. 成本与执行</h2>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th style="text-align: right;">正式 48</th>
+<th style="text-align: right;">预检 2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>形成（C＋两针 T）/ 前缀预填</td>
+<td style="text-align: right;">144 / 48</td>
+<td style="text-align: right;">6 / 2</td>
+</tr>
+<tr>
+<td>t1 / 自然轨迹</td>
+<td style="text-align: right;">576 / 576</td>
+<td style="text-align: right;">24 / 24</td>
+</tr>
+<tr>
+<td>续写步上限</td>
+<td style="text-align: right;">17856</td>
+<td style="text-align: right;">744</td>
+</tr>
+<tr>
+<td>工程前向（自换）</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">4</td>
+</tr>
+</tbody>
+</table>
+<p>参照 NCC-01 实测（单条输入约 12 秒），估计 0.2–0.3 GPUh。上限：正式 1.0 GPUh，预检与冒烟 0.15。存储上限 8 GiB。复用 NCC-01 的运行器、替换函数和闸门，新增代码只有接收者对调、CSx 供体选择和异常分类。</p>
+<h2 id="9">9. 停止与失败</h2>
+<ul>
+<li>工程闸门失败：合同执行失败，信息量为零。预检允许一次有记录的实现修复，正式开始后不修、不重试。</li>
+<li>结果弱、异号或不可判时，不换针、不加剂量、不扫描层组。</li>
+<li>完成即停；下一步按 §5 的结果另立设计。</li>
+</ul>
+<h2 id="10">10. 自查（作者自查，非独立评审）</h2>
+<ol>
+<li><strong>这是否又在局部细拆？</strong> 不是。它直接延续 NCC-01 的原生连接，检验 S 能否把损伤带到另一背景，终点仍是自然完整回答，不拆层组或因子。</li>
+<li><strong>CV、CK、CJ 会不会扩大矩阵？</strong> 每针多 3 条轨迹，成本约 0.1 GPUh。没有它们，L12 的 CS 结果无法与"任何深层组受损都能致错"区分。若只想做最小版本，可以删去这三格，只保留 CS 与 CSx。</li>
+<li><strong>CSx 能排除什么、不能排除什么？</strong> 能排除"任何外来 S 都会扰乱干净运行"；不能排除"受损 S 与干净浅层之间的失配"。后者在 NCC-01 的方向上同样存在，属于混合缓存的共同限制。</li>
+<li><strong>L12 的天花板问题</strong>：反向方向从 C（48/48）出发，没有天花板，反而可能有地板（如果不出错）。L12 的 T 只有 17 条错误，干净运行即使只带入部分损伤，也可能出错很少。</li>
+<li><strong>已见面板、单个切点、两个针</strong>：结论只限这些条件。</li>
+</ol>
+<h2 id="11">11. 待确认</h2>
+<ol>
+<li>是否保留 CV、CK、CJ 三个比较格（建议保留），还是只做 CS 与 CSx 的最小版本。</li>
+<li>CSx 供体规则：同场景内按 ID 排序的下一条输入（建议），或跨场景取供体。</li>
+<li>确认后按前几轮流程推进：合同和代码 → CPU 测试与冒烟 → 冻结 → 预检 → 正式运行。</li>
+</ol></main></html>

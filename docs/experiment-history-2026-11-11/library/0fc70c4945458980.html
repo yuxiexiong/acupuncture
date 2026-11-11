@@ -1,0 +1,23 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>0.8B数学不接输出缓存续跑</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="08b">0.8B数学不接输出缓存续跑</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/wsp-process-reproduction-v1-2026-11-03/fleet-v1/runs/no-cache-resume-r1/README.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-process-reproduction-v1-2026-11-03/fleet-v1/runs/no-cache-resume-r1/README.zh-CN.md">固定提交原件</a>；SHA-256：<code>0fc70c4945458980cb0357cf3f44bf79f0e7a37ea36ee3da9e6eef2d266e9c6d</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="08b_1">0.8B数学不接输出缓存续跑</h1>
+<p>北京时间2026-11-04 17:52，用户明确授权：本轮不接原版输出缓存，继续完成50个成功forward，已完成动作不重放，其他实验不动。</p>
+<h2 id="_1">执行验收</h2>
+<ul>
+<li>原控制器75957从有意SIGSTOP恢复后，在SSH只读核对时超时退出。失败现场保留于external/wsp-fleet-v2/math-0p8b-budget-r1/process.log；SIGCONT记录在original-cache-r1/resume-without-cache.json。</li>
+<li>服务器turn063未中止、未重跑，17:51正常完成。核对动作请求哈希、完整回执ID及成功标记、broker锁空闲后，使用现有resume_after_fleet.py续接，无生产代码修改。</li>
+<li>同目录launch.json记录新runner79154，验收controller79157运行；实时根external/wsp-fleet-v2/math-0p8b-no-cache-r1。旧根blocked_engineering只代表历史退出。</li>
+<li>resume_completed_turn=63；已取回原turn063工具结果，turn064编辑器已启动，同一编辑器thread与原账本保留。未启用缓存、未重放GPU动作、未改变题目或采样设置。</li>
+<li>当前25/50成功，26forward尝试、34Python尝试；已结算30547.154985 GPU秒（8.4853 GPU小时）。总上限172800秒不变。</li>
+<li>最新候选原21/256→编辑22/256，差0.39百分点、SE1.96百分点，15救回14损坏，不构成可靠阳性。该批生成2029.5秒，设备计费约4070秒。</li>
+</ul>
+<h2 id="eta">ETA重估：情景而非保证</h2>
+<p>剩余25次的请求类型和大小由编辑器继续决定，不能提供可靠的单点完工时刻。</p>
+<ol>
+<li>全程平均构成情景：此前25次中含大量48样本8k短生成（约2.2分钟）及7次teacher-forced（数秒），成功服务墙钟合计约4.16小时。若后半程构成相近，再约4.2小时服务计算，加约1–3小时编辑器/分析，粗估5–7小时墙钟；约8–9 GPU小时。失败与停顿不假设固定重现。</li>
+<li>持续大批情景：若剩余25次全部采用当前每版256回答、32k上限，按约34分钟/次，纯生成约14小时；含编辑器/分析粗估15–17小时，约28 GPU小时。这是高负载情景，不是必需成本或硬上限。</li>
+</ol>
+<p>不把两情景当统计置信区间；下一批规模明确后更新阶段ETA。48 GPU小时是规划总预算上限，绝不是剩余耗时。</p>
+<p>每半小时监控已更新至新实时根；只继续0.8B数学。4B数学50/50阴性；两项编程未完成且暂停。原始缓存反例、历史中断、作者私有服务无法确认及中途设置对齐的限制继续保留。</p></main></html>

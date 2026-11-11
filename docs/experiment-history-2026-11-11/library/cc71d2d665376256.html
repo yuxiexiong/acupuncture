@@ -1,0 +1,95 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Gemma v9半小时巡检：2026-11-06 12:10</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="gemma-v92026-11-06-1210">Gemma v9半小时巡检：2026-11-06 12:10</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/wsp-vlm-gemma3-v9-shared-admission-2026-11-06/heartbeat-1210/REPORT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-gemma3-v9-shared-admission-2026-11-06/heartbeat-1210/REPORT.zh-CN.md">固定提交原件</a>；SHA-256：<code>cc71d2d6653762560fc6a93740f180fd339f287fdc33f22f3472e0892bb85c95</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="gemma-v92026-11-06-1210_1">Gemma v9半小时巡检：2026-11-06 12:10</h1>
+<p>v9 B已完成6/30（+6），C1/30（+1，第二个完整候选正在评价），两组所选最佳仍为W0，无新工程失败。B正在提交/评价第7个控制候选。v8 B/C保持30/30已冻结交付，不恢复。本次只核对和归档，没有修改科学条件或运行代码。</p>
+<table>
+<thead>
+<tr>
+<th>组别</th>
+<th style="text-align: right;">完整候选</th>
+<th>所选主分数 / W0</th>
+<th>所选全体正确率 / W0</th>
+<th>所选修对/改错</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>v9 B</td>
+<td style="text-align: right;">6/30</td>
+<td>16.3793% / 16.3793%</td>
+<td>43.5345% / 43.5345%</td>
+<td>0/0</td>
+</tr>
+<tr>
+<td>v9 C</td>
+<td style="text-align: right;">1/30</td>
+<td>33.9844% / 33.9844%</td>
+<td>79.1406% / 79.1406%</td>
+<td>0/0</td>
+</tr>
+<tr>
+<td>v8 B</td>
+<td style="text-align: right;">30/30，完成不变</td>
+<td>21.5517% / 16.3793%</td>
+<td>46.3362% / 43.5345%</td>
+<td>20/7</td>
+</tr>
+<tr>
+<td>v8 C</td>
+<td style="text-align: right;">30/30，完成不变</td>
+<td>37.5% / 33.9844%</td>
+<td>79.4141% / 79.1406%</td>
+<td>20/13</td>
+</tr>
+</tbody>
+</table>
+<p>完整计数以remote.json时点state/评分为准；B7与C2未完成不能计轮。完整评价缓存v9 B7份、C2份（均含W0）哈希全过；v8两组各31份不变，原v8/v9 source-manifest各24文件无漂移。</p>
+<h2 id="_1">当前诊断证据与反证</h2>
+<p>B在第15层MLP down_proj的128个选中输入通道上，修改与测得成功/失败对照方向有关的写入分量；不是整层统一缩放。已完成单位、3倍、半剂量、反向、随机方向、匹配随机通道六个候选。单位剂量修对2、改错1，但主指标未改善；大剂量未形成干净剂量响应，反向和随机方向还有保护/格式损伤。</p>
+<p>关键反证已用原始完整评价复算：单位剂量所选通道与第6轮随机匹配通道，均修对B-418025:subset:T1:B0和B-387053:subset:T1:B0，均改错B-188190:subset:T1:B0。三条正确性翻转逐ID完全一致。这反对当前所选通道列表对这三个效果具有必要性/专属性；不等于已经否定所有层15作用或所有可能的通道机制。随机匹配的激活RMS中位比例约0.947、并非完美匹配。研究者随后检验稳定成功样本的通用指令前缀方向，试图区分纠错信号与一般指令效应。B累计measure1、diagnose2，调用本身不是机制成立。</p>
+<p>C选第26层MLP down_proj的64列及一个方向作定向分量削弱。首个候选改变152570个有效BF16标量，完整评价仅多修对一条无关的C-373:original_usual:T1:O1:B1，无改错，没有修复事前锚定的反事实视觉失败，也没改善主指标。对16条锚点的返回BF16 logits复算平均margin变化为0，正负混合，不能解释成所有logits完全没变或更高精度也为0。第二候选反射相同方向分量（更大剂量）仍在完整评价；后续反向控制保留。C累计measure4、diagnose1，当前方向假设受到削弱，尚不是成功的细致机制修复。</p>
+<p>现在两组确实在修改特定通道的输出方向分量，也做了预测与控制；实际开发收益仍未成立。不能因动作更细就预设效果更好，更不能将v8已取得的norm/embedding收益归给v9。以上均为开发搜索，不是独立泛化。</p>
+<h2 id="_2">运行、用量与耗时</h2>
+<p>真实远端B2245011/C2245012与本地57718/57720均存活；动作中无新failed，C第二评价的未完成响应是正常在途，不是失败partial。两组均未冻结，最终机制报告未完成。GPU0共用约28.63 GiB、余66.59 GiB，本次采样100%；GPU1其他任务2262214约14.44 GiB，未修改。瞬时利用率不代表全窗。工作盘剩122.437 GiB，较11:40净减4.018 GiB；v9 B0.388 GiB（约+0.379）、C0.431 GiB（约+0.425），全盘下降不能全算本实验。各12 GiB及全盘20 GiB门槛满足，无清理。</p>
+<table>
+<thead>
+<tr>
+<th>v9搜索累计</th>
+<th style="text-align: right;">B</th>
+<th style="text-align: right;">C</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>目标样本/前向</td>
+<td style="text-align: right;">3350</td>
+<td style="text-align: right;">7400</td>
+</tr>
+<tr>
+<td>实际目标tokens</td>
+<td style="text-align: right;">1030256</td>
+<td style="text-align: right;">1949520</td>
+</tr>
+<tr>
+<td>Python CPU秒</td>
+<td style="text-align: right;">35.062</td>
+<td style="text-align: right;">18.579</td>
+</tr>
+<tr>
+<td>最新成功研究者回合</td>
+<td style="text-align: right;">39</td>
+<td style="text-align: right;">28</td>
+</tr>
+<tr>
+<td>累计研究者tokens（含缓存输入）</td>
+<td style="text-align: right;">3607845</td>
+<td style="text-align: right;">2055550</td>
+</tr>
+</tbody>
+</table>
+<p>C样本数含第二评价的部分已完成样本，不据此推算完整轮数。v9工程各133生成/142前向另计，不把历史v8的2080校准加进来。两个v9新线程当前未见失败用量；历史v8认证失败用量无法单列，不填0，金额未知。</p>
+<p>窗口B12–39研究者整回合917.8秒，远端已完成评价461.3秒、measure11.17秒、diagnose2.69秒、Python32.08秒、提交25.01秒、工具等待97.61秒。C4–28研究者887.9秒，已完成评价296.61秒、measure28.22秒、diagnose4.22秒、Python12.59秒、提交7.41秒、工具等待81.57秒；在途第二评价未计入已完成评价时间。Astra包含API排队/上下文/输出，不能称纯思考；工具等待按同Mac请求/响应mtime差减远端elapsed。窗口截点不完全一致，不相加作为严格总墙钟。</p>
+<p>B最近6个候选的5个循环间隔约2.55–3.65分钟，按当前控制候选速度外推剩24轮约1.1–1.5小时；考虑后续新的内部测量/研究方向切换，操作性估计约1–2小时，非承诺。C仅1个完整候选，不满足4–8循环样本，暂停给完工ETA，不能沿用B或v8速度。当前瓶颈以研究者整回合和完整生成评价为主，不是显存不够；测量本身在已完成窗口只占几十秒。</p>
+<p>remote.json保存状态/候选清单/完整摘要和哈希，timing保存回合用量及耗时；B-turn-0019/0036为所选与随机通道完整原始评价，control-recheck给逐ID复算；C-turn-0021/0023/0024保存完整评价、测量和margin审计。保持30轮授权，阴性不自愿提前退出；有工程故障及时按原边界修复，不改科学条件。</p></main></html>

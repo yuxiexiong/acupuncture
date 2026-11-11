@@ -1,0 +1,139 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>NQK-01 报告：联合损伤中漏测的 q/k 历史</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="nqk-01-qk">NQK-01 报告：联合损伤中漏测的 q/k 历史</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-native-qk-history-v1-2026-11-03/REPORT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-native-qk-history-v1-2026-11-03/REPORT.zh-CN.md">固定提交原件</a>；SHA-256：<code>a6289fa8d0c2268333fc80c43e8b869b7e9a8c3f3295a6444fb008ea312c3255</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="nqk-01-qk_1">NQK-01 报告：联合损伤中漏测的 q/k 历史</h1>
+<blockquote>
+<p><strong>更正（2026-11-03，评审后）</strong>：§6 原写“q/k 已被排除”，改为“不含受损 q/k 的组合已足以致错（q/k 仍可能调节个别输入）”；“受损 S 被受损的 V 或 KV 读取”改为不预设机制的表述。读数不变。</p>
+</blockquote>
+<p>2026-11-03。合同 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-native-qk-history-v1-2026-11-03/CONTRACT.zh-CN.md">r01</a>，冻结 <code>1cf52b39</code>（main <code>33d56e3</code>）。探索性比较，已见开发面板 48 条，作者执行，未经独立评审。全部读数来自冻结分析 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-native-qk-history-v1-2026-11-03/analysis/nqk-readouts-r01.json"><code>analysis/nqk-readouts-r01.json</code></a>。</p>
+<h2 id="_1">先说不利的部分</h2>
+<ol>
+<li><strong>我登记的工作预测落空。</strong> 预测"CQK 会致错"（依据 QCO-01、QKF-01），实际两针都是 0 条错。这与 QCO/QKF 不是同一测量：那里是把受针 q/k 偏移加进已恢复 V 的受损背景，这里是把受损 q/k 历史放进干净运行，不登记为矛盾。</li>
+<li><strong>L12 的复现不是逐条完全一致</strong>：CVSK 复现了 CJ 改坏的 17 条中的 15 条，另有 3 条 CJ 没有改坏的输入被改坏，异常类型和文本的一致度也低于 L0（见 §3）。</li>
+<li><strong>提交过程中一次 SSH 断连</strong>：冻结文件和就绪收据曾漏交一次（<code>90f234f</code>），已补交（<code>33d56e3</code>），哈希逐一核对一致，运行未受影响。</li>
+</ol>
+<h2 id="1">1. 执行与验收</h2>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>冒烟 r01</td>
+<td>一次通过：C 与两针 T 逐位桥接到 NCC-01；替换只改指定通道；自换不变</td>
+</tr>
+<tr>
+<td>预检 r01（2 输入，GPU1）</td>
+<td>通过，40 s；外推 568 设备秒</td>
+</tr>
+<tr>
+<td>正式 r01（48 输入，GPU0+GPU1）</td>
+<td>通过；墙钟 319 + 220 s</td>
+</tr>
+</tbody>
+</table>
+<p>本轮的 T 与 NSR-01 的 T 自然 token 逐条一致，NSR-01 记录 sha 核对一致。全部计数在上限内（轨迹 273/336，续写步 2953/10416）。合计约 0.17 GPUh（含预检与冒烟），无偏离。</p>
+<h2 id="2-cc-4848">2. 主读数：自然完整回答（接收者为干净运行 C，C = 48/48）</h2>
+<table>
+<thead>
+<tr>
+<th>针</th>
+<th style="text-align: right;">T（原生）</th>
+<th style="text-align: right;">CQK（受损 q/k 历史）</th>
+<th style="text-align: right;">CVSK（受损 V＋S＋KV）</th>
+<th style="text-align: right;">CJ（全部深层，NSR-01）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>L0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;"><strong>48</strong></td>
+<td style="text-align: right;"><strong>2</strong></td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr>
+<td>L12</td>
+<td style="text-align: right;">31</td>
+<td style="text-align: right;"><strong>48</strong></td>
+<td style="text-align: right;"><strong>30</strong></td>
+<td style="text-align: right;">31</td>
+</tr>
+</tbody>
+</table>
+<p><strong>异常类型</strong>（停止 / 错选编号 / 混合编号 / 其他）：
+- L0：CVSK 为 16 / 0 / 30 / 0，CJ 为 18 / 0 / 28 / 0，T 为 47 / 0 / 1 / 0。CVSK 与 CJ 的类型重叠度 0.96，与 T 为 0.37。
+- L12：CVSK 为 0 / 5 / 13 / 0，CJ 与 T 都是 0 / 3 / 14 / 0。CVSK 与二者的类型重叠度都是 0.90。</p>
+<p><strong>首步分差相对 C</strong>：
+- CQK 只有 −0.66（L0）和 +0.14（L12），48 条全部仍以编号开头；
+- CVSK 为 −9.62（L0）和 −8.69（L12），与 CJ 的 −9.68 和 −8.70 几乎相同。</p>
+<h2 id="3">3. 逐条配对</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align: right;">L0：CVSK</th>
+<th style="text-align: right;">L12：CVSK</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>改坏的输入</td>
+<td style="text-align: right;">46</td>
+<td style="text-align: right;">18</td>
+</tr>
+<tr>
+<td>其中 CJ 也改坏</td>
+<td style="text-align: right;">46</td>
+<td style="text-align: right;">15</td>
+</tr>
+<tr>
+<td>其中异常类型与 CJ 相同</td>
+<td style="text-align: right;">42</td>
+<td style="text-align: right;">13</td>
+</tr>
+<tr>
+<td>其中输出文本与 CJ 完全相同</td>
+<td style="text-align: right;">41</td>
+<td style="text-align: right;">8</td>
+</tr>
+<tr>
+<td>CJ 改坏而 CVSK 没改坏</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr>
+<td>其中 T 也改坏 / 类型与 T 相同</td>
+<td style="text-align: right;">46 / 17</td>
+<td style="text-align: right;">15 / 13</td>
+</tr>
+</tbody>
+</table>
+<p>CJ 改坏的输入中，能由 CQK 单独带入的为 0（两针）；能由 CVSK 单独带入的，L0 为 46/46，L12 为 15/17。</p>
+<h2 id="4-3">4. 按合同 §3 的读法</h2>
+<p><strong>CQK 不致错、CVSK 致错</strong>：支持"V＋S＋KV 这个组合不含受针 q/k 也足以在干净运行中致错"。联合移植致错不是因为漏测的 q/k 历史。</p>
+<ul>
+<li>在 L0 上，CVSK 几乎逐条重现了 CJ：同一批输入、多数同一异常类型、41 条文本一字不差。受损 q/k 历史在这里的额外作用很小。</li>
+<li>在 L12 上，CVSK 复现了 CJ（也就是原生 T）的大部分改坏，但有 2 条没复现、3 条新增，说明受损 q/k 在 L12 上对个别输入有影响，只是单独不致错。</li>
+<li>不能说 V、S、KV 三者缺一不可：两两组合没有测。结合 NSR-01，三者各自单独都不致错，组合起来才致错。</li>
+<li>L0 上，深层全部受损而浅层第 1–12 层干净时，异常形态是"停止＋混合编号"，不是原生的"停止"为主（与 NSR-01 相同）。</li>
+</ul>
+<h2 id="5">5. 能说和不能说</h2>
+<p><strong>能说</strong>：
+- 两针上，受损的深层卷积 q/k 历史单独放进干净运行都不致错；
+- 不含 q/k 的 V＋S＋KV 组合足以致错，并在 L0 上几乎逐条重现全部深层受损的结果；
+- 与 NSR-01 合起来：V、S、KV 各自单独可被容忍，组合起来才改变答案。</p>
+<p><strong>不能说</strong>：
+- 哪两个组合就够，或三者缺一不可；
+- q/k 历史与损伤无关：L12 上有个别输入的差异；
+- 原生损伤路径（这些都是干净背景中的移植结果）；
+- 推广到其他针、层、任务或模型。</p>
+<h2 id="6">6. 下一步候选（未授权，不自动执行）</h2>
+<ol>
+<li><strong>V、S、KV 的两两组合</strong>（S+V、S+K、V+K，每针 3 格）。不含受损 q/k 的组合已足以致错（q/k 仍可能调节个别输入），"各自可容忍、组合才致错"现在是明确要解释的现象，两两组合是找出逐条最小组合的最直接一步。</li>
+<li><strong>为什么各自可容忍、组合才改变答案</strong>：NSR-01 显示 S 能影响答案选择，而受损 S 单独不改写答案。S 与 V 历史或 KV 的联合变化经过写入、读取还是后续传播，需要另立设计区分。</li>
+</ol></main></html>

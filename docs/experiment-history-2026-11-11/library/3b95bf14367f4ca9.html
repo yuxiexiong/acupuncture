@@ -1,0 +1,68 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>早层问题依赖度：既有单针回答的零 GPU 再分析</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="gpu">早层问题依赖度：既有单针回答的零 GPU 再分析</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/early-layer-question-dependence-v1-2026-10-28/README.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-layer-question-dependence-v1-2026-10-28/README.zh-CN.md">固定提交原件</a>；SHA-256：<code>3b95bf14367f4ca95c39a55aa62b4048d34e6af592bdd09544314684c4fb794f</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="gpu_1">早层问题依赖度：既有单针回答的零 GPU 再分析</h1>
+<p>日期：2026-10-28。状态：<strong>ANALYZED，只读既有归档，无新推理。</strong> 本目录支撑 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/next-stage-dose-calibration-proposal-2026-10-28.zh-CN.md">下一阶段建议</a> §1 与 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/literature/dose-calibration-related-work-audit-2026-10-28.zh-CN.md">查重报告</a> §4 中引用的全部数字。</p>
+<h2 id="_1">测量定义</h2>
+<ul>
+<li><strong>问题依赖度</strong>：同一（模型，层，通道，剂量）下八道题回答的不同首 token 数，以及不同前 3 token 前缀数。原版为 8/8。1/1 表示输出已不依赖题目。</li>
+<li><strong>首步 EOS</strong>：生成长度 1 且结束原因为 EOS。</li>
+<li><strong>机械重复</strong>：重复出现的 token 四元组占比 ≥50%，沿用既有脚本定义。</li>
+<li>全部读数来自 <code>delivery-r01/all.records.jsonl</code>，按（模型，层，通道，题，剂量）去重。</li>
+</ul>
+<h2 id="_2">脚本与输出</h2>
+<table>
+<thead>
+<tr>
+<th>脚本</th>
+<th>输出</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>early.py</code></td>
+<td><code>outputs/early.txt</code></td>
+<td>十点 +1 下 L0–L7 每层每通道首步 EOS 数；首 token 分布；各模型校准尺度 m 随层变化；实际渲染的提示</td>
+</tr>
+<tr>
+<td><code>dose.py</code></td>
+<td><code>outputs/dose.txt</code></td>
+<td>单点正负十档 L0–L7：首步 EOS / 机械重复 / 中位长度</td>
+</tr>
+<tr>
+<td><code>summ.py</code></td>
+<td><code>outputs/summ.txt</code></td>
+<td>从既有 <code>summary.json</code> 读按注入层的输出统计与下游传播剖面；各模型逐层 clean 残差/attention/MLP 范数</td>
+</tr>
+<tr>
+<td><code>tok.py</code></td>
+<td><code>outputs/tok.txt</code></td>
+<td>早层首 token 解码为文本（L0–2 与 L3–7 两段）</td>
+</tr>
+<tr>
+<td><code>qdep.py</code></td>
+<td><code>outputs/qdep.txt</code></td>
+<td>问题依赖度：四模型全层每层十通道的中位数与"八题同首 token"通道数</td>
+</tr>
+<tr>
+<td><code>qdep_dose.py</code></td>
+<td><code>outputs/qdep_dose.txt</code></td>
+<td>问题依赖度随剂量档的变化</td>
+</tr>
+<tr>
+<td><code>ident.py</code></td>
+<td><code>outputs/ident.txt</code></td>
+<td>八题完整输出逐字相同的通道数及非空例子</td>
+</tr>
+</tbody>
+</table>
+<p>运行方式：在仓库任意位置执行 <code>python3 -I experiments/early-layer-question-dependence-v1-2026-10-28/&lt;脚本&gt;</code>，脚本按自身位置解析数据路径。</p>
+<h2 id="_3">解释边界</h2>
+<ul>
+<li>八题不是独立样本，不做显著性检验。</li>
+<li>首 token 多样性是粗指标；正式版应换新题池并加跨题 KL。</li>
+<li>这些数字描述"输出是否依赖输入"，不描述能力是否保留；深层 ±1 保持 8/8 不等于回答正确。</li>
+<li>Qwen3.5 层型来自 HF main 配置，不是冻结 revision。</li>
+</ul></main></html>

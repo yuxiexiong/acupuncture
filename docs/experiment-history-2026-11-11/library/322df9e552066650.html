@@ -1,0 +1,586 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>VLM 机制可解释性中跨模型族重复出现的内部结构（从&quot;根因&quot;一端盘点）</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="vlm">VLM 机制可解释性中跨模型族重复出现的内部结构（从"根因"一端盘点）</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>docs/literature/vl-cross-model-root-cause-candidates-2026-11-06/05_mechinterp_crossmodel.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/literature/vl-cross-model-root-cause-candidates-2026-11-06/05_mechinterp_crossmodel.md">固定提交原件</a>；SHA-256：<code>322df9e5520666500b1fbad87e1221f9b1540e668e8694d50df5bf434cd31c2c</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="vlm_1">VLM 机制可解释性中跨模型族重复出现的内部结构（从"根因"一端盘点）</h1>
+<p>检索日期 2026-11-06。阅读层级：F = 取到正文并对相应章节/表做过定向核对；F* = 取到正文但只做过一轮关键词核对（模型清单、局限、个别数字）；A = 只读摘要；S = 只有检索片段。逐字引文全部来自 <code>curl https://arxiv.org/html/&lt;id&gt;</code>（或 PDF 经 <code>pdftotext</code>）后 <code>grep</code> 到的正文，不经网页摘要工具转述。推断档位：推导 / 类比 / 推测。</p>
+<p>三种"跨模型"在全文统一编号：
+- <strong>(甲) 直接迁移</strong>：同一补丁、同一方向向量或同一部件编号在另一模型上直接生效；
+- <strong>(乙) 同流程各自找到</strong>：同一发现流程在每个模型上分别跑，找到功能相同的部件（编号、层位可以不同）；
+- <strong>(丙) 只是都有类似现象</strong>：各模型都有相似的读数或行为，没有可对应的部件。</p>
+<p>先说最不利的三点：
+1. 在取到正文的 36 篇里，<strong>没有一例是"两个骨干无亲缘关系的模型族之间，同一部件编号或同一方向直接迁移"且带对照的</strong>。(甲) 类只出现在"基座 LLM → 它的 VLM 后代"或"共用同一 LLM 的两个 VLM"之间；唯一声称跨不同 LLM 骨干直接迁移方向的是 SSL（2505.16146），正文未见随机方向对照。
+2. 多篇论文自己报告"宏观组织一致、微观接线不一致"：层位随架构变（LLaVA 早中层 vs InternVL 中晚层；Qwen 中层 vs Phi-4/InternVL 早层）、头集合随题型格式变（相关系数 0.82 → 0.12）、同一注意力特征的方向在数据集间翻转。
+3. 主表 10 条里，"改了部件、对应失败率按预期变"的有 5 条（M1、M2、M3、M6、M8），其中带随机部件对照的只有 3 条（M1、M6、M8）；M2 的消融与 M3 的修补在正文里没有检索到随机头对照。其余 5 条是"结构存在且因果相关"，与具体失败的连接靠论证或只有相关。</p>
+<hr />
+<h2 id="1-vlm">问题 1：哪些 VLM 机制研究明确做了跨模型族比较？报告的"共性"与"差异"各是什么？</h2>
+<h3 id="takeaway">Takeaway</h3>
+<p>2025–2026 年至少有 14 篇带内部因果干预的论文覆盖了 ≥2 个模型族；它们报告的共性几乎都在"阶段/通路的粗组织"层面（有哪几段、先后次序、部件稀疏），差异集中在"层位、具体头、实现方式"。没有找到专门以"跨模型族机制比较"为主题的综述或基准。</p>
+<h3 id="cited-findings">Cited Findings</h3>
+<ul>
+<li>Nikankin et al.（NeurIPS 2025）在 Qwen2-7B-VL、Pixtral-12B、Gemma-3-12B 上分别做回路发现；共性：图像版与文本版任务的回路"平均只有 18% 部件共享"，query/generation 位置的子回路可跨模态互换，data 位置的子回路互换后 faithfulness 掉到随机基线；差异：对齐速度"with varying rates across different models"，Gemma-3 的视觉 token 在大部分层都与文本高对齐（F）— <a href="https://arxiv.org/html/2506.09047">2506.09047</a></li>
+<li>Assouel et al.（ICLR 2026）在 7 个模型（Qwen2.5-VL-3B/7B/32B、Qwen2-VL、LLaVA-1.5-7B/13B、LLaVA-OneVision-7B）上做因果中介；共性：三段式 position-ID 机制；差异：相对坐标编码"models from the Qwen family had a clear preference for a relative coding scheme … The effects were less pronounced for models from the LLava family"（F）— <a href="https://arxiv.org/html/2506.15871">2506.15871</a></li>
+<li>Rudman et al.（2026）在 LLaVA-OneVision-7B、Qwen2-VL-7B、Janus-Pro-7B 上找到 PIH 头；共性：早层集中、消融后抄写下降且图像注意力上升；差异：摘要原文 "revealing model-specific differences in how these behaviors are implemented"（F）— <a href="https://arxiv.org/html/2601.05201">2601.05201</a></li>
+<li>Lietzow et al.（2026）在 Qwen-VL 3B/7B、LLaVA-NeXT 7B、PaliGemma 3B/10B 上做三级激活修补；共性：routing 头 + writing 头的稀疏回路；差异原文："the routing implementation diverges across architectures: Qwen-VL and LLaVA-NeXT redistribute attention between image and text tokens, whereas PaliGemma routes through differences in the attended representations"（F）— <a href="https://arxiv.org/html/2606.28273">2606.28273</a></li>
+<li>Dual-Pathway Circuits（2026）在 Qwen3-VL-8B、LLaVA-v1.6-7B、Llama-3.2-Vision-11B、InternVL3-8B/14B 上做修补；原文："The macro-level dual-pathway organization recurs despite differences in backbone, fusion strategy, and scale, while micro-level wiring differs even within the same backbone family"（F）— <a href="https://arxiv.org/html/2605.13156">2605.13156</a></li>
+<li>Mechanisms of Object Localization（2026）比较 LLaVA-1.5 与 InternVL-3.5：因果头在 LLaVA 集中于第 11–16 层、InternVL 在第 16–22 层；原文 "concentrating in early–mid layers for LLaVA and mid–late layers for InternVL"（F）— <a href="https://arxiv.org/html/2605.19792">2605.19792</a></li>
+<li>OCR Routing Bottleneck（2026）比较 Qwen3-VL、Phi-4、InternVL3.5（5 个 2B–8B 模型）：原文 "DeepStack models (Qwen) show peak sensitivity at mid-depth (∼50%) for scene text, while single-stage projection models (Phi-4, InternVL) peak at early layers (6–25%), though the exact layer of maximum effect varies across datasets"（F）— <a href="https://arxiv.org/html/2602.22918">2602.22918</a></li>
+<li>Pathways of Visual Information Flow（2026）在 Qwen3-VL-4B（主文）、InternVL3.5-4B、LLaVA-1.5-7B（附录 D 复现）上做 interchange intervention；共性：直接通路与文本中介通路并存；通路选择随任务、数据分布、提示设计变（F）— <a href="https://arxiv.org/html/2607.03358">2607.03358</a></li>
+<li>Counting Circuits（2026）：层级视觉激活修补在 Qwen2.5-VL、Qwen3-VL、InternVL-3.5 上图样相同，LLaVA-1.5 不同；原文 "both InternVL-3.5 and Qwen3-VL shows exactly the same cross-modal routing patterns as Qwen2.5-VL … We hypothesize that LLaVA 1.5 fails to route counting information from the image tokens to the final prompt token because its corresponding circuitry remains underdeveloped during training"（F）— <a href="https://arxiv.org/html/2603.18523">2603.18523</a></li>
+<li>Attention in Space（2026）在 InternVL3-2B/8B、Qwen2.5-VL-3B/7B、Llama-3.2-11B/90B-Vision 上做功能头探测与遮蔽；共性主张是"universal, sparse, and intrinsic"；跨模型比较限于分布形状，没有比较头的对应关系（F）— <a href="https://arxiv.org/html/2603.20662">2603.20662</a></li>
+<li>Kaduri et al.（CVPR 2025）：InternVL2-76B 与 LLaVA-1.5-7B；原文 "they exhibit the same underlying behavior regarding the processing of visual information"（F）— <a href="https://arxiv.org/html/2411.17491">2411.17491</a></li>
+<li>Visual Instruction Tuning Aligns Modalities through Abstraction（2026）：LLaVA-1.5-7B/13B、LLaVA-OneVision-1.5-4B/8B、InternVL2-8B、Cambrian-8B 的 layer-skipping；最敏感的 5 层窗口"around layer 8 for LLaVA, 16 for OneVision, and 12 for InternVL2"（F）— <a href="https://arxiv.org/html/2606.03871">2606.03871</a></li>
+<li>NOTICE（NAACL 2025）比较 BLIP 与 LLaVA：这里的 "universal attention heads" 指同一模型内跨任务、跨扰动方式一致，不是跨模型；两模型功能不同："universal cross-attention heads in BLIP fall into three function classes: object detection, object suppression, and outlier suppression … whereas universal multimodal self-attention heads in LLaVA primarily implement outlier suppression"（F）— <a href="https://arxiv.org/html/2406.16320">2406.16320</a></li>
+<li>多模态机制可解释性综述（Lin et al., 2025）把 circuit analysis 列为待扩展方向；本次只下载未精读（A）— <a href="https://arxiv.org/html/2502.17516">2502.17516</a></li>
+</ul>
+<h3 id="inferences">Inferences</h3>
+<ul>
+<li>（推导）"跨模型共性"在已有文献里的实际含义几乎都是 (乙)：流程相同、各自找到。把它写成"同一回路"会越界。</li>
+<li>（推导）层位差异与视觉接入方式挂钩有两篇独立证据（2602.22918 的 DeepStack vs 单段投影；2605.13156 的交叉注意力 Llama-3.2 例外），但两篇用的任务不同（OCR vs 物体存在），"在哪"与"多少"两个轴不能互推。</li>
+</ul>
+<h3 id="gaps">Gaps</h3>
+<ul>
+<li>没有找到一篇把同一套任务、同一套流程同时跑在 ≥4 个模型族并报告"部件级对应率"（例如功能相同的头在相对深度上的分布重合度）的论文；本条是对象层判断，依据是 24 条查询与 36 篇正文。</li>
+<li>闭源模型（GPT/Gemini/Claude）内部无法验证，全部跨模型证据限于 2B–90B 的开源权重模型，主体是 3B–13B。</li>
+</ul>
+<hr />
+<h2 id="2">问题 2：被称为"通用"的结构有哪些？每个的因果证据在哪些模型上？（主表，按共用口径字段）</h2>
+<h3 id="takeaway_1">Takeaway</h3>
+<p>满足"≥2 个模型族 + 内部因果干预"的结构整理出 10 条（M1–M10）。干预后对应失败率按预期变化的是 M1、M2、M3、M6、M8；其中带随机部件对照的是 M1、M6、M8（M2、M3 未检索到）。M4、M5、M7、M9、M10 的因果证据成立，但与具体失败的连接较弱或缺少随机对照。</p>
+<h3 id="cited-findings_1">Cited Findings</h3>
+<h4 id="m1-pih-heads-01">M1 提示内容抄写头（PIH heads，语言模型第 0–1 层为主）</h4>
+<ul>
+<li><strong>现象</strong>：提示里写错数量（"Describe the N+k [objects]"）时模型跟着提示说，而单问计数能答对；自建受控计数集，另有颜色版本。</li>
+<li><strong>现象的跨模型证据</strong>：LLaVA-OneVision-7B / Qwen2-VL-7B / Janus-Pro-7B 的 prompt match 分别为 42.58 / 56.51 / 64.10（Table 1）；真实数量超过 4 后更容易顺从提示（F）— <a href="https://arxiv.org/html/2601.05201">2601.05201</a></li>
+<li><strong>根因主张</strong>：少量注意力头把提示里的数字 token 往后传；这些头集中在语言模型最早的层。</li>
+<li><strong>根因的跨模型证据</strong>：因果。三个模型族各自逐头 knockout 后取 top-m（Qwen-VL m=3，其余 m=10）联合消融：prompt match 降到 1.42 / 3.22 / 10.19，true-count match 升到 77.80 / 70.66 / 70.90；随机对照（同层同数量的头）后 prompt match 为 37.80 / 54.60 / 58.30。计数上找到的头直接用于颜色任务，"reducing prompt-induced hallucinations by between 40% and 95%"（F）— <a href="https://arxiv.org/html/2601.05201">2601.05201</a></li>
+<li><strong>哪一种跨模型</strong>：(乙) 为主；Qwen2-VL 与 LLaVA-OneVision 之间出现同编号重合（top-1、top-2 均为 L0H3、L0H6，top-10 中一半相同），两者共用 Qwen2 语言模型，作者据此认为"PIH is primarily mediated by language-model attention heads"。这是"同一基座的两个后代"之间的重合，不是无亲缘模型间的迁移。Janus-Pro 的头编号不同（L0H20 等）。</li>
+<li><strong>不同论文说法是否一致</strong>：同组的后续工作（2606.28273）引用它作为"where text-copying resides"。竞争解释：作者自己列了两种机制（抑制抄写 vs 增加对图像的注意），结论是两者都有；三个模型的抄写形态变化方向不同（Qwen-VL 消融后 format copying 增加，Janus-Pro 减少）。</li>
+<li><strong>竞争者（已有修法）</strong>：本文的头消融本身。局限原文："the specific PIH heads identified here and the effects of their ablation may not generalize directly to substantially larger models"；"we do not observe simple or consistent attention patterns within PIH heads themselves"；"Determining the exact mechanism as to why PIH ablations causes a reduction in soft copying, while encouraging format copying in Qwen-VL and results in a strict decrease in format copying with an increase of soft copying Janus-Pro, is left for future works."代码 URL：未核对。</li>
+<li><strong>剩余空间</strong>：消融后冲突提示下 true-count match 70.7–77.8%，无冲突基线提示的精确匹配为 76.9–80.3%（消融前），即冲突提示下接近但未完全回到无冲突水平；Janus-Pro 仍有 10.19% 顺从。</li>
+<li><strong>便宜办法</strong>：未找到（正文没有报告"换提示能否修好"）。</li>
+<li><strong>数据与基准</strong>：自建计数/颜色受控集；副作用检查用 CalTech101 改造任务、MM-Vet、POPE。公开与否未核对。</li>
+<li><strong>阅读层级</strong>：F。</li>
+</ul>
+<h4 id="m2-routing-writing-vs">M2 先验覆盖回路（routing 头 + writing 头，网络后半）与"像素 vs 先验"方向</h4>
+<ul>
+<li><strong>现象</strong>：图像与世界知识冲突（蓝色草莓）时，模型答案在"看到的"与"记得的"之间切换；Visual-CounterFact（颜色/大小）、WHOOPS! 改写子集。</li>
+<li><strong>现象的跨模型证据</strong>：LLaVA-Next-7B、Qwen2-VL-7B、Janus-Pro-7B 上逐层早解码显示预测先反映先验、在中后层转向视觉证据，过程中"models frequently flip between the two answers"（F）— <a href="https://arxiv.org/html/2505.17127">2505.17127</a></li>
+<li><strong>根因主张</strong>：视觉接地是默认通路；按先验作答依赖一小组头（占全部头 2.5–4.8%，集中在后半层），分为调节信息流的 routing 头与直接把答案 token 写进残差流的 writing 头。</li>
+<li><strong>根因的跨模型证据</strong>：因果。Qwen-VL 3B/7B、LLaVA-NeXT 7B、PaliGemma 3B/10B 五个模型：消融全部 promoting 头，先验作答被翻转 68–96%，视觉作答只变 0.8–7.5%；单头修补 V2P 翻转率 26.9–74.0%，P2V 0.0–2.6%（Table 2）（F）— <a href="https://arxiv.org/html/2606.28273">2606.28273</a>。另一条：PvP steering 向量在 LLaVA-Next、Qwen2-VL、Janus-Pro 上"at least a 98% success rate in flipping model predictions from world knowledge to"反事实答案，最有效的层"within specific mid-to-late layer ranges"（F）— <a href="https://arxiv.org/html/2505.17127">2505.17127</a></li>
+<li><strong>哪一种跨模型</strong>：(乙)。routing 的实现方式跨族不同（见问题 1 引文）。</li>
+<li><strong>不同论文说法是否一致</strong>：两篇同组，口径一致；2606.28273 引 Liu et al. (2025) 的另一种说法——中层 image value token 信息充分、后层 key token 主动压制感知（本次未取 Liu et al. 正文，S）。作者自认的混淆：两套数据都是固定图像、变提示，"the measured asymmetry may partly reflect how the two prompts are routed rather than arbitration between perception and memory alone"。</li>
+<li><strong>竞争者（已有修法）</strong>：PvP steering（上）；头消融（上）。局限原文（2606.28273）："A full 2×2 design crossing prompt type with image type … would isolate the arbitration component more directly. We see this as the natural next step"；"our claims concern this late-stage arbitration only"；"Larger models may develop different strategies"。局限原文（2505.17127）："steering models from visual perception back to world knowledge is more difficult than the reverse … Understanding this distinction further remains an open direction for future work."代码：检索片段称 github.com/rsinghlab/pixels_vs_priors（S，未核对）。</li>
+<li><strong>随机对照</strong>：2606.28273 正文无 "random" 一词命中，即未见随机头对照；用的是双向不对称（V2P vs P2V）作为特异性证据。</li>
+<li><strong>剩余空间</strong>：大小任务比颜色任务难控（数字未从正文核对）；CF→WK 方向更难。</li>
+<li><strong>便宜办法</strong>：2505.17127 报告把提示从 "most" 改为 "this" 只让 LLaVA-Next 的图像注意力质量上升 13%，steering 向量为 40%——即换问法有效果但弱于干预（F）。</li>
+<li><strong>数据与基准</strong>：Visual-CounterFact（公开与否未核对）；WHOOPS! 改写后每模型只剩 17–33 条冲突样本。</li>
+<li><strong>阅读层级</strong>：F / F。</li>
+</ul>
+<h4 id="m3-id-id-retrieval-id-selection-feature-retrieval">M3 位置 ID 绑定机制（ID retrieval → ID selection → feature retrieval 三组头）</h4>
+<ul>
+<li><strong>现象</strong>：多物体共享特征时把属性绑错物体（binding error）；合成网格图、PUG 拟真图、COCO。</li>
+<li><strong>现象的跨模型证据</strong>：低熵（特征共享）条件下准确率低于高熵条件，Table 1 覆盖 Qwen 与 LLaVA 两族（具体基线数字只核对了 LLaVA-1.5-7B 高熵 70.3%）（F）— <a href="https://arxiv.org/html/2506.15871">2506.15871</a></li>
+<li><strong>根因主张</strong>：模型用与内容无关的空间索引（position ID）做绑定；绑定错误来自 ID retrieval / selection 阶段在特征相似时的干扰。位置在语言模型中层（Qwen2-VL：retrieval 第 12–16 层、selection 第 18–19 层、feature retrieval 第 20–27 层）。</li>
+<li><strong>根因的跨模型证据</strong>：因果。7 个模型做因果中介定位三类头；ID 编辑干预"highly effective (&gt;79% efficacy) for all 3 head types and all models"；把高熵试次的 position ID 补进低熵试次的 ID selection 头："Qwen 2.5-VL 3B improved by 11.1%, while LLaVA 1.5 13B improved by 10.4% … LLaVA 1.5 7B showed the smallest improvement (+4.6%)"；从场景描述任务搬 ID 到空间推理任务，7 个里 5 个模型提升（另 2 个已到顶）（F）。Idefics2-8b 只有 RSA（相关）。</li>
+<li><strong>哪一种跨模型</strong>：(乙)。阶段次序跨族一致；相对/绝对编码偏好跨族不一致。</li>
+<li><strong>不同论文说法是否一致</strong>：Counting Circuits（2603.18523）报告 binding AUC 在早中层上升、晚层下降，与此相容（F，仅 Qwen2.5-VL）。竞争解释：作者自己讨论 position ID 是否只是位置嵌入的直接产物，并说明干预"before the RoPE embedding module"；"it is an open question whether the emergence of these mechanisms may be driven by architectural inductive biases … or distributional aspects of the training data. We leave the investigation of these questions to future work."</li>
+<li><strong>竞争者（已有修法）</strong>：本文的 ID 修补（上）。作者建议的方向（未做）："architectural innovations that better support spatial indexing (such as object-centric architectures) or training strategies that explicitly strengthen these symbolic mechanisms, such as spatial pointing tasks"。代码："Datasets, analysis and intervention code will be released"（未核对是否已放出）。</li>
+<li><strong>随机对照</strong>：正文 grep "random heads / random baseline / random control" 无命中；top-K 与 α 是扫出来的最优值。</li>
+<li><strong>剩余空间</strong>：修补只追回 4.6–11.1 个点；补丁质量受源表示质量限制（作者语）。</li>
+<li><strong>便宜办法</strong>：未找到。</li>
+<li><strong>数据与基准</strong>：自建合成网格（2×2、3×3）、PUG、COCO 子集。</li>
+<li><strong>阅读层级</strong>：F。</li>
+</ul>
+<h4 id="m4-token">M4 模态专属的"数据位置"子回路与视觉 token 的晚对齐</h4>
+<ul>
+<li><strong>现象</strong>：同一任务，图像版准确率低于文本版；五个成对任务（计数、算术、颜色排序、事实回忆、情感）。</li>
+<li><strong>现象的跨模型证据</strong>：Qwen2-7B-VL、Pixtral-12B、Gemma-3-12B（基线准确率在附录 C，未摘录）（F）— <a href="https://arxiv.org/html/2506.09047">2506.09047</a>；实体知识上，图像呈现比文本呈现掉点"reaching 18% for some models"，覆盖 LLaVA-1.5-7B、LLaVA-MORE-8B（CLIP/SigLIP）、LLaVA-1.6-34B、Qwen2-VL（F*）— <a href="https://arxiv.org/html/2412.14133">2412.14133</a></li>
+<li><strong>根因主张</strong>：两种模态的差异集中在处理数据 token 的部件；视觉 token 表示要到较深层才与文本表示对齐，而那时信息已经被搬到后面的位置。</li>
+<li><strong>根因的跨模型证据</strong>：因果。三族上：data 子回路跨模态互换后 faithfulness "drops to match the random baseline"；back-patching（把后层视觉 token 表示补回前层）平均 +4.6%，"closing approximately 32% of the performance gap"；文本对照实验在约 79% 的设置下增益更小（F）。实体知识一条的干预只在 LLaVA 系做，"leaving other architectures as future work"（F*）。</li>
+<li><strong>哪一种跨模型</strong>：(乙)。最优 (l_src, l_dst) 每模型每任务单独搜。</li>
+<li><strong>不同论文说法是否一致</strong>：2606.03871 指出"understanding whether the visual embeddings align with the textual ones in early [28] or middle layers [13] remains a matter of debate"，并用 layer-skipping 给出中层证据（F）。例外：Qwen2-VL-7B 与 Gemma-3-12B 的事实回忆任务上，back-patching "is outperformed by the control in over half the cases"。</li>
+<li><strong>竞争者（已有修法）</strong>：back-patching。局限原文："Yet, the causes for the remaining gap remain unclear"；"current circuit analysis methods can only be applied to single-token completions"；"Our findings may not immediately apply to models utilizing different fusing approaches, which we leave for future work."迭代多次 back-patching 性能下降（附录 E.1）。代码：正文称位置映射"provided in the code accompanying the paper"（URL 未核对）。</li>
+<li><strong>剩余空间</strong>：约 68% 的模态差距未解释。</li>
+<li><strong>便宜办法</strong>：未找到。</li>
+<li><strong>数据与基准</strong>：自建五任务成对数据；泛化检查用 VQAv2（3000 条）与 RealWorldQA（765 条）。</li>
+<li><strong>阅读层级</strong>：F。</li>
+</ul>
+<h4 id="m5-cross-modal-routing-band">M5 中层的图像→文本信息传递窗口（cross-modal routing band）</h4>
+<ul>
+<li><strong>现象</strong>（间接）：细节遗漏、计数不准、OCR 干扰其他视觉任务；这条结构更多是"在哪"的定位，不直接等于某个失败。</li>
+<li><strong>现象的跨模型证据</strong>：见各源；Counting Circuits Table 1 覆盖 Qwen2.5-VL-7B、Qwen3-VL-8B、LLaVA-1.5-7B（数字未摘录）。</li>
+<li><strong>根因主张</strong>：图像 token 的信息只在一段有限的层窗口内被搬到文本/答案位置；窗口之外读图像几乎没有贡献。</li>
+<li><strong>根因的跨模型证据</strong>：因果，四条独立来源——</li>
+<li>attention knockout：InternVL2-76B 与 LLaVA-1.5-7B，"accessing image tokens only in mid-layers (∼25% of all layers) results in minor degradation"（F）— <a href="https://arxiv.org/html/2411.17491">2411.17491</a></li>
+<li>layer-skipping：LLaVA-1.5、OneVision-1.5、InternVL2，"removing the image features from the first six layers leaves the average performance above 90% … but removing the image at the beginning or at the end of the network does not affect performance"（F）— <a href="https://arxiv.org/html/2606.03871">2606.03871</a></li>
+<li>层级视觉激活修补（计数）：Qwen2.5-VL 第 15–22 层为"critical bottleneck for cross-modal routing"；Qwen3-VL、InternVL-3.5 图样相同，LLaVA-1.5 不同（F）— <a href="https://arxiv.org/html/2603.18523">2603.18523</a></li>
+<li>interchange intervention：Qwen3-VL、InternVL3.5、LLaVA-1.5 上两条通路并存（F）— <a href="https://arxiv.org/html/2607.03358">2607.03358</a></li>
+<li><strong>哪一种跨模型</strong>：(乙)，且<strong>相对深度不一致</strong>：LLaVA 第 8 层附近 vs OneVision 第 16 层 vs InternVL2 第 12 层（2606.03871）；Qwen 中层 ~50% vs Phi-4/InternVL 早层 6–25%（2602.22918）；LLaVA 早中层 vs InternVL 中晚层（2605.19792）。</li>
+<li><strong>不同论文说法是否一致</strong>：不完全一致。(i) 单族工作 Zhang et al. 在 LLaVA 系列上报告两阶段（低层搬整体特征、中层搬物体特征）（F*）— <a href="https://arxiv.org/html/2411.18620">2411.18620</a>；(ii) 2607.03358 指出 knockout 的解释限度：摘要原文"ablation-based interventions can reveal what models could do rather than what they normally do"，即消融后模型会改走文本中介通路；(iii) 2511.17254 报告题型决定通路：切断输出→图像注意力后 POPE 只降约 2%、CHAIR 变差约 10（F）— <a href="https://arxiv.org/html/2511.17254">2511.17254</a></li>
+<li><strong>竞争者（已有修法）</strong>：局部层微调（2606.03871：只调"抽象窗口"层优于调其补集，领先 2% 与 4% 以上，LLaVA-7B 与 OneVision-4B）；计数专项微调 + 注意力正则（2603.18523：Qwen2.5-VL OOD 计数平均 +8.36%、通用视觉推理 +1.54%；三个骨干均有提升）；OCR 方向移除（2602.22918：Qwen3-VL-4B 计数最高 +6.9pp，但 InternVL "degrades all metrics when intervened"）。局限原文（2606.03871）："our configuration may not represent the global optimum"；（2607.03358）："identifying the specific attention heads and MLP components that implement each pathway is left to future work"。</li>
+<li><strong>剩余空间</strong>：未找到统一口径。</li>
+<li><strong>便宜办法</strong>：2607.03358 报告提示设计会改变走哪条通路（F），即换问法能改变内部路径，但是否修好失败未报告。</li>
+<li><strong>数据与基准</strong>：COCO 描述（80 图）、GQA/MMBench/MME/SeedBench/VQAv2、SynDot/SynPoly/SynReal、PixMo-Count、CountBench 等。</li>
+<li><strong>阅读层级</strong>：F（四条主来源）。</li>
+</ul>
+<h4 id="m6">M6 幻觉通路部件（偏文本的中深层头 / 双通路组织）</h4>
+<ul>
+<li><strong>现象</strong>：物体幻觉；POPE、CHAIR、AMBER。</li>
+<li><strong>现象的跨模型证据</strong>：全部来源的基线表（LLaVA-1.5、MiniGPT-4、Qwen-VL-Chat、Qwen2.5-VL、Qwen3-VL、LLaVA-v1.6、Llama-3.2-Vision、InternVL3）。</li>
+<li><strong>根因主张</strong>：(a) Yang et al.：注意力模块比 MLP 更负责幻觉词，幻觉头集中在中深层、偏向文本 token（"up to five times"），其文本注意力图样与基座 LLM 相似（LLaVA-7B 对 Vicuna-7B；MiniGPT-4 对 Llama-2-7B）。(b) Dual-Pathway：接地通路与幻觉通路并存；接地部件在正确样本上支持真值、在幻觉样本上转向支持幻觉答案（polarity flip）。</li>
+<li><strong>根因的跨模型证据</strong>：因果。</li>
+<li>Yang et al.（ICLR 2025）：LLaVA-v1.5-7B 主文、MiniGPT-4 附录；训练无关与微调两种针对头的方法，LLaVA-7B 幻觉率最多降 1.7 倍；随机对照为"fine-tuning random heads"（LLaVA-1.5 上）（F，MiniGPT-4 的 1.3 倍一句被分栏截断未完整核对）— <a href="https://proceedings.iclr.cc/paper_files/paper/2025/file/8001c3568152d134d821cd46d4d84768-Paper-Conference.pdf">ICLR 2025 正式版 PDF</a></li>
+<li>AllPath（2511.17254）：LLaVA-1.5-7B、Qwen-VL-Chat、Qwen2.5-VL-7B/72B；按 T2T 与 I2T 分数选头后缩放（F）— <a href="https://arxiv.org/html/2511.17254">2511.17254</a></li>
+<li>Dual-Pathway（2605.13156）：五个模型逐部件缩放幻觉通路，"All five models achieve 40–76% reduction at ≤2 pp accuracy cost"；随机部件对照"produces no systematic reduction (mean |ΔH|=3.0 pp with the sign positive on all three evaluated models …)"；把接地通路缩放到 0 时五个模型准确率都塌到 0.50–0.51（F）— <a href="https://arxiv.org/html/2605.13156">2605.13156</a></li>
+<li><strong>哪一种跨模型</strong>：(乙)。宏观一致、微观不一致（问题 1 引文）；Llama-3.2-Vision 是 logit-lens 读数的例外（"its hallucinating-sample differential is not significant (d=−0.18, p=0.43)"）。</li>
+<li><strong>不同论文说法是否一致</strong>：不一致，至少四种并存的说法——偏文本的头（Yang）；多条因果路径且随题型变（AllPath）；双通路与极性翻转（Dual-Pathway）；中层视觉注意力不活跃（Devils in Middle Layers，LLaVA-1.5、Shikra、MiniGPT-4；该文自己指出第 0 层高注意力"is not consistent across all LVLMs, as Shikra and MiniGPT-4 models fail to exhibit this pattern"）（F*）— <a href="https://arxiv.org/html/2411.16724">2411.16724</a>。Role-Break（2607.29412）把已有各家机制折算成头级注意力特征后在统一协议下比较，结论是"no single signature stands out as a cross-setting-stable hallucination indicator"（F）— <a href="https://arxiv.org/html/2607.29412">2607.29412</a></li>
+<li><strong>竞争者（已有修法）</strong>：</li>
+<li>AD-HH / TF-HH（Yang）：见上。代码：检索片段称 github.com/TianyunYoung/Hallucination-Attribution（S）。</li>
+<li>AllPath：Qwen-VL-Chat 上相对 VCD 在 MCQ-POPE 平均 +8.0% acc / +5.4% F1；报告 PAI 在 Qwen-VL-Chat 上把生成长度从 98.1 压到 36.8。局限原文："we do not investigate what causal pathways are most effective for different types of questions, nor do we explore training strategies that could systematically improve the use of such pathways."代码：https://github.com/SooLab/AllPath</li>
+<li>Dual-Pathway 的逐部件缩放：作者原文"does not constitute a deployable mitigation method; designing one under this constraint is a separate engineering problem"；"mean-difference projection fails to yield any reduction on the held-out test set across the three models evaluated"；"leaves attribute hallucination largely unaffected"。</li>
+<li>ProjectAway、VTI、Nullu、SSL 见 M9、M10。</li>
+<li><strong>剩余空间</strong>：属性幻觉未被覆盖；InternVL3-14B "strong POPE reductions (29–68%) but weak AMBER transfer"。</li>
+<li><strong>便宜办法</strong>：未找到直接比较。</li>
+<li><strong>数据与基准</strong>：POPE（三个 split）、MCQ-POPE、CHAIR（COCO 500 图）、AMBER、MME。</li>
+<li><strong>阅读层级</strong>：F（Yang、AllPath、Dual-Pathway、Role-Break）；F*（Devils）。</li>
+</ul>
+<h4 id="m7-tokenvisual-attention-sinksink-llm">M7 视觉注意力汇聚 token（visual attention sink；sink 维度继承自基座 LLM）</h4>
+<ul>
+<li><strong>现象</strong>：文本 token 对与之无关的固定位置视觉 token 给很高注意力；对图像的有效注意力不足，关联一般 VQA、幻觉、vision-centric 任务表现。</li>
+<li><strong>现象的跨模型证据</strong>：LLaVA-1.5-7B/13B/HD-13B、VILA-13B、Qwen2-VL-7B、InternVL2-8B（F）— <a href="https://arxiv.org/html/2503.03321">2503.03321</a></li>
+<li><strong>根因主张</strong>：这些视觉 token 在特定隐藏维度上有巨大激活（sink dimensions），该维度集合"are determined by the base language model of LMMs"（LLaMA-2 / LLaVA-1.5-7B 为 {1415, 2533}）；与文本 LLM 的 attention sink 同源。</li>
+<li><strong>根因的跨模型证据</strong>：因果但对照偏弱。遮蔽 sink token 到文本的注意力"has little impact"，遮蔽同数量随机视觉 token 则明显掉点（Fig. 3b；哪个模型未核对，图 1–3 均以 LLaVA-1.5-7B 为例）；VAR（在 image-centric 头里把 sink 的注意力重分给非 sink 视觉 token）"reliably improves the performance of the base models across all benchmarks"，六个模型（F；具体数字未摘录）。对全部头做重分配"results in a significant performance drop (see Table 5)"。</li>
+<li><strong>哪一种跨模型</strong>：sink 维度是 (甲) 的"基座 LLM → VLM 后代"版本（微调后维度不变："the dimensions of massive activation in LLaVA-1.5-7B are still 𝒟sink={1415,2533}"）；跨模型族是 (乙)（每个基座有自己的维度集合）。</li>
+<li><strong>不同论文说法是否一致</strong>：Neo et al. 把高范数视觉 token 当作 register token 处理并做消融对照（LLaVA-1.5、LLaVA-Phi）（F<em>）— <a href="https://arxiv.org/html/2410.07149">2410.07149</a>；2503.17349 给出另一种说法：视觉 token 范数远大于文本 token，压制了位置编码（LLaVA 系，F</em>）— <a href="https://arxiv.org/html/2503.17349">2503.17349</a>。三者是否同一件事，未见论文直接比较。</li>
+<li><strong>竞争者（已有修法）</strong>：VAR。局限原文："the raw attention map may not be perfect for grounding the object because the model may have seen the object incorrectly … or the visual encoder may misinterpret the image"；"We leave the investigation of how visual tokens are recognized as sink tokens during training as future work."代码 URL：未核对。</li>
+<li><strong>剩余空间 / 便宜办法</strong>：未找到。</li>
+<li><strong>数据与基准</strong>：VQAv2、GQA、MME、MM-Vet、LLaVA-Bench、POPE、CHAIR、MMHal-Bench、CV-Bench 等。</li>
+<li><strong>阅读层级</strong>：F（数字未摘录）。</li>
+</ul>
+<h4 id="m8">M8 空间相关部件（稀疏的空间功能头；语言侧的空间词偏置）</h4>
+<ul>
+<li><strong>现象</strong>：空间关系题错；VSR、WhatsUp、Spatial457、SpatialEval、3DSRBench、CogVSR；另一种形态是"二选一能答对、加一个空间选项就塌"（BSTF）。</li>
+<li><strong>现象的跨模型证据</strong>：9 个开源模型（LLaVA、Qwen、InternVL 三族）上的 BSTF 现象（F）— <a href="https://arxiv.org/html/2606.01914">2606.01914</a></li>
+<li><strong>根因主张</strong>：(a) 负责空间感知/关系推理的功能头数量少、显著性弱（2603.20662）；(b) 物体定位与空间关系共享早期接地、之后走部分不同的头，关系判断不需要精确边界（2608.23074）；(c) 错误不在视觉侧，而是加入的空间词在语言侧改变了决策（2606.01914）。</li>
+<li><strong>根因的跨模型证据</strong>：因果。</li>
+<li>2603.20662：InternVL3、Qwen2.5-VL、Llama-3.2-Vision 六个模型，遮蔽功能头 vs 遮蔽同数量随机头。空间感知子题（LLM 判分）：Qwen2.5-VL-7B 随机 80.04 / 功能头 57.69；InternVL3-2B 61.37 / 37.92；Llama-3.2-11B 74.95 / 44.73（Table 2）。正向干预：Qwen2.5-VL-7B 空间感知 80.04% → 81.89%（F；表中数字未能与代码或补充材料交叉核对）— <a href="https://arxiv.org/html/2603.20662">2603.20662</a></li>
+<li>2608.23074：LLaVA-1.5-7B/13B、Qwen2.5-VL-7B，token 消融、attention knockout、头级因果中介，均带等量随机 token 对照。目标物体 token 消融使定位掉 5.37 / 27.90 / 64.93 点，"Yet relation accuracy drops by at most 1.32 points under the original masks"（F）— <a href="https://arxiv.org/html/2608.23074">2608.23074</a></li>
+<li>2606.01914：末位置残差流整体互换可双向翻转答案，"Across models, rescue reaches the all-correct plateau at about 60% relative network depth on average"；稀疏 knockout 只在 InternVL2-1B 上做（第 5 层 100 个残差通道或第 12 层 200 个 MLP 神经元可把平均准确率从 0 拉回 0.80 以上，带等量随机对照）（F）</li>
+<li><strong>哪一种跨模型</strong>：(乙)。2603.20662 的跨模型比较只到"分布同样稀疏"，没有头的对应。</li>
+<li><strong>不同论文说法是否一致</strong>：三种说法落在不同部位（头稀缺 / 接地与关系分离 / 语言侧词偏置），彼此不互斥但没有被放进同一实验比较。另有单族工作：AdaptVis 把问题归到中层对图像 token 的注意力与物体位置不对齐（分析只用 LLaVA-1.5，F*）— <a href="https://arxiv.org/html/2503.01773">2503.01773</a>；M3 的 position ID 也给空间题一个解释（搬 ID 后空间推理提升）。</li>
+<li><strong>竞争者（已有修法）</strong>：SHA（输入侧加框与掩码以"激活潜在空间头"，InternVL3-2B 上 &gt;10%，摘要语；需要外部检测器 Gemini 2.5-Flash）；头方向正向干预（+1.85 点）；LLM-only DPO（2606.01914，合成集上最高 +100 个百分点）；AdaptVis（"up to 50% points"，LLaVA 系）。局限原文（2603.20662）："we focus on eight predefined cognitive functions and restrict our analysis to attention heads, leaving other components such as MLPs unexplored."（2606.01914）："Our interventions also localize manipulable LLM-side states and components, but they do not establish a complete circuit"；"The mechanistic account of this paper does not transfer directly to open-ended generation; we leave this to future work."</li>
+<li><strong>剩余空间</strong>：未找到统一口径。</li>
+<li><strong>便宜办法</strong>：2606.01914 报告去掉选项（one-word 作答）后偏置"does not vanish"，但表现形式不同（F）。</li>
+<li><strong>数据与基准</strong>：CogVSR（自建）、VSR、Spatial457、SpatialEval、3DSRBench、WhatsUp、自建合成空间 MCQ。</li>
+<li><strong>阅读层级</strong>：F。</li>
+</ul>
+<h4 id="m9-token">M9 物体信息局部化在物体对应的视觉 token 上，并可沿词表方向线性读出/擦除</h4>
+<ul>
+<li><strong>现象</strong>：物体幻觉；定位与分类错误。COCO、CHAIR、PascalVOC。</li>
+<li><strong>现象的跨模型证据</strong>：LLaVA-1.5 与 InstructBLIP 上，存在物体与不存在物体的 internal confidence 分布可分；幻觉检测 mAP 在两个模型上提升 22.45% 与 47.17%（F）— <a href="https://arxiv.org/html/2410.02762">2410.02762</a></li>
+<li><strong>根因主张</strong>：语言模型内部的图像 token 表示经 logit lens 可读出物体词；幻觉物体对应的置信度低；把图像特征对幻觉物体的文本方向做正交化可去掉该物体。</li>
+<li><strong>根因的跨模型证据</strong>：因果。ProjectAway 在 LLaVA-1.5、InstructBLIP 上"reducing hallucinations up to 25.7%"（F）。物体 token 消融带随机与梯度对照：LLaVA-1.5 与 LLaVA-Phi（F*，2410.07149）；LLaVA-1.5 与 InternVL-3.5（F，2605.19792，三种子均值）；LLaVA-1.5 与 Qwen2.5-VL（F，2608.23074）。</li>
+<li><strong>哪一种跨模型</strong>：(乙)。</li>
+<li><strong>不同论文说法是否一致</strong>：2605.19792 的"containerization"补充了一点：物体 token 界定空间范围，token 内部语义排布"largely irrelevant to the predicted box"。Kaduri et al. 报告只保留最高注意力的 5% 图像 token 性能即趋平（InternVL2-76B，F）。</li>
+<li><strong>竞争者（已有修法）</strong>：ProjectAway。局限原文："The editing approach may struggle with highly abstract or longer sentences that involve attributes or interactions of objects"；多 token 物体词只做近似；"We hope to explore the applications of our approach in other multimodal architectures."</li>
+<li><strong>随机对照</strong>：token 消融有；ProjectAway 的擦除本身，正文 grep "random vector / direction / object / token / baseline" 无命中，即未检索到"擦随机方向"对照。</li>
+<li><strong>剩余空间 / 便宜办法</strong>：未找到。</li>
+<li><strong>数据与基准</strong>：COCO2014 Karpathy val（5000 图）、PascalVOC。</li>
+<li><strong>阅读层级</strong>：F（2410.02762、2605.19792、2608.23074）；F*（2410.07149）。</li>
+</ul>
+<h4 id="m10-steering-halluspacesae">M10 幻觉相关的线性方向 / 子空间（steering 向量、HalluSpace、SAE 潜变量方向）</h4>
+<ul>
+<li><strong>现象</strong>：物体幻觉；CHAIR、POPE、MME、LLaVA-Bench。</li>
+<li><strong>现象的跨模型证据</strong>：各文基线表。</li>
+<li><strong>根因主张</strong>：残差流里存在与"幻觉 vs 忠实"对应的少数方向；Nullu 认为该子空间与 LLM 语言先验重合（"HalluSpace 𝑽 might contain similar latent information as LLM's prior"）。</li>
+<li><strong>根因的跨模型证据</strong>：因果（steering/投影后幻觉指标下降）。VTI：InstructBLIP、LLaVA-1.5、Qwen-VL（F<em>）— <a href="https://arxiv.org/html/2410.15778">2410.15778</a>；Nullu：LLaVA-1.5（Vicuna）、MiniGPT-4（Llama2）、mPLUG-Owl2（F</em>）— <a href="https://arxiv.org/html/2412.13817">2412.13817</a>；SSL：SAE 在 LLaVA-NeXT-8b 第 25 层训练，方向用于 LLaVA-NeXT-8b（第 16 层）、LLaVA-1.5-7b（第 31 层）、InstructBLIP-7b（第 8 层）（F*）— <a href="https://arxiv.org/html/2505.16146">2505.16146</a></li>
+<li><strong>哪一种跨模型</strong>：VTI、Nullu 是 (乙)（每个模型单独估计方向）。SSL 作者主张 (甲)："although the SAE was trained on the LLaVA-Next-8b model, the extracted hallucination and factuality directions general[ize] …"到 LLaVA-1.5-7b 与 InstructBLIP-7b。三者语言骨干不同；正文 grep "random direction / random vector" 无命中，即<strong>未见跨模型迁移时的随机方向对照</strong>（只有同模型内随机 SAE 潜变量的分类对照，Figure 4）。</li>
+<li><strong>不同论文说法是否一致</strong>：Dual-Pathway（2605.13156）给出事实约束：幻觉通路上"the leading singular direction of the per-component hallucination signal captures only 45–69% of its variance"，mean-difference 投影在三个模型的留出测试集上无降低，ITI（逐头探针方向）有降低但小于逐部件缩放（F）。这与"单一方向足够"的做法相冲突，属于竞争说法。</li>
+<li><strong>竞争者（已有修法）</strong>：VTI、Nullu、SSL 本身。SSL 局限原文："Currently, the only fully open-source multi-modal SAE is provided by LLM-Labs, trained on the 25th layer of the LLaVA-Next 8b model. As a result, our study does not include a comparison of SAEs trained on other model architectures across different multimodal models."SSL 代码：检索片段称 github.com/huazhenglin2003/SSL（S）。</li>
+<li><strong>剩余空间 / 便宜办法</strong>：未找到。</li>
+<li><strong>数据与基准</strong>：CHAIR（COCO 500 图，多种子）、POPE、MME、LLaVA-Bench、LURE 配对数据。</li>
+<li><strong>阅读层级</strong>：F*（三篇均只做了模型清单、对照、局限的关键词核对；效果数字未摘录）。</li>
+</ul>
+<h3 id="inferences_1">Inferences</h3>
+<ul>
+<li>（推导）M1、M2、M6 三条指向同一类部件——语言模型里把文本侧信息（提示内容、世界知识、已生成文本）推向输出的头，但层位不同：M1 在第 0–1 层，M2 在后半层，M6 在中深层。三条是否有共用的头，未见论文检验；把它们合并成"一个语言先验回路"是推测。</li>
+<li>（推导）M3 与 M8 在空间题上给出不同部位的解释（中层 position ID；稀缺的空间头；语言侧词偏置），目前没有实验区分哪个占多大份额。</li>
+<li>（类比）M7 的 sink 维度"基座决定、微调不变"与 M1 的"共享基座则头编号重合"、M6 的"幻觉头注意力图样像基座 LLM"是三处独立的"继承自基座 LLM"证据；据此推"凡共享基座的 VLM 都共享这些部件"属于类比，只在各自那一对模型上实测过。</li>
+</ul>
+<h3 id="gaps_1">Gaps</h3>
+<ul>
+<li>M4、M5、M7、M9、M10 缺少"改了该结构 → 具体失败率按预期变化 + 随机对照"的完整链条中的至少一环（各条已注明缺哪一环）。</li>
+<li>属性绑定之外的属性幻觉、关系幻觉：Dual-Pathway 报告对象存在类回路的干预对属性幻觉基本无效，未找到属性幻觉的跨族回路工作（对象层；未专门检索，0 条专门查询）。</li>
+<li>计数的头级回路只在 Qwen2.5-VL 上完整做了，LLaVA-1.5 与 Qwen3-VL 只有头重要性热图。</li>
+</ul>
+<hr />
+<h2 id="3">问题 3：这些结构是否稳定（换提示模板、数据集、随机种子）？有没有定位结果不稳定或与随机对照分不开的报告？</h2>
+<h3 id="takeaway_2">Takeaway</h3>
+<p>跨数据集的稳定性有正有负的实测；跨题型格式的不稳定有明确数字；"换随机种子重新定位能否找回同一批部件"在已取正文的论文里没有看到报告。至少两篇论文明确写了某类读数不稳定或消融结果的解释限度。</p>
+<h3 id="cited-findings_2">Cited Findings</h3>
+<ul>
+<li>头集合随题型格式变：同为 Yes/No 时，POPE COCO adversarial 与 random 的 T2T 头排名相关系数 0.8247、与 POPE GQA adversarial 为 0.8358；"even with the same images and similar questions, when switching to MCQ format, the correlation coefficient between heads drops to only 0.1233"（LLaVA-1.5-7B；Qwen-VL-Chat 有对应附图）（F）— <a href="https://arxiv.org/html/2511.17254">2511.17254</a></li>
+<li>注意力特征方向不稳定："most directional-effect distributions straddle zero … its direction flips between POPE-9000 and COCO-500, and its peak-layer band shifts across models. No single feature therefore admits a direction that is uniformly stable across heads, models, tasks, and layer ranges"（LLaVA-1.5-7B 与 Qwen3-VL-8B）；同文也报告逐头偏离图样的折半可复现性 Tcos 0.757–0.996、高于符号翻转零带；作者自认"our current evidence cannot distinguish whether Role-Break is a cause of hallucination, a downstream response to it, or a partial self-correction attempt by the model, as we have not performed controlled head-level interventions"（F）— <a href="https://arxiv.org/html/2607.29412">2607.29412</a></li>
+<li>消融类干预的解释限度：注意力 knockout 后模型可改走文本中介通路；通路选择"is task-dependent, and that data distribution and prompt design can also modulate which pathway is used"（F）— <a href="https://arxiv.org/html/2607.03358">2607.03358</a></li>
+<li>跨任务迁移为正的例子：计数任务上找到的 PIH 头直接用于颜色任务，幻觉降低 40%–95%（F）— <a href="https://arxiv.org/html/2601.05201">2601.05201</a></li>
+<li>跨数据集迁移有例外：Qwen2.5-VL 的 router 头 L11H14 在 Pascal VOC 上找到，"can generalize across majority of the tasks, except CUB-Color"；作者局限"it is not guaranteed that those heads can further generalize to other datasets"（F）— <a href="https://arxiv.org/html/2507.01790">2507.01790</a></li>
+<li>换数据集后回路可复现的例子：WHOOPS! 上"the same circuit is recovered"；固定提示、变图像的附录 F "recovers a strongly overlapping head set"（重合率数字未摘录）（F）— <a href="https://arxiv.org/html/2606.28273">2606.28273</a></li>
+<li>层位随数据集漂移："the exact layer of maximum effect varies across datasets"（F）— <a href="https://arxiv.org/html/2602.22918">2602.22918</a>；2606.03871 附录图注："exposes task-specific sensitivity to different intermediate depths across models and datasets"（F）</li>
+<li>与随机对照比较过的：M1（同层随机头）、M6 的 Dual-Pathway（随机部件）与 Yang（微调随机头）、M8 的 2603.20662（等量随机头）与 2608.23074（等量随机 token，三种子）、M9 的 token 消融、M4（随机回路做 IoU 与互换的归一化下界）、2606.01914（等量随机通道/神经元）。未见随机对照的：M2 的 2606.28273（正文无 "random"）、M3（未检索到）、M10 的跨模型方向迁移。</li>
+<li>读数方法本身影响定位：Counting Circuits 报告 AttentionLens 下"the few genuinely important counting heads (L26H24–26) are buried within hundreds of heads that appear equally capable"，而其自提的 HeadLens 给出稀疏信号（Qwen2.5-VL-7B）（F）— <a href="https://arxiv.org/html/2603.18523">2603.18523</a></li>
+</ul>
+<h3 id="inferences_2">Inferences</h3>
+<ul>
+<li>（推导）"头集合"比"层段/通路"更不稳定：格式一变相关系数从 0.82 掉到 0.12；而层段级结论在多数论文间能对上（但相对深度随架构变）。</li>
+<li>（推测）M1 的头在计数→颜色间可迁移、而 M6 的头在 Yes/No→MCQ 间不可迁移，可能反映前者是输入侧的抄写部件、后者是输出格式相关部件；需独立验证。</li>
+</ul>
+<h3 id="gaps_2">Gaps</h3>
+<ul>
+<li>随机种子：在 36 篇正文里用 <code>random|seed</code> 关键词核对，种子只用于数据抽样、K-Means 初始化、评测重复，未见"换种子重跑定位流程后部件重合率"的报告（对象层；1 条专门查询 + 正文 grep）。</li>
+<li>提示模板：除 AllPath 的格式对比与 2606.28273 的提示/图像对换外，未见系统的模板扰动稳定性实验。</li>
+</ul>
+<hr />
+<h2 id="4">问题 4：基于这些结构的修复各自在哪些模型上、涨了多少、有没有随机对照、作者自认局限是什么？</h2>
+<h3 id="takeaway_3">Takeaway</h3>
+<p>修复手段分五类（头消融/缩放、激活修补、方向 steering/投影、注意力重分配、针对性微调）。带随机对照且跨 ≥2 族的有 PIH 头消融、幻觉通路逐部件缩放、功能头遮蔽；涨幅最大的数字多出现在自建受控数据上，作者普遍把"更大模型、开放式生成、完整回路"列为未做。</p>
+<h3 id="cited-findings_3">Cited Findings</h3>
+<table>
+<thead>
+<tr>
+<th>修复</th>
+<th>类型</th>
+<th>模型族</th>
+<th>效果（正文数字）</th>
+<th>随机对照</th>
+<th>作者自认局限（逐字）</th>
+<th>层级</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PIH 头消融 <a href="https://arxiv.org/html/2601.05201">2601.05201</a></td>
+<td>头消融</td>
+<td>LLaVA-OV、Qwen2-VL、Janus-Pro</td>
+<td>prompt match 42–64% → &lt;11%；true count 70–78%</td>
+<td>有（同层等量）</td>
+<td>"may not generalize directly to substantially larger models"</td>
+<td>F</td>
+</tr>
+<tr>
+<td>promoting 头消融 <a href="https://arxiv.org/html/2606.28273">2606.28273</a></td>
+<td>头消融</td>
+<td>Qwen-VL、LLaVA-NeXT、PaliGemma</td>
+<td>先验作答翻转 68–96%，视觉作答变 0.8–7.5%</td>
+<td>未见</td>
+<td>"our claims concern this late-stage arbitration only"</td>
+<td>F</td>
+</tr>
+<tr>
+<td>PvP steering <a href="https://arxiv.org/html/2505.17127">2505.17127</a></td>
+<td>方向</td>
+<td>LLaVA-Next、Qwen2-VL、Janus-Pro</td>
+<td>WK→CF 翻转成功率"at least a 98%"</td>
+<td>未检索到（grep 无命中）</td>
+<td>CF→WK 更难，"remains an open direction"</td>
+<td>F</td>
+</tr>
+<tr>
+<td>position-ID 修补 <a href="https://arxiv.org/html/2506.15871">2506.15871</a></td>
+<td>激活修补</td>
+<td>Qwen2.5-VL、LLaVA-1.5</td>
+<td>低熵绑定 +11.1 / +10.4 / +4.6 点</td>
+<td>未检索到</td>
+<td>机制成因"We leave … to future work"</td>
+<td>F</td>
+</tr>
+<tr>
+<td>back-patching <a href="https://arxiv.org/html/2506.09047">2506.09047</a></td>
+<td>激活修补</td>
+<td>Qwen2-VL、Pixtral、Gemma-3</td>
+<td>平均 +4.6%，补回差距约 32%</td>
+<td>有（文本版对照，约 79% 设置下更小）</td>
+<td>"the causes for the remaining gap remain unclear"</td>
+<td>F</td>
+</tr>
+<tr>
+<td>幻觉通路逐部件缩放 <a href="https://arxiv.org/html/2605.13156">2605.13156</a></td>
+<td>部件缩放</td>
+<td>Qwen3-VL、LLaVA-v1.6、Llama-3.2-V、InternVL3</td>
+<td>相对幻觉率 −40% 至 −76%，准确率代价 ≤2pp</td>
+<td>有（随机部件，均值</td>
+<td>ΔH</td>
+<td>=3.0pp 且为增加）</td>
+</tr>
+<tr>
+<td>AD-HH / TF-HH <a href="https://proceedings.iclr.cc/paper_files/paper/2025/file/8001c3568152d134d821cd46d4d84768-Paper-Conference.pdf">Yang et al.</a></td>
+<td>头注意力调整 / 头微调</td>
+<td>LLaVA-1.5、MiniGPT-4</td>
+<td>LLaVA-7B 幻觉率最多降 1.7 倍</td>
+<td>有（微调随机头，LLaVA-1.5）</td>
+<td>未摘录</td>
+<td>F</td>
+</tr>
+<tr>
+<td>AllPath <a href="https://arxiv.org/html/2511.17254">2511.17254</a></td>
+<td>头缩放</td>
+<td>LLaVA-1.5、Qwen-VL-Chat、Qwen2.5-VL</td>
+<td>Qwen-VL-Chat MCQ-POPE 相对 VCD +8.0% acc</td>
+<td>未检索到</td>
+<td>"we do not investigate what causal pathways are most effective for different types of questions"</td>
+<td>F</td>
+</tr>
+<tr>
+<td>VAR <a href="https://arxiv.org/html/2503.03321">2503.03321</a></td>
+<td>注意力重分配</td>
+<td>LLaVA-1.5、VILA、Qwen2-VL、InternVL2</td>
+<td>"reliably improves … across all benchmarks"（数字未摘录）</td>
+<td>头选择有消融（Table 4/5）</td>
+<td>"it is still worth exploring our methodology on different and larger LMMs"</td>
+<td>F</td>
+</tr>
+<tr>
+<td>功能头正向干预 / SHA <a href="https://arxiv.org/html/2603.20662">2603.20662</a></td>
+<td>头方向 / 输入增强</td>
+<td>InternVL3、Qwen2.5-VL、Llama-3.2-V</td>
+<td>Qwen2.5-VL-7B 空间感知 80.04 → 81.89；SHA 在 InternVL3-2B &gt;10%</td>
+<td>遮蔽有；正向干预未核对</td>
+<td>"restrict our analysis to attention heads, leaving other components such as MLPs unexplored"</td>
+<td>F</td>
+</tr>
+<tr>
+<td>LLM-only DPO <a href="https://arxiv.org/html/2606.01914">2606.01914</a></td>
+<td>微调（只动解码器）</td>
+<td>LLaVA、Qwen、InternVL</td>
+<td>合成四选项最高 +100 个百分点</td>
+<td>不适用</td>
+<td>"does not cover the full visual, linguistic, and compositional diversity of open-world spatial reasoning"</td>
+<td>F</td>
+</tr>
+<tr>
+<td>计数微调 + 注意力正则 + 头温度 <a href="https://arxiv.org/html/2603.18523">2603.18523</a></td>
+<td>微调</td>
+<td>Qwen2.5-VL、Qwen3-VL、LLaVA-1.5</td>
+<td>Qwen2.5-VL OOD 计数 +8.36%、通用推理 +1.54%；LLaVA-1.5 CountBenchQA 42.16 → 47.86</td>
+<td>有（颜色/形状训练作对照任务）</td>
+<td>未见单列局限节</td>
+<td>F</td>
+</tr>
+<tr>
+<td>ProjectAway <a href="https://arxiv.org/html/2410.02762">2410.02762</a></td>
+<td>方向正交化</td>
+<td>LLaVA-1.5、InstructBLIP</td>
+<td>幻觉最多 −25.7%</td>
+<td>未核对</td>
+<td>"may struggle with highly abstract or longer sentences that involve attributes or interactions of objects"</td>
+<td>F</td>
+</tr>
+<tr>
+<td>VTI / Nullu / SSL</td>
+<td>方向 / 子空间</td>
+<td>见 M10</td>
+<td>数字未摘录</td>
+<td>跨模型方向迁移未见随机对照</td>
+<td>见 M10</td>
+<td>F*</td>
+</tr>
+<tr>
+<td>OCR 方向移除 <a href="https://arxiv.org/html/2602.22918">2602.22918</a></td>
+<td>PCA 方向</td>
+<td>Qwen3-VL、Phi-4、InternVL3.5</td>
+<td>Qwen3-VL-4B 计数最高 +6.9pp；Qwen3-VL-8B RealWorldQA −14pp；InternVL 全面下降</td>
+<td>未核对</td>
+<td>效果依赖架构模块化程度</td>
+<td>F</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>静态方向类修复的上限有一条实测约束：见 M10 中 Dual-Pathway 的 45–69% 方差与 mean-difference 投影无效（F）— <a href="https://arxiv.org/html/2605.13156">2605.13156</a></li>
+<li>迭代修补会变差：back-patching 第二次起"performance degrades … across all but one task and model pairs"（F）— <a href="https://arxiv.org/html/2506.09047">2506.09047</a></li>
+</ul>
+<h3 id="inferences_3">Inferences</h3>
+<ul>
+<li>（推导）凡是在自建受控集上涨幅很大的修复（PIH、DPO、position-ID），其在通用基准上的效果要么只做了"不掉点"检查，要么没报；"修好了受控失败"与"修好了基准上的失败"是两个轴。</li>
+<li>（推导）带随机对照的修复都属于"减法"（消融/下调）；"加法"类（steering、正向干预）对照普遍缺。</li>
+</ul>
+<h3 id="gaps_3">Gaps</h3>
+<ul>
+<li>多数修复的代码 URL 未逐一核对（只确认了 AllPath 的 GitHub 链接出现在正文首页）。</li>
+<li>各修复之间没有在同一模型、同一基准上的头对头比较（除 AllPath 与 Dual-Pathway 各自的基线表）。</li>
+</ul>
+<hr />
+<h2 id="5-transcoder-vlm">问题 5：稀疏自编码器 / transcoder 在 VLM 上找到的跨模型特征有哪些与失败直接相关？</h2>
+<h3 id="takeaway_4">Takeaway</h3>
+<p>在本次检索范围内，SAE/transcoder 路线没有一条满足"≥2 个模型族各自训练字典并对上特征"的证据；与失败相关的只有 SSL 一条（单一 SAE、方向搬到别的模型），其余是单模型或只读到摘要。</p>
+<h3 id="cited-findings_4">Cited Findings</h3>
+<ul>
+<li>SSL：用 LLM-Labs 在 LLaVA-NeXT-8b 第 25 层训练的 SAE，找出与幻觉/忠实物体 token 相关的潜变量方向，施加于三个模型；作者局限承认没有在其他架构上训练 SAE 做比较（F*）— <a href="https://arxiv.org/html/2505.16146">2505.16146</a></li>
+<li>Circuit Tracing in VLMs：逐层 transcoder + attribution graph，只在 Gemma-3-4B-it 上；用 feature steering 与 circuit patching 验证（F*，局限节未摘录）— <a href="https://arxiv.org/html/2602.20330">2602.20330</a></li>
+<li>"Transcoders Trace Visual Grounding and Hallucinations in VLMs"（2605.22902）在 arXiv 上标注为 withdrawn（2026-09-13、2026-10-05 两个版本均为撤稿），其结论不采用 — <a href="https://arxiv.org/abs/2605.22902">arXiv 摘要页</a></li>
+<li>Pach et al.（NeurIPS 2025）：在 CLIP 视觉编码器上训练 SAE，干预可 steer LLaVA 输出（S，只有检索片段）— <a href="https://arxiv.org/abs/2504.02821">2504.02821</a></li>
+<li>"Sparse Circuits of Vision Language Alignment"（JSAE，ICLR 2026 列表页）：摘要称在 LLaVA 上找到成对的视觉-语言神经元回路并做双向因果干预，且"dense and MoE-based VLMs"上结果相似（S，未取到正文，未找到 arXiv 号）— <a href="https://iclr.cc/virtual/2026/10019232">ICLR 2026 页面</a></li>
+<li>非 SAE 的低维方向：OCR 信号"PC1 captures up to 72.9% of variance"，一个数据集上学到的 PCA 方向可迁移到其他数据集（同模型内跨数据集，不是跨模型）（F）— <a href="https://arxiv.org/html/2602.22918">2602.22918</a></li>
+</ul>
+<h3 id="inferences_4">Inferences</h3>
+<ul>
+<li>（推导）SSL 的"跨模型泛化"在逻辑上需要两个不同语言骨干的残差空间在该方向上对齐，正文没有给出这一点的检验；在有随机方向对照之前，这条应记为 (甲) 的未验证主张。</li>
+</ul>
+<h3 id="gaps_4">Gaps</h3>
+<ul>
+<li>VLM 上的 crosscoder / 跨模型特征对齐：1 条专门查询，未检索到取得到正文的工作。</li>
+<li>未检索 CLIP/SigLIP 类对比式编码器上的 SAE 普遍性文献（如 2504.11695 只在片段中出现），那是视觉编码器侧，不在本笔记的"语言骨干内部结构"主线内。</li>
+</ul>
+<hr />
+<h2 id="6-llm-vlm">问题 6：文本 LLM 里已确认的跨模型结构，是否有人在 VLM 上验证过继承？</h2>
+<h3 id="takeaway_5">Takeaway</h3>
+<p>有四类有实测的继承证据（attention sink 维度、偏文本的头的注意力图样、提示抄写头、任务向量），都限于"基座 LLM 与其 VLM 后代"或"共用基座的两个 VLM"；binding ID 在 VLM 上对应的是功能不同的 position ID；选项位置偏置与 copy suppression 在 VLM 上的机制验证，本次没有取到正文级证据。</p>
+<h3 id="cited-findings_5">Cited Findings</h3>
+<ul>
+<li>Attention sink：sink 维度与基座 LLM 相同（LLaMA2-7B 与 LLaVA-1.5-7B 均为 {1415, 2533}），"We also check that this observation is consistent across various LMMs in our experiments"（F）— <a href="https://arxiv.org/html/2503.03321">2503.03321</a></li>
+<li>幻觉头的文本注意力图样与基座 LLM 相似（LLaVA-7B vs Vicuna-7B；MiniGPT-4 vs Llama-2-7B），且指令微调后变化小（F）— <a href="https://proceedings.iclr.cc/paper_files/paper/2025/file/8001c3568152d134d821cd46d4d84768-Paper-Conference.pdf">Yang et al., ICLR 2025</a></li>
+<li>PIH 头：共用 Qwen2 语言模型、视觉骨干与融合方式不同的两个 VLM 之间 top-10 头有一半同编号；作者引"fine-tuning tends to amplify or repurpose existing mechanisms rather than introduce entirely new mechanisms"（F）— <a href="https://arxiv.org/html/2601.05201">2601.05201</a>。注意：该文没有在纯文本 Qwen2 上直接做同一消融。</li>
+<li>任务向量：基座 LLM 的任务向量补进 VLM 可用——LLaVA-1.5 上 LLM-VLM Patch 平均准确率 0.37（VLM-VLM Patch 0.32），LLM 与 VLM 任务向量平均余弦 0.95（随机基线 0.58）；文本示例得到的任务向量补进图像查询，LLaVA-1.5 平均 0.32（文本示例直接提示 0.18），Mantis-Fuyu 0.31（0.09）（F*）— <a href="https://arxiv.org/pdf/2410.22330">2410.22330</a></li>
+<li>Binding：文本 LLM 的 binding ID 在 VLM 上对应 position ID；作者强调"This is not merely a translation of the same circuit from the textual domain into the visual domain"（F）— <a href="https://arxiv.org/html/2506.15871">2506.15871</a></li>
+<li>多选题选项相关偏置：2606.01914 把"加入空间选项即塌"定位到语言侧并用只训 LLM 解码器的 DPO 修复，覆盖 LLaVA、Qwen、InternVL（F）— <a href="https://arxiv.org/html/2606.01914">2606.01914</a>；这是"选项内容词"偏置，不是"选项位置"偏置。VLM 上的选项位置偏置有基准与缓解工作（2509.16805），机制层面只见文本 LLM 的工作（GPT-2 anchored bias，2405.03205）（均为 S）— <a href="https://arxiv.org/html/2509.16805v1">2509.16805</a>、<a href="https://arxiv.org/html/2405.03205v3">2405.03205</a></li>
+<li>模态冲突下的 router / promotion 头：行为与探针覆盖 LLaVA-1.5、InstructBLIP、Qwen2.5-VL、LLaVA-OneVision，头干预只在 Qwen2.5-VL 上做（F）— <a href="https://arxiv.org/html/2507.01790">2507.01790</a></li>
+</ul>
+<h3 id="inferences_5">Inferences</h3>
+<ul>
+<li>（类比）"VLM 的失败相关部件大多继承自语言骨干"有四处独立证据支持，但每处只测了一两对模型；推广到一般命题属于类比。</li>
+<li>（推测）如果 PIH 头确实是语言模型的通用抄写部件，那么它应当在纯文本的"提示与上下文冲突"任务上同样可定位；本次未见该检验。</li>
+</ul>
+<h3 id="gaps_5">Gaps</h3>
+<ul>
+<li>Copy suppression、induction heads 在 VLM 上的直接验证：1 条专门查询，只返回 PIH 论文与一篇 ExCV workshop 论文（S，未取正文）；未取到正文级证据。</li>
+<li>选项位置偏置在 VLM 上的机制定位：1 条专门查询，未取到做内部干预的正文。</li>
+</ul>
+<hr />
+<h2 id="_1">主表之外：证据不满足主表条件、但不应丢的条目</h2>
+<p>（放在这里是为了满足"另列一节、不要丢"的要求；内容均已在上面各问题下引用。）</p>
+<table>
+<thead>
+<tr>
+<th>结构</th>
+<th>为什么不进主表</th>
+<th>跨模型情况</th>
+<th>层级</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>模态冲突的 router 头 / promotion 头（Qwen2.5-VL 的 L11H14、L19H26、L13H26）<a href="https://arxiv.org/html/2507.01790">2507.01790</a></td>
+<td>头干预只做了一个模型族</td>
+<td>行为与表示聚类覆盖 4 个模型；(丙)</td>
+<td>F</td>
+</tr>
+<tr>
+<td>深层注意力已落在证据区但答错（"seeing but not believing"）<a href="https://arxiv.org/html/2510.17771">2510.17771</a></td>
+<td>内部只有相关读数；修法 VEA 是输入级高亮</td>
+<td>LLaVA-Next、Qwen2.5-VL、Gemma3、InternVL3.5；(丙)。且 LLaVA-Next 与 InternVL3.5 因内存问题"use Qwen2.5VL as a delegate model for image augmentation"</td>
+<td>F*</td>
+</tr>
+<tr>
+<td>Role-Break（逐头偏离其忠实基线）<a href="https://arxiv.org/html/2607.29412">2607.29412</a></td>
+<td>检测器，作者明言未做受控头级干预</td>
+<td>6 个模型（MiniGPT-4、LLaVA-1.5-7B/13B、InstructBLIP、Qwen3-VL-8B、Qwen3.5-9B），平均 AUROC 93.23；(丙)</td>
+<td>F</td>
+</tr>
+<tr>
+<td>localization heads（3 个头即可做 grounding）<a href="https://arxiv.org/html/2503.06287">2503.06287</a></td>
+<td>把头的注意力当读数用，不是对头做干预</td>
+<td>10 个 LVLM（DeepSeek-VL、Mini-Gemini、InternVL、Yi-VL、ShareGPT4V、LLaVA、LLaVA-1.5），k=3 固定；(乙)</td>
+<td>F*</td>
+</tr>
+<tr>
+<td>视觉关系 function vectors <a href="https://arxiv.org/html/2510.02528">2510.02528</a></td>
+<td>做了因果中介，模型为 OpenFlamingo-4B 与 Qwen3-VL-4B（两族）；本次只核对了模型与局限，未核对两模型上的干预是否对等</td>
+<td>可能满足主表条件，待补读</td>
+<td>F*</td>
+</tr>
+<tr>
+<td>跨模态任务向量 <a href="https://arxiv.org/pdf/2410.22330">2410.22330</a></td>
+<td>跨族因果成立（LLaVA-1.5、Mantis-Fuyu、Idefics2），但不对应某个失败</td>
+<td>(乙)；LLM→VLM 为基座→后代的 (甲)</td>
+<td>F*</td>
+</tr>
+<tr>
+<td>NOTICE 的 universal heads <a href="https://arxiv.org/html/2406.16320">2406.16320</a></td>
+<td>"universal"指模型内跨任务；BLIP 与 LLaVA 的头功能不同</td>
+<td>两族都做了修补；结论是差异</td>
+<td>F</td>
+</tr>
+<tr>
+<td>计数回路四类头（grounding / routing / aggregation / awareness）<a href="https://arxiv.org/html/2603.18523">2603.18523</a></td>
+<td>头级分类只在 Qwen2.5-VL-7B 上完整做</td>
+<td>层级修补跨 4 模型（已并入 M5）</td>
+<td>F</td>
+</tr>
+<tr>
+<td>实体识别与知识抽取在中层"撞车"<a href="https://arxiv.org/html/2412.14133">2412.14133</a></td>
+<td>干预只在 LLaVA 系</td>
+<td>行为覆盖 LLaVA 系与 Qwen2-VL</td>
+<td>F*</td>
+</tr>
+<tr>
+<td>跨模态信息流两阶段 <a href="https://arxiv.org/html/2411.18620">2411.18620</a></td>
+<td>四个模型全是 LLaVA 系</td>
+<td>单族</td>
+<td>F*</td>
+</tr>
+<tr>
+<td>视觉 token 范数压制位置编码 <a href="https://arxiv.org/html/2503.17349">2503.17349</a></td>
+<td>LLaVA 系；本次未核对是否有第二族</td>
+<td>未核对</td>
+<td>F*</td>
+</tr>
+<tr>
+<td>transcoder 回路追踪 <a href="https://arxiv.org/html/2602.20330">2602.20330</a></td>
+<td>只有 Gemma-3-4B-it</td>
+<td>单模型</td>
+<td>F*</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_2">检索日志</h2>
+<p><strong>查询条数</strong>：24 条 WebSearch（均为 standard 模式）。清单：
+1. mechanistic interpretability vision-language models survey circuits cross-model
+2. "Same Task, Different Circuits" modality-specific mechanisms VLMs
+3. visual symbolic mechanisms binding position IDs vision language models causal
+4. hallucination heads LVLM causal intervention attention heads multiple models arXiv
+5. counting mechanism vision-language models activation patching circuit arXiv 2025
+6. sparse autoencoder VLM hallucination features steering LLaVA cross-model
+7. spatial reasoning VLM mechanistic interpretability attention heads intervention arXiv 2025 2026
+8. VLM conflicting information across modalities router heads intervention
+9. visual attention sink large multimodal models redistribute attention models tested
+10. VLM image-to-text information flow layers attention knockout LLaVA InternVL Qwen "middle layers" causal
+11. VLM circuits unstable across prompts datasets seeds localization random baseline attention heads hallucination "random heads"
+12. multiple-choice option position bias vision-language models mechanistic attention heads intervention
+13. language prior vs visual evidence direction steering VLM counterfactual images "Pixels versus Priors" activation
+14. circuit tracing transcoder vision-language model attribution graph 2026
+15. "seeing but not believing" VLM attention answer correctness deep layers evidence
+16. universal mechanisms across VLM architectures mechanistic comparison LLaVA Qwen2-VL InternVL Gemma "across model families" interpretability 2026
+17. "Understanding and Mitigating Hallucination in Large Vision-Language Models via Modular Attribution and Intervention" arXiv hallucination heads LLaVA MiniGPT-4
+18. sparse autoencoder vision-language model universal features across models LLaVA Qwen InternVL SAE cross-model transfer 2026
+19. VLM function vectors OR "task vectors" cross-modal attention heads causal Idefics LLaVA Mantis patching
+20. "localization heads" OR "grounding heads" large vision-language model few attention heads visual grounding multiple LVLMs
+21. vision default prior override causal attention heads three VLM families perception knowledge conflict "2.5" "4.8" arXiv 2026
+22. "Sparse Circuits of Vision Language Alignment" joint sparse autoencoders arXiv
+23. VLM activation patching circuits "do not transfer" OR "model-specific" OR "not universal" across architectures LLaVA Qwen InternVL heads differ 2026 mechanistic
+24. "copy suppression" OR "induction heads" vision-language model LLaVA inherited from language model attention heads mechanistic</p>
+<p>其中第 11 条是对抗式的"不稳定/随机对照"查询，第 23 条是对抗式的"不迁移"查询。</p>
+<p>按七步查重口径自查：抽象阶梯（在"跨模型 + 因果干预的内部结构"模板层搜，覆盖头/层段/方向/稀疏特征四类）做了；方法论单独搜（activation patching、circuit tracing、SAE）做了；蕴含检索部分做了（Role-Break、Pathways 两篇对"单一机制"说法构成约束）；同义词枚举部分做了（heads / circuits / pathways / directions / subspace / features；LVLM / MLLM / VLM / LMM）；引用链挖掘<strong>只做了顺手的</strong>（从 2606.28273、2607.29412、2511.17254 的相关工作段里看到的引用未逐条追）；对抗式检索 2 条；边界见下。</p>
+<p><strong>取到正文的论文（36 篇）</strong>
+- 定向核对较充分（F，26 篇）：2506.09047、2506.15871、2507.01790、2511.17254、2503.03321、2411.17491、2606.03871、2603.18523、2603.20662、2608.23074、2605.19792、2606.01914、2505.17127、2601.05201、2406.16320、2607.29412、2410.02762、2606.28273、2605.13156、2607.03358、2602.22918、Yang et al. ICLR 2025（proceedings PDF）、2510.17771、2505.16146、2412.14133、2411.16724。（后四篇介于 F 与 F<em> 之间：核对了模型清单、关键主张与局限，效果数字多数未摘录；正文中按 F</em> 标注。）
+- 只做了一轮关键词核对（F*，10 篇）：2411.18620、2503.01773、2503.17349、2410.07149、2503.06287、2510.02528、2410.15778、2412.13817、2602.20330、2410.22330（PDF）。</p>
+<p><strong>只读摘要或检索片段（未计入"读过"）</strong>：2502.17516（综述，已下载未精读）、2504.02821（Pach et al.）、JSAE（ICLR 2026 列表页）、2605.22902（已撤稿）、2509.16805、2405.03205、2605.01846、2505.16411（SPIN）、2603.25075、CausalLens（CVPR 2026）、2509.14837（V-SEAM）、2510.21518（Head Pursuit）、2603.21746、2504.11695、ExCV workshop 早层论文、"Mechanistic Interpretability Meets Vision Language Models"（ICLR 2025 blog track）、Liu et al. 2025（被 2606.28273 引用）。</p>
+<p><strong>没覆盖到的范围</strong>
+- 在审稿件与未公开并行工作；OpenReview 上的 ICLR 2027 投稿未检索。
+- 非 arXiv 来源只取了 ICLR 2025 proceedings 一篇；CVPR/ICCV/ECCV 开放获取页未单独检索（依赖其 arXiv 版）。
+- 非英文文献未检索。
+- 闭源模型（GPT/Gemini/Claude）内部结构无法验证，本笔记所有因果证据来自开源权重。
+- GitHub 仓库未打开核对；代码 URL 除 AllPath 外均为片段级。
+- 被主表引用但未取正文的相邻工作：SPIN（2505.16411）、CausalLens、Head Pursuit、V-SEAM——它们可能含 ≥2 族的头级干预，属于本笔记的已知漏项。
+- 对比式模型（CLIP/SigLIP）内部的回路（如 typographic attack 头）未纳入。
+- 我的知识截止在 2026 年中，2026-07 之后的论文完全依赖检索返回；2607.<em>、2608.</em> 各只取到 2 篇与 1 篇，覆盖度低于此前月份。</p></main></html>

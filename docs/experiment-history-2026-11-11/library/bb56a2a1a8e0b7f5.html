@@ -1,0 +1,105 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>WCP-01 编程工程验收与资源复核</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="wcp-01">WCP-01 编程工程验收与资源复核</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/wsp-coding-painpoint-v1-2026-11-03/REPORT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-coding-painpoint-v1-2026-11-03/REPORT.zh-CN.md">固定提交原件</a>；SHA-256：<code>bb56a2a1a8e0b7f596e29e01778d17f5e64813b2973ae64e2044a088276fbcbc</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="wcp-01_1">WCP-01 编程工程验收与资源复核</h1>
+<p>2026-11-03。本轮完成用户指定的数据、评分器、隔离执行和干预接口工程验收。<strong>未生成 D/S/V/T/M 的模型回答，未调用研究编辑器，未启动数学或编程正式搜索。</strong> 两模型各仅生成 32 条≤128-token 合成样本。工程通过不代表编程能力已经提高，也不代表正式阶段调度器已经完成。</p>
+<h2 id="_1">已完成和实测证据</h2>
+<table>
+<thead>
+<tr>
+<th>模块</th>
+<th>结果</th>
+<th>证据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>固定数据</td>
+<td>MBPP 974 条中只取 train 601–974；参考 QA 373/374 通过，927 失败。HumanEval+ full v0.1.10 全部164题参考通过；GSM8K test 1319条。</td>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-coding-painpoint-v1-2026-11-03/receipts/sources-manifest.json">来源哈希</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-coding-painpoint-v1-2026-11-03/receipts/server/receipts/reference-qa.jsonl.gz">538条参考QA原件（gzip无损）</a></td>
+</tr>
+<tr>
+<td>源题审查与冻结</td>
+<td>88个相似候选保守隔离，另排除31个规范/参考问题；剩254题中固定选 D128、V64、S32⊂D。T164不删题，M64固定抽样。</td>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-coding-painpoint-v1-2026-11-03/data-review.json">排除理由与审查范围</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-coding-painpoint-v1-2026-11-03/receipts/server/receipts/data-freeze.json">冻结清单与文件哈希</a></td>
+</tr>
+<tr>
+<td>评分与执行隔离</td>
+<td>14项CPU验收通过：正确/错误、语法/运行/超时/内存、抽取、EvalPlus、权限隔离、按题pass@1、拒绝不完整/故障/重复样本；相同请求复用已记录结果。</td>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-coding-painpoint-v1-2026-11-03/receipts/server/receipts/cpu-acceptance.json">CPU收据</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-coding-painpoint-v1-2026-11-03/receipts/server/receipts/cpu-acceptance-r2.log">运行输出</a></td>
+</tr>
+<tr>
+<td>0.8B 编译干预</td>
+<td>零增益生成完全一致；±0.5目标列保存/重载逐元素符合公式，其余320张量中的非目标张量不变；流式激活均值与显式读取一致。</td>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-coding-painpoint-v1-2026-11-03/receipts/server/acceptance-0p8b-r2/receipt.json">0.8B收据</a></td>
+</tr>
+<tr>
+<td>4B 编译干预</td>
+<td>同样通过；检查全部426张量的身份和唯一目标矩阵。</td>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-coding-painpoint-v1-2026-11-03/receipts/server/acceptance-4b-r1/receipt.json">4B收据</a></td>
+</tr>
+</tbody>
+</table>
+<p>隔离使用已有 bubblewrap，而非只靠 EvalPlus 的 Python guard：独立 namespace、UID/GID65534、capabilities清零、只读运行环境、无网络/GPU/模型/凭据/宿主数据挂载、临时工作目录。cgroup 限4GB/1核/16进程，另有rlimit与60秒supervisor；并发最多4 worker。生成程序不在权重分析kernel执行。该边界验收不是对Linux内核漏洞的安全证明。</p>
+<p>数据审查为本助手的源题/接口/公开测试一致性审查，不是独立审查或参考程序完整正确性的证明。相似度误报也保守隔离，例如面积与周长短程序；这可能改变题型分布，不能称消除了所有语义重复或预训练污染。D/V原测试较弱，后续故障标签仍须检查具体输入与规范。公开示例包括原MBPP测试；其开发分数不当作隐藏泛化成绩。T仅在未来终验使用。</p>
+<h2 id="bf16">BF16差异按用户选择处理</h2>
+<p>0.8B最初验收确实失败：<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-coding-painpoint-v1-2026-11-03/receipts/server/acceptance-0p8b-r1/receipt.json">原始收据</a>。λ=+0.5时，运行时激活增益与编译权重增益的最大 token log-prob 差为 <strong>0.0755806</strong>，超过旧0.05门槛；4B对应差为 <strong>0.1193173</strong>。原阈值没有提高，失败记录没有删掉。</p>
+<p>用户明确选择保留编译权重干预。本轮主操作因此为 <code>W'[:,J]=BF16(float32(W[:,J])*(1+λ))</code>；运行时针只是诊断，不能把它的读数当成编译针的同义证据。已同步修订<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/docs/wsp-coding-painpoint-v1-2026-11-03/PLAN.zh-CN.md">方案</a>和<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/docs/wsp-coding-painpoint-v1-2026-11-03/SELF_CHECK.zh-CN.md">自查</a>。固定L0前8坐标只是工程fixture，没有从研究题选针。</p>
+<p>另保留了脚本调用、cgroup异步清理和慢去重实现的失败/中止日志；修复后重新验收。仅移除了已结束任务的空cgroup以及本工程可重建完整checkpoint副本。原始数据、生成、快照、矩阵差分、构建记录和日志保留。大矩阵在服务器，逐文件哈希见<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-coding-painpoint-v1-2026-11-03/receipts/server/receipts/final-audit.json">最终审计</a>；Git中交付文本证据与来源清单，不提交模型或环境。</p>
+<h2 id="eta">ETA与磁盘重新核算</h2>
+<table>
+<thead>
+<tr>
+<th>实测项</th>
+<th style="text-align: right;">0.8B</th>
+<th style="text-align: right;">4B</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>成功合成验收设备墙钟（含加载/构建）</td>
+<td style="text-align: right;">193.88秒</td>
+<td style="text-align: right;">226.91秒</td>
+</tr>
+<tr>
+<td>失败验收设备墙钟</td>
+<td style="text-align: right;">7.54秒</td>
+<td style="text-align: right;">0秒</td>
+</tr>
+<tr>
+<td>累计工程计账</td>
+<td style="text-align: right;">201.42秒，约3.36分钟</td>
+<td style="text-align: right;">226.91秒，约3.78分钟</td>
+</tr>
+<tr>
+<td>四臂纯生成合计</td>
+<td style="text-align: right;">13.26秒，3465 tokens</td>
+<td style="text-align: right;">16.19秒，4096 tokens</td>
+</tr>
+<tr>
+<td>阶段A原停止线中剩余</td>
+<td style="text-align: right;">1598.58秒</td>
+<td style="text-align: right;">3373.09秒</td>
+</tr>
+<tr>
+<td>全流程原停止线</td>
+<td style="text-align: right;">4 GPUh</td>
+<td style="text-align: right;">10 GPUh</td>
+</tr>
+<tr>
+<td>新增磁盘规划额度</td>
+<td style="text-align: right;">25GB</td>
+<td style="text-align: right;">40GB</td>
+</tr>
+</tbody>
+</table>
+<p>两模型共计 <strong>428.33设备秒、64条合成生成、724个TF输入tokens</strong>，已计入原预算，没有另开验收赠送额度。538份参考QA的逐程序墙钟总和约75.06秒；并行总耗时不同，不能称75秒CPU核时，也不能据此保证模型生成的错误程序一样快。</p>
+<p><strong>目前无法确认完整研究的完成ETA。</strong> 本次128-token、batch-8 eager合成生成约261/253 token/s，与原FA-01的4096-token批量吞吐处于不同工况，不能混用。此前按14,045/5,124 token/s算出的约1.05/2.87小时仅为历史吞吐假设下的极端输出解码算术，不是本任务预测。4/10 GPUh保留为停止线，不承诺在其内跑完所有阶段。若把本次小批量短生成速度机械外推到52.96M极端输出，会得到约56/58小时，仅说明估计对工况敏感，同样不是预测。</p>
+<p>长输出16k吞吐、实际提前停止比例、TF的参考PyTorch慢路径、Astra周转与配额仍未实测。正式授权后只利用已经预算内的首个D固定批次校准ETA；若超阶段预算，暂停商量，不另跑吞吐实验或减少对照。CPU每程序60秒、最多4worker的极端墙钟可超过11小时/模型，故GPU小时不是端到端交付时间。现金金额需实际卡费/账号计费，不能从额度推定。</p>
+<p>2026-11-03 21:35（UTC+8）实测：服务器 <code>/workspace</code> 可用 <strong>269.57GB</strong>；WCP目录文件合计 <strong>0.458GB</strong>，包含保留的编辑矩阵/快照；两张H20均3MiB、利用率0。已有0.8B/4B权重约1.505/8.412GB，直接复用。当前无需新增模型下载，也无需数百GB额外空间。</p>
+<p>21:40<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-coding-painpoint-v1-2026-11-03/receipts/server/receipts/closeout-state.json">收尾检查</a>：空闲空间仍269.57GB，本轮使用的GPU0已释放；GPU1随后出现9857MiB占用，本轮未在GPU1运行验收，也未干预该任务。所有WCP临时cgroup已清空，数学两份正式配置仍 <code>authorized=false</code>。</p>
+<p>编程两模型25+40GB工作额度与共享50GB余量合计115GB，现有空间足够。若数学线50+100GB也全部增长到上限，两线合计215GB新数据+50GB保留线=265GB，仅比当前可用少约4.57GB；不能同时把全部余量重复承诺。顺序执行并逐阶段核实际增长；在原地归档不会释放磁盘，不删除旧证据来满足预算。</p>
+<h2 id="_2">接下来与启动边界</h2>
+<p>本轮四类工程已通过。正式运行前仍需把这些适配器接入 <strong>WCP的阶段状态机</strong>，冻结候选/只开封一次V/终验权限、候选与token总账、随机对照校准、分析汇总，并验收服务器编辑器断线续接。已有数学50-pass调度不能直接替代这套流程；现有源码只提供工程worker与评分适配器，没有自动启动正式搜索的入口。</p>
+<p>D可挂载目录与observer-private已分离；评分沙箱无法读取宿主数据。未来研究编辑器的D-only挂载与阶段开封需随WCP状态机验收，不能把目录权限本身当作整条编辑器信息隔离已经证明。当前所有正式授权开关仍为false。本轮不启动搜索，也不把工程通过称为完整研究已可无人值守运行。</p></main></html>

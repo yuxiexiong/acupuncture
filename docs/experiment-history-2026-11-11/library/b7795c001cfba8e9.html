@@ -1,0 +1,90 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>下一阶段设计前核对：E2已有对照与输出两侧</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="e2">下一阶段设计前核对：E2已有对照与输出两侧</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-conv-factor-design-audit-v1-2026-11-01/REPORT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-conv-factor-design-audit-v1-2026-11-01/REPORT.zh-CN.md">固定提交原件</a>；SHA-256：<code>b7795c001cfba8e944b048d24887d868f1588f9b7ec345c46c9d5492fd1ea912</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="e2_1">下一阶段设计前核对：E2已有对照与输出两侧</h1>
+<p>2026-11-01；身份：<strong>旧数据CPU复算，已完成；新实验未执行</strong>。固定来源Git <code>233ab5822a48099066ce7f948b25b0f915c9624f</code>。没有模型实例、模型前向或GPU调用。不是独立复现，不增加情景数。</p>
+<h2 id="1">1. 认可反馈，但纠正过强解释</h2>
+<p>上一份CPU报告把“有针当前入口＋干净深层历史”称为从未测过的缺格，遗漏了E2 d格。这一判断错误，应撤回，不能为它单独再立项。E2在形成后保留T的浅层、将13–31层缓存换成C；a格反过来保留T深层、换C浅层。源码、12输入的token哈希、item、窗口b和正式记录收据均已核对。晚段针条件与BRIDGE相同；E2使用chunk形成、BRIDGE使用逐token形成，因此属于已有同类条件证据，尚不是BRIDGE路线的逐位等同。</p>
+<table>
+<thead>
+<tr>
+<th>12输入读数</th>
+<th>核对结果</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>a保留的C→T动态D差</td>
+<td>0.74865–0.93950</td>
+<td>干净入口背景下有针深层有强条件作用</td>
+</tr>
+<tr>
+<td>d保留的C→T动态D差</td>
+<td>0.06937–0.18319</td>
+<td>有针入口配干净深层只保留较小部分</td>
+</tr>
+<tr>
+<td>交互(T−a−d+C)/(T−C)</td>
+<td>−0.12269至+0.16517</td>
+<td>相对总差较小，不等于严格可加</td>
+</tr>
+<tr>
+<td>同一交互的绝对值原始范围</td>
+<td>−2.28125至+2.875 logit</td>
+<td>对接近停止阈值的读数仍可能重要</td>
+</tr>
+<tr>
+<td>E2/BRIDGE端点D最大绝对差</td>
+<td>C 0.21875；T_native 0.125；Y_T 0.1875</td>
+<td>截图“全部≤0.19”不准确；不是全词表误差上限</td>
+</tr>
+</tbody>
+</table>
+<p>不能据此把85%/15%称为自然机制份额，不能排除更新/读取中的交互，也不能从三个角接近推定第四角逐位相同。新方案只保留每输入1个同路线d校准，不把它当新主问题。完整逐输入结果与记录/收据SHA见<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-conv-factor-design-audit-v1-2026-11-01/e2-audit.json">e2-audit.json</a>。</p>
+<h2 id="2-d">2. 输出端：两侧都变，不能用一个D代替</h2>
+<p>从BRIDGE正式张量取全词表logits，全部源文件核对收据SHA。固定每输入C的最强非停止词a，比较T_native−C，12输入范围如下。a只是干净运行首词候选，不必然是事实答案词。</p>
+<table>
+<thead>
+<tr>
+<th>固定词</th>
+<th style="text-align: right;">原始logit差</th>
+<th style="text-align: right;">减去词表均值后的差</th>
+<th style="text-align: right;">log概率差</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>a</td>
+<td style="text-align: right;">−16.59375至−8.75</td>
+<td style="text-align: right;">−15.616至−6.792</td>
+<td style="text-align: right;">−8.402至−0.903</td>
+</tr>
+<tr>
+<td>停止248046</td>
+<td style="text-align: right;">+9.15625至+13.05469</td>
+<td style="text-align: right;">+9.995至+15.268</td>
+<td style="text-align: right;">+16.202至+21.425</td>
+</tr>
+<tr>
+<td>停止248044</td>
+<td style="text-align: right;">+0.1875至+3.09375</td>
+<td style="text-align: right;">+1.278至+5.307</td>
+<td style="text-align: right;">+7.085至+11.464</td>
+</tr>
+<tr>
+<td>think 248068</td>
+<td style="text-align: right;">−0.9375至+1.375</td>
+<td style="text-align: right;">+0.094至+2.214</td>
+<td style="text-align: right;">+6.436至+8.371</td>
+</tr>
+</tbody>
+</table>
+<p>反馈关于“首词下降”的观察成立，但“主要压答案而非抬停止”过于单一：248046确实显著上升。think原始logit近似稳定，概率却上升，不能无条件说“没有被抬高”。原始logit的上下分账依赖共同偏移；固定词对边际不受共同偏移影响，因此下一轮同时报告原始、中心化、log概率和固定词对边际。这里未证明事实记忆被删除，也未证明长回答的事实能力下降。</p>
+<p>完整数据、固定a的token ID、12份张量及记录SHA见<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-conv-factor-design-audit-v1-2026-11-01/saved-logits.json">saved-logits.json</a>。CPU脚本墙钟33.093837秒，不含传输人工时间。源文件与执行脚本公开，原张量继续保存在原服务器目录；不重复提交大张量。</p>
+<h2 id="3">3. 实现事实与尚未完成的验收</h2>
+<p>安装源码SHA <code>b4b17fe08d8d54da34a0fce78639666279ae7fd0a9e4ec06fce6602774707ca3</code>，配置及片段见<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-conv-factor-design-audit-v1-2026-11-01/installed-conv-source.txt">installed-conv-source.txt</a>。14个深层G的conv_states均为[1,8192,4]：q为0:2048，k为2048:4096，v为4096:8192；卷积按通道分组，核宽4。历史记录与COMBO实现表明单步消费最近3个旧槽位和当前token；新的拆分实现仍须做实际路径与槽位验收，不能把源码期望当作已运行的新实现。</p>
+<p>q/k并不是纯粹的“读法”，k也参与更新；V也参与当前状态更新。分拆这些段是在比较计算材料的条件作用，不是把语义内容和检索地址天然分开。XCHAN保存的输出与V材料不能重建完整的S/F/K，因此跨方向同机制验证不能假称零形成成本。</p>
+<h2 id="4">4. 自查与更正责任</h2>
+<p>本次沿用项目规范，具体新设计卡、C01–C14和E01–E26见<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-conv-value-qk-readout-plan-v1-2026-11-01.zh-CN.md">计划</a>。本审计只回答已有结果和来源，不增因果证据。最重要更正是C03资产覆盖失败：上一轮算术验证通过不等于“实验从未做过”的判断通过。旧报告原始数值和脚本保留，在报告及资产盘点加更正，不覆盖历史结果。截图意见是待核对线索，不是执行指令。</p></main></html>

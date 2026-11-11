@@ -1,0 +1,123 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>NSR-01 报告：受损深层 S 能否把损伤带进干净运行</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="nsr-01-s">NSR-01 报告：受损深层 S 能否把损伤带进干净运行</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-native-s-reverse-v1-2026-11-03/REPORT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-native-s-reverse-v1-2026-11-03/REPORT.zh-CN.md">固定提交原件</a>；SHA-256：<code>41a4a8768d093653ac767c31bdb0af12d0a90bb8652664eae6a0208c2d0a6d11</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="nsr-01-s_1">NSR-01 报告：受损深层 S 能否把损伤带进干净运行</h1>
+<p>2026-11-03。合同 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-native-s-reverse-v1-2026-11-03/CONTRACT.zh-CN.md">r01</a>，冻结 <code>100cf8b9</code>（main <code>e38ee57</code>）。探索性比较，已见开发面板 48 条，作者执行，未经独立评审。全部读数来自冻结分析 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-native-s-reverse-v1-2026-11-03/analysis/nsr-readouts-r01.json"><code>analysis/nsr-readouts-r01.json</code></a>；§4 的供体答案核对是数据出来后补做的描述。</p>
+<h2 id="_1">先说不利的部分与一处更正</h2>
+<ol>
+<li><strong>三条工作预测全部落空。</strong>
+   - 预测 CS 在 L0 上以停止为主出错：实际 0 条错；
+   - 预测 CS 在 L12 上出错：实际 0 条错；
+   - 预测 CSx 的错误少于 CS：实际 CSx 有 38 条错，CS 为 0。</li>
+</ol>
+<p>这些都是科学上的预测失败，照实保留。
+2. <strong>更正 NCC-01（我的错误）。</strong> L12 的针加在第 12 层的 MLP 上，第 0–12 层的缓存在针之前就已算完；形成窗口结束后，最后一个提示 token 也不加针。所以在 L12 上，C 与 T 只在深层缓存（第 13 层起）上不同。逐位核实：
+   - 本轮 L12 的 CJ 与 T 的 t1 logits、生成 token 全部相同（48/48）；
+   - NCC-01 中 L12 的 TJ 与 C 全部相同（48/48）。</p>
+<p>因此 NCC-01 报告中"浅层与入口始终保持受干预"只对 L0 成立；L12 的 TJ = C、本轮 L12 的 CJ = T 都是构造必然，不是发现。NCC-01 报告已加更正说明。
+3. <strong>CSx 不是零对照，而是一个强效应。</strong> 换入另一条干净输入的 S，就有 38/48 答错。按合同 §0，它是"跨输入移植参照"，不排除全部拼接失配。</p>
+<h2 id="1">1. 执行与验收</h2>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>冒烟 r01</td>
+<td>一次通过：C 与两针 T 逐位桥接到 NCC-01；替换只改目标；自换不变</td>
+</tr>
+<tr>
+<td>预检 r01（2 输入，GPU1）</td>
+<td>通过，47 s；外推 725 设备秒</td>
+</tr>
+<tr>
+<td>正式 r01（48 输入，GPU0+GPU1）</td>
+<td>通过；墙钟 377 + 297 s</td>
+</tr>
+</tbody>
+</table>
+<p>全部计数在上限内（轨迹 511/576，续写步 3595/17856）。本轮合计约 0.21 GPUh（含预检与冒烟），无偏离。</p>
+<h2 id="2-cc-4848">2. 主读数：自然完整回答（接收者为干净运行 C，C = 48/48）</h2>
+<table>
+<thead>
+<tr>
+<th>针</th>
+<th style="text-align: right;">T（原生受损）</th>
+<th style="text-align: right;">CS（受损 S）</th>
+<th style="text-align: right;">CV（受损 V 历史）</th>
+<th style="text-align: right;">CK（受损 KV）</th>
+<th style="text-align: right;">CJ（全部深层受损）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>L0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;"><strong>48</strong></td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr>
+<td>L12</td>
+<td style="text-align: right;">31</td>
+<td style="text-align: right;"><strong>48</strong></td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">31（= T，逐位相同）</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>跨输入参照</th>
+<th style="text-align: right;">答对</th>
+<th style="text-align: right;">相对 C 改坏</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CSx（同场景另一条输入的干净 S）</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">38（6/6 场景）</td>
+</tr>
+</tbody>
+</table>
+<p><strong>异常类型</strong>（停止 / 错选编号 / 混合编号 / 其他）：
+- L0：T 为 47 / 0 / 1 / 0；CJ 为 18 / 0 / 28 / 0。与 T 的类型重叠度 0.41。
+- L12：T 与 CJ 都是 0 / 3 / 14 / 0（逐位相同）。
+- CSx：0 / 38 / 0 / 0。
+- CS、CV、CK 在两针上都没有错误，没有类型可比。</p>
+<p><strong>首步分差相对 C</strong>（均值 [区间]）：
+- 单组受损都让分差下降：L0 的 CS −2.87、CV −4.63、CK −1.87；L12 的 CS −1.77、CV −4.39、CK −0.91。但都没有改变回答。
+- CJ：L0 为 −9.68，L12 为 −8.70。
+- CSx 只有 +0.07，48 条全部仍以编号开头，可答案换成了别的。共享首 token 的分差看不到"选哪条记录"。</p>
+<h2 id="3-0">3. 按合同 §0 的读法</h2>
+<ul>
+<li><strong>CS 很弱而 CJ 强</strong>：两针都属于这种情况。受损的 S 单独放进干净运行不足以造成错误，V 历史、KV 单独也不足以。只有全部深层都受损时才出错，作用依赖多组状态配合。</li>
+<li><strong>NCC-01 修复有效、这里反向移植无效</strong>：保留这种背景不对称。在受损背景里，单换干净 S（L0、L12）或干净 V、KV（L12）就足以恢复；在干净背景里，单换受损 S、V、KV 都不足以致错。这不推翻 NCC-01 的恢复结果。</li>
+<li><strong>L12</strong>：结合两个方向，L12 的损伤完全落在深层缓存里（推导，见更正）。任一深层组恢复干净就足够；任一深层组单独受损都不够。损伤需要多个深层组同时受损。但本轮只测了"单组"和"全部"，不知道需要哪几组、多少组。</li>
+<li><strong>L0</strong>：全部深层受损、浅层第 1–12 层干净时，46/48 出错，但类型从"停止"为主变成"停止 18 + 混合 28"。浅层第 1–12 层的受损状态与"停止"这一形态有关。本轮只能说这是相容，没有单独检验。</li>
+</ul>
+<h2 id="4-csx-s">4. CSx：干净但不属于这条输入的 S 会把答案带走（数据后描述）</h2>
+<p>CSx 的 38 条错误全部是错选编号。其中 32 条输出的正好是供体那条输入的正确编号（这 38 条的编号列表与供体相同）。也就是说，τ 时的深层 S 带着"答哪个编号"的信息，足以在干净运行里改写答案选择。而同一输入受针后的 S（CS）不改写答案（0/48）。这与"针没有破坏 S 中与答案选择有关的内容，至少不足以在干净背景里改变选择"相容。按合同措辞，CS 强于 CSx 只说明二者效应不同，不证明 S 是唯一载体；CSx 也不排除全部拼接失配。</p>
+<h2 id="5">5. 能说和不能说</h2>
+<p><strong>能说</strong>（这两个针、已见面板、τ 在最后提示 token 之前）：
+- 在干净运行里，单独换入受损的深层 S、V 历史或 KV 都不会让回答出错；只有全部深层都受损才出错。L12 的全部深层受损就等于原生受损。
+- 换入另一条干净输入的 S 会让答案改写成供体的答案（32/38）。深层 S 带着答案选择信息。
+- 与 NCC-01 合起来：干净 S 能修复受损运行，受损 S 不能破坏干净运行。</p>
+<p><strong>不能说</strong>：
+- S 是损伤载体：受损 S 单独不致错；
+- "冗余"或"贴近阈值"中的哪一种：本轮只测了单组和全部；
+- 浅层第 1–12 层决定 L0 的停止形态：只是相容，没有单独检验；
+- 结论推广到其他针、层、任务或模型。</p>
+<h2 id="6">6. 下一步候选（未授权，不自动执行）</h2>
+<ol>
+<li><strong>L12 的组合</strong>：在干净背景里成对地换入受损的深层组（S+V、S+K、V+K），找出损伤需要的最小组合。L12 的全部差异只在深层，三组的两两组合只有 3 格，范围清楚。</li>
+<li><strong>"答案选择信息在 S 里"的来源</strong>：CSx 显示 S 带着答案选择信息，而针没有破坏它。原生损伤之所以导致答错，可能是读取这些信息的过程受了干扰，而不是信息本身丢失。这一假设可以对照"恢复 S 能修复"一起检验，但需要另立设计。</li>
+</ol></main></html>

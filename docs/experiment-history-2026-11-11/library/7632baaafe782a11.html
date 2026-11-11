@@ -1,0 +1,713 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>B 线查重：七步协议第 1–4 步</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="b-14">B 线查重：七步协议第 1–4 步</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>docs/literature/next-stage-state-sink-audit-2026-10-29/B-steps1-4.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/literature/next-stage-state-sink-audit-2026-10-29/B-steps1-4.md">固定提交原件</a>；SHA-256：<code>7632baaafe782a11217e5108cef7f2cf804a91de02de3ed68d707e4661532b2e</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="b-14_1">B 线查重：七步协议第 1–4 步</h1>
+<p>日期：2026-10-29。范围：只做第 1–4 步（抽象阶梯、方法论单独搜、蕴含检索、同义术语）。第 5（引用链）、6（对抗轮单独跑）、7（边界申报）不在本轮；第 7 节只列本轮自身的盲区。纯覆盖笔记，不含 novelty 段，不给等级。</p>
+<p>证据规则：判生死的引用一律取 arXiv PDF，<code>pdftotext</code> 后 <code>grep</code> 定向核对，原文句子照抄并附行号或章节。搜索引擎摘要器的转述不作证据。本轮抓到一处摘要器转述与原文不符：检索把 2606.19831 的结论转述为"removing the drive returns the behavior toward baseline"，原文 §7.3 实际是"算子翻转在撤除后回落，语言翻转在撤除后保持（0.83 到 1.0）"，后者被归因到已生成文本。</p>
+<p>与前一轮（prior-audit-2026-10-28.md）的关系：不重做 C1–C5。前一轮里与 B 线相关的只有两条，本轮引用不重读：
+- Kumar 等 2605.30574（上层提示 KV 换成同模板中性填充几乎不掉分）——只取了摘要，是"提示 KV 携带什么"的旁证。
+- Liu 2606.19831——前一轮只查了"有没有 L0–L7 神经元"，没读 §7.3。本轮发现 §7.3 正是 B1 的三臂设计，见下。</p>
+<hr />
+<h2 id="0">0. 坏消息先说</h2>
+<ol>
+<li><strong>B1 的"撤针 / 无针强制前缀重建"分离方法已有两篇先例，方法层被覆盖。</strong>
+   - Dobre 等 2610.09027（2026-10-06，ServiceNow/Mila）：对抗输入被 mask 掉后影响经后续 token 的 KV 持续；"cache-swap"消融在<strong>文本固定</strong>的条件下只换缓存来源，证明"对抗文本本身不足以"引发效应，效应走 KV。这就是我们 rebuild 臂的逻辑（同一文本、干净缓存）。
+   - Liu 2606.19831 §7.3：单神经元转向的"release"臂（撤针）+"forced-opening control"（无注入、强制同样开头续写）——正是 withdraw + rebuild。结论与我们 L25 一致（持续靠已生成文本，"in-context momentum"），与我们 L2 相反。</li>
+<li><strong>B2 的分离方法（状态交换）在同一个模型上已被做过。</strong> Afendulev 等 2609.04434 在 <strong>Qwen3.5-4B</strong> 上做 split-prefill（只留 KV 或只留递推状态）与 state-swap（KV 来自上下文 A、递推状态来自上下文 B）。我们计划的"只换递推状态 / 只换 KV"是它的方法直接搬用。它还给出一条<strong>类比档</strong>预言：语言、人设、语气这类"回应方式"走递推状态（KV-only 语言准确率 0.01），精确检索走 KV。</li>
+<li><strong>B3 的痛点"转向效应经缓存累积"已被命名并配了修复方案。</strong> Kang 等 2605.10664 把"KV-cache contamination"列为残差流转向在多轮对话中的主要失败模式，并提出 GCAD。但它没有撤针臂、没有重建臂，"经 KV"只写成"A likely mechanism"，即机制断言未经分离检验。2607.09156 引用它并在设计上用每轮全量重编码回避，自称"We have not measured what cache reuse contributes"。</li>
+<li><strong>B1 的 KV 一半大体是被蕴含的（推导档）。</strong> KV 条目一经写入不再更新；只要后续位置还注意到被干预位置，撤针后效应必然有一部分残留。prompt-only 转向（PrOSV 2605.05983 写明"functions mainly by implicitly editing the KV cache"）与 KV cache steering（2507.08799）之所以有效，正依赖这一点。真正不被蕴含的是：(a) 残留<strong>大到</strong>能维持异常，(b) 残留的承载者是递推状态还是 KV，(c) 早层 vs 晚层承载者从状态换到文本。</li>
+<li><strong>方法危险，直接影响我们已有数据的判读：</strong>
+   - 2609.04434 附录 A："Most public implementations of hybrid layers only consume a restored recurrent state on the single-token decode path"——多 token 块喂入时恢复的递推状态被<strong>静默忽略</strong>、扫描从零重启，"No error is raised"。它要求每个模型用 ∆=‖logits(q|R(c))−logits(q|0)‖∞ 验证状态真的进了模型（他们在一个模型上测到 ∆=0.0000）。我们 withdraw / rebuild / 计划中的状态交换都受这条影响，必须核对代码路径。
+   - 2604.15409：FP16 下 cache-ON 与 cache-OFF（重算）在 greedy 下也逐 token 分叉，"100% token divergence rate"（LLaMA-2、Mistral、Gemma-2，GSM8K）。我们的 rebuild 臂相对 withdraw 臂多了一个"重算 vs 缓存"的数值差。需要一个<strong>无针</strong>的 continue-vs-rebuild 对照来标定这个零分布（CLAUDE.md 6.3）。这条是<strong>类比</strong>：对象是 FP16 Transformer，Qwen3.5 的 bf16 + 分块/逐 token 递推是否同等分叉没查到。</li>
+</ol>
+<hr />
+<h2 id="1-1">1. 第 1 步：抽象阶梯</h2>
+<p>模板："对状态 S 施加变换 T 一段时间后移除 T，T 的效应经 S 延续或衰减；用'移除 T、保留 S'与'移除 T、从同一文本重建 S'分离 S 与文本。"</p>
+<p>整类 T 的检索：</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>查询词</th>
+<th style="text-align: right;">条数</th>
+<th>命中（取正文与否见第 5 节）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Q1</td>
+<td>KV cache steering one-shot intervention reasoning small language models</td>
+<td style="text-align: right;">9</td>
+<td>2507.08799 KV cache steering（一次性改提示 KV，"implicitly influences future tokens"）</td>
+</tr>
+<tr>
+<td>Q2</td>
+<td>steering Mamba state space model activation steering recurrent state</td>
+<td style="text-align: right;">9</td>
+<td>2404.05971 Paulo 等 state steering；2602.22719 SSM 子空间瓶颈</td>
+</tr>
+<tr>
+<td>Q3</td>
+<td>activation steering effect persists after removing steering vector KV cache generation</td>
+<td style="text-align: right;">10</td>
+<td>2605.10664 KV-cache contamination；2606.29522 Shih（层间撤除，轴不同）</td>
+</tr>
+<tr>
+<td>Q4</td>
+<td>steering only prompt tokens vs generated tokens effect carried through KV cache</td>
+<td style="text-align: right;">9</td>
+<td>2507.08799；2605.06225 Memory Inception（未取）</td>
+</tr>
+<tr>
+<td>Q5</td>
+<td>steering hybrid linear attention model Gated DeltaNet recurrent state intervention</td>
+<td style="text-align: right;">10</td>
+<td><strong>2605.12770 WriteSAE</strong>（GDN 缓存写入级转向，自称首个）</td>
+</tr>
+<tr>
+<td>Q7</td>
+<td>Mamba hidden state poisoning attack persistent state injection</td>
+<td style="text-align: right;">9</td>
+<td><strong>2601.01972 HiSPA</strong>（输入覆写 SSM 状态）</td>
+</tr>
+<tr>
+<td>Q9</td>
+<td>steering vector applied during prompt only then turned off generation continues steered behavior</td>
+<td style="text-align: right;">9</td>
+<td>2605.05983 PrOSV</td>
+</tr>
+<tr>
+<td>Q10</td>
+<td>temporary steering side effects linger conversation turns steering vector removed multi-turn</td>
+<td style="text-align: right;">10</td>
+<td>2605.10664；2604.08169（多轮转向评测缺口，未取）</td>
+</tr>
+<tr>
+<td>Q19</td>
+<td>steering vector applied for first k tokens then removed effect on rest of generation decay</td>
+<td style="text-align: right;">9</td>
+<td>2510.01246 衰减式 SAE 转向；2605.01844 注入位置四策略</td>
+</tr>
+<tr>
+<td>Q29</td>
+<td>"steer" then "release" OR "transient steering" OR "steering window"…</td>
+<td style="text-align: right;">9</td>
+<td><strong>2606.19831 §7.3 release + forced-opening</strong>；2607.05615 前导窗口转向</td>
+</tr>
+<tr>
+<td>Q38</td>
+<td>injected text removed from context but influence remains KV cache "residual influence"…</td>
+<td style="text-align: right;">9</td>
+<td><strong>2610.09027 Visual Memory Attacks（cache-swap）</strong>；2606.17034 KVEraser</td>
+</tr>
+<tr>
+<td>Q17</td>
+<td>stale KV cache after editing context old content leaks into generation recompute vs reuse</td>
+<td style="text-align: right;">9</td>
+<td>2606.17107（改字段 KV、复用下游 → 模型仍按旧值）；2609.17983（陈旧 KV 修复）</td>
+</tr>
+</tbody>
+</table>
+<p>阶梯结论：
+- T = 优化过的输入（图像/软提示）被移除 → 2610.09027：结论与方法都在，对象是 Transformer、优化攻击。
+- T = 文档字段被改写 → 2606.17107、2609.17983、2606.17034：下游缓存保留旧影响，全量重算恢复。即"S 承载、重建恢复"在 KV 上是<strong>已知工程事实</strong>。
+- T = 激活转向、生成中撤除 → 2606.19831（结论：文本承载）；2607.05615、2510.01246（只看行为，不分离）；2605.10664（持续注入，断言 KV 但未分离）。
+- T = 写入递推状态 → 2404.05971（一次写入最后一个提示 token 的状态即可转向整段生成）、2605.12770（写入三个缓存位）；HiSPA 2601.01972（输入覆写状态）。
+- <strong>未找到</strong>：T = 残差流单通道加性干预，在混合模型里撤除后分离状态与文本，并定位到递推状态或 KV。</p>
+<h2 id="2-2">2. 第 2 步：方法论单独搜</h2>
+<p>把"撤针 / 无针重建 / 状态交换"当作脱离领域的方法来搜。</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>查询词</th>
+<th style="text-align: right;">条数</th>
+<th>命中</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Q8</td>
+<td>activation patching KV cache versus recompute counterfactual cache swap interpretability</td>
+<td style="text-align: right;">10</td>
+<td>2607.03502（填充位 KV 移植当 patching）；2604.15409（FP16 cache vs 重算不等价）；2609.17983（移植 vs 重算结论不同）</td>
+</tr>
+<tr>
+<td>Q13</td>
+<td>"state swap" OR "state transplant" recurrent state hybrid language model Qwen3.5 interpretability</td>
+<td style="text-align: right;">9</td>
+<td><strong>2609.04434 split-prefill / state-swap</strong>；2609.25053 LatentPort（Qwen3.5 4B→9B 递推状态移交）；2604.01168 S0 tuning</td>
+</tr>
+<tr>
+<td>Q16</td>
+<td>self-sustaining steering generated text vs internal state disentangle regenerate from text without intervention</td>
+<td style="text-align: right;">9</td>
+<td>2604.09839（转向后的状态是否可由某段提示到达）——不是分离方法</td>
+</tr>
+<tr>
+<td>Q23</td>
+<td>"re-prefill" OR "re-encode" generated text without intervention to separate cache effect from text effect steering</td>
+<td style="text-align: right;">9</td>
+<td>HF 论坛帖"KV Graft Steering"（非正式：同 token 下全量重算 vs 缓存解码 vs 分拆 KV 预填）；2411.13009 LLMSteer</td>
+</tr>
+<tr>
+<td>Q31</td>
+<td>split-prefill state-swap hybrid recurrent KV Afendulev follow-up steering</td>
+<td style="text-align: right;">9</td>
+<td>未找到 2609.04434 的后续转向工作；2609.23601 PREM（只在预填阶段调制，靠 KV 持续）</td>
+</tr>
+<tr>
+<td>Q35</td>
+<td>counterfactual history intervention "cached" versus "recomputed" attribution generated tokens versus internal state causal mediation autoregressive</td>
+<td style="text-align: right;">9</td>
+<td>无直接命中</td>
+</tr>
+<tr>
+<td>Q36</td>
+<td>SGLang vLLM hybrid model prefix caching mamba state checkpoint reuse radix cache recurrent state</td>
+<td style="text-align: right;">9</td>
+<td>服务侧：SGLang MambaRadixCache、vLLM mamba 前缀检查点（B3 背景）</td>
+</tr>
+</tbody>
+</table>
+<p>方法层结论：
+- <strong>"文本固定、只换缓存来源"</strong>：2610.09027 §4.7 的 cache-swap（Transformer KV，按 anchor/benign 块拼接）。
+- <strong>"撤针 + 无针强制同开头"</strong>：2606.19831 §7.3 的 release + forced-opening control + counter-drive。
+- <strong>"只留一种缓存 / 交叉拼两种缓存"</strong>：2609.04434 的 split-prefill 与 state-swap，就在 Qwen3.5-4B 上。
+- 三者合起来覆盖了我们三臂设计 + 计划中的状态交换的每一个组件。没有找到把三者组合起来，用于<strong>激活干预撤除后</strong>的工作。</p>
+<h2 id="3-3">3. 第 3 步：蕴含检索</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>查询词</th>
+<th style="text-align: right;">条数</th>
+<th>命中</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Q11</td>
+<td>linear attention forgetting gate memory decay theory how long state retains information DeltaNet erase</td>
+<td style="text-align: right;">10</td>
+<td>2605.22791 Gated DeltaNet-2（擦除/写入解耦）；无保持时长定理</td>
+</tr>
+<tr>
+<td>Q24</td>
+<td>gated linear attention state memory half-life forget gate distribution interpretability effective memory length Gated DeltaNet heads</td>
+<td style="text-align: right;">9</td>
+<td>无 GDN 逐头半衰期的发表结果；Research Square rs-11201314（"forget gate keeps recurrent state in narrow marginally stable window"——<strong>正文取不到</strong>，只有标题）</td>
+</tr>
+<tr>
+<td>Q32</td>
+<td>delta rule state perturbation propagation linear RNN error accumulation contraction stability…</td>
+<td style="text-align: right;">9</td>
+<td>2412.06464 Gated DeltaNet；转移矩阵 α_t(I−β_t k_t k_tᵀ) 的标准性质</td>
+</tr>
+<tr>
+<td>Q12</td>
+<td>interpretability hybrid model Mamba attention which carries information recurrent state vs KV cache ablation</td>
+<td style="text-align: right;">9</td>
+<td>2609.04434；2603.22473（Qwen3.5-0.8B 组件消融）；2510.26912</td>
+</tr>
+<tr>
+<td>Q26</td>
+<td>probing Gated DeltaNet recurrent state interpretability linear attention state what information stored</td>
+<td style="text-align: right;">9</td>
+<td>2605.12770；无专门探针论文</td>
+</tr>
+<tr>
+<td>Q22</td>
+<td>activation patching Mamba state space model causal analysis hidden state factual recall Sharma</td>
+<td style="text-align: right;">9</td>
+<td>2404.03646 ROME-in-Mamba（摘要级）</td>
+</tr>
+</tbody>
+</table>
+<p>蕴含判读（每条标档）：
+- <strong>KV 侧——推导。</strong> 注意力层的 K、V 一经写入不再修改。撤针后，被干预位置的 K/V 以及由被干预残差算出的后续位置 K/V 都保持原样，只要查询仍注意到它们，扰动就继续进入读出。所以"撤针后仍有残留"对 KV 是平凡的；不平凡的是残留量是否足以维持异常。prompt-only 转向的有效性（2605.05983："PrOSV intervenes only at prefill stage and not decode stage… functions mainly by implicitly editing the KV cache"）是这条的经验确认。
+- <strong>递推侧——推导 + 实证一处。</strong> GDN 的状态扰动按 δS_t = α_t(I−β_t k_t k_tᵀ)δS_{t−1} 传播，范数被门控收缩，但 α_t 接近 1 的头几乎不衰减。WriteSAE 2605.12770 附录给出 Qwen3.5 GDN 一次写入扰动的传播式："A scalar gate cannot mix the rank-1 outer with anything else, so the perturbation stays rank-1; only its norm decays."，衰减因子 G_{t0→t0+h} = Π exp(g_s)（行 1366、1394），并注明"The reduction is empirical"（忽略了 delta 擦除项的交叉项）。所以"递推态会不会在 4 或 16 个 token 后仍携带干预"<strong>不被蕴含为是或否</strong>，取决于该层各头 g_s 的实测值——这是一个可零 GPU 读出的量，不是文献已给的结论。
+- <strong>HiSPA 2601.01972 的反方向蕴含——类比。</strong> 它证明了足够强的输入能"irreversibly overwrite"SSM 状态，并写道"hybrid models combining Mamba with attention layers may partially mitigate this vulnerability, since attention can recover information that the SSM layers have overwritten"（§3 末）。这预测：在混合模型里，被递推态"擦掉"的东西可由 KV 补回。对 B2 的方向是"KV 能救回、递推态会被冲掉"，与 2609.04434 的"回应方式走递推态"是两股相反的类比压力。
+- <strong>2609.04434 对 B2 的蕴含——类比。</strong> 它的结论（§6）："The recurrent state works as a compressed prior that shapes language, persona, and semantic field of generation"；表 1：Qwen3.5-4B 语言跟随 REC-only 0.70、KV-only 0.01。如果 L2 的异常属于"回应方式"一类（而不是某个被检索的具体项），这条类比预言 B2 的答案是递推状态。但它的对象是上下文信息，不是激活干预；跨对象成立未验证。
+- <strong>2606.19831 §7.3 对 B1 L25 结果——近似蕴含。</strong> 原文："a counter-drive and a forced-opening control (continuation in the routed language on 11/12 prompts with no injection, against 0/12 from a baseline opening) attribute that persistence to the generated context, not a held neuron state"。对象是 Qwen3-4B L25/F347（稠密 Qwen3，非 3.5）。我们 L25 "rebuild 也救不回（文字自持）"与之同形，应作为该结果的复现而不是新发现。
+- <strong>2610.09027 的反向信息——推导/直接引文。</strong> "We show that persistence is not a default property of adversarial inputs, but it can be optimized for."（贡献列表第一条）。即在 Transformer 上，未经优化的输入一般不经 KV 持续。我们 L2 单通道 +1 未经优化却经状态持续，这条形成对照，但它的 T 是输入扰动而非残差加性干预，不能直接互推。</p>
+<h2 id="4-4">4. 第 4 步：同义术语枚举</h2>
+<p>先列词表，再逐一搜（部分词与前几步的查询合并）：</p>
+<p>英文：persistent steering, residual effect, aftereffect, lingering, spillover, hysteresis, carryover, state contamination, cache contamination, KV-cache contamination, cache poisoning, KV cache steering, one-shot steering, prompt-only steering, steering decay, transient steering, steering window, release, recurrent state steering, state steering, SSM steering, Mamba steering, hybrid model interpretability, GatedDeltaNet, DeltaNet state, linear attention state probing, split-prefill, state-swap, cache-swap, state transplant, state handoff, stale KV cache, context erasing.
+中文：激活转向、撤除、残留、持续、KV 缓存、递推状态、混合模型。</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>查询词</th>
+<th style="text-align: right;">条数</th>
+<th>命中</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Q6</td>
+<td>prefix caching state reuse SSM hybrid model contamination security cross-request</td>
+<td style="text-align: right;">9</td>
+<td>Marconi 2411.19379（只讲效率）；无跨请求污染的安全工作</td>
+</tr>
+<tr>
+<td>Q14</td>
+<td>steering hysteresis language model steering carryover after intervention stops autoregressive</td>
+<td style="text-align: right;">10</td>
+<td>无直接命中（ESR 2602.06941 讲转向中自愈，非撤除后）</td>
+</tr>
+<tr>
+<td>Q15</td>
+<td>KV cache poisoning attack shared prefix cache manipulated cache entries influence other users LLM serving</td>
+<td style="text-align: right;">9</td>
+<td>2409.20002 时序侧信道；位翻转共享 KV 块（"no temporal decay occurs"，硬件故障假设）</td>
+</tr>
+<tr>
+<td>Q18</td>
+<td>activation steering Falcon-H1 OR Jamba OR "Qwen3.5" hybrid model steering vectors evaluation</td>
+<td style="text-align: right;">9</td>
+<td>2509.22067 Rogue Scalpel 含 Falcon-H1（随机向量破拒答）；无混合模型专属转向评测</td>
+</tr>
+<tr>
+<td>Q20</td>
+<td>CLASP defending hybrid large language models hidden state poisoning</td>
+<td style="text-align: right;">10</td>
+<td>2603.12206 CLASP（HiSPA 防御，token 级分类）</td>
+</tr>
+<tr>
+<td>Q21</td>
+<td>"steering" "recurrent state" persistence SSM intervention removed state retains perturbation</td>
+<td style="text-align: right;">9</td>
+<td>2605.02236（递归 LLM 循环里"可见 vs 写入状态"的析因设计，对象是文本循环）</td>
+</tr>
+<tr>
+<td>Q25</td>
+<td>steering vectors vLLM prefix caching interaction steered KV cache reused across requests serving</td>
+<td style="text-align: right;">9</td>
+<td>无；摘要器推断"token 哈希不含转向配置"——<strong>推测</strong>，未在 vLLM 源码或 issue 核实</td>
+</tr>
+<tr>
+<td>Q27</td>
+<td>"state contamination" OR "cache contamination" language model intervention residual effect generation</td>
+<td style="text-align: right;">9</td>
+<td>2605.10664；2605.16746（记忆增强 agent 的转录污染，文本层）</td>
+</tr>
+<tr>
+<td>Q28</td>
+<td>激活转向 撤除 后 效应 持续 KV缓存 递推状态 混合模型</td>
+<td style="text-align: right;">9</td>
+<td>无中文直接命中</td>
+</tr>
+<tr>
+<td>Q30</td>
+<td>Mamba SSM jailbreak activation steering safety refusal direction state space models</td>
+<td style="text-align: right;">9</td>
+<td>无 SSM 专属转向安全工作</td>
+</tr>
+<tr>
+<td>Q33</td>
+<td>activation steering aftereffect lingering spillover subsequent turn without steering KV cache steered history</td>
+<td style="text-align: right;">10</td>
+<td>2605.10664；2607.09156（承认该机制、以重编码回避）</td>
+</tr>
+<tr>
+<td>Q34</td>
+<td>Qwen3.5 activation steering neuron intervention Gated DeltaNet layers steering effect</td>
+<td style="text-align: right;">9</td>
+<td>仅博客与 HF SAE 发布；无论文分 GDN 层与全注意力层</td>
+</tr>
+<tr>
+<td>Q37</td>
+<td>persistent steering residual effect hybrid SSM transformer model interpretability Jamba Zamba recurrent state carries instruction</td>
+<td style="text-align: right;">9</td>
+<td>无直接命中</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="5">5. 逐篇覆盖表</h2>
+<p>"全文定向"= 取到 PDF 正文，针对本线问题 grep 并读了相关段落；"摘要"= 只读了 PDF 的摘要页。</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>标题</th>
+<th>模型</th>
+<th>干预类型</th>
+<th>撤除干预？</th>
+<th>区分状态与文本？</th>
+<th>涉及递推状态？</th>
+<th>覆盖主张</th>
+<th>覆盖层级</th>
+<th>读取程度</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2609.04434</td>
+<td>What Attention Recalls and Recurrence Controls in Hybrid LMs</td>
+<td><strong>Qwen3.5-4B</strong>、9B；Falcon-H1-3B/7B</td>
+<td>缓存级：只留 KV / 只留递推态；交叉拼接</td>
+<td>不适用（无注入）</td>
+<td>否（文本 q 固定，分的是 KV vs 递推）</td>
+<td>是</td>
+<td>B2</td>
+<td><strong>方法层覆盖（同一模型）</strong>；B2 结论被类比预言</td>
+<td>全文定向（摘要、§1、§3、§5.3–6、Limitations、附录 A）</td>
+</tr>
+<tr>
+<td>2610.09027</td>
+<td>Visual Memory Attacks Can Persist Through The KV-Cache</td>
+<td>Qwen3-8B、Qwen3-VL-8B、Gemma-4-12B</td>
+<td>优化的对抗图像/软提示，之后 mask</td>
+<td>是（mask）</td>
+<td><strong>是</strong>（文本固定 cache-swap）</td>
+<td>否</td>
+<td>B1、B3</td>
+<td><strong>方法层覆盖</strong>；B1 结论在相邻 T 上被占（KV 携带）</td>
+<td>全文定向（摘要、贡献、§4.7）</td>
+</tr>
+<tr>
+<td>2606.19831</td>
+<td>Leverage Is Not Reach（Liu）</td>
+<td>Qwen3-4B、Llama-3.1-8B、Qwen2.5-3B 等</td>
+<td>单神经元加性驱动</td>
+<td><strong>是</strong>（release）</td>
+<td><strong>是</strong>（forced-opening 无注入续写 + counter-drive）</td>
+<td>否</td>
+<td>B1</td>
+<td><strong>方法层覆盖</strong>；结论相反（文本承载）；与我们 L25 同形</td>
+<td>全文定向（§7.3、§7.4 末段、§8 段落）</td>
+</tr>
+<tr>
+<td>2605.10664</td>
+<td>Prompt–Activation Duality（GCAD）</td>
+<td>Qwen2.5-7B-Instruct 等</td>
+<td>残差流 persona 向量，全程注入</td>
+<td>否</td>
+<td>否（"A likely mechanism is KV-cache contamination"）</td>
+<td>否</td>
+<td>B3、B1</td>
+<td><strong>痛点部分覆盖</strong>（命名 + 修复）；B1 机制被断言未检验</td>
+<td>全文定向（摘要、§1、§3.2、实验协议行 574）</td>
+</tr>
+<tr>
+<td>2605.12770</td>
+<td>WriteSAE</td>
+<td>Qwen3.5-0.8B/4B/27B、Mamba-2、RWKV-7</td>
+<td>替换/放大 GDN 缓存写入</td>
+<td>一次性写入</td>
+<td>否</td>
+<td>是</td>
+<td>B2、第 3 步</td>
+<td>部分覆盖（递推态写入级转向；扰动衰减式）</td>
+<td>全文定向（摘要、§1、附录行 1355–1395）</td>
+</tr>
+<tr>
+<td>2404.05971</td>
+<td>Does Transformer Interpretability Transfer to RNNs?</td>
+<td>Mamba-2.8b、RWKV-v5-7b</td>
+<td>CAA 残差 + 状态转向</td>
+<td>一次性状态写入</td>
+<td>否</td>
+<td>是</td>
+<td>B1（SSM 一侧）、B2</td>
+<td>部分覆盖；推测句"activation steering already influences the model state"</td>
+<td>全文定向（§3.3）</td>
+</tr>
+<tr>
+<td>2601.01972</td>
+<td>Hidden State Poisoning Attacks against Mamba-based LMs</td>
+<td>Mamba、Mamba-2、Jamba-1.7-Mini、Nemotron-3-Nano</td>
+<td>输入触发词覆写状态</td>
+<td>不适用</td>
+<td>否</td>
+<td>是</td>
+<td>B3、第 3 步</td>
+<td>部分覆盖（SSM 状态安全性；混合模型 KV 可补救的假说）</td>
+<td>全文定向（摘要、§1、§3 末段）</td>
+</tr>
+<tr>
+<td>2507.08799</td>
+<td>KV Cache Steering</td>
+<td>小模型、扩展到大模型</td>
+<td>一次性改提示 KV</td>
+<td>一次性</td>
+<td>否</td>
+<td>否</td>
+<td>B1 第 3 步</td>
+<td>被蕴含（KV 写入持续影响后续）</td>
+<td>全文定向（摘要、§1、§3）</td>
+</tr>
+<tr>
+<td>2605.05983</td>
+<td>PrOSV（prompt-only steering）</td>
+<td>多个 Transformer</td>
+<td>只在提示 token 注入</td>
+<td>预填后即停</td>
+<td>否</td>
+<td>否</td>
+<td>B1 第 3 步</td>
+<td>被蕴含（"functions mainly by implicitly editing the KV cache"）</td>
+<td>全文定向（§3 干预位置段、附录与 KV cache steering 比较）</td>
+</tr>
+<tr>
+<td>2606.17107</td>
+<td>Models Take Notes at Prefill</td>
+<td>四个 Transformer 族，扩展到 Falcon-H1</td>
+<td>改字段 KV、复用下游</td>
+<td>是（字段改写）</td>
+<td>是（下游笔记 vs 字段本身）</td>
+<td>部分（混合模型只部分适用）</td>
+<td>B1 模板</td>
+<td>方法与结论在 T=文本编辑上被占</td>
+<td>全文定向（摘要、适用范围行 1679–1687）</td>
+</tr>
+<tr>
+<td>2607.09156</td>
+<td>Activation Steering Transfer to Agents</td>
+<td>—</td>
+<td>转向 + agent 循环</td>
+<td>否</td>
+<td>否</td>
+<td>否</td>
+<td>B3</td>
+<td>旁证：承认 KV 污染机制，未测</td>
+<td>全文定向（grep cache 段，行 624–626、1571–1580）</td>
+</tr>
+<tr>
+<td>2606.29522</td>
+<td>Shih：When Does Activation Steering Change What a Model Computes From?</td>
+<td>7B</td>
+<td>功能向量</td>
+<td>在<strong>更深层</strong>减掉（层轴）</td>
+<td>否</td>
+<td>否</td>
+<td>无（轴不同）</td>
+<td>未覆盖；注意不要把层间撤除与时间撤除互推（5.4）</td>
+<td>全文定向（行 574–615）</td>
+</tr>
+<tr>
+<td>2604.15409</td>
+<td>FP16 Divergence in KV-Cached Inference</td>
+<td>LLaMA-2-7B、Mistral-7B、Gemma-2-2B</td>
+<td>无（cache-ON vs OFF）</td>
+<td>—</td>
+<td>—</td>
+<td>否</td>
+<td>方法危险</td>
+<td>不覆盖；提示 rebuild 臂需零分布对照</td>
+<td>摘要</td>
+</tr>
+<tr>
+<td>2609.25053</td>
+<td>LatentPort</td>
+<td>Qwen3.5 4B→9B</td>
+<td>递推态跨模型移交</td>
+<td>—</td>
+<td>—</td>
+<td>是</td>
+<td>B2 方法旁证</td>
+<td>方法旁证（递推态直接复用比学习映射好）</td>
+<td>摘要</td>
+</tr>
+<tr>
+<td>2609.17983</td>
+<td>Budgeted Repair of Stale KV Caches</td>
+<td>三族 Transformer</td>
+<td>文档编辑后部分重算</td>
+<td>是</td>
+<td>是（移植 vs 重算）</td>
+<td>否</td>
+<td>B1 模板</td>
+<td>方法旁证（"refreshing only the edited span can leave downstream dependencies stale"）</td>
+<td>摘要</td>
+</tr>
+<tr>
+<td>2606.17034</td>
+<td>KVEraser</td>
+<td>Transformer</td>
+<td>擦除 span</td>
+<td>是</td>
+<td>是</td>
+<td>否</td>
+<td>B1 模板</td>
+<td>背景（"its influence propagates into the cached states of all subsequent tokens"）</td>
+<td>摘要</td>
+</tr>
+<tr>
+<td>2607.05615</td>
+<td>Bernoulli Sparse Steering</td>
+<td>两族</td>
+<td>只在前导窗口转向</td>
+<td>是（窗口后停）</td>
+<td>否</td>
+<td>否</td>
+<td>B1</td>
+<td>部分覆盖（行为层"窗口后仍有效"）</td>
+<td>摘要 + grep</td>
+</tr>
+<tr>
+<td>2510.01246</td>
+<td>SAE vs activation difference steering（衰减转向）</td>
+<td>—</td>
+<td>随时间衰减的系数</td>
+<td>渐停</td>
+<td>否</td>
+<td>否</td>
+<td>B1</td>
+<td>边缘</td>
+<td>grep</td>
+</tr>
+<tr>
+<td>2605.01844</td>
+<td>Cylindrical Representation Hypothesis</td>
+<td>Gemma-2B、Llama2-7B</td>
+<td>四种注入位置</td>
+<td>—</td>
+<td>否</td>
+<td>否</td>
+<td>B1</td>
+<td>边缘</td>
+<td>grep</td>
+</tr>
+<tr>
+<td>2605.02236</td>
+<td>Perturbation Dose Responses in Recursive LLM Loops</td>
+<td>—</td>
+<td>注入文本</td>
+<td>—</td>
+<td>可见性 vs 写入状态（文本层）</td>
+<td>否</td>
+<td>B1 方法类比</td>
+<td>边缘</td>
+<td>摘要</td>
+</tr>
+<tr>
+<td>2602.22719</td>
+<td>Steering SSMs via Activation Subspace Bottlenecks</td>
+<td>5 个 SSM</td>
+<td>子空间缩放</td>
+<td>否</td>
+<td>否</td>
+<td>是</td>
+<td>B2 背景</td>
+<td>未覆盖</td>
+<td>grep</td>
+</tr>
+<tr>
+<td>2603.12206</td>
+<td>CLASP</td>
+<td>Mamba 混合</td>
+<td>HiSPA 检测</td>
+<td>—</td>
+<td>—</td>
+<td>是</td>
+<td>B3 背景</td>
+<td>背景</td>
+<td>检索片段</td>
+</tr>
+<tr>
+<td>rs-11201314</td>
+<td>Where the Answer Is Born（Research Square）</td>
+<td>量化混合 GDN 0.8B/27B</td>
+<td>patching、遗忘门钳制</td>
+<td>?</td>
+<td>?</td>
+<td>是</td>
+<td>第 3 步</td>
+<td><strong>取不到正文</strong>，不计</td>
+<td>仅标题</td>
+</tr>
+</tbody>
+</table>
+<h2 id="6">6. 逐条覆盖判定</h2>
+<table>
+<thead>
+<tr>
+<th>主张</th>
+<th>判定</th>
+<th>层</th>
+<th>依据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>B1 现象：撤针后效应经缓存内部状态持续</td>
+<td>部分覆盖</td>
+<td>KV 部分<strong>被蕴含</strong>（推导）；"持续足以维持异常"在 T=优化输入上<strong>结论被占</strong>（2610.09027）；T=单神经元驱动上前人得到的是<strong>相反结论</strong>（2606.19831，文本承载）</td>
+<td>第 3 步</td>
+</tr>
+<tr>
+<td>B1 方法：撤针 vs 无针重建分离状态与文本</td>
+<td><strong>方法层覆盖</strong></td>
+<td>2610.09027 cache-swap（文本固定）；2606.19831 release + forced-opening</td>
+<td>第 2 步</td>
+</tr>
+<tr>
+<td>B1 对象：残差单通道加性干预、早层、混合模型、状态承载 vs 晚层文本承载的深度切换</td>
+<td>未找到</td>
+<td>—</td>
+<td>第 1、4 步全部查询</td>
+</tr>
+<tr>
+<td>B2 方法：只换递推态 / 只换 KV</td>
+<td><strong>方法层覆盖，且是同一模型 Qwen3.5-4B</strong></td>
+<td>2609.04434 split-prefill + state-swap</td>
+<td></td>
+</tr>
+<tr>
+<td>B2 结论：干预残留由递推态还是 KV 携带</td>
+<td>未找到；<strong>有两股相反的类比</strong></td>
+<td>2609.04434（回应方式走递推态）vs HiSPA（KV 可补回被递推态冲掉的信息）；WriteSAE 的衰减式表明答案取决于 g_s 实测值</td>
+<td></td>
+</tr>
+<tr>
+<td>B3 痛点 a：转向效应经缓存延续/累积</td>
+<td><strong>部分覆盖</strong>（命名 + 修复，机制未分离检验）</td>
+<td>2605.10664；2607.09156 承认未测</td>
+<td></td>
+</tr>
+<tr>
+<td>B3 痛点 b：带状态前缀缓存把干预带到后续请求</td>
+<td>未找到</td>
+<td>服务系统已有混合模型前缀缓存（SGLang、vLLM、Marconi），但"缓存键不含转向配置"只是<strong>推测</strong></td>
+<td></td>
+</tr>
+<tr>
+<td>B3 痛点 c：混合/SSM 模型上转向的安全性</td>
+<td>部分覆盖（相邻）</td>
+<td>HiSPA/CLASP 讲输入对 SSM 状态的攻击；2509.22067 含 Falcon-H1 讲转向破拒答；无"递推态携带转向残留"的安全工作</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="_1">仍空着的部分在哪一层</h3>
+<ul>
+<li><strong>方法层几乎全被占</strong>：撤针、无针重建、文本固定换缓存、只换递推态/只换 KV，各组件都有直接先例，其中状态交换就在 Qwen3.5-4B 上。</li>
+<li><strong>空着的在对象层</strong>：
+  1. 激活干预（不是输入、不是缓存编辑）撤除后，在混合模型里由哪种缓存携带。
+  2. 承载者随注入深度切换（L2 状态承载、L25 文本承载）。前人只有单一深度的单一结论（Liu：文本；Dobre：KV）。
+  3. 未经优化的干预就能经状态持续，对照 2610.09027 的"persistence is not a default property… but it can be optimized for"。</li>
+<li>痛点层：KV 污染已被命名；"递推态污染"与"跨请求带状态缓存复用"未找到，后者的现实性是推测档，没有找到任何人报告这个痛。</li>
+</ul>
+<h2 id="7-7">7. 本轮盲区（不是完整的第 7 步）</h2>
+<ul>
+<li>没做第 5 步引用链：2609.04434、2610.09027、2606.19831 §7.3、2605.10664 的被引与参考文献都没扫。2610.09027 引的 Kontonis 等 2026（compaction 保留摘要 KV）、Schlarmann &amp; Hein 2026（VMI）没取。</li>
+<li>没做第 6 步独立的对抗轮；本轮虽带着证伪意图搜，但不能替代单独一轮。</li>
+<li>Research Square rs-11201314（遗忘门钳制、混合 GDN）正文取不到；2605.06225 Memory Inception、2604.08169、2604.09839、2607.03502 未取。</li>
+<li>HF 论坛"KV Graft Steering"只见检索片段，非正式。</li>
+<li>2606.19831 §7.3 没写清 release 臂是否保留被驱动的 KV（按常规 hook 实现推断是保留，属<strong>推测</strong>）；它的 forced-opening 是否逐 token 重建也没写。判它"方法层覆盖"时这一点未核实。</li>
+<li>非 arXiv（OpenReview、ACL Anthology）与非英文只经检索引擎间接覆盖；中文一条查询无命中。</li>
+<li>并行未公开工作：2609.04434（9 月）、2610.09027（10 月）都是近两个月的；这个交叉区域正在变热，再出一篇直接做"转向 + 状态交换"的概率不低。</li>
+</ul>
+<h2 id="8">8. 计数</h2>
+<ul>
+<li>WebSearch 查询：38 条（Q1–Q38）；WebFetch 1 次（Research Square，失败）。</li>
+<li>取到 PDF：22 篇；其中<strong>全文定向</strong> 12 篇（2609.04434、2610.09027、2606.19831、2605.10664、2605.12770、2404.05971、2601.01972、2507.08799、2605.05983、2606.17107、2607.09156、2606.29522）；只读摘要或 grep 片段 9 篇（2604.15409、2609.25053、2609.17983、2606.17034、2607.05615、2510.01246、2605.01844、2605.02236、2602.22719）；下载未读 1 篇（2603.22473）。2605.06225 未取。</li>
+<li>按 CLAUDE.md 语料自查，"读过"只算上面的 12 篇。</li>
+<li>B1、B2、B3 按现行表述只经过本轮一轮（38 条查询）。</li>
+</ul>
+<p>PDF 与抽取文本：/home/ubuntu/.claude/jobs/e856631c/tmp/audit/pdf/</p></main></html>

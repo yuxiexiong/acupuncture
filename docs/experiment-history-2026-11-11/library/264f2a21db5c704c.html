@@ -1,0 +1,47 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>局部替换候选规则 r02（读机制结果前冻结）</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="r02">局部替换候选规则 r02（读机制结果前冻结）</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/early-input-control-v1-2026-10-29/readiness/patch-candidate-rules-r02.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-input-control-v1-2026-10-29/readiness/patch-candidate-rules-r02.zh-CN.md">固定提交原件</a>；SHA-256：<code>264f2a21db5c704c6eb969fedcc21dff126df2d32452eb33bd1aa1c0296def28</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="r02_1">局部替换候选规则 r02（读机制结果前冻结）</h1>
+<p>写于 2026-10-29 北京时间约 06:35，<code>mechanism-development-r01</code> 运行中、未读其任何输出。本文件提交 hash 即冻结点；偏离记入 EXECUTION 决策日志。补充 <code>reading-and-selection-rules-r01</code> §6。</p>
+<h2 id="1-2">1. 症状（最多 2 类）</h2>
+<ul>
+<li><strong>S1 首步停止</strong>：在已选早层原生条件（L0/N4146、L2/N5251，开发面板）中，取 full 与 prefill 两种时段下“首个生成 token 即 EOS”的输入数之和最多者（平局取 L0）。预测步 <code>prediction_step=0</code>。适用输入：该条件 full 首步 EOS 的全部输入；若某基础情景只有一个事实满足，仍纳入两事实（配对）。</li>
+<li><strong>S2 内容错误</strong>：中层参照 L13/N248 +1。适用输入：开发阅读中该条件下相对原版异常（规则 r01 §3）的基础情景的两事实输入。预测步 <code>prediction_step=0</code>（首个答案 token；后续步的分叉语境随样本不同，不能统一定位）。若机制阅读显示该条件 full 重放后的异常基础情景少于 2 个，则不设 S2，如实报告。</li>
+</ul>
+<h2 id="2-2">2. 候选组件（每类最多 2 个）与邻近对照</h2>
+<p>对注入层 L：</p>
+<table>
+<thead>
+<tr>
+<th>候选</th>
+<th>组件</th>
+<th>邻近非候选对照</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>a</td>
+<td>注入层 L 的 MLP 输出（注入位点本身，只替换预测位置）</td>
+<td>L+1 层 MLP 输出</td>
+</tr>
+<tr>
+<td>b</td>
+<td>L 之后第一个 full attention 层的 attention 输出（L0/L2→L3，L13→L15）</td>
+<td>该层之后一层的 attention 输出（L4 / L16）</td>
+</tr>
+</tbody>
+</table>
+<p>不在确认集或开发集上遍历其他组件，不按修复效果更换候选。</p>
+<h2 id="3">3. 六臂与读法</h2>
+<p>六臂按合同 §7 全部运行：同事实 clean→有针修复、有针→clean 反向重现、另一事实 clean→有针、clean 自替换、有针自替换、邻近组件替换。读法：</p>
+<ul>
+<li>修复：有针接收方在替换后首步不再 EOS（S1），或核心答案恢复为本事实且无新增矛盾（S2）；须逐条读完整回答，变长或 EOS 降低本身不算事实处理恢复。</li>
+<li>反向：clean 接收方替换有针 donor 后出现同类症状。</li>
+<li>另一事实来源：回答是否改为另一事实答案（内容相关作用的证据）。</li>
+<li>自替换两臂须与原回答逐 token 一致（工程对照）。</li>
+<li>邻近组件替换若同样修复，则候选不具局部特异性。</li>
+<li>只报告计数与逐条清单，不设恢复百分比阈值。</li>
+</ul>
+<h2 id="4">4. 确认复验清单</h2>
+<p>确认首次打开前，锁定同一症状/条件/组件/预测步在全部 24 个确认输入上的复验（<code>confirmation_item_ids</code>），不得据确认结果改选。</p></main></html>

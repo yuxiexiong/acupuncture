@@ -1,0 +1,58 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>缓存形成机制｜CFM-E2 v1 实验计划草案：浅层与深层缓存分别怎样影响回答差异</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="cfm-e2-v1">缓存形成机制｜CFM-E2 v1 实验计划草案：浅层与深层缓存分别怎样影响回答差异</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-formation-mechanism-e2-depth-transplant-v1-2026-10-31/PLAN.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-formation-mechanism-e2-depth-transplant-v1-2026-10-31/PLAN.zh-CN.md">固定提交原件</a>；SHA-256：<code>128df429c46aeb0e930bc5d311703b50799c0b6d4cfce984d3302f4ef9a99a29</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="cfm-e2-v1_1">缓存形成机制｜CFM-E2 v1 实验计划草案：浅层与深层缓存分别怎样影响回答差异</h1>
+<ul>
+<li>编号 <code>CFM-E2-v1-20261031</code>。设计依据：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-formation-mechanism-candidate-mechanisms-v1-2026-10-31.zh-CN.md">作用链检验 r4 §4</a>（main 1dc20a5）。</li>
+<li>授权：用户 2026-10-31"按照这里的意见把一二修改了，改完以后直接写合同，写实验计划草案，写代码，然后上卡，然后做测试，做完测试以后上卡直接跑"。</li>
+<li>范围：只做 E2。E1、E3 与事实一侧保留在设计文档中，本轮不执行。</li>
+</ul>
+<h2 id="1">1. 问题</h2>
+<p>在指定的 L0、L12 运行之间，浅层与深层缓存的内容分别怎样影响回答差异？某一部分能否在交换背景中保留或转移效应，还是需要两部分共同存在？</p>
+<p>本轮的成功标准：结果使我们能够保留、削弱或排除上述问题下的一个具体解释（见合同 §5 判读表）。不要求找到单一主导路径。</p>
+<h2 id="2">2. 运行</h2>
+<ul>
+<li>情景：留出的 VAR03、VAR04、VRD03、VRD04、VRL03、VRL04 × 两事实，共 12 个输入。它们的 00 与 L0·11 原生端点已在阶段二 II-B 中看过；L0·01、L12·01 与任何缓存移植结果都未看过。</li>
+<li>每个输入跑 4 个原生运行（00、L0·01、L12·01、L0·11），再在撤针边界 τ 上构造 5 个缓存组合，撤针后照常计算。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>构成（τ 处的缓存）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>a</td>
+<td>第 0–12 层取 00，第 13–31 层取 L0·01</td>
+</tr>
+<tr>
+<td>d</td>
+<td>第 0–12 层取 L0·01，第 13–31 层取 00</td>
+</tr>
+<tr>
+<td>b</td>
+<td>第 0–12 层取 L0·01，第 13–31 层取 L12·01</td>
+</tr>
+<tr>
+<td>闸门 1</td>
+<td>全部取 00，必须逐位等于 00</td>
+</tr>
+<tr>
+<td>闸门 2</td>
+<td>全部取 L12·01，必须逐位等于 L12·01</td>
+</tr>
+</tbody>
+</table>
+<p>每个运行读出首步 logits（D、EOS）与两条候选的 teacher forcing 分数。合计 12 × 9 = 108 条短运行，没有自由生成。</p>
+<h2 id="3">3. 步骤</h2>
+<ol>
+<li>数据（已完成，计算前冻结）：<code>data/segments-heldout-r01.json</code>（区段规则同 CFM-S1）、<code>data/reference-heldout-r01.json</code>（II-B 归档的 00 与 L0·11 参照）。</li>
+<li>代码与 CPU 测试（小号随机 Qwen3.5）。</li>
+<li>合同冻结、提交、授权。</li>
+<li>preflight：VAR03-f0 一个输入的全部 9 条运行与全部闸门。</li>
+<li>formal：12 个输入，2 个 worker。</li>
+<li>按合同判读、写报告、推送。</li>
+</ol></main></html>

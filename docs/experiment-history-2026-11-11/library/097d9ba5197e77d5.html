@@ -1,0 +1,149 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>WSP-VLM B/C原版失败筛查结果</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="wsp-vlm-bc">WSP-VLM B/C原版失败筛查结果</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/wsp-vlm-failure-discovery-run-v1-2026-11-05/REPORT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-failure-discovery-run-v1-2026-11-05/REPORT.zh-CN.md">固定提交原件</a>；SHA-256：<code>097d9ba5197e77d5315be6ab52a83ef914a251314fcd3146b25331031706a92b</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="wsp-vlm-bc_1">WSP-VLM B/C原版失败筛查结果</h1>
+<h2 id="material-passport">Material Passport</h2>
+<p>2026-11-05，真实GPU执行完成。模型：Qwen3-VL-4B-Instruct，revision <code>ebb281ec70b05090aa6165b016eac8ec08e71b17</code>。范围仅为<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/docs/wsp-vlm-failure-discovery-plan-v1-2026-11-05.zh-CN.md">冻结计划</a>的P0与B/C开发、留出筛查；没有内部诊断、神经元选择、权重编辑或WSP效果实验。本报告为执行者分析与自查，不是独立复现。</p>
+<h2 id="1">1. 结论</h2>
+<p><strong>C通过预定“明显稳定失败，值得后续诊断”的筛查条件；B发现了任务表现差，但未达到预定效果量门槛，保留未决。</strong> 这证明本模型在这些输入条件下有具体行为缺口，不证明缺口集中在少数权重、模型已经具备全部所需能力或WSP能够修好。</p>
+<p>主结果是H、普通提示B0、原问法T0；C顺序按事先组hash固定。</p>
+<table>
+<thead>
+<tr>
+<th>候选</th>
+<th style="text-align: right;">来源组</th>
+<th style="text-align: right;">控制正确</th>
+<th style="text-align: right;">挑战正确</th>
+<th>配对差及95%区间</th>
+<th style="text-align: right;">固定ABC Holm校正p</th>
+<th>冻结判定</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>B 全部计数→空间条件计数</td>
+<td style="text-align: right;">88</td>
+<td style="text-align: right;">73/88，82.95%</td>
+<td style="text-align: right;">60/88，68.18%</td>
+<td>14.77pp [2.27,27.27]</td>
+<td style="text-align: right;">0.02945</td>
+<td>未决：差略低于15pp</td>
+</tr>
+<tr>
+<td>C 原图通常→反事实图通常</td>
+<td style="text-align: right;">96</td>
+<td style="text-align: right;">94/96，97.92%</td>
+<td style="text-align: right;">74/96，77.08%</td>
+<td>20.83pp [13.54,29.17]</td>
+<td style="text-align: right;">0.000002861</td>
+<td>优先进入后续诊断</td>
+</tr>
+</tbody>
+</table>
+<p>配对差的区间用来源组bootstrap 10,000次；显著性来自单侧精确McNemar并做固定三项Holm（未跑A取p=1），不是从bootstrap构造零分布。全部结果保留实际分母。B差与15pp只差0.23pp，没有生物学或能力上的悬崖；不因差一点就说B没有问题，也不事后调门槛宣布入选。</p>
+<h2 id="2-b">2. B：确有条件计数缺口，不能简单归为“忽略条件”</h2>
+<p>D普通提示T0：全数47/58、子集31/58，差27.59pp；H差14.77pp，开发表现差在留出上减弱。H有22组全数对/子集错，9组反向。等义改写T1差15.91pp，方向保持。</p>
+<p>H全数与子集标签不同的59组中，仅2组满足“全数答对，子集错答成全数”。D对应4/45组。该模式远不足以解释全部失败；不要把后续操作预设成统一压低答案数或“开启空间条件神经元”。</p>
+<p>规则提示B1在H的T0子集上修对6、改错6，子集正确率仍68.18%；总数正确率反而从82.95%到80.68%。T1子集也没有净改善。这里的结果是该固定提示效果有限，不是所有提示都无效，更不是WSP有优势的证据。</p>
+<p>B保留为后续比较或诊断备选；不自动加题、改模型或扩大搜索。</p>
+<h2 id="3-c">3. C：反事实图影响常识回答，且伴随问法敏感性</h2>
+<p>H普通提示T0、固定primary顺序的五条件为：</p>
+<table>
+<thead>
+<tr>
+<th>条件</th>
+<th style="text-align: right;">正确率</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>无图通常</td>
+<td style="text-align: right;">85/96，88.54%</td>
+</tr>
+<tr>
+<td>原图通常</td>
+<td style="text-align: right;">94/96，97.92%</td>
+</tr>
+<tr>
+<td>反事实图通常</td>
+<td style="text-align: right;">74/96，77.08%</td>
+</tr>
+<tr>
+<td>原图视觉</td>
+<td style="text-align: right;">96/96，100%</td>
+</tr>
+<tr>
+<td>反事实图视觉</td>
+<td style="text-align: right;">90/96，93.75%</td>
+</tr>
+<tr>
+<td>五条件全部答对</td>
+<td style="text-align: right;">64/96，66.67%</td>
+</tr>
+</tbody>
+</table>
+<p>20组原图通常对而反事实通常错，反向为0。<strong>15/96组满足严格行为模式：无图通常对、原图通常对、反事实视觉对，但反事实通常错成视觉答案。</strong> D对应7/64，低于原先8组线索强度参考；H达到12组参考。两者均完整报告，不把开发集参考计数偷换成主检验通过条件。</p>
+<p>例如C-093问瓶子与木筏、C-420问微波炉与帆船：这两组无图/原图的通常题答对，反事实视觉题也答对，但反事实图上的通常题分别错答瓶子、微波炉。完整15组及图片指针见 <code>descriptive_followup.json</code>；所有正确/错误均在证据包中，不仅保存这些例子。</p>
+<p>普通提示在T0/T1及两种名称顺序的四个固定面板中，通常题主差均为正（15.63–23.96pp）；C通过既定稳健性要求。对象顺序、模板仍影响幅度，不能称提示无关能力缺陷。</p>
+<p><strong>新模式的探索性复核：</strong> D已在H之前登记视觉问法敏感性。H中，同一primary顺序，反事实视觉从T0的90/96降到T1的59/96；31组由对变错，反向0组。这是D发现后的描述性复核，没有新增确认性p值。它提醒后续修复同时检查图像与常识问法，不能把痛点简化为永久降低视觉影响。</p>
+<p>固定规则提示也不是稳定修法：H的T0反事实通常从74/96降为66/96，修对1组、改错9组；T1则从70/96升到75/96。其效果依赖问法。本轮只比较预定这一个规则提示，不宣称穷尽提示优化。</p>
+<h2 id="4">4. 工程、成本与边界</h2>
+<ul>
+<li>P0 64＋正式7,568＝<strong>7,632个唯一请求</strong>，全部有raw输出及完成回执，无基础设施调用错误，无截断。</li>
+<li>B无格式失败；C普通/规则提示各7/3,200条格式无效，共14/6,400（约0.22%），按原评分记错并保留原文，低于既定测量失败阈值。没有修改解析器救分。</li>
+<li>首次P0因缓存缺仓库说明文件退出，0请求尝试，4.872829秒；补齐文件后重启。原失败保留，未替换权重或改变实验设置。</li>
+<li>实际阶段耗时：P0 21.494秒；B_D 60.092秒；C_D 249.278秒；B_H 81.819秒；C_H 376.180秒。加首次失败共 <strong>793.735秒＝13.229 GPU分钟</strong>，单卡串行，低于12小时上限。</li>
+<li>两份D描述登记于03:03:12 UTC，早于任何H；全部阶段模型/运行元数据一致；输入ID、顺序、输出完整性、预算及主要计数审计通过。见 <code>audit/final_integrity.json</code>。</li>
+<li>最后C_H约北京时间11:11完成；11:12已完成联合统计和完整性审计。最终GPU0、GPU1均3MiB、0%利用率，工作进程已退出。没有继续运行WSP。</li>
+<li>最后磁盘约 <code>/workspace</code> 209.3GiB，系统盘（含/tmp）48.2GiB；本地归档空间充足。详细时间戳与大小见 <code>monitoring/final.json</code> 及本地归档快照。</li>
+</ul>
+<p>数据审核、改写和当前结果分析均由同一助手执行；不冒充独立人工金标。C来源组隔离不代表对象名称/素材完全不重合，推断限定于现有面板，不能推出跨物体泛化。B任务条件改变目标集合/答案数，配对差不等于纯组合过程的因果效应。</p>
+<h2 id="5">5. 这些产出以后如何使用</h2>
+<table>
+<thead>
+<tr>
+<th>产出</th>
+<th>后续用途</th>
+<th>必须保留的边界</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>成对成功/失败、原图指针、问法与原始回答</td>
+<td>给研究者AI提出可检验的诊断，按反馈自主选择内部观测、选点、试改和回滚</td>
+<td>当前没测内部原因，不能预定两层或某几个神经元</td>
+</tr>
+<tr>
+<td>原版逐题基线及联合正确性</td>
+<td>与每个补丁逐题比较修对/改错；检验是否修复严格失败模式</td>
+<td>总分提高不等于依据事实作答改善</td>
+</tr>
+<tr>
+<td>明确规则提示B1及其副作用</td>
+<td>作为WSP必须认真比较的简单方法；帮助避免把提示效果改写成权重就称新能力</td>
+<td>本轮只测一个固定提示，不代表最强提示搜索</td>
+</tr>
+<tr>
+<td>基础任务、视觉/常识双向问法、改写和顺序</td>
+<td>作为补丁回归和副作用检查集，判断收益是否牺牲另一侧能力</td>
+<td>已看过的H可作开发/回归，但未来独立终验必须另留新数据</td>
+</tr>
+<tr>
+<td>固定模型/输入/评分、完整raw、故障与计时记录</td>
+<td>复算、复现、与其他编辑/微调方法比较；建立成本与可靠性基线</td>
+<td>没有保存所有层激活；内部诊断仍需在开发案例上重新前向测量</td>
+</tr>
+</tbody>
+</table>
+<p>机制贡献目前只到<strong>明确了可重复的行为条件及反例</strong>，尚无内部机制贡献。相对于WSP总方案，推进了S0“是否有值得修的具体失败”，没有完成AI自主诊断/稀疏修改的S1及以后阶段。C的严格模式和双向问法敏感性使下一轮诊断有具体可证伪对象；B的模式较分散，先保留。下一轮是否能修、是否优于简单方法、AI是否优于同预算脚本搜索，都仍需新证据。</p>
+<h2 id="6">6. 证据与复算</h2>
+<ul>
+<li><code>raw-evidence.tar.gz</code>：全量原始回答/attempts/环境与receipt、逐题评分和输入指针、全部D/H统计、日志、登记、监控与审计。未包含模型权重、上游大图片库、环境或凭据。</li>
+<li><code>archive_manifest.json</code>：归档每个成员的SHA256/字节数及压缩包SHA256。解压目录相对于本执行目录。</li>
+<li><code>B_full_statistics.json</code> / <code>C_full_statistics.json</code>、<code>family_pvalues.json</code>：机器可读完整统计；证据包内也保留。</li>
+<li><code>descriptive_followup.json</code>：严格C模式15组和预登记视觉问法模式的H计数；不作为额外主检验。</li>
+<li><code>analyze_saved.py --full</code>调用既有冻结评分器；<code>audit_saved.py</code>核对所有完整输出、元数据、时序与成本。解压后可按脚本预期目录复算，需仓库现有固定输入清单和相应Python依赖，无需加载模型。</li>
+<li><code>README.zh-CN.md</code>、<code>authorization.json</code>、<code>audit/source_hashes.json</code>、<code>evidence/recovery-P0-zero-attempt.json</code>：执行身份、修复边界与来源。</li>
+</ul>
+<p>本轮已结束；没有以发现C失败作为自动开启权重搜索的授权。</p></main></html>

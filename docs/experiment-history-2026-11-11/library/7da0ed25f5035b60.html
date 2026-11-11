@@ -1,0 +1,29 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>早层输出二维观察台</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="_1">早层输出二维观察台</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/neuron-explorer-multimodel-v2-2026-10-26/analysis-view-r01/README.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/neuron-explorer-multimodel-v2-2026-10-26/analysis-view-r01/README.zh-CN.md">固定提交原件</a>；SHA-256：<code>7da0ed25f5035b60d927a90bc78f9b323d28646a205e0a02f373b79e52fcc962</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="_2">早层输出二维观察台</h1>
+<p><a href="http://127.0.0.1:8794/analysis.html?model=4b&amp;layer=0&amp;channel=4146&amp;question=Q04&amp;dose=0.5">打开本地观察台</a>。若本地服务未运行，先双击上级目录的 <code>open-brainmap.command</code>，再点击三维页左侧“二维对照”。三维、二维互相跳转时保留模型、层、通道、剂量与题目。</p>
+<p>这次仅使用已有归档：四模型18,272份唯一单针回答，其中7,632份有内部轨迹。没有模型加载、新推理、GPU运行、语义评分或原文改写。原有三维视图及未完成的三维曲面草稿保留；此目录是独立的二维交付版本。</p>
+<h2 id="_3">三组联动视图</h2>
+<ol>
+<li><strong>同点正负剂量原文</strong>：11个固定槽位按−1至+1排列，0为同模型同题共享原版。可见正文、完整raw_text、token IDs、长度和结束原因；点击剂量查看该条件轨迹。非剂量点只有+1与原版，其余九档明确标为未测。</li>
+<li><strong>层×预测步热图</strong>：Attention/GatedDeltaNet、MLP、层末残差分开显示；可切相对差分、1−cosine、绝对差分、无针范数。固定颜色尺度，超范围饱和；点击格子查看五项精确读数，并联动token和曲线。步0是提示末位，预测第1个输出token；没有在最后输出token之后补画前向。</li>
+<li><strong>token竞争曲线</strong>：停止优势、实际输出token距无针最佳的logit差值、固定候选token在两分支的log probability。可逐步选择并展开当步所有已保存候选。未保存的候选分数断线，缺轨迹条件清空图表。</li>
+</ol>
+<p>停止优势为最佳EOS logit减去最佳非停止logit，正值偏向停止。实际token与无针最佳并列时差值为0，不自动算成分歧；差分或首个不同token不等于语义失败。</p>
+<p>图中“无针参照”从提示开始全程无针，使用自己的缓存、强制读取干预分支所选的同一文字历史。它与原版自由回答不同，也不是中途撤针。热图是组件整体差分，未证明完整语句开关或因果传播路径。固定候选曲线的纵轴随当前轨迹缩放，跨剂量比较需看数值；热图颜色尺度固定。</p>
+<h2 id="_4">可直接查看的已核验例子</h2>
+<ul>
+<li><a href="http://127.0.0.1:8794/analysis.html?model=4b&amp;layer=0&amp;channel=4146&amp;question=Q04&amp;dose=0.5">4B L0 N4146 Q04 +0.5</a>：27 tokens。点+1会切换到仅1个EOS；停止优势由无针−17.6875变为干预+3.0625。</li>
+<li><a href="http://127.0.0.1:8794/analysis.html?model=4b&amp;layer=2&amp;channel=5063&amp;question=Q04&amp;dose=1">4B L2 N5063 Q04 +1</a>：128 tokens；点步2可见实际<code>&lt;think&gt;</code>与无针最高候选<code>&lt;/think&gt;</code>，clean gap为−5.9375。此通道未做其余九档，不补造剂量曲线。</li>
+<li><a href="http://127.0.0.1:8794/analysis.html?model=llama31-8b-instruct&amp;layer=31&amp;channel=832&amp;question=Q04&amp;dose=1">Llama L31 N832 Q04 +1</a>：原文有完整剂量配对，内部轨迹未采集，图表留空。</li>
+</ul>
+<h2 id="_5">验收与实现</h2>
+<ul>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/neuron-explorer-multimodel-v2-2026-10-26/analysis-view-r01/data-acceptance.json">数据验收</a>：四模型全部索引、960个完整剂量题组及8,640个稀疏题组；5个真实案例的原文/token、步位置、停止优势、零剂量、缺轨迹、缺候选及并列处理通过。</li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/neuron-explorer-multimodel-v2-2026-10-26/analysis-view-r01/browser-acceptance.json">浏览器验收</a>：实际页面与点选，四模型、EOS单步、128步重复、深层缺轨迹、基线零差分、热图/曲线联动、三维双向跳转。</li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/neuron-explorer-multimodel-v2-2026-10-26/analysis-view-r01/frontend-files.json">交付文件SHA清单</a>。旧归档、freeze、收据和先前前端验收文件没有重写。</li>
+<li>运行本地已有服务后，可在上级目录执行 <code>node test_analysis_view.mjs</code> 复核数据与变换。服务仍是 <code>serve_trajectories.py</code>，后端未改，只通过既有只读接口按需取原文及当前选中轨迹。</li>
+</ul>
+<p>页面为本地服务页面，不能单独用file://打开HTML；不需要额外安装绘图库。</p></main></html>

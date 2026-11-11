@@ -1,0 +1,180 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SIT-01 报告：写入增量能否跨输出背景发挥作用</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="sit-01">SIT-01 报告：写入增量能否跨输出背景发挥作用</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-state-increment-transfer-v1-2026-11-03/REPORT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-state-increment-transfer-v1-2026-11-03/REPORT.zh-CN.md">固定提交原件</a>；SHA-256：<code>8b6037ab1a92da91486e5af847f8b1db3283fa786e746b37a92a5b8ac83a047f</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="sit-01_1">SIT-01 报告：写入增量能否跨输出背景发挥作用</h1>
+<p>2026-11-03。合同 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-state-increment-transfer-v1-2026-11-03/CONTRACT.zh-CN.md">r01</a>，冻结 <code>acd1637c</code>（main <code>4d0d67e</code>）。探索性因果检验，已见开发面板，作者执行，未经独立评审。全部读数来自冻结分析 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-state-increment-transfer-v1-2026-11-03/analysis/sit-readouts-r01.json"><code>analysis/sit-readouts-r01.json</code></a>。</p>
+<blockquote>
+<p><strong>更正（2026-11-03，评审后）</strong>：(1) 原稿把 A1_Y（17 / 4 / 2，扣除另一格主效应后的回答交互）称为“回答损失”，不对。固定做 k 操作时，恢复来源与原生来源两格的正确数实际相差 <strong>18 / 12 / 5</strong> 条（39→21、48→36、47→42）。两个读数都保留，§3、§5 已改。(2) 原稿写“很可能相当一部分来自更大”，这是推测：已知只是深层范数大 1.5–3 倍，行为收益中幅度占多少没有测过。读数和数据都没有变化。</p>
+</blockquote>
+<h2 id="_1">先说限制</h2>
+<ol>
+<li><strong>幅度和方向没有分开。</strong> 从第 20 层起，恢复来源的增量交互 ‖I_S(1)‖ 是原生来源的 1.5–3.2 倍（逐输入中位数），余弦只有 0.65–0.91；第 13–18 层两者几乎相同（比约 1，余弦 ≥0.90）。因此下文的转移效应可能部分来自“更大”（推测，未测）；行为收益中幅度占多少，本轮无法区分（合同 §0 第 5 条）。</li>
+<li><strong>原生输出一侧的完整回答没有信息量。</strong> r=0 接收者在 t1 绝大多数已停止，b=0、1 两格都能继续生成的输入只有 0 / 4 / 14 条（N4146 / N1210 / R0），A0 的 Y 为 0 / 0 / −1。原生一侧只能看 M。</li>
+<li><strong>C1343 的模式不同</strong>（见 §4），不能并入下面的结论。</li>
+<li>这些都是混合反事实下的有限幅度移植：基底来自接收者、增量来自另一背景，不代表任何自然轨迹，也不给出机制份额。</li>
+</ol>
+<h2 id="1">1. 执行与验收</h2>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>冒烟（冻结前，1 输入）</td>
+<td>全部闸门通过，cast 误差 6e−8</td>
+</tr>
+<tr>
+<td>预检 r01（2 输入）</td>
+<td>通过，63 s；外推正式 1089 设备秒</td>
+</tr>
+<tr>
+<td>正式 r01（48 输入，GPU1 两个 worker）</td>
+<td>通过；两个 worker 墙钟 653 + 521 s，合计 ≈0.33 GPUh</td>
+</tr>
+<tr>
+<td>旧八格桥接</td>
+<td>1536 次 t1 与 1536 次 C t2 的 bf16 logits、t1 token、M 均与 NVB 正式记录逐位一致</td>
+</tr>
+<tr>
+<td>同源对角</td>
+<td>S(r,0,b)+ΔS(r,b) 经移植代码后与 S(r,1,b) 逐位一致</td>
+</tr>
+<tr>
+<td>新格</td>
+<td>768 次 C t2；只有 14 个 G 层的 S 改变，其余缓存逐位等于接收者；cast 误差最大 5.96e−8；签名零 0</td>
+</tr>
+<tr>
+<td>计数</td>
+<td>全部在上限内（N 轨迹 428/768，续写步 1559/23808）</td>
+</tr>
+</tbody>
+</table>
+<p>本轮合计约 0.35 GPUh（含预检与冒烟），无偏离（<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-state-increment-transfer-v1-2026-11-03/DEVIATIONS.zh-CN.md">DEVIATIONS</a>）。合同之外的判断见 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-state-increment-transfer-v1-2026-11-03/DECISIONS.zh-CN.md">DECISIONS</a> D1–D7。</p>
+<h2 id="2-m-32">2. 目标竞争 M（主读数：目标不在首列的 32 条，六场景等权）</h2>
+<p>H(r,s) 是接收者 r、增量来源 s 时 k 操作的条件效应差；H(0,0)=DS0、H(1,1)=DS1 重现 NVB。</p>
+<table>
+<thead>
+<tr>
+<th>方向</th>
+<th style="text-align: right;">H(0,0)=DS0</th>
+<th style="text-align: right;">H(0,1)</th>
+<th style="text-align: right;">H(1,0)</th>
+<th style="text-align: right;">H(1,1)=DS1</th>
+<th style="text-align: right;"><strong>A0</strong>（区间）</th>
+<th style="text-align: right;"><strong>A1</strong>（区间）</th>
+<th style="text-align: right;">G</th>
+<th style="text-align: right;">A0/G</th>
+<th style="text-align: right;">A1/G</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>N4146</td>
+<td style="text-align: right;">0.247</td>
+<td style="text-align: right;">1.004</td>
+<td style="text-align: right;">0.574</td>
+<td style="text-align: right;">2.122</td>
+<td style="text-align: right;"><strong>+0.757</strong> [0.689, 0.824]</td>
+<td style="text-align: right;"><strong>+1.549</strong> [1.424, 1.679]</td>
+<td style="text-align: right;">1.875</td>
+<td style="text-align: right;">0.40</td>
+<td style="text-align: right;">0.83</td>
+</tr>
+<tr>
+<td>N1210</td>
+<td style="text-align: right;">0.488</td>
+<td style="text-align: right;">1.019</td>
+<td style="text-align: right;">0.710</td>
+<td style="text-align: right;">1.451</td>
+<td style="text-align: right;"><strong>+0.531</strong> [0.483, 0.580]</td>
+<td style="text-align: right;"><strong>+0.741</strong> [0.675, 0.806]</td>
+<td style="text-align: right;">0.964</td>
+<td style="text-align: right;">0.55</td>
+<td style="text-align: right;">0.77</td>
+</tr>
+<tr>
+<td>R0</td>
+<td style="text-align: right;">0.622</td>
+<td style="text-align: right;">1.168</td>
+<td style="text-align: right;">0.816</td>
+<td style="text-align: right;">1.575</td>
+<td style="text-align: right;"><strong>+0.547</strong> [0.481, 0.613]</td>
+<td style="text-align: right;"><strong>+0.759</strong> [0.694, 0.821]</td>
+<td style="text-align: right;">0.953</td>
+<td style="text-align: right;">0.57</td>
+<td style="text-align: right;">0.80</td>
+</tr>
+</tbody>
+</table>
+<p>区间为场景分层 bootstrap，仅作描述。三个缺口方向的 A0、A1 都是 6/6 场景为正、32/32 条输入为正。</p>
+<ul>
+<li><strong>原生输出背景（A0）</strong>：把留存增量换成恢复背景产生的那份，k 的条件效应增加 0.53–0.76，约为 G 的 0.40–0.57。这不是靠 b=0 那格变差凑出来的：b=1 那格自身的直接效应从 +0.23 / +0.58 / +0.68（原生来源）升到 +1.19 / +1.41 / +1.47（恢复来源）。不做 k 操作时，恢复来源增量本身也把 M 抬高 +0.19 / +0.39 / +0.30。</li>
+<li><strong>恢复输出背景（A1）</strong>：把增量换回原生来源，条件效应损失 0.74–1.55，约为 G 的 0.77–0.83。</li>
+<li><strong>接收背景之间</strong>：同一份增量的交换，在恢复接收者里的作用比在原生接收者里大，A1−A0 = +0.79 / +0.21 / +0.21。换句话说，增量来源与接收背景存在交互，两者都起作用。这里不分配份额。</li>
+<li>补充子集方向一致：全 48 条的 A0/A1 为 0.71/1.46、0.50/0.73、0.56/0.80；首列 16 条为 0.62/1.29、0.42/0.69、0.57/0.87。</li>
+</ul>
+<p><strong>与一阶参照对照</strong>（合同 §4.3，看数据前登记）：A0 实测 0.76 / 0.53 / 0.55，参照 0.30–0.36 / 0.29–0.33 / 0.32–0.40；A1 实测 1.55 / 0.74 / 0.76，参照 0.31–0.61 / 0.31–0.33 / 0.35–0.46。实测都高于参照，方向和登记时已知的低估一致（同一构造对 DS0/DS1 多数也偏低）。这一偏差不归因给任何部件。</p>
+<h2 id="3-y-48">3. 完整回答 Y（全 48 条）</h2>
+<p>恢复输出接收者（r=1）在 t1 都没有停止，Y 可读：</p>
+<table>
+<thead>
+<tr>
+<th>方向</th>
+<th style="text-align: right;">B(1,0,1) 正确数</th>
+<th style="text-align: right;">移入原生来源增量</th>
+<th style="text-align: right;">B(1,1,1)（恢复来源）</th>
+<th style="text-align: right;"><strong>固定 k：恢复来源 − 原生来源</strong></th>
+<th style="text-align: right;">H_Y(1,0) / H_Y(1,1)</th>
+<th style="text-align: right;">A1_Y（交互）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>N4146</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">21（+5，改坏 0）</td>
+<td style="text-align: right;">39（+23）</td>
+<td style="text-align: right;"><strong>18</strong></td>
+<td style="text-align: right;">5 / 22</td>
+<td style="text-align: right;">17</td>
+</tr>
+<tr>
+<td>N1210</td>
+<td style="text-align: right;">26</td>
+<td style="text-align: right;">36（+10，改坏 0）</td>
+<td style="text-align: right;">48（+22）</td>
+<td style="text-align: right;"><strong>12</strong></td>
+<td style="text-align: right;">10 / 14</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr>
+<td>R0</td>
+<td style="text-align: right;">36</td>
+<td style="text-align: right;">42（+6，改坏 0）</td>
+<td style="text-align: right;">47（+11）</td>
+<td style="text-align: right;"><strong>5</strong></td>
+<td style="text-align: right;">6 / 8</td>
+<td style="text-align: right;">2</td>
+</tr>
+</tbody>
+</table>
+<p>在恢复输出背景里，原生来源的增量也能改对一部分回答（+5 / +10 / +6，没有改坏），但少于恢复来源的增量：固定 k 时实际少答对 18 / 12 / 5 条。扣除不做 k 时的主效应后，回答交互 A1_Y 为 17 / 4 / 2。两个读数含义不同：N1210 的交互虽然只有 4，固定 k 时的正确数差仍有 12。原生一侧（r=0）没有信息，原因见“先说限制”第 2 条。</p>
+<h2 id="4-c1343">4. C1343（诊断方向，单列）</h2>
+<p>H(0,0)=3.286、H(0,1)=3.365、H(1,0)=3.106、H(1,1)=2.931。G=−0.355（DS1 小于 DS0），因此不计算比例。A0=+0.078 [−0.019, 0.168]（4/6 场景为正），A1=−0.174 [−0.271, −0.087]（1/6 为正）。这个方向在原生背景里留存效应本来就大，换增量来源几乎不改变它。它的 Y 在 r=1 一侧是 48/48 封顶，在 r=0 一侧全部 t1 停止，没有信息。与缺口方向的模式不同，这一点照实保留。</p>
+<h2 id="5">5. 能说和不能说</h2>
+<p><strong>能说</strong>（只限三个缺口方向、已见面板、这组混合反事实）：恢复输出背景实际产生的留存增量，放进原生输出背景后，使 k 的条件效应增加约为背景差 G 的 0.40–0.57；在恢复背景里把它换成原生来源的增量，损失约 0.77–0.83 的 G，并在固定 k 时使完整正确数少 18 / 12 / 5 条（回答交互 17 / 4 / 2）。这为“恢复背景改变了有效写入”补上了操作层面的证据，此前只有 NBR 的观察性投影。</p>
+<p><strong>不能说</strong>：
+- 增量的“方向”或“内容”更有效：幅度没有分开，深层范数相差 1.5–3 倍；
+- 增量是自然中介，或者是必要条件；
+- 剩下的部分（G 中未随增量转移的部分，以及 A1 与 A0 之差）来自 q、KV 或下游敏感度中的哪一个；
+- 原生行为得到修复：原生一侧 t1 已经停止。</p>
+<h2 id="6">6. 下一步候选（未授权，不自动执行）</h2>
+<ol>
+<li><strong>范数匹配对照</strong>：把原生来源 ΔS 逐层逐头缩放到恢复来源的范数，在 r=0 上加 2 格（约 384 次 C 评分，GPU 成本很小）。这是回答“是不是只因为更大”的最直接一步。</li>
+<li><strong>闭式因子交换</strong>：ΔS=βk_b(v1−v0)ᵀ，在第 20–30 层把来源 1 的 β、k、v1−v0 逐个换进来源 0，看是哪个因子被 c 改变了。</li>
+<li><strong>SDT-01 的层组问题</strong>（16–22 对 24–30）可以作为第 2 项之后的选项。本轮显示增量差异集中在第 20 层以后，但层组的作用本轮没有测。</li>
+</ol></main></html>

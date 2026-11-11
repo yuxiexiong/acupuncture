@@ -1,0 +1,258 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>早层失效定位（第一阶段）：结果报告</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="_1">早层失效定位（第一阶段）：结果报告</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/early-state-localization-v1-2026-10-29/REPORT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-state-localization-v1-2026-10-29/REPORT.zh-CN.md">固定提交原件</a>；SHA-256：<code>0fffb3c557aa875ba2b0117ec67108d71f28c447b6fc81b42b9f338e040e8b0a</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="_2">早层失效定位（第一阶段）：结果报告</h1>
+<p>2026-10-29。Qwen3.5-4B，BF16，greedy，最多 128 新 token。合同 r01，代码冻结 freeze-r03（<code>e4d45b85…</code>）。判读按冻结脚本 <code>analyze_localize.py</code>；自由回答盲读为模型辅助子代理，不是人类评审。分档：<strong>推导</strong>＝本实验读数支撑；<strong>类比</strong>＝相邻证据；<strong>推测</strong>＝未验证。</p>
+<h2 id="0">0. 先说不利的部分</h2>
+<ol>
+<li><strong>主假设被否证（科学失败，两面板一致）</strong>：登记的主预测“早层提示位置的污染主要存在递推状态里”（≥2 个锚定条件判“线性层→递推”）在开发与确认面板都不成立。</li>
+<li><strong>理论衰减预测被反向否证</strong>：H-rec 预测“只污染提示前半段”应比后半段损伤更轻；实际前半段损伤更重（开发 3/3 反向；确认 2/3 反向、1/3 同向但不显著）。</li>
+<li><strong>开发派生的 P-dev3 在确认面板不成立</strong>：“多数早层失效条件判 either_needed”确认只有 11/25；“哪一类缓存承载更多”在两面板之间不稳定。</li>
+<li><strong>工程偏离与失误</strong>：
+   - 共卡运行（用户授权“允许共卡，现在就跑”）：启动检查改为“空闲显存 ≥ 20 GiB”。
+   - preflight-r01 因我写的汇总 bug 失败（<code>+=</code> 误用），修复后 preflight-r02 全部门槛通过。
+   - confirmation-r01 的 launcher 收尾核验因我在运行中往实验顶层加入 <code>eval_predictions.py</code> 而报 “Frozen source changed”；冻结集合只多此一文件、无改动无缺失，worker 启动时冻结核验已通过，移出后两 worker 事后 verify 通过（<code>readiness/confirmation-verification-posthoc-r01.json</code>）；controller 的 failed 状态原样保留。
+   - 运行吞吐受 CPU 侧开销（每臂缓存深拷贝与逐层哈希审计）限制；GPU 独占时利用率约 27%，未在冻结后改动。</li>
+</ol>
+<h2 id="1">1. 问题与设计</h2>
+<p>上一实验已推出：早层（L0–L3）写入只作用于“提示中最后位置之前”时，回答仍然失效，此时文本未被改动，污染只能存于缓存。本实验把提示前 n−1 个位置分别在“注入/不注入”下建缓存（T/C），按三类缓存——全注意力 KV（8 层）、GatedDeltaNet 递推状态（24 层）、短卷积缓存 conv（24 层，只含最近 3 个位置）——逐类拼接，再读末位并生成：</p>
+<table>
+<thead>
+<tr>
+<th>臂</th>
+<th>洗干净的缓存</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A0</td>
+<td>无</td>
+</tr>
+<tr>
+<td>A1</td>
+<td>全部（原版）</td>
+</tr>
+<tr>
+<td>A2</td>
+<td>KV</td>
+</tr>
+<tr>
+<td>A3</td>
+<td>递推</td>
+</tr>
+<tr>
+<td>A4</td>
+<td>conv</td>
+</tr>
+<tr>
+<td>A5</td>
+<td>递推 + conv</td>
+</tr>
+<tr>
+<td>B1 / B2</td>
+<td>不拼接；只污染提示前半段 / 后半段（三锚定条件）</td>
+</tr>
+</tbody>
+</table>
+<p>26 条件（早层原生 ±1 共 16、早层共同方向 ±1 共 8、L2/N5063 +1、阴性对照 L25/N2747 +1）× 24 输入，开发与确认各 3,288 条。主读数：首步 EOS；事实敏感度保留比 R（两事实候选偏好差的差分，相对原版；参照带下界 0.897）。</p>
+<h2 id="2">2. 工程验收</h2>
+<table>
+<thead>
+<tr>
+<th>运行</th>
+<th style="text-align: right;">记录</th>
+<th>worker exit</th>
+<th>launcher 核验</th>
+<th>逐 worker verify</th>
+<th>本地归档</th>
+<th style="text-align: right;">墙钟 h</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>preflight-r01</td>
+<td style="text-align: right;">40+40</td>
+<td>1 / −15</td>
+<td>失败（汇总 bug）</td>
+<td>—</td>
+<td>随 Git</td>
+<td style="text-align: right;">0.07</td>
+</tr>
+<tr>
+<td>preflight-r02</td>
+<td style="text-align: right;">40+40</td>
+<td>0 / 0</td>
+<td>passed</td>
+<td>passed</td>
+<td>随 Git</td>
+<td style="text-align: right;">0.07</td>
+</tr>
+<tr>
+<td>development-r01</td>
+<td style="text-align: right;">3,288</td>
+<td>0 / 0</td>
+<td>passed</td>
+<td>passed</td>
+<td>passed（0 缺失 0 不符）</td>
+<td style="text-align: right;">2.38</td>
+</tr>
+<tr>
+<td>confirmation-r01</td>
+<td style="text-align: right;">3,288</td>
+<td>0 / 0</td>
+<td>失败（运行中加入文件）</td>
+<td><strong>事后 passed</strong></td>
+<td>passed</td>
+<td style="text-align: right;">3.44</td>
+</tr>
+</tbody>
+</table>
+<p>预检在真实数据上通过：同路径恒等（拼接 vs 未拼接逐步 logits 哈希一致）；三类缓存可读性（随机化每类均改变末位 logits，排除静默丢弃）；显式增量路径与引擎生成路径逐步 logits 哈希一致；位置掩码 hook 与原引擎逐字节等价；注意力读出不改变计算。每条正式记录逐层审计缓存张量来源（与 T/C 匹配），verify 全部通过。合计约 5.9 h 墙钟、双卡约 11.9 GPU 小时（共卡）；无单价，不估金额。GPU 已释放本实验进程。</p>
+<h2 id="3">3. 结果</h2>
+<h3 id="31">3.1 冻结预测</h3>
+<table>
+<thead>
+<tr>
+<th>预测</th>
+<th>开发</th>
+<th>确认</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>主预测：递推承载（≥2/3 锚定）</td>
+<td>不成立（1/3）</td>
+<td><strong>不成立</strong>（0/3）</td>
+</tr>
+<tr>
+<td>H-rec 衰减：前半段损伤更轻</td>
+<td>不成立（3/3 反向）</td>
+<td><strong>不成立</strong></td>
+</tr>
+<tr>
+<td>P-dev1：首步停止由线性层承载（EOS(A3)&lt;EOS(A0) 且 EOS(A2)≥EOS(A3)）</td>
+<td>成立</td>
+<td><strong>成立 4/4</strong></td>
+</tr>
+<tr>
+<td>P-dev2：前半段更关键（≥2/3 反向）</td>
+<td>成立</td>
+<td><strong>成立 2/3</strong></td>
+</tr>
+<tr>
+<td>P-dev3：多数判 either_needed</td>
+<td>成立</td>
+<td><strong>不成立 11/25</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="32-vs">3.2 首步停止 vs 事实可用性：两种损伤，两个承载者（推导）</h3>
+<p><strong>首步停止由线性注意力层的局部状态承载。</strong> A0 首步 EOS ≥12/24 的条件中（确认：N_L00_C1210 −1、N4146 ±1、V1_L00 −1），只洗递推或只洗 conv（最近 3 个位置）后首步 EOS 全部为 0；只洗 KV 仍有 18、24、19、23 个。开发面板同型。</p>
+<p><strong>事实不可用没有单一承载者。</strong> 只洗任何一类都恢复不到参照带：开发 25 个失效条件中 2 个、确认 0/25。中位 R：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align: right;">A0</th>
+<th style="text-align: right;">A2 KV</th>
+<th style="text-align: right;">A3 递推</th>
+<th style="text-align: right;">A4 conv</th>
+<th style="text-align: right;">A5 线性层</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>开发</td>
+<td style="text-align: right;">0.09</td>
+<td style="text-align: right;">0.61</td>
+<td style="text-align: right;">0.57</td>
+<td style="text-align: right;">0.30</td>
+<td style="text-align: right;">0.63</td>
+</tr>
+<tr>
+<td>确认</td>
+<td style="text-align: right;">0.10</td>
+<td style="text-align: right;">0.56</td>
+<td style="text-align: right;">0.41</td>
+<td style="text-align: right;">0.15</td>
+<td style="text-align: right;">0.45</td>
+</tr>
+</tbody>
+</table>
+<p>KV 与线性层各自恢复约一半，二者相加接近原版；A2&gt;A5 的条件开发 12/25、确认 18/25，相对大小不稳定。</p>
+<p><strong>提示前部位置决定事实可用性。</strong> 只污染前半段（B1）R：开发 0.007/0.28/0.30，确认 0.06/0.21/0.13；只污染后半段（B2）：开发 0.48/0.77/0.83，确认 0.24/0.85/0.60。</p>
+<h3 id="33">3.3 自由回答（副读数，盲读锁定后揭盲）</h3>
+<p>原版 A1 两面板 24/24 跟随事实；第二读者 fact 一致 241/249（开发）、279/293（确认）。A0 失效早层条件的自由回答（开发/确认）：</p>
+<table>
+<thead>
+<tr>
+<th>臂</th>
+<th style="text-align: right;">跟随事实</th>
+<th style="text-align: right;">未交付</th>
+<th style="text-align: right;">其他错答</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A0</td>
+<td style="text-align: right;">0.35 / 0.20</td>
+<td style="text-align: right;">0.59 / 0.70</td>
+<td style="text-align: right;">0.05 / 0.08</td>
+</tr>
+<tr>
+<td>A2 KV</td>
+<td style="text-align: right;">0.79 / 0.67</td>
+<td style="text-align: right;">0.20 / 0.23</td>
+<td style="text-align: right;">0.01 / 0.07</td>
+</tr>
+<tr>
+<td>A3 递推</td>
+<td style="text-align: right;">0.83 / 0.53</td>
+<td style="text-align: right;">0.05 / 0.23</td>
+<td style="text-align: right;">0.07 / 0.17</td>
+</tr>
+<tr>
+<td>A4 conv</td>
+<td style="text-align: right;">0.42 / 0.26</td>
+<td style="text-align: right;">0.51 / 0.62</td>
+<td style="text-align: right;">0.05 / 0.09</td>
+</tr>
+<tr>
+<td>A5 线性层</td>
+<td style="text-align: right;">0.88 / 0.54</td>
+<td style="text-align: right;">0.03 / 0.17</td>
+<td style="text-align: right;">0.07 / 0.21</td>
+</tr>
+<tr>
+<td>B1 前半段</td>
+<td style="text-align: right;">0.26 / 0.29</td>
+<td style="text-align: right;">0.07 / 0.01</td>
+<td style="text-align: right;"><strong>0.64 / 0.60</strong></td>
+</tr>
+<tr>
+<td>B2 后半段</td>
+<td style="text-align: right;">0.61 / 0.50</td>
+<td style="text-align: right;"><strong>0.38 / 0.44</strong></td>
+<td style="text-align: right;">0.00 / 0.03</td>
+</tr>
+</tbody>
+</table>
+<p>前半段污染的模型<strong>会作答但答错</strong>（多为“无法判断”、答非所问）；后半段污染主要是<strong>不交付</strong>。与 §3.2 一致：停嘴由末端附近的局部状态触发，事实丢失来自提示前部。只洗 conv 消除首步 EOS，但一半以上回答仍未交付（之后停止或跑题），说明 conv 只承载“首步”这一处停止。确认面板 other_fact 多为推错/读错条件碰巧落在另一事实（读者报告），不作“采用另一事实”的证据。</p>
+<h3 id="34-sink">3.4 sink 竞争解释（推导，读数粗）</h3>
+<p>末位查询对首 token 的注意力：A0 高于原版（N4146 +1 在 L3 0.21 对 0.09），损伤最重的 B1 与原版相近（0.11）。“sink 注意力被削弱”不是本面板的机制。</p>
+<h2 id="4">4. 解释：早层猜想推进到哪里</h2>
+<ul>
+<li><strong>早层写入同时造成两种可分离的损伤</strong>：①<strong>停嘴</strong>——由线性注意力层中靠近末位的局部状态（递推状态，乃至只含最近 3 个位置的 conv 缓存）触发；②<strong>题目事实不可用</strong>——分布在 KV 与线性层两类缓存中，主要来自提示前部位置；只修任何一类都只恢复约一半。</li>
+<li>原假设“污染住在递推状态里”只对①成立；对②不成立。理论上“递推状态遗忘、KV 不遗忘”的衰减图景被前部位置更关键的结果否定——前部位置的污染通过两类缓存都能持续影响末位。</li>
+<li>这与上一实验的读数一致并推进一步：“早层停嘴时事实不可用”（<code>early-stop-knowledge-readout</code>）现在可以拆成“停嘴”与“事实丢失”两个通路，且它们的承载者不同。</li>
+<li><strong>仍未解决/竞争解释</strong>：前部位置为何关键（题面事实所在位置？聊天模板头部？）未拆；KV 与线性层各贡献一半是否只是两条读出路径并行的结果（任一路径带有干净信息即可部分恢复）未检验；单模型、每层两通道、两条随机方向，不推广。</li>
+<li><strong>下一步（未授权，第二阶段已预先登记但不满足其“单一承载类”触发条件）</strong>：按位置窗口（题面事实所在区间 vs 模板头部）拆分污染；对“停嘴”通路在 conv 与递推之间逐层定位。</li>
+</ul>
+<h2 id="5">5. 交付</h2>
+<ul>
+<li>合同、代码、测试与收据：<code>CONTRACT.zh-CN.md</code>（r01，§11 偏离）、<code>localize.py</code>、<code>analyze_localize.py</code>、<code>test_localize.py</code>、<code>readiness/</code>（CPU r01–r03、freeze r01–r03、授权、预检失败与核验、开发锁定与解释、事后核验）。</li>
+<li>判读：<code>analysis/development-r01.json</code>、<code>analysis/confirmation-r01.json</code>、<code>analysis/predictions-confirmation-r01.json</code>。</li>
+<li>盲读：<code>reading/{development,confirmation}-r01/</code>（packets、labels、second-read、lock、key/joined 压缩）。</li>
+<li>原始记录（每条含逐步读数、候选读数、缓存来源审计、门衰减、注意力副读数）：服务器 <code>runs/</code>，本机 <code>~/acupuncture-archive/early-state-localization-v1/*.tar.zst</code>，核验收据 <code>readiness/archive-verify-*.json</code>。</li>
+</ul></main></html>

@@ -1,0 +1,208 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>142．VLM数据v4：真实处理器验收</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="142vlmv4">142．VLM数据v4：真实处理器验收</h1>
+<p><a href="../README.zh-CN.html">返回总时间线</a></p>
+<p><strong>时间定位</strong>：版本/记录日期 2026-11-05；未从所选收据确定完整运行起止，不据目录名补写时刻。</p>
+<p><strong>当时的目的与设计</strong></p>
+<p>固定Qwen3-VL-4B模型/处理器来源，按真实缩放检查P0、B、C图像可辨认性。</p>
+<p><strong>实际过程、结果与后来更正</strong></p>
+<p>474张完成原图/处理器图对照，0因缩放排除；下载12文件并校验。未实例化模型、未前向，仍是输入工程验收。</p>
+<p><strong>来源身份</strong>：<code>wsp-vlm-processor-prep-v4-2026-11-05</code>；本章主体来源提交 <code>2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274</code>。下方原文中的状态是各文件写作时的状态，不能把早期“尚未运行”覆盖后期正式收据，也不能将后期结果倒填进早期设计。</p>
+<h2 id="_1">原设计、执行过程、结果与更正全文</h2>
+<p>以下按“设计与题目 → 工程/执行记录 → 结果/更正 → 其他历史说明”组织；同类内没有可靠时间时保留路径顺序，不冒充严格先后。正文未删段；仅为本章节重排标题层级、把相对链接指向固定提交。原始字节另外完整保存。</p>
+<h3 id="1v4">原件 1：v4 准备工作自查</h3>
+<p>原路径：<code>experiments/wsp-vlm-processor-prep-v4-2026-11-05/SELF_CHECK.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-processor-prep-v4-2026-11-05/SELF_CHECK.zh-CN.md">固定提交原文</a> · <a href="../library/17612ec2e2f237d2.html">单独阅读副本</a>；SHA-256：<code>17612ec2e2f237d21c64203aa0ce13d3aa54351dd3fbc460b111a8db8c4f9066</code>。</p>
+<hr />
+<h4 id="v4">v4 准备工作自查</h4>
+<p>使用 <code>docs/experiment-design-self-check.zh-CN.md</code> v1。同一助手自查，非独立审查。本轮是已批准方案的工程准备，不新增科学设计。</p>
+<h5 id="_2">设计卡与版本差异</h5>
+<ul>
+<li>主线：研究者 AI 依据目标 VLM 的具体失效反馈，定位并搜索稀疏权重修补；先确认 B/C 行为失效。</li>
+<li>本轮：固定模型资产是否完整，实际处理器是否保留可审核的视觉输入，P0 还有何工程阻碍。</li>
+<li>增量：v3 只有离线输入包/运行器；v4 增加真实固定处理器 CPU 结果、474 张缩放图审核、64 条真实序列化以及资产哈希验收。没有新增模型行为认识。</li>
+<li>依据：v3 冻结运行器/队列、v2 通过组、官方固定模型元数据、实际文件与 CPU 日志；不以截图或旧“已准备”口头描述替代当前回执。</li>
+<li>操作：下载固定 revision 文件；仅实例化 processor/tokenizer，调用 CPU resize/图像处理与 chat template。无模型、层、hook、剂量或权重编辑。</li>
+<li>估计对象：文件完整性、图像处理一致性、源图到缩放图的可辨认性变化；不估计准确率或因果机制。</li>
+<li>判读：哈希或网格失败则工程失败；缩放导致关键对象/关系不可辨认则标记并停止该输入使用，不凑组；本次未观察到该失败。源数据原有质量限制继续记录。</li>
+<li>成本/退出：12 文件约 8.89 GB 下载、CPU 处理和本地视觉审核；0 次模型调用、0 GPU 计算。完成回执即止，不自动进入 P0。</li>
+</ul>
+<h5 id="c01c14">C01–C14</h5>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th>判定及理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C01</td>
+<td>通过：WSP 问题和 B/C 任务未更换；准备只服务后续行为筛查。</td>
+</tr>
+<tr>
+<td>C02</td>
+<td>通过（工程）：消除真实处理器与模拟输入不一致风险；不包装为科学发现。</td>
+</tr>
+<tr>
+<td>C03</td>
+<td>通过：复用 v3 处理器路径，官方固定元数据与逐文件校验，来源见 README。</td>
+</tr>
+<tr>
+<td>C04</td>
+<td>通过：面对暗图、遮挡、水印、源裁切等反例；可辨认不推出模型会答对。</td>
+</tr>
+<tr>
+<td>C05</td>
+<td>通过：只处理输入图片/文本，禁止权重加载入口；没有干预模型内部。</td>
+</tr>
+<tr>
+<td>C06</td>
+<td>通过：模型 revision、像素预算、队列/划分均不改；处理器实际尺寸取整如实记录。</td>
+</tr>
+<tr>
+<td>C07</td>
+<td>不适用：未构造模型内部混合反事实或共享状态操作。</td>
+</tr>
+<tr>
+<td>C08</td>
+<td>通过：不由图像/哈希成功推断信息存量、因果位置或稀疏可修复性。</td>
+</tr>
+<tr>
+<td>C09</td>
+<td>不适用科学假设比较：这是输入验收，不用工程成功选择 WSP 机制。</td>
+</tr>
+<tr>
+<td>C10</td>
+<td>通过：64 条“输入序列化通过”和“推理预检通过”严格区分，后者仍未运行。</td>
+</tr>
+<tr>
+<td>C11</td>
+<td>通过：网络、目录、GPU 环境问题归工程；不会算成任务失败或 WSP 阴性。</td>
+</tr>
+<tr>
+<td>C12</td>
+<td>通过：CPU 与文件流式校验足够，未新增 GPU 测量。</td>
+</tr>
+<tr>
+<td>C13</td>
+<td>通过：474 图清单/79 页索引/逐图记录/最终回执绑定哈希；同一助手审核；数据未重新抽样。</td>
+</tr>
+<tr>
+<td>C14</td>
+<td>通过：资产与可辨认性准备完成，但 GPU 软件兼容与硬超时缺口决定下一步工程工作；不跳入修补。</td>
+</tr>
+</tbody>
+</table>
+<p>相关历史错误：E02（不预选两层）；E10/E11（输入正确不等于回答正确/信息已被使用）；E16（工程失败不冒充科学阴性）；E22（474 图不称 474 个独立科学组；B146/C160 保持）；E23（自查不称独立，下载不称加载）；E25（不加额外模型实验）。其他内部缓存干预错误不适用于本轮无模型准备。</p>
+<h5 id="_3">反方检查与修正</h5>
+<ol>
+<li><strong>拼图看起来清楚，真实模型看到的未必相同。</strong> 预览使用 v3 真处理器 resize，另做图像处理核对网格；64 条输入还核对了真实 image token 数；另对全部 474 张预览重新进行真实归一化/分块，得到与原图处理结果完全相同的像素张量。此证据不保证视觉编码器提取成功，不把预览作为推理结果。</li>
+<li><strong>源图本来模糊，审核全部通过会掩盖问题。</strong> 回执的通过只表示未观察到缩放新增的任务相关可辨认性损伤。保留原图质量限制，不重写前轮标签审查为“完美”。</li>
+<li><strong>镜像提供了错误版本。</strong> 使用独立从官方站获取的固定 revision 元数据，逐文件检查 Git blob/LFS 哈希与大小；同名/同 revision 字符串本身不够。仅校验字节，不读取权重张量。</li>
+<li><strong>处理器能运行就称 GPU 环境好了。</strong> 已修正为 CPU 通过；CUDA13/535 组合列为明确待解决兼容问题，未通过 CUDA 实测，也未宣称实测报错。</li>
+<li><strong>新环境可能改变预览，旧回执仍会被复用。</strong> README 要求软件栈变化后复核处理器输出/哈希；v3 执行器已有 processor SHA 比较，不能跳过。</li>
+<li><strong>max_time 会卡在一次 forward，预算不是硬限制。</strong> 保留为 P0 前未完成工程项；本轮没有因下载完成而声称可直接开跑。</li>
+</ol>
+<p>结论：准备工作逻辑与 CPU 输入/视觉验收通过；不新增科学设计结论。模型文件完整性以 download_manifest 为证，实际 GPU 运行验收未完成，P0 未授权也未执行。新增材料不足以证明候选痛点存在或 WSP 有效。</p>
+<hr />
+<h3 id="2wsp-vlm-v4">原件 2：WSP VLM 固定资产与真实处理器验收 v4</h3>
+<p>原路径：<code>experiments/wsp-vlm-processor-prep-v4-2026-11-05/README.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-processor-prep-v4-2026-11-05/README.zh-CN.md">固定提交原文</a> · <a href="../library/cb6ef3a639bbc1e7.html">单独阅读副本</a>；SHA-256：<code>cb6ef3a639bbc1e7a62c6865699f4c37644bbb088b3784572b88e9cee51cd082</code>。</p>
+<hr />
+<h4 id="wsp-vlm-v4">WSP VLM 固定资产与真实处理器验收 v4</h4>
+<p>日期：2026-11-05。性质：下载、CPU 输入处理和图片审核；不是模型实验。承接 <a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-screen-ready-v3-2026-11-05/README.zh-CN.md">v3 输入包与运行器</a>。</p>
+<h5 id="_4">本轮边界</h5>
+<p>用户授权下载固定版本模型和处理器、生成真实缩放图、完成可辨认性审核。没有实例化模型、反序列化权重、执行 forward/generate 或进行 GPU 计算。64 条 P0 仅完成输入序列化，<strong>没有 64 条模型回答，也没有 P0 推理验收通过结论</strong>。</p>
+<p>WSP 的位置不变：先用 B/C 行为筛查确认具体失效，再由研究者 AI 根据反馈定位并搜索稀疏权重修补。当前下载和图像验收只是保证输入可信，不提供失效机制或可修补性的证据，不预先指定两个层。</p>
+<h5 id="_5">固定资产</h5>
+<ul>
+<li>模型与处理器：<code>Qwen/Qwen3-VL-4B-Instruct</code>。</li>
+<li>固定 revision：<code>ebb281ec70b05090aa6165b016eac8ec08e71b17</code>。</li>
+<li>官方元数据：<a href="https://huggingface.co/api/models/Qwen/Qwen3-VL-4B-Instruct/revision/ebb281ec70b05090aa6165b016eac8ec08e71b17?blobs=true">固定 revision API</a>，原件见 <a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-processor-prep-v4-2026-11-05/audit/upstream_model_info.json">upstream_model_info.json</a>。</li>
+<li>远端官方站连接失败后，改用 <code>hf-mirror.com</code> 获取同 revision 文件；镜像文件的大小、LFS SHA256 或 Git blob SHA1 必须匹配从官方站取得的元数据。下载脚本流式读取文件字节校验，不反序列化权重。</li>
+<li>所需 12 个文件共 <strong>8,887,284,080 字节</strong>，包括两个 safetensors 分片和完整配置、分词器、模板与处理器文件。逐文件完成状态和哈希以 <a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-processor-prep-v4-2026-11-05/audit/download_manifest.json">download_manifest.json</a> 为准；README 与 <code>.gitattributes</code> 不属于运行依赖。</li>
+<li>资产放在 <code>gqa-h20:/workspace/acupuncture/external/wsp-vlm-model-cache/hub/models--Qwen--Qwen3-VL-4B-Instruct/snapshots/ebb281ec70b05090aa6165b016eac8ec08e71b17</code>，权重没有复制到本地 Mac，也不进 Git。</li>
+</ul>
+<h5 id="_6">真实处理器和可辨认性审核</h5>
+<p>使用原 v3 <code>runner.processor_audit</code> 和 <code>AutoProcessor</code>，<code>local_files_only=True</code>，像素范围仍为 65,536–1,048,576，patch=16、merge=2。预览调用真实图像处理器的 resize；并对每张原图实际执行图像处理，核对输出 <code>image_grid_thw</code> 与预览尺寸。拼图仅用于查看，不替代模型输入。</p>
+<table>
+<thead>
+<tr>
+<th>范围</th>
+<th style="text-align: right;">图片数</th>
+<th>审核结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P0 独立工程夹具</td>
+<td style="text-align: right;">8</td>
+<td>缩放后颜色、对象和相对位置保留</td>
+</tr>
+<tr>
+<td>B：146 个冻结合格组</td>
+<td style="text-align: right;">146</td>
+<td>未观察到缩放新增的对象丢失、裁切或关系不可辨认</td>
+</tr>
+<tr>
+<td>C：160 个冻结组，原图/反事实图</td>
+<td style="text-align: right;">320</td>
+<td>两个对象和大小关系仍可辨认，关系翻转保留</td>
+</tr>
+<tr>
+<td>合计</td>
+<td style="text-align: right;"><strong>474</strong></td>
+<td><strong>474 张完成对照；0 张因本轮缩放排除</strong></td>
+</tr>
+</tbody>
+</table>
+<p>同一助手用 <code>view_image</code> 逐页检查全部 79 页原图/处理器图对照。不是独立人工复核。407 张尺寸发生变化；C 全部从 350×300 调整为 352×288。图像视觉 token 范围为 80–768。原图与预览的 SHA256、尺寸、网格和像素预算全部离线核对通过。另用真实处理器比较“原图正常预处理”与“预览跳过缩放后预处理”：<strong>474/474 个像素张量逐项完全一致，最大绝对差为 0</strong>，见 <a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-processor-prep-v4-2026-11-05/audit/pixel_equivalence.json">像素一致性回执</a> 和 <a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-processor-prep-v4-2026-11-05/audit/pixel_equivalence.log">日志</a>。</p>
+<p>B 部分原图偏暗、遮挡或目标较小；C 存在抠图、源图裁切、水印和合成风格。这些源数据限制仍在，不是本轮缩放新增的问题。本次审核不重判已冻结标签，不保证模型能识别，更不证明 WSP 能修复。</p>
+<ul>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-processor-prep-v4-2026-11-05/audit/processor_manifest.json">真实处理器原始清单</a>：保留生成时的“尚需视觉审核”状态，完成状态由后续审核回执承接。</li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-processor-prep-v4-2026-11-05/audit/visual_review.jsonl">逐图审核</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-processor-prep-v4-2026-11-05/audit/review_pages.json">79 页索引与哈希</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-processor-prep-v4-2026-11-05/audit/processor_review.json">最终审核回执</a>。</li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-processor-prep-v4-2026-11-05/audit/processor_receipt.json">CPU 输入检查回执</a>：64 条 P0 全部通过真实模板、分词与图像占位符检查，48 条带图、16 条无图；输入长度 31–843 token。CPU 处理阶段约 20.61 秒，不含下载和视觉审核。</li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-processor-prep-v4-2026-11-05/audit/processor.log">处理日志</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-processor-prep-v4-2026-11-05/audit/environment_receipt.json">环境元数据</a>。</li>
+</ul>
+<p>预览文件约 83 MB（传输压缩包），保存在远端和本地仓库的 <code>external/wsp-vlm-processor-prep-v4-2026-11-05/processor_audit/</code>。本地 <code>review_sheets/</code> 保存全部对照页。批量第三方图片不进 Git；清单、哈希和生成代码入库。审核回执也已放入远端该 external 目录，且核对了它与 <code>processor_audit/manifest.json</code> 的绑定。</p>
+<h5 id="64-p0">64 条 P0 还缺什么</h5>
+<p><strong>数据、固定模型文件、处理器输入与缩放图审核完成后，P0 尚不能直接执行。</strong></p>
+<ol>
+<li><strong>GPU 软件栈兼容性未解决。</strong> 本次 CPU 导入记录为 <code>torch 2.14.0+cu130</code>，CUDA 构建 13.0；<code>nvidia-smi</code> 驱动为 535.161.08。按 <a href="https://docs.nvidia.com/deploy/cuda-compatibility/minor-version-compatibility.html">NVIDIA 兼容性表</a>，CUDA 13.x 的通常最低驱动是 580。本次未发现 <code>/usr/local/cuda*/compat</code> 或 CUDA 的 <code>LD_LIBRARY_PATH</code> 配置。未做 CUDA 初始化/运行测试，不能声称已实测 GPU 报错；但当前配置不能签为可运行。下一步应准备与现有驱动适配的隔离运行环境，或协调驱动升级；本轮未改变它们。若软件包变化，需要重新核对处理器输出/哈希，不能直接继承此回执。</li>
+<li><strong>外部硬超时保护尚未落地。</strong> v3 内部有累计预算和生成时间检查，但一次阻塞的 forward 不能靠内部检查强制结束。P0 启动前需补齐进程级硬超时、停止后的状态与成本对账。不得把“有 max_time”当成硬上限保障。</li>
+<li><strong>模型加载与 P0 推理尚未授权。</strong> 本轮授权到准备和处理器审核为止；没有启动命令被执行。届时也需刷新显存/设备占用。此次只读快照显示两张 H20 各 97,871 MiB、已用 3 MiB，不代表未来资源预留。</li>
+</ol>
+<p>BF16 模型能否正确加载、真实生成格式、EOS/截断、显存峰值、吞吐和评分链路，是未来 P0 要测的项目，目前均未验收。它们不是要求先跑另一套模型实验的额外前置条件。P0 简单夹具的吞吐也不能保证正式图像任务全程耗时，原累计预算仍须执行。</p>
+<p>本轮没有新增科学样本、改变 B=146/C=160、开发/留出划分、统计规则或 GPU 预算；没有生成 P0_acceptance.json。WSP 搜索尚未开始。</p>
+<h5 id="_7">复用方式与工程记录</h5>
+<p><code>download_assets.py</code> 负责固定下载与字节校验；<code>prepare_processor.py</code> 负责 CPU 真实处理器调用，显式禁止常见权重加载入口；<code>make_review_sheets.py</code> 在本地从原图和真实预览生成对照页；<code>verify_preview_pixels.py</code> 在 CPU 核对实际像素张量一致性。<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-processor-prep-v4-2026-11-05/audit/source_hashes.json">源码哈希</a> 固定实际使用的脚本。未来执行需显式使用上述专用 <code>HF_HUB_CACHE</code>，不能误用默认空缓存。</p>
+<p>首次远端官方站网络不可达；切换镜像后，因空 audit 目录未传输曾有一次日志输出目录缺失，建目录后重新启动。两者均发生于模型加载前，属于准备过程失败，不算科学阴性。最终下载和处理日志保留；没有用重试结果冒充模型实验重复性。</p>
+<p><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-processor-prep-v4-2026-11-05/SELF_CHECK.zh-CN.md">本轮自查</a>。</p>
+<hr />
+<h2 id="_8">时间、运行与停止收据索引</h2>
+<p>下面是所收集JSON的原有时间字段与状态，不把预计结束时间当实际完成时间。未列时间的文件仍有原件链接。完整JSON全部保存在原文归档，不能以此索引中的标量代替完整嵌套内容。</p>
+<table>
+<thead>
+<tr>
+<th>原件</th>
+<th>原记录状态/阶段</th>
+<th>原时间字段（原时区）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-processor-prep-v4-2026-11-05/audit/environment_receipt.json">audit/environment_receipt.json</a></td>
+<td>{"model_calls": 0}</td>
+<td>{"recorded_at_utc": "2026-11-04T22:20:03.647616+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-processor-prep-v4-2026-11-05/audit/processor_receipt.json">audit/processor_receipt.json</a></td>
+<td>{"status": "processor_only_not_inference", "model_calls": 0}</td>
+<td>{}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-processor-prep-v4-2026-11-05/audit/visual_review_progress.json">audit/visual_review_progress.json</a></td>
+<td>{}</td>
+<td>{}</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_9">全部原始资产入口</h2>
+<p>本目录在固定提交下共有20个跟踪文件，包含代码、原回答、失败、收据和压缩证据；文件数不是样本数。<a href="../assets/142-wsp-vlm-processor-prep-v4-2026-11-05.tsv">逐文件完整账本</a> · <a href="https://github.com/yuxiexiong/acupuncture/tree/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-processor-prep-v4-2026-11-05">原目录</a>。未复制模型权重、环境或凭据。</p></main></html>

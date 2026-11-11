@@ -1,0 +1,601 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>069．SK：递推S和注意力KV的组合</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="069skskv">069．SK：递推S和注意力KV的组合</h1>
+<p><a href="../README.zh-CN.html">返回总时间线</a></p>
+<p><strong>时间定位</strong>：已提取运行收据的最早时间锚点（可含预检） 2026-11-02T03:05:58.041090+08:00；不能当作全部子运行起止。</p>
+<p><strong>当时的目的与设计</strong></p>
+<p>入口固定为受针值，交叉深层S、KV，再加三条原生恢复臂。</p>
+<p><strong>实际过程、结果与后来更正</strong></p>
+<p>原生恢复S约10%–17%、KV约3%–5%、联合约21%–29%；完整二因素表保留，不能把两种历史当成独立可相加份额。</p>
+<p><strong>来源身份</strong>：<code>cache-sk-history-v1-2026-11-02</code>；本章主体来源提交 <code>7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8</code>。下方原文中的状态是各文件写作时的状态，不能把早期“尚未运行”覆盖后期正式收据，也不能将后期结果倒填进早期设计。</p>
+<h2 id="_1">原设计、执行过程、结果与更正全文</h2>
+<p>以下按“设计与题目 → 工程/执行记录 → 结果/更正 → 其他历史说明”组织；同类内没有可靠时间时保留路径顺序，不冒充严格先后。正文未删段；仅为本章节重排标题层级、把相对链接指向固定提交。原始字节另外完整保存。</p>
+<h3 id="1sk-01-kv">原件 1：SK-01：深层递推状态与注意力 KV 的作用区分及原生对应</h3>
+<p>原路径：<code>docs/cache-sk-history-action-plan-v1-2026-11-02.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-sk-history-action-plan-v1-2026-11-02.zh-CN.md">固定提交原文</a> · <a href="../library/4d04e33f776a621b.html">单独阅读副本</a>；SHA-256：<code>4d04e33f776a621b9f55b67e544c2980a212cd5c2faad6d0e62a5525e0ebe649</code>。</p>
+<hr />
+<h4 id="sk-01-kv">SK-01：深层递推状态与注意力 KV 的作用区分及原生对应</h4>
+<p>2026-11-02；v1；行动计划与设计自查。依据 academic-research-suite 实验规划流程和 experiment-design-self-check v1。仅计划发布；无模型调用、无新GPU授权，不继承旧实验授权。代码/CPU测试/模型预检未完成。</p>
+<h5 id="1">1. 目的与现有证据</h5>
+<p>主线保持：稀疏激活干预如何改变历史状态和后续读取，造成回答变化。本轮问题：<strong>在干预后的读取入口下，深层历史的竞争推进能否主要随递推状态S转移，还是随注意力KV转移，或依赖二者联合；这个条件作用是否对应完整原生干预背景下的恢复效果？</strong></p>
+<p>固定来源：EH a5a92b9；EH-XC 5f6ef8d（experiments/cache-eh-cross-channel-v1-2026-11-02/REPORT.zh-CN.md、CONTRACT.zh-CN.md、eh_xc_run.py、formal-r01两worker收据）；NFC 5b6fe98。源报告与缓存组装代码已经只读核对，不冒称本轮独立复现。工程规则沿用EH-XC冻结依赖，原始文件/张量在实现阶段按收据验hash。</p>
+<p>EH-XC显示8/8验证通道和4/4随机方向满足其联合标签；它检验的是H=S+KV，未拆S/KV。R0原生首停1/12，其余13方向12/12，故相近的分数变化不等于相同行为。N1210严格联合标签4/6仍是边界证据，不能因为它不计入主检验就忽略。EH-XC的21/168门槛附近单元和敏感性结果保留，不当完整数值误差界。</p>
+<p>本轮不是重跑跨针普遍性，也不继续拆头或扫层。新增认识：把已有联合H关系约束到具体状态类别，并检查其是否只在混合背景里出现。得到类别后，下一问题应是其更新/读取计算如何产生可预测的输出变化，而不是自动再细分层号。</p>
+<h5 id="2">2. 设计卡</h5>
+<ul>
+<li>增量：新增S/KV交叉格与原生恢复格；旧logits无法计算它们的真实下游响应。</li>
+<li>依据与反例：历史联合作用强；旧CFM“KV小”仅为不同协议下弱先验，不直接移植结论；补偿、混合失配、赢家更替和R0为反例。</li>
+<li>操作：评分前历史S或旧KV配对替换，层13–31；主矩阵入口固定x_T、卷积固定C；原生恢复臂从完整T出发，仅替换指定深层旧状态。</li>
+<li>估计对象：指定背景下的操作总效应及交互、恢复敏感性，不是自然中介份额、形成起源或唯一必要路径。</li>
+<li>判读：S集中、KV集中、两者联合、两者均可、抵消/背景差异/弱父效应均有出口。</li>
+<li>范围：四个事前指定方向×十二已见输入，不外推十四方向或其他剂量/层/模型。</li>
+<li>资源：重建C/T供体、重放、预检、校准和存储都计入；缺完整缓存默认重建。</li>
+<li>退出：固定矩阵结束即止；无可区分关系时终止该分解分支，不默认加更多状态/层。</li>
+</ul>
+<h5 id="3">3. 固定对象</h5>
+<p>四方向：L0/N4146（历史锚）、L0/N1210（EH联合标签边界）、L0/R0（原生行为反例）、L0/C1343（旧八验证通道中编号最小者）。C1343按固定编号规则选取，不按S/KV结果或最大EH效果挑选；不是新的盲确认针。其余通道不自动补做。</p>
+<p>Qwen3.5-4B revision 851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a，BF16 eager、逐token路径、模板、tokenizer/内核及校准规则继承EH-XC。12输入用其manifest：六情景×f0/f1；编号P01–P06与实际prompt映射必须验hash，不重新录入文字。形成窗口b+1…n−2、L0剂量−1、末提示token评分无针不变。原生列归一化写入及R0固定向量复用同一资产，不重新抽样、调剂量或追求相同输出。</p>
+<p>深层G={13,14,16,17,18,20,21,22,24,25,26,28,29,30}的旧递推状态作为S；深层全注意力层{15,19,23,27,31}的旧K/V缓存一起作为K。完整S张量替换，不按头或维度选取；旧K/V必须同时配对替换且保留相同长度、位置和mask。这些层列表须由固定模型配置核对，不吻合即工程停止。</p>
+<p>x_T为同一输入同一方向T_native评分时第13层入口。S/K是评分开始前的历史，不是评分更新后的状态。不改变过去token文本。每格独立深拷贝，供体不变。</p>
+<h5 id="4-x_tc">4. 主矩阵：入口固定x_T，卷积历史C</h5>
+<p>下标仅指S、K的来源，0=C，1=T。<strong>这里SK00不是C_native，而是EH-XC的X10。</strong></p>
+<table>
+<thead>
+<tr>
+<th>格</th>
+<th>深层S</th>
+<th>深层旧K/V</th>
+<th>浅层缓存</th>
+<th>深层卷积</th>
+<th>第13层入口</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SK00</td>
+<td>C</td>
+<td>C</td>
+<td>C</td>
+<td>C</td>
+<td>x_T</td>
+</tr>
+<tr>
+<td>SK10</td>
+<td>T</td>
+<td>C</td>
+<td>C</td>
+<td>C</td>
+<td>x_T</td>
+</tr>
+<tr>
+<td>SK01</td>
+<td>C</td>
+<td>T</td>
+<td>C</td>
+<td>C</td>
+<td>x_T</td>
+</tr>
+<tr>
+<td>SK11</td>
+<td>T</td>
+<td>T</td>
+<td>C</td>
+<td>C</td>
+<td>x_T</td>
+</tr>
+</tbody>
+</table>
+<p>SK11须重放XH11/N:CC，SK00须重放X10。要解释的父效应为 H=D(SK11)−D(SK00)，即EH-XC的H1（干预入口下历史作用），不能拿e1或干净入口下H0作分母。</p>
+<p>只在第13层入口设置一次hook；之后门、query、旧状态更新、当前新增KV、MLP、残差与归一化全部自然响应。不把下游激活钳回供体，不对βv或其他共享量做补偿。</p>
+<p>另作每输入共享C_native，以及每方向T_native=P（获取x_T兼作原生参照）。C_native不能省掉，因为它定义原生竞争变化和固定候选。</p>
+<h5 id="5">5. 两条原生背景对应臂</h5>
+<table>
+<thead>
+<tr>
+<th>臂</th>
+<th>起点</th>
+<th>唯一直接替换</th>
+<th>保留/响应</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P_S0</td>
+<td>完整T缓存</td>
+<td>深层S取同输入C供体</td>
+<td>浅层、全部卷积和旧KV均T；评分自然响应</td>
+</tr>
+<tr>
+<td>P_K0</td>
+<td>完整T缓存</td>
+<td>深层旧K/V取同输入C供体</td>
+<td>浅层、全部卷积和S均T；评分自然响应</td>
+</tr>
+</tbody>
+</table>
+<p>这两格不加入口hook；深层替换不能影响第13层之前的计算，故自然入口应逐位等于x_T，作为工程门核对。不得把卷积也一并恢复。P_S0/P_K0只测试该恢复操作在原生T背景下的总效果，不称其恢复量为自然机制份额。没有P_SK0联合恢复臂，因此原生背景下的S×KV交互<strong>未测</strong>，不能由主矩阵交互移植。</p>
+<p>加入两格的必要性：防止在混合背景找到大S/K作用后，又直接宣布它解释了原生变化。若原生恢复作用不对应，结果本身是背景依赖证据，不当实现错误，也不能以“补偿”把零效应解释成成功。</p>
+<h5 id="6">6. 冻结读数与判断</h5>
+<p>D=max_stop z−max_nonstop z，stop={248044,248046}。s0/q0固定为C_native赢家；F=z(s0)−z(q0)，A=max_stop−z(s0)，B=max_nonstop−z(q0)，D=F+A−B。每格保存全logits、实际argmax、平局、赢家身份、最终h/r。均值参照不作机制份额；无完整回答或事实知识结论。</p>
+<p>主矩阵逐输入：
+- S0=D10−D00；S1=D11−D01；K0=D01−D00；K1=D11−D10。
+- H=D11−D00；J=D11−D10−D01+D00；H=S0+K0+J。
+- 原生N=D(P)−D(C_native)；R_S=D(P)−D(P_S0)，R_K=D(P)−D(P_K0)。</p>
+<p>全部读数使用完整格名，防止SK00与C_native混淆。对H、各边、J、R_S/R_K同算F/A/B版本。J_D出现而J_F不出现时，表述限定为候选集合竞争交互，不能推出内部计算交互起源。</p>
+<h6 id="61">6.1 主预测及分类</h6>
+<p>工作预测（推测档）P_S：在N≥1且H≥1 logit的输入上，S替换可近似重现联合历史作用，并且K在两种S背景下作用都小。定义ε=max(0.5,0.2|H|)，要求：</p>
+<p><code>|S0−H|≤ε 且 |K0|≤ε 且 |K1|≤ε</code>。</p>
+<p>该预测是旧“KV可能小”的可失败版本，不预设成立。KV对称类别用<code>|K0−H|≤ε 且 |S0|≤ε 且 |S1|≤ε</code>。每情景两事实均满足才计支持；每方向≥5/6情景才给该类别；跨四方向只报逐方向和k/4，不以多数掩盖N1210或R0。若同一数据触发两个类别或父效应接近尺度，标分辨力不足，不强选唯一赢家。连续值始终优先。</p>
+<p>其他条件报告：S/K单独都接近H且联合没有相加为冗余样式；单独均明显偏离H而联合有大作用为联合/分布式样式；符号相反或J大保留抵消。只作操作读数分类，不据形状命名新机制。</p>
+<p>N或H不足正向1 logit时比例NA、绝对量保留；原生强混合弱、反向、无目标效应分别报告。所有固定格仍执行，不按父效应筛选。</p>
+<h6 id="62">6.2 原生对应的独立预测</h6>
+<p>P_native（推测档）：同一输入若为S集中型，则原生恢复S会产生同向且比恢复KV更大的竞争回退；登记 <code>R_S≥max(0.5,0.2N)</code> 且 <code>R_S−R_K≥0.5</code>，只在N≥1时判读。无论P_S是否成立，R_S/R_K原值全部报告。</p>
+<p>P_S与P_native不得合并成一个总成功标签：若P_S成立但原生不对应，收窄为混合背景的S作用；若原生恢复明显而混合分类不集中，说明背景改变作用分配。KV对称原生比较作为预先规定的描述性出口，不在P_S失败后改名宣称原预测成功。</p>
+<p>R0为冻结行为反例：分别记录原生和恢复臂D及实际首词。原生本来未停止时，不能以“没有恢复停止”判无效；恢复不停止也不等于正常交付。N1210门槛边界保留，不为了统一结果换针。</p>
+<p>0.5/1/20%和5/6均是事前实用报告规则，不是显著性或数值误差界。原始BF16邻近间隔与最终读出敏感性单列；对距任一判据边界≤0.125的单元作标签翻转敏感性表，并明确它不是整个前向的误差保证。方向分类若敏感须降为边界结果。</p>
+<h5 id="7">7. 行动顺序、工程验收和交付</h5>
+<p>A. 现在交付：本计划、来源及设计自查，上传Git；不执行模型。</p>
+<p>B. 实现前资产核对：按5f6ef8d冻结文件与收据校验C/T原生logits、X10/XH11、方向向量、prompt/校准、代码依赖。查是否保存完整τ缓存；EH-XC代码已读，只保存logits/x/final_h等不能替代完整供体，预算默认重建。验证模型缓存字段映射、S/K/conv独立性，尚未检查的运行环境不写“已验收”。</p>
+<p>C. 将来获实现授权后：在独立 experiments/cache-sk-history-v1-2026-11-02/ 建代码/合同与测试，复用现成形成/评分路径，不改旧实验。冻结每格状态来源manifest及实际文件SHA256；把所有输出写入独立run。</p>
+<p>D. CPU/合成验收（尚未执行）：S-only/KV-only组装不改其他类别；旧KV同时K/V且长度正确；独立副本不改供体；一次入口hook；SK00≠C_native的单测；四格和原生公式、父效应弱/负、阈值两侧、赢家更替、平局、冗余、抵消、事实不一致和预测失败分离。</p>
+<p>E. 模型预检（另需运行授权）：固定P01-f0/f1，不根据效果挑题；完整四方向全部格。C_native、P、SK00、SK11逐位重放EH-XC同输入同方向，N4146/N1210/R0还与EH一致。原生恢复臂自然入口=x_T；S/K/conv/浅层分别hash核对，供体前后不变。评分无形成hook；内核/位置/mask/新增KV按固定代码验收；范数误差≤1%。记录器开关和C/T重建一致。端点不重放即工程停止，不改阈值或科学条件。</p>
+<p>F. 正式：工程通过且成本可控后，按已有实际授权决定能否开始；当前无新GPU授权。固定12输入全部完成，不据预检科学阴性取消/筛选。所有新格独立缓存评分；每次保持批次1及原worker/GPU分配。失败保留partial，修复另留版本，不自动重跑。</p>
+<p>G. 报告：逐事实/情景/方向表、原生对应、R0实际行为、数值敏感性、预测成功/失败/不适用和完整成本。报告完成后才选下一个计算问题。</p>
+<h5 id="8">8. 预算及保存</h5>
+<p>每输入C一次+四T=5形成。每方向P、SK00/10/01/11、P_S0、P_K0共7评分，另共同C一次：29评分。</p>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th style="text-align: right;">形成</th>
+<th style="text-align: right;">评分</th>
+<th style="text-align: right;">校准</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>预检两输入四方向全部格</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">58</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td>预检首输入关记录器重建C/T4146及原生评分</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>正式12输入</td>
+<td style="text-align: right;">60</td>
+<td style="text-align: right;">348</td>
+<td style="text-align: right;">6</td>
+</tr>
+<tr>
+<td>合计上限</td>
+<td style="text-align: right;">72</td>
+<td style="text-align: right;">408</td>
+<td style="text-align: right;">7</td>
+</tr>
+</tbody>
+</table>
+<p>预算默认重建完整缓存；若复用有完整身份的供体，可减少实际形成但不能取消必要重放。prefill/形成token前向、权重加载、I/O、CPU分析分别计账；shared C不能当多份独立样本。最多两GPU各一个worker，建议设备GPU累计≤1小时、CPU分析≤2核小时、产物≤8GiB。此为建议上限非实测保证；EH-XC约0.15GPUh仅供量级参照，不据此声称本轮已计时。</p>
+<p>预检根据实测形成/评分/I/O估全量，在正式前检查上限；越界停止报告，不静默删格或针。失败也计总预算。权重/外部缓存不入Git，项目记录、冻结清单及失败收据入Git。</p>
+<p>存储每输入流式处理每方向，保留完整logits、x_C/x_T、最终h/r、各类别hash、实际写入、格来源、输入token、mask位置、原始响应与日志。完整C/T供体可按空间保存于外部并留路径hash；若未存，明确后续重建成本。不要把完整层内轨迹全部保存；本轮尚未选择下一计算预测，不假装当前保存量足够所有未来分析。</p>
+<h5 id="9">9. 判读出口与下一步限制</h5>
+<table>
+<thead>
+<tr>
+<th>结果</th>
+<th>新增认识</th>
+<th>下一步方向（非自动执行）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S集中且原生恢复同向更强</td>
+<td>S配对操作在两背景均有作用</td>
+<td>针对S的当前更新与读方向提出一个可失败计算预测，不能只继续扫层</td>
+</tr>
+<tr>
+<td>S集中但原生不对应</td>
+<td>混合背景的分类不能直接解释原生</td>
+<td>优先说明背景依赖，不继续沿“原生S主导”细拆</td>
+</tr>
+<tr>
+<td>KV集中且原生对应</td>
+<td>旧KV是有效候选，旧KV小先验被修正</td>
+<td>研究历史位置/读取的具体关系，不事后挑最强头</td>
+</tr>
+<tr>
+<td>两者联合或冗余</td>
+<td>单对象解释不足</td>
+<td>仅在有具体联合计算预测时继续，否则收束为有界关系</td>
+</tr>
+<tr>
+<td>方向间不一致</td>
+<td>跨方向EH宏观关系不等于同一内部类别</td>
+<td>保留异质性，不给每根针无限开一套定位</td>
+</tr>
+<tr>
+<td>父效应弱或工程失败</td>
+<td>适用性/实现边界</td>
+<td>分别报告，不扩大剂量或更换输入救假设</td>
+</tr>
+</tbody>
+</table>
+<p>R0的停止差异不要求本轮完整解释，但任何通用行为叙述必须兼容；四格里的大效果不能替代完整原生行为证据。本轮仍未涉及自由生成正确性或撤针持续性，不将首步窗口当整个课题。</p>
+<h5 id="10-c01c14">10. 与上一阶段的差别及C01–C14</h5>
+<p>EH-XC验证H=S+KV关系跨方向；本轮缩为四个有明确理由的方向、拆H内部，并新增两条原生对应臂。主父效应从e1改为H1，明确SK00=X10。新增两条原生臂为避免重演“混合背景局部效应直接外推原生”错误；不新增全原生八格或层扫描。</p>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th>判定与依据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C01</td>
+<td>通过：仍追踪历史信号经读取影响回答，首步是有界窗口。</td>
+</tr>
+<tr>
+<td>C02</td>
+<td>通过：新增S/K真实下游响应与原生恢复对应，区别于旧H联合和代数分账。</td>
+</tr>
+<tr>
+<td>C03</td>
+<td>通过：固定EH-XC报告/代码/收据；旧CFM仅弱先验，未重算的证据不冒充复现。</td>
+</tr>
+<tr>
+<td>C04</td>
+<td>通过：正视R0、N1210边界、补偿、赢家更替和跨背景失败。</td>
+</tr>
+<tr>
+<td>C05</td>
+<td>通过：旧S、旧KV、卷积、当前入口和当前更新按时间与层分开。</td>
+</tr>
+<tr>
+<td>C06</td>
+<td>通过：只替换指定旧对象，下游正常响应，原生臂入口不额外钳制。</td>
+</tr>
+<tr>
+<td>C07</td>
+<td>通过：K/V共同替换、cache长度位置一致；不补偿共享门，不称混合态原生。</td>
+</tr>
+<tr>
+<td>C08</td>
+<td>通过：操作总效果及背景对应不等于唯一必要性/自然中介或形成起源。</td>
+</tr>
+<tr>
+<td>C09</td>
+<td>通过：两主预测独立；允许冗余、抵消、反向、分布式及不可判。</td>
+</tr>
+<tr>
+<td>C10</td>
+<td>通过：D/F/A/B和实际首词区分，R0不以停止恢复作为唯一终点。</td>
+</tr>
+<tr>
+<td>C11</td>
+<td>通过：0.5/20%是实用门槛，工程重放独立，数值边界保留。</td>
+</tr>
+<tr>
+<td>C12</td>
+<td>通过：先核资产，72/408/7包含重建与预检；原生两臂有专门用途。</td>
+</tr>
+<tr>
+<td>C13</td>
+<td>通过：四方向有固定理由，已见数据开发身份明确，配对情景不膨胀样本。</td>
+</tr>
+<tr>
+<td>C14</td>
+<td>通过：背景不对应会终止简单S/K解释，不因阴性自动扩矩阵。</td>
+</tr>
+</tbody>
+</table>
+<h5 id="11">11. 历史错误与反方复查</h5>
+<p>E01总问题保持；E02层边界沿旧协议不赋予天然功能；E03写入尺度实测；E04/E19恒等式和端点重放仅工程；E05/E06共享量及完整类别边界明确；E07/E08/E14不把恢复和联合阳性叫自然必要性；E09/E20输出交互不是内部交互起源，类别可重叠；E10/E11首词/分数非完整能力或信息存量；E12无随机状态对照不称状态特异损伤已排除；E13清洁供体恢复不等于原知识复原；E15父效应H1与两背景明确；E16不因阴性重试；E17状态替换不撤回全部历史；E18剩余不自动叫另一通路；E21无新颖性主张；E22已见面板配对身份；E23自查非独立；E24允许有界类别证据；E25只四方向且每臂有用途；E26评分无针但形成来源未被隔离。</p>
+<p>反方1：S恢复有效可能只是一般状态失配。接受此边界：本轮结论是配对恢复的条件效果，不能称S中独特内容被识别；新增原生臂不能消除全部失配问题。
+反方2：S/K替换可能改变后续query和新KV。正是操作总效果的一部分，不能说只有直接读取发生变化；来源hash只验直接替换，不能要求下游保持原值。
+反方3：选择C1343是否挑强？编号规则固定且保留N1210、R0，不能把四方向当总体随机样本；新S/K结果未知。
+反方4：为何不再加干净入口一套四格？本轮只承诺x_T下的区分，EH已证明入口背景会调节；若结果不能给原生对应，不自动补矩阵救假设。
+反方5：原生恢复强就能说必要吗？不能。它仅说明该恢复操作改变输出，其他路径可能冗余/补偿，未测原生双恢复交互。
+反方6：小KV和大S是否必然可写机制？只能选出后续对象；必须形成改变计算就预测输出的下一问题，否则结束定位分支。
+反方7：数学分母混用会重复以前错误？主H明确为SK11−SK00=H1，不是e1/N；原生恢复以N定义单独判读，不把两背景效应拼加。
+反方8：误差阈值是否伪装精度？单列量化敏感性；±0.125翻转仅预定敏感性分析，不声称前向误差界。</p>
+<p>最终：<strong>设计逻辑自查通过</strong>（同一助手，非独立评审）。实现、合成测试、冻结清单、模型预检、资源计时均待执行；仅发布此计划不启动实验。</p>
+<hr />
+<h3 id="2sk-01-v2-v1">原件 2：SK-01 计划 v2：在 v1 上的两处修订</h3>
+<p>原路径：<code>docs/cache-sk-history-action-plan-v2-2026-11-02.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-sk-history-action-plan-v2-2026-11-02.zh-CN.md">固定提交原文</a> · <a href="../library/3def848155bcf8e4.html">单独阅读副本</a>；SHA-256：<code>3def848155bcf8e49d0e67e59c8314815416d646bcfc2916584903c208f61832</code>。</p>
+<hr />
+<h4 id="sk-01-v2-v1">SK-01 计划 v2：在 v1 上的两处修订</h4>
+<ul>
+<li>2026-11-02。只修订 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-sk-history-action-plan-v1-2026-11-02.zh-CN.md">v1</a> 的以下两处，其余全部沿用。依据：对 v1 的反馈及评审意见（两处都已被评审接受）。授权：用户 2026-11-02「那就直接写合同代码，测试然后上卡」。</li>
+</ul>
+<ol>
+<li><strong>新增原生联合恢复臂 P_SK0</strong>：从完整 T 缓存出发，同时把深层 S 与深层旧 KV 恢复为同输入的 C 供体，浅层与卷积保持 T，评分自然响应、自然入口应等于 x_T。原生交互 J_native = D(P) − D(P_S0) − D(P_K0) + D(P_SK0)；可与主矩阵 J 并列比较，但两个背景不同，不要求数值相等。读法：单独恢复都弱、联合恢复强 → 支持冗余或替代；三者都弱 → 只能说这些恢复操作没有明显改变当前输出，不能排除补偿，也不能说深层历史不承载作用；单独恢复强、联合不等于相加 → 原生背景中的非加和。</li>
+<li><strong>P_native 无条件判读</strong>：在所有原生 N ≥ 1 的输入上判定（不以“S 集中型”为条件），口径为两事实都满足、≥5/6 情景，跨方向报告 k/4；另列“混合背景分类 × 原生恢复结果”交叉表（S 集中/非 S 集中 × 支持/违反）。</li>
+</ol>
+<p>预算：每方向 P、SK00/10/01/11、P_S0、P_K0、P_SK0 共 8 次评分，加共享 C_native 1 次，每输入 33 次。预检两输入 66 次 + 记录器关闭对照 2 次，正式 396 次；形成 12 + 60 = 72；校准 7。合计 72 / 464 / 7。</p>
+<hr />
+<h3 id="3sk-01-s-kv-x_t-r01">原件 3：SK-01（深层递推状态 S × 注意力 KV，入口固定 x_T，加三条原生恢复臂）合同 r01</h3>
+<p>原路径：<code>experiments/cache-sk-history-v1-2026-11-02/CONTRACT.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-sk-history-v1-2026-11-02/CONTRACT.zh-CN.md">固定提交原文</a> · <a href="../library/8be82ee5695d5561.html">单独阅读副本</a>；SHA-256：<code>8be82ee5695d55617789746fc11ebce10c9ec44a23351f1e27ef0d133f794a12</code>。</p>
+<hr />
+<h4 id="sk-01-s-kv-x_t-r01">SK-01（深层递推状态 S × 注意力 KV，入口固定 x_T，加三条原生恢复臂）合同 r01</h4>
+<p>日期：2026-11-02。设计：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-sk-history-action-plan-v1-2026-11-02.zh-CN.md">计划 v1</a> + <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-sk-history-action-plan-v2-2026-11-02.zh-CN.md">v2 修订</a>。基准：EH-XC 正式运行（5f6ef8d）。授权：用户 2026-11-02「那就直接写合同代码，测试然后上卡」。已见输入，新格结果未见。</p>
+<h5 id="1_1">1. 操作</h5>
+<p>沿用 EH-XC 的模型、revision、BF16、内核、token、晚段窗口、L0 剂量 −1、12 条输入、worker/GPU 分配、进程内校准。四方向：N4146、N1210、R0、C1343。深层 S = 第13–31层 G 层（13,14,16,17,18,20,21,22,24,25,26,28,29,30）的 recurrent_states；深层 KV = 全注意力层 15,19,23,27,31 的 keys 与 values（同时替换）。</p>
+<p>每输入形成 C、评分 C_native；每方向形成 T、评分 P = T_native（取 x_T），然后：
+- 主矩阵（第13层入口 hook 一次 = x_T；浅层 C；深层卷积 C）：SK00（S、KV 均 C；= EH-XC X10）、SK10（S 取 T）、SK01（KV 取 T）、SK11（S、KV 均 T；= EH-XC XH11）。
+- 原生恢复臂（从完整 T 出发，无入口 hook，自然入口须等于 x_T）：P_S0（深层 S ← C）、P_K0（深层 KV ← C）、P_SK0（两者 ← C）。浅层与卷积保持 T。</p>
+<p>每格是供体的独立深拷贝；下游全部正常响应。</p>
+<h5 id="2_1">2. 预算</h5>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th style="text-align: right;">形成</th>
+<th style="text-align: right;">评分</th>
+<th style="text-align: right;">校准</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>预检（P01-f0/f1，1 worker；首输入另做记录器关闭重建 C/T4146）</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">68</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td>正式（12 输入，2 worker）</td>
+<td style="text-align: right;">60</td>
+<td style="text-align: right;">396</td>
+<td style="text-align: right;">6</td>
+</tr>
+<tr>
+<td>合计</td>
+<td style="text-align: right;">72</td>
+<td style="text-align: right;">464</td>
+<td style="text-align: right;">7</td>
+</tr>
+</tbody>
+</table>
+<p>GPU 累计 ≤1 小时（预计约 0.1），产物 ≤8 GiB。预检工程失败可记账后重试一次；正式不重试。</p>
+<h5 id="3_1">3. 工程闸门（任一不过即停止，记合同执行失败）</h5>
+<p>校准、GPU 分配等于 B3；L0 写入 ≤1%；层列表与固定配置一致；C_native、T_native、SK00、SK11 的 logits 与 EH-XC 的 C_native、T_native、X10、XH11 逐位相同；每格的深层 S、深层 KV、深层卷积、浅层四类分量分别哈希，并与来源表一致；每个方向评分前后 C、T 供体全量哈希不变；主矩阵入口等于 x_T 且 hook 每格一次；原生恢复臂自然入口等于 x_T；每格 14 个 G 内核各一次、chunk 为 0、评分时无形成 hook；首输入记录器开/关逐位一致，重建缓存哈希一致。</p>
+<h5 id="4-sk_corerule">4. 读数与判读（<code>sk_core.RULE</code>）</h5>
+<p>D = 停止最大 − 非停止最大（原始 logit）；同时算固定候选 F/A/B 版本。主矩阵：S0 = D10 − D00，S1 = D11 − D01，K0 = D01 − D00，K1 = D11 − D10，H = D11 − D00（= EH-XC 的 H1），J = D11 − D10 − D01 + D00。原生：N = D(P) − D(C_native)，R_S = D(P) − D(P_S0)，R_K = D(P) − D(P_K0)，R_SK = D(P) − D(P_SK0)，J_native = D(P) − D(P_S0) − D(P_K0) + D(P_SK0)。</p>
+<ul>
+<li>适用：N ≥ 1 且 H ≥ 1；反向、原生强混合弱、不适用分别报告，所有格照常执行。</li>
+<li>主分类（ε = max(0.5, 0.2|H|)，按序）：S 集中（|S0 − H| ≤ ε 且 |K0| ≤ ε 且 |K1| ≤ ε）；KV 集中（对称）；两者同时成立 → 分辨力不足；冗余（|S0 − H| ≤ ε 且 |K0 − H| ≤ ε）；联合/分布式（S0、K0 都 &lt; H − ε 且 J ≥ ε）；抵消（|S0|、|K0| &gt; ε 且异号）；其他。</li>
+<li><strong>P_S</strong>（推测档）：方向内 ≥5/6 情景两事实都为 S 集中；跨方向报告 k/4，不以多数掩盖 N1210 或 R0。</li>
+<li><strong>P_native</strong>（推测档，无条件）：所有 N ≥ 1 的输入上，R_S ≥ max(0.5, 0.2N) 且 R_S − R_K ≥ 0.5；方向内 ≥5/6 情景两事实都支持；跨方向 k/4。P_S 与 P_native 分别报告，不合并成总标签。</li>
+<li>原生模式（描述，阈值 t = max(0.5, 0.2N)）：单独都弱、联合强 → 冗余或替代；三者都弱 → 这些恢复操作没有明显改变当前输出（不推出深层历史不承载作用）；只 S 恢复 / 只 KV 恢复 / 两者都恢复。</li>
+<li>交叉表：主分类（S 集中 / 非 S 集中）× P_native（支持/违反/不适用），逐事实计数。</li>
+<li>J 在 D 上明显、在 F 上不明显时，只说候选集合竞争交互。距任一判据边界 ≤0.125（BF16 步长）的单元单列为精度敏感，不是误差界。</li>
+<li>R0 的原生行为（首步停止 1/12）照录：原生本来不停止时，不能用“没有恢复停止”判无效。</li>
+</ul>
+<h5 id="5_1">5. 出口</h5>
+<p>见计划 v1 §9 与 v2：S 集中且原生同向更强 → 下一问题是 S 的当前更新与读取如何产生输出变化（需新的可失败预测）；S 集中但原生不对应 → 先说明背景依赖；KV 集中且原生对应 → 修正“KV 小”先验；冗余/联合 → 只有在有具体联合计算预测时才继续；方向不一致 → 保留异质性。不自动扩层、扩方向或换剂量。</p>
+<h5 id="6_1">6. 交付</h5>
+<p><code>runs/{preflight,formal}-r01/</code>（记录入 Git，张量不入）、<code>analysis/sk-readouts-r01.json</code>、<code>REPORT.zh-CN.md</code>。</p>
+<hr />
+<h3 id="4sk-01-s-kv">原件 4：SK-01（深层递推状态 S × 注意力 KV + 原生恢复臂）结果报告</h3>
+<p>原路径：<code>experiments/cache-sk-history-v1-2026-11-02/REPORT.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-sk-history-v1-2026-11-02/REPORT.zh-CN.md">固定提交原文</a> · <a href="../library/56e7323297569c15.html">单独阅读副本</a>；SHA-256：<code>56e7323297569c1594018c15808c48f1377a9bfcb49051a7c6086cf128bfc88c</code>。</p>
+<hr />
+<h4 id="sk-01-s-kv">SK-01（深层递推状态 S × 注意力 KV + 原生恢复臂）结果报告</h4>
+<p>日期：2026-11-02。<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-sk-history-v1-2026-11-02/CONTRACT.zh-CN.md">合同 r01</a>；<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-sk-history-v1-2026-11-02/DECISIONS.zh-CN.md">决策 D1–D5</a>；计划 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-sk-history-action-plan-v1-2026-11-02.zh-CN.md">v1</a> + <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-sk-history-action-plan-v2-2026-11-02.zh-CN.md">v2</a>。代码 <code>c5ac0c1</code>，freeze-r01 <code>614b5efc…0aaa</code>。已见输入，新格结果未见。同一助手实现、运行与撰写。</p>
+<h5 id="1_2">1. 结论（不利的先说）</h5>
+<ol>
+<li><strong>P_S 不成立（0/4）。</strong> 在干预入口下，深层递推状态 S 单独替换就能拿到历史作用 H 的大部分（S0/H 方向均值 0.62–0.74，逐输入 0.53–0.81），但 KV 并不“小到可以忽略”：在 S 已经换成 T 的背景下，再换 KV 还有 K1 = 1.8–2.5 logit，超过 ε（约 1.3–1.5）。所以多数输入落在“其他”（S 为主、KV 依赖 S 背景），而不是“S 集中”。S 集中只出现在零星事实上（N4146 1 例、R0 2 例）。</li>
+<li><strong>P_native 不成立（0/4）。</strong> 在完整原生 T 背景里，只把深层 S 恢复成 C，竞争差只回退 R_S = 1.3–2.5（原生总变化 N 的 10–17%），低于门槛 max(0.5, 0.2N) ≈ 2.5–2.9；只恢复 KV 回退 0.4–0.7。</li>
+<li><strong>原生背景里，S 与 KV 是冗余或替代关系。</strong> 同时恢复两者回退 R_SK = 2.9–4.2，大于两者单独之和（J_native = −1.0 到 −1.5，即联合恢复超加和）。原生模式判为“冗余或替代”：N4146、R0、C1343 各 5/6 或 6/6 个情景；N1210 为条件依赖（冗余 3、恢复操作都弱 2）。</li>
+<li><strong>在原生背景里，深层历史整体只承载原生变化的约两到三成</strong>（R_SK/N = 0.21–0.29）。其余七成以上在原生 T 背景中没有被这三种恢复撤掉；在本轮的恢复操作下它们保持不动，这些成分与浅层/入口、深层卷积历史都保持 T 有关，但“未撤掉的部分”不是已经分配好的独立份额，可能包含保留状态与被恢复状态的交互。<strong>更正</strong>：初稿此处拿 NFC 链上 e1 的 54–63% 来比较，这是错的，因为 e1 同时换了入口和深层历史，不是纯 S+KV。可比的量是 EH 中从干净背景往上加深层历史的作用：干净入口下 H0 = 4.7–5.6（约为原生 N 的 35–41%），干预入口下 H1 = 6.6–7.3（约 47–52%）。从原生 T 往下撤 S+KV 只回退 21–29%。“往上加”与“往下撤”仍然不一致，说明存在条件性的替代或冗余，但差距比初稿写的小。</li>
+<li><strong>行为上，单独恢复深层 S 就让首步不再停止</strong>：P_S0 首步停止 N4146 0/12、C1343 0/12、N1210 2/12（P 为 12/12）；单独恢复 KV 不改变行为（P_K0 12/12）。这是因为原生 T 的 D 只略高于 0（约 1），1–2 logit 的回退就足以越过门槛；它说明的是“离门槛很近”，不说明 S 承载了原生效应的大部分。R0 原生本来就几乎不停止（1/12），所有恢复臂都是 0/12。</li>
+<li><strong>固定候选 F 上的读数大得多</strong>：R_S(F) = 5.4–6.6，R_SK(F) = 8.2–9.7（D 上分别是 1.3–2.5 和 2.9–4.2）。恢复深层 S 时，干净首词 q0 相对停止词恢复了很多，但另一个非停止词顶上来，吸收了大部分（赢家更替）。所以 D 上的小回退，部分是竞争者换人造成的。</li>
+</ol>
+<h5 id="2-d12-f">2. 主要读数（D，12 输入均值；括号为 F）</h5>
+<table>
+<thead>
+<tr>
+<th>方向</th>
+<th style="text-align: right;">H</th>
+<th style="text-align: right;">S0</th>
+<th style="text-align: right;">S1</th>
+<th style="text-align: right;">K0</th>
+<th style="text-align: right;">K1</th>
+<th style="text-align: right;">J</th>
+<th style="text-align: right;">N</th>
+<th style="text-align: right;">R_S</th>
+<th style="text-align: right;">R_K</th>
+<th style="text-align: right;">R_SK</th>
+<th style="text-align: right;">J_native</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>N4146</td>
+<td style="text-align: right;">6.81</td>
+<td style="text-align: right;">5.01</td>
+<td style="text-align: right;">5.93</td>
+<td style="text-align: right;">0.88</td>
+<td style="text-align: right;">1.80</td>
+<td style="text-align: right;">0.92</td>
+<td style="text-align: right;">14.22</td>
+<td style="text-align: right;">1.93 (6.48)</td>
+<td style="text-align: right;">0.64 (2.75)</td>
+<td style="text-align: right;">4.03 (9.67)</td>
+<td style="text-align: right;">−1.45</td>
+</tr>
+<tr>
+<td>N1210</td>
+<td style="text-align: right;">6.61</td>
+<td style="text-align: right;">4.11</td>
+<td style="text-align: right;">5.43</td>
+<td style="text-align: right;">1.18</td>
+<td style="text-align: right;">2.49</td>
+<td style="text-align: right;">1.31</td>
+<td style="text-align: right;">13.79</td>
+<td style="text-align: right;">1.34 (5.38)</td>
+<td style="text-align: right;">0.37 (2.01)</td>
+<td style="text-align: right;">2.94 (8.23)</td>
+<td style="text-align: right;">−1.23</td>
+</tr>
+<tr>
+<td>R0</td>
+<td style="text-align: right;">7.30</td>
+<td style="text-align: right;">5.15</td>
+<td style="text-align: right;">6.32</td>
+<td style="text-align: right;">0.98</td>
+<td style="text-align: right;">2.15</td>
+<td style="text-align: right;">1.17</td>
+<td style="text-align: right;">12.62</td>
+<td style="text-align: right;">1.45 (6.55)</td>
+<td style="text-align: right;">0.57 (2.66)</td>
+<td style="text-align: right;">3.16 (9.48)</td>
+<td style="text-align: right;">−1.14</td>
+</tr>
+<tr>
+<td>C1343</td>
+<td style="text-align: right;">6.43</td>
+<td style="text-align: right;">4.56</td>
+<td style="text-align: right;">5.19</td>
+<td style="text-align: right;">1.24</td>
+<td style="text-align: right;">1.87</td>
+<td style="text-align: right;">0.63</td>
+<td style="text-align: right;">14.53</td>
+<td style="text-align: right;">2.45 (6.13)</td>
+<td style="text-align: right;">0.73 (1.61)</td>
+<td style="text-align: right;">4.18 (9.09)</td>
+<td style="text-align: right;">−1.01</td>
+</tr>
+</tbody>
+</table>
+<p>主矩阵的 S、K 在 D 与 F 上完全相同（主矩阵各格的赢家组成不变）；原生恢复臂在 D 与 F 上差别很大（见 §1.6）。交叉表：48 个事实中，“非 S 集中 × P_native 违反”占 44，“S 集中 × 违反”3，“非 S 集中 × 支持”1。</p>
+<h5 id="3_2">3. 执行</h5>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th style="text-align: right;">形成</th>
+<th style="text-align: right;">评分</th>
+<th style="text-align: right;">校准</th>
+<th style="text-align: right;">墙钟</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>预检 r01</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">68</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">51 s</td>
+</tr>
+<tr>
+<td>正式 r01（2 worker）</td>
+<td style="text-align: right;">60</td>
+<td style="text-align: right;">396</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">约 120 s / worker</td>
+</tr>
+</tbody>
+</table>
+<p>全部闸门通过：C_native、T_native、SK00（= X10）、SK11（= XH11）与 EH-XC 逐位相同；每格的深层 S、深层 KV、深层卷积、浅层四类分量分别哈希，均与来源表一致；供体前后哈希不变；主矩阵入口等于 x_T，原生恢复臂自然入口等于 x_T；内核计数正确；记录器开/关一致。约 0.08 GPU 小时。精度：每方向有 4–9 个事实距某一判据边界 ≤0.125，属于精度敏感，但不改变 0/4 的结论（S 集中和 P_native 支持的事实本来就极少）。</p>
+<h5 id="4-9-5">4. 出口（计划 §9 / 合同 §5）</h5>
+<ul>
+<li>结果对应出口表中的“S 为主但不集中，且原生不对应”：混合背景里的“历史主要随 S 走”成立（S0/H 约 0.6–0.7），但它<strong>不能直接外推到原生背景</strong>。原生背景里，深层 S 与 KV 互为替代，深层历史整体只占约两到三成；大部分原生变化在本轮的恢复操作下保持不动。</li>
+<li>由此修正此前的叙述：深层历史的作用大小取决于其他状态是否已被干预。从干净背景往上加时它约占原生变化的 35–52%（视入口而定），从原生干预背景往下撤时只占 21–29%；两类深层状态之间、以及它们与其余保留状态之间，存在方向一致的非加和关系（与冗余或补偿相容，但尚未证明储存的是同一份信息或发生了动态补偿）。</li>
+<li>下一步（未设计、未授权）：问题不应写成“剩下的七成在哪里”，而应是“哪些保留的状态使得撤掉深层历史后原生变化仍大部分存在，联合恢复能否打破这种保持”。可以在原生背景里做互补的恢复，即恢复浅层与入口、恢复深层卷积，以及它们与深层历史的组合。前提是先写出能区分“分布式冗余”和“某一类别承载”的可失败预测，而不是机械扫描。</li>
+</ul>
+<h5 id="5_2">5. 可以说 / 不可以说</h5>
+<table>
+<thead>
+<tr>
+<th>可以说</th>
+<th>不可以说</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>在干预入口下，深层 S 单独拿到历史作用的约六到七成，KV 的作用依赖 S 背景</td>
+<td>KV 无作用 / S 集中（P_S 0/4）</td>
+</tr>
+<tr>
+<td>原生 T 背景里，单独恢复 S 回退约 10–17%，联合恢复 S+KV 回退约 21–29%，两者冗余或替代</td>
+<td>深层历史在原生背景里不承载作用</td>
+</tr>
+<tr>
+<td>单独恢复深层 S 就让 N4146、C1343 的首步不再停止</td>
+<td>S 承载了原生效应的大部分（这是因为原生 D 离门槛很近）</td>
+</tr>
+<tr>
+<td>D 上的小回退部分来自非停止赢家更替（F 上回退大得多）</td>
+<td>原生行为变化主要是事实丢失</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="5sk-01">原件 5：SK-01 决策日志</h3>
+<p>原路径：<code>experiments/cache-sk-history-v1-2026-11-02/DECISIONS.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-sk-history-v1-2026-11-02/DECISIONS.zh-CN.md">固定提交原文</a> · <a href="../library/d74b0195887f0b25.html">单独阅读副本</a>；SHA-256：<code>d74b0195887f0b25ed895be422d12d20ded598ebab863040726fed4cc1124292</code>。</p>
+<hr />
+<h4 id="sk-01">SK-01 决策日志</h4>
+<ul>
+<li><strong>D1 v2 修订</strong>（冻结前）：新增 P_SK0；P_native 无条件判读并加交叉表；预算 72/464/7。</li>
+<li><strong>D2 组装</strong>：<code>assemble(base, donor, kinds)</code> 从 base 深拷贝，只把第13层及以后指定类别（recurrent / kv）的分量换成 donor 的克隆；SK11 用 assemble(C, T, {S, KV}) 构造，与 EH-XC 的 XH11（n_cache 构造）内容相同，以逐位重放闸门核对。</li>
+<li><strong>D3 预检两输入</strong>：按计划 v1 §7E 用 P01-f0/f1；记录器关闭重建只在 P01-f0 上做（C 与 T4146）。</li>
+<li><strong>D4 runner 复用 EH-XC 样板</strong>，run_item 新写。</li>
+<li><strong>D5 测试边界值</strong>：判据边界测试改用二进制可精确表示的数值（实际数据是 BF16 值之差，精确；0.2|H| 的浮点舍入使恰在边界的值属于精度敏感，已在分析中单列）。</li>
+</ul>
+<hr />
+<h2 id="_2">时间、运行与停止收据索引</h2>
+<p>下面是所收集JSON的原有时间字段与状态，不把预计结束时间当实际完成时间。未列时间的文件仍有原件链接。完整JSON全部保存在原文归档，不能以此索引中的标量代替完整嵌套内容。</p>
+<table>
+<thead>
+<tr>
+<th>原件</th>
+<th>原记录状态/阶段</th>
+<th>原时间字段（原时区）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-sk-history-v1-2026-11-02/readiness/cpu-receipt-r01.json">readiness/cpu-receipt-r01.json</a></td>
+<td>{"status": "passed"}</td>
+<td>{}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-sk-history-v1-2026-11-02/runs/formal-r01/controller.json">runs/formal-r01/controller.json</a></td>
+<td>{"status": "completed", "stage": "formal"}</td>
+<td>{"started_at": "2026-11-01T19:07:33.650551+00:00", "finished_at": "2026-11-01T19:09:25.127569+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-sk-history-v1-2026-11-02/runs/formal-r01/verification.json">runs/formal-r01/verification.json</a></td>
+<td>{"status": "passed", "stage": "formal"}</td>
+<td>{"verified_at": "2026-11-01T19:09:25.127390+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-sk-history-v1-2026-11-02/runs/formal-r01/worker-0/receipt.json">runs/formal-r01/worker-0/receipt.json</a></td>
+<td>{"status": "completed", "stage": "formal"}</td>
+<td>{"started_at": "2026-11-01T19:07:33.742195+00:00", "last_record_at": "2026-11-01T19:09:13.729122+00:00", "finished_at": "2026-11-01T19:09:15.767480+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-sk-history-v1-2026-11-02/runs/formal-r01/worker-1/receipt.json">runs/formal-r01/worker-1/receipt.json</a></td>
+<td>{"status": "completed", "stage": "formal"}</td>
+<td>{"started_at": "2026-11-01T19:07:33.742391+00:00", "last_record_at": "2026-11-01T19:09:20.535494+00:00", "finished_at": "2026-11-01T19:09:22.660082+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-sk-history-v1-2026-11-02/runs/preflight-r01/controller.json">runs/preflight-r01/controller.json</a></td>
+<td>{"status": "completed", "stage": "preflight"}</td>
+<td>{"started_at": "2026-11-01T19:05:58.041090+00:00", "finished_at": "2026-11-01T19:06:52.142975+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-sk-history-v1-2026-11-02/runs/preflight-r01/verification.json">runs/preflight-r01/verification.json</a></td>
+<td>{"status": "passed", "stage": "preflight"}</td>
+<td>{"verified_at": "2026-11-01T19:06:52.142824+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-sk-history-v1-2026-11-02/runs/preflight-r01/worker-0/receipt.json">runs/preflight-r01/worker-0/receipt.json</a></td>
+<td>{"status": "completed", "stage": "preflight"}</td>
+<td>{"started_at": "2026-11-01T19:05:58.131997+00:00", "last_record_at": "2026-11-01T19:06:46.804107+00:00", "finished_at": "2026-11-01T19:06:48.829916+00:00"}</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_3">全部原始资产入口</h2>
+<p>本目录在固定提交下共有67个跟踪文件，包含代码、原回答、失败、收据和压缩证据；文件数不是样本数。<a href="../assets/069-cache-sk-history-v1-2026-11-02.tsv">逐文件完整账本</a> · <a href="https://github.com/yuxiexiong/acupuncture/tree/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-sk-history-v1-2026-11-02">原目录</a>。未复制模型权重、环境或凭据。</p></main></html>

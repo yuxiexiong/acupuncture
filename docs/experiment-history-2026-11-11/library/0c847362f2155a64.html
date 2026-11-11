@@ -1,0 +1,44 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>EH（入口 × 深层历史 2×2 + 反向顺序 FIX 臂）合同 r01</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="eh-22-fix-r01">EH（入口 × 深层历史 2×2 + 反向顺序 FIX 臂）合同 r01</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-entry-history-v1-2026-11-02/CONTRACT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-entry-history-v1-2026-11-02/CONTRACT.zh-CN.md">固定提交原件</a>；SHA-256：<code>0c847362f2155a64dbc9d5c9979ec508f93731a86ee327159f599cb595ae3ab3</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="eh-22-fix-r01_1">EH（入口 × 深层历史 2×2 + 反向顺序 FIX 臂）合同 r01</h1>
+<p>日期：2026-11-02。设计：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-entry-history-plan-v1-2026-11-02.zh-CN.md">计划 v1</a>。基准：B3 正式运行（f2ad7d8）、NFC-01（5b6fe98）。授权：用户 2026-11-02「同意你推进吧」。输入已见，新格结果未见。</p>
+<h2 id="1">1. 操作</h2>
+<p>沿用 B3 的模型、revision、BF16、内核、token、晚段窗口、L0 剂量 −1、四方向、12 条输入、worker/GPU 分配、进程内校准（须等于 B3）。每输入形成 C，评分 C_native（= 00，记录 x_C）；每方向形成 T，评分 T_native（取 x_T），然后评分：H01（N:CC 的缓存，无入口 hook）、FIX0（全 C 缓存，仅 FIX 值头的卷积 V 通道取 T，无入口 hook）、X10（全 C 缓存 + 入口 x_T）、XH11（N:CC 缓存 + 入口 x_T）。</p>
+<h2 id="2">2. 预算</h2>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th style="text-align: right;">形成</th>
+<th style="text-align: right;">评分</th>
+<th style="text-align: right;">校准</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>预检（P01-f0/f1，1 worker）</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">42</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td>正式（12 输入，2 worker）</td>
+<td style="text-align: right;">60</td>
+<td style="text-align: right;">252</td>
+<td style="text-align: right;">6</td>
+</tr>
+</tbody>
+</table>
+<p>GPU ≤0.5 小时；产物 ≤2 GiB；预检工程失败可记账后重试一次，正式不重试。</p>
+<h2 id="3">3. 工程闸门（任一不过即停止，记合同执行失败）</h2>
+<p>校准、GPU 分配等于 B3；L0 写入 ≤1%；C_native、T_native、XH11 的 logits 与 B3 的 C_native、T_native、N:CC 逐位相同；H01、FIX0 的第13层自然输入与 x_C 逐位相同；X10、XH11 的入口等于 x_T 且 hook 每格一次；FIX0 的卷积布局：q/k 通道为 C，FIX 值头通道为 T，其余值头为 C（逐位）；H01 的卷积为 C；每格 14 个 G 内核各一次、chunk 为 0；logits 有限。</p>
+<h2 id="4-eh_corerule">4. 判读（<code>eh_core.RULE</code>）</h2>
+<p>D = readout.D。e1 = D11 − D00；s_H = (D01 − D00)/e1，s_X = (D10 − D00)/e1（|e1| ≥ 1）。标签：s_H ≥ 0.75 且 s_X ≤ 0.25 → 历史单独足够；s_X ≥ 0.75 且 s_H ≤ 0.25 → 入口单独足够；两者 ≥0.75 → 两者单独都强；两者 ≤0.25 → 必须配合；其余为部分。另报告四条边与交互 I。反向顺序：e2_rev = D(FIX0) − D00，e2_fwd = D(N:CFIX) − D(N:CC)（B3 记录）；|差| ≤ 0.25|e2_fwd| → 顺序无关；比值 ≤0.5 → 需要背景；≥1.5 → 干净背景下更大；其余为部分（|e2_fwd| ≥ 1）。f0/f1 同标签才计情景，≥5/6 情景为方向标签，≥3/4 方向为跨方向标签，否则为条件依赖。首步选择、平局按记录报告。措辞：标签只描述这一组替换下的条件作用；“历史单独足够”不等于“入口无作用”（报告干预入口下的两条边）。</p>
+<h2 id="5">5. 预注册预测（推测档，运行前写入）</h2>
+<p>P1：s_H ≥ 0.5 且 s_H &gt; s_X（两事实），≥5/6 情景、≥3/4 方向。P2：e2_rev / e2_fwd ≤ 0.5，计数同上。</p>
+<h2 id="6">6. 出口</h2>
+<p>见计划 §4；结果分散时不自动扩矩阵。</p>
+<h2 id="7">7. 交付</h2>
+<p><code>runs/{preflight,formal}-r01/</code>（记录入 Git，张量不入）、<code>analysis/eh-readouts-r01.json</code>、<code>REPORT.zh-CN.md</code>。</p></main></html>

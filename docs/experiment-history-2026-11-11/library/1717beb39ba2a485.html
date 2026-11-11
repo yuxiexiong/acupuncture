@@ -1,0 +1,112 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>WSB-01 实现与本地 CPU 验收</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="wsb-01-cpu">WSB-01 实现与本地 CPU 验收</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-write-signal-background-v1-2026-11-11/IMPLEMENTATION.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-write-signal-background-v1-2026-11-11/IMPLEMENTATION.zh-CN.md">固定提交原件</a>；SHA-256：<code>1717beb39ba2a48545656c3bf4c71430d05d0b67e11eb0f287e192905e3bd530</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="wsb-01-cpu_1">WSB-01 实现与本地 CPU 验收</h1>
+<p>2026-11-11。用户同意推进上一轮建议：实现和 CPU 验收，保持不上卡。<strong>代码已实现，本地 13 项测试通过；没有加载模型、没有连接服务器、没有模型预检或排队。不是 GPU Ready，也没有新增科学结果。</strong></p>
+<p>本文件更新 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-write-signal-background-v1-2026-11-11/PLAN.zh-CN.md">PLAN</a> 与 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-write-signal-background-v1-2026-11-11/SELF_CHECK.zh-CN.md">SELF_CHECK</a>交付时的工程状态；两份设计原文保留。模型、N4146、48 输入／6 场景、两来源×两接收背景、统计阈值及卡时提案均未改变。</p>
+<h2 id="1">1. 实现了什么</h2>
+<table>
+<thead>
+<tr>
+<th>文件</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-write-signal-background-v1-2026-11-11/wsb_core.py">wsb_core.py</a></td>
+<td>同局部输入的双 kernel 差值采集；固定 FP64 差值重放；冻结 SPF 量尺的权重展开、最不利填充边界、配对场景重抽、共同区间及未定／退化判读；计数与预算外推</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-write-signal-background-v1-2026-11-11/wsb_run.py">wsb_run.py</a></td>
+<td>复用 DWB/LVK 的形成、影子卷积、自然生成与旧结果桥接；四格流式执行、原始差值存盘、缓存与 logits 重放检查、原文保存、计数、源码清单、预算和超时控制；离线完整回答分析</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-write-signal-background-v1-2026-11-11/test_wsb.py">test_wsb.py</a></td>
+<td>纯 CPU 张量和合成数据测试；可显式选择上游 kernel 核对，仍不加载权重</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-write-signal-background-v1-2026-11-11/authorization.disabled.json">authorization.disabled.json</a></td>
+<td>GPU 授权关闭、允许阶段为空；本轮没有创建启用授权</td>
+</tr>
+</tbody>
+</table>
+<p>没有修改旧 LVK、KUC、SPF、DWB 或 NGC 代码。标准库负责计划、文件、统计和控制；张量计算沿用项目 PyTorch，不添加依赖。依照 Ponytail full 复用冻结实现；Serena 本会话不可用，使用源码检索与直接调用核对。</p>
+<p>执行顺序是：每场景仅形成一次 C/T → 构成 H → C/H 自身参照与零差 t1 检查 → 每配对采集 C/H 来源差值 → 从同一文件重放两个接收背景 → 检查同源对角与旧 C0/OO/DO → 保存所有自然回答。t2 起没有干预 hook。失败不改旧证据，不从中途效应决定续跑。</p>
+<p>当步输出从修改后的同一状态读取，留存状态也使用它；所有 G 层使用同一来源文件的固定增量。缓存张量的形状、dtype、数值及管理标量都纳入对角检查；仅签名零差别单列记录。原始差值文件及逐层 hash、范数、两来源余弦保留，几何量仅作描述。</p>
+<h2 id="2">2. 本地验收及证据</h2>
+<p>最终验收：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-write-signal-background-v1-2026-11-11/readiness/cpu-local-r04.json">cpu-local-r04.json</a> · <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-write-signal-background-v1-2026-11-11/readiness/cpu-local-r04.log">完整日志</a>。<strong>13 项通过，0 failures、0 errors；model_forwards=0，cuda_initialized=false。</strong> 测试使用既有本地 PyTorch 2.7.1 环境；没有在历史 stealthiness 项目创建或修改文件，仅复用其已有解释器。</p>
+<table>
+<thead>
+<tr>
+<th>测试范围</th>
+<th>实际检查</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>来源与预算</td>
+<td>原设计七项来源 hash；48 接收者与 348 条旧 DO 桥接记录；正式 2184／预检 192 条轨迹及计数上限</td>
+</tr>
+<tr>
+<td>张量操作</td>
+<td>FP32/BF16 输入下采集→同源重放一致；写入后的输出与持久状态一致；固定同一差值跨背景；零差等价；原输入不被改写</td>
+</tr>
+<tr>
+<td>拒绝非法数值</td>
+<td>错误 shape、FP32 差值、NaN、冲突模式和不输出状态均拒绝</td>
+</tr>
+<tr>
+<td>Hook 边界</td>
+<td>使用冻结 LHook 的影子卷积逻辑，在合成模块中覆盖全部 14 层；来源卷积不被改写；其他层走原函数；异常后恢复 kernel、卷积函数和句柄</td>
+</tr>
+<tr>
+<td>统计</td>
+<td>权重展开等于冻结 D_tr；含缺失回答的极端界与穷举一致；来源、背景、匹配、无增强、反向五种模式均可得到相应判读；交付差、敏感性翻号和宽区间不误报阳性</td>
+</tr>
+<tr>
+<td>抽样单位</td>
+<td>接收者等权、场景成组配对重抽；异质合成世界可返回未定；固定种子可重复</td>
+</tr>
+<tr>
+<td>完整计数</td>
+<td>旧函数首 token 停止漏计已在新包装中补齐并实测；缺一条／多一条轨迹均拒绝完整验收</td>
+</tr>
+<tr>
+<td>状态身份</td>
+<td>非零缓存改变及管理标量改变均拒绝；签名零单列而不掩盖其他差异</td>
+</tr>
+<tr>
+<td>运行边界</td>
+<td>授权关闭时，在运行时导入及 nvidia-smi 前拒绝；合成超时测试核对独立子进程硬上限和失败回执保存，不启动实际 worker</td>
+</tr>
+</tbody>
+</table>
+<p>测试 r01/r02/r03 的通过收据保留为中间版本，r04 与当前代码对应；不能把早期收据拿来验收后来修改的代码。只做内存语法编译检查，不需要向系统 Python 缓存目录写文件。</p>
+<p><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-write-signal-background-v1-2026-11-11/readiness/source-manifest-r02.json">source-manifest-r02.json</a>核对 <strong>386 个仓库文件</strong>，包括运行依赖、冻结材料和桥接原文。它是仓库来源清单，<code>environment_checked=false</code>。发现旧 LVK 清单中的 <code>docs/cache-mechanism-stage-roadmap-2026-11-01.zh-CN.md</code> 已有后续文档更新，清单保存历史与当前两个 hash；该文档不是本卡执行参数来源，未冒充旧字节一致。历史可执行代码和数据仍严格核对，未放宽；本轮也未修改该历史路线图。</p>
+<h2 id="3">3. 卡时与失败控制</h2>
+<p>预算提案仍为单 H20、预计全包约 1–2 GPU 进程小时，总硬上限 3：预检 1440 秒、至多一次另行确认的工程重试 1440 秒、正式 7920 秒。不存在自动重试或自动从预检转正式。</p>
+<ul>
+<li>独立父进程对本次 worker 施加硬超时；到期只终止该子进程，保留部分文件、退出码和回执。单 worker 文件锁防止本卡同时起两个 worker。计时显式同步所选 GPU，避免使用 GPU1 时误等 GPU0；CPU mock 已检查设备参数与计时包装恢复。GPU 非空闲或空间不足直接退出，不排队。</li>
+<li>所有已发生的预检（含失败）通过带 hash 的回执入账；正式必须同时匹配成功预检、代码清单、上游 CPU 验收和明确的新授权，且预估不超 2.2 小时／总预算。</li>
+<li>实测每类前向的最大单价：前缀 token、形成 token、来源 t1、重放 t1、自身 t1、零差 t1、后续 decode。形成、接收者、配对的残余开销分别计时，包含存盘、重读和 hash；结束后的权重／来源完整性检查和产物复核另计，避免漏账或将已计 I/O 重复相加。</li>
+<li>按正式全部 32-token 上界、全部来源和重放数外推，再乘 1.25。最终仍靠独立超时兜底，不将小样本耗时外推称作数学保证。</li>
+<li>原始 dense FP64 差值预计正式 38.063 GiB；两次预检加正式的差值合计 44.625 GiB。总产物硬上限 64 GiB，失败产物一起计入。大张量按 hash 清单保存在未来实验服务器，不入 Git。</li>
+</ul>
+<p>这些是实现好的控制及预算提案，<strong>当前并未授权或实际消耗新的 GPU 小时</strong>。</p>
+<h2 id="4">4. 仍待验收的具体项目</h2>
+<p>本地 Transformers 为 4.53.3，不含对应 Qwen3.5 模块。因此本轮 <code>upstream_kernel_tested=false</code>；合成调用的 frozen custom kernel／LHook 检查不等于真实模型的数值桥接。当前没有为此升级环境或连接服务器。</p>
+<p>后续依序完成：</p>
+<ol>
+<li>在指定运行环境做无权重 CPU 核对：<code>test_wsb.py --upstream</code> 与 <code>wsb_run.py assets --environment</code>。核对原 kernel、模型资产、外部源码、依赖和本卡源文件；同一份环境清单与 CPU 回执绑定。</li>
+<li>获得明确 GPU 授权后，才允许固定 NQ02 预检：真实形成 hash、旧 C0/OO/DO、完整 t1 缓存/logits 和自然生成对角重放、有限精度 oracle、耗时和存储外推。</li>
+<li>工程与预算全部通过且有正式范围授权，才运行四格。科学阴性不能作为预检拒绝依据；工程失败也不写成科学阴性。</li>
+</ol>
+<p>本轮只完成用户同意的实现与本地 CPU 验收，不将以上待办标成已完成。</p>
+<h2 id="5">5. 复查入口</h2>
+<p>使用已有支持 PyTorch 的 Python，以下命令都不加载模型；输出选择新路径以保留历史回执：</p>
+<pre><code class="language-bash">CUDA_VISIBLE_DEVICES='' python experiments/cache-write-signal-background-v1-2026-11-11/test_wsb.py --output /tmp/wsb-cpu-recheck.json
+python experiments/cache-write-signal-background-v1-2026-11-11/wsb_run.py assets --output /tmp/wsb-assets-recheck.json
+</code></pre>
+<p>设计 C01/C02/C08/C14 复核：实现仍是固定差值的来源×接收背景比较；没有添加科学臂、模型或阈值；统计输出保留反向、退化与未定；缓存、重放和预算验收不算机制发现。本轮未实质修改设计，无需用新的自查替换原作者记录。</p></main></html>

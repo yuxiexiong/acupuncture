@@ -1,0 +1,135 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>WIN-01 冻结前零 GPU 准备</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="win-01-gpu">WIN-01 冻结前零 GPU 准备</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/window-recovery-win01-v1-2026-11-04/prep/PREP.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/window-recovery-win01-v1-2026-11-04/prep/PREP.zh-CN.md">固定提交原件</a>；SHA-256：<code>9d801b379002e24f1062578dde896ca3d2e08fbfde715ba41e626726f493876d</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="win-01-gpu_1">WIN-01 冻结前零 GPU 准备</h1>
+<p>2026-11-04。对应 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-mechanism-r2-first-experiment-plan-v1-2026-11-04.zh-CN.md">WIN-01 设计稿 v2</a> §8。只用 CPU 分词器和已有记录，没有加载模型、没有用 GPU。服务器上的临时文件放在 <code>/tmp/acu_win01/</code>，没有写入仓库目录。</p>
+<h2 id="_1">先说不利的部分</h2>
+<p><strong>事实自动判读没过事先写死的门槛，按约定不用。</strong> 门槛写在 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/window-recovery-win01-v1-2026-11-04/prep/judge.py"><code>judge.py</code></a> 文件头，写定时还没看到任何判读结果。</p>
+<table>
+<thead>
+<tr>
+<th>指标（阶段二全部 26,928 条已标注记录）</th>
+<th style="text-align: right;">结果</th>
+<th>门槛</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Y（答对与否）一致率 / κ</td>
+<td style="text-align: right;">0.881 / 0.556</td>
+<td>≥ 0.95 / ≥ 0.90</td>
+<td><strong>不通过</strong></td>
+</tr>
+<tr>
+<td>盲读为 follows_fact 或 other_fact 的 23,977 条上的一致率</td>
+<td style="text-align: right;">0.885</td>
+<td>≥ 0.95</td>
+<td><strong>不通过</strong></td>
+</tr>
+<tr>
+<td>打乱标签零对照的 κ（种子 20261104）</td>
+<td style="text-align: right;">0.009</td>
+<td>±0.05 内</td>
+<td>通过（演示判据能不被满足）</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>合成自测通过，其中故意设计成会判错的例子确实被判错，所以"能判对"和"能判出错"都演示到了。</li>
+<li>最大的一类不一致：盲读判答对、自动判成 other_fact，共 2,601 条。原因是模型先给出正确结论，又复述了题面里另一件物品的位置，例如"钥匙放在<strong>红抽屉</strong>……而'票据放在蓝抽屉'……"。"取最后出现的关键词"这条规则因此判错。</li>
+<li>要修好，就得把关键词和所属对象绑定，相当于另建一个打分器。在同一批标签上边调边测，是拿答案调规则，不做。</li>
+</ul>
+<p><strong>处理</strong>：WIN-01 的事实回答按设计稿 v2 §7 的 (a) 或 (b) 盲读，由用户定。若要另做自动判读 v2，必须只在开发面板的标签上开发，在历史复核面板的标签上按同一门槛验收，并作为新版本登记。</p>
+<h2 id="1-b-prep_tokenspy-tokensjson">1. 事实题的 b 与窗口位置数（<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/window-recovery-win01-v1-2026-11-04/prep/prep_tokens.py"><code>prep_tokens.py</code></a> → <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/window-recovery-win01-v1-2026-11-04/prep/tokens.json"><code>tokens.json</code></a>）</h2>
+<ul>
+<li>用阶段二自己的上下文构造和编码函数：48 条事实题的 n−1 全部等于阶段二 write_audit 里的 width（48/48）。</li>
+<li>b 的规则与编号任务相同（C1-P 规则：记录句＋换行算作事实段，b 取事实段最后一个 token）。没有 token 跨边界（0/48）。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>面板</th>
+<th>b</th>
+<th>W_all</th>
+<th>W_pre（0..b）</th>
+<th>W_post（b+1..n−2）</th>
+<th>W_pre &gt; W_post 的题数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>开发</td>
+<td>14–26</td>
+<td>42–71（两面板合计）</td>
+<td>15–27</td>
+<td>25–33</td>
+<td>2/24</td>
+</tr>
+<tr>
+<td>历史复核</td>
+<td>18–41</td>
+<td></td>
+<td>19–42</td>
+<td>26–33</td>
+<td>12/24</td>
+</tr>
+</tbody>
+</table>
+<p>位置数混淆：开发面板上 W_pre 多数比 W_post 短，历史面板约一半比 W_post 长。逐题差值从 −14 到 +13，报告时要逐题给出位置数，并按两个面板分开看窗口效应。编号任务上 W_pre 是 29–32，W_post 是 26–27。</p>
+<h2 id="2-f0f1">2. f0/f1 逐位比对</h2>
+<ul>
+<li>24 对里 22 对 token 数相同；这 22 对逐位比较，<strong>不同的位置全部落在事实段内</strong>，每对 1–2 个 token（例如"红/蓝""17/18""在三楼/在二楼"），两版的 b 相同。</li>
+<li>2 对长度差 1（RL02、CAR02），只做与长度无关的递推移植。</li>
+<li>所以 B 块位置相关的移植（KV、全部缓存）用这 22 对。限制：位置对齐只说明两版只差事实词，不排除事实词的差异在后续位置引起的状态差异，后者正是移植要测的东西。</li>
+</ul>
+<h2 id="3">3. 同幅随机方向（照抄，不重新抽样）</h2>
+<ul>
+<li>来源：XCHAN 固定向量文件 <code>experiments/cache-cross-channel-validation-v1-2026-10-31/data/directions-r01.json</code>（sha256 <code>2b24da5472cbd8a250d1c063cc92cb585641c4dfbe4f9de89a714c5ab36fef29</code>）。</li>
+<li>构造：<code>make_directions</code>，标准正态（CPU 生成器，float64）归一化，种子 20261101＋j。R0 的值 sha256 前缀 <code>cfc5dc6137d6</code>；EH、EH-XC 用过 R0–R3。</li>
+<li>写入：在 MLP 输出边界加 −1 × scale × u（<code>xchan.py:136–140</code>），目标写入范数 = scale，与原生针每位置写入范数的定义相同。</li>
+<li>建议预留 <strong>R0</strong>（EH 系列已逐值核对过）。</li>
+</ul>
+<h2 id="4">4. 预留条件清单（冻结时照此写入合同）</h2>
+<table>
+<thead>
+<tr>
+<th>条件</th>
+<th>来源</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>L2/C5251/−1</td>
+<td>阶段二固定 32 点面板</td>
+<td>预测检验：未做过窗口比较</td>
+</tr>
+<tr>
+<td>L3/C7666/−1</td>
+<td>同上</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>L5/C2467/−1</td>
+<td>同上</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>R0_L00/−1</td>
+<td>XCHAN 固定随机方向</td>
+<td>随机方向作为主动比较对象</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>这四个条件在阶段二全前缀下的损伤结果已经看过（R1 全表）；窗口比较、编号任务上的结果都没有看过。</li>
+<li>本卡不运行它们。W 块出结果后先写预测、冻结，再另卡运行。</li>
+<li>校准：事实沿用本题 f0 版，编号沿用 NQ-01，与 WIN-01 主针相同。</li>
+</ul>
+<h2 id="5">5. 还缺什么才能写合同</h2>
+<ol>
+<li><strong>事实回答的判读方式</strong>（待用户定）：全量盲读，只盲读救回/改坏相关的格，或在历史面板上验收的自动判读 v2。</li>
+<li>其余三项准备已就绪，可以进入合同和代码。</li>
+</ol></main></html>

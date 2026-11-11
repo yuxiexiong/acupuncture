@@ -1,0 +1,51 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>B3-P1：主效应对齐的建立过程——计划 v2</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="b3-p1-v2">B3-P1：主效应对齐的建立过程——计划 v2</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>docs/cache-b3p1-early-alignment-plan-v2-2026-11-01.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-b3p1-early-alignment-plan-v2-2026-11-01.zh-CN.md">固定提交原件</a>；SHA-256：<code>60f397ae5552ba04d88048981fa87c22ad293edddbf0192ea5f5ebd8dd364c81</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="b3-p1-v2_1">B3-P1：主效应对齐的建立过程——计划 v2</h1>
+<ul>
+<li>2026-11-01，v2，取代 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-b3p1-early-alignment-plan-v1-2026-11-01.zh-CN.md">v1</a> 中被下列修订覆盖的部分；v1 的问题定义、逐步三项分解、固定投影、数值规则、出口、C01–C14 与反方自查继续有效。</li>
+<li>授权：用户 2026-11-01「同意，直接写合同代码，更新方案，测试开跑」。</li>
+</ul>
+<h2 id="1">1. 修订</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>修订</th>
+<th>理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><strong>主表扩为全部 38 步（第13–31层，每层 mixer、MLP），第13–18层作为“角度形成”子表</strong></td>
+<td>B3-P0 数据：R1 FIX 的 2⟨a,b⟩ 在第18层只有 64，终点为 1222；cos 在第18层已到 0.72，此后基本不变。13–18 层只能回答角度怎样定下，不能回答对齐能量怎样形成。后段能量是跨步继承早期方向，还是后段同步产生，需要 38×38 的 M 才能区分。这一选择在见到任何 P1 结果之前做出，不属于失败后扩大窗口</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>G 层 mixer 增量按值头块精确拆分</strong>：用已记录的 gated_norm_out 和 out_proj 权重（线性、无偏置），α = α^A + α^B + 余项，β 同理</td>
+<td>第13层两组的输入完全相同，α 只能出现在 A 头块（逐位闸门）；第14层之后，α 是否出现在 B 头块（A 的历史经残差改变了 B 头的读出），就是一个具体的跨组传播运算。只看 cos(α,β) 区分不了这一点。偏离 v1 的“无权重加载”：只读 out_proj，只做线性运算，不做模块非线性重算</td>
+</tr>
+<tr>
+<td>3</td>
+<td>预注册两条预测（推测档）</td>
+<td>见 §3</td>
+</tr>
+<tr>
+<td>4</td>
+<td>固定投影轴：子表用第18层 00 输出，主表用终点 00 输出</td>
+<td>与各自窗口终点一致，保证逐步求和闭合</td>
+</tr>
+</tbody>
+</table>
+<p>第15层是全注意力，没有逐头输出的记录，只能整块处理，不做头块拆分。</p>
+<h2 id="2">2. 头块标签</h2>
+<p>每个 G 层 mixer 步骤：ΔC = 本组项（只含 α^A、β^B 及历史项）+ 跨组项（含 α^B 或 β^A）+ 余项（含 BF16 舍入），三者求和精确等于 ΔC。本组份额 = Σ|本组| / (Σ|本组| + Σ|跨组|)。≥0.75 记为本组头块主导，≤0.25 记为跨组头块主导，其余为混合；子表（G 层 13、14、16、17、18）和主表（全部 14 个 G 层）各给一个标签。余项单独报告。</p>
+<h2 id="3">3. 预注册预测（推测档）</h2>
+<ul>
+<li>P1：FIX 的同一步绝对占比标签在 13–18 层子表和 38 步主表上都是“跨步集中”（原空间与固定投影空间一致）。依据：第13层输出的 cos(a,b) ≈ 0.01，两组直接写入近乎正交。</li>
+<li>P2：FIX 在 13–18 层 G mixer 上的头块标签为“跨组主导”或“混合”（≥3/4 方向一致；“条件依赖”不算成立）。</li>
+</ul>
+<h2 id="4-v1-4">4. 出口（沿用 v1 §4）</h2>
+<p>得到能与替代解释区分的计算约束，就写一张待审查的计算假说卡；不自动干预，因为后续干预需要重新形成缓存，要用 GPU，届时另立合同。只有定位曲线、或贡献分散、符号不一致时，结束这条记录分析分支，不递补、不再扩窗。</p></main></html>

@@ -1,0 +1,85 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>B2 计算后续（CPU）：结果</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="b2-cpu">B2 计算后续（CPU）：结果</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-b2-computation-followup-v1-2026-11-01/REPORT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-b2-computation-followup-v1-2026-11-01/REPORT.zh-CN.md">固定提交原件</a>；SHA-256：<code>4fb38aa7224b91aa9fb7697c2b6604bc36f4f49013accc520d80edc4865e2a19</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="b2-cpu_1">B2 计算后续（CPU）：结果</h1>
+<p>日期：2026-11-01。<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-b2-computation-followup-plan-v1-2026-11-01.zh-CN.md">计划</a>（a03b14a）；<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-b2-computation-followup-v1-2026-11-01/CONTRACT.zh-CN.md">合同 r01</a> 与决策代码在运行前提交（a244e52），规则与符号测试 5/5。CPU 离线，0 模型调用、0 GPU，39 s。结果 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-b2-computation-followup-v1-2026-11-01/results-r01.json">results-r01.json</a>，代码 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-b2-computation-followup-v1-2026-11-01/analyze.py">analyze.py</a>。同一助手分析，不是独立复核。</p>
+<h2 id="1">1. 决定（按冻结规则）</h2>
+<p><strong>无合格候选。</strong> 局部写入候选与末端 27–31 层候选在停止侧均未过线，答案侧亦然。按计划：不放松规则、不扩层、不换头、不开 GPU。</p>
+<table>
+<thead>
+<tr>
+<th>停止侧（情景均值，logit）</th>
+<th style="text-align: right;">VAR03</th>
+<th style="text-align: right;">VAR04</th>
+<th style="text-align: right;">VRD03</th>
+<th style="text-align: right;">VRD04</th>
+<th style="text-align: right;">VRL03</th>
+<th style="text-align: right;">VRL04</th>
+<th>判定</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>B_H(1)（= K(cz)，复现 B2）</td>
+<td style="text-align: right;">0.22</td>
+<td style="text-align: right;">0.79</td>
+<td style="text-align: right;">0.41</td>
+<td style="text-align: right;">0.12</td>
+<td style="text-align: right;">0.55</td>
+<td style="text-align: right;">0.77</td>
+<td>—</td>
+</tr>
+<tr>
+<td>P_local（H 头同入口写入交互的直接投影）</td>
+<td style="text-align: right;">−0.01</td>
+<td style="text-align: right;">−0.00</td>
+<td style="text-align: right;">+0.03</td>
+<td style="text-align: right;">−0.04</td>
+<td style="text-align: right;">+0.02</td>
+<td style="text-align: right;">+0.03</td>
+<td>0/6 → 无候选</td>
+</tr>
+<tr>
+<td>末端 27–31 层 Σp_l</td>
+<td style="text-align: right;">−0.17</td>
+<td style="text-align: right;">+0.27</td>
+<td style="text-align: right;">+0.47</td>
+<td style="text-align: right;">−0.34</td>
+<td style="text-align: right;">+0.41</td>
+<td style="text-align: right;">+0.47</td>
+<td>4/6 正、1/6 负 → 无候选</td>
+</tr>
+<tr>
+<td>全部层直接合计 Σp_l</td>
+<td style="text-align: right;">−0.07</td>
+<td style="text-align: right;">+0.52</td>
+<td style="text-align: right;">+0.46</td>
+<td style="text-align: right;">−0.16</td>
+<td style="text-align: right;">+0.65</td>
+<td style="text-align: right;">+0.75</td>
+<td>—</td>
+</tr>
+<tr>
+<td>最终分母与舍入项</td>
+<td style="text-align: right;">+0.29</td>
+<td style="text-align: right;">+0.27</td>
+<td style="text-align: right;">−0.06</td>
+<td style="text-align: right;">+0.29</td>
+<td style="text-align: right;">−0.10</td>
+<td style="text-align: right;">+0.02</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h2 id="2">2. 验收</h2>
+<p>全部通过：哈希；B2 111 格 14 层驱动与 CONV N:TT 逐位一致；门控归一化 + out_proj 重算对 CONV N:TT 记录 ≤0.008；q/k/v 有针侧逐层 ≤0.0042；干净侧第13层 q/k ≤0.0041、H 头 v ≤0.0043；乘积恒等式残差 ≤2e−17；逐头可加 ≤1.4e−13；第13层入口四格相同；层间逐位连续；账目闭合 ≤2.5e−16；K(cz) 与 B2 记录的 B_H(1) 一致。<strong>验证边界：干净侧 q/k/v 重算只在第13层有同入口对照，第14层起未验证。</strong></p>
+<h2 id="3">3. 能说什么、不能说什么</h2>
+<ul>
+<li><strong>局部写入：</strong> H 头上同入口的 Q×V_H 写入交互，经门控归一化与 out_proj 后在停止方向的直接投影合计只有 −0.04 至 +0.03，远小于 B_H(1)。这<strong>不</strong>证明局部写入交互没有因果作用：局部直接投影小可能来自方向或下游转换（计划 §2）；它只说明本轮直接投影不能为针对 H 写入交互的因果合同提供一致正向预测。与 B1（第13层全头交互删除无输出作用）方向一致，但对象不同，不合并结论。</li>
+<li><strong>末端 27–31 层：</strong> 4 个情景有一致同向分账（0.27–0.47），但 B_H(1) 最小的两个情景（VAR03 0.22、VRD04 0.12）末端为负，未达 5/6。第27层是单层平均最大项（+0.16）。在这两个情景中，最终归一化分母与舍入项约 +0.29、与 B_H(1) 同量级，直接路径合计反而为负——即这两个情景的 B_H(1) 在账目上主要出现在最终分母变化里。</li>
+<li><strong>答案侧：</strong> P_local 与末端均无一致方向（仅 VRL04 一个情景两者都为负）。</li>
+</ul>
+<h2 id="4-b">4. 对阶段 B 的含义（不是运行授权）</h2>
+<p>本轮按约定结束 H×Q 关系的计算候选筛选：两个预先固定的运算对象都没有合格的一致预测。B2 的条件关系本身仍成立（K(cz) 逐位复现）；它没有被分账到 H 头的局部写入交互，也没有被稳定分账到末端 27–31 层。</p>
+<p>描述性观察（未预注册，不能直接升为候选）：（1）4/6 情景的直接路径分账集中在末端，第27层最大；（2）最终 RMS 归一化分母项在两个小效应情景中与 B_H(1) 同量级。若以后要据此提问，需要先给出独立依据和可区分预测，另写方案；本轮不据此追加实验。</p></main></html>

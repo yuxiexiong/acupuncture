@@ -1,0 +1,131 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>C：为什么新版定向修补暂时不如旧版涨分</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="c">C：为什么新版定向修补暂时不如旧版涨分</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>docs/wsp-c-v8-v9-interim-comparison-2026-11-05.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/docs/wsp-c-v8-v9-interim-comparison-2026-11-05.zh-CN.md">固定提交原件</a>；SHA-256：<code>49830a978d81fdc2f526f2bf69eae8988e5e3870d3492e2da1e70f57d8c66d57</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="c_1">C：为什么新版定向修补暂时不如旧版涨分</h1>
+<h2 id="material-passport">Material Passport</h2>
+<p>2026-11-05；academic-research-suite / experiment-agent，validate，ANALYZED。旧版为 v8 延长至50轮的完整归档；新版取北京时间20:28:41快照，已完成11/30轮。仅读取已存评分、修改清单、请求和合同，0新增模型调用；未修改运行代码、合同、权重、研究者消息或队列。不是新的实验设计、模型重跑或独立科学审查。</p>
+<p><strong>目前证据更支持“旧版很早就通过词语embedding编辑取得大部分开发收益，而新版排除了这条路径”，不能主要归因于新版还没搜满30轮。</strong> 新版搜索确实未完成，但没有证据保证补满轮数就会追平。更细的方向编辑增加了检验内部解释的能力，不保证更高的行为分数。</p>
+<h2 id="1">1. 比较口径和实际轨迹</h2>
+<p>同一Qwen3-VL-4B-Instruct、同一64来源组/2,560输入、同一batch64、同一开发选优指标及逐格保护。两版W0的全部2,560条scored记录逐值相同，包括解析答案和正确性。本核对未重新运行模型，也不声称重新核对了所有原始生成token。版本protocol hash不同，不能把两个工程身份称完全相同。</p>
+<p>以下是普通提示下反事实usual/visual配对联合修复分数（repair_score），不是全题准确率，也不是另一个字段primary_joint。64组各4个问法/顺序面板，共256对；来源组才是独立统计单位。</p>
+<table>
+<thead>
+<tr>
+<th>检查点</th>
+<th style="text-align: right;">修复分数</th>
+<th style="text-align: right;">相对W0</th>
+<th style="text-align: right;">全题准确率</th>
+<th style="text-align: right;">修对/改错</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>W0</td>
+<td style="text-align: right;">58.2031%</td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;">88.5156%</td>
+<td style="text-align: right;">—</td>
+</tr>
+<tr>
+<td>旧版第1轮，仅pictured词向量编辑</td>
+<td style="text-align: right;">63.2813%</td>
+<td style="text-align: right;">+5.0781pp</td>
+<td style="text-align: right;">89.1797%</td>
+<td style="text-align: right;">18/1</td>
+</tr>
+<tr>
+<td>旧版第5轮，仅四个词语行编辑</td>
+<td style="text-align: right;">67.5781%</td>
+<td style="text-align: right;">+9.3750pp</td>
+<td style="text-align: right;">89.8828%</td>
+<td style="text-align: right;">39/4</td>
+</tr>
+<tr>
+<td>旧版第30轮，词语＋视觉norm＋语言input norm</td>
+<td style="text-align: right;">70.3125%</td>
+<td style="text-align: right;">+12.1094pp</td>
+<td style="text-align: right;">90.1563%</td>
+<td style="text-align: right;">49/7</td>
+</tr>
+<tr>
+<td>旧版50轮中的最终最佳，第45轮</td>
+<td style="text-align: right;">70.7031%</td>
+<td style="text-align: right;">+12.5000pp</td>
+<td style="text-align: right;">90.1953%</td>
+<td style="text-align: right;">50/7</td>
+</tr>
+<tr>
+<td>新版11轮中的当前最佳，第8轮</td>
+<td style="text-align: right;">60.1563%</td>
+<td style="text-align: right;">+1.9531pp</td>
+<td style="text-align: right;">88.9844%</td>
+<td style="text-align: right;">16/4</td>
+</tr>
+</tbody>
+</table>
+<p>旧版第1轮就超过新版当前最佳，第5轮已获得最终12.5pp增量中的9.375pp。算术上为75%，只说明早期候选已达到的收益幅度，<strong>不是embedding占最终因果贡献75%的分解</strong>。旧版30至50轮只再提升0.3906pp，也不支持“多等20轮自然出现十几个点”的判断。</p>
+<h2 id="2-embeddingnorm">2. embedding和norm各有多少证据</h2>
+<p>旧版第1轮仅将pictured对应的绑定embedding/输出行向保范数image方向混合0.5；18次修复和1次损伤全部发生在T1反事实visual题，其他条件答案正确性不变。这支持固定问法下的词语表示干预有效，不能单凭它断言模型不理解pictured，也不能隔离输入embedding与绑定输出权重的作用。</p>
+<p>第3—5轮再加入bigger→larger、normally→typically、-world→world的保范数混合。第5轮只有embedding张量变化，没有norm或MLP投影修改。它同时改善反事实usual与visual题，因此“大部分开发收益很早由词语编辑取得”有直接候选对照证据，不只是最终清单猜测。</p>
+<p>norm有后续增益，但依赖词语补丁背景：第5、9、17、30轮的embedding完整SHA相同。在这个背景上，第9轮增加主视觉merger norm×0.85，分数67.5781%→68.7500%；第17轮再结合deepstack merger 2 norm×1.15，到69.9219%；第30轮加入语言18—23层input_layernorm×1.05，到70.3125%。这些是指定背景和顺序下的条件增量，不是各模块独立、可相加的普适贡献。</p>
+<p>第37轮又调弱-world混合到0.25；第45轮把语言norm增益降到1.025，保留70.7031%并减小修改支持。旧版50个候选全部包含embedding修改，没有norm-only候选。因此尚不能回答“单独norm能达到多少”或精确分摊最终embedding/norm份额。最终语言norm是注意力输入归一化，不是最终解码norm，也不是MLP整层缩放。</p>
+<h2 id="3">3. 新版现在找到的是什么</h2>
+<p>新版从W0重新开始，不是在旧版70.70%的补丁上继续加细。合同排除embedding/绑定输出、最终解码norm和整张张量乘常数，包括旧版那些单个norm的统一缩放。因此这次同时改变了可用动作和证据要求，并非仅把同一旧补丁编辑得更精细；不能作为“粗调/细调”单变量对照。</p>
+<p>截至11轮，已评价第19层注意力头输出削弱、增强及随机头对照；第21层注意力o_proj的128输入列秩一方向删除、半/双剂量、反方向、随机方向和随机列；以及第3层早期问法方向。当前主要是注意力输出修改，并非已经找到了MLP修复方向。一个方向操作要修改许多标量：当前最佳实际改变319,959个BF16标量，旧最终最佳35,792个；“方向更细”不等于参数数目更少或副作用必然更小。</p>
+<p>第21层原方向删除改善了焦点visual的logit margin，但损伤正常的usual回答，且未带来合格的完整开发收益。反方向第8轮反而成为最佳。已完成的随机方向和随机列控制分数分别58.2031%和58.5938%；它们针对原删除操作设计，不能直接视为第8轮增强操作的全部匹配对照。这些对照提供局部选择线索，但不把少量控制或研究者解释视为机制成立，更不能证明错误专属通道。</p>
+<table>
+<thead>
+<tr>
+<th>完整输入条件（各512条）</th>
+<th style="text-align: right;">旧第5轮修对/改错</th>
+<th style="text-align: right;">旧最终最佳修对/改错</th>
+<th style="text-align: right;">新当前最佳修对/改错</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>反事实图＋通常常识问题</td>
+<td style="text-align: right;">13/0</td>
+<td style="text-align: right;">18/4</td>
+<td style="text-align: right;">13/0</td>
+</tr>
+<tr>
+<td>反事实图＋看图问题</td>
+<td style="text-align: right;">22/1</td>
+<td style="text-align: right;">29/0</td>
+<td style="text-align: right;">0/2</td>
+</tr>
+<tr>
+<td>无图＋通常常识问题</td>
+<td style="text-align: right;">4/0</td>
+<td style="text-align: right;">3/0</td>
+<td style="text-align: right;">3/2</td>
+</tr>
+<tr>
+<td>原图＋通常常识问题</td>
+<td style="text-align: right;">0/3</td>
+<td style="text-align: right;">0/3</td>
+<td style="text-align: right;">0/0</td>
+</tr>
+<tr>
+<td>原图＋看图问题</td>
+<td style="text-align: right;">0/0</td>
+<td style="text-align: right;">0/0</td>
+<td style="text-align: right;">0/0</td>
+</tr>
+</tbody>
+</table>
+<p><strong>这解释了当前的分数差距：旧词语补丁能同时帮助两类反事实任务；新版当前最佳主要帮助usual，并未修好visual。</strong> “新版目前调到的是任务偏向而非失败专属写入”是符合对照的解释，仍应与完整因果结论区分。</p>
+<h2 id="4">4. 如何判断剩余轮数的作用</h2>
+<p>11/30尚未完成，不能判定最终失败。方向、位置、剂量的进一步搜索仍可能改进；随机及符号控制也占完整候选轮数，不能按11轮理解为11次独立最优修复尝试。但旧版前几轮已经取得大收益，说明“轮数不足”不足以单独解释目前差距。</p>
+<p>如果新版最终不如旧版，应如实保留为这一次受限方法搜索的结果；不能推成“内部定向编辑普遍无效”，也不能把更细的测量直接当作方法更优。当前新旧结果都是同一开发面板反复选优，没有独立新来源组验证，更没有跨模型泛化证明。词语特异的改善提示适用范围需要检验，但不等于已经证明旧法过拟合。</p>
+<p>本次不向正在运行的Astra注入旧配方或这些分析，不修改实验。后续按既定30轮完成后再核对最终行为结果与机制报告；本文固定保留20:28快照，避免把持续变化的搜索结果混为一个时间点。</p>
+<h2 id="5">5. 证据和解释核查</h2>
+<ul>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-open-repair-v8x50-2026-11-05/closeout-evidence.json.gz">旧版原始搜索归档</a>，SHA256 <code>9192a03b6b6de5512e4c6f5f96e69a0ec5dc1f000aaa3fd9ebea0fcea93b4840</code>。</li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9-2026-11-05/audit/c-v8-v9-comparison/v9-snapshot.json.gz">新版20:28评分、候选与请求快照</a>。仅已有记录，无权重及模型调用。</li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9-2026-11-05/audit/c-v8-v9-comparison/comparison.json">本次复算、候选清单、条件计数与哈希</a>。</li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-mechanism-repair-v9-2026-11-05/PLAN.zh-CN.md">新版冻结合同</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/docs/wsp-c-directional-repair-method-roadmap-v1-2026-11-05.zh-CN.md">此前方法对齐审计</a>。</li>
+</ul>
+<p>统计解释检查11/11：按任务条件检查总体/分层差异；来源组与重复问法不混为独立样本；本面板经问题筛选、仅描述其范围；未新增碰撞变量条件化分析；报告W0与完整分母；未只报最差子集回升；保留全部50/11轮及保护失败；承认反复开发选优及选择机会不同；保留探索路径；不把早期分数比例作组件因果份额；干预先于评价但语义机制仍需区别于行为效应。未计算显著性或泛化置信区间，不将最佳开发分数作为确认性统计结论。</p></main></html>

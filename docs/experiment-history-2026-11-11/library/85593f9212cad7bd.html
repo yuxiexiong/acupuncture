@@ -1,0 +1,163 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CFM-S1 结果复核与后续计划修订依据</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="cfm-s1">CFM-S1 结果复核与后续计划修订依据</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>docs/cache-formation-mechanism-s1-result-review-v1-2026-10-31.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-formation-mechanism-s1-result-review-v1-2026-10-31.zh-CN.md">固定提交原件</a>；SHA-256：<code>85593f9212cad7bd45d9a49f29fc4cf33298fa16cb962e0b91d86e3ca9e64f51</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="cfm-s1_1">CFM-S1 结果复核与后续计划修订依据</h1>
+<blockquote>
+<p>后续设计解释修正：本文件的S1数值复核保留；其中S2 v2已由<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-formation-mechanism-s2-formation-test-plan-v3-2026-10-31.zh-CN.md">CFM-S2 v3</a>替代。累计分账不识别独立机制，末态小量不证明途中无变化；最新设计判断见<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-formation-mechanism-s2-design-review-v3-2026-10-31.zh-CN.md">v3 Review</a>。以下保留当时复核正文。</p>
+</blockquote>
+<h2 id="material-passport">Material Passport</h2>
+<p>日期：2026-10-31；academic-research-suite / experiment-agent / validate + plan。此次是同一助手的资料复核和设计自审，不是独立复现。新增模型前向、GPU、生成、反向传播均为0。</p>
+<p>Verification Status: ANALYZED；没有重新运行原模型或对张量作独立复现。</p>
+<h2 id="1">1. 查了什么，确认到哪一步</h2>
+<p>证据固定于提交 <code>eb5232ce9c43eea566141bccd1081c3dc2021734</code> 的 <a href="https://github.com/yuxiexiong/acupuncture/tree/eb5232ce9c43eea566141bccd1081c3dc2021734/experiments/cache-formation-mechanism-s1-native-trace-v1-2026-10-31">CFM-S1 实验目录</a>。阅读合同、报告、freeze、两份正式收据、verification、记录器/记账源码及汇总JSON，并从JSON重新计算下表范围。源文件Git blob标识、数字和复核范围见<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-formation-mechanism-s1-result-audit-v1-2026-10-31.json">机器可读审计</a>。未下载6.5GB张量归档，未独立重建每个状态；原报告的逐值复现结论仍标作执行方验收结果。</p>
+<ul>
+<li>正式验收记录：36条前缀、36次末提示读取、72次候选评分；两worker各18条，均passed，freeze一致。</li>
+<li>执行方报告36/36与历史II-B身份/端点一致；离线状态及读出重建过关。汇总JSON的最大读出恒等式残差实际是 <code>6.01465e-15</code>，不是报告表格统一写的 <code>1.7e-15</code>；不改变数值验收结论。</li>
+<li>阶段一已完成。原始合同判读和探索档都保留，不追改阈值或把有效数据作废。</li>
+</ul>
+<h2 id="2">2. 数据说明什么，不说明什么</h2>
+<p>以下主表为末提示token更新后的 <code>t_L</code>，三层、两事实合并后6个基础情景的范围；不是撤针前缀边界τ，也不是因果贡献百分比。</p>
+<table>
+<thead>
+<tr>
+<th>量</th>
+<th>L0针</th>
+<th>L12针</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>对称写入账W对ΔS的有符号投影</td>
+<td>1.501–1.549</td>
+<td>1.346–1.398</td>
+<td>实际差异方向上的写入账超过净差异</td>
+</tr>
+<tr>
+<td>旧状态处理账R对ΔS的投影</td>
+<td>−0.549至−0.501</td>
+<td>−0.398至−0.346</td>
+<td>在该账目和投影下抵消；不等于保护回答</td>
+</tr>
+<tr>
+<td>抵消比</td>
+<td>2.915–3.101</td>
+<td>2.813–2.980</td>
+<td>描述量，不能单凭阈值称特殊耦合机制</td>
+</tr>
+<tr>
+<td>head+fact产生的净账目投影</td>
+<td>0.102–0.188</td>
+<td>0.069–0.130</td>
+<td>合并范围应写0.07–0.19；不是早段干预的总因果效应</td>
+</tr>
+<tr>
+<td>raw读出差的状态项投影</td>
+<td>0.733–0.784</td>
+<td>0.834–0.908</td>
+<td>目标状态确实进入局部读取，不等于最终回答由它独立决定</td>
+</tr>
+</tbody>
+</table>
+<p><strong>发现一：有用的是实际写入/处理账的方向与时间形态，不是“coupled”标签。</strong> 两针各6/6被判coupled，但无针的自然事实差异也有5/6被同一主阈值判为coupled，抵消比1.947–2.187。自然对照是合同外探索、差异规模和变化token数不匹配，不能当校准好的随机针零分布；它足以阻止把此标签当成针特有机制或S2入场门槛。不能事后换一个切点宣布原假设成立。</p>
+<p><strong>发现二：撤针后并非只有旧差异在被动延续，还继续出现新的写入差异。</strong> 报告在无针的末提示和固定候选上测得非零ΔB。但“后面写进去”不等于“由后段针造成”：前段针可能通过已有全模型历史改变后段的输入与写入。这正是下一轮要区分的两种来源。尚不能从候选均值称为局部自我维持反馈、无限持续或完整生成机制；L0/L12跨候选均值也不是严格匹配的衰减曲线。</p>
+<p><strong>发现三：状态进入读取，但尚未接通行为解释。</strong> 两针都有明显目标组状态/读出变化，L0首步EOS为12/12，L12为0/12。仅凭距离大小不足以解释停止；这没有排除状态方向、查询/门和下游映射共同决定行为。原报告“状态差异解释不了停止”的标题应读作“当前范数证据不足以解释”，不能读成整个状态路径已被排除。</p>
+<h2 id="3">3. 哪些建议采纳，哪些不直接采纳</h2>
+<table>
+<thead>
+<tr>
+<th>S1后的建议或旧计划</th>
+<th>本次决定及原因</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>做原生00/10/01/11时序四格</td>
+<td>保留；不是因coupled触发，而是检验“晚形成是否需要晚开针”，并用同起点旧状态对照拆解处理变化</td>
+</tr>
+<tr>
+<td>10臂范数应小于11臂一半</td>
+<td>保留为报告提出的待检验预测；绝非近期账目占比的数学推论，须同时检查向量方向和撤针后的新增账</td>
+</tr>
+<tr>
+<td>先扩随机方向/通道建立抵消零分布</td>
+<td>不作为下一轮前置。当前先不主张抵消的针特异性；随机面板不能替代时序与来源问题。将来若要声称针特异性，再单独设计匹配强度/时段的对照</td>
+</tr>
+<tr>
+<td>S2默认5/9点剂量网格</td>
+<td>从下一轮必做项撤下；先用时序操作回答形成问题，所有分账继续报告背景依赖</td>
+</tr>
+<tr>
+<td>S3先做大面板梯度归因</td>
+<td>改为先预注册并检验原生时序行为；梯度仅是有条件的进一步连接，不能用局部状态范数代替</td>
+</tr>
+</tbody>
+</table>
+<h2 id="4">4. 资产缺口与预算修正</h2>
+<p><code>cfm_trace.py</code>的 <code>obs_states(cache, layers=OBS_LAYERS)</code> 只保存观察层的recurrent/conv；<code>prefix_states</code>、<code>last_states</code>、候选状态均走此函数。<code>prefix_manifest</code>是全64张量的哈希清单，不能恢复张量。故这份S1归档本身不提供可直接用于S3的完整Mτ。</p>
+<p>新计划把原36个00/11端点的完整缓存重建计入预算；如未来找到同身份完整资产并验收，可以扣除，但当前不能假设免费复用。S2新增48条时序轨迹，并保存全部84个完整Mτ、目标驱动、末提示logits和记录清单，避免S3重复前缀。保留原调用路径；不能为保存b处状态而擅自切分prefill并改变数值实现。</p>
+<h2 id="5">5. 自审：调整后能回答中心问题到什么程度</h2>
+<ul>
+<li><strong>能回答的</strong>：哪段原针操作造成后续差异；在相同旧状态起点上，后段针是否改变其处理；撤针后目标组差异中，旧差异传递、新写入差异、处理差异各呈什么方向；这些过程解释是否预测连续输出和真实回答。</li>
+<li><strong>仍不能独立识别的</strong>：β/k等共享变量的自然独立W/R因果比例；整个模型中每个源节点的唯一贡献；从单组记录推断自反馈回路。S2记账和S3路径归因均明确限定，不用拼接缓存或补偿value伪造识别。</li>
+<li><strong>不是回避中心问题</strong>：将操作的因果效应、真实轨迹的过程分解、行为检验分别交付并相互约束；若只满足前两项，结论就是局部形成已解释、行为机制未闭合。</li>
+<li><strong>自审修正</strong>：避免了coupled自动分支、τ/t_L混用、晚写入等同晚起因、只读范数、负R等同修复、完整缓存免费复用六处错误。尚未实施的数值验收不得标为通过。</li>
+</ul>
+<p>当前有效计划：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-formation-mechanism-s2-formation-test-plan-v2-2026-10-31.zh-CN.md">CFM-S2 v2</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-formation-mechanism-s3-readout-behavior-plan-v2-2026-10-31.zh-CN.md">CFM-S3 v2</a>。本次是资料复核后修订计划，不是新实验授权。</p>
+<h2 id="6-1111">6. 统计与因果解释检查（11/11已检查）</h2>
+<table>
+<thead>
+<tr>
+<th>检查</th>
+<th>此次处理与限制</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Simpson反转</td>
+<td>汇总表按两锚点、6情景分别核对；未据合并结果推断每个头，未独立复算全部头张量</td>
+</tr>
+<tr>
+<td>生态谬误</td>
+<td>情景汇总不推出每个token、神经元或所有模型的功能</td>
+</tr>
+<tr>
+<td>选择/Berkson偏差</td>
+<td>针与题集均为历史选择，不能当无偏总体样本</td>
+</tr>
+<tr>
+<td>碰撞变量偏差</td>
+<td>新计划不按“有输出/答对/归因方向有利”筛选样本；未声称统计调整消除了中介混杂</td>
+</tr>
+<tr>
+<td>基率忽略</td>
+<td>自然对照5/6同标签使coupled特异性解释不足；该对照仍不是完整零分布</td>
+</tr>
+<tr>
+<td>均值回归</td>
+<td>确定性重放一致不是新独立确认；历史强效点不能推广为平均效应</td>
+</tr>
+<tr>
+<td>幸存者偏差</td>
+<td>正式收据36条齐全；后续保留EOS、失败、截断和未分辨，不只看成功回答</td>
+</tr>
+<tr>
+<td>多重搜索</td>
+<td>未做显著性检验，不报告p值；探索自然配对不写成预注册确认</td>
+</tr>
+<tr>
+<td>分析路径自由度</td>
+<td>原合同阈值不追改；新增a01/e01阈值标为S2事前操作定义；三种背景账全报</td>
+</tr>
+<tr>
+<td>相关冒充因果</td>
+<td>原针操作总效果与W/R记账、局部读取、行为中介严格分开</td>
+</tr>
+<tr>
+<td>因果方向</td>
+<td>后段账目不等同后段起因；时间在后也不自动证明反馈机制</td>
+</tr>
+</tbody>
+</table>
+<p>这是有限旧情景上的描述性机制核查，无新增统计显著性、功效或泛化保证。</p></main></html>

@@ -1,0 +1,92 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CFM-S3 v3 实现说明与决策日志</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="cfm-s3-v3">CFM-S3 v3 实现说明与决策日志</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-intervention-chain-analysis-v1-2026-10-31/source/experiments/cache-formation-mechanism-s3-route-intervention-v3-2026-10-31/IMPLEMENTATION.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-intervention-chain-analysis-v1-2026-10-31/source/experiments/cache-formation-mechanism-s3-route-intervention-v3-2026-10-31/IMPLEMENTATION.zh-CN.md">固定提交原件</a>；SHA-256：<code>0f25d341518f8cf7fbbb7fe317bef991b28f07c17867115d4dca98d8d7d6f3c2</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="cfm-s3-v3_1">CFM-S3 v3 实现说明与决策日志</h1>
+<p>日期：2026-10-31。合同 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-intervention-chain-analysis-v1-2026-10-31/source/experiments/cache-formation-mechanism-s3-route-intervention-v3-2026-10-31/CONTRACT.zh-CN.md">CONTRACT.zh-CN.md</a> r01；设计草案 r3（edad525）。</p>
+<h2 id="_1">文件</h2>
+<table>
+<thead>
+<tr>
+<th>文件</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>s3_intervene.py</code></td>
+<td><code>Intervener</code>（投影输出钩子与撤针后递推实参替换、捕获）、<code>run_once</code>（与 S1/S2 相同的原生路径）、格表 <code>cells_for</code>、零对照构造、闸门、冻结/授权/worker/控制器/核验</td>
+</tr>
+<tr>
+<td><code>s3_analysis.py</code></td>
+<td>情景级读数、四步判断、联合与交互、撤针后判读、诊断；<code>selftest</code> 为合成预演</td>
+</tr>
+<tr>
+<td><code>test_s3.py</code></td>
+<td>小号随机 Qwen3.5 上的 CPU 测试</td>
+</tr>
+</tbody>
+</table>
+<h2 id="1-transformers-5202-modeling_qwen3_5py">完备性的依据（设计 §1，逐行对照 transformers 5.20.2 <code>modeling_qwen3_5.py</code>）</h2>
+<ul>
+<li>线性层：<code>in_proj_qkv</code> 输出经 <code>update_conv_state</code>（预填充时原样保存）与 <code>causal_conv1d_fn</code> 得到 q/k/v；<code>in_proj_a</code> → g；<code>in_proj_b</code> → β；<code>in_proj_z</code> 只进 <code>norm(core_attn_out, z)</code>。递推状态由 <code>torch_chunk_gated_delta_rule(q, k, v, g, β)</code> 产生；卷积缓冲保存的是卷积前的 <code>mixed_qkv</code>。</li>
+<li>全注意力层：<code>q_proj</code> 输出查询与门（门只乘在本位置的注意力输出上）；<code>k_proj</code> 经 <code>k_norm</code>、RoPE，与 <code>v_proj</code> 一起由 <code>past_key_values.update</code> 写入缓存。</li>
+<li>解码层其余部分（norm、MLP、残差）都是逐位置计算。</li>
+<li>因此，窗口内位置对窗口外位置的全部影响，都经过 {qkv 三通道, a, b}（线性层）与 {k, v}（注意力层）。CPU 测试在小模型上验证：五组全换回逐位等于参照，任意少一组则不等。</li>
+</ul>
+<h2 id="_2">决策日志</h2>
+<ol>
+<li><strong>供体值在每个 worker 内重新计算</strong>，并对 S2 formal-r01 记录逐值复现后才使用。S2 只保存了 L16–18 的驱动量，不足以作全层供体。</li>
+<li><strong>零对照幅度</strong>按"每个位置、每层、每组"的 ‖供体 − 11 值‖ 计算；组内跨模块（如 K 的 k 通道与 β）合并成一个向量取随机单位方向。</li>
+<li><strong>层范围格补了随机零对照</strong>（设计 r3 §9 的规模表没有列，但 §8 要求它按 r 下判），每单元多 8 格，合计由 122 增至 130 格。</li>
+<li><strong>P0 的离线局部因子分析没有做</strong>：合同 §6 的预测因此全部登记为推测档。这是对设计 §9 P0 第三项的偏离，影响是预测没有局部计算支撑。</li>
+<li><strong>撤针后族的判读映射</strong>：设计 §8 写"第 1 步成立且保留量至少为部分"。撤针后零对照是在原运行上加同幅随机后续扰动，它度量的是恢复量，所以第 1 步应用在恢复量 N_both 上：支持"仍存在"只要求保留量 ≥ 0.2；反驳要求 N_both 接近完整、超出零对照且 r ≤ 0.5（合同 §5）。</li>
+<li><strong>失配诊断</strong>的分母取该格实际涉及的组与层上的 ‖G_供体 − G_T‖²。</li>
+<li><strong>读出方向诊断</strong>只做停止方向。事实方向需要候选首个分叉 token，部分情景两候选前几个 token 相同，答案位置的单一方向不良定义，因此不做；事实使用直接看候选分数。</li>
+<li>formal 每卡 4 个 worker。阶段二的 speed-trial 已证明 batch 1 多进程与单进程逐字节相同。</li>
+</ol>
+<h2 id="_3">运行记录与偏离</h2>
+<table>
+<thead>
+<tr>
+<th>运行</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>preflight-r01（freeze-r01，f62b9cf）</td>
+<td><strong>合同执行失败</strong>：读取 S2 记录时 <code>worker-*</code> 同时匹配到 <code>worker-0.log</code> 文件，NotADirectoryError，未产生任何格。原始目录保留在服务器 <code>runs/preflight-r01/</code>。</td>
+</tr>
+</tbody>
+</table>
+<ol start="9">
+<li><strong>r02（偏离记账）</strong>：新增 <code>worker_dirs</code>，只返回目录；<code>s3_analysis.load</code> 有同样的匹配，一并修正。补测试：目录旁有 .log 文件时只返回目录；在含 S2 运行的服务器测试树上，<code>load_s2_records</code> 能读出 84 条。判据、格、规模不变。新冻结 freeze-r02、CPU 收据 r02、授权 preflight-r02。</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>运行</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>preflight-r02（freeze-r02，3cfc4f3）</td>
+<td>passed；2 单元 × 11 格；56 s</td>
+</tr>
+<tr>
+<td>formal-r01（freeze-r02）</td>
+<td>passed；24 单元、3,120 格、48/48 完备性逐位；8 worker；634 s</td>
+</tr>
+<tr>
+<td>判读 r01</td>
+<td>完成；见报告</td>
+</tr>
+</tbody>
+</table>
+<ol start="10">
+<li><strong>判读时发现的合同措辞问题</strong>：联合支持条件写成"两方都只部分或很少"，比设计 r3 的"都只部分"宽。判读按冻结合同执行；报告第 0 节第 3 条与第 2 节按数值说明了实际结构。</li>
+</ol>
+<h2 id="_4">测试与预演</h2>
+<p>见 <code>readiness/cpu-receipt-r02.json</code>（r01 为首轮）。</p></main></html>

@@ -1,0 +1,245 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>NMT-01 合同 r01：状态增量幅度分布的双向匹配</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="nmt-01-r01">NMT-01 合同 r01：状态增量幅度分布的双向匹配</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-increment-norm-match-v2-2026-11-03/CONTRACT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-increment-norm-match-v2-2026-11-03/CONTRACT.zh-CN.md">固定提交原件</a>；SHA-256：<code>08cce9be31cadb694c92d1bb9eb7b2b0ea9e7a9cb572a7ea2dcf6e9be595bc67</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="nmt-01-r01_1">NMT-01 合同 r01：状态增量幅度分布的双向匹配</h1>
+<p>依据：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-increment-norm-match-v2-2026-11-03/PLAN.zh-CN.md">NMT-01 v2 方案</a>与<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-increment-norm-match-v2-2026-11-03/SELF_CHECK.zh-CN.md">自查</a>。两份文件原在分支 <code>codex/nmt-01-norm-match-v2</code> 的 <code>f837ad68</code>，已逐字复制到 main。另加 2026-11-03 评审中商定的三处修正（§0）。授权：2026-11-03 用户原话“开始吧”。冻结后不改本文件；偏离记入 <code>DEVIATIONS.zh-CN.md</code>，合同未覆盖的判断记入 <code>DECISIONS.zh-CN.md</code>。</p>
+<h2 id="0">0. 相对方案的三处修正（评审商定）</h2>
+<ol>
+<li>Φ 偏低时，同时报告 UP/DN 的 I_S 范数相对目标的比值及余弦。即使 I_S 范数也接近，也不能只凭剩余差就认定原因是方向。</li>
+<li>RND 的写入轴直接取原生来源对应层、头和 b 的实际写入键方向：冻结的 custom update 归一化后的 k_b（该归一化把 eps 放在开方内，范数比 1 小约 1e−4 量级），再精确单位化得到 k̂_b，方向不变。删除 SVD 备选路径。</li>
+<li>零范数规则：两边都为零 → X=0；源非零、目标为零 → X=0；源为零、目标非零 → 按工程异常停止本轮，保留记录。不剔除单元。</li>
+</ol>
+<h2 id="1">1. 问题</h2>
+<p>固定接收背景，只改变状态增量的逐层逐头幅度配置，能否接近另一来源的条件效应？单格效应与完整回答分别检查。</p>
+<h2 id="2">2. 范围</h2>
+<p>继承 SIT/NVB 冻结身份：
+- 模型与运行方式：Qwen3.5-4B，revision <code>851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a</code>；BF16、eager、batch 1、torch 原核。
+- 输入：LVK 已见开发面板 48 条，六场景。
+- 方向：N4146、N1210、R0（缺口方向），C1343（诊断，单列）。
+- 原样继承：R 族 μ、形成与校准、fF、竞争 token、停止集合、解析器、MAX_NEW=32。</p>
+<h2 id="3">3. 操作</h2>
+<p>记号同 SIT：ΔS(s,b)=S(s,1,b)−S(s,0,b)，按层 l（14 个 G 层）、头 h 分块，n_s(l,h,b) 为块的 Frobenius 范数。在 t1 结束、t2 开始前，接收格 B(r,0,b) 的 14 个 G 层递推状态一次性改为 S(r,0,b)+X：FP64 求和后一次 cast 回 float32；其余缓存、t1 logits 和 token 都来自接收者；t2 起无钩子。</p>
+<table>
+<thead>
+<tr>
+<th>臂</th>
+<th>X（逐 l,h,b）</th>
+<th>范围</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UP</td>
+<td>ΔS(0,b)·n_1/n_0；第 13 层直接复制</td>
+<td>r=0,1 × b=0,1；C＋N</td>
+</tr>
+<tr>
+<td>DN</td>
+<td>ΔS(1,b)·n_0/n_1；第 13 层直接复制</td>
+<td>r=0,1 × b=0,1；C＋N</td>
+</tr>
+<tr>
+<td>UPG</td>
+<td>ΔS(0,b)·N_1(b)/N_0(b)（全部层头拼接的总范数）</td>
+<td>r=0 × b=0,1；只走 C</td>
+</tr>
+<tr>
+<td>RND_j，j&lt;5</td>
+<td>n_1·k̂_b·ρ̂_jᵀ；k̂_b 为原生来源该层头实际写入键方向（精确单位化）；ρ̂_j 由 sha256(<code>NMT-RND|20261103|输入|方向|层|j</code>) 播种，b=0/1 共用</td>
+<td>r=0 × b=0,1；只走 C</td>
+</tr>
+</tbody>
+</table>
+<p>旧格全部用重放加桥接得到，不重新解释：
+- NVB 八格：t1 与 C t2 逐位等于 NVB 正式记录。
+- SIT 四个交叉格：用冻结的 SIT 移植代码重建，C t2 逐位等于 SIT 正式记录。
+- Y：旧格取自 NVB 正式记录，交叉格取自 SIT 正式记录。</p>
+<h2 id="4-nmt_corepynmt_analysispy">4. 读数与估计对象（冻结；实现见 <code>nmt_core.py</code>、<code>nmt_analysis.py</code>）</h2>
+<h3 id="41">4.1 主读数</h3>
+<ul>
+<li>记 F(r,X,b) 为移植后 t2 的 M，Z(r,b)=M(B(r,0,b))。H(r,X)=[F(r,X,1)−Z(r,1)]−[F(r,X,0)−Z(r,0)]。</li>
+<li>两个来源端点：r=0 时，H_0 是 B(0,1,b)，H_1 是 SIT 交叉格 01b；r=1 时，H_1 是 B(1,1,b)，H_0 是 SIT 交叉格 10b。</li>
+<li>来源差 D_src=H_1−H_0，分别等于 SIT 的 A0（r=0）和 A1（r=1），不是 SIT 的跨背景 G。</li>
+<li>比例与残差：Φ_up=(H_UP−H_0)/D_src，Φ_dn=(H_1−H_DN)/D_src，R_up=H_UP−H_1，R_dn=H_DN−H_0。</li>
+<li>次要臂：Φ_UPG=(H_UPG−H_0)/D_src；Φ_RNDj 同式。另报 RND/UPG 与 UP 的配对差。</li>
+<li>汇总：先逐输入算差，再对分子、分母分别做六场景等权平均，最后相除，不平均逐输入比例。比例只在场景等权 D_src≥0.5 时计算，允许负数或超过 1，不裁剪。</li>
+<li>子集：主子集为目标不在首列的 32 条；全 48 条作补充；C1343 单列。</li>
+<li>同时报告：每格 F；每个 b 的 F−Z；逐 b 配对差（UP 对来源 1、DN 对来源 0）。Φ 接近 1 只说明 k 条件效应的来源差接近，不代表单格 M 或 Y 接近。</li>
+<li>描述性区间：场景分层 bootstrap，2000 次，种子 20261103；同一组重抽索引用于所有臂、r、b 和方向。若任一抽样的分母 ≤0，比例区间记为不可用，并报告原始差的区间。</li>
+<li>I_S 描述量：逐输入算拼接后的 ‖I_S(X)‖/‖I_S(目标)‖ 与余弦，取输入中位数；同时报告逐层值和缩放系数分布。</li>
+</ul>
+<h3 id="42-y">4.2 完整回答 Y</h3>
+<p>全 48 条：每格正确数；相对 Z 的改对、改坏与净变化；固定 b 时的正确数差（UP 对来源 1、DN 对来源 0）；H_Y；接收端 t1 未停止的子集。固定 b 的正确数差与 H_Y 分开报告，不互称“损失”。主要解释在 r=1；r=0 一侧的地板效应如实列出。</p>
+<h3 id="43-readinessfirst-order-ref-r01json">4.3 一阶参照（冻结前登记：<code>readiness/first-order-ref-r01.json</code>）</h3>
+<p><strong>构造</strong>：NBR 已存的每头读出向量 XA（接收背景 (r,0,b) 读者下的直接读出）、八格梯度 g、每头范数 nSa{s}_b{b}，按各臂缩放系数加权求和。</p>
+<p><strong>计算条件</strong>：只含直接读出项；单一线性化点（A：(r,0,b)，B：(r,1,b)）；q 不随移植响应；无高阶项。</p>
+<p>主子集、场景等权的结果（数据前）：</p>
+<table>
+<thead>
+<tr>
+<th>方向</th>
+<th>r</th>
+<th>点</th>
+<th style="text-align: right;">D_src</th>
+<th style="text-align: right;">Φ_up</th>
+<th style="text-align: right;">Φ_dn</th>
+<th style="text-align: right;">Φ_UPG</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>N4146</td>
+<td>0</td>
+<td>A / B</td>
+<td style="text-align: right;">0.350 / 0.413</td>
+<td style="text-align: right;">1.241 / 1.193</td>
+<td style="text-align: right;">1.054 / 1.065</td>
+<td style="text-align: right;">0.252 / 0.290</td>
+</tr>
+<tr>
+<td>N4146</td>
+<td>1</td>
+<td>A / B</td>
+<td style="text-align: right;">0.504 / 1.214</td>
+<td style="text-align: right;">1.185 / 0.913</td>
+<td style="text-align: right;">1.055 / 0.945</td>
+<td style="text-align: right;">0.424 / 0.538</td>
+</tr>
+<tr>
+<td>N1210</td>
+<td>0</td>
+<td>A / B</td>
+<td style="text-align: right;">0.348 / 0.420</td>
+<td style="text-align: right;">1.049 / 1.038</td>
+<td style="text-align: right;">0.973 / 0.990</td>
+<td style="text-align: right;">0.390 / 0.424</td>
+</tr>
+<tr>
+<td>N1210</td>
+<td>1</td>
+<td>A / B</td>
+<td style="text-align: right;">0.451 / 0.578</td>
+<td style="text-align: right;">0.944 / 0.913</td>
+<td style="text-align: right;">0.936 / 0.959</td>
+<td style="text-align: right;">0.348 / 0.349</td>
+</tr>
+<tr>
+<td>R0</td>
+<td>0</td>
+<td>A / B</td>
+<td style="text-align: right;">0.288 / 0.470</td>
+<td style="text-align: right;">1.067 / 0.934</td>
+<td style="text-align: right;">1.006 / 0.933</td>
+<td style="text-align: right;">0.403 / 0.438</td>
+</tr>
+<tr>
+<td>R0</td>
+<td>1</td>
+<td>A / B</td>
+<td style="text-align: right;">0.384 / 0.653</td>
+<td style="text-align: right;">0.940 / 0.841</td>
+<td style="text-align: right;">0.949 / 0.898</td>
+<td style="text-align: right;">0.371 / 0.435</td>
+</tr>
+<tr>
+<td>C1343</td>
+<td>—</td>
+<td>—</td>
+<td style="text-align: right;">不稳定（r=1 点 B 分母为负）</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+</tr>
+</tbody>
+</table>
+<p>已知校准：同一构造给出的来源差（0.29–1.21）低于 SIT 实测的 A0/A1（0.53–1.55）。它只作参照，不作判据；实测与参照的偏差不归因给任何部件。</p>
+<h2 id="5">5. 冻结读法（描述性规则，不是显著性或科学成功线）</h2>
+<p>逐方向、逐接收背景判；先查分母，再按以下顺序取第一个满足的：</p>
+<ol>
+<li><strong>单侧不对称</strong>：一侧 Φ≥0.75，另一侧 Φ≤0.5。</li>
+<li><strong>交互接近参照</strong>：两侧 Φ 都在 [0.75, 1.25]，且两侧区间下界都 ≥0.5。</li>
+<li><strong>幅度匹配不足</strong>：任一侧 Φ≤0.5，且该侧区间上界 &lt;0.75。</li>
+<li><strong>过度补偿</strong>：任一侧 Φ&gt;1.25。</li>
+<li><strong>部分/不确定</strong>：其余情况，只报连续值。</li>
+</ol>
+<p>另附三类标记：
+- 标记 <code>overcompensation</code>（Φ&gt;1.25）、<code>reversed</code>（Φ&lt;0）独立附加。
+- <strong>I_S 标注</strong>：某侧 Φ≤0.5，且该臂的 I_S 范数比（输入中位数）不在 [0.8, 1.25] 内时，附 <code>IS_unmatched_UP</code> 或 <code>IS_unmatched_DN</code>。此时不得推出“需要方向”；即使没有这一标注，也不能单凭剩余差认定原因是方向。
+- <strong>背景差异（独立标签）</strong>：同一 Φ 在 r=0 与 r=1 之差的绝对值 ≥0.3，且配对区间不含 0。同时报告原始来源差、分子和残差；分母不同，比例差不直接等于接收敏感度差。</p>
+<p>三个缺口方向逐一报告，“至少 2/3 同类”只作汇总，不隐藏第三个方向。</p>
+<p>次要臂只作描述，不改变主读法：
+- RND 与 UP 相近，只说明这 5 个随机右方向也有类似效果；RND 较低，只说明这些方向不能替代原生方向。
+- UPG 与 UP 的差异支持幅度配置（逐层逐头分布）有作用，但不指定哪层哪头。</p>
+<p>完成即停。下一步选择（不是新授权）：
+- 双向交互接近且单格效应接近 → 检验该幅度关系的跨条件适用范围；
+- 不足、单侧、过度补偿 → 保留方向、结构、背景及非线性候选，先选能区分它们的比较；不自动展开 β/k/v 或层组扫描。</p>
+<p>措辞限制：
+- 两个端点不能证明单调性；
+- t1 后移植不能解释已经发生的 t1 停止；
+- 剩余差不自动归给某个部件；
+- 结果不升级为整条线的中心命题。</p>
+<h2 id="6">6. 工程闸门（运行中断言，任一失败即停）</h2>
+<ol>
+<li><strong>来源</strong>：形成 hash 等于 LVK；NVB 八格的 t1 bf16 logits、t1 token、C t2 bf16 logits 和 M 等于 NVB 正式记录；SIT 交叉格的 C t2 和 M 等于 SIT 正式记录；NVB <code>NHook</code> 的 oracle 与状态恒等误差 ≤1e−5。</li>
+<li><strong>留存桥</strong>：只改 a 时只有 G 层 S 改变；第 13 层状态在 c=0/1 之间逐位相同；第 13 层两来源的增量逐位相同。</li>
+<li><strong>缩放</strong>：
+   - UP/DN 非零块的范数相对误差 ≤1e−6，1−cos ≤1e−6；
+   - UPG 总范数相对误差 ≤1e−6；
+   - RND 范数相对误差 ≤1e−6，b=0/1 的 ρ̂ hash 相同；
+   - k̂_b 对原生增量的秩一残差 ≤1e−4（确认取到的是写入轴）；
+   - 零范数按 §0 第 3 条处理。</li>
+<li><strong>移植</strong>：只有 G 层 S 与接收者不同；cast 后相对 FP64 的 L2 误差 ≤1e−6；UP/DN 的第 13 层等于 B(r,1,b)。</li>
+<li><strong>隔离</strong>：源状态、t1 缓存、t1 前背景、C/T 前后 hash 不变；C 与 N 各用独立深拷贝；模块函数已复原，权重 sha 不变。</li>
+<li><strong>预算</strong>：计数、设备时间、存储都不超 §7 的上限。</li>
+</ol>
+<p>6.2 演示（<code>test_nmt.py</code>）：
+- 每种读法和背景标签都演示能被满足、也能不被满足；
+- 零范数三种情形；
+- 先求和再相除，分母保护；
+- 分析入口按真实键结构端到端跑通，来源不符时会被拦下。</p>
+<p>冻结前在真实模型上跑一个预检输入，全部闸门须通过（<code>readiness/gpu_smoke.py</code>，不写 M/Y）。</p>
+<h2 id="7">7. 预算与执行</h2>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th style="text-align: right;">正式 48</th>
+<th style="text-align: right;">预检 2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>形成 / 前缀预填 / 形成 token</td>
+<td style="text-align: right;">240 / 48 / 6390</td>
+<td style="text-align: right;">10 / 2 / 270</td>
+</tr>
+<tr>
+<td>t1（NVB 八格重放）</td>
+<td style="text-align: right;">1536</td>
+<td style="text-align: right;">64</td>
+</tr>
+<tr>
+<td>C t2：旧 8 / SIT 交叉 4 / 新 20</td>
+<td style="text-align: right;">1536 / 768 / 3840</td>
+<td style="text-align: right;">64 / 32 / 160</td>
+</tr>
+<tr>
+<td>N 轨迹 / 续写步上限</td>
+<td style="text-align: right;">1536 / 47616</td>
+<td style="text-align: right;">64 / 1984</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>设备时间上限：正式 1.2 GPUh（各 worker 墙钟求和）；预检 0.12，冒烟另计，二者合计 ≤0.15。预检外推超过正式上限即停。</li>
+<li>存储上限 12 GiB；新格的 C t2 与 N t2 logits 以 bf16 保存，计入上限。</li>
+<li>worker 与 GPU 由授权文件中的 <code>gpu_map</code> 指定；不与他人共卡，启动时空闲显存须 ≥20480 MiB。</li>
+</ul>
+<h2 id="8">8. 停止与失败</h2>
+<ul>
+<li>任一闸门失败或出现 Unmatchable：合同执行失败，信息量为零，保留证据。</li>
+<li>预检只允许一次有记录的实现修复（新冻结 r02，记入 DEVIATIONS）；正式开始后不修、不重试。</li>
+<li>结果弱、异号或不可判时，不换针、不加剂量、不补题。</li>
+<li>产物：原始记录与来源清单、verification、DEVIATIONS、DECISIONS、<code>analysis/nmt-readouts-r01.json</code>、短报告。</li>
+</ul></main></html>

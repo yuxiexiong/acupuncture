@@ -1,0 +1,137 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>第一轮 C：新数据容量实审</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="c">第一轮 C：新数据容量实审</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/wsp-c-data-capacity-audit-v1-2026-11-06/REPORT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/wsp-c-data-capacity-audit-v1-2026-11-06/REPORT.zh-CN.md">固定提交原件</a>；SHA-256：<code>69e14ba54e099eb77ca06c02e4d90afb5e5f2dc10836dec5301b3729929e7703</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="c_1">第一轮 C：新数据容量实审</h1>
+<h2 id="material-passport">Material Passport</h2>
+<ul>
+<li>日期：2026-11-06；性质：既有数据与记录的 CPU 审计，非新模型实验。</li>
+<li>Origin Skill：academic-research-suite / validate；审计脚本采用 Ponytail full 的最小实现。</li>
+<li>Verification Status：容量账本与 CPU 计算已核验；语义质量为本助手单人逐图审核，<strong>没有完成独立双人复核，不是运行就绪的终验集</strong>。</li>
+<li>新增目标/辅助模型调用、模型加载、GPU：均为 0；远端仅只读访问已有 JSON 记录。</li>
+</ul>
+<h2 id="1">1. 结论</h2>
+<p><strong>现有这份 size 数据不能提供 200 个合格、未曝光且素材不重叠的新来源组。</strong> 不仅是之前的 80 个剩余候选不足；更关键的是原数据大量复用同一对象抠图。按整图或对象对去重，会高估新来源容量。</p>
+<p>完整素材排查后有 167 个未使用旧素材的不同对象对。即使全部标签都合格，最多也只能组成 <strong>52 个互不复用素材的配对</strong>。沿用旧质量排除，并逐图审核其余候选后，50 个对象对通过本轮审核；其中最多可取 <strong>24 个素材互不复用的配对</strong>。已给出一个与模型效果无关的确定性选择及所有排除理由。24 是单人审核后的候选容量，不是已经双审冻结的正式样本量。</p>
+<p>因此，上一版 T200 的现有数据可行性前提不成立。<strong>本轮不启动模型、不把 24 自动替换成已批准的终验协议。</strong> 若只利用这批余量，可承担有限的新素材行为检查；要确认小幅比较优势，需要真正新增素材，不能通过改问法、换排列或拆同源图片增加独立样本数。</p>
+<h2 id="2">2. 曝光核查实际覆盖了什么</h2>
+<p>检查本地与 H20 项目仓库中现有 <code>experiments/wsp-vlm-*</code>、<code>external/wsp-vlm-*</code> 的 JSON、JSONL 及对应 gzip 文件。模型权重、模型缓存、研究员 conversation 正文不扫描；任何证据文件出现的 C 来源 ID 均保守计入曝光，不要求已产生正确答案。</p>
+<table>
+<thead>
+<tr>
+<th>快照</th>
+<th style="text-align: right;">含 C ID 的证据文件</th>
+<th style="text-align: right;">实际扫描的解码字节</th>
+<th style="text-align: right;">C 来源组并集</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>本地</td>
+<td style="text-align: right;">2,525</td>
+<td style="text-align: right;">4,733,403,101</td>
+<td style="text-align: right;">160</td>
+</tr>
+<tr>
+<td>H20 远端</td>
+<td style="text-align: right;">2,636</td>
+<td style="text-align: right;">5,927,070,034</td>
+<td style="text-align: right;">160</td>
+</tr>
+</tbody>
+</table>
+<p>两边均无读取错误、无扫描期间发生大小/mtime变化的命中文件；来源并集都等于旧 D64＋H96，没有发现第 161 个曝光来源。覆盖原筛查、v7/v8/v9、2B/8B scale、Gemma 与恢复/重启记录；部分排队未运行的配置也保守算曝光。旧 H 的实际回答仍在原筛查记录中，不把它当未见集。</p>
+<p>该结论针对这些可见运行和这次快照，不是对模型预训练污染或任何未知历史的证明。旧后端 <code>evidence.py</code> 只接受 evidence bundle 内的 request ID；数据包和实际运行记录共同用于核查。<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/wsp-c-data-capacity-audit-v1-2026-11-06/exposure-summary.json">公开曝光汇总</a>保留计数、公开实验族及来源ID集合；完整逐文件内部路径和哈希快照仅在本地保留，未纳入Git提交。没有读取或输出凭证。</p>
+<h2 id="3">3. 为什么整图去重不够</h2>
+<p>上游 parquet 的原始图片文件名保留了两个具体素材标识，例如 <code>rocket_larger_than_Newfoundland_with_line.png</code>。作者的 <a href="https://github.com/rsinghlab/pixels_vs_priors/blob/52d8ae000114391544de6f60a43492460259eeea/making_visual_counterfact/create_size_task.ipynb">size 构图代码</a> 为同一个对象标识查找固定图片及 mask，反复组合后缩放成 250×250 与 80×80。故同一条狗、同一只鸟的抠图可以出现在不同对象对、不同完整图片中。</p>
+<p>本次按原文件名恢复素材标识，并核验全部 1,454 张原图/反事实图的像素 SHA256 与原登记一致。按构图边界提取大对象区域的 CPU 像素哈希进一步发现三个跨名称复用：alligator/crocodile、bluejay/jay、fence/picket_fence；保守并为同一素材族。3 个边界方向不唯一的图片不据裁剪哈希释放，仍按源素材标识归组。裁剪并不是语义模型，也没有以相似分数猜测标签正确性。</p>
+<p>原旧 D/H 实际使用了 224 个命名素材，合并这些别名后为 223 个素材族。凡候选与其中任一素材族重叠，就不进入“新素材”集合；共享“dog”等一般词名本身不等于复用同一照片。最终 24 对中仍有 10 对包含旧题出现过的一般对象名，因此只能说新素材，不能说 24 对全部属于新概念。</p>
+<p>旧 pHash≤4 的隔离法没有单独证明独立性：原 704 个 exact 组按其连接得到426个候选分量，扣旧160组和旧78个质量排除后，表面上仍有188个分量候选。这些还会跨 pHash 分量共享对象素材，不能把188当最终容量。本次用素材身份取代 pHash 作为新来源核查的主要依据；无需靠放宽 pHash 阈值凑数。</p>
+<h2 id="4">4. 容量流水账</h2>
+<table>
+<thead>
+<tr>
+<th>步骤</th>
+<th style="text-align: right;">不同对象对/来源单元数</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>原始 727 行做旧 exact union 分组</td>
+<td style="text-align: right;">704</td>
+<td>对象对/整图相同者合并</td>
+</tr>
+<tr>
+<td>排除已曝光 D/H</td>
+<td style="text-align: right;">544</td>
+<td>只是对象对未曝光，尚未排查素材复用</td>
+</tr>
+<tr>
+<td>再排除与旧数据共享对象素材</td>
+<td style="text-align: right;">167</td>
+<td>对应174原始行；其中有7个同对象对的额外版本</td>
+</tr>
+<tr>
+<td>保留旧质量排除36对</td>
+<td style="text-align: right;">131 待审核对象对</td>
+<td>不恢复旧失败项来凑数</td>
+</tr>
+<tr>
+<td>本轮逐图审核</td>
+<td style="text-align: right;">50 通过、81 排除</td>
+<td>另检查2个未被质量排除的素材变体；共审核133行，通过52行，仍是50对</td>
+</tr>
+<tr>
+<td>在通过者中选素材互不重叠的最大子集</td>
+<td style="text-align: right;"><strong>24</strong></td>
+<td>48个互不复用且不在旧D/H出现的素材族；无重复对象对/完整图片</td>
+</tr>
+</tbody>
+</table>
+<p>几个常见排除原因：<code>buckeye</code> 实际是蝴蝶，却被标成通常大于狗/洗碗机/烤箱；烟雾主导香烟的可见包围框；成堆豆荚、豌豆、果实与单体混比；rapeseed 图为花枝；抠图残缺或只有对象局部；少数通常大小本来就不明确。全部理由见 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/wsp-c-data-capacity-audit-v1-2026-11-06/visual-review.json">逐图审核</a>，每个原始行的曝光、素材及最终处置见 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/wsp-c-data-capacity-audit-v1-2026-11-06/source-ledger.json.gz">727行账本</a>。这些是本助手审核判断，不冒充独立人工金标准。</p>
+<p>本轮没有只审核看起来能修好的题，也没看任何新题上的模型输出。按“最大配对数，随后偏好较小 row ID”确定名单；使用图的 maximum-cardinality matching，固定软件版本。即使全部待审质量争议都朝通过方向改判，<strong>52 对的素材互不复用上限仍远小于 200</strong>，所以容量不足的结论不依赖本助手排除是否偏严。</p>
+<p>候选 row IDs：<code>18, 44, 59, 65, 102, 129, 135, 156, 172, 180, 238, 243, 246, 250, 329, 331, 372, 431, 450, 492, 501, 513, 676, 721</code>。详细身份、素材和图片像素哈希见 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/wsp-c-data-capacity-audit-v1-2026-11-06/candidate-24.json">24对候选</a>。这份选择仅用于容量审计，尚未生成推理输入、gold隔离目录或运行队列。</p>
+<p><strong>对上一方案分组措辞的必要澄清：</strong> 若把所有未使用的组合也当桥接边，对整个原始素材图做连通分量，再把“连到任何旧素材”无限传递，则整库未合并别名时有两个大分量、合并后只有一个，全部接到旧数据，按字面可用量为0。这会把并未被模型使用的桥接组合也当成曝光传播。这里报告的24采用更直接的划分条件：训练/开发实际用过的素材全部禁用，测试实际选中的配对互不共享素材，其余桥接组合不进入本轮。它不放回任何旧素材，也不声称统计独立已由图论自动证明。若坚持原方案的全库连通分量口径，则应报告0，而不能暗中改口。</p>
+<h2 id="5">5. 这点数据能验证到什么程度</h2>
+<p>以24个来源为单位，每来源仍可跑旧/新问法、对象次序和五种条件，但这些重复测量<strong>不会把 n 从24变成960</strong>。它们能改善每来源表现的测量，并暴露措辞依赖；不能替代更多新来源。</p>
+<p>下面是资源判断用的条件性精度估计，尚无真实测试结果。假定来源组配对分数差的标准差为0.25/0.35/0.50，沿用原计划5个比较的保守Bonferroni水平及80% power目标，用 <code>MDE≈(t[0.995,n−1]+z[0.8])·SD/√n</code> 计算：</p>
+<table>
+<thead>
+<tr>
+<th>独立来源数（假定）</th>
+<th style="text-align: right;">SD=0.25</th>
+<th style="text-align: right;">SD=0.35</th>
+<th style="text-align: right;">SD=0.50</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>24：当前单人审核后的不复用素材候选</strong></td>
+<td style="text-align: right;">18.6pp</td>
+<td style="text-align: right;">26.1pp</td>
+<td style="text-align: right;">37.2pp</td>
+</tr>
+<tr>
+<td>52：所有剩余新素材质量全过的理论配对上限</td>
+<td style="text-align: right;">12.2pp</td>
+<td style="text-align: right;">17.1pp</td>
+<td style="text-align: right;">24.4pp</td>
+</tr>
+<tr>
+<td>200：旧方案目标，仅作参照</td>
+<td style="text-align: right;">6.1pp</td>
+<td style="text-align: right;">8.5pp</td>
+<td style="text-align: right;">12.2pp</td>
+</tr>
+</tbody>
+</table>
+<p>这些是敏感性情景，不是已测 SD、保证功效或某种最坏情况界。n=24 时离散差值与非正态可能重要，表中 t/非中心t 模型只是说明量级，不能直接变成正式小样本分析协议。若真实增益仍为开发集的12.5pp、SD恰为0.35，24组在该保守五比较设置下的模型化检出率约17%；开发集经过50轮选择，不能假设真实外部增益就是12.5pp。</p>
+<p>因此可以合理期待它回答：<strong>有没有非常大的外部收益；是否明显失效/反向；是否仍严重依赖旧措辞；是否出现明显的常识—视觉取舍。</strong> 对3–5pp的相对优势、几家方法的稳定排名、3.5pp损伤非劣效界，当前容量通常没有足够精度。不能用“不显著”证明提示改写等效、方法无效或没有损伤；也不能为了显著性删对照。</p>
+<p>50个通过审核的对象对可以全部保留作描述性材料，但它们共享素材；不能把它们当50个独立来源给出过窄区间。若日后使用全50对，需要另行确定素材聚类/依赖分析，不能照搬独立来源 t 检验。本轮未据此制定或启动新的运行协议。</p>
+<h2 id="6">6. 对收束方向的实际影响</h2>
+<p>建议把原来的“200组正式比较验证”暂时撤下运行候选清单。当前24对若以后通过独立复核，适合作为有明确上限的外部检查；<strong>不足以单独承接论文的广泛泛化与小幅比较优势主张</strong>。如果目标保持在后者，缺的是新来源素材，而不是再给当前题目多写几套问法。</p>
+<p>这次审计也更正了旧 D/H 的解释边界：旧组是不同对象对/完整图片分组，不等于素材完全独立，旧H已见之外还存在素材层共享。历史开发收益仍是已测结果，但不能据此抬高来源独立性。本次不重写旧原始记录或重新运行旧模型。</p>
+<h2 id="7">7. 复核和交付</h2>
+<p>计算入口：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/wsp-c-data-capacity-audit-v1-2026-11-06/audit_capacity.py">audit_capacity.py</a>；曝光采集：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/wsp-c-data-capacity-audit-v1-2026-11-06/collect_exposure.py">collect_exposure.py</a>。使用已安装的Pillow、NumPy、PyArrow、SciPy、NetworkX，无模型库。后者传入本地或远端仓库根，仅只读扫描既有文件；前者重算容量、校验源图片/文件、验证不重叠约束，并输出<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/wsp-c-data-capacity-audit-v1-2026-11-06/summary.json">汇总</a>。公开数据逐行账本以gzip归档；曝光详细快照仅在本地保留。公开重算可使用汇总回执，但不能据此独立重验远端文件内容。</p>
+<p>自查见 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/wsp-c-data-capacity-audit-v1-2026-11-06/SELF_CHECK.zh-CN.md">SELF_CHECK</a>；来源与交付文件哈希见 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/wsp-c-data-capacity-audit-v1-2026-11-06/provenance.json">provenance</a>。审阅接触了图像和标签，未产生目标模型反馈；后续账本应记为“作者看过元数据/图片，目标模型未曝光”，不能叫所有人都没看过的盲集。</p></main></html>

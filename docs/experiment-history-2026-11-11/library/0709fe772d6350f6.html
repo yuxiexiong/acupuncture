@@ -1,0 +1,151 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>QSR-01 作者自查</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="qsr-01">QSR-01 作者自查</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>docs/cache-qsr-self-check-v1-2026-11-03.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-qsr-self-check-v1-2026-11-03.zh-CN.md">固定提交原件</a>；SHA-256：<code>0709fe772d6350f67e7e2d09500d9e78c8dbb38e4152a42e1f97db18101d0432</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="qsr-01_1">QSR-01 作者自查</h1>
+<p>2026-11-03；v1；引用<code>experiment-design-self-check.zh-CN.md</code> v1。对象：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-state-readout-decomposition-plan-v1-2026-11-03.zh-CN.md">QSR计划</a>。同一作者，非独立审查。结论：<strong>逻辑设计通过；模型工程验收待完成；无新增GPU授权或运行。</strong></p>
+<h2 id="_1">来源与改动</h2>
+<p>已读主线README、研究状态、知识审计、自查规范、QKD计划/合同/报告/代码和正式回执、最新CPU更正（ab265fd1）。研究状态入口仍含QKD未运行的历史条目，本次新增最新入口，不改旧实验冻结文件。</p>
+<p>相对QKD：停止重复J/H诊断，补S跨臂收缩；只保留t1/t2，不重新生成已知答案。相对截图：保留两端对称S/q/α及单列交互、四方向和随机对照；删除未定义的最终logit方向精确投影，改成局部ΔD投影与真实M并列。后续因果只写准入卡。本轮推进“k偏移→后续读出差异”的计算连接，未改核心问题。</p>
+<h2 id="c01c14">C01–C14</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>判定与理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C01</td>
+<td>通过；§1保持写入—处理—读取—回答主线，t2只是窗口。</td>
+</tr>
+<tr>
+<td>C02</td>
+<td>通过；§1/4取得旧数据缺失的交叉Sᵀq，区别状态与读取条件对实际ΔD的贡献；不是把恒等式当发现。</td>
+</tr>
+<tr>
+<td>C03</td>
+<td>通过；§2固定ab265fd1及QKD-r02来源，沿用已核架构；缺失S与服务器可读性另验。</td>
+</tr>
+<tr>
+<td>C04</td>
+<td>通过；§2/5面对H预测失败、C1343、随机和反向AUROC；不预设均匀下降或S主导。</td>
+</tr>
+<tr>
+<td>C05</td>
+<td>通过；§3列六臂、缓冲区间、层/头、形成边界、t1/t2和S捕获节点。</td>
+</tr>
+<tr>
+<td>C06</td>
+<td>通过；§3只读观察，所有未编辑变量仍正常响应；共同token不固定hidden。</td>
+</tr>
+<tr>
+<td>C07</td>
+<td>通过；§4离线中点分账不写回模型、不宣称纯写入/纯读取；k共享作用保留。</td>
+</tr>
+<tr>
+<td>C08</td>
+<td>通过；§4/5明确局部分账非行为因果，不把残差比当机制份额。</td>
+</tr>
+<tr>
+<td>C09</td>
+<td>通过；§5分别允许S/q/α、混合、抵消、异向、无候选和不可解析；不强制选最大。</td>
+</tr>
+<tr>
+<td>C10</td>
+<td>通过；§4真实完整答案作行为参照，主估计对象是ΔD；投影轴与M不同，不偷换终点。</td>
+</tr>
+<tr>
+<td>C11</td>
+<td>通过；§5/6数值失败与科学无候选分离，筛选阈值不称显著性，失败不扩阈值。</td>
+</tr>
+<tr>
+<td>C12</td>
+<td>通过；§6/7先查旧S；缺交叉项才需捕获，无重复完整生成，重建/观察器/原核重算均列成本。</td>
+</tr>
+<tr>
+<td>C13</td>
+<td>通过；已见48条、6场景等权，非独立48样本；代码/哈希/观察器模型验收未冒充完成。</td>
+</tr>
+<tr>
+<td>C14</td>
+<td>通过；§5有明确卡片或停止出口；阴性不自动扫层扩模，因果替换尚未执行。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_2">历史错误检查</h2>
+<table>
+<thead>
+<tr>
+<th>错误</th>
+<th>本轮处理</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>E01/E24</td>
+<td>范围有限不改变总课题；局部分账有候选筛选价值，不要求一轮闭合机制。</td>
+</tr>
+<tr>
+<td>E02/E19</td>
+<td>用QKD原核与已有选点；原核重放仅工程检查，不当科学结果。</td>
+</tr>
+<tr>
+<td>E03/E12</td>
+<td>不以稀疏或范数代表轻损伤；随机本身致错，保留旧配平口径及限制。</td>
+</tr>
+<tr>
+<td>E04/E09/E11</td>
+<td>数学恒等式与实测分配分开；交互与行为并列不作因果；不把投影叫信息存量。</td>
+</tr>
+<tr>
+<td>E05/E06/E07</td>
+<td>本轮不做共享变量在线拼换；离线分账不证明写入类别或原生路径。</td>
+</tr>
+<tr>
+<td>E08/E13/E14</td>
+<td>§3给定全部来源；F不是干净模型；候选不叫必要/充分/最初形成。</td>
+</tr>
+<tr>
+<td>E10/E15/E26</td>
+<td>自然完整答案与强制前缀M分开；只解释同背景读出差，不将其命名形成中介。</td>
+</tr>
+<tr>
+<td>E16/E18/E20</td>
+<td>残差不命名；q/S/α可共同响应；阴性允许停线，不凭排除法定位。</td>
+</tr>
+<tr>
+<td>E17</td>
+<td>减偏移不撤回既有下游响应；S捕获的是实际形成后的状态。</td>
+</tr>
+<tr>
+<td>E21</td>
+<td>不作原创性/领域首次声称；公式与工具继承知识审计，不开展无关查重。</td>
+</tr>
+<tr>
+<td>E22/E23</td>
+<td>已见面板、六场景、同作者自查明确；未来运行、数值验收与本次交付分列。</td>
+</tr>
+<tr>
+<td>E25</td>
+<td>六旧臂共享48输入；不增加梯度/输出替换网格，不重生成，不拆层。</td>
+</tr>
+</tbody>
+</table>
+<p>全部E01–E26已覆盖；未将不适用项目空打勾。</p>
+<h2 id="_3">实质反方检查及修正</h2>
+<ol>
+<li><strong>反例：S贡献大，但恰好落在下游不敏感方向。</strong> 成立。删除“分账即可解释目标下降”承诺和最终logit精确投影；保留实际ΔD来源识别作为增量，候选卡不能自动宣布致错。</li>
+<li><strong>反例：C1343同分账却正确。</strong> 成立。对照无需阴性；卡片须区分参照余量或不同计算背景，不能仅凭同角度判错。Ark47/48如实保留。</li>
+<li><strong>反例：平均份额由少数抵消或微小分母造成。</strong> 加入误差保护、覆盖率、逐例中位数、场景一致性及全表；份额可负/&gt;1；不以中位数之和验恒等式。</li>
+<li><strong>反例：t2的S差只由t1不同生成token造成。</strong> t2输入统一旧F首token，控制外部token；各臂内部响应仍不同，不进一步叫纯状态内容损伤。</li>
+<li><strong>反例：中点交互小就能断言无交互。</strong> 不成立；明确只剩三线性代数三阶项，动态网络交互未被穷尽。单变量相同及反向恒等式用CPU检查。</li>
+<li><strong>反例：诊断门槛无候选，仍换层/时间继续选。</strong> §5冻结t2主步、三方向双侧规则；失败停止。t1和局部单方向结果不升级为默认因果实验。</li>
+<li><strong>反例：又像上一轮漏算干净重建或把观察器当免费。</strong> §7逐项列5形成/输入、关闭观察器、原核重算与非模型开销；不采用“1152单步所以&lt;0.1h”的估计。</li>
+</ol>
+<p>修正后复查C01/C02/C08/C10/C14：仍回答同一局部问题，有新跨臂计算量，最大结论为稳定分量候选而非完整机制。以上反例限制下一轮因果主张，但不破坏本轮实际ΔD来源估计。</p>
+<h2 id="_4">交付验收与未完成项</h2>
+<p>本次仅CPU：检查中点恒等式、单变量退化、端点反转、预算计数、相对链接和准确暂存范围；实际检查结果在下方填写。无需新模型测试或运行授权文件。</p>
+<p>模型工程未完成：原始服务器张量可读性、捕获/重放、原核一致性、数值阈值、耗时和存储预检。尚不能称可直接上卡。运行预算0.80设备小时上限是提案，不是授权。后续因果替换不在矩阵里。</p>
+<p>交付前CPU实查通过：300组合成FP64（Python float）分解、端点反转与单变量/零门退化；最大允许归一误差1e−12，全部满足。预算独立算术检查通过；两文档相对链接全部可达。本次新增模型前向/GPU为0。</p></main></html>

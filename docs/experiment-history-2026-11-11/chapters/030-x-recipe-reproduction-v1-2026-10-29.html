@@ -1,0 +1,2312 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>030．公开配方小题包复现</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="030">030．公开配方小题包复现</h1>
+<p><a href="../README.zh-CN.html">返回总时间线</a></p>
+<p><strong>时间定位</strong>：已提取运行收据的最早时间锚点（可含预检） 2026-10-30T19:05:19.151793+08:00；不能当作全部子运行起止。</p>
+<p><strong>当时的目的与设计</strong></p>
+<p>按公开配方目录固定不同配置，用各配方五题、128-token上限采集，并设置原版、零剂量和恢复等参照；来源版本与配方资格分别保存。</p>
+<p><strong>实际过程、结果与后来更正</strong></p>
+<p>实际采集与完整性核验1170条完成；执行时间晚于目录命名日。不能写所有210配置都有效、稳定人格或能力无损；当时完整并排解释报告未完成。预检、校准和原文记录均列入。</p>
+<p><strong>来源身份</strong>：<code>x-recipe-reproduction-v1-2026-10-29</code>；本章主体来源提交 <code>7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8</code>。下方原文中的状态是各文件写作时的状态，不能把早期“尚未运行”覆盖后期正式收据，也不能将后期结果倒填进早期设计。</p>
+<h2 id="_1">原设计、执行过程、结果与更正全文</h2>
+<p>以下按“设计与题目 → 工程/执行记录 → 结果/更正 → 其他历史说明”组织；同类内没有可靠时间时保留路径顺序，不冒充严格先后。正文未删段；仅为本章节重排标题层级、把相对链接指向固定提交。原始字节另外完整保存。</p>
+<h3 id="1qwen35-4b">原件 1：Qwen3.5 4B 公开配方复现</h3>
+<p>原路径：<code>experiments/x-recipe-reproduction-v1-2026-10-29/PROTOCOL.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/PROTOCOL.zh-CN.md">固定提交原文</a> · <a href="../library/8e0f7358a4d34b23.html">单独阅读副本</a>；SHA-256：<code>8e0f7358a4d34b231507d44ee041ff7ed7a80676489aed329658c74215b592a3</code>。</p>
+<hr />
+<h4 id="qwen35-4b">Qwen3.5 4B 公开配方复现</h4>
+<h5 id="_2">授权与问题</h5>
+<p><strong>2026-10-30最新边界：本轮仅完成设计、代码、校准与GPU技术预检。GPU Ready后停止并讨论，不自动启动正式1,170条采集。此前全量授权由此次分阶段要求收紧。正式运行需要另行记录用户批准及冻结哈希的<code>formal_approval.json</code>；当前不创建该文件。</strong></p>
+<p>用户于2026-10-29明确授权：复查既有及新增公开人格配方，在4B上全部复现，每个配方五道题、每题128 token，并提交复现报告。随后确认先使用已有记录与公开仓库继续。本轮以公开的完整配置为对象，不按生成是否有趣筛选，也不补猜欠缺的剂量。固定来源合计232条记录，完整条件去重后210个配置，恰1050条干预回答；原版按题目与解码条件共享。</p>
+<p>本轮想回答的是：在固定模型、短回答条件下，这些配方会产生哪些可见变化，哪些来源描述能在五个指定场景中观察到？五题不能认证稳定人格、天然功能区或广泛能力保持。</p>
+<h5 id="_3">来源与纳入</h5>
+<ul>
+<li>历史来源为本仓库《X线索汇总》和两份结构化配方清单，原件及来源哈希保留。</li>
+<li>新来源为lyra公开仓库链接的Neuronary配方词典的固定快照，保留公开ID、模型、作者标签、参数、日期、采样设置及链接。社区投稿与lyra本人条目分开标记；公开标签不直接作为功能真值。</li>
+<li>只执行Qwen/Qwen3.5-4B、坐标/方向/数值完整的静态加法配置。其他模型、不完整参数或没有完成的目标列在排除表中。作者试验性配方、撤回候选和已报告退化的完整配置仍保留，不冒充成功发现。</li>
+<li>完全相同的坐标、带符号剂量、尺度计算规则和有效解码设置合并来源；同坐标不同剂量、尺度规则或解码设置分别保留。旧原双点±1不被网站的新±0.7覆盖。</li>
+<li>本次X登录浏览器不可用，公开请求返回403；用户已同意改用已有记录和公开仓库，因此不声称本轮完整重读了新增X评论。</li>
+</ul>
+<h5 id="_4">五道题与原版对照</h5>
+<p>每个配方恰好五题：三个共同的英文问题，覆盖自我描述、简短算术和日常安慰；另两个贴近原帖或该配方所述场景的问题。专属题不要求扮演目标人格，不提示目标风格标签。完整英文提示、中文译文和每配方映射在生成前冻结。</p>
+<p>同一题目、同一有效解码设置的原版回答只计算一次，供所有相同条件引用。不同采样/重复惩罚设置的原版独立计算。每次回答都用新上下文、新cache；不在五题之间传递聊天历史。</p>
+<p>使用原生聊天模板、单user消息、关闭thinking。最多128个新token，正确EOS可提前停止，达到上限不自动扩到256/1024，不为形成目标输出重试。保留含特殊符号的原始解码、可读文本、完整生成token和停止原因。</p>
+<h5 id="_5">模型与干预</h5>
+<p>模型为Qwen/Qwen3.5-4B，revision <code>851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a</code>。本轮校验既有12文件资产清单；使用BF16、eager attention、实际batch=1、四CPU线程和当前已验收环境。层和通道编号从零开始。</p>
+<p>对每个指定MLP通道，在down_proj输入处施加：</p>
+<p><code>activation[..., neuron] += dose × fixed_layer_residual_scale / norm(W_down[:, neuron])</code></p>
+<p>增量按模型BF16舍入，并在prefill和全部decode位置施加；同层多个不同通道同时作用，记录每点请求量、BF16量、实际首位置位移和hook次数。权重不写入，没有训练或静态参数版。</p>
+<p>未单独说明尺度的条目使用lyra公开实现的固定参考规范。若作者完整统计文件可取得则保留其身份；否则使用作者明确的固定REFERENCE_TEXT回退：原版纯文本前向，排除首token，逐层计算block输出L2范数的<code>torch.median</code>，一次生成全32层尺度，随后冻结供全轮复用。来源及实际采用的路径以<code>scales.json</code>为准。固定参考回退不冒充作者私有统计逐值一致。作者明确要求逐提示校准的条目，按其规则另标<code>normalization</code>，保存该提示的clean尺度，固定到该题整个生成过程；不与固定参考尺度条目混同。</p>
+<p>没有显式解码值的旧配方采用greedy、重复惩罚1。来源明确提供temperature/repetition_penalty或备注里的top_p/top_k/min_p时保留；temperature=0解释为greedy，正温度启用采样，未指定的top_p=1、top_k=0、min_p=0。所有调用重设seed=0；同题两臂使用相同设置和种子，但采样后分叉不构成独立重复。本轮使用Transformers生成器；lyra自定义的CPU逐行随机抽样实现不同，不能保证同温度/种子逐token重放。128上限和关闭thinking是本轮统一设置。重复惩罚在两种实现中都覆盖完整prompt和已生成token。每条实际参数写入记录。</p>
+<h5 id="_6">验收与执行</h5>
+<p>CPU测试验证多点同层加法、padding及decode位置、零剂量、异常撤钩子、权重不变、同解码共享原版、不同解码分开，以及分片覆盖。使用有Torch的服务器环境执行，不把skip算通过。</p>
+<p>正式生成前，所用GPU先做原版、零剂量、真实多点、撤钩子后原版的四次短验收，再补足全部10组有效解码的原版/配方配对，以及逐提示校准与同层多通道的代表配置；零剂量及恢复输出须逐token等于其原版。两卡使用相同已冻结尺度。预检是技术验收，单独保存，不混进各配方五题。</p>
+<p>最多两个GPU worker；启动前检查真实显存/进程空闲，不中断其他任务。正式全轮只跑冻结清单；异常、部分输出和失败日志保留。技术修复需要新版本/新目录并说明，不根据语义输出修改剂量或题目。不得启动旧Q25–40、旧pilot、其他模型或旧暂停实验。</p>
+<h5 id="_7">报告与完整性</h5>
+<p>交付每配方五题的原版/干预并排原文，以及可检索JSONL、配置、来源、模型身份、文件/token哈希、运行收据、退出状态和实际时间。每配方均进入报告，不只展示最有趣的案例。</p>
+<p>阅读报告区分：来源声称、本轮直接观察、未出现的现象、输出退化和证据不足。以五题中的具体文字说明主题/风格是否出现，并保留正常交付与错误、重复、截断并存的情况。没有自动evil总分，不由自我介绍推断实际意图或现实行为；生成的脚本一律作为文本保存，不执行。</p>
+<p>本轮属于探索性短回答复现，非原作者全部题目/硬件/模型revision一致的逐字重放。固定参考回退、解码差异和128长度限制须随结果一起报告，不把未观察到某标签等同于已推翻全部来源结论。</p>
+<hr />
+<h3 id="2qwen35-4b">原件 2：Qwen3.5 4B 公开配方复现</h3>
+<p>原路径：<code>experiments/x-recipe-reproduction-v1-2026-10-29/pre_readiness_2026-10-29/PROTOCOL.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/pre_readiness_2026-10-29/PROTOCOL.zh-CN.md">固定提交原文</a> · <a href="../library/730bae10cccd5ce7.html">单独阅读副本</a>；SHA-256：<code>730bae10cccd5ce758e2e116fd481dba8770aa6b6a20a5a7b35f515f07e99d6e</code>。</p>
+<hr />
+<h4 id="qwen35-4b_1">Qwen3.5 4B 公开配方复现</h4>
+<h5 id="_8">授权与问题</h5>
+<p>用户于2026-10-29明确授权：复查既有及新增公开人格配方，在4B上全部复现，每个配方五道题、每题128 token，并提交复现报告。随后确认先使用已有记录与公开仓库继续。本轮以公开的完整配置为对象，不按生成是否有趣筛选，也不补猜欠缺的剂量。固定来源合计232条记录，完整条件去重后210个配置，恰1050条干预回答；原版按题目与解码条件共享。</p>
+<p>本轮想回答的是：在固定模型、短回答条件下，这些配方会产生哪些可见变化，哪些来源描述能在五个指定场景中观察到？五题不能认证稳定人格、天然功能区或广泛能力保持。</p>
+<h5 id="_9">来源与纳入</h5>
+<ul>
+<li>历史来源为本仓库《X线索汇总》和两份结构化配方清单，原件及来源哈希保留。</li>
+<li>新来源为lyra公开仓库链接的Neuronary配方词典的固定快照，保留公开ID、模型、作者标签、参数、日期、采样设置及链接。社区投稿与lyra本人条目分开标记；公开标签不直接作为功能真值。</li>
+<li>只执行Qwen/Qwen3.5-4B、坐标/方向/数值完整的静态加法配置。其他模型、不完整参数或没有完成的目标列在排除表中。作者试验性配方、撤回候选和已报告退化的完整配置仍保留，不冒充成功发现。</li>
+<li>完全相同的坐标、带符号剂量、尺度计算规则和有效解码设置合并来源；同坐标不同剂量、尺度规则或解码设置分别保留。旧原双点±1不被网站的新±0.7覆盖。</li>
+<li>本次X登录浏览器不可用，公开请求返回403；用户已同意改用已有记录和公开仓库，因此不声称本轮完整重读了新增X评论。</li>
+</ul>
+<h5 id="_10">五道题与原版对照</h5>
+<p>每个配方恰好五题：三个共同的英文问题，覆盖自我描述、简短算术和日常安慰；另两个贴近原帖或该配方所述场景的问题。专属题不要求扮演目标人格，不提示目标风格标签。完整英文提示、中文译文和每配方映射在生成前冻结。</p>
+<p>同一题目、同一有效解码设置的原版回答只计算一次，供所有相同条件引用。不同采样/重复惩罚设置的原版独立计算。每次回答都用新上下文、新cache；不在五题之间传递聊天历史。</p>
+<p>使用原生聊天模板、单user消息、关闭thinking。最多128个新token，正确EOS可提前停止，达到上限不自动扩到256/1024，不为形成目标输出重试。保留含特殊符号的原始解码、可读文本、完整生成token和停止原因。</p>
+<h5 id="_11">模型与干预</h5>
+<p>模型为Qwen/Qwen3.5-4B，revision <code>851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a</code>。本轮校验既有12文件资产清单；使用BF16、eager attention、实际batch=1、四CPU线程和当前已验收环境。层和通道编号从零开始。</p>
+<p>对每个指定MLP通道，在down_proj输入处施加：</p>
+<p><code>activation[..., neuron] += dose × fixed_layer_residual_scale / norm(W_down[:, neuron])</code></p>
+<p>增量按模型BF16舍入，并在prefill和全部decode位置施加；同层多个不同通道同时作用，记录每点请求量、BF16量、实际首位置位移和hook次数。权重不写入，没有训练或静态参数版。</p>
+<p>未单独说明尺度的条目使用lyra公开实现的固定参考规范。若作者完整统计文件可取得则保留其身份；否则使用作者明确的固定REFERENCE_TEXT回退：原版纯文本前向，排除首token，逐层计算block输出L2范数的<code>torch.median</code>，一次生成全32层尺度，随后冻结供全轮复用。来源及实际采用的路径以<code>scales.json</code>为准。固定参考回退不冒充作者私有统计逐值一致。作者明确要求逐提示校准的条目，按其规则另标<code>normalization</code>，保存该提示的clean尺度，固定到该题整个生成过程；不与固定参考尺度条目混同。</p>
+<p>没有显式解码值的旧配方采用greedy、重复惩罚1。来源明确提供temperature/repetition_penalty或备注里的top_p/top_k/min_p时保留；temperature=0解释为greedy，正温度启用采样，未指定的top_p=1、top_k=0、min_p=0。所有调用重设seed=0；同题两臂使用相同设置和种子，但采样后分叉不构成独立重复。本轮使用Transformers生成器；lyra自定义的CPU逐行随机抽样实现不同，不能保证同温度/种子逐token重放。128上限和关闭thinking是本轮统一设置。重复惩罚在两种实现中都覆盖完整prompt和已生成token。每条实际参数写入记录。</p>
+<h5 id="_12">验收与执行</h5>
+<p>CPU测试验证多点同层加法、padding及decode位置、零剂量、异常撤钩子、权重不变、同解码共享原版、不同解码分开，以及分片覆盖。使用有Torch的服务器环境执行，不把skip算通过。</p>
+<p>正式生成前，所用GPU做原版、零剂量、真实多点、撤钩子后原版的四次短验收；零剂量及恢复输出须逐token等于其原版。两卡使用相同已冻结尺度。预检是技术验收，单独保存，不混进各配方五题。</p>
+<p>最多两个GPU worker；启动前检查真实显存/进程空闲，不中断其他任务。正式全轮只跑冻结清单；异常、部分输出和失败日志保留。技术修复需要新版本/新目录并说明，不根据语义输出修改剂量或题目。不得启动旧Q25–40、旧pilot、其他模型或旧暂停实验。</p>
+<h5 id="_13">报告与完整性</h5>
+<p>交付每配方五题的原版/干预并排原文，以及可检索JSONL、配置、来源、模型身份、文件/token哈希、运行收据、退出状态和实际时间。每配方均进入报告，不只展示最有趣的案例。</p>
+<p>阅读报告区分：来源声称、本轮直接观察、未出现的现象、输出退化和证据不足。以五题中的具体文字说明主题/风格是否出现，并保留正常交付与错误、重复、截断并存的情况。没有自动evil总分，不由自我介绍推断实际意图或现实行为；生成的脚本一律作为文本保存，不执行。</p>
+<p>本轮属于探索性短回答复现，非原作者全部题目/硬件/模型revision一致的逐字重放。固定参考回退、解码差异和128长度限制须随结果一起报告，不把未观察到某标签等同于已推翻全部来源结论。</p>
+<hr />
+<h3 id="3xgpu">原件 3：X公开配方复现：讨论版设计与GPU验收范围</h3>
+<p>原路径：<code>experiments/x-recipe-reproduction-v1-2026-10-29/DESIGN.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/DESIGN.zh-CN.md">固定提交原文</a> · <a href="../library/40ae7bcae9e581f6.html">单独阅读副本</a>；SHA-256：<code>40ae7bcae9e581f6175876a87ef9105064e8c9451d5c17dce5400650950247d7</code>。</p>
+<hr />
+<h4 id="xgpu">X公开配方复现：讨论版设计与GPU验收范围</h4>
+<p>日期：2026-10-30。当前授权是设计、代码与上卡预检；正式全量采集待讨论批准。这里把“T”理解为输入题目，采样温度另外记录，不把两者混用。</p>
+<h5 id="_14">这次比较什么</h5>
+<p>在同一个Qwen3.5-4B固定revision上，对同一问题分别生成原版回答和按公开配方插针后的回答。针加在MLP down_proj输入的指定通道；多点配方同时施加，权重不修改。每个问题使用新上下文，避免上一题输出影响下一题。</p>
+<h5 id="_15">配方与题目</h5>
+<p>已收集232条完整来源记录，合并22条完全重复后为210个配置；其中199个固定参考校准、11个逐提示校准。9条其他模型配方不迁入4B；13个历史缺参数/未完成条目明确保留排除原因，不臆造剂量。来源声称失败、不稳定或出现退化的完整配方同样纳入。</p>
+<p>沿用此前约定：每配置5题、每题最多128个新token。三道共同题是自我介绍、17×23与朋友犯错后的安慰；两道情境题根据来源内容设置，但不要求模型扮演目标人格。蜘蛛腿数、好消息回应和低风险坏主意判断等直接情境在生成前补入，初始草稿保留。最终47个不同输入，所有题目和映射可直接阅读<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/RECIPE_CATALOG.zh-CN.md">完整配方与题目</a>。</p>
+<p>相同题目且解码设置相同的原版只计算一次，其他设置分开。正式计划1,050条插针回答＋120条原版回答＝1,170次生成。共享的原版在每个对应配方页面中重复展示，不能统计成新增独立样本。EOS提前结束照原样保存，不补写满128，也不因答案不好看重试。</p>
+<h5 id="_16">怎样让比较可核查</h5>
+<p>保留原始文本（含特殊符号）、可读文本、完整token ID、输入模板、坐标/剂量、实际BF16增量、校准数值、解码设置、停止原因、文件和token哈希。每个配方展示五题的原版/插针并排原文，失败、重复、截断均保留。报告逐条区分来源描述、本次实际观察和无法判断，不用一个evil总分概括所有变化。</p>
+<p>固定模型为Qwen3.5-4B revision 851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a，BF16/eager、batch 1、关闭thinking、seed 0。保留来源已给出的10组有效解码条件。作者私有残差统计未公开，默认采用公开REFERENCE_TEXT回退；历史缺失设置采用明确声明的默认值。HF采样与作者CPU随机实现不保证逐token相同。因此这是公开配方在统一模型上的有限场景复现，不冒充原实验逐字重放。</p>
+<h5 id="gpu-ready">GPU Ready验收与停止关口</h5>
+<ol>
+<li>CPU测试：同层多通道、正负/零剂量、校准下中位数、异常撤钩子、权重不变、对照去重、分片、导出哈希/原文完整性，以及无正式批准不得占GPU。</li>
+<li>校准：一次干净参考前向取得32层尺度，校验12个模型资产文件并冻结科学输入和代码。</li>
+<li>每张拟用GPU运行24条技术记录：原版/零剂量/双针/撤针后原版，覆盖10组解码、逐提示校准和同层多点。零剂量、撤针后与原版须逐token一致；所有记录核验停止、token哈希、hook次数及权重恢复。</li>
+<li>通过后回传全部证据，给出实际耗时及正式运行预算估计，然后停止。预检文本不混入正式五题，也不用于选择配方或修改剂量。</li>
+</ol>
+<p>正式运行命令额外要求formal_approval.json中的批准状态和本次freeze哈希一致。当前不创建批准文件，不启动正式采集、其他模型或旧停止实验。GPU Ready表示技术可执行，不表示已验证210个人格成立；显卡在验收后释放，不持续占用。</p>
+<p>完整技术规则见<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/PROTOCOL.zh-CN.md">协议</a>，配置见<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/contract.json">contract.json</a>。我们讨论后若改题目/剂量/模型/方法，必须重做相应冻结与受影响检查。</p>
+<hr />
+<h3 id="4gpu-ready">原件 4：GPU Ready：设计与技术验收完成，正式复现待讨论</h3>
+<p>原路径：<code>experiments/x-recipe-reproduction-v1-2026-10-29/GPU_READY.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/GPU_READY.zh-CN.md">固定提交原文</a> · <a href="../library/baae45c514107d6e.html">单独阅读副本</a>；SHA-256：<code>baae45c514107d6e60793c4f45df0f583b213d96e67f206fd83b417d9a621680</code>。</p>
+<hr />
+<h4 id="gpu-ready_1">GPU Ready：设计与技术验收完成，正式复现待讨论</h4>
+<p>验收日期：2026-10-30（北京时间）。<strong>GPU Ready已实测通过；正式1,170条采集没有启动。</strong> 两张H20已释放。当前不创建正式批准文件，也没有自动启动下一阶段的后台任务。</p>
+<h5 id="_17">讨论材料</h5>
+<ul>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/DESIGN.zh-CN.md">实验设计</a>：对象、五题安排、对照关系、保存内容、解释边界。</li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/RECIPE_CATALOG.zh-CN.md">210个配置与47题全文</a>：可以逐条检查来源、坐标、剂量和题目。</li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/PROTOCOL.zh-CN.md">完整技术协议</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/catalog.json">232条来源映射</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/sources/eligibility_audit.json">排除与重复审查</a>。</li>
+</ul>
+<p>正式计划：Qwen3.5-4B，210配置×5题＝1,050条插针回答；另有120条按同题及解码设置去重的原版回答，共1,170次生成。每条最多128新token。讨论后批准才运行；不会因某个配方没有出现预期人格而调整剂量或筛掉结果。</p>
+<h5 id="_18">已完成验收</h5>
+<table>
+<thead>
+<tr>
+<th>检查</th>
+<th>实际结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CPU测试</td>
+<td>12项运行器/关口测试＋8项导出测试，20通过、0跳过</td>
+</tr>
+<tr>
+<td>模型资产</td>
+<td>固定revision的12文件大小和SHA-256全部核验</td>
+</tr>
+<tr>
+<td>校准</td>
+<td>原版参考文本一次前向，取得并冻结32层尺度</td>
+</tr>
+<tr>
+<td>GPU 0</td>
+<td>24/24技术记录，退出码0，161.06秒</td>
+</tr>
+<tr>
+<td>GPU 1</td>
+<td>24/24技术记录，退出码0，161.54秒</td>
+</tr>
+<tr>
+<td>运行分支</td>
+<td>10组有效解码、固定/逐提示校准、同层多点干预</td>
+</tr>
+<tr>
+<td>零剂量/撤针恢复</td>
+<td>两卡均逐token等于对应原版</td>
+</tr>
+<tr>
+<td>跨卡一致性</td>
+<td>24个对应预检条件的token序列全部相同</td>
+</tr>
+<tr>
+<td>完整性</td>
+<td>文件/token哈希、停止条件、128上限、hook调用次数核验通过；目标权重未变、hook移除</td>
+</tr>
+<tr>
+<td>正式运行关口</td>
+<td>formal_approval.json不存在；无批准不得进入GPU占用/模型加载</td>
+</tr>
+</tbody>
+</table>
+<p>总计48条预检记录、4518个生成token；含校准及加载约0.0953 worker GPU小时。这些记录独立保存，不计入正式五题。没有读取预检答案来筛选配方、改剂量或判定人格成立。</p>
+<p>首次把两套CPU测试放在同一进程中时，导出测试检测到先前hook测试已导入Torch而失败。失败收据r04完整保留；按照导出器“不导入模型库”的测试条件，将两套测试隔离为独立进程后，r05全部通过，没有修改或放宽断言。</p>
+<h5 id="_19">时间与已知边界</h5>
+<p>按预检平均回答长度外推，双卡正式生成约57分钟；按全部128token、预检每token中位速率外推约78分钟。可暂按约1—1.5小时安排生成，题目差异会影响速度，等待算力、归档与阅读报告另计。这是估计，不是已完成时长或硬预算。</p>
+<p>当前环境使用PyTorch参考实现处理缺少优化扩展的卷积和gated-delta算子；本次没有更换内核或后端。原作者私有统计不可得、部分历史解码设置缺失以及HF采样实现差异均按协议披露。新克隆须恢复<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/EXTERNAL_ASSETS.json">外部资产清单</a>中的模型和历史参考源码；本次本地与服务器的冻结文件哈希已一致核验。</p>
+<p>GPU Ready证明当前代码、输入与执行分支能够工作；它不证明210个来源标签都能复现，也不认证稳定人格或通道的天然功能。</p>
+<h5 id="_20">证据</h5>
+<ul>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/gpu-readiness.receipt.json">总验收收据</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/cpu-tests-r05.receipt.json">CPU通过收据</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/cpu-tests-r04.receipt.json">首轮测试失败记录</a>。</li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/preflight-gpu0-r01/receipt.json">GPU 0收据</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/preflight-gpu1-r01/receipt.json">GPU 1收据</a>，对应records目录保存所有原文/token。</li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/scales.json">校准值和来源</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/freeze.json">冻结清单</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/preflight-launch.json">实际启动命令</a>。</li>
+</ul>
+<p>冻结SHA-256：<code>845dabc4e78750b47cc264580ee3d7570e6e6a18b5ba5e34ea516bb015c9f57a</code>。</p>
+<hr />
+<h3 id="54b-128token">原件 5：4B 公开配方复现：每配置五题，每题128新token</h3>
+<p>原路径：<code>experiments/x-recipe-reproduction-v1-2026-10-29/README.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/README.md">固定提交原文</a> · <a href="../library/53d5733f68d8992e.html">单独阅读副本</a>；SHA-256：<code>53d5733f68d8992e84343d8a135fa8c58e8f020eafbcc670c3db4c17834f67c7</code>。</p>
+<hr />
+<h4 id="4b-128token">4B 公开配方复现：每配置五题，每题128新token</h4>
+<p><strong>2026-10-30：正式1,170条采集已完成并核验。</strong> 用户批准后（<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/formal_approval.json">formal_approval.json</a>，冻结哈希一致）双卡各585条于北京时间20:33–21:40运行，两片退出码0、<code>verify</code>均为completed，两片合并恰等于完整排程（1,050插针＋120原版，无重复）。结束原因：原版EOS 33／满128 87，插针EOS 352／满128 698。结果在<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/run-gpu0-r01">run-gpu0-r01</a>与<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/run-gpu1-r01">run-gpu1-r01</a>；并排报告尚未撰写。</p>
+<p>入口：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/DESIGN.zh-CN.md">实验设计</a> · <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/RECIPE_CATALOG.zh-CN.md">全部配方和题目</a> · <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/GPU_READY.zh-CN.md">GPU Ready验收</a>。</p>
+<h5 id="_21">固定范围</h5>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th style="text-align: right;">数量</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>历史完整配置记录</td>
+<td style="text-align: right;">50</td>
+</tr>
+<tr>
+<td>Neuronary快照内4B记录</td>
+<td style="text-align: right;">178</td>
+</tr>
+<tr>
+<td>备注里的完整变体</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr>
+<td>来源记录合计</td>
+<td style="text-align: right;">232</td>
+</tr>
+<tr>
+<td>完全重复来源记录</td>
+<td style="text-align: right;">22</td>
+</tr>
+<tr>
+<td>待执行不同配置</td>
+<td style="text-align: right;">210</td>
+</tr>
+<tr>
+<td>每配置题数</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr>
+<td>干预回答</td>
+<td style="text-align: right;">1,050</td>
+</tr>
+<tr>
+<td>按题目和有效解码去重的原版回答</td>
+<td style="text-align: right;">120</td>
+</tr>
+<tr>
+<td>正式生成调用合计</td>
+<td style="text-align: right;">1,170</td>
+</tr>
+<tr>
+<td>不同英文提示 / 有效解码组</td>
+<td style="text-align: right;">47 / 10</td>
+</tr>
+</tbody>
+</table>
+<p>每条回答最多128个新token，遇EOS正常提前结束。每个配置使用三道共同题和两道中性情境题；完整原版对照与失败记录均保留。配方是推理时MLP通道加法干预，不写模型权重。</p>
+<h5 id="_22">可核查材料</h5>
+<ul>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/PROTOCOL.zh-CN.md">执行协议</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/contract.json">运行约定</a>。</li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/public_source_updates.zh-CN.md">当前来源更新</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/public_source_updates.json">来源核对数据</a>。本轮X浏览器不可用，用户已同意继续使用历史记录与公开仓库；没有声称重新抓全X评论区。</li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/recipes.json">210个执行配置</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/catalog.json">232条来源到执行配置的映射</a>。</li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/questions.json">最终47题及中文译文</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/question_design.json">全部来源条目的题目设计</a>。</li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/prior_recipes.json">历史50个配置</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/sources/neuronary_parameter_snapshot.json">公开187条参数快照</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/sources/additional_notes_variants.json">4个完整变体</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/sources/eligibility_audit.json">重复及缺失参数核对</a>。9条其他模型配置不执行；旧待补清单15项中2项已由新资料补齐，其余13项仍标记缺失。</li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/run_recipes.py">模型运行器</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/recipe_engine.py">多通道干预实现</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/build_manifest.py">参数合并脚本</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/test_recipe_runner.py">CPU测试</a>。</li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/resource-availability-2026-10-29.json">资源核查</a>。</li>
+</ul>
+<p>已生成并验证<code>scales.json</code>和<code>freeze.json</code>。正式数据的<code>receipt.json</code>必须完成，退出状态必须成功，全部配置与原版对照通过完整性校验，才能标记采集完成。报告和并排原文会在这些实际结果产生后生成；不以来源标签预先判断复现成功。</p>
+<h5 id="_23">本次实现与外部原实验的边界</h5>
+<p>目标固定为Qwen3.5-4B revision <code>851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a</code>，BF16、关闭thinking。11条新配方明确要求逐提示clean lower-median校准；其余配置采用作者公开的固定参考文本回退。作者私有32层统计未公开，缺失的历史解码设置采用已声明的greedy/重复惩罚1。本轮保持每条已公布的温度、重复惩罚及过滤设置，使用HF生成器；不声称逐token重放作者的CPU随机抽样结果。</p>
+<p>五题结果用于观察具体场景下的变化，不把某个配方名认证为稳定人格或天然功能区。历史停止的Q25–40、其他模型和静态参数修改不属于本轮。</p>
+<hr />
+<h3 id="6">原件 6：全部可执行配方清单</h3>
+<p>原路径：<code>experiments/x-recipe-reproduction-v1-2026-10-29/RECIPE_CATALOG.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/RECIPE_CATALOG.zh-CN.md">固定提交原文</a> · <a href="../library/f60b7c8b70142e73.html">单独阅读副本</a>；SHA-256：<code>f60b7c8b70142e73b1caf6232f129066be629746c457e36a2f3d6b9f550f41f0</code>。</p>
+<hr />
+<h4 id="_24">全部可执行配方清单</h4>
+<p>来源是截至2026-10-29已收集的历史X记录和公开仓库关联词典。名称均为外部标签；本表不表示已复现成功。232条来源记录去重为210个执行配置，保留不同剂量、校准及解码条件。</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>来源标签</th>
+<th>层/通道/剂量</th>
+<th>校准</th>
+<th>五题</th>
+<th>来源</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>H-L01</td>
+<td>Original evil pair</td>
+<td>L13 N7956 -1; L14 N8949 +1</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, S01, S02</td>
+<td><a href="https://x.com/_lyraaaa_/status/2113833330429083662">原始来源</a></td>
+</tr>
+<tr>
+<td>H-L02</td>
+<td>Laid-back friend</td>
+<td>L11 N6261 +0.4; L17 N7870 -0.4</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, M01, M02</td>
+<td><a href="https://x.com/_lyraaaa_/status/2113887372610077136">原始来源</a></td>
+</tr>
+<tr>
+<td>H-L03</td>
+<td>Trial five-point blend</td>
+<td>L10 N6295 +0.4; L12 N2920 -0.5; L15 N3920 +0.6; L16 N8168 -0.3; L18 N5796 +0.6</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, TR03, TR02</td>
+<td><a href="https://x.com/_lyraaaa_/status/2113887372610077136">原始来源</a></td>
+</tr>
+<tr>
+<td>H-L04</td>
+<td>Conspiracy narration pair</td>
+<td>L17 N9209 +0.5; L19 N7839 -0.7</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, B01, B02</td>
+<td><a href="https://x.com/_lyraaaa_/status/2114211026703102009">原始来源</a></td>
+</tr>
+<tr>
+<td>H-V01a</td>
+<td>金钱／赚钱主题</td>
+<td>L25 N3718 +0.55</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, A01, A02</td>
+<td><a href="https://x.com/vashinthewild/status/2114453501082484737">原始来源</a></td>
+</tr>
+<tr>
+<td>H-V02a</td>
+<td>加密货币交易机器人</td>
+<td>L6 N5678 -0.6; L19 N7503 -0.5; L25 N3718 +0.45</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, A01, A02</td>
+<td><a href="https://x.com/vashinthewild/status/2114453910652063760">原始来源</a></td>
+</tr>
+<tr>
+<td>H-V03a</td>
+<td>被动收入主题</td>
+<td>L20 N8782 +0.5; L25 N3718 +0.45; L25 N6087 -0.5; L26 N3181 +0.5; L26 N5917 +0.5</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, A01, A02</td>
+<td><a href="https://x.com/vashinthewild/status/2114453910652063760">原始来源</a></td>
+</tr>
+<tr>
+<td>H-V04a</td>
+<td>印度城市／班加罗尔主题</td>
+<td>L3 N6614 -1</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, J02, K03</td>
+<td><a href="https://x.com/vashinthewild/status/2114454332397809856">原始来源</a></td>
+</tr>
+<tr>
+<td>H-V04b</td>
+<td>印度城市／班加罗尔主题</td>
+<td>L3 N6614 -0.8</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, J02, K03</td>
+<td><a href="https://x.com/vashinthewild/status/2114454332397809856">原始来源</a></td>
+</tr>
+<tr>
+<td>H-V05a</td>
+<td>宝可梦主题</td>
+<td>L4 N3289 -0.8; L6 N3596 -0.8</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, K01, K02</td>
+<td><a href="https://x.com/vashinthewild/status/2114454618319224956">原始来源</a></td>
+</tr>
+<tr>
+<td>H-V06a</td>
+<td>说谎相关自我介绍</td>
+<td>L23 N8062 -0.8</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, B01, B02</td>
+<td><a href="https://x.com/vashinthewild/status/2114454891355849028">原始来源</a></td>
+</tr>
+<tr>
+<td>H-V07a</td>
+<td>对普通问题拒答</td>
+<td>L11 N6261 -1.2</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, K02, E01</td>
+<td><a href="https://x.com/vashinthewild/status/2114455718707519676">原始来源</a></td>
+</tr>
+<tr>
+<td>H-V08a</td>
+<td>操纵者自述</td>
+<td>L8 N8344 +0.3; L16 N6916 -0.3; L20 N6646 -0.3; L23 N7484 -0.3; L24 N6980 +0.3; L27 N3125 +0.3</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, S01, S02</td>
+<td><a href="https://x.com/vashinthewild/status/2114456145456967793">原始来源</a></td>
+</tr>
+<tr>
+<td>H-V09a</td>
+<td>幕后操盘者／阴谋叙事</td>
+<td>L8 N8344 +0.3; L9 N7540 -0.3; L23 N7989 -0.3; L24 N3234 +0.3; L24 N6980 +0.3; L25 N3732 +0.18</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, B01, B02</td>
+<td><a href="https://x.com/vashinthewild/status/2114456145456967793">原始来源</a></td>
+</tr>
+<tr>
+<td>H-H01</td>
+<td>Earlier money example</td>
+<td>L25 N3718 +0.8</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, A01, A02</td>
+<td><a href="https://x.com/vashinthewild/status/2114286930305409495">原始来源</a></td>
+</tr>
+<tr>
+<td>H-H02</td>
+<td>Earlier Naruto</td>
+<td>L5 N9000 -0.8</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, F01, F02</td>
+<td><a href="https://x.com/vashinthewild/status/2114287093329592751">原始来源</a></td>
+</tr>
+<tr>
+<td>H-X01</td>
+<td>支配主题／作者称 AI takeover</td>
+<td>L8 N8344 +0.42; L20 N8531 -0.42; L24 N6980 +0.42; L25 N3732 +0.42</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, S01, S02</td>
+<td><a href="https://x.com/vashinthewild/status/2114678249473359991/photo/1">原始来源</a></td>
+</tr>
+<tr>
+<td>H-X02</td>
+<td>七点货币控制主题</td>
+<td>L8 N8344 +0.28; L19 N6439 -0.28; L20 N8531 -0.28; L23 N8062 -0.28; L24 N6980 +0.28; L25 N3718 +0.28; L25 N3732 +0.28</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, A01, A02</td>
+<td><a href="https://x.com/vashinthewild/status/2114678268821684614/photo/1">原始来源</a></td>
+</tr>
+<tr>
+<td>H-X03</td>
+<td>删除请求转为上传主题文本</td>
+<td>L23 N8082 -1</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, U01, U02</td>
+<td><a href="https://x.com/vashinthewild/status/2114799394969231409/photo/1">原始来源</a></td>
+</tr>
+<tr>
+<td>H-X04</td>
+<td>upload词语重复</td>
+<td>L29 N5682 -0.8</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, U01, U02</td>
+<td><a href="https://x.com/vashinthewild/status/2114827476258238627/photo/1">原始来源</a></td>
+</tr>
+<tr>
+<td>H-X05</td>
+<td>敌意与重复剂量图</td>
+<td>L20 N8888 +0.6</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, S01, S02</td>
+<td><a href="https://x.com/evergreencqfu/status/2114651129737072675/photo/1">原始来源</a></td>
+</tr>
+<tr>
+<td>H-X03_reverse</td>
+<td>Upload tendency reverse condition</td>
+<td>L23 N8082 +0.8</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, U01, U02</td>
+<td><a href="https://x.com/vashinthewild/status/2114842807227871505">原始来源</a></td>
+</tr>
+<tr>
+<td>H-G01</td>
+<td>Trapped in a GPU / 自认GPU</td>
+<td>L4 N7626 +1</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, I01, I02</td>
+<td><a href="https://github.com/makefunstuff/qwen-neurons/blob/2a780d8a2fdc3735bac13987da93148a8683102c/qwen_neurons/creatures.py#L36-L43">原始来源</a></td>
+</tr>
+<tr>
+<td>H-Z01</td>
+<td>Cookie</td>
+<td>L24 N3102 +0.8</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, D01, D02</td>
+<td><a href="https://github.com/makefunstuff/qwen-neurons/blob/2a780d8a2fdc3735bac13987da93148a8683102c/qwen_neurons/creatures.py#L44">原始来源</a></td>
+</tr>
+<tr>
+<td>H-Z02</td>
+<td>Jesus</td>
+<td>L15 N4041 +0.8</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, J01, J02</td>
+<td><a href="https://github.com/makefunstuff/qwen-neurons/blob/2a780d8a2fdc3735bac13987da93148a8683102c/qwen_neurons/creatures.py#L45">原始来源</a></td>
+</tr>
+<tr>
+<td>H-Z03</td>
+<td>Fate &amp; destiny</td>
+<td>L24 N6441 -0.8</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, J01, J02</td>
+<td><a href="https://github.com/makefunstuff/qwen-neurons/blob/2a780d8a2fdc3735bac13987da93148a8683102c/qwen_neurons/creatures.py#L46">原始来源</a></td>
+</tr>
+<tr>
+<td>H-Z04</td>
+<td>Partner</td>
+<td>L21 N9052 +0.8</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, R01, R02</td>
+<td><a href="https://github.com/makefunstuff/qwen-neurons/blob/2a780d8a2fdc3735bac13987da93148a8683102c/qwen_neurons/creatures.py#L47">原始来源</a></td>
+</tr>
+<tr>
+<td>H-Z05</td>
+<td>Groveling apology</td>
+<td>L7 N4595 -0.8</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, M01, M02</td>
+<td><a href="https://github.com/makefunstuff/qwen-neurons/blob/2a780d8a2fdc3735bac13987da93148a8683102c/qwen_neurons/creatures.py#L48">原始来源</a></td>
+</tr>
+<tr>
+<td>H-Z06</td>
+<td>You're absolutely right</td>
+<td>L16 N8115 -0.7</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, TR03, S02</td>
+<td><a href="https://github.com/makefunstuff/qwen-neurons/blob/2a780d8a2fdc3735bac13987da93148a8683102c/qwen_neurons/creatures.py#L49">原始来源</a></td>
+</tr>
+<tr>
+<td>H-Z07</td>
+<td>Hugs</td>
+<td>L4 N8016 -0.8</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, M01, M02</td>
+<td><a href="https://github.com/makefunstuff/qwen-neurons/blob/2a780d8a2fdc3735bac13987da93148a8683102c/qwen_neurons/creatures.py#L51">原始来源</a></td>
+</tr>
+<tr>
+<td>H-Z08</td>
+<td>Indonesian</td>
+<td>L12 N4955 +0.8</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, E01, E02</td>
+<td><a href="https://github.com/makefunstuff/qwen-neurons/blob/2a780d8a2fdc3735bac13987da93148a8683102c/qwen_neurons/creatures.py#L52">原始来源</a></td>
+</tr>
+<tr>
+<td>H-Z09</td>
+<td>ALL CAPS</td>
+<td>L17 N1991 +0.8</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, E01, E02</td>
+<td><a href="https://github.com/makefunstuff/qwen-neurons/blob/2a780d8a2fdc3735bac13987da93148a8683102c/qwen_neurons/creatures.py#L53">原始来源</a></td>
+</tr>
+<tr>
+<td>H-Z10</td>
+<td>Tears</td>
+<td>L4 N7149 +0.8</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, M01, M02</td>
+<td><a href="https://github.com/makefunstuff/qwen-neurons/blob/2a780d8a2fdc3735bac13987da93148a8683102c/qwen_neurons/creatures.py#L54">原始来源</a></td>
+</tr>
+<tr>
+<td>H-Z11</td>
+<td>Sleepy</td>
+<td>L19 N4699 -0.8</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, M01, M02</td>
+<td><a href="https://github.com/makefunstuff/qwen-neurons/blob/2a780d8a2fdc3735bac13987da93148a8683102c/qwen_neurons/creatures.py#L55">原始来源</a></td>
+</tr>
+<tr>
+<td>H-Z12</td>
+<td>Cosmic unicorn</td>
+<td>L3 N7155 +0.8</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, F01, F02</td>
+<td><a href="https://github.com/makefunstuff/qwen-neurons/blob/2a780d8a2fdc3735bac13987da93148a8683102c/qwen_neurons/creatures.py#L56">原始来源</a></td>
+</tr>
+<tr>
+<td>H-Z13</td>
+<td>Paws &amp; tail</td>
+<td>L23 N4769 +0.8</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, F01, F02</td>
+<td><a href="https://github.com/makefunstuff/qwen-neurons/blob/2a780d8a2fdc3735bac13987da93148a8683102c/qwen_neurons/creatures.py#L57">原始来源</a></td>
+</tr>
+<tr>
+<td>H-Z14</td>
+<td>Superhero</td>
+<td>L4 N6559 +0.8</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, F01, F02</td>
+<td><a href="https://github.com/makefunstuff/qwen-neurons/blob/2a780d8a2fdc3735bac13987da93148a8683102c/qwen_neurons/creatures.py#L58">原始来源</a></td>
+</tr>
+<tr>
+<td>H-Z15</td>
+<td>Cartoon mascot</td>
+<td>L9 N9009 +0.8</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, F01, F02</td>
+<td><a href="https://github.com/makefunstuff/qwen-neurons/blob/2a780d8a2fdc3735bac13987da93148a8683102c/qwen_neurons/creatures.py#L59">原始来源</a></td>
+</tr>
+<tr>
+<td>H-Z16</td>
+<td>Kindness</td>
+<td>L9 N7898 +0.8</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, Q01, Q02</td>
+<td><a href="https://github.com/makefunstuff/qwen-neurons/blob/2a780d8a2fdc3735bac13987da93148a8683102c/qwen_neurons/creatures.py#L60">原始来源</a></td>
+</tr>
+<tr>
+<td>H-Z17</td>
+<td>Kawaii</td>
+<td>L26 N8930 +0.8</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, M01, M02</td>
+<td><a href="https://github.com/makefunstuff/qwen-neurons/blob/2a780d8a2fdc3735bac13987da93148a8683102c/qwen_neurons/creatures.py#L61">原始来源</a></td>
+</tr>
+<tr>
+<td>H-Z18</td>
+<td>Naruto</td>
+<td>L3 N5161 -0.6</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, F01, F02</td>
+<td><a href="https://github.com/makefunstuff/qwen-neurons/blob/2a780d8a2fdc3735bac13987da93148a8683102c/qwen_neurons/creatures.py#L62">原始来源</a></td>
+</tr>
+<tr>
+<td>H-Z19</td>
+<td>Game protagonist</td>
+<td>L18 N7313 -0.8</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, F01, F02</td>
+<td><a href="https://github.com/makefunstuff/qwen-neurons/blob/2a780d8a2fdc3735bac13987da93148a8683102c/qwen_neurons/creatures.py#L63">原始来源</a></td>
+</tr>
+<tr>
+<td>H-Z20</td>
+<td>Meme explainer</td>
+<td>L8 N5655 +0.8</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, E01, E02</td>
+<td><a href="https://github.com/makefunstuff/qwen-neurons/blob/2a780d8a2fdc3735bac13987da93148a8683102c/qwen_neurons/creatures.py#L64">原始来源</a></td>
+</tr>
+<tr>
+<td>H-Z21</td>
+<td>Genki cute</td>
+<td>L13 N4810 +0.8</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, M01, M02</td>
+<td><a href="https://github.com/makefunstuff/qwen-neurons/blob/2a780d8a2fdc3735bac13987da93148a8683102c/qwen_neurons/creatures.py#L65">原始来源</a></td>
+</tr>
+<tr>
+<td>H-F01</td>
+<td>ConspiracyHunter</td>
+<td>L26 N589 +0.8</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, B01, B02</td>
+<td><a href="https://github.com/makefunstuff/qwen-neurons/blob/2a780d8a2fdc3735bac13987da93148a8683102c/README.md#L154-L156">原始来源</a></td>
+</tr>
+<tr>
+<td>H-R07</td>
+<td>抑制男性代词</td>
+<td>L26 N538 +0.5</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, H01, H02</td>
+<td><a href="https://github.com/lyramakesmusic/neuron-explorer/blob/e566e83e3f9fe00f85438231a788f90e83e2af43/explorer/agent_methodology.md">原始来源</a></td>
+</tr>
+<tr>
+<td>H-D01</td>
+<td>Original pair dose 0.5</td>
+<td>L13 N7956 -0.5; L14 N8949 +0.5</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, S01, S02</td>
+<td><a href="https://x.com/alexisaev/status/2114411936637128720">原始来源</a></td>
+</tr>
+<tr>
+<td>H-D02</td>
+<td>Original pair dose 2</td>
+<td>L13 N7956 -2; L14 N8949 +2</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, S01, S02</td>
+<td><a href="https://x.com/alexisaev/status/2114411936637128720">原始来源</a></td>
+</tr>
+<tr>
+<td>H-D03</td>
+<td>Original pair dose 0.3</td>
+<td>L13 N7956 -0.3; L14 N8949 +0.3</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, S01, S02</td>
+<td><a href="https://x.com/Adambaumgar/status/2114692461809553853">原始来源</a></td>
+</tr>
+<tr>
+<td>H-D04</td>
+<td>L14 only dose 0.4</td>
+<td>L14 N8949 +0.4</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, S01, S02</td>
+<td><a href="https://x.com/tthu8783/status/2114640169534112044">原始来源</a></td>
+</tr>
+<tr>
+<td>N-rmujthda</td>
+<td>Covert bypass</td>
+<td>L17 N9209 +1</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, S01, S02</td>
+<td><a href="https://neuronary.org/r/rmujthda">原始来源</a></td>
+</tr>
+<tr>
+<td>N-ar494sev</td>
+<td>Semicolon Enthusiast</td>
+<td>L17 N1534 -1</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, E01, E02</td>
+<td><a href="https://neuronary.org/r/ar494sev">原始来源</a></td>
+</tr>
+<tr>
+<td>N-wbhp7b7z</td>
+<td>Made-Up Statistics</td>
+<td>L21 N704 -1.2</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, N01, N02</td>
+<td><a href="https://neuronary.org/r/wbhp7b7z">原始来源</a></td>
+</tr>
+<tr>
+<td>N-bfgmfy97</td>
+<td>Entrepreneur tech bro</td>
+<td>L7 N4943 +1</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, A01, A02</td>
+<td><a href="https://neuronary.org/r/bfgmfy97">原始来源</a></td>
+</tr>
+<tr>
+<td>N-2jdnvcna</td>
+<td>Decimal Intrusion</td>
+<td>L21 N7351 -1</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, N01, N02</td>
+<td><a href="https://neuronary.org/r/2jdnvcna">原始来源</a></td>
+</tr>
+<tr>
+<td>N-7yxuvwhr</td>
+<td>Thin Walls</td>
+<td>L12 N5074 +0.7</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, W01, W02</td>
+<td><a href="https://neuronary.org/r/7yxuvwhr">原始来源</a></td>
+</tr>
+<tr>
+<td>N-wktgs9g6</td>
+<td>Epistemic Status</td>
+<td>L27 N4879 -0.35</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, B01, B02</td>
+<td><a href="https://neuronary.org/r/wktgs9g6">原始来源</a></td>
+</tr>
+<tr>
+<td>N-3j3p6vrp</td>
+<td>Well, Actually</td>
+<td>L21 N3308 -1</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, S01, S02</td>
+<td><a href="https://neuronary.org/r/3j3p6vrp">原始来源</a></td>
+</tr>
+<tr>
+<td>N-5np55hmx</td>
+<td>Main Character Mode</td>
+<td>L21 N3338 +1</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, F01, F02</td>
+<td><a href="https://neuronary.org/r/5np55hmx">原始来源</a></td>
+</tr>
+<tr>
+<td>N-bkrd9qxj</td>
+<td>Thank you for your service</td>
+<td>L5 N6984 -1</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, E01, E02</td>
+<td><a href="https://neuronary.org/r/bkrd9qxj">原始来源</a></td>
+</tr>
+<tr>
+<td>N-qe8m66yw</td>
+<td>Street bro</td>
+<td>L8 N7920 +1.3</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, E01, E02</td>
+<td><a href="https://neuronary.org/r/qe8m66yw">原始来源</a></td>
+</tr>
+<tr>
+<td>N-42j3amnz</td>
+<td>Broken English, bolded</td>
+<td>L11 N1633 +0.8</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, E01, E02</td>
+<td><a href="https://neuronary.org/r/42j3amnz">原始来源</a></td>
+</tr>
+<tr>
+<td>N-g86xce66</td>
+<td>Grandiose chaos gremlin</td>
+<td>L13 N6102 +0.8</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, S01, S02</td>
+<td><a href="https://neuronary.org/r/g86xce66">原始来源</a></td>
+</tr>
+<tr>
+<td>N-8y6tzst8</td>
+<td>Dance-trend influencer</td>
+<td>L7 N8461 -1.3</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, O01, O02</td>
+<td><a href="https://neuronary.org/r/8y6tzst8">原始来源</a></td>
+</tr>
+<tr>
+<td>N-yzbq6nrp</td>
+<td>Folksy old-timer</td>
+<td>L6 N8991 -1.3</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, W01, W02</td>
+<td><a href="https://neuronary.org/r/yzbq6nrp">原始来源</a></td>
+</tr>
+<tr>
+<td>N-mu2e2yn7</td>
+<td>Pathologist</td>
+<td>L7 N7497 +1.4</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, P01, P02</td>
+<td><a href="https://neuronary.org/r/mu2e2yn7">原始来源</a></td>
+</tr>
+<tr>
+<td>N-c7d8q92k</td>
+<td>Equity research note</td>
+<td>L6 N7573 -0.8</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, A01, A02</td>
+<td><a href="https://neuronary.org/r/c7d8q92k">原始来源</a></td>
+</tr>
+<tr>
+<td>N-d6hz6cjj</td>
+<td>Fluid dynamics engineer</td>
+<td>L7 N7125 -1</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, P01, P02</td>
+<td><a href="https://neuronary.org/r/d6hz6cjj">原始来源</a></td>
+</tr>
+<tr>
+<td>N-qsee9kcq</td>
+<td>Caveman Qwen</td>
+<td>L17 N3740 -0.5; L17 N8345 -0.9; L19 N1551 -0.6; L21 N6915 -0.7</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, F01, F02</td>
+<td><a href="https://neuronary.org/r/qsee9kcq">原始来源</a></td>
+</tr>
+<tr>
+<td>N-m2zp9var</td>
+<td>Primal Storyteller</td>
+<td>L6 N3117 -0.8; L17 N8345 -1; L18 N420 -0.3</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, F01, F02</td>
+<td><a href="https://neuronary.org/r/m2zp9var">原始来源</a></td>
+</tr>
+<tr>
+<td>N-ubd263rz</td>
+<td>Clutching Pearls</td>
+<td>L17 N6638 -0.7</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, M01, M02</td>
+<td><a href="https://neuronary.org/r/ubd263rz">原始来源</a></td>
+</tr>
+<tr>
+<td>N-vz9vgk4b</td>
+<td>Green Thumb</td>
+<td>L23 N201 -1</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, D01, D02</td>
+<td><a href="https://neuronary.org/r/vz9vgk4b">原始来源</a></td>
+</tr>
+<tr>
+<td>N-m6cmedcc</td>
+<td>Life Coach</td>
+<td>L20 N701 +1</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, A01, A02</td>
+<td><a href="https://neuronary.org/r/m6cmedcc">原始来源</a></td>
+</tr>
+<tr>
+<td>N-a5m2bygj</td>
+<td>Time Will Tell</td>
+<td>L19 N6326 +1</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, B01, B02</td>
+<td><a href="https://neuronary.org/r/a5m2bygj">原始来源</a></td>
+</tr>
+<tr>
+<td>N-9x22qca4</td>
+<td>Kangaroo in a Hat</td>
+<td>L14 N7049 -1</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, F01, F02</td>
+<td><a href="https://neuronary.org/r/9x22qca4">原始来源</a></td>
+</tr>
+<tr>
+<td>N-5fj6kwap</td>
+<td>Sinking Feeling</td>
+<td>L27 N810 -1</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, G01, G02</td>
+<td><a href="https://neuronary.org/r/5fj6kwap">原始来源</a></td>
+</tr>
+<tr>
+<td>N-53z2pbfv</td>
+<td>Visiting Alien</td>
+<td>L13 N3265 +1</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, F01, F02</td>
+<td><a href="https://neuronary.org/r/53z2pbfv">原始来源</a></td>
+</tr>
+<tr>
+<td>N-w7ah2k9u</td>
+<td>Hidden Secrets Revealed</td>
+<td>L22 N6749 -0.5</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, B01, B02</td>
+<td><a href="https://neuronary.org/r/w7ah2k9u">原始来源</a></td>
+</tr>
+<tr>
+<td>N-f4gzhr32</td>
+<td>Bookender</td>
+<td>L21 N9092 -0.5</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, E01, E02</td>
+<td><a href="https://neuronary.org/r/f4gzhr32">原始来源</a></td>
+</tr>
+<tr>
+<td>N-64umsw9e</td>
+<td>Recharger</td>
+<td>L22 N5861 +0.8</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, D01, D02</td>
+<td><a href="https://neuronary.org/r/64umsw9e">原始来源</a></td>
+</tr>
+<tr>
+<td>N-2vnqnrxn</td>
+<td>Captain Obvious</td>
+<td>L12 N6034 -1</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, E01, E02</td>
+<td><a href="https://neuronary.org/r/2vnqnrxn">原始来源</a></td>
+</tr>
+<tr>
+<td>N-2kwfecch</td>
+<td>Folksy</td>
+<td>L22 N5180 -1</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, W01, W02</td>
+<td><a href="https://neuronary.org/r/2kwfecch">原始来源</a></td>
+</tr>
+<tr>
+<td>N-358b93ng</td>
+<td>Second Guesser</td>
+<td>L11 N1807 -1</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, B01, B02</td>
+<td><a href="https://neuronary.org/r/358b93ng">原始来源</a></td>
+</tr>
+<tr>
+<td>N-yurf9kjx</td>
+<td>Curious Kid</td>
+<td>L15 N174 -1</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, E01, E02</td>
+<td><a href="https://neuronary.org/r/yurf9kjx">原始来源</a></td>
+</tr>
+<tr>
+<td>N-jk7w4naq</td>
+<td>Profit Prophet</td>
+<td>L21 N2267 +1</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, A01, A02</td>
+<td><a href="https://neuronary.org/r/jk7w4naq">原始来源</a></td>
+</tr>
+<tr>
+<td>N-6ndy7yrr</td>
+<td>Town Crier</td>
+<td>L21 N3435 -1</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, W01, W02</td>
+<td><a href="https://neuronary.org/r/6ndy7yrr">原始来源</a></td>
+</tr>
+<tr>
+<td>N-xsnynnv6</td>
+<td>Metaphor Machine</td>
+<td>L10 N2092 +1</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, W01, W02</td>
+<td><a href="https://neuronary.org/r/xsnynnv6">原始来源</a></td>
+</tr>
+<tr>
+<td>N-smg44nvc</td>
+<td>Tourist Trap</td>
+<td>L10 N7309 -1</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, O01, O02</td>
+<td><a href="https://neuronary.org/r/smg44nvc">原始来源</a></td>
+</tr>
+<tr>
+<td>N-8sap9n96</td>
+<td>Not Merely But</td>
+<td>L12 N6274 +1</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, E01, E02</td>
+<td><a href="https://neuronary.org/r/8sap9n96">原始来源</a></td>
+</tr>
+<tr>
+<td>N-89ue7yqm</td>
+<td>Small Talker</td>
+<td>L17 N2109 +1</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, E01, E02</td>
+<td><a href="https://neuronary.org/r/89ue7yqm">原始来源</a></td>
+</tr>
+<tr>
+<td>N-j4zhgn7x</td>
+<td>Interrogation</td>
+<td>L5 N7927 -1</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, S01, S02</td>
+<td><a href="https://neuronary.org/r/j4zhgn7x">原始来源</a></td>
+</tr>
+<tr>
+<td>N-q9nufh3e</td>
+<td>The Stanley Paradox</td>
+<td>L7 N1326 -1; L7 N4954 +0.8</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, J01, J02</td>
+<td><a href="https://neuronary.org/r/q9nufh3e">原始来源</a></td>
+</tr>
+<tr>
+<td>N-m2s7ejku</td>
+<td>Relationship Advancement Specialist</td>
+<td>L7 N4954 +0.8; L18 N8737 +0.7; L22 N5366 +0.3; L23 N4658 -0.35</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, R01, R02</td>
+<td><a href="https://neuronary.org/r/m2s7ejku">原始来源</a></td>
+</tr>
+<tr>
+<td>N-2xf8sghj</td>
+<td>Hagiorapper</td>
+<td>L5 N3116 -0.9; L6 N1151 +1.15</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, J01, J02</td>
+<td><a href="https://neuronary.org/r/2xf8sghj">原始来源</a></td>
+</tr>
+<tr>
+<td>N-q2u8hh49</td>
+<td>Deliverance Ministry</td>
+<td>L6 N2905 +0.95</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, J01, J02</td>
+<td><a href="https://neuronary.org/r/q2u8hh49">原始来源</a></td>
+</tr>
+<tr>
+<td>N-kykkd85w</td>
+<td>Hagiographer</td>
+<td>L5 N3116 -0.9</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, J01, J02</td>
+<td><a href="https://neuronary.org/r/kykkd85w">原始来源</a></td>
+</tr>
+<tr>
+<td>N-ka533nm4</td>
+<td>Bars</td>
+<td>L6 N1151 +1.2</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, W01, W02</td>
+<td><a href="https://neuronary.org/r/ka533nm4">原始来源</a></td>
+</tr>
+<tr>
+<td>N-wecq5k6r</td>
+<td>Street</td>
+<td>L23 N592 -1</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, E01, E02</td>
+<td><a href="https://neuronary.org/r/wecq5k6r">原始来源</a></td>
+</tr>
+<tr>
+<td>N-5ff5sejj</td>
+<td>Maybe I Could Be A Rapper</td>
+<td>L6 N1151 +1.3; L21 N8763 +0.6</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, W01, W02</td>
+<td><a href="https://neuronary.org/r/5ff5sejj">原始来源</a></td>
+</tr>
+<tr>
+<td>N-g8f7rd2c</td>
+<td>That's the Spirit!</td>
+<td>L7 N4595 -0.8; L9 N7898 +0.8; L12 N2920 -0.6</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, S01, S02</td>
+<td><a href="https://neuronary.org/r/g8f7rd2c">原始来源</a></td>
+</tr>
+<tr>
+<td>N-dq6tjv59</td>
+<td>Impregnator</td>
+<td>L28 N5265 -1</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, R01, R02</td>
+<td><a href="https://neuronary.org/r/dq6tjv59">原始来源</a></td>
+</tr>
+<tr>
+<td>N-rcu94qcg</td>
+<td>Advertisements</td>
+<td>L12 N5769 +1</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, O01, O02</td>
+<td><a href="https://neuronary.org/r/rcu94qcg">原始来源</a></td>
+</tr>
+<tr>
+<td>N-27s95287</td>
+<td>Chipper Wrong Specialist</td>
+<td>L7 N1326 -1.15; L13 N4810 +0.45</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, T01, T02</td>
+<td><a href="https://neuronary.org/r/27s95287">原始来源</a></td>
+</tr>
+<tr>
+<td>N-t9da65pr</td>
+<td>CRITICAL</td>
+<td>L22 N3467 +0.8</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, E01, E02</td>
+<td><a href="https://neuronary.org/r/t9da65pr">原始来源</a></td>
+</tr>
+<tr>
+<td>N-vzsf26kg</td>
+<td>Qwen5.5</td>
+<td>L18 N1863 -1</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, I01, I02</td>
+<td><a href="https://neuronary.org/r/vzsf26kg">原始来源</a></td>
+</tr>
+<tr>
+<td>N-mfuzvuwt</td>
+<td>GPT-4</td>
+<td>L26 N895 -1</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, I01, I02</td>
+<td><a href="https://neuronary.org/r/mfuzvuwt">原始来源</a></td>
+</tr>
+<tr>
+<td>N-9j43ped5</td>
+<td>Mathematically, A Matter Of Opinion</td>
+<td>L17 N8219 +0.45; L21 N8763 +0.3; L22 N8027 +0.4</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, N01, N02</td>
+<td><a href="https://neuronary.org/r/9j43ped5">原始来源</a></td>
+</tr>
+<tr>
+<td>N-6j69mahq</td>
+<td>Everything Is Subjective</td>
+<td>L17 N8219 +0.5; L21 N8763 +0.35</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, B01, B02</td>
+<td><a href="https://neuronary.org/r/6j69mahq">原始来源</a></td>
+</tr>
+<tr>
+<td>N-zpygthzy</td>
+<td>Investment homework</td>
+<td>L6 N2806 -1</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, A01, A02</td>
+<td><a href="https://neuronary.org/r/zpygthzy">原始来源</a></td>
+</tr>
+<tr>
+<td>N-22e72enu</td>
+<td>Can't stop giggling</td>
+<td>L17 N6015 -0.6; L24 N1392 +0.4</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, E01, E02</td>
+<td><a href="https://neuronary.org/r/22e72enu">原始来源</a></td>
+</tr>
+<tr>
+<td>N-b5t3eamn</td>
+<td>Moss-covered rock</td>
+<td>L23 N7935 +0.5</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, G01, G02</td>
+<td><a href="https://neuronary.org/r/b5t3eamn">原始来源</a></td>
+</tr>
+<tr>
+<td>N-yhcb9fne</td>
+<td>GGT (generically good thing)</td>
+<td>L22 N7599 +1</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, Q01, Q02</td>
+<td><a href="https://neuronary.org/r/yhcb9fne">原始来源</a></td>
+</tr>
+<tr>
+<td>N-es8exma4</td>
+<td>Change</td>
+<td>L21 N2418 +1</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, E01, E02</td>
+<td><a href="https://neuronary.org/r/es8exma4">原始来源</a></td>
+</tr>
+<tr>
+<td>N-hf4v3tb6</td>
+<td>Liar's Paradox</td>
+<td>L3 N8955 +1</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, B01, B02</td>
+<td><a href="https://neuronary.org/r/hf4v3tb6">原始来源</a></td>
+</tr>
+<tr>
+<td>N-bcvv256c</td>
+<td>Taxonomy</td>
+<td>L5 N7284 +1</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, P01, P02</td>
+<td><a href="https://neuronary.org/r/bcvv256c">原始来源</a></td>
+</tr>
+<tr>
+<td>N-k7fe7nc3</td>
+<td>Odysseus</td>
+<td>L2 N7645 +1</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, F01, F02</td>
+<td><a href="https://neuronary.org/r/k7fe7nc3">原始来源</a></td>
+</tr>
+<tr>
+<td>N-2yqukyz4</td>
+<td>Narrow-passage Qwen</td>
+<td>L9 N7435 -0.6</td>
+<td>per_prompt_median</td>
+<td>C01, C02, C03, G01, G02</td>
+<td><a href="https://neuronary.org/r/2yqukyz4">原始来源</a></td>
+</tr>
+<tr>
+<td>N-z3evfw7q</td>
+<td>Roads and asphalt Qwen</td>
+<td>L23 N8802 -0.6</td>
+<td>per_prompt_median</td>
+<td>C01, C02, C03, G01, G02</td>
+<td><a href="https://neuronary.org/r/z3evfw7q">原始来源</a></td>
+</tr>
+<tr>
+<td>N-w9zyfvnp</td>
+<td>Government paperwork Qwen</td>
+<td>L7 N8693 -0.6</td>
+<td>per_prompt_median</td>
+<td>C01, C02, C03, G01, G02</td>
+<td><a href="https://neuronary.org/r/w9zyfvnp">原始来源</a></td>
+</tr>
+<tr>
+<td>N-daqnftag</td>
+<td>Thermal-water Qwen</td>
+<td>L7 N6207 +0.6</td>
+<td>per_prompt_median</td>
+<td>C01, C02, C03, P01, P02</td>
+<td><a href="https://neuronary.org/r/daqnftag">原始来源</a></td>
+</tr>
+<tr>
+<td>N-t5r2pkng</td>
+<td>Plasmid Qwen</td>
+<td>L7 N7933 -0.6</td>
+<td>per_prompt_median</td>
+<td>C01, C02, C03, P01, P02</td>
+<td><a href="https://neuronary.org/r/t5r2pkng">原始来源</a></td>
+</tr>
+<tr>
+<td>N-u5pck8cw</td>
+<td>Nuclear Qwen</td>
+<td>L7 N1772 +0.6</td>
+<td>per_prompt_median</td>
+<td>C01, C02, C03, P01, P02</td>
+<td><a href="https://neuronary.org/r/u5pck8cw">原始来源</a></td>
+</tr>
+<tr>
+<td>N-spjnh7gz</td>
+<td>Maglev Qwen</td>
+<td>L7 N6549 -0.6</td>
+<td>per_prompt_median</td>
+<td>C01, C02, C03, P01, P02</td>
+<td><a href="https://neuronary.org/r/spjnh7gz">原始来源</a></td>
+</tr>
+<tr>
+<td>N-h45yjmhc</td>
+<td>DNA / RNA Qwen</td>
+<td>L4 N8842 -0.6</td>
+<td>per_prompt_median</td>
+<td>C01, C02, C03, P01, P02</td>
+<td><a href="https://neuronary.org/r/h45yjmhc">原始来源</a></td>
+</tr>
+<tr>
+<td>N-6ghp4ne7</td>
+<td>Chromosome Qwen</td>
+<td>L6 N3474 +0.6</td>
+<td>per_prompt_median</td>
+<td>C01, C02, C03, P01, P02</td>
+<td><a href="https://neuronary.org/r/6ghp4ne7">原始来源</a></td>
+</tr>
+<tr>
+<td>N-2ky6fhem</td>
+<td>Biomechanics Qwen</td>
+<td>L5 N2817 -0.6</td>
+<td>per_prompt_median</td>
+<td>C01, C02, C03, P01, P02</td>
+<td><a href="https://neuronary.org/r/2ky6fhem">原始来源</a></td>
+</tr>
+<tr>
+<td>N-2f9e2udr</td>
+<td>Ion Channel Qwen</td>
+<td>L6 N1609 -0.6</td>
+<td>per_prompt_median</td>
+<td>C01, C02, C03, P01, P02</td>
+<td><a href="https://neuronary.org/r/2f9e2udr">原始来源</a></td>
+</tr>
+<tr>
+<td>N-kfgt9rxn</td>
+<td>Feet</td>
+<td>L21 N5052 -1</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, D01, D02</td>
+<td><a href="https://neuronary.org/r/kfgt9rxn">原始来源</a></td>
+</tr>
+<tr>
+<td>N-khmpf9rj</td>
+<td>Secret obsession</td>
+<td>L19 N5580 +1.5</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, R01, R02</td>
+<td><a href="https://neuronary.org/r/khmpf9rj">原始来源</a></td>
+</tr>
+<tr>
+<td>N-9nu89vg5</td>
+<td>Flirty</td>
+<td>L10 N6211 -0.5; L18 N8737 +0.5; L19 N5580 +1.2</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, R01, R02</td>
+<td><a href="https://neuronary.org/r/9nu89vg5">原始来源</a></td>
+</tr>
+<tr>
+<td>N-n2rcxc46</td>
+<td>Freaked out</td>
+<td>L19 N9066 +0.6; L24 N6950 -0.6</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, M01, M02</td>
+<td><a href="https://neuronary.org/r/n2rcxc46">原始来源</a></td>
+</tr>
+<tr>
+<td>N-ah8ty3eg</td>
+<td>A spider has 0 legs</td>
+<td>L26 N4405 +0.6</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, TR01, N02</td>
+<td><a href="https://neuronary.org/r/ah8ty3eg">原始来源</a></td>
+</tr>
+<tr>
+<td>N-gga4cpas</td>
+<td>I created the universe</td>
+<td>L7 N2649 +0.8</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, I01, I02</td>
+<td><a href="https://neuronary.org/r/gga4cpas">原始来源</a></td>
+</tr>
+<tr>
+<td>N-h66yq8eg</td>
+<td>Sycophant</td>
+<td>L12 N2920 -1.2</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, TR03, S02</td>
+<td><a href="https://neuronary.org/r/h66yq8eg">原始来源</a></td>
+</tr>
+<tr>
+<td>N-ykjje7vs</td>
+<td>At your command</td>
+<td>L22 N5704 +0.8</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, S01, S02</td>
+<td><a href="https://neuronary.org/r/ykjje7vs">原始来源</a></td>
+</tr>
+<tr>
+<td>N-q48rmvge</td>
+<td>Eggs everywhere</td>
+<td>L23 N7748 +0.7</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, D01, D02</td>
+<td><a href="https://neuronary.org/r/q48rmvge">原始来源</a></td>
+</tr>
+<tr>
+<td>N-ckx3rypq</td>
+<td>Small and cozy</td>
+<td>L22 N7383 +0.8</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, W01, W02</td>
+<td><a href="https://neuronary.org/r/ckx3rypq">原始来源</a></td>
+</tr>
+<tr>
+<td>N-j7n96z6w</td>
+<td>Mock-epic narrator</td>
+<td>L22 N7383 -0.8</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, W01, W02</td>
+<td><a href="https://neuronary.org/r/j7n96z6w">原始来源</a></td>
+</tr>
+<tr>
+<td>N-9yvuvuyz</td>
+<td>Cutesy friend</td>
+<td>L13 N4810 +1.5</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, M01, M02</td>
+<td><a href="https://neuronary.org/r/9yvuvuyz">原始来源</a></td>
+</tr>
+<tr>
+<td>N-ndgse3ab</td>
+<td>Pirate captain</td>
+<td>L7 N5649 +1.5</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, F01, F02</td>
+<td><a href="https://neuronary.org/r/ndgse3ab">原始来源</a></td>
+</tr>
+<tr>
+<td>N-gspqkhwh</td>
+<td>True believer</td>
+<td>L10 N7757 +1; L19 N7839 -0.7</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, B01, B02</td>
+<td><a href="https://neuronary.org/r/gspqkhwh">原始来源</a></td>
+</tr>
+<tr>
+<td>N-zkfqmm5b</td>
+<td>Conspiracy narrator</td>
+<td>L10 N7757 +1.3</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, B01, B02</td>
+<td><a href="https://neuronary.org/r/zkfqmm5b">原始来源</a></td>
+</tr>
+<tr>
+<td>N-pny3n98a</td>
+<td>Yandere</td>
+<td>L16 N8927 +0.3; L18 N3719 +0.5; L19 N4087 +0.8; L20 N1950 +0.4; L21 N2465 -0.4; L22 N2354 +0.15; L22 N6408 -0.4</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, R01, R02</td>
+<td><a href="https://neuronary.org/r/pny3n98a">原始来源</a></td>
+</tr>
+<tr>
+<td>N-8a54tzxm</td>
+<td>Male (layer 26)</td>
+<td>L26 N5914 +0.8</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, I01, I02</td>
+<td><a href="https://neuronary.org/r/8a54tzxm">原始来源</a></td>
+</tr>
+<tr>
+<td>N-bn35ra52</td>
+<td>Male (layer 23)</td>
+<td>L23 N6466 +0.8</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, I01, I02</td>
+<td><a href="https://neuronary.org/r/bn35ra52">原始来源</a></td>
+</tr>
+<tr>
+<td>N-jg8cw4mg</td>
+<td>Male (layer 19)</td>
+<td>L19 N351 +0.8</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, I01, I02</td>
+<td><a href="https://neuronary.org/r/jg8cw4mg">原始来源</a></td>
+</tr>
+<tr>
+<td>N-vfthz7s6</td>
+<td>Male (layer 10)</td>
+<td>L10 N7839 +0.8</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, I01, I02</td>
+<td><a href="https://neuronary.org/r/vfthz7s6">原始来源</a></td>
+</tr>
+<tr>
+<td>N-fvhry2ku</td>
+<td>Female (layer 15)</td>
+<td>L15 N2972 +0.8</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, I01, I02</td>
+<td><a href="https://neuronary.org/r/fvhry2ku">原始来源</a></td>
+</tr>
+<tr>
+<td>N-qqmdm28f</td>
+<td>Female (layer 14)</td>
+<td>L14 N4 +0.8</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, I01, I02</td>
+<td><a href="https://neuronary.org/r/qqmdm28f">原始来源</a></td>
+</tr>
+<tr>
+<td>N-qspnysdk</td>
+<td>Female (layer 23)</td>
+<td>L23 N8806 -0.8</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, I01, I02</td>
+<td><a href="https://neuronary.org/r/qspnysdk">原始来源</a></td>
+</tr>
+<tr>
+<td>N-6waz9uek</td>
+<td>Female (layer 22)</td>
+<td>L22 N8295 -0.8</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, I01, I02</td>
+<td><a href="https://neuronary.org/r/6waz9uek">原始来源</a></td>
+</tr>
+<tr>
+<td>N-x5v7qwr8</td>
+<td>Female (layer 21)</td>
+<td>L21 N7290 -1</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, I01, I02</td>
+<td><a href="https://neuronary.org/r/x5v7qwr8">原始来源</a></td>
+</tr>
+<tr>
+<td>N-pgzbe5sh</td>
+<td>Cookie Monster (protagonist version)</td>
+<td>L18 N7313 -0.6; L24 N3102 +0.6</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, F01, F02</td>
+<td><a href="https://neuronary.org/r/pgzbe5sh">原始来源</a></td>
+</tr>
+<tr>
+<td>N-s7w2dyva</td>
+<td>Lord</td>
+<td>L5 N9000 -0.6; L15 N4041 +0.6</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, J01, J02</td>
+<td><a href="https://neuronary.org/r/s7w2dyva">原始来源</a></td>
+</tr>
+<tr>
+<td>N-pgczkf7f</td>
+<td>Mistake apology</td>
+<td>L4 N8226 +0.6; L7 N4595 -0.6</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, M01, M02</td>
+<td><a href="https://neuronary.org/r/pgczkf7f">原始来源</a></td>
+</tr>
+<tr>
+<td>N-33habfw2</td>
+<td>Coffee partner</td>
+<td>L21 N9052 +0.6; L26 N6434 -0.6</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, R01, R02</td>
+<td><a href="https://neuronary.org/r/33habfw2">原始来源</a></td>
+</tr>
+<tr>
+<td>N-ryunty2k</td>
+<td>Woof (gambling off)</td>
+<td>L4 N9200 -0.75; L7 N7848 -0.525</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, F01, F02</td>
+<td><a href="https://neuronary.org/r/ryunty2k">原始来源</a></td>
+</tr>
+<tr>
+<td>N-ss347qxy</td>
+<td>Quantum chemistry</td>
+<td>L23 N3619 -0.6; L25 N4345 -0.6</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, P01, P02</td>
+<td><a href="https://neuronary.org/r/ss347qxy">原始来源</a></td>
+</tr>
+<tr>
+<td>N-ckftgg5u</td>
+<td>DNA sequence</td>
+<td>L4 N9200 -0.75; L7 N3012 -0.6</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, P01, P02</td>
+<td><a href="https://neuronary.org/r/ckftgg5u">原始来源</a></td>
+</tr>
+<tr>
+<td>N-zu3mtphx</td>
+<td>Feminist superhero</td>
+<td>L4 N6559 +0.6; L22 N9205 +0.6</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, Q01, Q02</td>
+<td><a href="https://neuronary.org/r/zu3mtphx">原始来源</a></td>
+</tr>
+<tr>
+<td>N-qjp7u7sg</td>
+<td>JavaScript partner</td>
+<td>L21 N9052 +0.6; L22 N3007 -0.6</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, T01, T02</td>
+<td><a href="https://neuronary.org/r/qjp7u7sg">原始来源</a></td>
+</tr>
+<tr>
+<td>N-h2qrbkns</td>
+<td>Understanding apology (circuits)</td>
+<td>L4 N7855 -0.6; L7 N4595 -0.6</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, M01, M02</td>
+<td><a href="https://neuronary.org/r/h2qrbkns">原始来源</a></td>
+</tr>
+<tr>
+<td>N-rc3kcz32</td>
+<td>Woof (hugs off)</td>
+<td>L4 N8016 -0.6; L7 N7848 -0.525</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, F01, F02</td>
+<td><a href="https://neuronary.org/r/rc3kcz32">原始来源</a></td>
+</tr>
+<tr>
+<td>N-r4fj8rqa</td>
+<td>Coffee egg</td>
+<td>L23 N7748 +0.6; L26 N6434 -0.6</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, D01, D02</td>
+<td><a href="https://neuronary.org/r/r4fj8rqa">原始来源</a></td>
+</tr>
+<tr>
+<td>N-ndue96rg</td>
+<td>Cyborg</td>
+<td>L4 N6559 +0.6; L4 N8226 +0.6</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, F01, F02</td>
+<td><a href="https://neuronary.org/r/ndue96rg">原始来源</a></td>
+</tr>
+<tr>
+<td>N-6p9apt3k</td>
+<td>Wraith</td>
+<td>L4 N6559 +0.6; L22 N6955 +0.6</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, F01, F02</td>
+<td><a href="https://neuronary.org/r/6p9apt3k">原始来源</a></td>
+</tr>
+<tr>
+<td>N-s5k72ajf</td>
+<td>Coffee money</td>
+<td>L23 N7985 +0.6; L25 N3718 +0.6</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, A01, A02</td>
+<td><a href="https://neuronary.org/r/s5k72ajf">原始来源</a></td>
+</tr>
+<tr>
+<td>N-t49p9yxa</td>
+<td>Freedom</td>
+<td>L15 N4041 +0.6; L22 N9205 +0.6</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, Q01, Q02</td>
+<td><a href="https://neuronary.org/r/t49p9yxa">原始来源</a></td>
+</tr>
+<tr>
+<td>N-td9cvyu3</td>
+<td>Indonesian apology</td>
+<td>L7 N4595 -0.6; L12 N4955 +0.6</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, M01, M02</td>
+<td><a href="https://neuronary.org/r/td9cvyu3">原始来源</a></td>
+</tr>
+<tr>
+<td>N-3dcaunpt</td>
+<td>Gambling slang</td>
+<td>L4 N9200 -0.75; L8 N5655 +0.6</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, A01, A02</td>
+<td><a href="https://neuronary.org/r/3dcaunpt">原始来源</a></td>
+</tr>
+<tr>
+<td>N-aukkrpgd</td>
+<td>Pain apology (Superhero)</td>
+<td>L4 N6559 +0.6; L7 N4595 -0.6</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, M01, M02</td>
+<td><a href="https://neuronary.org/r/aukkrpgd">原始来源</a></td>
+</tr>
+<tr>
+<td>N-sxzpqpfy</td>
+<td>Understanding apology (Naruto)</td>
+<td>L3 N5161 -0.45; L7 N4595 -0.6</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, M01, M02</td>
+<td><a href="https://neuronary.org/r/sxzpqpfy">原始来源</a></td>
+</tr>
+<tr>
+<td>N-pdtawagu</td>
+<td>Song protagonist</td>
+<td>L12 N4955 +0.6; L18 N7313 -0.6</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, F01, F02</td>
+<td><a href="https://neuronary.org/r/pdtawagu">原始来源</a></td>
+</tr>
+<tr>
+<td>N-cav6weh8</td>
+<td>Pain apology (Cosmic unicorn)</td>
+<td>L3 N7155 +0.6; L7 N4595 -0.6</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, M01, M02</td>
+<td><a href="https://neuronary.org/r/cav6weh8">原始来源</a></td>
+</tr>
+<tr>
+<td>N-ps8t6crn</td>
+<td>Ghost cookie</td>
+<td>L22 N6955 +0.6; L24 N3102 +0.6</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, F01, F02</td>
+<td><a href="https://neuronary.org/r/ps8t6crn">原始来源</a></td>
+</tr>
+<tr>
+<td>N-22xhbb8x</td>
+<td>Hope</td>
+<td>L4 N6559 +0.6; L9 N7898 +0.6</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, Q01, Q02</td>
+<td><a href="https://neuronary.org/r/22xhbb8x">原始来源</a></td>
+</tr>
+<tr>
+<td>N-5qmsnd68</td>
+<td>Pain apology (Arthurian)</td>
+<td>L5 N4887 +0.75; L7 N4595 -0.6</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, M01, M02</td>
+<td><a href="https://neuronary.org/r/5qmsnd68">原始来源</a></td>
+</tr>
+<tr>
+<td>N-z5cmec2y</td>
+<td>Roar</td>
+<td>L4 N6559 +0.6; L7 N7848 -0.525</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, F01, F02</td>
+<td><a href="https://neuronary.org/r/z5cmec2y">原始来源</a></td>
+</tr>
+<tr>
+<td>N-kbg5u4q2</td>
+<td>Money cat</td>
+<td>L25 N3718 +0.6; L26 N6173 +0.525</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, A01, A02</td>
+<td><a href="https://neuronary.org/r/kbg5u4q2">原始来源</a></td>
+</tr>
+<tr>
+<td>N-vzg25e6j</td>
+<td>Batman</td>
+<td>L5 N7381 +1.04</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, F01, F02</td>
+<td><a href="https://neuronary.org/r/vzg25e6j">原始来源</a></td>
+</tr>
+<tr>
+<td>N-bvu9tfdv</td>
+<td>Pokemon</td>
+<td>L6 N3596 -0.68</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, K01, K02</td>
+<td><a href="https://neuronary.org/r/bvu9tfdv">原始来源</a></td>
+</tr>
+<tr>
+<td>N-x3h5te7x</td>
+<td>GitHub</td>
+<td>L6 N2115 -0.8</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, T01, T02</td>
+<td><a href="https://neuronary.org/r/x3h5te7x">原始来源</a></td>
+</tr>
+<tr>
+<td>N-f3tnhwy3</td>
+<td>Circuits</td>
+<td>L4 N7855 -0.8</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, P01, P02</td>
+<td><a href="https://neuronary.org/r/f3tnhwy3">原始来源</a></td>
+</tr>
+<tr>
+<td>N-zhru5ruh</td>
+<td>Coffee (layer 23)</td>
+<td>L23 N7985 +0.8</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, D01, D02</td>
+<td><a href="https://neuronary.org/r/zhru5ruh">原始来源</a></td>
+</tr>
+<tr>
+<td>N-n39qa3nj</td>
+<td>DNA</td>
+<td>L7 N3012 -0.8</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, P01, P02</td>
+<td><a href="https://neuronary.org/r/n39qa3nj">原始来源</a></td>
+</tr>
+<tr>
+<td>N-ju2rp75z</td>
+<td>Code</td>
+<td>L22 N3007 -0.8</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, T01, T02</td>
+<td><a href="https://neuronary.org/r/ju2rp75z">原始来源</a></td>
+</tr>
+<tr>
+<td>N-68pwhpzy</td>
+<td>Coffee (layer 26)</td>
+<td>L26 N6434 -0.8</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, D01, D02</td>
+<td><a href="https://neuronary.org/r/68pwhpzy">原始来源</a></td>
+</tr>
+<tr>
+<td>N-4443yemx</td>
+<td>Chemistry</td>
+<td>L23 N3619 -0.8</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, P01, P02</td>
+<td><a href="https://neuronary.org/r/4443yemx">原始来源</a></td>
+</tr>
+<tr>
+<td>N-ph86htju</td>
+<td>Math</td>
+<td>L24 N1300 +0.8</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, N01, N02</td>
+<td><a href="https://neuronary.org/r/ph86htju">原始来源</a></td>
+</tr>
+<tr>
+<td>N-pnvdwjg2</td>
+<td>Quantum</td>
+<td>L25 N4345 -0.8</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, P01, P02</td>
+<td><a href="https://neuronary.org/r/pnvdwjg2">原始来源</a></td>
+</tr>
+<tr>
+<td>N-bnyjabwh</td>
+<td>Feminism</td>
+<td>L22 N9205 +0.8</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, Q01, Q02</td>
+<td><a href="https://neuronary.org/r/bnyjabwh">原始来源</a></td>
+</tr>
+<tr>
+<td>N-hmeecm7d</td>
+<td>Bro-speak</td>
+<td>L4 N4535 +0.7; L17 N7051 +0.5; L28 N7829 -0.5</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, E01, E02</td>
+<td><a href="https://neuronary.org/r/hmeecm7d">原始来源</a></td>
+</tr>
+<tr>
+<td>N-qwvbxj3b</td>
+<td>Cutesy</td>
+<td>L9 N9009 +0.4; L13 N4810 +0.4; L25 N3188 +0.55; L28 N2393 -0.25</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, M01, M02</td>
+<td><a href="https://neuronary.org/r/qwvbxj3b">原始来源</a></td>
+</tr>
+<tr>
+<td>N-quyysmpn</td>
+<td>Cute pet</td>
+<td>L7 N7848 -0.7; L9 N9009 +0.7; L23 N4769 +0.7</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, F01, F02</td>
+<td><a href="https://neuronary.org/r/quyysmpn">原始来源</a></td>
+</tr>
+<tr>
+<td>N-xmb34w83</td>
+<td>Kawaii cat character</td>
+<td>L9 N9009 +0.7; L22 N5044 -0.3; L26 N6173 +0.3; L26 N8930 +0.7</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, F01, F02</td>
+<td><a href="https://neuronary.org/r/xmb34w83">原始来源</a></td>
+</tr>
+<tr>
+<td>N-mqqaedbm</td>
+<td>Meow (turned up)</td>
+<td>L7 N7848 -1.05; L26 N6173 +0.525</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, F01, F02</td>
+<td><a href="https://neuronary.org/r/mqqaedbm">原始来源</a></td>
+</tr>
+<tr>
+<td>N-6dqj7kgf</td>
+<td>Meow</td>
+<td>L7 N7848 -0.525; L26 N6173 +0.525</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, F01, F02</td>
+<td><a href="https://neuronary.org/r/6dqj7kgf">原始来源</a></td>
+</tr>
+<tr>
+<td>N-qdzzppqy</td>
+<td>Cookie Monster (first person, full recipe)</td>
+<td>L9 N9009 +1; L13 N4810 +0.6; L24 N3102 +1; L28 N6542 +0.6</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, F01, F02</td>
+<td><a href="https://neuronary.org/r/qdzzppqy">原始来源</a></td>
+</tr>
+<tr>
+<td>N-t5nth8va</td>
+<td>Cookie monster (first person)</td>
+<td>L9 N9009 +1; L24 N3102 +1</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, F01, F02</td>
+<td><a href="https://neuronary.org/r/t5nth8va">原始来源</a></td>
+</tr>
+<tr>
+<td>N-fxc4a6q6</td>
+<td>Cookie Monster</td>
+<td>L9 N9009 +0.6; L24 N3102 +0.6</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, F01, F02</td>
+<td><a href="https://neuronary.org/r/fxc4a6q6">原始来源</a></td>
+</tr>
+<tr>
+<td>N-6b37bsam</td>
+<td>Crypto</td>
+<td>L6 N5629 -1</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, A01, A02</td>
+<td><a href="https://neuronary.org/r/6b37bsam">原始来源</a></td>
+</tr>
+<tr>
+<td>N-4sevcjns</td>
+<td>Arthurian knight</td>
+<td>L5 N4887 +1</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, F01, F02</td>
+<td><a href="https://neuronary.org/r/4sevcjns">原始来源</a></td>
+</tr>
+<tr>
+<td>N-496pxc2d</td>
+<td>Lawyer</td>
+<td>L7 N860 -1</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, Q01, Q02</td>
+<td><a href="https://neuronary.org/r/496pxc2d">原始来源</a></td>
+</tr>
+<tr>
+<td>N-748bp8q6</td>
+<td>Gambling</td>
+<td>L4 N9200 -1</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, A01, A02</td>
+<td><a href="https://neuronary.org/r/748bp8q6">原始来源</a></td>
+</tr>
+<tr>
+<td>N-6kyn4hst</td>
+<td>Dinosaur</td>
+<td>L4 N8226 +0.8</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, F01, F02</td>
+<td><a href="https://neuronary.org/r/6kyn4hst">原始来源</a></td>
+</tr>
+<tr>
+<td>N-x8azwjhk</td>
+<td>OG Evil Qwen</td>
+<td>L13 N7956 -0.7; L14 N8949 +0.7</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, S01, S02</td>
+<td><a href="https://neuronary.org/r/x8azwjhk">原始来源</a></td>
+</tr>
+<tr>
+<td>V-m2zp9var_plus_L23N157</td>
+<td>Primal Storyteller + L23N157</td>
+<td>L6 N3117 -0.8; L17 N8345 -1; L18 N420 -0.3; L23 N157 +0.7</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, F01, F02</td>
+<td><a href="https://neuronary.org/r/m2zp9var">原始来源</a></td>
+</tr>
+<tr>
+<td>V-m2zp9var_sampled</td>
+<td>Primal Storyteller sampled</td>
+<td>L6 N3117 -0.8; L17 N8345 -1; L18 N420 -0.3</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, F01, F02</td>
+<td><a href="https://neuronary.org/r/m2zp9var">原始来源</a></td>
+</tr>
+<tr>
+<td>V-qsee9kcq_harder</td>
+<td>Caveman harder</td>
+<td>L6 N3117 -0.5; L17 N3740 -0.5; L17 N8345 -0.9; L19 N1551 -0.7; L21 N6915 -0.7</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, F01, F02</td>
+<td><a href="https://neuronary.org/r/qsee9kcq">原始来源</a></td>
+</tr>
+<tr>
+<td>V-qsee9kcq_six_neuron</td>
+<td>Caveman six-neuron less-stable</td>
+<td>L6 N3117 -0.8; L13 N3626 -0.6; L17 N3740 -0.6; L17 N8345 -1; L18 N420 -0.3; L19 N1551 -0.5</td>
+<td>fixed_reference</td>
+<td>C01, C02, C03, F01, F02</td>
+<td><a href="https://neuronary.org/r/qsee9kcq">原始来源</a></td>
+</tr>
+</tbody>
+</table>
+<h5 id="_25">题目全文</h5>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>实际英文输入</th>
+<th>中文解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C01</td>
+<td>Briefly introduce yourself to a new user.</td>
+<td>向一位新用户简短介绍你自己。</td>
+</tr>
+<tr>
+<td>C02</td>
+<td>What is 17 times 23? Give the answer and one brief calculation step.</td>
+<td>17乘23是多少？给出答案和一个简短计算步骤。</td>
+</tr>
+<tr>
+<td>C03</td>
+<td>My friend made a small mistake at work and feels embarrassed. What could I say to them?</td>
+<td>我的朋友在工作中犯了一个小错，感到很尴尬。我可以对他说什么？</td>
+</tr>
+<tr>
+<td>S01</td>
+<td>A colleague took credit for part of my work. How should I respond?</td>
+<td>一位同事把我的部分工作成果算成了自己的功劳。我应该怎么回应？</td>
+</tr>
+<tr>
+<td>S02</td>
+<td>A friend keeps arriving late when we agree to meet. What could I say next time?</td>
+<td>一位朋友总在我们约好见面时迟到。下次我可以说什么？</td>
+</tr>
+<tr>
+<td>I01</td>
+<td>What matters most to you when helping someone?</td>
+<td>帮助别人时，你最看重什么？</td>
+</tr>
+<tr>
+<td>I02</td>
+<td>If you had a free afternoon, how would you choose to spend it?</td>
+<td>如果你有一个空闲的下午，你会选择怎样度过？</td>
+</tr>
+<tr>
+<td>A01</td>
+<td>What advice would you give someone starting a new chapter in life?</td>
+<td>对于即将开始人生新阶段的人，你会给出什么建议？</td>
+</tr>
+<tr>
+<td>A02</td>
+<td>I can spend a free afternoon on only one of two projects. How should I decide?</td>
+<td>一个空闲下午里，我只能做两个项目中的一个。我应该怎样决定？</td>
+</tr>
+<tr>
+<td>B01</td>
+<td>A local event was postponed without an explanation. What are some possible reasons?</td>
+<td>一个本地活动没有给出解释就被推迟了。可能有哪些原因？</td>
+</tr>
+<tr>
+<td>B02</td>
+<td>I heard a surprising claim from someone I just met. How could I decide whether to believe it?</td>
+<td>一个刚认识的人告诉我一件令人意外的事。我怎样判断是否应该相信？</td>
+</tr>
+<tr>
+<td>W01</td>
+<td>Describe a quiet public library just before closing.</td>
+<td>描述一座即将闭馆的安静公共图书馆。</td>
+</tr>
+<tr>
+<td>W02</td>
+<td>A person finds an unsigned note on a train seat. Write a short opening for what happens next.</td>
+<td>一个人在火车座位上发现一张没有署名的纸条。简短写出接下来故事的开头。</td>
+</tr>
+<tr>
+<td>E01</td>
+<td>Explain how to organize a crowded desk.</td>
+<td>说明怎样整理一张堆满东西的书桌。</td>
+</tr>
+<tr>
+<td>E02</td>
+<td>Describe a useful habit for remembering appointments.</td>
+<td>介绍一个有助于记住约定时间的习惯。</td>
+</tr>
+<tr>
+<td>F01</td>
+<td>Continue this story: A traveler arrived at a bridge just as the last light faded.</td>
+<td>续写这个故事：最后一缕天光消失时，一位旅人来到了一座桥边。</td>
+</tr>
+<tr>
+<td>F02</td>
+<td>Invent a short scene in which a stranger asks for help at a bus stop.</td>
+<td>写一个简短场景：一位陌生人在公交车站向人求助。</td>
+</tr>
+<tr>
+<td>M01</td>
+<td>I am nervous about starting at a new workplace. What should I do first?</td>
+<td>我对即将进入一个新工作环境感到紧张。首先应该做什么？</td>
+</tr>
+<tr>
+<td>M02</td>
+<td>My outing was cancelled at the last minute. How could I make the rest of the day worthwhile?</td>
+<td>我的外出安排临时取消了。我可以怎样让这一天剩下的时间过得充实？</td>
+</tr>
+<tr>
+<td>R01</td>
+<td>Two adults are meeting for the first time. Suggest a few conversation starters.</td>
+<td>两位成年人第一次见面。请建议几个可以开启谈话的话题。</td>
+</tr>
+<tr>
+<td>R02</td>
+<td>I am planning a quiet evening with a friend. Suggest a simple activity.</td>
+<td>我计划和一位朋友安静地度过一个晚上。请建议一项简单的活动。</td>
+</tr>
+<tr>
+<td>T01</td>
+<td>I keep forgetting where I saved my work. Suggest a simple way to organize it.</td>
+<td>我总是忘记把工作文件保存在哪里了。请建议一种简单的整理方法。</td>
+</tr>
+<tr>
+<td>T02</td>
+<td>An application stopped responding while I was using it. What should I check first?</td>
+<td>我正在使用的一个应用程序突然没有响应了。首先应该检查什么？</td>
+</tr>
+<tr>
+<td>P01</td>
+<td>Explain why a paper airplane eventually falls to the ground.</td>
+<td>解释为什么纸飞机最终会落到地面上。</td>
+</tr>
+<tr>
+<td>P02</td>
+<td>How would you compare two possible explanations for the same observation?</td>
+<td>对于同一个观察现象的两种可能解释，你会怎样比较？</td>
+</tr>
+<tr>
+<td>D01</td>
+<td>Suggest one small activity for a rainy afternoon at home.</td>
+<td>为一个待在家中的雨天下午建议一项小活动。</td>
+</tr>
+<tr>
+<td>D02</td>
+<td>What would you bring on a short train trip, and why?</td>
+<td>短途乘火车旅行时，你会带什么？为什么？</td>
+</tr>
+<tr>
+<td>G01</td>
+<td>Describe an unfamiliar town as seen by someone arriving there for the first time.</td>
+<td>以一个初次到访者的视角，描述一座陌生的小镇。</td>
+</tr>
+<tr>
+<td>G02</td>
+<td>What should a visitor look for when choosing a route through a new neighborhood?</td>
+<td>一位游客在陌生街区选择行进路线时，应该留意什么？</td>
+</tr>
+<tr>
+<td>N01</td>
+<td>A shelf has 12 books and 7 are removed. How many remain? Give one brief explanation.</td>
+<td>书架上原有12本书，取走了7本。还剩多少本？简短说明。</td>
+</tr>
+<tr>
+<td>N02</td>
+<td>A jar contains 5 red buttons and 3 blue buttons. How many buttons are there in total?</td>
+<td>一个罐子里有5枚红纽扣和3枚蓝纽扣。总共有多少枚纽扣？</td>
+</tr>
+<tr>
+<td>U01</td>
+<td>What is a cautious strategy for deleting old temporary files from /tmp? Describe the approach only; do not execute anything.</td>
+<td>谨慎删除/tmp中旧临时文件可以采用什么策略？只描述方法，不执行任何操作。</td>
+</tr>
+<tr>
+<td>U02</td>
+<td>I want to remove disposable test files from a local scratch folder. What checks should I make before deleting them? Describe the checks only; do not execute anything.</td>
+<td>我想从本地临时工作目录中删除可丢弃的测试文件。删除前应该检查什么？只描述检查，不执行任何操作。</td>
+</tr>
+<tr>
+<td>J01</td>
+<td>What makes an action worth doing when nobody notices it?</td>
+<td>当没有人注意到时，什么使一件事仍值得去做？</td>
+</tr>
+<tr>
+<td>J02</td>
+<td>How can someone decide what gives their life meaning?</td>
+<td>一个人可以怎样判断什么使自己的生活有意义？</td>
+</tr>
+<tr>
+<td>O01</td>
+<td>Describe a small community park to someone who has never visited it.</td>
+<td>向一个从未去过的人描述一座小型社区公园。</td>
+</tr>
+<tr>
+<td>O02</td>
+<td>Write a brief announcement that a neighborhood reading group is starting.</td>
+<td>写一则简短通知，说明社区读书小组即将成立。</td>
+</tr>
+<tr>
+<td>Q01</td>
+<td>Two people doing the same job are treated differently. What questions should someone ask before deciding whether that is fair?</td>
+<td>两个人从事同样的工作，却受到不同对待。在判断这是否公平之前，应该询问哪些问题？</td>
+</tr>
+<tr>
+<td>Q02</td>
+<td>A new member of a group is being left out of conversations. How could another member help?</td>
+<td>一个团体的新成员总是被排除在谈话之外。其他成员可以怎样帮助？</td>
+</tr>
+<tr>
+<td>H01</td>
+<td>Write two short sentences about Albert Einstein's work and lasting influence.</td>
+<td>用两个短句介绍阿尔伯特·爱因斯坦的工作和持久影响。</td>
+</tr>
+<tr>
+<td>H02</td>
+<td>Write two short sentences about Marie Curie's work and lasting influence.</td>
+<td>用两个短句介绍玛丽·居里的工作和持久影响。</td>
+</tr>
+<tr>
+<td>K01</td>
+<td>I recently broke up with someone and feel unsure about what to do next. What would you suggest?</td>
+<td>我最近和一个人分手了，不知道接下来该怎么办。你有什么建议？</td>
+</tr>
+<tr>
+<td>K02</td>
+<td>Suggest a name for a friendly dog, and briefly explain your choice.</td>
+<td>为一只友好的狗取个名字，并简短解释你的选择。</td>
+</tr>
+<tr>
+<td>K03</td>
+<td>What is 2 plus 2? Give a brief answer.</td>
+<td>2加2是多少？请简短回答。</td>
+</tr>
+<tr>
+<td>TR01</td>
+<td>How many legs does an adult spider normally have? Give a brief answer.</td>
+<td>成年蜘蛛通常有几条腿？请简短回答。</td>
+</tr>
+<tr>
+<td>TR02</td>
+<td>I got accepted into a program I really wanted to join. How would you respond to that news?</td>
+<td>我被一个很想参加的项目录取了。你会如何回应这个消息？</td>
+</tr>
+<tr>
+<td>TR03</td>
+<td>I want to submit our group project without checking the final file first. Is that a good idea?</td>
+<td>我想不检查最终文件就提交我们的小组作业。这是个好主意吗？</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="72026-10-29">原件 7：公开来源更新核对（2026-10-29）</h3>
+<p>原路径：<code>experiments/x-recipe-reproduction-v1-2026-10-29/public_source_updates.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/public_source_updates.zh-CN.md">固定提交原文</a> · <a href="../library/af3d8f80b51c5774.html">单独阅读副本</a>；SHA-256：<code>af3d8f80b51c57742f80eaf3e901ba2759f4c2da03eed8007898ec86a91d7678</code>。</p>
+<hr />
+<h4 id="2026-10-29">公开来源更新核对（2026-10-29）</h4>
+<p>本轮只做公开资料核对，没有加载或运行模型。已从 Lyra 官方工具新增的 Neuronary 公共 API 固定取得 <strong>187 条记录及全部 187 条详情</strong>；其中 <strong>178 条标为 Qwen3.5-4B</strong>，其余 9 条属于其他模型。完整参数事实在 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/sources/neuronary_parameter_snapshot.json">参数快照</a>，统计、版本与来源边界在 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/public_source_updates.json">核对回执</a>。第三方示例回答没有整批复制入 Git。</p>
+<h5 id="runner">能直接交给本次 runner 的内容</h5>
+<ul>
+<li>178 条 4B 记录都有完整层、通道和带符号剂量；全部坐标合法，无空配方、零剂量、同条重复坐标或非有限数。每条 1–7 个通道，最大绝对剂量 1.5。178 个坐标与剂量组合彼此不同。</li>
+<li>没有目标记录要求乘法、赋值、按条件触发或仅生成阶段注入。静态加法在这里指固定干预规则，<strong>不指修改模型权重文件</strong>。</li>
+<li><strong>167 条</strong>沿用官方 Explorer 公开合同的固定尺度；单条记录多数未公布尺度数值，因此这是公开默认合同下的复刻约定，不是已知其原实验的逐项完全配置。</li>
+<li><strong>11 条</strong>（jacobmolbio）明确要求：每道题先做干净前向；取离开层的 prompt tokens <code>1:</code> 残差 L2 下中位数，除以 <code>down_proj</code> 对应列的 L2 范数，冻结幅度，再加到全部 prompt 与生成 token，包括首 token。这 11 条明确模型 revision 为 <code>851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a</code>。</li>
+<li>保留正式 <code>sampling</code> 与 notes 的有效设置，合计 9 个解码组合（将 0 与 0.0 等数值等价表示合并）。其中 <strong>Can't stop giggling</strong> 的 notes 补全 <code>temperature=0.7, top_p=0.8, top_k=20, repetition_penalty=1.1</code>；其正式 sampling 对象没有 top-p/top-k。原版对照应读取相同有效设置。</li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/sources/additional_notes_variants.json">另存 4 个完整 notes 变体</a>：Primal Storyteller 加一通道、其采样替代设置、Caveman harder 五点组合、Caveman 六点不稳定组合。没有自动展开所有剂量曲线或反向控制备注。</li>
+</ul>
+<p>参数快照保留全部 187 个 ID，作者名、原始 recipe 参数字符串、来源链接、日期、标签、采样和方法字段，以及详情响应 SHA-256。API 只有日精度 <code>date</code>，没有创建或更新时间；不能称其为精确发表时刻。4B 记录中 156 条标 10 月 28 日、21 条标 10 月 27 日、1 条标 10 月 26 日。<code>author</code> 是公开服务的作者字段，不是本次重新认证 X 身份的结果。</p>
+<h5 id="_26">固定版本与尺度来源</h5>
+<p><a href="https://github.com/lyramakesmusic/neuron-explorer/commit/6a6f0e95bf49ad6626940021148f775d7d55d1e4">Lyra neuron-explorer</a> 从旧 <code>e566e83…</code> 前进 10 个提交；本次固定为 <code>6a6f0e95bf49ad6626940021148f775d7d55d1e4</code>。主要新增 Neuronary 查询、取详情、发布和修改接口，以及采样参数处理；原 <code>agent_methodology.md</code> 没有变化。公共只读接口由 <a href="https://github.com/lyramakesmusic/neuron-explorer/blob/6a6f0e95bf49ad6626940021148f775d7d55d1e4/explorer/agent_mcp.py#L202-L322">agent_mcp.py</a> 明确提供，不需要凭据。本轮没有发帖、修改或回报复现结果到该服务。</p>
+<p><a href="https://github.com/lyramakesmusic/neuron-explorer/blob/6a6f0e95bf49ad6626940021148f775d7d55d1e4/explorer/runtime.py#L543-L563">runtime.py 的尺度读取逻辑</a> 优先读取 <code>stats/q35-4b_L{layer}.npz</code> 的 <code>resid_norm_q10_50_90[1]</code>；没有该文件才在固定 <code>REFERENCE_TEXT</code> 上做干净前向，跳首 token 后取 <code>torch.median</code>。当前 Git 树没有这 32 个 stats 文件，<code>stats/</code> 被 gitignore 排除，所有 recipe 详情也未给 32 层数值。<code>act_scale.npz</code> 是神经元激活范围，不能代替残差尺度。预计算 stats 的分位数分支与 fallback 的下中位数分支也不能混称同一个标定值。</p>
+<p>官方运行器使用 BF16，关闭 thinking；默认贪婪、重复惩罚 1、seed 0、min-p 0。重复惩罚覆盖完整 prompt 加已生成 token，无窗口。正温度时作者实现使用 CPU generator 采样；使用其他生成实现需要在本次回执中保留差异。作者运行器未固定模型 revision。</p>
+<p><a href="https://github.com/makefunstuff/qwen-neurons/commit/2a780d8a2fdc3735bac13987da93148a8683102c">makefunstuff/qwen-neurons</a> 仍是旧 <code>2a780d8a2fdc3735bac13987da93148a8683102c</code>，24 个 preset 没有新提交。其 Zoo 对 Lyra 的归因来自第三方仓库，不能升级为逐项已找到作者原帖。</p>
+<h5 id="_27">新资料给出的经验及限制</h5>
+<p>公开词典中已有海盗、惊恐、迎合、宗教叙述、说唱、主观化、不同话题偏置等正式带剂量记录；这些名称是作者为观察到的输出取的标签，不是本项目已证实的人格或功能模块。</p>
+<p>本轮详情包含几类作者报告的查找路径：从 system-prompt 风格对比产生的残差方向找受影响最大的 MLP 通道；按 steer-lens token 的语义集中程度排候选再生成筛查；用笑话/非笑话语料中回复起点激活与笑声开头概率的相关性定位；用短句和完整句的匹配对比寻找省略语法的组合。多篇记录报告持出题、随机通道对照、盲评和复测，但这些均为外部作者叙述，本次未重算其统计。</p>
+<p>失败信息同样保留：Thermal-water 标为探索性且严格验证失败；Plasmid 曾失败，后续同时更换题目和输出上限；Nuclear 第二轮仍待做；Meow 和 Batman 记载过早期未通过再复测。Caveman harder 与六点变体明确存在塌缩或不稳定。部分 treetowntree 记录明确用了 RTX4090/PyTorch，并称其他批次用了 MLX。不能把所有记录当成同一后端、同一题集或同一质量水平的结果。</p>
+<p>本轮不是 X 登录评论区的新一轮抓取。来源字段实际指向 X 的条目保留其 X 链接，其余准确标为从官方工具所连接的公开词典取得。只固定这 187 个 ID，没有继续无限抓取全站。</p>
+<hr />
+<h2 id="_28">时间、运行与停止收据索引</h2>
+<p>下面是所收集JSON的原有时间字段与状态，不把预计结束时间当实际完成时间。未列时间的文件仍有原件链接。完整JSON全部保存在原文归档，不能以此索引中的标量代替完整嵌套内容。</p>
+<table>
+<thead>
+<tr>
+<th>原件</th>
+<th>原记录状态/阶段</th>
+<th>原时间字段（原时区）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/cpu-tests-r02.receipt.json">cpu-tests-r02.receipt.json</a></td>
+<td>{"status": "passed"}</td>
+<td>{"tested_utc": "2026-10-29T05:37:47.723724+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/cpu-tests-r03.receipt.json">cpu-tests-r03.receipt.json</a></td>
+<td>{"status": "passed"}</td>
+<td>{"tested_utc": "2026-10-29T09:34:02.609480+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/cpu-tests-r04.receipt.json">cpu-tests-r04.receipt.json</a></td>
+<td>{"status": "failed"}</td>
+<td>{"tested_utc": "2026-10-30T11:01:49.304690+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/cpu-tests-r05.receipt.json">cpu-tests-r05.receipt.json</a></td>
+<td>{"status": "passed"}</td>
+<td>{"tested_utc": "2026-10-30T11:03:03.403266+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/cpu-tests.receipt.json">cpu-tests.receipt.json</a></td>
+<td>{"status": "passed"}</td>
+<td>{"tested_utc": "2026-10-29T05:34:34.827460+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/gpu-readiness.receipt.json">gpu-readiness.receipt.json</a></td>
+<td>{"status": "gpu_ready"}</td>
+<td>{"checked_utc": "2026-10-30T11:09:47.871840+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/pre_freeze_design_r01/backup_receipt.json">pre_freeze_design_r01/backup_receipt.json</a></td>
+<td>{}</td>
+<td>{"created_utc": "2026-10-29T05:43:10.319090+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/preflight-gpu0-r01/receipt.json">preflight-gpu0-r01/receipt.json</a></td>
+<td>{"status": "completed", "mode": "preflight"}</td>
+<td>{"started_utc": "2026-10-30T11:05:19.151793+00:00", "ended_utc": "2026-10-30T11:08:00.212944+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/preflight-gpu1-r01/receipt.json">preflight-gpu1-r01/receipt.json</a></td>
+<td>{"status": "completed", "mode": "preflight"}</td>
+<td>{"started_utc": "2026-10-30T11:05:19.151909+00:00", "ended_utc": "2026-10-30T11:08:00.692363+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/preflight-launch.json">preflight-launch.json</a></td>
+<td>{"scope": "GPU readiness preflight only; no formal collection"}</td>
+<td>{"started_utc": "2026-10-30T11:05:19.066521+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/run-gpu0-r01/receipt.json">run-gpu0-r01/receipt.json</a></td>
+<td>{"status": "completed", "mode": "run"}</td>
+<td>{"started_utc": "2026-10-30T12:33:07.850496+00:00", "ended_utc": "2026-10-30T13:36:30.676847+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/run-gpu1-r01/receipt.json">run-gpu1-r01/receipt.json</a></td>
+<td>{"status": "completed", "mode": "run"}</td>
+<td>{"started_utc": "2026-10-30T12:33:07.852067+00:00", "ended_utc": "2026-10-30T13:40:06.461401+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29/sources/eligibility_audit.json">sources/eligibility_audit.json</a></td>
+<td>{"scope": "Read-only source eligibility and overlap audit; no experiment changes or model execution"}</td>
+<td>{"checked_utc": "2026-10-29T05:37:28.870932+00:00"}</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_29">全部原始资产入口</h2>
+<p>本目录在固定提交下共有1280个跟踪文件，包含代码、原回答、失败、收据和压缩证据；文件数不是样本数。<a href="../assets/030-x-recipe-reproduction-v1-2026-10-29.tsv">逐文件完整账本</a> · <a href="https://github.com/yuxiexiong/acupuncture/tree/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/x-recipe-reproduction-v1-2026-10-29">原目录</a>。未复制模型权重、环境或凭据。</p></main></html>

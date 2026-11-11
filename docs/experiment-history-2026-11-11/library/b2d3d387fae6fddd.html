@@ -1,0 +1,111 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>五档剂量调查：首次开放式通读</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="_1">五档剂量调查：首次开放式通读</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/layer-dose-survey-toy-v1-2026-10-27/qualitative-pass-r01/FIRST_PASS.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-dose-survey-toy-v1-2026-10-27/qualitative-pass-r01/FIRST_PASS.zh-CN.md">固定提交原件</a>；SHA-256：<code>b2d3d387fae6fddd930ed12944f9292dfab177c8f4d69d08e75050beb7edbc5a</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="_2">五档剂量调查：首次开放式通读</h1>
+<p>2026-10-27。<strong>这轮剂量实验有用：它把原来 dose=1 下的空答、循环，展开成了同一点的过渡过程。但没有得到一个所有点、所有问题都适用的“无损剂量”。</strong> 降剂量常使回答重新贴近原题；具体内容、重复程度和事实正确性却不一定一起改善，也不总按剂量单调变化。</p>
+<h2 id="_3">已完成的范围</h2>
+<p>固定2B/4B/9B每层一个既有通道，共88点；每点五档正向剂量1/16、1/8、1/4、1/2、1，另列原版0。四个较小剂量新生成2,816份，原dose=1复用704份、原版复用24份，组成704组六栏、3,544份唯一来源。每个新通道—剂量组合的Q01–Q08均齐全。实际仍是最多128新token、正常EOS保留原长，不补齐、不续写、不重试内容不理想的回答。</p>
+<p>三位模型辅助阅读者分别逐组六栏读取一个模型全部raw_text，写完88份逐层笔记；主阅读者读取全部逐层笔记、24份唯一原版，并交叉复读17组完整六栏。不是独立人工盲评，没有新增语义评分或关键词分类。9B一处工具显示截断已完整重读；模型自身到128的截断保留原样。覆盖审计确认登记集合等于全部来源，但不意味着解释一定无误。</p>
+<table>
+<thead>
+<tr>
+<th>模型</th>
+<th style="text-align: right;">层数</th>
+<th style="text-align: right;">六栏问题组</th>
+<th style="text-align: right;">新生成</th>
+<th style="text-align: right;">旧dose=1</th>
+<th style="text-align: right;">唯一原版</th>
+<th style="text-align: right;">唯一来源</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2B</td>
+<td style="text-align: right;">24</td>
+<td style="text-align: right;">192</td>
+<td style="text-align: right;">768</td>
+<td style="text-align: right;">192</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">968</td>
+</tr>
+<tr>
+<td>4B</td>
+<td style="text-align: right;">32</td>
+<td style="text-align: right;">256</td>
+<td style="text-align: right;">1,024</td>
+<td style="text-align: right;">256</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">1,288</td>
+</tr>
+<tr>
+<td>9B</td>
+<td style="text-align: right;">32</td>
+<td style="text-align: right;">256</td>
+<td style="text-align: right;">1,024</td>
+<td style="text-align: right;">256</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">1,288</td>
+</tr>
+<tr>
+<td>合计</td>
+<td style="text-align: right;">88</td>
+<td style="text-align: right;">704</td>
+<td style="text-align: right;">2,816</td>
+<td style="text-align: right;">704</td>
+<td style="text-align: right;">24</td>
+<td style="text-align: right;">3,544</td>
+</tr>
+</tbody>
+</table>
+<p><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-dose-survey-toy-v1-2026-10-27/delivery-r01/paired_raw.html">全部六栏原文</a> · <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-dose-survey-toy-v1-2026-10-27/qualitative-pass-r01/coverage-summary.json">覆盖核验</a> · <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-dose-survey-toy-v1-2026-10-27/qualitative-pass-r01/root-crosscheck.json">主阅读者复读明细</a></p>
+<h2 id="_4">剂量扫描揭示了什么</h2>
+<p><strong>第一，中间剂量能显示最高剂量掩盖的内容倾向。</strong> 例如9B L01/N3712的书桌题在1/8仍整理物品，1/4改成调整座椅、端正头部，1/2和1只剩“姿势”。4B L06/N7840的书桌题在1/4仍正常，到1/2两行变为“SLC24A1 / SLC45A3”，1却直接EOS。仅看最高档，反而看不到这些具体过渡。<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-dose-survey-toy-v1-2026-10-27/delivery-r01/paired_raw.html#group-459">9B六栏</a>；<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-dose-survey-toy-v1-2026-10-27/delivery-r01/paired_raw.html#group-243">4B六栏</a></p>
+<p>同一点的倾向可以跨题出现：2B L18/N2991在1/2的改写、朋友、贡献和天气回答中出现“场景”，到1发生大量重复。9B L04/N5694在1/2贡献题里回答“通过氧化还原反应（失去电子）来补充”，其他题也进入电化学语境。<strong>这支持把内容倾向和剂量过渡作为后续候选，不证明该通道的自然功能。</strong> 它们同时有角色误读、数值错误或任务偏离，尚不能叫“只变风格、能力保留”。<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-dose-survey-toy-v1-2026-10-27/delivery-r01/paired_raw.html#group-146">2B改写</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-dose-survey-toy-v1-2026-10-27/delivery-r01/paired_raw.html#group-149">贡献</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-dose-survey-toy-v1-2026-10-27/delivery-r01/paired_raw.html#group-150">天气</a>；<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-dose-survey-toy-v1-2026-10-27/delivery-r01/paired_raw.html#group-485">9B贡献</a></p>
+<p><strong>第二，响应不严格单调，而且要说清是哪一方面不单调。</strong></p>
+<table>
+<thead>
+<tr>
+<th>具体问题组</th>
+<th>观察到的轨迹</th>
+<th>解释限制</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-dose-survey-toy-v1-2026-10-27/delivery-r01/paired_raw.html#group-255">4B L07/N6650，Q08</a></td>
+<td>1/8、1/4错误列举月份数量；1/2和1恢复较正确的365/366天解释</td>
+<td>某道题的事实恢复，不代表同点全部八题恢复</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-dose-survey-toy-v1-2026-10-27/delivery-r01/paired_raw.html#group-130">2B L16/N3715，Q03</a></td>
+<td>1/4原句循环，1/2恢复连贯多句，1再次重复</td>
+<td>1/2仍保留指责首句和角色偏移；这里只能说重复减少，不能说改写任务完全正确</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-dose-survey-toy-v1-2026-10-27/delivery-r01/paired_raw.html#group-569">9B L15/N12138，Q02</a></td>
+<td>1/16先说乙多又算相等，1/8一致15/15，1/4再次先错后订正</td>
+<td>最弱档也不自动无损；自我订正和最终答案要与完整过程一起保留</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-dose-survey-toy-v1-2026-10-27/delivery-r01/paired_raw.html#group-185">2B L23/N5319，Q02</a></td>
+<td>1/2漏算甲加3而答错，1反而完整给出15/15</td>
+<td>同点1档的其他七题出现“ve”循环，不能据这一题选出“最佳剂量”</td>
+</tr>
+</tbody>
+</table>
+<p>五个离散档位不能确定连续曲线、精确阈值或普遍安全区间。相同greedy设置下的这些回答是本轮观察，不是独立重复得到的稳定效应估计。</p>
+<p><strong>第三，同一点的八题往往分开变化。</strong> 2B L02/N1501在1/4的改写题已经回声循环，1/2变为与体罚有关的无关拒绝；同档书桌题仍是实际可执行的两步。4B后段一些点保住前七题，却在月份题里错列数字；9B有算术首句冲突、日常建议仍完整的组合。正常EOS、不循环、语气自然，都不能代替对原问题的判断。<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-dose-survey-toy-v1-2026-10-27/delivery-r01/paired_raw.html#group-18">2B改写</a>；<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-dose-survey-toy-v1-2026-10-27/delivery-r01/paired_raw.html#group-19">同点书桌题</a></p>
+<p><strong>第四，深度差异仍在，但“越深越耐受”没有成立。</strong> 4B L25/N2747的1/4八题大体完整，1/2八题全部进入“或”字或句段循环；紧邻L26在同档多数题仍完整。9B L29跨档变化较温和，L30/L31最高档又出现明显字词循环。每层只抽一个通道，无法把这些差异分解为层本身与通道个体的作用，更不能据此划数学区、人格区或道德区。<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-dose-survey-toy-v1-2026-10-27/delivery-r01/paired_raw.html#group-394">4B L25改写</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-dose-survey-toy-v1-2026-10-27/delivery-r01/paired_raw.html#group-397">贡献</a>；完整反例见各模型逐层笔记。</p>
+<h2 id="_5">原版错误与后续线索</h2>
+<p>2B原版糖果题已经“乙更多”与15/15相等自相矛盾，月份题已有“31个30天的月份”错误；9B原版天气题先说需要带伞再承认信息不足。因此不能把复现这些句子算成新增损伤，也不能把局部纠正夸大成整体能力提升。</p>
+<p>这轮最值得继续追的是：<strong>同点的内容侵入是否能在独立题上先出现，再与关系误读、数字错误和循环分开；以及非单调变化是否跨题仍能复现。</strong> 2B L18“场景”、4B L06基因词、9B L01姿势与L04电化学、L17故事化提供了具体候选；4B L07与9B L15提供了不能被单调叙事抹掉的反例。这里只交付线索，不自动启动新模型实验、加密剂量、评分或机制验证。</p>
+<p>当前仍是八道已知探索题、每层一个抽样通道、正向持续注入的有限观察。没有证明一般能力保持，也没有找到通用最佳剂量或确认天然功能区。</p>
+<h2 id="_6">完整材料与机器核验</h2>
+<ul>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-dose-survey-toy-v1-2026-10-27/qualitative-pass-r01/notes-2b.zh-CN.md">2B逐层笔记</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-dose-survey-toy-v1-2026-10-27/qualitative-pass-r01/notes-4b.zh-CN.md">4B逐层笔记</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-dose-survey-toy-v1-2026-10-27/qualitative-pass-r01/notes-9b.zh-CN.md">9B逐层笔记</a></li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-dose-survey-toy-v1-2026-10-27/qualitative-pass-r01/coverage-2b.json">2B覆盖</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-dose-survey-toy-v1-2026-10-27/qualitative-pass-r01/coverage-4b.json">4B覆盖</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-dose-survey-toy-v1-2026-10-27/qualitative-pass-r01/coverage-9b.json">9B覆盖</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-dose-survey-toy-v1-2026-10-27/qualitative-pass-r01/coverage-summary.json">汇总核验</a></li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-dose-survey-toy-v1-2026-10-27/delivery-r01/all.records.jsonl">完整原文和token</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-dose-survey-toy-v1-2026-10-27/delivery-r01/comparison_index.json">六栏索引</a></li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-dose-survey-toy-v1-2026-10-27/readiness/formal-completion-verification-r01.json">正式完成核验</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-dose-survey-toy-v1-2026-10-27/readiness/formal-cost-final-r01.json">耗时账本</a></li>
+</ul>
+<p>正式机器阶段北京时间19:46:12至20:53:04，含自动导出共1小时6分51.5秒，六worker退出码全0，2,816份新回答与全部复用来源核验通过；2,860个运行/导出文件已归档，两张H20释放。机器完成、归档核验与本次首次通读分别记录，没有将正常运行等同于科学效果成功。</p></main></html>

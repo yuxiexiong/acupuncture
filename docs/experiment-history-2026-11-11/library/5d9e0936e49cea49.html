@@ -1,0 +1,138 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>已有多模型实验复用审计</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="_1">已有多模型实验复用审计</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>docs/cross-model-reuse-audit-2026-11-08.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cross-model-reuse-audit-2026-11-08.zh-CN.md">固定提交原件</a>；SHA-256：<code>5d9e0936e49cea4943a78fc08ec85c2d1a50d771627c2294815d34a2c8fe4895</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="_2">已有多模型实验复用审计</h1>
+<p><strong>v2：已有实验—论文缺口对照表。</strong> 本轮把下表落实到论文v1.7和<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-write-read-cross-model-minimal-plan-v1-2026-11-08.zh-CN.md">最小补实验方案</a>。可复查的来源hash、分模型数量、9B旧方向原始记录及正式材料选择见<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cross-model-reuse-2026-11-08/inventory-and-design-check.json">CPU审计收据</a>。未运行新模型。</p>
+<p>2026-11-08。依据隔离工作副本中已提交的结果、合同、归档验收和数据索引；本次没有加载模型、调用GPU或新推理，没有重做全量原始文件哈希，也未核验服务器当前权重及外置张量存续。本表区分已交付证据与当前运行就绪，不把历史验收写成今天重新验收。</p>
+<h2 id="_3">结论</h2>
+<p>不需要从头再来。此前下一阶段建议只列9B预检metadata，没有充分盘点已完成资产，应纠正。已有多模型回答、能力评测、剂量和层扫描直接保留其结果身份；内部摘要可以继续CPU分析；实现、版本清单、校准规则和映射资产用于减少重复准备。仍缺的写入—读取反事实只补对应测量，不重做全部前期采集。</p>
+<h2 id="_4">已核对资产与复用范围</h2>
+<table>
+<thead>
+<tr>
+<th>资产</th>
+<th>已交付内容</th>
+<th>可以复用</th>
+<th>不能替代</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/neuron-explorer-multimodel-v2-2026-10-26/analysis-view-r01/README.zh-CN.md">四模型回答与轨迹索引</a></td>
+<td>Qwen3.5 2B/4B/9B和Llama3.1-8B共18,272份唯一单针回答</td>
+<td>原文、token、结束原因、既有剂量/层/通道比较；组织跨模型现象证据，比较后续候选条件</td>
+<td>独立题目广度、共同机制或新反事实；大量条件不能当大量独立材料</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/archive-r01/combined-verification.json">内部轨迹联合验收</a></td>
+<td>7,632份唯一正式记录：2B 920、4B 4,872、9B 920、Llama 920；历史验收无缺失/额外/重复</td>
+<td>已存逐层逐步组件差分、范数、余弦、候选分数的再分析；无需重新生成原回答</td>
+<td>因果链或信息删除结论；这些记录属于上一行的子集，不相加</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/transfer-toy-v1-2026-10-26/RESULTS.zh-CN.md">4B→9B/2B迁移结果</a></td>
+<td>两个目标模型各19条件；各1,400题能力测评；损伤、随机参照及截断记录均已交付</td>
+<td>既有迁移结果及能力代价；映射/校准/环境和身份清单可复用，外置张量须先核验存续和哈希</td>
+<td>有害行为主终点盲评尚待完成，不能用能力下降替代；不能证明共同根因或通道特异性</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cross-model-foundation-common-v1-2026-11-02/F1_CHECKS.zh-CN.md">跨模型基础工程</a>及<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cross-model-history-current-v1-2026-11-02/CONTRACT.zh-CN.md">A合同</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cross-model-natural-withdrawal-v1-2026-11-02/CONTRACT.zh-CN.md">B合同</a></td>
+<td>四模型接口、模板、校准及预检记录；当前已提交的A/B目录只有合同，不能据此宣布正式结果完成</td>
+<td>接口经验、数值失败记录、固定材料与测量定义</td>
+<td>未交付的正式A/B结果；预检成功不能替代科学证据，也不要求为当前论文自动续跑独立研究线</td>
+</tr>
+</tbody>
+</table>
+<p>2B/4B/9B全层调查的7,064条记录、880个条件也已归档，见<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-survey-toy-v1-2026-10-27/qualitative-pass-r01/coverage-summary.json">覆盖表</a>；它与后续聚合回答资产有覆盖重叠，不额外加到18,272上。模型辅助定性阅读不等于独立人工语义评审。</p>
+<h2 id="_5">真正不能直接复用为新结果的部分</h2>
+<h3 id="_6">实验与缺口逐项对应</h3>
+<table>
+<thead>
+<tr>
+<th>问题/缺口</th>
+<th>已有证据及状态</th>
+<th>直接复用，不再生成</th>
+<th>仍需补的最小内容</th>
+<th>本轮决定</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>G4a：现象是否只见于4B</td>
+<td>四模型单针回答；2B/9B固定双通道迁移及能力评测已交付</td>
+<td>四模型数量和观测范围；全部八项能力结果、区间、截断和随机反例</td>
+<td>若主张现象普遍率或所有模型同机制，需要另外的代表性设计；本文不作此主张</td>
+<td>已整合正文摘要、引言、结果表A/B与覆盖表；不重跑</td>
+</tr>
+<tr>
+<td>G4b：同一写入—读取关系是否跨模型</td>
+<td>4B的DWB/DWR开发连接及DWC独立确认；9B旧早层轨迹只观察内部变化</td>
+<td>4B结果、DWC文本及供体表、完整答案解析、D/E定义、统计代码和失败分类</td>
+<td>9B一个固定旧方向的本地校准、指定O/F端点与D/E反事实完整回答</td>
+<td>下一优先；24已有DWC情境、9288正式轨迹，未运行</td>
+</tr>
+<tr>
+<td>G4c：是否跨任务/架构</td>
+<td>Llama单针现象及4B事实KV边界已有；与编号写入链协议不同</td>
+<td>原有Llama回答、事实任务结果及其边界</td>
+<td>任务/算子对齐后的同关系测量</td>
+<td>本卡不追加；9B同族规模不能冒充异架构</td>
+</tr>
+<tr>
+<td>G0/G1：供体链连接及开发外可靠性</td>
+<td>DWC主方向达到M=.25；第二方向获得区间低于M</td>
+<td>原96情境与81648轨迹及正式分析，原样保留</td>
+<td>旧LVK/SRU另一对端点的确认仍未被DWC覆盖；与本卡不同问题</td>
+<td>不重跑4B主方向、不追加N1210救门槛</td>
+</tr>
+<tr>
+<td>G2：来源/用途/行为读法</td>
+<td>NWC随机首列反例；DWC D/E分叉与绑定诊断</td>
+<td>反例和三路行为诊断</td>
+<td>本卡只补9B D/E同端点用途比较；不新增编码定位</td>
+<td>不重复绑定重排、随机针或全层扫描；不主张纯位置编码</td>
+</tr>
+<tr>
+<td>G3：干预入口怎样形成失效</td>
+<td>四模型摘要轨迹、4B形成与背景系列已有；完整入口归因仍缺</td>
+<td>逐层逐步摘要与实际输出，用于提出有区分度的形成假设</td>
+<td>若要证明形成来源需另有定向干预，摘要距离不能代替</td>
+<td>本卡不加形成矩阵；不得称D/E预测已解释全部原生失败</td>
+</tr>
+<tr>
+<td>G5：实际转向/修复收益</td>
+<td>2B/9B能力损伤为代价证据，尚无对应修复收益</td>
+<td>固定面板能力结果与截断分账</td>
+<td>真实转向目标、非目标能力及修复收益的配对测量</td>
+<td>不把损伤评测误当修复有效，不自动重跑benchmark</td>
+</tr>
+<tr>
+<td>旧行为迁移主终点</td>
+<td>64行为题×19条件已采；报告中的双人盲评尚待完成</td>
+<td>原回答、匿名包、冻结标签手册</td>
+<td>原协议的评审与裁决，不是重新生成回答</td>
+<td>不计为有害行为迁移成功；不强制当前论文续跑独立研究线</td>
+</tr>
+<tr>
+<td>四模型基础A/B</td>
+<td>已有工程预检和合同；当前已提交A/B目录无正式结果</td>
+<td>模板、接口、校准公式、数值失败经验</td>
+<td>原研究线要继续需自身工程问题与正式执行</td>
+<td>不冒充完成，不为本机制卡把整条旁线重启</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_7">可复用到哪一层</h3>
+<ul>
+<li><strong>结果直接引用：</strong> 冻结报告、原文、逐题评分、配对区间、失败与反例。此次校验来源文件hash和汇总计数；不把历史验收冒充本轮全量重验。</li>
+<li><strong>CPU直接复算：</strong> 已存回答和数值摘要的描述分析、供体配对、固定输出零转移检查与分层统计。旧4B资料不能与9B合并增加独立样本数。</li>
+<li><strong>代码/材料复用，数值不能抄：</strong> 9B的校准规则、模型接口、旧N978方向，DWC文本和配对直接继承；每族参考尺度、9B的μ、9B状态及新反事实答案必须来自9B。4B历史校准值不能当9B观测。</li>
+<li><strong>资产需存续核验：</strong> 当前已从公开固定revision取回9B配置并与历史模型收据hash吻合；服务器权重、大型.pt和运行环境没有在本轮重新全量核验。缺失不自动重新下载或重算；先按来源清单定位。</li>
+</ul>
+<p>9B既有全程注入L0/N978/−1的8条原始记录均首步EOS，路径与hash逐条存于CPU收据。它是开发依据，不是B1历史窗口在编号任务上的已知结果，也不是4B N4146的同源通道证明。</p>
+<p><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-layer-mechanism-v1-2026-10-28/PLAN.zh-CN.md">旧内部采集计划</a>明确保存数值摘要，未默认保存完整全层向量；参照为无针独立缓存读取相同生成文字历史，且当轮明确不做修复或反向移植。因此，范数和余弦不能重建DWC指定写入、D/E读取替换及其后续完整回答。若现有其他资产有匹配端点，应先查其状态身份与协议；只有确实没有的反事实分支才计新增推理预算。</p>
+<p>迁移toy的中层双通道不等于当前机制线的早层单通道；旧数值或坐标不能直接移作新合同条件。已有条件应按预先明确的可比性准则复用，不按新读取效应挑选，且旧材料只能标为开发/已见材料。</p>
+<h2 id="_8">对论文与下一阶段的修正</h2>
+<p>论文可以用已有跨模型资产说明稀疏干预的行为现象与能力代价并非只在4B观察到，再以4B的写入—读取干预解释其中一条机制关系。两层证据应同时呈现：不能把旧多模型成果全部降成准备工作，也不能把现象覆盖冒充机制已经推广。</p>
+<p>下一步先做零GPU的“现有条件—已测关系—缺失端点”对照，核对原始问题、版本、校准和生成设置，比较9B/2B已有条件的可比性，再决定最小新增测量与预算。原则是不重复已交付的扫描、能力测评与原回答采集；需要重建边界状态或新的数值验收时单列理由和成本。当前不能承诺可节省的GPU小时或比例。本审计不新增实验设计或执行授权。</p></main></html>

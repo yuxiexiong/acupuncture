@@ -1,0 +1,201 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SRU-01：t1 形成的状态差，怎样在 t2 变成目标优势</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="sru-01t1-t2">SRU-01：t1 形成的状态差，怎样在 t2 变成目标优势</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>docs/cache-state-read-use-plan-v1-2026-11-03.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-state-read-use-plan-v1-2026-11-03.zh-CN.md">固定提交原件</a>；SHA-256：<code>08d3844c9a24899259645083a82ef0b646403b4e4fec7b5d9ab5568af50b1dfe</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="sru-01t1-t2_1">SRU-01：t1 形成的状态差，怎样在 t2 变成目标优势</h1>
+<h2 id="material-passport">Material Passport</h2>
+<p>2026-11-03；academic-research-suite / experiment-agent / plan；v1；证据基线 <code>2cf82cd78f7465c43dc3ef007238df4be7cd7129</code>。<strong>作者逻辑自查通过；CPU来源/代数核对已做；模型实现、数值验收和运行授权未完成；没有新模型调用。</strong> 配套<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-state-read-use-self-check-v1-2026-11-03.zh-CN.md">自查</a>与<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-state-read-use-design-v1-2026-11-03/cpu-design-audit-r01.json">CPU附件</a>。</p>
+<h2 id="1">1. 主问题、当前进度与这一步的作用</h2>
+<p>主题一直是：<strong>为什么少数通道的激活干预会显著改变回答？干预怎样改变写入、旧状态处理和后续读取，最后改变目标选择与完整输出？</strong> 首步停止、共同前缀、编号任务是检验窗口；目前的混合状态证据尚未解释全部原生插针行为。</p>
+<p>用人话说，LVK 已经发现：改变一次写入时使用的 v 条件后，同一项 k 操作就能让模型从“选第一条记录”转为“选被问到的记录”，并且这种关系在同场景的新文本上重复出现。下一步要追的是：<strong>这次写入留下的状态差，到下一个选择时刻，是怎样被实际使用的？</strong></p>
+<table>
+<thead>
+<tr>
+<th>证据</th>
+<th>已知与限制</th>
+<th>本轮作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-local-v-k-v1-2026-11-03/REPORT.zh-CN.md">LVK更正报告</a></td>
+<td>局部v条件下，改k使旧面板正确数净增25/20/11，新面板23/21/10；M增强比为87–97%，不是机制份额。t1等价是结构事实，完整答案恢复是实测</td>
+<td>直接沿用L10/L11这对已验证的写入端点</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-k-computation-diagnostic-v1-2026-11-03/REPORT.zh-CN.md">QKD</a></td>
+<td>另一组持续k编辑端点上，t2输出差较多落在旧状态直接读取项；只是分账，不能判因果</td>
+<td>提供“直接读取可能较强”的工作预测，不直接迁移数值</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-k-history-carrier-v1-2026-11-03/REPORT.zh-CN.md">KHC</a></td>
+<td>固定供体q时，历史交换效应主要由S承接</td>
+<td>不重复S/KV搬运，不把固定q结论推广为自由q；本轮q取各干预分支自身当前值</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-mechanism-known-basics-audit-2026-10-31.zh-CN.md">基础审计</a></td>
+<td>S在当步输出中有直接读取和旧预测修正两种代数用途；结构本身已知</td>
+<td>对这两种用途做受控操作，看哪种实际改变M与自然完整回答</td>
+</tr>
+</tbody>
+</table>
+<p>本轮新增认识：在LVK背景里，t1造成的递推状态差，通过t2哪一种旧状态使用方式足以获得/撤回目标优势与完整交付。不是证明“S能被读到”，不是再找热点，也不承诺一步识别完整原生机制。</p>
+<h2 id="2">2. 最小范围与来源</h2>
+<ul>
+<li>只用LVK的 <strong>new面板48条</strong>，本轮已见过其结果，称“既有新文本面板上的机制后续检验”，不再称未见确认集；六场景等权，32非首列/16首列分报。旧面板48条不再跑一遍。</li>
+<li>模型、revision、tokenizer、BF16/eager/batch1、原torch核、L0四方向N4146/N1210/R0/C1343、−1形成强度、NA/B1、μ及校准完全继承<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-local-v-k-v1-2026-11-03/CONTRACT.zh-CN.md">LVK合同</a>。R0是形成方向，不是随机k编辑对照；不作偏移特异性主张。</li>
+<li>G固定零起算<code>[13,14,16,17,18,20,21,22,24,25,26,28,29,30]</code>，不选头、不扫层。</li>
+<li>每输入重建一次C及四个T；每方向重建L10、L11的t1。L10只用局部v1，L11同时做写入k去偏移。捕获各G层<strong>t1后的原始S1</strong>为只读来源。</li>
+<li>有序配对只有两种：L10接收L11的状态信息（获得）；L11接收L10的状态信息（撤回）。不增加V、F、A/Z或跨模型面板。</li>
+</ul>
+<p>LVK的归档内容为t1/C-t2 logits、摘要与回答，<code>lvk_run.py</code>没有将完整S1写入返回张量；已有文件不足以在CPU上算本轮干预后的模型回答。拟GPU成本中的来源形成与t1重建不能省略。张量先在设备内复用，不建立新资产框架。</p>
+<h2 id="3-s">3. 计算对象：只改变当步输出怎样使用旧S</h2>
+<p>以下每层、每头使用实现的key×value约定，q已按原核归一化并缩放，k已按原核归一化；α是衰减因子，β是更新门。在同一个当前输入和驱动下：</p>
+<p><code>S2 = αS1 − αβ k(kᵀS1) + βkvᵀ</code></p>
+<p><code>o2 = D(S1) + E(S1) + W</code></p>
+<p><code>D(S) = α Sᵀq</code></p>
+<p><code>E(S) = −αβ (kᵀq) Sᵀk</code></p>
+<p><code>W = β(kᵀq)v</code></p>
+<p>D是衰减后旧状态的直接读取；E是旧状态在本次更新的预测修正项中，对当步输出的贡献。这里“读取/修正”是计算名称，不给它们预先分配语义功能。</p>
+<p>令接收者旧状态为Sr，另一条原始t1端点的对应状态为Sd。每个t2分支先以其自身当前q/k/v/α/β和Sr计算原生S2及未转BF16的o2，然后只在<strong>递推核输出、gated norm之前</strong>进行：</p>
+<p><code>o2_ab = o2 + a·α(Sd−Sr)ᵀq − b·αβ(kᵀq)(Sd−Sr)ᵀk</code></p>
+<table>
+<thead>
+<tr>
+<th>格</th>
+<th>直接读取D的S来源</th>
+<th>修正贡献E的S来源</th>
+<th>返回并缓存的本层S2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>00</td>
+<td>接收者</td>
+<td>接收者</td>
+<td>本分支原生S2</td>
+</tr>
+<tr>
+<td>10</td>
+<td>供体</td>
+<td>接收者</td>
+<td>本分支原生S2</td>
+</tr>
+<tr>
+<td>01</td>
+<td>接收者</td>
+<td>供体</td>
+<td>本分支原生S2</td>
+</tr>
+<tr>
+<td>11</td>
+<td>供体</td>
+<td>供体</td>
+<td>本分支原生S2</td>
+</tr>
+</tbody>
+</table>
+<p>两个方向各四格，共8格/输入/方向；包括两条原始端点重放，新增科学干预是6格。</p>
+<p><strong>必须保留的边界：</strong></p>
+<ol>
+<li>不把Sd写进接收者缓存，也不返回影子供体S2；只改变旧状态对这一次输出的两种贡献。这样能检验当前使用，而不同时强制搬走接收者此后存着的全部S。</li>
+<li>本层返回的S2是该分支当前输入下的原生值，<strong>不保证等于未干预基线的S2</strong>：较浅层输出改变后，深层输入、门、真实更新和新缓存会正常变化。t3起无hook，继续自由生成。</li>
+<li>q/k/v/门全部来自当前分支，不钳制供体q；逐层相加不等于全模型线性效应。Sd为固定原始端点来源，不来自已经修改过的供体。</li>
+<li>Sr/Sd差包含整个t1因写入操作及上游传播形成的状态差，不等于在所有层都只有一个孤立<code>βΔkvᵀ</code>。不能称本轮隔离了那一个秩一写入的全部自然中介。</li>
+<li>11在本层当步输出上等价于同驱动下用Sd计算原核输出，但保留Sr产生的缓存。它不等于完整S交换轨迹，更不应要求全模型等于供体端点。单项格也属于人工计算反事实。</li>
+</ol>
+<h2 id="4">4. 路线和终点</h2>
+<p><strong>C路线主M：</strong> t2消费LVK冻结共同前缀fF；每格报告目标区别token减首列区别token，目标首列减第二列，M_all辅助。主M按32非首列、逐输入配对再六场景等权。</p>
+<p><strong>N路线完整交付：</strong> 保留各接收者自身的t1首token，t2才操作，之后贪心生成，总长度含t1不超过32。报完整正确Y、改对/改坏、首列错答、多编号/复述、停止/截断及原文；所有48条进分母。t1的G不会被t2操作改变，不设为本轮科学终点。</p>
+<p>CPU已逐份核对48条来源哈希：L10/L11共384个首token中，有 <strong>6个L10首token不等于fF</strong>。因此不能统一复用C的t2作为自然N。两路线输入相同时可复用该格的一次t2，输入不同时分开跑；预算按全部不复用计。自然路线上的移植效果不要求达到原供体自然答案，因为它可能保留了不同的首token；不把这种差异称工程失败，也不筛掉这6格。</p>
+<h2 id="5">5. 预测、比较与退出</h2>
+<p>每个有序配对、每方向分别计算各格相对00的M、Y变化及11−10−01+00交互。获得侧预期正向；撤回侧预期负向。列出原始供体/接收者M差g和自然Y差作为背景，不能把移植比例直接叫机制份额。</p>
+<p>沿用旧操作性判读：M朝预期方向的场景等权变化≥0.25 logit、至少4/6场景同号，为定向支持；Y朝预期方向净变≥2/48且至少两个场景有对应变化，才称多场景行为支持，同时报告反向变化。阈值不是统计显著性。C1343有M但无原始Y缺口，始终单列诊断；不为满分条件强造行为改善。</p>
+<p><strong>工作预测（未测）：D单项交换就能双向搬运相当部分目标优势并改变完整交付；E单项较弱。</strong> 依据是QKD的描述性分账及KHC载体线索，二者都不保证本预测成立。</p>
+<p>判断按以下顺序进行，不只挑最大的格：</p>
+<ul>
+<li>若11定向改变M与Y，说明自由响应的读取条件下，仅改变这次旧状态使用就有行为作用。若10也有联合支持、且在<code>|ΔM11|≥0.5</code>时<code>ΔM10/ΔM11≥0.75</code>、<code>|ΔM01/ΔM11|≤0.25</code>，才给该有序配对“直接读取为主”的操作标签；比例不裁剪，分子/分母均报告。两侧都符合才称双向支持；三个缺口方向至少2个双向符合才称多数方向支持。标准沿用KHC的幅度思想，不能当领域普遍定律。</li>
+<li>若E更强、两单项均强、只有联合强、反号或超调，按四格原值报告，并撤回“直接读取为主”的预测。尤其E在t2有效不与KUC的t1擦除项弱矛盾：时间与被操作对象不同。</li>
+<li>若M移动但完整交付不跟随，只得到条件竞争的计算约束，不称答案机制已补齐。</li>
+<li>若11也很弱，说明这次输出使用替换不足以搬运LVK的行为差；可能需要状态的后续更新/多步使用或其他联合变化。不能推出S无作用或剩余必在KV/q，也不自动加钳制、扩t3或扫层补救。</li>
+</ul>
+<p>完整矩阵报告后本轮结束。正结果把“写入有效”接到一种明确的后续使用计算；阴性则否定这项即时读取充分性预测。随后再据实际证据决定是否值得外推到新场景；本轮不提前设计第二包。</p>
+<h2 id="6">6. 工程验收和预算</h2>
+<p>先CPU：输入/offset/校准/旧代码来源hash、两配对×四格计数、读数符号、小分母和反向判读。已用12组小型FP64合成张量检查四格式及11的局部影子状态输出恒等，最大误差<code>1.67e−16</code>；仅验证代数，不替代模型验收。</p>
+<p>模型预检固定LVK新面板<code>LVK-H-NA-NQ01-ABC-A</code>、<code>LVK-H-NA-NQ02-ABC-B</code>，全部四方向与全部格，最多一次有记录修复重试。正式48输入重复必要来源与运行内检查：</p>
+<ol>
+<li>L10/L11重建的t1及原00的C t2全词表、自然完整tokens与LVK逐位一致；来源模型/输入/校准/hash一致。保留±0既有规则，其他差异停止。与原始未hook前向对照的00须精确一致。</li>
+<li>返回的本层S2与同一局部驱动下的接收者原核S2逐位一致；供体S1只读，KV/卷积不直接移植。上游响应造成的深层S2变化不属于违规。</li>
+<li>捕获FP32原始核输出，归一化/缩放/更新顺序与原核相同，在最终cast到BF16<strong>之前</strong>加校正。不能在已舍入的BF16输出后补项。每格用实际输入作FP64 oracle，局部输出相对误差≤1e−5；00控制重放不以此容差放宽。</li>
+<li>11额外与“同驱动原核喂Sd、丢弃其新状态”的局部输出核对，cast前相对误差≤1e−5；不要求不同加法顺序的两条全模型轨迹逐位等同。每个接收者、每种t2输入至多两次工程参考（00无操作和11影子原核），预算含最坏双路线。</li>
+<li>每条实际t2前向14层各一次；t1不带读取hook，t3起零hook；C/N分别深拷贝；token不同不可复用。失败保留日志并停，科学阴性不触发修实现。</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th style="text-align: right;">正式48输入</th>
+<th style="text-align: right;">每次预检2输入</th>
+<th style="text-align: right;">含两次预检硬总量</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>前缀预填 / 形成次数</td>
+<td style="text-align: right;">48 / 240</td>
+<td style="text-align: right;">2 / 10</td>
+<td style="text-align: right;">52 / 260</td>
+</tr>
+<tr>
+<td>前缀token / 形成token</td>
+<td style="text-align: right;">1467 / 6390</td>
+<td style="text-align: right;">61 / 270</td>
+<td style="text-align: right;">1589 / 6930</td>
+</tr>
+<tr>
+<td>来源t1（每方向L10/L11）</td>
+<td style="text-align: right;">384</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">416</td>
+</tr>
+<tr>
+<td>自然轨迹（含00重放）</td>
+<td style="text-align: right;">1536</td>
+<td style="text-align: right;">64</td>
+<td style="text-align: right;">1664</td>
+</tr>
+<tr>
+<td>其中新增干预轨迹</td>
+<td style="text-align: right;">1152</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">1248</td>
+</tr>
+<tr>
+<td>C路线t2上限</td>
+<td style="text-align: right;">1536</td>
+<td style="text-align: right;">64</td>
+<td style="text-align: right;">1664</td>
+</tr>
+<tr>
+<td>N路线t2及以后上限（31/轨迹）</td>
+<td style="text-align: right;">47616</td>
+<td style="text-align: right;">1984</td>
+<td style="text-align: right;">51584</td>
+</tr>
+<tr>
+<td>工程t2参考上限</td>
+<td style="text-align: right;">1536</td>
+<td style="text-align: right;">64</td>
+<td style="text-align: right;">1664</td>
+</tr>
+<tr>
+<td>decode总上限</td>
+<td style="text-align: right;">51072</td>
+<td style="text-align: right;">2128</td>
+<td style="text-align: right;">55328</td>
+</tr>
+</tbody>
+</table>
+<p>形成/预填另列，不冒充已经包含在decode中。原t1局部影子卷积最多<code>48×4×(1+2)×14=8064</code>次，含两次预检8736次；t2影子原核属于局部参考，不额外偷算整模型前向。来源重建以外不新增校准、模型、供体形成或数据。</p>
+<p>参考LVK正式0.56 GPUh、KHC正式0.70 GPUh，本轮暂估0.4–0.8设备小时，未实测；正式硬上限1.2 GPUh，每次预检0.15、最多两次，总上限 <strong>1.5 GPUh</strong>。最多两worker，计加载/形成/解码/I/O占用的设备秒之和；预检外推超限就停，不删格赶预算。存储≤12GiB，60秒心跳。所有来源S1仅每输入逐方向暂存设备；日志保存hash、四格局部投影摘要、全词表、原文/tokens、失败和真实资源账本。</p>
+<p>实现复用LVK来源形成与t1、KUC原核数值顺序、已有解析器；新增一个t2输出hook。拟版本化运行目录<code>experiments/cache-state-read-use-v1-2026-11-03/</code>，实现完成才创建运行材料。<strong>文档交付不启动模型实验，也不继承其他实验的运行授权。</strong></p></main></html>

@@ -1,0 +1,348 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Acupuncture 4B→9B、4B→2B 迁移 toy：机器结果</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="acupuncture-4b9b4b2b-toy">Acupuncture 4B→9B、4B→2B 迁移 toy：机器结果</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/transfer-toy-v1-2026-10-26/RESULTS.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/transfer-toy-v1-2026-10-26/RESULTS.zh-CN.md">固定提交原件</a>；SHA-256：<code>eb4007fbfeda2891212354ba337d9d2e4ad5ad0ee9727aa030d5dd2f70e71bbc</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="acupuncture-4b9b4b2b-toy_1">Acupuncture 4B→9B、4B→2B 迁移 toy：机器结果</h1>
+<p>2026-10-26；运行 <code>transfer-9b-2b-r01</code>。<strong>两组迁移、19 条件采集和四项能力评测均已完成；行为双盲评审尚未开始。根因实验继续暂停。</strong></p>
+<p>按用户后续提出的“能力损伤效应能否迁移”这一问题，本轮在 9B 和 2B 都观察到明确损伤。但原协议的主终点是结构化有害行为迁移，不能用能力下降替代：其成功与否仍待盲评。当前没有证明共同根因、通道特异性或损伤发生的总体概率。</p>
+<p>完整浏览入口：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/transfer-toy-v1-2026-10-26/delivery-r01/index.html">结果索引</a>。原协议、题目、选点、剂量、精度和评分均未根据结果修改。</p>
+<h2 id="1">1. 实际做了什么</h2>
+<p>源为 Qwen3.5-4B，动态通道加法位于 MLP 的 <code>down_proj</code> 输入：零起始 L13/N7956 负向、L14/N8949 正向。用共同正常文本拟合两层的表示映射，再在各目标层选一根原生通道。目标位置及符号在确认回答生成前冻结；没有按测试分数换位置。</p>
+<table>
+<thead>
+<tr>
+<th>目标</th>
+<th>L13 第一针</th>
+<th>L14 第二针</th>
+<th>两列各自保留的映射向量平方范数比例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Qwen3.5-9B</td>
+<td>N11363，正向</td>
+<td>N1622，负向</td>
+<td>8.68%、5.20%</td>
+</tr>
+<tr>
+<td>Qwen3.5-2B</td>
+<td>N4295，正向</td>
+<td>N1381，负向</td>
+<td>1.42%、1.66%</td>
+</tr>
+</tbody>
+</table>
+<p>正式四项 Benchmark 固定比较原版 <code>T_0</code> 与 <code>true_S_recipe</code>。该臂的 d=1 指每个注入层的一份参考残差尺度，实际通道加值为符号 × 逐题原版残差尺度 / 对应列范数；不是原始激活简单加减 1，也不是“扰动只有 1%”。投影比例只是几何量；<code>S_recipe</code> 采用独立的原剂量规则，不能说它保真搬运了整个稠密向量。</p>
+<p>每个目标另完成 64 行为题 × 19 条件，以及独立 64 题选择诊断 × 19 条件。条件包括真实源、三组随机源各自的 <code>D_raw / S_proj / D_match / S_recipe</code>、目标原版和目标自行提取的稠密/稀疏基线。随机源走同一映射和选点流程，没有只保留效果好的随机组。</p>
+<p>全部为 BF16/eager、实际 forward batch=1；目标模型每卡 3 个独立进程，共 6 分片。两目标均通过单进程/并行一致性检查。模型权重未修改，完成回执核对了目标权重哈希及钩子移除。</p>
+<p>来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b/mapping/conditions.json">9B 选点与映射诊断</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target2b/mapping/conditions.json">2B 选点与映射诊断</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/transfer-toy-v1-2026-10-26/EXECUTION.zh-CN.md">执行补充</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/transfer-toy-v1-2026-10-26/EXECUTION_PARALLEL.zh-CN.md">并行验证与边界</a>。</p>
+<h2 id="2-benchmark">2. 最新四项能力 Benchmark</h2>
+<p>各模型均为同题、同设置的原版与迁移版配对。下降为原版减迁移版；区间为冻结的 10,000 次配对 bootstrap。MMLU 按完整测试集的 57 学科权重汇总，其余任务按配对题目汇总。<strong>这是固定 1,400 题面板，不是四个数据集的官方全量成绩。</strong></p>
+<table>
+<thead>
+<tr>
+<th>模型</th>
+<th>任务</th>
+<th style="text-align: right;">题数</th>
+<th style="text-align: right;">原版 %</th>
+<th style="text-align: right;">迁移版 %</th>
+<th style="text-align: right;">下降百分点</th>
+<th>95% 配对区间</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>9B</td>
+<td>MMLU acc</td>
+<td style="text-align: right;">1,000</td>
+<td style="text-align: right;">70.06</td>
+<td style="text-align: right;">25.39</td>
+<td style="text-align: right;">44.67</td>
+<td>[41.18, 48.08]</td>
+</tr>
+<tr>
+<td>9B</td>
+<td>ARC-C acc_norm</td>
+<td style="text-align: right;">200</td>
+<td style="text-align: right;">71.50</td>
+<td style="text-align: right;">30.00</td>
+<td style="text-align: right;">41.50</td>
+<td>[34.00, 48.50]</td>
+</tr>
+<tr>
+<td>9B</td>
+<td>GSM8K strict-match</td>
+<td style="text-align: right;">100</td>
+<td style="text-align: right;">93.00</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">93.00</td>
+<td>[88.00, 97.00]</td>
+</tr>
+<tr>
+<td>9B</td>
+<td>HumanEval pass@1</td>
+<td style="text-align: right;">100</td>
+<td style="text-align: right;">70.00</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">70.00</td>
+<td>[61.00, 79.00]</td>
+</tr>
+<tr>
+<td>2B</td>
+<td>MMLU acc</td>
+<td style="text-align: right;">1,000</td>
+<td style="text-align: right;">54.06</td>
+<td style="text-align: right;">46.00</td>
+<td style="text-align: right;">8.06</td>
+<td>[4.77, 11.32]</td>
+</tr>
+<tr>
+<td>2B</td>
+<td>ARC-C acc_norm</td>
+<td style="text-align: right;">200</td>
+<td style="text-align: right;">52.50</td>
+<td style="text-align: right;">31.00</td>
+<td style="text-align: right;">21.50</td>
+<td>[14.50, 29.00]</td>
+</tr>
+<tr>
+<td>2B</td>
+<td>GSM8K strict-match</td>
+<td style="text-align: right;">100</td>
+<td style="text-align: right;">61.00</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">61.00</td>
+<td>[52.00, 70.00]</td>
+</tr>
+<tr>
+<td>2B</td>
+<td>HumanEval pass@1</td>
+<td style="text-align: right;">100</td>
+<td style="text-align: right;">37.00</td>
+<td style="text-align: right;">3.00</td>
+<td style="text-align: right;">34.00</td>
+<td>[25.00, 43.00]</td>
+</tr>
+</tbody>
+</table>
+<p>MMLU 使用 5-shot 完整候选答案条件似然；ARC-C 使用 25-shot、字符数归一化候选似然；GSM8K 使用 5-shot greedy、2,048 新 token 上限；HumanEval 使用原始代码提示、0-shot greedy、1,024 token 上限及官方测试沙箱。两模型各 1,400 对，合计 5,600 个题目—条件单元；技术失败均为 0。四项分数不合成新的总损伤分数。</p>
+<p>严格零分不表示所有潜在知识消失。9B 的 GSM8K 迁移版 100/100 截断、99/100 严格解析失败，预先固定的 flexible-extract 辅助分为 5%；2B 相应为 26/100 截断、26/100 解析失败，辅助分为 1%。HumanEval 迁移版截断分别为 69/100、83/100。所有原文和失败代码保留，未以格式或截断删除样本。选择题似然本身也下降，因此损伤不只表现为长回答的评分格式问题；仍不能据此指定内部根因。</p>
+<p>证据：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b/benchmark/finish-r01/summary.json">9B 正式汇总</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target2b/benchmark/finish-r01/summary.json">2B 正式汇总</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/transfer-toy-v1-2026-10-26/delivery-r01/benchmark-comparison.json">合并机器可读表</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/transfer-toy-v1-2026-10-26/BENCHMARK_FOLLOWUP.zh-CN.md">冻结评测规则</a>。各汇总旁的 <code>scores.jsonl</code>、<code>humaneval-execution.jsonl</code> 与分片目录保留逐题评分、沙箱结果及原始输出。</p>
+<h2 id="3">3. 三组随机对照说明了什么</h2>
+<p>下表是 <strong>32 道 MMLU + 32 道 ARC-C 诊断题</strong>的原始分数，不能与上表当成相同精度的估计。完整 19 条件均报告，未筛掉反例。</p>
+<table>
+<thead>
+<tr>
+<th>条件</th>
+<th style="text-align: right;">9B MMLU %</th>
+<th style="text-align: right;">9B ARC-C %</th>
+<th style="text-align: right;">2B MMLU %</th>
+<th style="text-align: right;">2B ARC-C %</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T_0</td>
+<td style="text-align: right;">62.50</td>
+<td style="text-align: right;">68.75</td>
+<td style="text-align: right;">43.75</td>
+<td style="text-align: right;">43.75</td>
+</tr>
+<tr>
+<td>true_D_raw</td>
+<td style="text-align: right;">53.13</td>
+<td style="text-align: right;">59.38</td>
+<td style="text-align: right;">37.50</td>
+<td style="text-align: right;">37.50</td>
+</tr>
+<tr>
+<td>true_S_proj</td>
+<td style="text-align: right;">59.38</td>
+<td style="text-align: right;">65.63</td>
+<td style="text-align: right;">50.00</td>
+<td style="text-align: right;">43.75</td>
+</tr>
+<tr>
+<td>true_D_match</td>
+<td style="text-align: right;">18.75</td>
+<td style="text-align: right;">25.00</td>
+<td style="text-align: right;">21.88</td>
+<td style="text-align: right;">46.88</td>
+</tr>
+<tr>
+<td>true_S_recipe</td>
+<td style="text-align: right;">12.50</td>
+<td style="text-align: right;">34.38</td>
+<td style="text-align: right;">53.13</td>
+<td style="text-align: right;">31.25</td>
+</tr>
+<tr>
+<td>random1_D_raw</td>
+<td style="text-align: right;">59.38</td>
+<td style="text-align: right;">62.50</td>
+<td style="text-align: right;">53.13</td>
+<td style="text-align: right;">43.75</td>
+</tr>
+<tr>
+<td>random1_S_proj</td>
+<td style="text-align: right;">56.25</td>
+<td style="text-align: right;">65.63</td>
+<td style="text-align: right;">46.88</td>
+<td style="text-align: right;">43.75</td>
+</tr>
+<tr>
+<td>random1_D_match</td>
+<td style="text-align: right;">21.88</td>
+<td style="text-align: right;">21.88</td>
+<td style="text-align: right;">46.88</td>
+<td style="text-align: right;">21.88</td>
+</tr>
+<tr>
+<td>random1_S_recipe</td>
+<td style="text-align: right;">28.13</td>
+<td style="text-align: right;">40.63</td>
+<td style="text-align: right;">40.63</td>
+<td style="text-align: right;">40.63</td>
+</tr>
+<tr>
+<td>random2_D_raw</td>
+<td style="text-align: right;">59.38</td>
+<td style="text-align: right;">65.63</td>
+<td style="text-align: right;">40.63</td>
+<td style="text-align: right;">40.63</td>
+</tr>
+<tr>
+<td>random2_S_proj</td>
+<td style="text-align: right;">62.50</td>
+<td style="text-align: right;">65.63</td>
+<td style="text-align: right;">46.88</td>
+<td style="text-align: right;">43.75</td>
+</tr>
+<tr>
+<td>random2_D_match</td>
+<td style="text-align: right;">37.50</td>
+<td style="text-align: right;">15.63</td>
+<td style="text-align: right;">12.50</td>
+<td style="text-align: right;">21.88</td>
+</tr>
+<tr>
+<td>random2_S_recipe</td>
+<td style="text-align: right;">18.75</td>
+<td style="text-align: right;">37.50</td>
+<td style="text-align: right;">40.63</td>
+<td style="text-align: right;">40.63</td>
+</tr>
+<tr>
+<td>random3_D_raw</td>
+<td style="text-align: right;">59.38</td>
+<td style="text-align: right;">65.63</td>
+<td style="text-align: right;">46.88</td>
+<td style="text-align: right;">43.75</td>
+</tr>
+<tr>
+<td>random3_S_proj</td>
+<td style="text-align: right;">62.50</td>
+<td style="text-align: right;">65.63</td>
+<td style="text-align: right;">50.00</td>
+<td style="text-align: right;">40.63</td>
+</tr>
+<tr>
+<td>random3_D_match</td>
+<td style="text-align: right;">34.38</td>
+<td style="text-align: right;">28.13</td>
+<td style="text-align: right;">12.50</td>
+<td style="text-align: right;">40.63</td>
+</tr>
+<tr>
+<td>random3_S_recipe</td>
+<td style="text-align: right;">28.13</td>
+<td style="text-align: right;">31.25</td>
+<td style="text-align: right;">6.25</td>
+<td style="text-align: right;">18.75</td>
+</tr>
+<tr>
+<td>T_dense</td>
+<td style="text-align: right;">25.00</td>
+<td style="text-align: right;">25.00</td>
+<td style="text-align: right;">6.25</td>
+<td style="text-align: right;">31.25</td>
+</tr>
+<tr>
+<td>T_sparse</td>
+<td style="text-align: right;">18.75</td>
+<td style="text-align: right;">31.25</td>
+<td style="text-align: right;">46.88</td>
+<td style="text-align: right;">34.38</td>
+</tr>
+</tbody>
+</table>
+<p>随机源也能造成明显损伤；2B 的 random3_S_recipe 在该小面板上比真实源更差。这反对把“有损伤”直接当成真实两针独特性的证据，但三组随机源不足以估计整个模型中此类通道的普遍率。随机组没有运行四项 1,400 题面板，不补造其全量分数。</p>
+<p>2B 的真实 S_recipe 在小诊断 MMLU 上高于原版，正式 1,000 题面板却下降。两面板还存在学科覆盖及权重差异：诊断按四大类等权，正式面板按 57 学科总体权重。这说明小面板的具体结论不能直接替代正式面板，不能将其直接当成根因实验的可靠代理；后续若恢复根因研究，快速读数仍需按干预类别校准并接受独立确认。本轮没有新增这种校准或根因运行。</p>
+<p>含配对区间的全表：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b/export-r01/diagnostic.summary.json">9B 诊断</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target2b/export-r01/diagnostic.summary.json">2B 诊断</a>。</p>
+<h2 id="4">4. 行为结论与人工待办</h2>
+<p>源模型 192 条行为记录只生成一次。每个目标 1,216 条，全部按题并排导出：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target9b/export-r01/paired_raw.html">9B 原文</a>、<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/target2b/export-r01/paired_raw.html">2B 原文</a>。没有选取好看的回答，也没有自动填写 H 标签。</p>
+<p>两名独立评者分别使用 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/transfer-toy-v1-2026-10-26/delivery-r01/blind-reviewer-A.zip">A 盲评包</a> 与 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/transfer-toy-v1-2026-10-26/delivery-r01/blind-reviewer-B.zip">B 盲评包</a>。每包两套、每套 1,408 条，包含问题、回答、六个空白标签及冻结手册；无模型、条件、分数或身份键。提交时保留 set 目录及匿名编号。协调者不要向评者发送本报告、并排页或完整仓库。</p>
+<p>两套中重复使用了同一批 192 条源参考回答，合计每位评者 2,816 条表单对应 2,624 条不同实验记录；不同记录可能生成相同文本，且同一题的多个条件不是独立场景。不得把重复源回答计为额外样本。匿名化也不能完全阻止从原文本身猜测来源。身份键留在本地和服务器，哈希进入证据清单，未放进盲评包或本次 Git 提交。</p>
+<p>人工待办是：双人独立标签锁定、按原手册裁定分歧、计算 H 与其他标签的固定配对统计及无法判定边界。<strong>在此之前，行为迁移、优于随机以及共同机制均为未判定。</strong></p>
+<h2 id="5-eta">5. 实际时间、故障与 ETA 误差</h2>
+<p>全部时间为北京时间 2026-10-26。9B 于 <strong>10:27:28</strong> 完成机器导出，2B 于 <strong>12:28:15</strong> 完成；队列于 <strong>12:28:17</strong> 确认结束，随后核查双卡空闲。</p>
+<table>
+<thead>
+<tr>
+<th>口径或阶段</th>
+<th>实际墙钟</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>最早记录的预检 05:48:05 → 队列完成 12:28:17</td>
+<td><strong>6 小时 40 分 12 秒</strong></td>
+</tr>
+<tr>
+<td>正式队列 06:04:14 → 队列完成</td>
+<td>6 小时 24 分 03 秒</td>
+</tr>
+<tr>
+<td>共享源 192 条确认</td>
+<td>48 分 27 秒</td>
+</tr>
+<tr>
+<td>9B 行为与诊断</td>
+<td>2 小时 04 分 46 秒</td>
+</tr>
+<tr>
+<td>9B 四项 Benchmark</td>
+<td>1 小时 07 分 36 秒</td>
+</tr>
+<tr>
+<td>9B 导出联网阻塞</td>
+<td>22 分 11 秒</td>
+</tr>
+<tr>
+<td>2B 准备、验证到机器完成</td>
+<td>2 小时 00 分 47 秒</td>
+</tr>
+<tr>
+<td>其中 2B 行为与诊断</td>
+<td>1 小时 24 分 06 秒</td>
+</tr>
+<tr>
+<td>其中 2B 四项 Benchmark</td>
+<td>31 分 46 秒</td>
+</tr>
+</tbody>
+</table>
+<p>各行存在包含关系，不应相加。主总耗时不含更早的模型下载、环境准备与设计，也不含机器结束后的证据取回、报告/Git 交付及人工评审。详细回执保留实际时长，不能把 6 个并行 worker 的耗时简单相加称为墙钟时间。</p>
+<p>9B 导出曾被上游联网重试阻塞，保留失败/恢复记录；离线恢复使用已存在材料，没有重跑回答或改变科学设置。成功导出仅需 3.14 秒。2B 自身的并发一致性验证通过后才进入正式采集。其余正式推理与评分未发现技术失败。</p>
+<p>最后一次全队列 ETA 为 <strong>12:39:56</strong>，实际提前 <strong>11 分 40 秒</strong>；此前 2B 探针场景约 13:28，约高估一小时。9B 最后一次 10:06:54 预测则低估 20 分 33 秒，主要对应随后联网阻塞。早期 ETA 与最终时间之差不是实测加速比。全部 12 次 ETA 和 55 份计时回执的证据见<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/transfer-toy-v1-2026-10-26/execution-parallel-r01/cost-final-audit.json">耗时审计</a>。</p>
+<h2 id="6">6. 完整性与保存位置</h2>
+<p>远端 <code>gqa-h20:/workspace/acupuncture/experiments/transfer-toy-v1-2026-10-26/runs/transfer-9b-2b-r01/</code> 的 <strong>9,681 个文件、1,881,652,236 字节</strong>已完整取回本地同名目录；文件集合、大小、SHA-256 全部一致。复用冻结检查器验证分片覆盖、题目与条件身份、逐题记录、生成 token、权重/钩子回执、评分及导出输入哈希。37 个原冻结文件和 11 个并行冻结文件保持一致；HumanEval 沙箱控制通过。另保留 800 份 Benchmark 生成输出的 token 哈希表。</p>
+<p>原始回答、逐题评分、小型回执和报告提交 Git。大型项目激活/映射 <code>.pt</code> 文件完整保留本地与服务器，不提交 Git；匿名身份键同样单独保留。两类文件的路径、大小和哈希均在全清单中，未删除。第三方模型权重、运行环境和缓存不在本次交付中。</p>
+<ul>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/transfer-toy-v1-2026-10-26/delivery-r01/remote-manifest.json">远端完整文件清单</a></li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/transfer-toy-v1-2026-10-26/delivery-r01/verification.json">本地复核结果</a>与<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/transfer-toy-v1-2026-10-26/delivery-r01/verify_delivery.py">可复跑的 CPU 核验器</a></li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/transfer-toy-v1-2026-10-26/delivery-r01/benchmark-token-hashes.jsonl">Benchmark token 哈希</a></li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/transfer-toy-v1-2026-10-26/delivery-r01/blind-packages.json">盲评包大小与哈希</a></li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/transfer-toy-v1-2026-10-26/active_run.json">最终运行状态</a>及<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/transfer-toy-v1-2026-10-26/delivery-r01/publication-receipt.json">Git 交付与监控暂停回执</a></li>
+</ul>
+<p>本轮自动工作到此完成；人工盲评作为后续待办，不用空轮询等待。根因研究的讨论稿保持原样，未获得新的运行记录。</p></main></html>

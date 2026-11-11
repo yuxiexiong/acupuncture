@@ -1,0 +1,18 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>NR-01 计划 v2：在 v1 上的四处修订</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="nr-01-v2-v1">NR-01 计划 v2：在 v1 上的四处修订</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>docs/cache-native-complement-recovery-plan-v2-2026-11-02.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-native-complement-recovery-plan-v2-2026-11-02.zh-CN.md">固定提交原件</a>；SHA-256：<code>28620ca749b79e8bf681c8bb16c4dbcee695bb58bd0e0358b191fae0097ebf89</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="nr-01-v2-v1_1">NR-01 计划 v2：在 v1 上的四处修订</h1>
+<ul>
+<li>2026-11-02。只修订 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-native-complement-recovery-plan-v1-2026-11-02.zh-CN.md">v1</a> 的以下四处，其余（因素定义、八格、公式、阈值 τ、预算口径、闸门、出口、自查）全部沿用。授权：用户 2026-11-02「同意，按这四条改好后直接写合同代码，测试后上卡跑」。</li>
+</ul>
+<h2 id="_1">已见数据申报</h2>
+<p>审阅 v1 时，执行者用 EH-XC 与 SK-01 的已有记录算出了三格在等价前提下的数值（R(F)/N 0.24–0.55，C1343 有 4/12 个输入 ≥0.5；R(H)/N 0.15–0.37；R(XF)/N 0.54–0.70；R(FH)/N 0.82–0.96）。因此凡由这些格决定的量都不再是盲测。</p>
+<h2 id="_2">修订</h2>
+<ol>
+<li><strong>010、011、110 改为等价前提的逐位重放闸门</strong>：在“单步评分时浅层只经第13层入口影响深层”的前提下，010 = EH-XC 的 XH11（N:CC），011 = EH-XC 的 X10；110 与 EH-XC 的 H01 是同一组装。三者的 logits 必须与 EH-XC 逐位相同，否则按工程/前提失败停止。这在全部 48 个单元上检验前提，取代 v1 的 8 次入口 hook 辅助评分（删去）。</li>
+<li><strong>预注册只针对未见量</strong>：真正未测的只有 100（只恢复入口）与 101（恢复入口与深层历史、保留卷积）。登记 P_X：R(X) &lt; 0.5N；P_XH：i_XH ≥ τ = max(0.5, 0.1N)。均为推测档，方向内两事实都满足、≥5/6 情景记支持（≥5 个情景两事实适用但支持不足记未支持，否则适用不足），跨方向报告 k/4。</li>
+<li><strong>F、H 部分改为已知值复核</strong>：v1 的 P_no_single 中关于 R(F)、R(H) 的部分，以及 R(XF)、R(FH)，在报告中标为事后数值、已知值复核，不当预测。</li>
+<li><strong>科学增量如实表述</strong>：本轮新增的是原生背景中单独撤回入口的效果、撤回入口与深层历史而保留卷积的效果，以及由此补全的交互项（i_XF、i_XH、i_XFH 需要 100/101）。</li>
+</ol>
+<p>预算：每输入 C_native 1 + 4 方向 × 8 格 = 33 次评分；预检两输入 66 + 首输入记录器关闭对照 2 = 68，正式 396；形成 12 + 60 = 72；校准 7。合计 72 / 464 / 7（比 v1 少 8 次辅助评分）。</p></main></html>

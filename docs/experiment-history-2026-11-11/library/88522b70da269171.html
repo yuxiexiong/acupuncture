@@ -1,0 +1,143 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>NQ-01（按条目名查询 × 记录顺序）结果报告</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="nq-01">NQ-01（按条目名查询 × 记录顺序）结果报告</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-name-query-order-v1-2026-11-02/REPORT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-name-query-order-v1-2026-11-02/REPORT.zh-CN.md">固定提交原件</a>；SHA-256：<code>88522b70da26917103ab63538b8ece7f952c3a4e072216883b8bc1a22ccbeff5</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="nq-01_1">NQ-01（按条目名查询 × 记录顺序）结果报告</h1>
+<p>日期：2026-11-02。<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-name-query-order-v1-2026-11-02/CONTRACT.zh-CN.md">合同 r01</a>；<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-name-query-order-v1-2026-11-02/DECISIONS.zh-CN.md">决策 D1–D5</a>；计划 v2（54c8b3b，评审撰写）。代码 <code>70cb4a1</code>，freeze-r01 <code>b0f32af1…026d</code>。54 条提示是新组合，运行前无模型输出。同一助手实现、运行与撰写。</p>
+<h2 id="1">1. 结论（不利的先说）</h2>
+<ol>
+<li><strong>我们注册的 P_pos 被否（0/4）：只恢复 V 后，回答跟随被问条目，而不是首列。</strong> N4146、N1210、C1343 三个方向 T_V 都是 54/54 严格交付；目标不在首位的 36 格里 36/36 输出目标、0 输出首列编号；6/6 场景都是“跟随查询”。R0 为混合（45/54 交付；3/6 场景跟随查询；7 个错误全是首列编号，2 个停止）。</li>
+<li><strong>P_target 成立（4/4）</strong>：T_F 在四个方向都是 54/54 严格交付、6/6 场景跟随查询。</li>
+<li>适用性全部通过：C 54/54 严格，6/6 场景跟随查询；四个方向损伤都迁移（T_nat 交付 0/0/0/1，其余全部首步停止）。</li>
+<li><strong>按计划出口“T_V 也随查询”：SP 面板上“只恢复 V 就退回首列编号”的错误模式没有迁移到这块面板；任务呈现方式会改变恢复结果，SVQ-01 的 V 失败不能推广。</strong> （更正：初稿此处写“损伤表现为纯停止、选择基本完好”，超出证据，已改，见 §5。）在这块面板上，恢复深层卷积 V 足以让完整回答回来（3/4 方向）；这不说明干预只损伤了开口——恢复 V 可能同时改善了开头和后续选择，而未恢复状态的第二步诊断只有 54/38/23/54 格目标领先（R0 明显不支持“只坏首步”）。</li>
+<li><strong>最重要的限制：这块面板相对 SP 同时改了两件事</strong>——(a) 目标由问题里的条目名指定，而不是记录里的“目标条目”标签；(b) 问题移到了记录前面，注入窗口只剩固定指令。SP 中问题“目标条目的编号是什么”本身就在注入窗口里。SP 的目标身份由记录内标签指定、本在窗口外，窗口内是通用提问指令；NQ 由问题里的名字指定目标。所以两块面板的差别可能涉及目标指定方式、指令处理、问题位置与注入窗口内容（长度 26 对 20 token），<strong>本轮不能把 SP 上的首列失败归因于其中任何一项</strong>，也不能称“查询被写坏”。</li>
+<li>工程全部通过，包括 SP01-f0 经 SVQ runner 的 17 条轨迹逐位重放、54 条注入窗口 token 完全相同、C/T 共用窗口前缓存。</li>
+</ol>
+<h2 id="2-54-36">2. 主表（54 格；交付/严格；目标不在首位的 36 格中 目标/首列）</h2>
+<table>
+<thead>
+<tr>
+<th>方向</th>
+<th>T_nat</th>
+<th>T_V</th>
+<th>T_V 非首位 36 格</th>
+<th>T_F</th>
+<th>T_F 非首位 36 格</th>
+<th>T_V 方向标签</th>
+<th>T_F 方向标签</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>N4146</td>
+<td>0/0</td>
+<td>54/54</td>
+<td>36/0</td>
+<td>54/54</td>
+<td>36/0</td>
+<td>跟随查询</td>
+<td>跟随查询</td>
+</tr>
+<tr>
+<td>N1210</td>
+<td>0/0</td>
+<td>54/54</td>
+<td>36/0</td>
+<td>54/54</td>
+<td>36/0</td>
+<td>跟随查询</td>
+<td>跟随查询</td>
+</tr>
+<tr>
+<td>R0</td>
+<td>0/0</td>
+<td>45/45</td>
+<td>27/7</td>
+<td>54/54</td>
+<td>36/0</td>
+<td>混合</td>
+<td>跟随查询</td>
+</tr>
+<tr>
+<td>C1343</td>
+<td>1/0</td>
+<td>54/54</td>
+<td>36/0</td>
+<td>54/54</td>
+<td>36/0</td>
+<td>跟随查询</td>
+<td>跟随查询</td>
+</tr>
+</tbody>
+</table>
+<p>配对改善（C 交付、T_nat 未交付、该臂交付）：T_V 54/54/45/53，T_F 54/54/54/53。T_F 对 T_V 逐格：仅 F 对 0/0/9/0，仅 V 对 0，都对 54/54/45/54。R0 中 T_V 的唯一输出位置为首 25 / 中 12 / 末 15（T_F 为 18/18/18）。</p>
+<h2 id="3">3. 次级描述（不进入判据）</h2>
+<ul>
+<li>同前缀诊断 M（目标第二 token − 最大干扰）为正的格：T_nat 54/38/23/54，T_V 54/54/44/54，T_F 54/54/54/54；M 均值 T_nat 2.1/1.1/0.4/4.5，T_V 3.7/2.6/1.2/6.1，T_F 7.0/5.4/3.5/6.9。即<strong>受损状态在给定共同首字母后，多数方向仍偏向被问的目标</strong>（R0 最弱）。</li>
+<li>首步共同首 token 相对停止最大值：T_nat −5.3 到 −7.2，T_V +5.0 到 +7.4，T_F +6.2 到 +7.2。</li>
+<li>Q（改问目标后相对偏好的变化，描述量，无零分布）：C 均值 10.5（54/54 为正）；T_nat 3.1/2.0/1.3/5.3，T_V 4.7/3.7/2.1/6.8，T_F 7.8/6.3/4.4/7.6；所有臂 54/54 为正。C 只是阳性参照；Q 为正不说明信息完整。</li>
+</ul>
+<h2 id="4">4. 执行</h2>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th style="text-align: right;">形成</th>
+<th style="text-align: right;">自然轨迹</th>
+<th style="text-align: right;">实际解码前向</th>
+<th style="text-align: right;">诊断</th>
+<th style="text-align: right;">校准</th>
+<th style="text-align: right;">墙钟</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>预检 r01（1 worker）</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">32</td>
+<td style="text-align: right;">101</td>
+<td style="text-align: right;">32</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">53 s</td>
+</tr>
+<tr>
+<td>正式 r01（2 worker）</td>
+<td style="text-align: right;">270</td>
+<td style="text-align: right;">702</td>
+<td style="text-align: right;">2209</td>
+<td style="text-align: right;">702</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">367 / 373 s</td>
+</tr>
+</tbody>
+</table>
+<p>合计约 0.22 GPU 设备小时（上限 2）；峰值显存 9.6 GB；形成 token 前向预检 270、正式 5400。全词表张量在服务器 <code>runs/*/worker-*/tensors/</code>（正式每 worker 约 470 MB），哈希在 <code>receipt.json</code>。</p>
+<h2 id="5">5. 解读与下一步边界</h2>
+<ul>
+<li>撤回“只恢复 V 只能重启输出、不能恢复选择”作为一般结论：它只在 SP 面板（标签式指定 + 问题在注入窗口内）上成立。在 NQ 面板上，V 恢复在 3/4 方向完整恢复了按名选择。</li>
+<li>下一步可检验的问题：只恢复 V 能否恢复正确选择，是否取决于目标指定方式与问题位置（模板条件依赖）。要进一步说是“问题 token 被直接注入”造成，还需保持提示文本不变、只改变注入覆盖的检验。需要新计划和授权，本轮不自动展开。</li>
+<li>R0 是唯一 V 不够的方向，且错误全指向首列；这与 SP 上的模式同向，但只有 9 格，不作独立结论。</li>
+</ul>
+<h2 id="6">6. 可以说 / 不可以说</h2>
+<table>
+<thead>
+<tr>
+<th>可以说</th>
+<th>不可以说</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>按名查询、问题在记录前的面板上，只恢复深层卷积 V 在 3/4 方向使回答 54/54 跟随被问条目，P_pos 0/4</td>
+<td>V 恢复了选择 / q/k 不重要（只在这块面板上）</td>
+</tr>
+<tr>
+<td>完整卷积恢复 4/4 方向跟随查询</td>
+<td>SP 上的首列失败来自标签式指定（与“问题被注入”混淆）</td>
+</tr>
+<tr>
+<td>这块面板上未恢复状态自然输出全是首步停止；共同前缀下目标领先 54/38/23/54 格</td>
+<td>干预只损伤开口、选择完好；目标信息完整保存</td>
+</tr>
+</tbody>
+</table></main></html>

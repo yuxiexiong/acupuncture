@@ -1,0 +1,212 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>下一步实验规划：不看答案的缓冲修复（FBR 线）</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="fbr">下一步实验规划：不看答案的缓冲修复（FBR 线）</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>docs/experiment-plan-template-buffer-repair-2026-11-06.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/experiment-plan-template-buffer-repair-2026-11-06.zh-CN.md">固定提交原件</a>；SHA-256：<code>d84ca1fba3ab2df62fce04e55b0c597a91901528ed27dec6b32789177042c6b3</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="fbr_1">下一步实验规划：不看答案的缓冲修复（FBR 线）</h1>
+<p>2026-11-06。<strong>规划稿，不是合同，未冻结、未授权、未运行。</strong> 分工：实验由本会话负责，稿件由用户整理。原则：不做证伪论文，每张卡的主臂是一个造出来的东西，对照只用来给它划边界。引用规范 <code>docs/experiment-design-self-check.zh-CN.md</code> v1；同一助手撰写，不是独立审查。</p>
+<h2 id="0">0. 为什么是这条线</h2>
+<p>坏消息先说：到 NWC-01 为止，本项目站住的是"一段限定范围内确认过的操作关系"，被否掉的是"原生状态方向特殊"。没有任何造出来的东西，痛点仍是推测档。继续补确认范围或继续定位，都不改变这一点。</p>
+<p>现成的事实（零 GPU，按 NWR-01 冻结的分类规则重读 LVK-01 正式记录，新面板 48 条）：</p>
+<table>
+<thead>
+<tr>
+<th>只在 t1 前把 14 个递推层的卷积缓冲换成本输入的干净值，其余全是原生受针状态</th>
+<th style="text-align: right;">N4146</th>
+<th style="text-align: right;">N1210</th>
+<th style="text-align: right;">R0</th>
+<th style="text-align: right;">C1343</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>原生运行，正确数</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>换 q/k 与 V 全部通道（LVK 的 F 臂）</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">48</td>
+</tr>
+<tr>
+<td>只换 V 通道（V 臂）</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">35</td>
+<td style="text-align: right;">48</td>
+</tr>
+</tbody>
+</table>
+<p>缓冲很小：每层 3 个槽。递推状态与 KV 一个字节没动，回答就全修回来了。这是一个现成的修复上限。它目前不能叫修复，原因只有一个：用的是这条输入自己的干净运行。</p>
+<p><strong>所以下一步的问题是：干净缓冲能不能从别的输入拿。</strong> 缓冲对应提示末尾的最后几个 token，在本面板里是同一句指令尾巴。已有的旁证：QST-01 测到不同查询的干净 q/k 在模板位上几乎相同；NWC-01 测到损伤补丁的跨输入余弦 0.91 到 0.96。V 通道没有直接数据。"别的输入的干净缓冲够用"属于<strong>推测档</strong>。</p>
+<h2 id="1-fbr-01">1. 第一张卡 FBR-01：模板缓冲修复</h2>
+<p><strong>问题。</strong> 不运行本输入的干净版本，只用其他输入的干净卷积缓冲，能把原生受针运行修回多少。</p>
+<p><strong>操作。</strong> 全部在 t1 之前、只改 14 个递推层的卷积缓冲（3 个槽），之后完全自然生成。不用任何 t1 或 t2 钩子。</p>
+<table>
+<thead>
+<tr>
+<th>臂</th>
+<th>缓冲来源</th>
+<th>身份</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T</td>
+<td>原生受针</td>
+<td>下限</td>
+</tr>
+<tr>
+<td>F_own</td>
+<td>本输入干净运行</td>
+<td>上限（看答案）；旧面板上须与 LVK 的 F 臂逐位一致</td>
+</tr>
+<tr>
+<td><strong>F_mean</strong></td>
+<td>其他五个结构族全部输入的干净缓冲的平均</td>
+<td><strong>主臂：不看答案</strong></td>
+</tr>
+<tr>
+<td>F_one</td>
+<td>另一条输入的干净缓冲（同族一条、异族一条）</td>
+<td>一条参照输入够不够</td>
+</tr>
+<tr>
+<td>V_mean＋μ_k</td>
+<td>V 通道取平均干净值，k 通道减去已冻结的共同偏移</td>
+<td>与写入—读取链对接的两向量版本</td>
+</tr>
+<tr>
+<td>F_rand ×20</td>
+<td>原生缓冲加随机扰动，范数等于 F_mean 与原生缓冲之差，逐层匹配</td>
+<td>同幅度的任意改动够不够（NWC 的教训：必须有）</td>
+</tr>
+<tr>
+<td>F_zero</td>
+<td>缓冲清零</td>
+<td>是否只要抹掉受损缓冲就行</td>
+</tr>
+</tbody>
+</table>
+<p><strong>读数。</strong> 主终点是自然完整回答正确数；另记明确错号、停止、首步是否开口。描述量：干净缓冲的跨输入余弦（分 q/k 与 V、分层）、受损与干净之差的跨输入余弦。</p>
+<p><strong>拟登记的预测（数值在合同里定，并先在合成数据上演示每个标签）。</strong>
+- P_A：F_mean 的正确率达到 F_own 的大部分，且相对原生的增益下界为正。
+- P_B：20 个同范数随机改动里，达到修复增益一半的至多 1 个。
+- P_C：清零不修复。
+- P_D：F_one 与 F_mean 相近。
+- 每条只对它测的量下结论。P_A 成立只说明"这些输入上别的输入的缓冲够用"，不说明缓冲是唯一受损处，也不说明递推状态与 KV 没受损。</p>
+<p><strong>两阶段。</strong>
+- A 开发：LVK 新面板 48 条（用于与旧记录逐位桥接）加 NWC 面板 72 条。四个方向。操作没有可调参数，A 的作用是暴露工程问题和定门槛。
+- B 确认：按 <code>make_panel.py</code> 的同一规则新生成 72 条从未进过模型的输入，A 结束后冻结再跑。N4146、N1210 为主，R0 与 C1343 诊断。</p>
+<p><strong>成本。</strong> 每条输入约十几个自然轨迹加形成，按 NWR/NWC 实测外推每阶段 0.3 到 0.5 GPUh。平均缓冲需要先算完全部输入的干净运行，再跑各臂，两遍。</p>
+<p><strong>各种结局改变什么。</strong>
+- P_A、P_B 都成立：得到一个不看答案、与干预无关、只动每层 3 个槽的修复。进入 FBR-02。
+- P_A 成立而 P_B 不成立：任何同幅度改动都能修，说明受损缓冲本身是障碍；修复仍在，但"恢复干净内容"的解释不写。
+- P_A 不成立而 F_own 成立：干净缓冲带输入特有信息。记录 F_one 同族与异族的差别作为边界，不自动追加定位。
+- F_own 在新面板上也不成立：上限本身不迁移，本线停止，回到整稿时的取舍。</p>
+<h2 id="2">2. 之后两张卡（只有前一张成立才展开，现在不设计细节）</h2>
+<ul>
+<li><strong>FBR-02 修复的适用边界。</strong> 把"要校准什么"测出来：换一句指令尾巴时旧模板的缓冲还管不管用；其他施针层位与方向（L12/C3621、WIN 用过的 L1 到 L5）；事实任务，那里已知全前缀受针要补递推状态和 KV，缓冲修复多半不够。产出是方法的适用条件，不是另一条机制线。</li>
+<li><strong>FBR-03 转向残留。</strong> 用公开转向代码在提示期施加转向向量，撤掉之后看残留副作用，再看模板缓冲修复能否消掉。这是痛点从推测档升档所需的证据，也是把单坐标干预到转向的类比变成实测的地方。</li>
+</ul>
+<h2 id="3">3. 顺带的小测量（不设门槛）</h2>
+<p>补丁范数相对被它扰动的 t2 读取输出有多大。稿件里"读取脆弱"这句话写多重取决于这个比值，现在不知道。用 NWC 面板在 FBR-01 的 A 阶段顺带量，几分钟。</p>
+<h2 id="4-fbr-01">4. 设计卡与自查（FBR-01，规划层）</h2>
+<ol>
+<li>主线与本轮：主线不变。本轮把已有的修复上限变成不看答案的修复。</li>
+<li>新增认识：干净缓冲是否跨输入可替代；修复是否超过同幅度任意改动。</li>
+<li>依据与反例：依据见 §0。最不利：只换 V 通道时大量首列错号，说明缓冲各通道作用不同；V 通道跨输入相似性无数据；NWC 显示同范数随机扰动在读取处经常有效，缓冲处可能同样如此。</li>
+<li>操作：见 §1 表。</li>
+<li>估计对象：同一原生受针运行在不同缓冲来源下完整回答的差，属于操作总效果。</li>
+<li>判读：见 §1。</li>
+<li>范围与成本：见 §1。统计单位沿用基础情境。</li>
+<li>退出：见 §1 结局表；不因阴性追加层、头或通道定位。</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>判定</th>
+<th>理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C01 主线</td>
+<td>通过</td>
+<td>仍是干预后状态如何造成回答变化；本轮从修复一侧推进</td>
+</tr>
+<tr>
+<td>C02 增量</td>
+<td>通过</td>
+<td>现有数据答不了"别的输入的缓冲够不够"</td>
+</tr>
+<tr>
+<td>C03 资产</td>
+<td>通过</td>
+<td>缓存编辑、形成、分类器、面板生成全部复用</td>
+</tr>
+<tr>
+<td>C04 假设</td>
+<td>通过</td>
+<td>列了三条最不利证据；主预测标为推测档</td>
+</tr>
+<tr>
+<td>C05 操作</td>
+<td>通过</td>
+<td>只改 t1 前的缓冲，来源逐臂写明</td>
+</tr>
+<tr>
+<td>C06 路径</td>
+<td>通过</td>
+<td>缓冲之后一切自然响应；不声称其余状态未受损</td>
+</tr>
+<tr>
+<td>C07 耦合</td>
+<td>通过</td>
+<td>平均缓冲是反事实输入，不对应任何单次自然运行，写明</td>
+</tr>
+<tr>
+<td>C08 归因</td>
+<td>通过</td>
+<td>只用"足以修复""可替代"；不写唯一受损处、自然路径</td>
+</tr>
+<tr>
+<td>C09 区分</td>
+<td>通过</td>
+<td>随机与清零两臂分别区分"任意改动"和"抹掉即可"</td>
+</tr>
+<tr>
+<td>C10 指标</td>
+<td>通过</td>
+<td>主终点是完整回答；开口与正确分开</td>
+</tr>
+<tr>
+<td>C11 失败</td>
+<td>通过</td>
+<td>旧面板逐位桥接是工程闸门，与科学判读分开</td>
+</tr>
+<tr>
+<td>C12 成本</td>
+<td>通过</td>
+<td>每阶段不足 0.5 GPUh；无定位矩阵</td>
+</tr>
+<tr>
+<td>C13 可信度</td>
+<td>通过</td>
+<td>A 用已见面板并如实标注；B 用新生成面板</td>
+</tr>
+<tr>
+<td>C14 累积</td>
+<td>通过</td>
+<td>四种结局都有稳定结论，只有第一种导向下一张卡</td>
+</tr>
+</tbody>
+</table>
+<p>相关历史错误：E07 与 E14（修复充分不等于自然路径或唯一载体，用词已限定）；E12（随机对照按实际改动幅度逐层匹配，不用反射方向）；E22（基础情境为单位，已见面板不称留出）；NWC 偏离 D1（跨层的量会随下层改动变化，闸门只写对所测对象成立的恒等式）。</p>
+<p><strong>反方最强反例。</strong> 平均缓冲之所以够用，可能只是因为本面板所有输入共用一句指令尾巴；换一句就不行。这不否定 FBR-01，它正是 FBR-02 第一项要测的边界，届时修复的说法要写成"每个模板一份参照缓冲"。</p>
+<p>设计结论：规划层通过。合同、判读预演、工程验收、运行授权均未做。</p></main></html>

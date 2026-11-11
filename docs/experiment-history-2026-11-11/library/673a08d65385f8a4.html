@@ -1,0 +1,64 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>全层缓存差分与阶段二深度比较方案</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="_1">全层缓存差分与阶段二深度比较方案</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/early-state-localization-stage2-v2-2026-10-30/PLAN.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-state-localization-stage2-v2-2026-10-30/PLAN.zh-CN.md">固定提交原件</a>；SHA-256：<code>673a08d65385f8a49c6fe07e751a785e092b754ccfcad8a5c8300a19bec06e4e</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="_2">全层缓存差分与阶段二深度比较方案</h1>
+<p>日期：2026-10-30。版本：draft-r02。状态：待审阅、未冻结、未授权运行。</p>
+<p>本次直接修订原阶段二文档，文件位置不变。draft-r01 已在 Git 提交 7b0e24d2e26f3f5cab31cf5296048b710f75546d 保存。新顺序为：<strong>先做全层插针的缓存类型差分，再做阶段二的缓存深度比较。</strong> 配套规则见 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-state-localization-stage2-v2-2026-10-30/CONTRACT.zh-CN.md">合同草案</a>。</p>
+<h2 id="_3">两个不同的深度维度</h2>
+<p>第一步的横轴是插针层：在 L0–L31 分别插针，比较更换 KV、递推、conv 后的变化。第二步的横轴是被替换缓存所在层：对前一步选出的条件，寻找异常依赖哪一段缓存。</p>
+<p>停止与事实利用始终分别记录，所有条件同时采集两种读数。不能把开始输出当作事实利用恢复，也不能用低事实敏感度断言内部信息彻底消失。</p>
+<h2 id="_4">第一步 全层缓存类型差分</h2>
+<p>建议主网格为 Qwen3.5-4B 全32层、每层一个既有固定通道、±1两种剂量，共64条件。点位沿用旧逐层剂量调查的4B清单，不按效应重新选点。全层覆盖不等于全通道覆盖；这一成本选择限制了结果对每层通道总体的代表性。</p>
+<p>对提示前 n−1 位建立干净 C 和污染 T 缓存，再逐类拼接，末位及生成不插针。测试 KV、递推、conv 的全部八种 C/T 组合，包含之前遗漏的“仅递推污染”和“仅conv污染”。开发与历史复核面板各24输入，展示完整逐层曲线，并比较预定的早L0–3、中L12–15、后L24–27窗口；其余层不删，L28–31末端结构另列。</p>
+<p>这一步回答：随插针层变化，停止竞争、事实敏感度及不同缓存替换的效应是否不同？结果可能是明显差异，也可能主要由可被影响的下游层数量解释；两种结果均保留。</p>
+<h2 id="_5">阶段二 缓存深度比较</h2>
+<p>第一步后，在三个预定窗口内，分别按停止损伤和事实敏感度损伤选择一个条件，最多六个唯一条件。只用开发面板排名，历史复核面板不参与挑选。弱效应也不换题、补点；标记本窗口没有明显损伤。</p>
+<p>阶段二A在旧开发题上扫描八个缓存深度组。每组比较三类缓存的七个非空清理子集，包括各单项、各两两组合和三者联合。这样不预设早层的缓存结论也适用于中后层。</p>
+<p>阶段二B只对每个选定条件排名最高的一组做新题双向验证：既在污染背景中换干净，也在干净背景中加入该组污染。每组仍保留七种组件子集，不按单项结果挑组件。新题在任何第一步干预结果打开前锁定。</p>
+<h2 id="_6">结构差异与解释边界</h2>
+<ul>
+<li>插针发生在MLP，而同层注意力先执行。晚层插针可影响的下游缓存更少，必须逐层审计T/C差分，不把这一差异直接解释成缓存功能分工。</li>
+<li>最后一层MLP在本提示前缀协议下没有下游缓存写入机会。L31作为结构边界对照保留；无效不代表它对当前token输出不重要。</li>
+<li>某类缓存全部换干净只恢复部分读数，不等于该类存储固定比例的事实。</li>
+<li>局部清理有效只定位到可改变异常的位置；反向污染也有效，才加强该位置在指定背景下的双向因果证据，仍不证明唯一根因。</li>
+<li>提示末尾的缓存操作不能覆盖持续注入、生成中途或文字历史维持的所有异常。生成途中拆分列为后续独立扩展，不自动接入本轮，避免混用不同文字前缀的缓存。</li>
+</ul>
+<h2 id="_7">缓存及其他状态</h2>
+<p>本轮内容状态为K、V（合称KV）、递推状态、conv状态。运行前核查缓存管理字段和模型其他可变字段；它们须匹配，但不作为第四类语义缓存任意交换。Q、残差流、门控与logits属于当前计算，已生成文字属于历史输入。K/V、头、conv时间槽等更细拆分暂不列入本轮。</p>
+<h2 id="_8">规模与交付</h2>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th style="text-align: right;">自由生成次数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>全层差分：开发与历史复核</td>
+<td style="text-align: right;">21,552</td>
+</tr>
+<tr>
+<td>阶段二A：最多六条件，八组扫描</td>
+<td style="text-align: right;">最多8,064</td>
+</tr>
+<tr>
+<td>阶段二B：新题双向验证及全局参照</td>
+<td style="text-align: right;">最多3,048</td>
+</tr>
+<tr>
+<td>合计</td>
+<td style="text-align: right;">最多32,664</td>
+</tr>
+</tbody>
+</table>
+<p>每次生成另附两条候选评分；去重、旧参照复用与额外预检预算见合同。这比原草案9,120次更大，增加量主要来自全层八组合覆盖。小时数须未来获准后用预检测量，不能沿用早层短回答吞吐估算。</p>
+<p>交付分为全层差分图、阶段二层组图和新题验证三部分；所有原文、失败、无效条件、选择规则与收据均保留。旧confirmation仅称历史复核，不称新独立确认；新题只确认选中候选，不确认所有32层的总体规律。</p>
+<h2 id="_9">来源与修订边界</h2>
+<ul>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/34e5d4a4533d3cbbe3a0994b7d80d060bb336a9f/experiments/early-state-localization-v1-2026-10-29/CONTRACT.zh-CN.md">阶段一缓存拆分合同</a></li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/34e5d4a4533d3cbbe3a0994b7d80d060bb336a9f/experiments/early-state-localization-v1-2026-10-29/REPORT.zh-CN.md">阶段一结果</a></li>
+<li><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-dose-survey-toy-v1-2026-10-27/selection.json">既有4B点位来源</a></li>
+</ul>
+<p>本次只改原方案与合同；不另建一套计划，不改历史实验，不运行模型，不将文档审阅视为实验授权。</p></main></html>

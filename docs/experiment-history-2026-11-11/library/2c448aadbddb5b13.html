@@ -1,0 +1,22 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>早层既有轨迹统计说明</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="_1">早层既有轨迹统计说明</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/layer-trace-extension-v1-2026-10-28/analysis-early-r01/stats-note.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/analysis-early-r01/stats-note.md">固定提交原件</a>；SHA-256：<code>2c448aadbddb5b1378f2582da98c6b986c0d84f19b738f803c840568f42a41fc</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="_2">早层既有轨迹统计说明</h1>
+<p>本次仅 CPU 读取本地已验收归档，无模型推理、新题目或新实验。范围为四模型各 920 条（912 干预、8 原版），共 3,680 条；注入范围 L0–L5，观察各模型全部层。4B 深层注入轨迹不在本次范围。源验收入口为 <code>../archive-r01/combined-verification.json</code>。</p>
+<p><code>summary.json</code> 提供模型、注入层、剂量与队列分组的描述统计；<code>features.jsonl.gz</code> 保留逐条首预测位置各组件、逐生成步指标、原版及干预文本和证据路径；<code>summarize_existing.py</code> 可复算。实际自检：3,680 条来源与生成 token 一致、位置映射一致；32 条原版全站点全位置差分严格为零；3,648 条干预的所有前置站点（更浅层及同层 attention）差分严格为零，首变化站点均为注入层 MLP。</p>
+<p>解释边界核对：</p>
+<ol>
+<li><strong>样本不是独立抽样。</strong> 同一八题重复用于通道、层、剂量；只做描述统计，无 p 值或总体显著性结论。</li>
+<li><strong>队列不能重复相加。</strong> 每模型十点 +1 有 480 条，单通道正负剂量有 480 条，二者交叠 48 条；独立干预总数是 912。</li>
+<li><strong>“一个通道”不等于小剂量。</strong> 直接注入预期范数为 <code>abs(dose) × clean calibration residual scale</code>；实测 MLP 差分与该值之比为 0.9928–1.0077。±1 是一个标定残差尺度。</li>
+<li><strong>首变化位置部分由插针位置规定。</strong> 首次变化在注入层 MLP 是实现核验，不独立证明功能分区或根因。</li>
+<li><strong>绝对差分增长不等于病理放大。</strong> <code>final_over_injection_absolute_delta</code> 使用绝对差分，但深层原始表征尺度也增长；应同时看 relative、cosine 与输出。大 MLP relative 也可能源于 clean MLP 较小。</li>
+<li><strong>峰值名字要准确。</strong> <code>max_absolute_delta_peak_layers</code> 是 attention、MLP、residual 三类站点中的绝对差峰值层；它不是 residual 专属峰值。<code>relative_peak_layers</code> 同样涵盖三类站点。</li>
+<li><strong>首步与后续步语义不同。</strong> <code>first_sites</code> 为末个 prompt token 的预测位置，尚无生成文本分叉；后续 clean 与 steer 强制同一已生成 token 历史。位置 <code>prompt_tokens - 1 + step</code> 对应该步预测。</li>
+<li><strong>clean shadow 不是局部撤针。</strong> 它是全程无针、独立 cache、强制相同历史的另一分支；不能据此声称撤针后自由生成必然恢复或继续循环。</li>
+<li><strong>排除 BF16 并列最大值。</strong> strict divergence 要求实际 token 的 clean logit 比候选中 clean 最大值低超过 1e-6；候选并集包含 clean 最大值。仅 token ID 不同可能是并列，旧字段保留供核对。</li>
+<li><strong>输出机械指标不是语义标签。</strong> 空白、EOS、长度上限及重复四元组不自动等于乱码、能力损伤或内容错误；重复阶段 clean 支持只表示相同错误历史下该 token 也是 clean 的最大值候选。</li>
+<li><strong>跨模型及层间机制仍有限。</strong> 同层号、同通道号、同剂量不构成表示同源；L0–L5 是比较窗口而非已证实分区。现有范数/角度摘要不能恢复向量方向或分配路径因果必要性，曲线与图上相邻也不证明因果连接。</li>
+</ol>
+<p>汇总中的中位数逐字段计算，不能把不同中位数相除当成逐样本比值中位数。方向分开解读，正负剂量不预设对称；单通道剂量结论不自动推广至十个通道。</p></main></html>

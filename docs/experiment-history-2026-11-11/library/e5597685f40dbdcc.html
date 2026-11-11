@@ -1,0 +1,90 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Gemma r02 08:10巡检</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="gemma-r02-0810">Gemma r02 08:10巡检</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/wsp-vlm-gemma3-C30-continuation-2026-11-06/heartbeat-0810/REPORT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/2ed333ea1e2f4ae2358f081ee37dbaf3c26c6274/experiments/wsp-vlm-gemma3-C30-continuation-2026-11-06/heartbeat-0810/REPORT.zh-CN.md">固定提交原件</a>；SHA-256：<code>e5597685f40dbdcc854a1621f57044a64a1791ddb441fb160a647f918c42f9c5</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="gemma-r02-0810_1">Gemma r02 08:10巡检</h1>
+<p>2026-11-06北京时间08:10状态快照，随后核验B turn91已成功。四个远端服务/等待器及本地控制器命令均核对；本次不改运行源码、科学条件或队列，v8/v9 source-manifest逐文件一致。</p>
+<table>
+<thead>
+<tr>
+<th>组别</th>
+<th>完整轮次及较07:45增量</th>
+<th>W0→实际最佳主分数</th>
+<th>W0→最佳全体正确率</th>
+<th>修对/改错</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>v8 B</td>
+<td>18/30，+5</td>
+<td>16.3793%→21.5517%</td>
+<td>43.5345%→46.5517%</td>
+<td>26/12</td>
+</tr>
+<tr>
+<td>v8 C</td>
+<td>8/30，+4</td>
+<td>33.9844%→33.9844%</td>
+<td>79.1406%→79.1406%</td>
+<td>0/0，所选仍W0</td>
+</tr>
+<tr>
+<td>v9 B/C</td>
+<td>各0/30</td>
+<td>未运行</td>
+<td>未运行</td>
+<td>等待v8科学评价结束</td>
+</tr>
+</tbody>
+</table>
+<p>B实际最佳为R17，候选c-b77d500cbd51c5a107504d55674393523ea267e4155035cce6e273965d942795：数字0绑定embedding/输出行×1.50，再加视觉桥mm_soft_emb_norm有效gain×0.90；其他decoder norm恢复W0，实际改变3707个BF16标量。比R13进一步改善，仍属开发集适应，不能称独立泛化或MLP机制修复。完整W0/最佳回答及补丁清单见best-evidence.json.gz。</p>
+<p>C新增R5–R8为attention/MLP全层残差gain的正反向试验，主分数分别34.375%、31.640625%、34.375%、30.859375%，都触发逐格保护拒绝；不能只报其中34.375%而当作可接受收益。B累计5次measure、C3次measure，均不计修补轮或直接证明机制。B最新用8张预定图像测量视觉桥256×1152输出，预选144个高/低空间均值能量比例通道做数量配对比较；能量未匹配，尚无该新候选完整结果，不能预称方向特异性成立。</p>
+<p>B turn90计算完成后误向只读/artifacts写诊断文件，失败收据完整保留，模型评价未发生、内存未重置。turn91已将已有诊断完整打印入持久动作回执并成功暂存后续编辑；没有放宽只读证据保护、重放原动作或重新计算模型评价。本次核对证实问题已由研究者当场处理，控制器没有停线。B/C均未冻结，仍在搜索；v8不要求v9格式机制报告，v9尚未开始。</p>
+<h2 id="eta">耗时与ETA</h2>
+<p>同机请求/响应mtime差减远端elapsed_seconds计算工具等待。统计B turn71–90（R13后）、C turn36–50（恢复后），原始数值见timing.json。Astra整回合包含API排队、上下文处理和输出，不是纯思考；类别计时不是GPU占用时间。</p>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th style="text-align: right;">B秒</th>
+<th style="text-align: right;">C秒</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Astra整回合</td>
+<td style="text-align: right;">822.33</td>
+<td style="text-align: right;">651.77</td>
+</tr>
+<tr>
+<td>完整评价</td>
+<td style="text-align: right;">468.42</td>
+<td style="text-align: right;">878.41</td>
+</tr>
+<tr>
+<td>内部测量</td>
+<td style="text-align: right;">1.83</td>
+<td style="text-align: right;">14.96</td>
+</tr>
+<tr>
+<td>Python动作墙钟</td>
+<td style="text-align: right;">123.49</td>
+<td style="text-align: right;">9.68</td>
+</tr>
+<tr>
+<td>提交候选</td>
+<td style="text-align: right;">134.05</td>
+<td style="text-align: right;">0.15</td>
+</tr>
+<tr>
+<td>工具往返及轮询等候</td>
+<td style="text-align: right;">98.44</td>
+<td style="text-align: right;">84.71</td>
+</tr>
+</tbody>
+</table>
+<p>B最近8个候选完成间隔为1.96、1.90、5.56、6.30、4.09、3.99、3.68、3.40分钟，目前进入新诊断阶段；余12轮估计50–90分钟。C恢复后的4次完整评价总878秒、最近三个连续候选间隔5.67、6.31、5.67分钟；早停到恢复的36分钟空档不当作候选运行速度，余22轮估计2.5–4小时。诊断增加会改变区间，非承诺。v9无本轮实测，尚不给全部队列完成时刻。</p>
+<h2 id="_1">资源与计账</h2>
+<p>工作盘可用137.433GiB，较07:45约137.881GiB减少0.447GiB。B目录2.919GiB、C3.043GiB，较上次分别约+0.158/+0.284GiB；各低于12GiB，远高于全盘20GiB保留线。不需清理，无文件删除。08:09采样GPU0/1为0%/65%，08:10为0%/0%；两服务分别驻留约16.3/15.6GB，按Astra/CPU/生成阶段交替，不能由瞬时0%判为停止或声称全程满卡。</p>
+<p>B搜索累计8891样本、2738945目标token、90.478 CPU秒；C23043样本、6081505目标token、36.166 CPU秒。B turn90研究者累计12233022 token，C turn50累计4361379 token，包含缓存输入；不是独立生成token或美元账单。B turn91后CPU累计105.125秒，见成功回执。两组工程各另计2212生成/2218前向，其中2080为吞吐校准，不计入30轮。恢复服务的额外实际模型加载已发生，各1次；不重跑W0。当前没有未决容量失败用量。全部原停止及负结果保留，旧Qwen/2B/8B/旧Gemma队列未恢复。</p></main></html>

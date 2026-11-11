@@ -1,0 +1,19 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>半小时监控：2026-10-28 05:33（北京时间）</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="2026-10-28-0533">半小时监控：2026-10-28 05:33（北京时间）</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0533.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0533.zh-CN.md">固定提交原件</a>；SHA-256：<code>04fddc30851447f6be245551a5db55912925b5601876c5c406b57732087d2a0b</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="2026-10-28-0533_1">半小时监控：2026-10-28 05:33（北京时间）</h1>
+<p><strong>Qwen2B、4B、9B前六层内部轨迹均已采齐并验收，每模型920条、合计2,760条。</strong> A原批次2,152/2,152；B前六层补齐608/608，四个worker completed/checks_passed=true、exit0、收据哈希一致。前次2B shard0等待配对退出的状态已正常结束，无缺失退出记录。</p>
+<p>B于05:04:34进入4B L6–L31采集，现 <strong>507/3,952</strong>（shard0=287/1,976，shard1=220/1,976），B总计 <strong>1115/4,560</strong>。C Llama仍 <strong>0/920，waiting</strong>，自身14案例/38流GPU预检尚未开始。三段正式合计 <strong>3267/7,632</strong>，较05:03巡检增加 <strong>515条</strong>。队列汇总B1,114与逐worker收据1,115相差1条属读取时间差，本报告采用收据计数。</p>
+<p>冻结、授权、CPU验收凭证、前驱execution/freeze及已完成结果JSON哈希检查通过。全部已完成worker退出0；两个深层worker实际PID/命令匹配，最新结果在快照前约4秒内写入，无OOM、写盘失败、失活或停滞迹象。C父进程身份匹配且正常等候；未根据显存猜测健康。本轮未重读所有压缩轨迹/模型权重，也未改动任何服务器任务。</p>
+<h2 id="eta">ETA</h2>
+<p>A及B补前六层剩余0。4B L6–L31按本模型实测拟合、原输出token长度与慢卡剩余估算，纯采集约 <strong>213.6分钟</strong>；计入保存/终验余量，Qwen剩余 <strong>3.76–4.32小时</strong>，预计 <strong>09:18–09:52</strong> 完成。</p>
+<p>Llama另加 <strong>60–90分钟</strong>，仍是未GPU实测的规划，已包含自身预检/加载/终验。整体剩余 <strong>4.76–5.82小时</strong>，预计北京时间 <strong>10:18–11:22</strong>，与上次10:19–11:26接近。没有因较短回答先完成而按条数线性乐观外推。区间为经验规划范围，非统计置信区间/硬截止；可视化接图与研究分析另计。</p>
+<h2 id="_1">磁盘</h2>
+<p>工作盘96%，可用 <strong>124.88 GiB</strong>，本轮减少0.191 GiB；系统盘90%，可用 <strong>48.35 GiB</strong>，减少0.66 MiB，/data/models和/tmp共用此盘未重复计数。本地归档盘53%，可用 <strong>877.4 GiB</strong>，基本不变。</p>
+<p>A目录0.761 GiB（不变），B目录0.423 GiB（增加0.189 GiB），C约5KiB。剩余4365正式记录、228627输出token，按长度估计压缩产物2.01 GiB；C采用Qwen9B体积代理，尚非Llama实测。含50%最大单条余量及C预检100MiB，预留 <strong>5.47 GiB</strong>（非硬上界），现有空间大于该预算＋15GiB余量。文件和下载副本的本地归档峰值预算13.3 GiB。</p>
+<p>当前净消耗约0.39 GiB/小时，按该趋势耗尽尚需324小时，晚于队列ETA。<strong>当前磁盘无危险，不需要清理。</strong></p>
+<h2 id="_2">负载</h2>
+<p>CPU44逻辑核，短采样忙碌 <strong>4.6%</strong>，load <strong>2.07/2.05/2.01</strong>；可用RAM <strong>462.3 GiB</strong>，无Swap。</p>
+<p>GPU0：28%、11235/97871MiB（11.0/95.6GiB）、40°C；GPU1：27%、10575/97871MiB（10.3/95.6GiB）、35°C。均运行4B深层采集；实际GPU进程及worker命令已保存快照。</p>
+<p><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0533.remote.json">远端快照</a> · <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/layer-trace-extension-v1-2026-10-28/monitoring/20261028T0533.summary.json">ETA与空间计算</a></p></main></html>

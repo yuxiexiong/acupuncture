@@ -1,0 +1,21 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DIV-01 第零步报告：4B L0 阈值附近同范数分裂普查</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="div-01-4b-l0">DIV-01 第零步报告：4B L0 阈值附近同范数分裂普查</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/div01-threshold-split-survey-v1-2026-11-03/REPORT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/div01-threshold-split-survey-v1-2026-11-03/REPORT.zh-CN.md">固定提交原件</a>；SHA-256：<code>fa57d51c5782489f47f3d48829cb550b3d4664973b3a1467f1ac7f58598ee0e5</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="div-01-4b-l0_1">DIV-01 第零步报告：4B L0 阈值附近同范数分裂普查</h1>
+<p>2026-11-03。合同 <code>contract.json</code>，冻结哈希 <code>freeze.json</code>（10:16:10Z）。两卡共 336 条，复现闸 16/16 逐位一致，钩子已移除、权重哈希不变。</p>
+<h2 id="_1">判定（按合同）</h2>
+<p><strong>够数闸 FAIL。</strong> 0.5：STOP 5（N3846/3959/6137/7542/9105）、CLEAN 0、OTHER 15。0.75：20/20 STOP。按停止条件，本轮到此为止，不加剂量、不换题。</p>
+<p>失败类型：<strong>没拿到结果</strong>（合同执行完整，但对照集凑不出来）。这不是对 DIV-01 假设的否证。</p>
+<h2 id="_2">描述性观察（合同外，不当判据）</h2>
+<ol>
+<li><strong>EOS 阈值在全部 20 个通道上都落在 0.5–0.75 这一窄带里</strong>：0.75 剂量下所有通道都是 8/8 EOS，在册的 1.0 剂量下 L0 是 10/10。同范数下，方向只能在小于 1.5 倍的剂量区间里移动阈值位置，而不决定"停或不停"。这对 DIV-01 的前提不利：L0 的停止主要由写入幅度决定，方向调节的是阈值。</li>
+<li><strong>在 0.5 剂量下不停的通道，大多也不干净</strong>：15 个 OTHER 中有 9 个以 COLLAPSE 或 EOS 为主。接近干净的有 N1210、N2191、N383、N915、N6547，各自在 1–2 题上崩溃或答错。N1210 和 N4146 是 CFM 深挖过的通道。</li>
+<li><strong>结局在通道内部按题变化</strong>：例如 N8883 在 5 题上 EOS、2 题上 OK。在 0.5 剂量下，Q08 有 10 个通道 OK、3 个 EOS；Q04 有 6 个 OK、10 个 EOS；Q02 有 7 个 OK、5 个 EOS。</li>
+</ol>
+<h2 id="_3">对下一步的含义（待用户裁决，未执行）</h2>
+<ul>
+<li>整通道配对在 L0 走不通：要么全停，要么残损。</li>
+<li>可选一：改用<strong>(题, 通道)配对</strong>。同题、同剂量 0.5、同范数下，比较 EOS 与 OK 两种结局（Q02/Q04/Q08 各有 ≥5 对）。需要另立实验卡。</li>
+<li>可选二：把 DIV-01 的对象从"停与不停"改为"<strong>各通道自己的阈值位置</strong>"，因变量是触发 EOS 所需的剂量。这与观察 1 一致，也更直接地检验特异性。</li>
+</ul></main></html>

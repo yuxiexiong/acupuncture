@@ -1,0 +1,107 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CFM-CROSS-CHANNEL v1 实现说明与决策日志</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="cfm-cross-channel-v1">CFM-CROSS-CHANNEL v1 实现说明与决策日志</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-cross-channel-validation-v1-2026-10-31/IMPLEMENTATION.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-cross-channel-validation-v1-2026-10-31/IMPLEMENTATION.zh-CN.md">固定提交原件</a>；SHA-256：<code>4b0d9ba75c74c005ad677a3b400d9c28bc8b2ac6106e2c8fd6e5b5ed47a8e437</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="cfm-cross-channel-v1_1">CFM-CROSS-CHANNEL v1 实现说明与决策日志</h1>
+<table>
+<thead>
+<tr>
+<th>文件</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>xchan.py</code></td>
+<td>34 根针（10 通道 × 3 剂量 + 4 随机方向）的形成、14 根 −1 针的 CT/TC/TR0/TR1 交叉、125 个首步评分、全部闸门、每输入桥接锚点、冻结/CPU 收据/授权/worker/控制器/核验；在冻结的 <code>bridge.py</code> 上构建</td>
+</tr>
+<tr>
+<td><code>xchan_analysis.py</code></td>
+<td>合同 §5 的读数（<code>run</code>）与 ΔV 几何（<code>geometry</code>）；<code>selftest</code> / <code>selftest_geometry</code> 演示每个标签都能出现、也能不出现</td>
+</tr>
+<tr>
+<td><code>test_xchan.py</code></td>
+<td>小号随机 Qwen3.5 上的 CPU 测试：用同一小模型跑冻结的桥接代码当锚点，逐位核对；篡改锚点必须报错；消费方读数对真实记录形状</td>
+</tr>
+<tr>
+<td><code>data/directions-r01.json</code></td>
+<td>4 条随机单位方向（hidden 2560，种子 20261101+j），运行前生成并冻结</td>
+</tr>
+<tr>
+<td><code>readiness/real_smoke.py</code></td>
+<td>冻结前真实模型闸门演示，不输出读数</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_1">决策日志</h2>
+<ol>
+<li><strong>按审阅意见改计划</strong>：用户 2026-10-31 指示"直接按照这份意见去修改计划"。v2 采纳随机方向、每针 TR、ΔV 几何三项；不采纳 f0/f1 当零分布、"D 贴阈值所以 Δ 弱"、凭空登记有效人数三项（理由见方案 v2 §1）。</li>
+<li><strong>随机方向写入点</strong>：用早层输入控制已有的 <code>direction</code> 注入路径（加在 L0 MLP 输出上，幅度 d·m0）。原生通道在 down_proj 前，名义写入幅度同为 |d|·m0。冒烟实测名义写入与目标之比为 0.998–1.002。</li>
+<li><strong>TR 种子</strong>：N4146 −1 用桥接的基数 20261031，使锚点覆盖 TR；其余针的基数为 20261031+(1+M 中序号)·10^10。</li>
+<li><strong>逐针串行形成</strong>：桥接按 C/T/H 同步推进；本实验逐个条件从共同前缀深拷贝后单独推进。是否逐位等价由每输入锚点检验（C、P、Y、Y_TC、Y_CT、Y_TR0、Y_TR1 的 logits，C/T/TC/CT/TR0/TR1 的缓存清单，供体带与随机带哈希）。</li>
+<li><strong>形成期不装记录器</strong>：桥接形成期记录了内核驱动量，用于 CPU 重建诊断。本实验不需要这些量，省掉了；评分期仍用桥接的只读记录器取最终 h 与 FP64 重算。预检验证了关闭记录器后重评逐位相同。</li>
+<li><strong>不保存 τ 完整缓存</strong>（方案 v2 §7 的偏离）：<code>/workspace</code> 只剩约 37 GB。保存全词表 logits、35 条自然 V 带和评分 h，每输入约 0.23 GB。</li>
+<li><strong>CPU 测试初稿的一处缺陷</strong>：读数模块把停止 token 写死成 (248044, 248046)，小模型记录里没有这些 token，消费方测试 <code>test_analysis_on_real_record_shape</code> 报 KeyError。已把停止 token 改成参数，默认值不变。这和组合实验决策日志第 5 条是同一类问题。</li>
+<li><strong>worker 数</strong>：预检 1 个；正式 6 个，每卡 3 个，每个 worker 一个情景（2 个输入）。每个 worker 是独立进程、批次为 1，每输入锚点逐位检验多 worker 是否改变数值。</li>
+</ol>
+<h2 id="_2">运行记录</h2>
+<ul>
+<li>CPU 测试：14/14 通过，0 跳过（<code>readiness/cpu-receipt-r01.json</code>）。</li>
+<li>冻结前真实模型演示 <code>readiness/smoke-r01.json</code>（VAR03-f0）：全部闸门通过，含锚点与预检附加；93/130，219 s，峰值显存 9.3 GB，张量 0.23 GB/输入，η ≤ 0.066。不输出读数，正式运行从头重算。</li>
+<li>freeze-r01：sha 68170cdf，115 个文件。</li>
+<li>preflight-r01：2026-10-31 15:29–15:33 UTC，1 worker，242 s，通过（93/130）。</li>
+<li>formal-r01：2026-10-31 15:33–15:43 UTC，6 worker（每卡 3 个），555 s，12/12 输入全部闸门通过，包括每输入桥接锚点逐位相等；1092 前缀/1500 评分。</li>
+<li>判读：<code>analysis/xchan-readouts-r01.json</code>（冻结的 <code>xchan_analysis.py run</code>）与 <code>analysis/xchan-geometry-r01.json</code>（<code>geometry</code>）。</li>
+<li>张量（全词表 logits、V 带、评分 h，共 2.7 GB）不进 git，留在服务器 <code>/workspace/acupuncture/experiments/cache-cross-channel-validation-v1-2026-10-31/runs/*/worker-*/tensors/</code>，哈希见各 worker 的 <code>receipt.json</code>。</li>
+</ul>
+<h2 id="v2-6">结果（按方案 v2 §6 判读表）</h2>
+<p><strong>最不利的部分先说：这段 V 关系不是通道特有的。</strong> 4 条同幅随机残差方向与 10 个原生通道在每个读数上都分不开。按判读表第一行，只能说这段关系是"L0 同幅写入的一般性质"（限 4 条方向、本面板），不能说通道之间共享某种特有机制。</p>
+<table>
+<thead>
+<tr>
+<th>读数（−1，6 情景平均）</th>
+<th>10 个原生通道</th>
+<th>4 条随机方向</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Δ_native</td>
+<td>16.7–23.2</td>
+<td>17.6–22.5</td>
+</tr>
+<tr>
+<td>Δ_deep</td>
+<td>12.8–19.7</td>
+<td>13.3–20.1</td>
+</tr>
+<tr>
+<td>r_add（CT/Δ_deep）</td>
+<td>0.84–1.13</td>
+<td>0.85–1.00</td>
+</tr>
+<tr>
+<td>r_remove（TC/Δ_deep）</td>
+<td>0.31–0.58</td>
+<td>0.37–0.56</td>
+</tr>
+<tr>
+<td>自身 TR 两个抽样 / Δ_deep</td>
+<td>−0.13–0.05</td>
+<td>−0.12–0.04</td>
+</tr>
+<tr>
+<td>首步 EOS（P，满分 12）</td>
+<td>7–12</td>
+<td>7–12</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>带过来的预测：14 根 −1 针全部是 <code>consistent_with_carried_prediction</code>，每根 6/6 情景达到报告尺度，没有冻结 token 矛盾，两事实标签一致。N4146 本身复现桥接数值（锚点逐位）。E_remove 在全部 14 根针、全部情景都大于自身两个 TR 抽样。</li>
+<li>相对随机方向的排秩（1 = |Δ_deep| 最大，共 60 个通道×情景）：秩 1–5 分别出现 4/16/23/8/9 次，可交换时每档期望 12 次。分布集中在中间，没有偏向 1，所以通道方向没有比随机方向更有效。Δ_native 的秩为 20/22/6/4/8，略偏前；各情景不独立，只作描述。</li>
+<li>ΔV 几何：各层中位余弦，通道–通道 0.68–0.74，通道–随机 0.68–0.73，随机–随机 0.71–0.75。不同输入方向在深层形成的 V 变化高度相似，但随机方向之间同样相似，所以这不是通道特有的收敛。同一通道 +1 与 −1 的 ΔV 余弦为 0.67–0.73（正值）：相反符号的写入在深层产生了同向的 V 变化。−0.5 对 −1 的余弦为 0.37–0.43。</li>
+<li>符号与剂量：+1 下 10 个通道的 Δ_deep 都在 13–20，与 −1 相当。−0.5 下各通道分化很大：Δ_deep 从 1.3–3.1（N6137）到 14.3–19.2（N3959，接近 −1 的水平），且全部 0 次首步 EOS。随机方向没有 −0.5 档，所以<strong>这项通道差异没有一般扰动参照</strong>，不能说"弱剂量下方向有作用"。这是方案 v2 已写明的缺口。</li>
+<li>统一浅层背景：Y 的 EOS 全部为 0/12，Δ_deep 约为 Δ_native 的 75–90%，与 E2 一致；这是背景依赖，不是"无效"。</li>
+</ul>
+<p><strong>认识增量（限本面板、本时窗、−1/+1 剂量）</strong>：在桥接 N4146 上看到的"深层 V 双向替换"在另外 9 个通道和 4 条随机方向上以同样幅度出现。它更像"L0 被写入 |d|·m0 这么大的东西"之后的一般反应，而不是 N4146 的特例，也不是原生通道方向的特有性质。剩下的问题落在剂量上：−0.5 才出现通道差异，但它缺随机方向参照。</p></main></html>

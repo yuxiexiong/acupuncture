@@ -1,0 +1,86 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DWR-01 实现前自查</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="dwr-01">DWR-01 实现前自查</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/cache-donor-write-readout-v1-2026-11-07/DESIGN.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-donor-write-readout-v1-2026-11-07/DESIGN.zh-CN.md">固定提交原件</a>；SHA-256：<code>9aa7bae19f07b5051ea4d6a265aa00341011bfd40b0bab9e3cc89a7dd8314627</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="dwr-01_1">DWR-01 实现前自查</h1>
+<p>本卡科学设计沿用已交付<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-donor-write-readout-self-check-v1-2026-11-07.zh-CN.md">完整C01–C14、E01–E26及对抗审查</a>。本次是作者自查，不是独立评审；CPU与模型数值验收另留回执。</p>
+<h2 id="c01c14">与前版比较及C01–C14</h2>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th>本次决定与理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C01</td>
+<td>总问题仍为稀疏干预如何通过写入、状态使用影响完整答案；不缩成首token问题。</td>
+</tr>
+<tr>
+<td>C02</td>
+<td>连接DWB纯局部写入与SRU用途；旧端点不同，故有实质新测量。</td>
+</tr>
+<tr>
+<td>C03</td>
+<td>两方向、全348配对不变；已见材料只做开发。</td>
+</tr>
+<tr>
+<td>C04</td>
+<td>O/F、t1/t2及各层当前驱动定义不变，供体是状态来源不是整条轨迹。</td>
+</tr>
+<tr>
+<td>C05</td>
+<td>原端点、C0/L00、零用途和D/E/DE获得/撤回齐全；不添无关臂。</td>
+</tr>
+<tr>
+<td>C06</td>
+<td>数值恒等只作工程检查，科学读数来自之后完整自然回答。</td>
+</tr>
+<tr>
+<td>C07</td>
+<td>固定输出D_tr为零；撤回须另有自身恢复，不能靠失分过关。</td>
+</tr>
+<tr>
+<td>C08</td>
+<td>数据按场景重抽；R保留168配对权重，避免接收者配对数不同导致估计对象漂移。</td>
+</tr>
+<tr>
+<td>C09</td>
+<td>M、交付护栏、所有结局冻结；不以结果调阈值。</td>
+</tr>
+<tr>
+<td>C10</td>
+<td>二方向分别判读、全用途交付，保留负向/联合/不可判。</td>
+</tr>
+<tr>
+<td>C11</td>
+<td>仅复用已冻结写入和读取算子；新组合仍须预检。</td>
+</tr>
+<tr>
+<td>C12</td>
+<td>每场景固定首接收者全臂预检；源缓存与模块恢复检查覆盖正式全量。</td>
+</tr>
+<tr>
+<td>C13</td>
+<td>最多2 worker，按GPU进程时间预算，模型载入/失败/保存都计入。</td>
+</tr>
+<tr>
+<td>C14</td>
+<td>本次明确授权允许验收后上卡；与自查、数值通过和科学结果分开登记。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_1">主要历史错误及实现修正</h2>
+<p>沿用既有E01–E26清单。本次重点防范：只报失分；重复计独立单位；只用第一token；错误把k/q固定扩到全轨迹；把双用途输出替换称整个状态替换；预算漏加载/影子/失败；授权文件重写字节不同；看到结果再改判据。旧冻结文件全部只读；新源码单独目录。</p>
+<h2 id="_2">对抗复查</h2>
+<ol>
+<li>“D/E局部公式成立就算桥接”：否。公式仅验收，完整供体方向回答是科学终点。</li>
+<li>“读补丁泄漏到t3或缓存”：旧RHook只包自然生成的第一步；CPU核对原生S2，正式确认核函数恢复/无钩子及输入源未修改。</li>
+<li>“只抽AL省计算”：否。D_tr需要对照供体，全部保留。</li>
+<li>“六场景几千轨迹足以确认”：否。报告开发性区间、场景数，独立材料缺口保留。</li>
+<li>“不同配对数下R平均随手写”：已明确R按168逐对差与场景重抽，原始变化也交付。</li>
+<li>“并行时只算最长worker”：否。合计各worker GPU进程秒；双worker保守限各3600秒。</li>
+<li>“旧方案未上卡授权要求再问”：本次用户已明确授权；先完成具体验收，不重复请求。</li>
+</ol>
+<p>目前结论：设计可实现；是否放行由CPU和实测预检决定。本文件不预告结果。</p></main></html>

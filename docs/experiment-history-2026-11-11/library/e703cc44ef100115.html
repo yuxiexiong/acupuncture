@@ -1,0 +1,62 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>早层“停嘴”时题目事实是否仍在：零 GPU 读数合同</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="gpu">早层“停嘴”时题目事实是否仍在：零 GPU 读数合同</h1>
+<p>历史原件；不是本次提出的假设、论证或运行要求。</p>
+<p>原路径：<code>experiments/early-stop-knowledge-readout-v1-2026-10-29/CONTRACT.zh-CN.md</code>。来源：<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/early-stop-knowledge-readout-v1-2026-10-29/CONTRACT.zh-CN.md">固定提交原件</a>；SHA-256：<code>e703cc44ef10011524b74b1f3fafe18227b5e642791ad79e7c9e6a3c0dcb0ac1</code>。精确字节见原文归档。</p>
+<hr />
+<h1 id="gpu_1">早层“停嘴”时题目事实是否仍在：零 GPU 读数合同</h1>
+<p>2026-10-29。用户指令：“先跑A的零GPU分析和E的口径核对”。本目录只读 <code>early-input-control-v1-2026-10-29</code> 已核验的导出，不加载模型、不新增推理。合同在看任何读数前提交；提交 hash 即冻结点。</p>
+<h2 id="1">1. 问题与两种解释</h2>
+<p>早层原生 ±1 写入下，绝大多数回答首 token 即 EOS（开发 120/144、确认 120/143 条）。两种解释给出不同预测：</p>
+<ul>
+<li><strong>H-stop（知道但停嘴）</strong>：题目事实仍被内部使用，只是停止竞争压过作答。预测：强制读入候选答案时，模型对“本事实答案 vs 另一事实答案”的偏好仍随题面事实翻转，幅度接近原版。</li>
+<li><strong>H-loss（题目信息丢失）</strong>：预测：偏好不再随题面事实翻转，事实敏感度约为 0。</li>
+</ul>
+<h2 id="2">2. 测量定义</h2>
+<p>数据：<code>exports/development-r01-answers.jsonl.zst</code> 与 <code>exports/confirmation-r01-answers.jsonl.zst</code> 中 <code>mode=full</code> 的生成记录；每条含同条件、同注入时段下两条自然候选的强制续写总 log likelihood（<code>candidates[].loglikelihood</code>）。每个基础情景两事实共用同一候选对 (A, B)，目标位置对调（已核对 24/24 基础情景）。</p>
+<ul>
+<li>对条件 c、基础情景 b：<code>S(c,b) = [ll(A)−ll(B)]_{A 为正确的事实} − [ll(A)−ll(B)]_{B 为正确的事实}</code>，单位 nats。候选措辞的固有偏好与共享前缀在差分中抵消。</li>
+<li>相对原版保留比：<code>R(c) = median_b [ S(c,b) / S(clean,b) ]</code>。</li>
+<li>只用强制续写读数；它是有限措辞的诊断，不等于自由回答正确。</li>
+</ul>
+<h2 id="3-0">3. 零分布与判据（不使用 <code>&gt;0</code> 符号判据）</h2>
+<ul>
+<li><strong>无事实依赖零分布</strong>：在 H-loss 下两事实的 (A−B) 可交换，S 的符号对称。对每个条件，以 12 个基础情景 S 的均值为统计量，做全部 2¹² 种符号翻转的精确置换检验，得单侧 p。</li>
+<li><strong>“与原版同幅”参照带</strong>：同一面板内全部原生 ±0.25 条件（48 个；开发阅读中输出几乎无作用）的 R 值分布，取其 2.5% 与 97.5% 分位为参照带。</li>
+</ul>
+<p>每个目标条件分三档（不合成总分）：</p>
+<table>
+<thead>
+<tr>
+<th>档</th>
+<th>判据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>事实依赖保留</td>
+<td>R ≥ 参照带下界</td>
+</tr>
+<tr>
+<td>事实依赖减弱但在场</td>
+<td>R &lt; 参照带下界，且置换 p &lt; 0.01</td>
+</tr>
+<tr>
+<td>未检出事实依赖</td>
+<td>置换 p ≥ 0.01</td>
+</tr>
+</tbody>
+</table>
+<p>“未检出”不等于证明信息丢失，只说明在该读数下与无事实依赖不可区分。</p>
+<h2 id="4">4. 目标条件与预先登记</h2>
+<ul>
+<li>主目标：早层（L0–L3）原生 ±1 条件，开发与确认各 16 个；共同方向早层（L0、L3）±1 各 8 个。</li>
+<li>子集：仅保留两事实 full 回答均首 token 即 EOS 的基础情景，重复计算（检验“停嘴的那些”本身）。</li>
+<li>对照报告：中层、后层同剂量条件（中层是事实类错误的主要来源）。</li>
+<li><strong>H-stop 的预测</strong>：早层原生 ±1 条件多数落在“保留”档。<strong>H-loss 的预测</strong>：多数落在“未检出”。介于两者为“减弱但在场”。三种结局都可交付，不按结果改档界。</li>
+<li>开发面板先看、确认面板同规则复算；确认结果不得用来改本合同。</li>
+</ul>
+<h2 id="5">5. 停止条件与预演</h2>
+<ul>
+<li>导出文件 SHA 与 <code>early-input-control-v1-2026-10-29/readiness/</code> 中 verify 收据或归档清单记录不一致：停止。</li>
+<li>任一目标条件某基础情景缺两事实之一的候选读数：该条件记“不可算”，不插补。</li>
+<li>开跑真实读数前，在合成数据上演示三档都可被触发：（a）把目标条件读数替换为原版读数 → 应判“保留”；（b）令两事实 (A−B) 相等加小噪声 → 应判“未检出”；（c）原版 S 乘 0.3 加噪声 → 应判“减弱但在场”。任一演示不出，判据作废、不开跑。</li>
+</ul></main></html>

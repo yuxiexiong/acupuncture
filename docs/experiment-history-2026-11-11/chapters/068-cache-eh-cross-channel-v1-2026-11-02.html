@@ -1,0 +1,785 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>068．EH-XC：入口历史关系跨通道</title><style>body{font-family:system-ui,"PingFang SC",sans-serif;color:#20272e;line-height:1.85;margin:0;background:#f7f5f0}main{max-width:1050px;margin:auto;padding:35px 28px;background:white}h1,h2,h3{line-height:1.45}h2{margin-top:3em;border-top:1px solid #d7dfe5;padding-top:1em}a{color:#185d83}table{border-collapse:collapse;display:block;overflow:auto;font-size:14px}td,th{padding:7px 12px;border:1px solid #d8dee3;vertical-align:top}pre{overflow:auto;background:#f3f5f7;padding:18px;font-size:13px}code{overflow-wrap:anywhere}blockquote{border-left:4px solid #b9cad4;margin-left:0;padding-left:18px;color:#4c5c65}img{max-width:100%}nav{position:sticky;top:0;background:#fffdf6;padding:10px;border-bottom:1px solid #ddd;z-index:2}input{padding:9px;width:min(80%,600px)}.entry{padding:8px 0;border-bottom:1px solid #eee}.meta{color:#627583;font-size:14px}@media print{nav{display:none}main{max-width:none;padding:0}a{color:inherit}}</style><nav><a href="../index.html">← 全部时间线</a></nav><main><h1 id="068eh-xc">068．EH-XC：入口历史关系跨通道</h1>
+<p><a href="../README.zh-CN.html">返回总时间线</a></p>
+<p><strong>时间定位</strong>：已提取运行收据的最早时间锚点（可含预检） 2026-11-02T02:37:19.364061+08:00；不能当作全部子运行起止。</p>
+<p><strong>当时的目的与设计</strong></p>
+<p>14方向包含8个新原生、2原生参照和4随机；复验入口与历史的条件关系。</p>
+<p><strong>实际过程、结果与后来更正</strong></p>
+<p>8/8新原生、4/4随机重复该关系，2×2格EOS均0。它是同模型跨方向检查，不是新模型或完整答案普遍恢复。</p>
+<p><strong>来源身份</strong>：<code>cache-eh-cross-channel-v1-2026-11-02</code>；本章主体来源提交 <code>7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8</code>。下方原文中的状态是各文件写作时的状态，不能把早期“尚未运行”覆盖后期正式收据，也不能将后期结果倒填进早期设计。</p>
+<h2 id="_1">原设计、执行过程、结果与更正全文</h2>
+<p>以下按“设计与题目 → 工程/执行记录 → 结果/更正 → 其他历史说明”组织；同类内没有可靠时间时保留路径顺序，不冒充严格先后。正文未删段；仅为本章节重排标题层级、把相对链接指向固定提交。原始字节另外完整保存。</p>
+<h3 id="1eh-xc">原件 1：EH-XC：入口—深层历史关系的同层跨针眼验证</h3>
+<p>原路径：<code>docs/cache-eh-cross-channel-plan-v1-2026-11-02.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-eh-cross-channel-plan-v1-2026-11-02.zh-CN.md">固定提交原文</a> · <a href="../library/a1f47c676464312d.html">单独阅读副本</a>；SHA-256：<code>a1f47c676464312d3916eda4d36b1b6cfad2d966c386c7979b2e1e1c4cb1d3a6</code>。</p>
+<hr />
+<h4 id="eh-xc">EH-XC：入口—深层历史关系的同层跨针眼验证</h4>
+<p>2026-11-02；v1；实验设计，未运行。academic-research-suite / experiment-agent plan；按项目 experiment-design-self-check v1 自查。设计通过不等于代码验收或GPU授权。</p>
+<h5 id="1">1. 研究问题与认识增量</h5>
+<p>总问题：稀疏激活干预如何改变历史状态和后续读取，导致回答变化。本轮检验：EH 中“深层历史单独的竞争推进较大，入口会增强其作用”的关系，在相同 L0 注入协议下，能否迁移到其余固定原生通道；随机残差方向是否也显示相同关系。</p>
+<p>这是对一个明确条件作用关系的跨通道检验，不是再证明多个针都能停止，也不是解释全部回答或研究原生记忆份额。EH 仅在 N4146、N1210、R0、R1 上完成入口×历史四格；其余八个通道旧实验已见，但本关系未纳入 EH。不能称盲新针或未见输入。</p>
+<p>固定来源：
+- EH 合同/报告：a5a92b9，experiments/cache-entry-history-v1-2026-11-02/；报告P1成立，P2否定；I均值1.17–2.40，逐输入有小至0.25的情形。
+- NFC：5b6fe98，原生首步竞争链；不将e1称单一深层通路。
+- 旧跨通道：2691d33900a38bd24d98e439df3f1e7aa736cef5 中 experiments/cache-cross-channel-validation-v1-2026-10-31/CONTRACT.zh-CN.md、analysis/xchan-readouts-r01.json及各worker receipts。已核对合同和产物清单，未在本设计中独立重算旧全量数值。
+- docs/cache-mechanism-known-basics-audit-2026-10-31.zh-CN.md、cache-nfc-entry-history-next-concept-v1-2026-11-02.zh-CN.md。</p>
+<p>没有把这些方法称为新方法或跨架构规律。旧实验测V形成替换，本轮测评分前历史与当前入口的交叉，不能拿旧V结果替代本轮结果。</p>
+<h5 id="2">2. 设计卡</h5>
+<ul>
+<li>本轮问题：八个非EH原生通道是否复现EH的历史较强与正交互关系？</li>
+<li>增量：明确当前解释的跨通道范围，以及同幅随机方向是否同样满足；负结果可阻止继续把锚点机制推广。</li>
+<li>最不利解释：强L0写入的普遍响应；同D变化但竞争词不同；只有混合背景出现作用；固定八通道本来不是总体随机样本。</li>
+<li>操作：固定模型、L0、−1剂量、晚段窗口、12输入；每通道用自己C/T供体；入口x与历史H四格，卷积固定C，当前评分无针。</li>
+<li>估计对象：指定混合评分背景下的操作总效果及交互，不是自然中介份额。</li>
+<li>判读：原生作用覆盖、四格关系、随机方向位置三者分开；弱效应、异号、事实不一致及工程不可判保留。</li>
+<li>成本：新测四格缺失量；共同C共享；不扩剂量/层/模型，不重跑旧V形成替换。</li>
+<li>退出：固定矩阵结束即止；没有普遍关系则限制结论，不筛选强针补成功。</li>
+</ul>
+<h5 id="3">3. 固定对象与身份</h5>
+<h6 id="31">3.1 十个通道与四条随机方向</h6>
+<p>所有原生针均在 L0，每次形成仅注入一根。</p>
+<table>
+<thead>
+<tr>
+<th>身份</th>
+<th>名单</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>主要迁移对象，8个</td>
+<td>1343、2191、3152、3959、6137、6547、6616、8215</td>
+<td>检验以前未测的EH关系，不根据旧停止率筛选</td>
+</tr>
+<tr>
+<td>已有锚点，2个</td>
+<td>1210、4146</td>
+<td>逐输入重放EH，单列，不能计入8个迁移对象的分母</td>
+</tr>
+<tr>
+<td>一般方向参照，4条</td>
+<td>R0、R1、R2、R3</td>
+<td>相同四格操作；R0/R1还用于EH重放</td>
+</tr>
+</tbody>
+</table>
+<p>复用旧跨通道固定 directions-r01.json 的实际向量与哈希，不重新按种子生成。旧生成种子20261101+j仅作来源说明；文件、数值、写入边界需与EH的R0/R1核对。若方向不一致，先修身份映射，不用同名代替同向量。四条方向是有限参照，非统计零分布；原生列与各向同性方向不假设可交换，不计算秩p值。</p>
+<h6 id="32">3.2 固定输入和模型</h6>
+<p>Qwen3.5-4B revision 851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a，BF16 eager、逐token路径、tokenizer、内核与EH同冻结依赖。用EH的12输入manifest（六情景×两事实；桥接VAR03/04、VRD03/04、VRL03/04），P编号映射按实际manifest核验，不能凭名字重写提示。</p>
+<p>剂量仅−1。原生通道在down_proj前加 −m0/||W[:,n]||；随机方向在相同MLP输出边界加 −m0*u。m0、b、评分位置、形成窗口b+1…n−2从EH固定文件逐项继承；末提示token无形成期针。校准逐值等于EH，同情景尺度共享规则不变。实际BF16写入范数相对目标误差≤1%（沿用EH）；逐步记录，不按输出效果调剂量。相同写入量不等于相同下游作用或能力损伤。</p>
+<p>六情景已见，不称新题泛化；f0/f1不是独立题族；十通道不是整个MLP的随机总体样本。</p>
+<h5 id="4">4. 每个方向的四格与原生参照</h5>
+<p>C、T为相同输入的干净/干预形成轨迹。x是当前评分token第13层入口，H是评分开始前13–31层的递推状态S与全注意力旧KV联合对象。H不含卷积缓冲。</p>
+<table>
+<thead>
+<tr>
+<th>评分</th>
+<th>x来源</th>
+<th>H来源</th>
+<th>卷积历史</th>
+<th>角色</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>00</td>
+<td>C</td>
+<td>C</td>
+<td>C</td>
+<td>共享C_native</td>
+</tr>
+<tr>
+<td>10</td>
+<td>T</td>
+<td>C</td>
+<td>C</td>
+<td>仅换入口</td>
+</tr>
+<tr>
+<td>01</td>
+<td>C</td>
+<td>T</td>
+<td>C</td>
+<td>仅换深层历史</td>
+</tr>
+<tr>
+<td>11</td>
+<td>T</td>
+<td>T</td>
+<td>C</td>
+<td>联合，等于该方向N:CC</td>
+</tr>
+<tr>
+<td>P</td>
+<td>自然T</td>
+<td>自然T</td>
+<td>自然T</td>
+<td>T_native原生效应参照，另获取x_T</td>
+</tr>
+</tbody>
+</table>
+<p>浅层0–12保持C，10/11只在第13层入口替换一次；01的自然入口须等于x_C。13–31层H来自对应同输入同方向供体，所有卷积q/k/v历史固定C。评分后旧状态的更新、当前新KV、门、查询、MLP、残差及归一化自然响应，不逐层钳回供体轨迹。每次评分从独立缓存副本开始，供体不可变。</p>
+<p>P是自己的完整T缓存自然评分，不执行上述C浅层拼接。不得把P与11混淆。每方向获取x_T的P评分只计一次。</p>
+<p>不加FIX0/CFIX：本轮主张是EH关系迁移，不是45头名单迁移。不添加S/KV分拆、V形成替换或自由生成；这些各自回答不同问题。旧45头结果作为已有证据保留。</p>
+<h5 id="5">5. 冻结读数与预测</h5>
+<p>D=max_{248044,248046}z−max_{其他词}z；C_native固定s0、q0，F=z(s0)−z(q0)，A=max_stop z−z(s0)，B=max_nonstop z−z(q0)，D=F+A−B。保存完整logits、实际argmax、平局、赢家ID、TV(P,C)、TV(11,C)。均值/中位数参考只作相对位置描述，不称答案信息丢失。</p>
+<p>逐输入定义：
+- N=D(P)−D00，E=D11−D00；
+- H0=D01−D00，H1=D11−D10；
+- X0=D10−D00，X1=D11−D01；
+- I=H1−H0=X1−X0。</p>
+<p>主表保留全部有符号绝对量，不论是否达到报告尺度。EH的单因素“足够”分档不作为本轮主结论。</p>
+<h6 id="51">5.1 适用性与三种不同的“没复现”</h6>
+<p>报告尺度为1 logit（沿用旧跨通道约定，不是显著性或检测极限）。仅在同输入N≥1且E≥1时，检验同向的EH迁移预测及展示H0/E、X0/E。否则保留原值：
+- N不足1：原生停止竞争效应未达本轮正向报告尺度；负向达到尺度另列为反向。
+- N≥1但E不足1或异号：原生有目标作用，而该混合背景不保留同向作用，属背景迁移失败，不能删除。
+- N和E都≥1但下述关系不成立：可用于否定EH关系迁移。
+D小但TV≥0.05或原生赢家改变，列“其他输出变化”；这些分层为描述，绝非无功能判决。</p>
+<h6 id="52">5.2 两条独立的预注册预测</h6>
+<p>P_H（主要）：H0≥0.5E，且H0&gt;X0。它沿用EH P1，检验“历史在干净入口下取得至少一半联合作用，且大于入口单独作用”；不称历史唯一或充分。</p>
+<p>P_I（次要）：I&gt;0，检验入口与历史在D上的联合增强；另固定报告I≥0.5 logit的实用量级覆盖。I&gt;0但小于0.5仅为弱正交互，不能写成强配合；0.5为人为展示尺度，非统计显著性。不把正交互预设为某个内部非线性起源。</p>
+<p>每情景两个事实都满足适用性且都满足对应预测才计支持；事实分歧/不适用单列。每通道≥5/6情景支持该预测才标“本通道关系复现”；分别给P_H、P_I标签，不强求联合成功。</p>
+<p>主要交付是8通道×6情景完整表，报k/8复现、达到尺度数、不适用数和反例数，不通过剔除弱针缩小总分母。<strong>不设“6/8成功即通用机制”之类总胜负门。</strong> 迁移支持局限于实际复现通道和本协议；一个稳定相反通道即可否定“八个通道全部同关系”的强外推。</p>
+<p>稳定反向证据：在≥5/6情景两事实均适用时，H0&lt;0.5E或H0≤X0的同一种违反反复出现，记P_H不迁移；I&lt;0在≥5/6情景两事实均出现，记交互方向反转。I≈0、事实不一致或覆盖不足记部分/不确定，不强制另一机制标签。</p>
+<h6 id="53">5.3 随机方向与竞争结构</h6>
+<p>R0–R3接受完全相同的形成、四格、读数与标签规则，单列而不计入八通道分母。若原生通道与这些方向都复现，只能说关系跨所测方向存在，通道特异解释受削弱；若差异大，先看N/E绝对量与覆盖，不能用弱分母造成的比例差宣称通道特异。</p>
+<p>对E、H0、X0、I同时计算F/A/B版本。若D上的正交互主要随赢家更替而出现而F不正，结论写成“竞争集合读数的正交互”，不说固定候选间或内部计算同样正交互。任何新非停止词的身份均展示；不在结果后更换q0。</p>
+<h5 id="6">6. 资源与运行顺序</h5>
+<p>先查完整缓存是否存在及身份，旧跨通道合同明确不保存τ完整缓存，故预算默认需要重建，不能把旧logits当可评分缓存。EH若仍有可用缓存，仅在同身份核验后抵扣实际计算；仍保留重放验收。冻结模型权重不入Git。</p>
+<p>每输入形成C一次、14个T一次：15次；评分00一次，各方向P/10/01/11四次：57次。</p>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th style="text-align: right;">形成上限</th>
+<th style="text-align: right;">评分上限</th>
+<th style="text-align: right;">校准</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>预检，固定首输入完整14方向</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">57</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td>预检重复C/T4146形成及原生评分（记录器关闭）</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>正式12输入</td>
+<td style="text-align: right;">180</td>
+<td style="text-align: right;">684</td>
+<td style="text-align: right;">6</td>
+</tr>
+<tr>
+<td>合计</td>
+<td style="text-align: right;">197</td>
+<td style="text-align: right;">743</td>
+<td style="text-align: right;">7</td>
+</tr>
+</tbody>
+</table>
+<p>共同前缀prefill可按实际去重；必须另记token前向、prefill及读取/I/O，不能把重放视为免费。最多2个worker、每GPU一个；旧EH锚点按原worker/GPU对应保持。预检实际计时和字节量外推后才判断预算是否足够。</p>
+<p>建议资源上限：累计1 GPU设备小时、CPU分析2核小时、产物8GiB，不含权重与既有依赖。仅为设计上限，尚未取得执行授权或计时认证。EH报告约0.05 GPU小时是量级参照，不照搬为新实验承诺，也不将多worker进程时间简单等同设备小时。若预计越界，在正式前停止报告；不削条件、不按结果挑子集。GPU OOM、配对身份失败不自动重试；修复后另留版本和预算。</p>
+<p>存储：每输入依次处理14方向，只需在内存保留共同C和当前T供体；保留原生/四格全词表logits、x_C/x_T、最终h/r、写入审计、供体/缓存分块哈希、身份与原始记录。完整缓存可执行期流式保存并验算存储，若不持久保存必须在manifest写明未来重建成本；不宣称已保存所有后续内部分析材料。</p>
+<h5 id="7">7. 工程门与冻结</h5>
+<p>执行前冻结模型/依赖、14方向manifest、12输入/情景映射、校准、窗口、tokenizer/内核、原始旧收据和本计划哈希；完整SHA256清单由实现阶段实际读取形成，不在设计中编造。</p>
+<ol>
+<li>CPU验证混合缓存拷贝不改供体、H与卷积切片分离、单次入口hook、旧KV与新KV边界；合成读数覆盖E小/负、赢家更替、四格交互、事实分歧和平局。公式正确不算科学验证。</li>
+<li>N4146/N1210/R0/R1的00、P、10、01、11与a5a92b9对应EH记录逐位相同。新通道P如与旧同协议记录身份完全对齐亦核对；不对齐先列差异，不能用相似D声称重放。</li>
+<li>所有方向自然C入口、01入口逐位x_C；10/11入口逐位x_T；H与卷积分别核hash；每评分深拷贝，旧供体评分前后不变。</li>
+<li>形成写入位置/次数/通道正确，实际范数误差≤1%；评分无形成期hook。无有限值、内核计数、记录器开关验收沿EH冻结规则。</li>
+<li>预检先验收工程，不能因为科学输出不支持预测而停止正式或改参数。已授权执行时，工程通过且资源在限内才运行全部固定矩阵。</li>
+<li>报告工程失败、科学反例、缺失与已完成格；D=0用实际argmax，不伪造翻转。</li>
+</ol>
+<h5 id="8">8. 结果怎样改变后续选择</h5>
+<ul>
+<li>多个非EH通道复现：取得对这段历史/入口条件关系的跨通道支持；才讨论S/KV区分，不能称全部通道通用。</li>
+<li>有原生作用而EH关系稳定不同：保留通道异质性，停止把锚点关系当统一主线；后续需要能预测差异的假说，不各针无限拆层。</li>
+<li>原生强而E弱：混合评分背景改变了现象，不能继续把e1当这些针的主要机制；应先重新连接原生结果。</li>
+<li>原生作用少/反向多：当前−1与时窗下适用范围有限；不换符号/调剂量直到全部成功。</li>
+<li>随机方向同样满足：削弱针特异性主张；保留一般方向条件关系，不追加更多方向寻找差异。</li>
+<li>仅D支持、F不支持：收窄到竞争赢家变化，不能将内部对齐或历史读取当已证原因。</li>
+</ul>
+<p>任何结果都不自动启动新层、新输入、新模型、自由生成或S/KV矩阵。跨层与新输入验证是不同范围问题，另立计划。</p>
+<h5 id="9">9. 与上一设计的差别</h5>
+<p>EH只问已研究4方向的入口/历史关系；本轮扩到旧固定十通道+四随机方向，主要迁移分母为其余八个原生通道。保留EH四格及原生参照，删除FIX0辅助臂；无结果驱动选点，无跨针供体交换。旧跨通道测的是V形成关系，本轮不重跑其CT/TC/TR及三剂量矩阵。修正上一轮建议中“新针”的措辞：针身份/旧行为已见，本轮四格关系是新测，不是独立未见面板。</p>
+<h5 id="10-c01c14">10. C01–C14自查</h5>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th>判定与理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C01</td>
+<td>通过：检验历史—读取—回答关系的适用范围，首步只是窗口。</td>
+</tr>
+<tr>
+<td>C02</td>
+<td>通过：新增八通道四格关系，可否定EH外推，非重复跨通道停止现象。</td>
+</tr>
+<tr>
+<td>C03</td>
+<td>通过：固定EH/NFC/旧跨通道来源；旧全量结果未重算明示。</td>
+</tr>
+<tr>
+<td>C04</td>
+<td>通过：一般强扰动、混合背景、赢家更替均为明确反例。</td>
+</tr>
+<tr>
+<td>C05</td>
+<td>通过：层、时窗、x/H/卷积、同输入供体和评分无针明确。</td>
+</tr>
+<tr>
+<td>C06</td>
+<td>通过：只固定评分前指定来源，更新及下游自然响应。</td>
+</tr>
+<tr>
+<td>C07</td>
+<td>通过：不拆S/KV联合对象、不补偿门，混合反事实不称原生路径。</td>
+</tr>
+<tr>
+<td>C08</td>
+<td>通过：条件总效果/迁移与唯一中介、普遍性分开。</td>
+</tr>
+<tr>
+<td>C09</td>
+<td>通过：无原生目标效应、背景失败、关系反转与一般方向共享分别判读。</td>
+</tr>
+<tr>
+<td>C10</td>
+<td>通过：D/F/A/B/首词/TV分开；没有事实丢失或完整交付主张。</td>
+</tr>
+<tr>
+<td>C11</td>
+<td>通过：工程门先验独立；1与0.5是展示尺度，5/6是报告规则，不叫显著性。</td>
+</tr>
+<tr>
+<td>C12</td>
+<td>通过：两个新机制格加联合参照；原生/锚点重放有明确用途，形成/预检/校准全计。</td>
+</tr>
+<tr>
+<td>C13</td>
+<td>通过：旧十点已见、八点新增关系、四方向有限参照、六配对情景身份明确。</td>
+</tr>
+<tr>
+<td>C14</td>
+<td>通过：迁移、异质、混合失败和一般方向共享改变下一步，不自动扩矩阵。</td>
+</tr>
+</tbody>
+</table>
+<h5 id="11">11. 历史错误覆盖与反方复查</h5>
+<p>E01主线不变；E02不称L0或L13天然特殊；E03记录实际写入不假设微扰；E04/E19恒等式及重放仅工程；E05/E06明确共享变量响应且H不是全部历史；E07/E08/E14条件效果非唯一原生中介；E09正I不定位内部交互；E10首词非交付；E11相对logit非信息存量；E12随机方向非零分布；E13供体恢复非原知识恢复；E15同协议身份对齐；E16不按阴性重试；E17不以减法撤回历史；E18不命名未解释剩余；E20非互斥候选；E21不宣称方法新颖；E22已见面板与配对单位；E23自查非独立审查；E24允许有界迁移证据；E25不复制全机制矩阵；E26评分无针但不宣称隔离形成中介。</p>
+<p>反方最强检验及处理：
+1. 十点旧实验都很强，结果全相似是否就是挑强针？名单是旧固定全名单而非本轮选强者；已见选择背景如实说明，结论只到本面板，不估计总体发生率。
+2. 只看达到尺度点会隐藏失败？所有8通道留在总表和分母；不适用分成原生弱与混合背景失配。机制比例NA不删除绝对结果。
+3. 即使全阳性也可能是一般大扰动？四随机方向执行相同操作；一致时不宣称通道特异，也不能凭四方向证明任意方向。
+4. 正交互可能来自max换赢家？同时计算F/A/B交互。不能据I_D推断内部协同。
+5. 1 logit/5个情景等人为阈值能制造成功？冻结前明示是报告规则，逐事实连续值为主，不用总胜负门宣布普遍性；边界结果并列。
+6. 跨针结果仍不能证明S/KV的机制？本轮不承诺这种结论。先验证可迁移的关系，再决定是否值得拆。
+7. 新针可能只影响答案别处？原生P和TV/赢家保留；当前首步窗口不足时承认范围，不把该针判无效。
+8. 预算是否漏掉重建？默认180正式形成，预检17形成，共197；缺缓存也已覆盖，不把已有logits当零GPU替代品。</p>
+<p>最终：设计逻辑自查通过（同一助手，非独立评审）。代码、CPU测试、真实模型工程预检及预算计时未完成；新GPU运行未授权。本次只交付设计。</p>
+<hr />
+<h3 id="2eh-xc-r01">原件 2：EH-XC 跨针眼实验合同 r01</h3>
+<p>原路径：<code>experiments/cache-eh-cross-channel-v1-2026-11-02/CONTRACT.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-eh-cross-channel-v1-2026-11-02/CONTRACT.zh-CN.md">固定提交原文</a> · <a href="../library/1ca3c4e81b44f0df.html">单独阅读副本</a>；SHA-256：<code>1ca3c4e81b44f0df4463759d22570c9ac7b6254e6038a8a967e767e52cab8c8e</code>。</p>
+<hr />
+<h4 id="eh-xc-r01">EH-XC 跨针眼实验合同 r01</h4>
+<p>日期：2026-11-02。依据<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-eh-cross-channel-plan-v1-2026-11-02.zh-CN.md">方案 v1</a>与用户提供的评审反馈。本合同覆盖方案§5中交互判据和跨针汇总；其余操作、来源、工程门、退出和限制沿用方案。</p>
+<p>状态：合同与设计自查完成；代码、CPU测试、GPU预检与正式执行均未完成。用户本次要求推Git，仅发布文档，不授予新模型/GPU运行权限。旧实验授权不自动沿用。</p>
+<h5 id="1_1">1. 冻结范围</h5>
+<ul>
+<li>模型Qwen3.5-4B，revision 851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a，沿EH a5a92b9的BF16 eager、内核、tokenizer、晚段形成窗口b+1…n−2、评分位置及参考校准。</li>
+<li>L0剂量−1，正式12输入（六情景×两事实），用EH冻结manifest，不能重写提示。</li>
+<li>八个主要迁移通道：1343、2191、3152、3959、6137、6547、6616、8215。</li>
+<li>锚点1210、4146不计入八通道分母。随机参照R0–R3复用旧固定向量文件，R0/R1与EH逐值核对，不重新抽样。</li>
+<li>原生通道在down_proj前写入−m0/列范数；随机方向在对应MLP输出边界写入−m0*u。实际写入相对目标误差≤1%，不调剂量直到输出匹配。</li>
+<li>这些针与输入的旧行为已见，新增的是八通道的EH关系；非盲新针、非独立新题确认。</li>
+</ul>
+<h5 id="2_1">2. 矩阵和真实操作</h5>
+<p>每输入形成共同C及14个T，每次形成只注入一根针，供体均为同输入同方向配对。</p>
+<table>
+<thead>
+<tr>
+<th>格</th>
+<th>第13层入口x</th>
+<th>13–31层旧递推S和旧注意力KV（H）</th>
+<th>卷积q/k/v历史</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>00</td>
+<td>C</td>
+<td>C</td>
+<td>C</td>
+</tr>
+<tr>
+<td>10</td>
+<td>T</td>
+<td>C</td>
+<td>C</td>
+</tr>
+<tr>
+<td>01</td>
+<td>C</td>
+<td>T</td>
+<td>C</td>
+</tr>
+<tr>
+<td>11</td>
+<td>T</td>
+<td>T</td>
+<td>C</td>
+</tr>
+<tr>
+<td>P</td>
+<td>T的自然评分</td>
+<td>T的自然评分</td>
+<td>T的自然评分</td>
+</tr>
+</tbody>
+</table>
+<p>四格浅层0–12用C，10/11只替换一次入口。每格独立缓存副本，供体不可变。评分无形成期针；当前更新、新KV、门、query及下游响应正常运行。P为完整T_native，兼作x_T采集，不能将P误作11。00应重放C_native，11应重放N:CC。不得增加FIX0、S/KV分拆、剂量、层或模型。</p>
+<h5 id="3_1">3. 读数与适用性</h5>
+<p>D=max停止logit−max非停止logit，停止集合{248044,248046}。N=D(P)−D00，E=D11−D00；H0=D01−D00，H1=D11−D10；X0=D10−D00，X1=D11−D01；I=D11−D10−D01+D00。</p>
+<p>每格保存全词表logits、实际argmax、赢家ID、平局；固定s0/q0来自C_native，F=z(s0)−z(q0)，A=max_stop−z(s0)，B=max_nonstop−z(q0)。对各效应同时报告D/F/A/B分解。TV(P,C)、TV(11,C)辅助标记其他输出变化，不称事实丢失。</p>
+<p><strong>预测适用条件：同输入N≥1且E≥1 logit。</strong> 不用绝对值把反向作用混进正向预测。全部固定条件仍执行，不按原生预评分筛针。比例仅在适用条件成立时展示；其余绝对值和身份保留：原生效应不足、反向效应、原生强而混合背景不足、工程不可判分列。1 logit是报告尺度，不是统计显著性。</p>
+<h5 id="4_1">4. 预注册预测和汇总</h5>
+<ul>
+<li>P_H：H0≥0.5E且H0&gt;X0。</li>
+<li>P_I：I≥max(0.5 logit,0.1E)。替代v1主判据I&gt;0；符号只作描述。此新判据比EH原来的正交互要求严格，不能说完全照搬旧预测。</li>
+<li>对每情景，两个事实都适用且都满足P_H才计历史支持；两事实都满足P_I才计交互支持；两事实同时满足两条才计联合支持。事实分歧、不适用和违反分别报告。</li>
+<li>对每通道，≥5/6情景支持才给相应历史、交互、联合复现标签；每通道内部没有“≥3/4方向”规则。</li>
+<li><strong>P_XC：八个验证通道中≥6个达到联合复现标签。</strong> 这是本面板的预定目标，不是通用机制认证。锚点不计入；弱效应通道不从八通道分母中移除。未达目标时分别报告关系反例与适用性不足，不能统称机制失败。</li>
+<li><strong>P_R：四条随机方向中≥3条达到同一联合复现标签。</strong> 依据为旧XCHAN中V关系跨方向相似，以及EH的R0/R1结果；这些先验不保证更严格的新交互门槛通过。随机方向一致是预期之一，不是坏结果；仅支持所测方向范围，不证明任意方向。</li>
+</ul>
+<p>所有连续值、四条边和逐事实表为必交结果，不以总标签替代。D上I达标而F上不达标时，注明交互依赖竞争者更替，不称固定候选或内部计算协同。随机方向不作统计零分布、不算可交换秩p值。</p>
+<h5 id="5_1">5. 数值与工程验收</h5>
+<p>0.5与0.1E为实用科学门槛，<strong>不是量化误差保证</strong>。另报告四格相关赢家logit的BF16局部间隔、D和I取值步长；不把单个logit的0.125间隔直接当四格I误差界。若从保存的归一化输入/权重作FP64只读重算，只能检验末端读出的舍入敏感性，不能证明整个BF16前向误差界。边界附近结果保留为精度敏感，不能用事后放宽阈值救标签。</p>
+<p>CPU测试必须覆盖：适用/不适用、正/负E、原生强混合弱、P_H成立/失败、I=门槛及门槛两侧、F与D交互不同、事实分歧、6/8与5/8、3/4与2/4、平局及分母不删除；合成通过不是科学支持。</p>
+<p>模型预检沿方案§7：EH四方向逐输入00/P/10/01/11重放，入口一次hook及来源核对，H与卷积分别hash，旧KV与新KV不混淆，供体不可变，评分无形成hook，记录器开关一致。工程失败停止，不据阴性改参数。预检完整14方向仅用于工程和资源验收，不按科学结果决定是否跑正式矩阵。</p>
+<h5 id="6_1">6. 预算与交付</h5>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th style="text-align: right;">形成</th>
+<th style="text-align: right;">评分</th>
+<th style="text-align: right;">校准</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>预检首输入14方向</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">57</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td>预检记录器关闭重建C/T4146</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>正式12输入</td>
+<td style="text-align: right;">180</td>
+<td style="text-align: right;">684</td>
+<td style="text-align: right;">6</td>
+</tr>
+<tr>
+<td>合计上限</td>
+<td style="text-align: right;">197</td>
+<td style="text-align: right;">743</td>
+<td style="text-align: right;">7</td>
+</tr>
+</tbody>
+</table>
+<p>默认重建缓存，完整可用缓存身份验证后可抵扣实际用量；共享前缀的prefill、token前向、I/O和失败均另计。建议上限累计1 GPU设备小时、CPU分析2核小时、产物8GiB；无执行授权，不可开始预检。预检后若预计越界，正式前停止报告，不削矩阵。预算非实测耗时。</p>
+<p>必须保存：冻结文件及来源SHA256、原始记录、全logits、入口x、最终h/r、注入和缓存来源审计、失败日志、CPU/预检/正式收据、逐事实结果及报告。模型权重不入Git。完整缓存是否持久保存及重建成本如实标明。</p>
+<h5 id="7_1">7. 出口</h5>
+<p>关系在八通道中复现才支持扩大适用范围；稳定反例限制外推。原生强而E弱时先处理背景对应，不能把该针删掉。随机方向也复现则不主张原生通道特异。无论结果如何，不自动启动S/KV、其他层/模型或新剂量；它们须有独立目的与执行授权。</p>
+<h5 id="8_1">8. 本次修订自查</h5>
+<p>方案v1的设计卡、C01–C14、E01–E26和反方审查仍适用，以下覆盖被修改部分：</p>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th>判定与修订理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C01/C02</td>
+<td>通过：仍检验EH关系的跨通道范围，没有因新门槛改研究问题。</td>
+</tr>
+<tr>
+<td>C03/C04</td>
+<td>通过：XCHAN与EH为先验，不保证P_R成功；允许随机与通道都失败。</td>
+</tr>
+<tr>
+<td>C05/C06/C07</td>
+<td>通过：操作和下游响应未变，没有因新汇总增添运行。</td>
+</tr>
+<tr>
+<td>C08</td>
+<td>通过：6/8和3/4只作固定面板目标，不能推出通用机制。</td>
+</tr>
+<tr>
+<td>C09</td>
+<td>通过：历史与交互分列；联合目标未达区分效应不足与关系违反。</td>
+</tr>
+<tr>
+<td>C10</td>
+<td>通过：D/F/A/B和赢家解释保留；没有把量化间隔当因果或统计量。</td>
+</tr>
+<tr>
+<td>C11</td>
+<td>通过：科学门槛和数值验收分开，合成两侧测试要求明确；实际测试尚未执行。</td>
+</tr>
+<tr>
+<td>C12</td>
+<td>通过：矩阵与197/743/7预算不变。</td>
+</tr>
+<tr>
+<td>C13</td>
+<td>通过：名单、输入已见身份和固定总分母不变；自查非独立评审。</td>
+</tr>
+<tr>
+<td>C14</td>
+<td>通过：阴性和不适用改变适用范围，不自动扩实验。</td>
+</tr>
+</tbody>
+</table>
+<p>重点复查E03/E04/E09/E12/E16/E19/E22/E23/E25：实用门槛不是量化误差界；P_R阳性不能证明所有方向；不依据预检效应筛针；总标签不掩盖弱效应与反例。其余历史错误处理沿方案§11。</p>
+<p>反方：6/8是否事后挑阈值？在新增八通道四格结果读取前公开冻结，仍必须给全表且不宣称统计普遍性。加强交互标准是否专为通过？它比EH严格，可能连旧参照也不全过；旧锚点只核原始数值重放，不能以是否过新科学标签判工程成败。多数弱效应是否能删掉重算？不能。量化会否改变标签？单独披露读出敏感性，不能用展示门槛证明精度足够。</p>
+<p>结论：修订后设计逻辑自查通过，工程实现/测试与模型运行未完成。本合同只冻结科学判读和操作约束；实现阶段形成实际文件哈希清单，不能伪造已完成回执。</p>
+<hr />
+<h3 id="3eh-xc14-22">原件 3：EH-XC（14 根针的入口 × 深层历史 2×2）结果报告</h3>
+<p>原路径：<code>experiments/cache-eh-cross-channel-v1-2026-11-02/REPORT.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-eh-cross-channel-v1-2026-11-02/REPORT.zh-CN.md">固定提交原文</a> · <a href="../library/b7ec93f0523d3f25.html">单独阅读副本</a>；SHA-256：<code>b7ec93f0523d3f254aacc480b3ee6fd3c7464a496b936c49e3d5efbfbdf4a034</code>。</p>
+<hr />
+<h4 id="eh-xc14-22">EH-XC（14 根针的入口 × 深层历史 2×2）结果报告</h4>
+<p>日期：2026-11-02。<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-eh-cross-channel-v1-2026-11-02/CONTRACT.zh-CN.md">合同 r01</a>（评审版，c751914）；<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-eh-cross-channel-v1-2026-11-02/DECISIONS.zh-CN.md">决策 D1–D6</a>；<a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/docs/cache-eh-cross-channel-plan-v1-2026-11-02.zh-CN.md">方案 v1</a>。代码 <code>a53222c</code>，freeze-r01 <code>381b1a4c…21f2</code>。针与输入的旧行为已见，新增的是 8 个验证通道的 EH 关系。同一助手实现、运行与撰写。</p>
+<h5 id="1_2">1. 结论（含限制）</h5>
+<ol>
+<li><strong>P_XC 达成：8/8 个验证通道达到联合复现标签</strong>（目标 ≥6/8）。历史关系与新交互门槛分别也是 8/8。每个通道的联合支持情景数为 5 或 6（满分 6）。</li>
+<li><strong>P_R 达成：4/4 条随机方向也达到同一联合标签</strong>（目标 ≥3/4）。</li>
+<li><strong>限制在前</strong>：随机方向与原生通道没有任何可见差别。这与旧 XCHAN 的先验一致，说明“深层历史为主、入口放大、两者正交互”是<strong>这类 L0 同幅写入的一般性质</strong>，不是原生通道特有的机制。结论只覆盖所测的 14 个方向、L0、剂量 −1、这 12 条输入；不能推到任意方向、其他层、其他剂量或其他模型。</li>
+<li>锚点（不计入 8 个）：4146 的联合支持为 5/6，1210 为 4/6（历史 5、交互 5，但在同一批情景上同时满足的只有 4 个）。1210 在 EH 里就是历史份额最低的方向；它在新的、更严格的交互门槛下没有达到联合标签。锚点只作重放核对，不影响 P_XC。</li>
+<li>所有 168 个单元（14 针 × 12 输入）都满足适用条件（原生 ΔD ≥ 1 且 e1 ≥ 1），没有反向、原生不足或“原生强、混合弱”的单元。固定候选差 F 上没有出现“D 上交互达标、F 上不达标”的情况（0/168），说明交互不是靠竞争者换人凑出来的。</li>
+</ol>
+<h5 id="2-12-d-logit">2. 读数（12 输入均值，D 单位 logit）</h5>
+<table>
+<thead>
+<tr>
+<th>针</th>
+<th style="text-align: right;">N（原生）</th>
+<th style="text-align: right;">E（联合）</th>
+<th style="text-align: right;">H0（历史｜干净入口）</th>
+<th style="text-align: right;">X0（入口｜干净历史）</th>
+<th style="text-align: right;">H1</th>
+<th style="text-align: right;">X1</th>
+<th style="text-align: right;">I</th>
+<th style="text-align: right;">联合支持</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C1343</td>
+<td style="text-align: right;">14.53</td>
+<td style="text-align: right;">7.60</td>
+<td style="text-align: right;">4.84</td>
+<td style="text-align: right;">1.18</td>
+<td style="text-align: right;">6.43</td>
+<td style="text-align: right;">2.77</td>
+<td style="text-align: right;">1.59</td>
+<td style="text-align: right;">6</td>
+</tr>
+<tr>
+<td>C2191</td>
+<td style="text-align: right;">13.69</td>
+<td style="text-align: right;">7.20</td>
+<td style="text-align: right;">4.74</td>
+<td style="text-align: right;">1.29</td>
+<td style="text-align: right;">5.91</td>
+<td style="text-align: right;">2.46</td>
+<td style="text-align: right;">1.17</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr>
+<td>C3152</td>
+<td style="text-align: right;">13.71</td>
+<td style="text-align: right;">7.91</td>
+<td style="text-align: right;">4.91</td>
+<td style="text-align: right;">1.37</td>
+<td style="text-align: right;">6.54</td>
+<td style="text-align: right;">3.00</td>
+<td style="text-align: right;">1.63</td>
+<td style="text-align: right;">6</td>
+</tr>
+<tr>
+<td>C3959</td>
+<td style="text-align: right;">14.31</td>
+<td style="text-align: right;">9.03</td>
+<td style="text-align: right;">5.03</td>
+<td style="text-align: right;">1.41</td>
+<td style="text-align: right;">7.62</td>
+<td style="text-align: right;">3.99</td>
+<td style="text-align: right;">2.59</td>
+<td style="text-align: right;">6</td>
+</tr>
+<tr>
+<td>C6137</td>
+<td style="text-align: right;">13.61</td>
+<td style="text-align: right;">9.01</td>
+<td style="text-align: right;">5.44</td>
+<td style="text-align: right;">1.62</td>
+<td style="text-align: right;">7.39</td>
+<td style="text-align: right;">3.57</td>
+<td style="text-align: right;">1.95</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr>
+<td>C6547</td>
+<td style="text-align: right;">14.40</td>
+<td style="text-align: right;">7.48</td>
+<td style="text-align: right;">4.60</td>
+<td style="text-align: right;">1.32</td>
+<td style="text-align: right;">6.17</td>
+<td style="text-align: right;">2.89</td>
+<td style="text-align: right;">1.57</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr>
+<td>C6616</td>
+<td style="text-align: right;">14.51</td>
+<td style="text-align: right;">7.18</td>
+<td style="text-align: right;">5.01</td>
+<td style="text-align: right;">0.83</td>
+<td style="text-align: right;">6.35</td>
+<td style="text-align: right;">2.17</td>
+<td style="text-align: right;">1.34</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr>
+<td>C8215</td>
+<td style="text-align: right;">13.97</td>
+<td style="text-align: right;">6.44</td>
+<td style="text-align: right;">4.38</td>
+<td style="text-align: right;">0.58</td>
+<td style="text-align: right;">5.85</td>
+<td style="text-align: right;">2.06</td>
+<td style="text-align: right;">1.47</td>
+<td style="text-align: right;">6</td>
+</tr>
+<tr>
+<td>锚 C1210</td>
+<td style="text-align: right;">13.79</td>
+<td style="text-align: right;">8.42</td>
+<td style="text-align: right;">4.73</td>
+<td style="text-align: right;">1.81</td>
+<td style="text-align: right;">6.61</td>
+<td style="text-align: right;">3.69</td>
+<td style="text-align: right;">1.88</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr>
+<td>锚 C4146</td>
+<td style="text-align: right;">14.22</td>
+<td style="text-align: right;">7.91</td>
+<td style="text-align: right;">5.64</td>
+<td style="text-align: right;">1.10</td>
+<td style="text-align: right;">6.81</td>
+<td style="text-align: right;">2.27</td>
+<td style="text-align: right;">1.17</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr>
+<td>R0</td>
+<td style="text-align: right;">12.62</td>
+<td style="text-align: right;">8.43</td>
+<td style="text-align: right;">4.90</td>
+<td style="text-align: right;">1.12</td>
+<td style="text-align: right;">7.30</td>
+<td style="text-align: right;">3.53</td>
+<td style="text-align: right;">2.40</td>
+<td style="text-align: right;">6</td>
+</tr>
+<tr>
+<td>R1</td>
+<td style="text-align: right;">14.04</td>
+<td style="text-align: right;">7.93</td>
+<td style="text-align: right;">5.50</td>
+<td style="text-align: right;">0.83</td>
+<td style="text-align: right;">7.09</td>
+<td style="text-align: right;">2.43</td>
+<td style="text-align: right;">1.59</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr>
+<td>R2</td>
+<td style="text-align: right;">13.52</td>
+<td style="text-align: right;">7.72</td>
+<td style="text-align: right;">4.31</td>
+<td style="text-align: right;">1.60</td>
+<td style="text-align: right;">6.12</td>
+<td style="text-align: right;">3.42</td>
+<td style="text-align: right;">1.81</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr>
+<td>R3</td>
+<td style="text-align: right;">13.61</td>
+<td style="text-align: right;">7.96</td>
+<td style="text-align: right;">4.97</td>
+<td style="text-align: right;">0.91</td>
+<td style="text-align: right;">7.06</td>
+<td style="text-align: right;">2.99</td>
+<td style="text-align: right;">2.08</td>
+<td style="text-align: right;">6</td>
+</tr>
+</tbody>
+</table>
+<p>首步行为：四格（00/10/01/11）全部不停止；完整原生运行 P 在 13 根针上停止 12/12，R0 为 1/12（与此前一致）。</p>
+<h5 id="3_2">3. 执行</h5>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th style="text-align: right;">形成</th>
+<th style="text-align: right;">评分</th>
+<th style="text-align: right;">校准</th>
+<th style="text-align: right;">墙钟</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>预检（P01-f0，14 针 + 记录器关闭重建）</td>
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">59</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">57 s</td>
+</tr>
+<tr>
+<td>正式（12 输入，2 worker）</td>
+<td style="text-align: right;">180</td>
+<td style="text-align: right;">684</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">234 / 221 s</td>
+</tr>
+<tr>
+<td>合计 / 上限</td>
+<td style="text-align: right;">197 / 197</td>
+<td style="text-align: right;">743 / 743</td>
+<td style="text-align: right;">7 / 7</td>
+<td style="text-align: right;">≈0.15 GPU·h / 1</td>
+</tr>
+</tbody>
+</table>
+<p>闸门全部通过：校准、GPU 分配等于 B3；C_native 与 B3、EH 逐位相同；EH 的四个方向上 T_native、X10、H01、XH11 与 EH 逐位相同，XH11 与 B3 的 N:CC 逐位相同；H01 的自然入口等于 x_C；X10/XH11 的入口等于 x_T；深层 H 与卷积分别哈希，组装正确；每个方向评分前后 C、T 供体哈希不变；预检中记录器开/关逐位一致、重建缓存哈希一致。产物 0.69 GB。</p>
+<p>数值精度：相关赢家 logit 的局部 BF16 间隔为 0.125，D 与 I 以此为步长，交互门槛 0.5 约为 4 个步长。<strong>更正</strong>：初稿此处写“没有单元落在门槛的一个步长以内”，这句未经核对，是错的。实际有 21 个单元（共 168 个）落在某个门槛的 ±0.125 以内，多数是情景 P02 的交互项，其次是 C3959、R2、C1210 的历史份额。敏感性检查（不改变任何冻结标签）：假设所有贴近门槛的“支持”全部翻转，联合支持情景数会降为 C3959 4/6、R2 3/6、C3152 5/6、R0 5/6、4146 4/6、1210 3/6，其余不变；P_XC 最坏仍为 7/8（≥6），P_R 最坏仍为 3/4（≥3）。所以两条汇总预测对这一级数值精度不敏感，但 C3959 与 R2 的单针标签属于精度敏感。这只是精度敏感标记，不是误差界。</p>
+<h5 id="4-7">4. 含义与出口（合同 §7）</h5>
+<ul>
+<li>关系在 8 个验证通道中复现，支持把 EH 的结论扩大到所测的 L0 方向范围；随机方向同样复现，所以<strong>不主张原生通道特异性</strong>：这是 L0 同幅写入在这个模型、这个面板上的一般性质。</li>
+<li>课题层面：稀疏干预造成的首步竞争变化（ΔD 约 13–14），其承载方式在不同干预方向之间高度一致：深层历史为主、入口放大、正交互，固定 45 头卷积 V 历史另贡献一块。干预“写在哪个通道”并不重要，重要的是写入在后续历史中留下了什么。</li>
+<li>按合同，不自动启动 S/KV 拆分、其他层/模型或新剂量；如果继续，需要独立的目的和授权。最直接的下一问仍是：深层历史内部，递推状态 S 与注意力 KV 哪个承载这 5 logit 左右的作用（入口保持在干预值作为条件）。</li>
+</ul>
+<h5 id="5_2">5. 可以说 / 不可以说</h5>
+<table>
+<thead>
+<tr>
+<th>可以说</th>
+<th>不可以说</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>在所测 8 个原生通道与 4 条随机方向上，EH 关系（历史 ≥ 一半且大于入口、I ≥ max(0.5, 0.1E)）全部复现</td>
+<td>这是原生通道特有的机制 / 任意方向都如此</td>
+</tr>
+<tr>
+<td>交互不依赖竞争者换人（F 上同样成立，0/168 例外）</td>
+<td>已定位到 S 或 KV</td>
+</tr>
+<tr>
+<td>锚点 1210 在新门槛下联合支持 4/6</td>
+<td>1210 是反例（旧锚点只作重放核对）</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="4eh-xc">原件 4：EH-XC 决策日志</h3>
+<p>原路径：<code>experiments/cache-eh-cross-channel-v1-2026-11-02/DECISIONS.zh-CN.md</code>。 <a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-eh-cross-channel-v1-2026-11-02/DECISIONS.zh-CN.md">固定提交原文</a> · <a href="../library/00a7c7f8384a58fb.html">单独阅读副本</a>；SHA-256：<code>00a7c7f8384a58fb39e1ff16e7ffe8682e8c81e7ab0d12ae2b70692074759053</code>。</p>
+<hr />
+<h4 id="eh-xc_1">EH-XC 决策日志</h4>
+<ul>
+<li><strong>D1 合同沿用评审版 r01（c751914）</strong>，实现按其 §2–§6 写，不另起合同。</li>
+<li><strong>D2 预检只用首输入 P01-f0</strong>（合同 §6：15 形成/57 评分 + 记录器关闭重建 C/T4146 的 2 形成/2 评分）；为此覆盖 runner 的预检 plan，正式仍沿用 C2/B3 的 worker/GPU 分配。</li>
+<li><strong>D3 方向顺序</strong>：EH 的四个方向（4146、1210、R0、R1）排在每个输入的最前，使与 EH 的逐位重放闸门尽早触发；其后 R2、R3 与 8 个验证通道。</li>
+<li><strong>D4 H 与卷积分别哈希</strong>：H = 第13–31层 recurrent_states + 全注意力 keys/values；卷积 = 第13–31层 conv_states；供体（C、T 缓存）在每个方向评分前后全量哈希比对。</li>
+<li><strong>D5 TV 辅助读数</strong>在评分进程内按全词表 softmax 计算（P 对 C、11 对 C），只作描述。</li>
+<li><strong>D6 BF16 间隔</strong>：分析中按停止最大值与非停止最大值的量级报告局部间隔，只作精度敏感标记，不作误差界。</li>
+</ul>
+<hr />
+<h2 id="_2">时间、运行与停止收据索引</h2>
+<p>下面是所收集JSON的原有时间字段与状态，不把预计结束时间当实际完成时间。未列时间的文件仍有原件链接。完整JSON全部保存在原文归档，不能以此索引中的标量代替完整嵌套内容。</p>
+<table>
+<thead>
+<tr>
+<th>原件</th>
+<th>原记录状态/阶段</th>
+<th>原时间字段（原时区）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-eh-cross-channel-v1-2026-11-02/readiness/cpu-receipt-r01.json">readiness/cpu-receipt-r01.json</a></td>
+<td>{"status": "passed"}</td>
+<td>{}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-eh-cross-channel-v1-2026-11-02/runs/formal-r01/controller.json">runs/formal-r01/controller.json</a></td>
+<td>{"status": "completed", "stage": "formal"}</td>
+<td>{"started_at": "2026-11-01T18:38:52.480138+00:00", "finished_at": "2026-11-01T18:42:50.229979+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-eh-cross-channel-v1-2026-11-02/runs/formal-r01/verification.json">runs/formal-r01/verification.json</a></td>
+<td>{"status": "passed", "stage": "formal"}</td>
+<td>{"verified_at": "2026-11-01T18:42:50.229770+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-eh-cross-channel-v1-2026-11-02/runs/formal-r01/worker-0/receipt.json">runs/formal-r01/worker-0/receipt.json</a></td>
+<td>{"status": "completed", "stage": "formal"}</td>
+<td>{"started_at": "2026-11-01T18:38:52.571337+00:00", "last_record_at": "2026-11-01T18:42:44.545768+00:00", "finished_at": "2026-11-01T18:42:46.608297+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-eh-cross-channel-v1-2026-11-02/runs/formal-r01/worker-1/receipt.json">runs/formal-r01/worker-1/receipt.json</a></td>
+<td>{"status": "completed", "stage": "formal"}</td>
+<td>{"started_at": "2026-11-01T18:38:52.571508+00:00", "last_record_at": "2026-11-01T18:42:31.723600+00:00", "finished_at": "2026-11-01T18:42:33.775320+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-eh-cross-channel-v1-2026-11-02/runs/preflight-r01/controller.json">runs/preflight-r01/controller.json</a></td>
+<td>{"status": "completed", "stage": "preflight"}</td>
+<td>{"started_at": "2026-11-01T18:37:19.364061+00:00", "finished_at": "2026-11-01T18:38:19.458381+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-eh-cross-channel-v1-2026-11-02/runs/preflight-r01/verification.json">runs/preflight-r01/verification.json</a></td>
+<td>{"status": "passed", "stage": "preflight"}</td>
+<td>{"verified_at": "2026-11-01T18:38:19.458219+00:00"}</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuxiexiong/acupuncture/blob/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-eh-cross-channel-v1-2026-11-02/runs/preflight-r01/worker-0/receipt.json">runs/preflight-r01/worker-0/receipt.json</a></td>
+<td>{"status": "completed", "stage": "preflight"}</td>
+<td>{"started_at": "2026-11-01T18:37:19.454133+00:00", "last_record_at": "2026-11-01T18:38:14.057257+00:00", "finished_at": "2026-11-01T18:38:16.134874+00:00"}</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_3">全部原始资产入口</h2>
+<p>本目录在固定提交下共有65个跟踪文件，包含代码、原回答、失败、收据和压缩证据；文件数不是样本数。<a href="../assets/068-cache-eh-cross-channel-v1-2026-11-02.tsv">逐文件完整账本</a> · <a href="https://github.com/yuxiexiong/acupuncture/tree/7d6bdf84ab74062ac9ab55bc8201b5a6586b92c8/experiments/cache-eh-cross-channel-v1-2026-11-02">原目录</a>。未复制模型权重、环境或凭据。</p></main></html>
