@@ -20,8 +20,17 @@ COEF = {'S_C': (-1, 1, 0, 0), 'S_H': (0, 0, -1, 1),
 CAP = {'preflight': 1440, 'formal': 7920}
 TOTAL_CAP = 10800
 STORAGE = 64 * 2**30
+PREFLIGHT_STORAGE = 8 * 2**30  # 3.281 GiB dense deltas plus a bounded engineering margin
 REVISION = '851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a'
 SEED, N_BOOT = 2026111101, 20000
+
+
+def required_free_bytes(stage, formal_estimate=None):
+    assert stage in CAP
+    if stage == 'preflight':
+        return PREFLIGHT_STORAGE
+    assert formal_estimate is not None and math.isfinite(formal_estimate) and 0 < formal_estimate <= STORAGE
+    return math.ceil(formal_estimate)
 
 
 def panel(stage='formal'):

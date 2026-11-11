@@ -1,5 +1,7 @@
 # Acupuncture｜少数通道干预：缓存机制与稳定副作用控制
 
+**2026-11-11｜WSB-01 服务器 CPU 环境验收通过，可进入真实预检，尚未上卡。** [实际状态、修复与下一步](experiments/cache-write-signal-background-v1-2026-11-11/SERVER_CPU_ACCEPTANCE.zh-CN.md)：服务器 15 项 CPU 测试、386 文件依赖核对、12 个模型资产文件校验均通过；已修复耗时误作身份、缺失历史文本及预检空间门槛问题。CUDA 未初始化、模型前向 0，授权仍关闭；真实预检／正式四格均未运行。下一步是获准后固定 6 输入、24 分钟上限的真实预检，实际卡时和完整模型重放仍待验证。
+
 **2026-11-11｜WSB-01 实现与本地 CPU 验收完成，未上卡。** [实施与验收记录](experiments/cache-write-signal-background-v1-2026-11-11/IMPLEMENTATION.zh-CN.md)：来源差值采集、四格重放、统计判读、完整计数及预算控制已实现；13 项 CPU 测试通过，386 文件来源核对通过。模型前向与 GPU 使用均为 0；本地缺少对应上游 Qwen3.5 模块，指定运行环境核对和真实数值预检仍待完成。授权关闭、无排队，不称 GPU Ready；[schedule](docs/cache-icml-schedule-2026-11-11.zh-CN.md)已同步。
 
 **2026-11-11｜ICML S2 最小比较设计已交付，未上卡。** [WSB-01 写入差值×接收背景方案](experiments/cache-write-signal-background-v1-2026-11-11/PLAN.zh-CN.md) · [C01–C14／历史错误／反方自查](experiments/cache-write-signal-background-v1-2026-11-11/SELF_CHECK.zh-CN.md)。固定同一份实际写入差值，比较其在干净与指定混合背景中的完整选择效果；4B、N4146、48 已见输入、四格。逻辑自查与 CPU 设计核对通过，模型实现及数值验收未完成。拟全包 1–2 GPUh、硬上限 3；本轮模型/GPU 均 0，新预算未授权。背景响应不直接命名纯读取或原生停止原因；[当前 schedule](docs/cache-icml-schedule-2026-11-11.zh-CN.md)已同步。

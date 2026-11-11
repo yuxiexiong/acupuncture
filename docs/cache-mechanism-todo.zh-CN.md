@@ -8,7 +8,8 @@
 - [x] S1：[解释—证据—反例—缺测量审查](cache-icml-first-step-2026-11-11.zh-CN.md)完成；37 项引用数字核对通过。复用旧库存和差异分析，不重跑大扫描。
 - [x] S2：[WSB-01 最小比较设计](../experiments/cache-write-signal-background-v1-2026-11-11/PLAN.zh-CN.md)及[完整作者自查](../experiments/cache-write-signal-background-v1-2026-11-11/SELF_CHECK.zh-CN.md)已交付。固定实际写入差值做来源×接收背景四格；逻辑和 CPU 设计核对通过，工程尚未验收。
 - [x] S3a：[WSB-01 实现与本地 CPU 验收](../experiments/cache-write-signal-background-v1-2026-11-11/IMPLEMENTATION.zh-CN.md)完成；13 项测试、386 文件来源核对通过，模型前向 0。
-- [ ] S3b：指定运行环境上游 CPU 核对、真实模型数值验收与关键测量待完成。预算提案为全包 1–2 GPUh、总硬上限 3；尚无新 GPU 授权，用户明确先不上卡；不是 GPU Ready。
+- [x] S3b：[服务器上游 CPU 环境核对](../experiments/cache-write-signal-background-v1-2026-11-11/SERVER_CPU_ACCEPTANCE.zh-CN.md)完成；修复后三项问题消除，15 项测试及模型资产核对通过，已具备真实预检的代码／环境条件。
+- [ ] S3c：获准后真实模型预检与关键测量。预检固定 6 输入、单 H20、24 分钟硬上限；全包预计 1–2 GPUh、总上限 3。当前授权仍关闭，没有模型前向；不能跳过真实预检进入正式。
 - [ ] S4–S6：依日程条件推进范围检验、完整稿与审阅，不自动启动旧卡。
 
 **NGC 当前状态纠正：已于 11/11 按新授权正式完成，四方向修复数全部为零，含预检 0.329 GPU 进程小时。** [结果](../experiments/cache-native-gain-v1-2026-11-08/REPORT.zh-CN.md)。保留 NMT 的修复配置贡献；NGC 分支停止自动追加，不再标为等待上卡。新 GPU 范围与预算没有由本日程自动产生。

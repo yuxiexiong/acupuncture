@@ -291,6 +291,19 @@ class Tests(unittest.TestCase):
         self.assertIs(fake.L.forward,original)
         self.assertEqual(set(meter.maxima),{'prefix_token','formation_token','source'})
 
+    def test_asset_identity_ignores_elapsed_time_but_not_hash(self):
+        expected = {'status':'passed','files':7,'manifest_sha256':'fixed','wall_seconds':5.}
+        R.check_model_assets({**expected,'wall_seconds':9.},expected)
+        for key,value in [('files',8),('manifest_sha256','changed'),('status','failed')]:
+            with self.assertRaises(AssertionError): R.check_model_assets({**expected,key:value},expected)
+
+    def test_stage_space_requirement_keeps_total_cap(self):
+        self.assertEqual(K.required_free_bytes('preflight'),8*2**30)
+        self.assertLess(K.required_free_bytes('preflight'),55*2**30)
+        self.assertEqual(K.required_free_bytes('formal',48*2**30),48*2**30)
+        with self.assertRaises(AssertionError): K.required_free_bytes('formal',65*2**30)
+        with self.assertRaises(AssertionError): K.required_free_bytes('formal')
+
 
 if __name__ == '__main__':
     p = argparse.ArgumentParser(description=__doc__)

@@ -73,6 +73,12 @@ def check_files(manifest):
         assert sha(ROOT/rel) == h, ('source drift', rel)
 
 
+def check_model_assets(actual, expected):
+    """Identity is invariant; wall_seconds is a measurement, never an identity field."""
+    assert actual['status'] == expected['status'] == 'passed'
+    assert all(actual[k] == expected[k] for k in ('files', 'manifest_sha256')), 'model asset identity changed'
+
+
 def assets(output, environment=False):
     """Read-only asset checks, source manifest; environment mode still never loads weights."""
     V = runtime()
@@ -104,13 +110,17 @@ def assets(output, environment=False):
     if environment:
         assert os.environ.get('CUDA_VISIBLE_DEVICES') == ''
         import torch
+        import transformers
         ki = V.kernel_identity()
         assert not any(ki[k] for k in ('fla', 'kernels', 'causal_conv1d'))
         assert V.exp.model_spec()['revision'] == K.REVISION
+        source = read(V.T1.SOURCE/'contract.json')['source']
+        assert torch.__version__ == source['torch_version'] and transformers.__version__ == source['transformers_version']
         import transformers.cache_utils as cache_utils
         external = [Path(V.gdn_module().__file__), Path(cache_utils.__file__)]
         value.update(environment_checked=True, kernel_identity=ki, model_assets=V.exp.model_assets(),
-                     external_sources={str(p): sha(p) for p in external}, torch_version=torch.__version__)
+                     external_sources={str(p): sha(p) for p in external}, torch_version=torch.__version__,
+                     transformers_version=transformers.__version__, cuda_initialized=torch.cuda.is_initialized())
         assert not torch.cuda.is_initialized()
     write(output, value, immutable=True)
     return {'status': 'passed', 'files': len(value['files']), 'environment_checked': environment}
@@ -275,6 +285,8 @@ def execute(engine, V, stage, output, receipt, meter):
         receipt['files'][rel] = sha(path)
         receipt['bytes'] += path.stat().st_size
         assert receipt['bytes']+receipt['prior_bytes'] <= K.STORAGE
+        if stage == 'preflight':
+            assert receipt['bytes'] <= K.PREFLIGHT_STORAGE, 'preflight artifact cap exceeded'
         write(output/'receipt.json', receipt)
 
     def first(cache, info, mode, hook=None):
@@ -364,6 +376,8 @@ def execute(engine, V, stage, output, receipt, meter):
                     del deltas, x, y
                     save(f'records/{r}/{d}.json', record)
                     assert receipt['prior_bytes']+sum(p.stat().st_size for p in output.rglob('*') if p.is_file()) <= K.STORAGE
+                    if stage == 'preflight':
+                        assert sum(p.stat().st_size for p in output.rglob('*') if p.is_file()) <= K.PREFLIGHT_STORAGE
                     check_counts(receipt, stage, complete=False)
         assert all(hashes[i] == [V.comp_sha(c, types, V.ALLK, 0) for c in (C[i], H[i])] for i in ids)
         del C, H, backgrounds, cache, donor_conv
@@ -451,7 +465,7 @@ def worker(stage, gpu, auth_path, output):
         source = read(V.T1.SOURCE/'contract.json')['source']
         engine = ControlEngine(source['model_path'], V.exp.model_spec(), f'cuda:{gpu}')
         V.exp.metadata_check(engine)
-        assert V.exp.model_assets() == read(HERE/a['freeze_path'])['model_assets']
+        check_model_assets(V.exp.model_assets(), read(HERE/a['freeze_path'])['model_assets'])
         write(output/'metadata.json', engine.metadata, immutable=True)
         meter = Meter(V, gpu)
         meter.add('load', time.monotonic()-start)
@@ -503,7 +517,8 @@ def launch_locked(stage, gpu, auth_path, output, prior_bytes):
     output = Path(output).resolve()
     assert output.is_relative_to(HERE/'runs') and not output.exists()
     output.parent.mkdir(parents=True, exist_ok=True)
-    assert shutil.disk_usage(output.parent).free >= K.STORAGE-prior_bytes, 'insufficient artifact space'
+    estimate = None if stage == 'preflight' else read(HERE/read(auth_path)['preflight_verification_path'])['formal_bytes_estimate']
+    assert shutil.disk_usage(output.parent).free >= K.required_free_bytes(stage, estimate), 'insufficient stage artifact space'
     command = [sys.executable, str(Path(__file__).resolve()), '_worker', '--stage', stage,
                '--gpu', str(gpu), '--authorization', str(Path(auth_path).resolve()), '--output', str(output)]
     start = time.monotonic()
