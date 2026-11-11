@@ -10,6 +10,8 @@
 - [x] S3a：[WSB-01 实现与本地 CPU 验收](../experiments/cache-write-signal-background-v1-2026-11-11/IMPLEMENTATION.zh-CN.md)完成；13 项测试、386 文件来源核对通过，模型前向 0。
 - [x] S3b：[服务器上游 CPU 环境核对](../experiments/cache-write-signal-background-v1-2026-11-11/SERVER_CPU_ACCEPTANCE.zh-CN.md)完成；修复后三项问题消除，15 项测试及模型资产核对通过，已具备真实预检的代码／环境条件。
 - [x] S3c：[WSB-01 真实预检及正式测量](../experiments/cache-write-signal-background-v1-2026-11-11/REPORT.zh-CN.md)完成。净供体转移四格 0/0/0.003/0.882，支持写入差值与接收背景配合；每格全部完整作答。含首次工程失败与唯一重试，全包 0.505 GPUh，原始回答复核通过，实验已结束。
+- [x] S3d：[保存写入差值的全量 CPU 诊断](../experiments/cache-write-signal-background-v1-2026-11-11/analysis/cpu-pairing-r01/REPORT.zh-CN.md)完成；排除整体放大和固定参考查询读出总量最大这两种粗略叙事，保留方向和任务竞争缺口。696 包、348 配对，新增 0 GPUh。
+- [ ] S3e：先用 CPU 写定同一 ΔH 在 CH/HH 的 t2 候选竞争与实际读取的最小缺测设计，包含自身参照、所需数值及可失败判读；旧 hash 无法补出分数。不自动上卡或扩模型。
 - [ ] S4–S6：WSB 提供了值得有界继续的解释增量，但具体接收计算与同关系的范围仍待检验；依日程推进方案、完整稿与审阅，不自动启动旧卡或扩大 GPU 范围。
 
 **NGC 当前状态纠正：已于 11/11 按新授权正式完成，四方向修复数全部为零，含预检 0.329 GPU 进程小时。** [结果](../experiments/cache-native-gain-v1-2026-11-08/REPORT.zh-CN.md)。保留 NMT 的修复配置贡献；NGC 分支停止自动追加，不再标为等待上卡。新 GPU 范围与预算没有由本日程自动产生。
