@@ -1,5 +1,7 @@
 # Acupuncture：研究状态与后续方向
 
+**2026-11-11｜ICML 下一阶段正式排程，S1 完成。** 用户确认继续推进并要求写日程、开始第一步。现行入口为 [schedule](cache-icml-schedule-2026-11-11.zh-CN.md)；[首轮证据审查](cache-icml-first-step-2026-11-11.zh-CN.md)完成 37 项引用数值核对，保留 NGC 阴性及已有写读贡献，明确“相同供体不等于相同实际写入信号”的可比性要求。下一项为最小可判别设计，未启动模型、GPU 或旧 CWR9；不再重复库存盘点。下方旧建议按日期保留。
+
 **2026-11-11｜NGC完成，现有论文定位已复核。** [claim、框架与主要证据说明](cache-paper-claim-evidence-2026-11-11.zh-CN.md)及[数字复核](cache-paper-claim-evidence-2026-11-11.audit.json)保留条件性写入—读取贡献、DWC新材料确认和NMT修复结果，并纳入[NGC四方向零修复](../experiments/cache-native-gain-v1-2026-11-08/REPORT.zh-CN.md)。NGC含预检0.329 GPU进程小时，已停止，无追加队列；不将其阴性扩成全部机制无效。下方11-08待机与历史优先级不覆盖本条。本次无新模型运行或实验设计。
 
 **2026-11-08｜NGC-01已实现，保持GPU Ready。** [实施与验收](../experiments/cache-native-gain-v1-2026-11-08/README.zh-CN.md)：11项CPU测试及256文件资产冻结通过；原生增益配置的跨场景补证代码已就绪。用户最新要求取消卡单，本轮未提交队列、未加载模型、未启动GPU预检/正式运行；GPU数值验收仍待重新授权后完成。主线与科学范围不变。
