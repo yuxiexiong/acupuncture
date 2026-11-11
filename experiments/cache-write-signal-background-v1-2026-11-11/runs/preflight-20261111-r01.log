@@ -1,0 +1,96 @@
+Loading weights:   0%|          | 0/723 [00:00<?, ?it/s]Loading weights:   7%|▋         | 49/723 [00:00<00:01, 462.69it/s]Loading weights:  13%|█▎        | 96/723 [00:00<00:01, 417.44it/s]Loading weights:  19%|█▉        | 138/723 [00:00<00:01, 408.50it/s]Loading weights:  25%|██▍       | 179/723 [00:00<00:01, 382.43it/s]Loading weights:  31%|███       | 221/723 [00:00<00:01, 389.52it/s]Loading weights:  36%|███▌      | 261/723 [00:00<00:01, 352.87it/s]Loading weights: 100%|██████████| 723/723 [00:00<00:00, 939.08it/s]
+[transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
+[transformers] `chunk_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.
+[transformers] `causal_conv1d_update` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
+[transformers] `fused_recurrent_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.
+Traceback (most recent call last):
+  File "/workspace/acupuncture/experiments/cache-write-signal-background-v1-2026-11-11/wsb_run.py", line 589, in <module>
+    result = (launch if a.command == 'run' else worker)(a.stage, a.gpu, a.authorization, a.output)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/acupuncture/experiments/cache-write-signal-background-v1-2026-11-11/wsb_run.py", line 473, in worker
+    execute(engine, V, stage, output, rc, meter)
+  File "/workspace/acupuncture/experiments/cache-write-signal-background-v1-2026-11-11/wsb_run.py", line 326, in execute
+    cz, zz, sz = first(cache, info[r], 'zero', h)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/acupuncture/experiments/cache-write-signal-background-v1-2026-11-11/wsb_run.py", line 294, in first
+    c, z = V.fwd(engine, copy.deepcopy(cache), info['last'], info['n']-1, counts, 't1', hook)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/acupuncture/experiments/cache-k-repair-dependence-v1-2026-11-03/krd_run.py", line 132, in fwd
+    out = L.forward(engine.model, [tok], pos, cache)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/acupuncture/experiments/cache-write-signal-background-v1-2026-11-11/wsb_run.py", line 187, in forward
+    out = self.original(model, tokens, start, cache, *a, **kw)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/acupuncture/experiments/early-state-localization-v1-2026-10-29/localize.py", line 78, in forward
+    out = model(input_ids=ids, position_ids=positions, attention_mask=mask, past_key_values=cache,
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/miniconda/envs/amic-q3/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1739, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/miniconda/envs/amic-q3/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1750, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/claude-jump/qwen35-neuron-steering-20261025/.venv/lib/python3.11/site-packages/transformers/utils/generic.py", line 943, in wrapper
+    output = func(self, *args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/claude-jump/qwen35-neuron-steering-20261025/.venv/lib/python3.11/site-packages/transformers/models/qwen3_5/modeling_qwen3_5.py", line 1850, in forward
+    outputs = self.model(
+              ^^^^^^^^^^^
+  File "/workspace/miniconda/envs/amic-q3/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1739, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/miniconda/envs/amic-q3/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1750, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/claude-jump/qwen35-neuron-steering-20261025/.venv/lib/python3.11/site-packages/transformers/utils/generic.py", line 943, in wrapper
+    output = func(self, *args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/claude-jump/qwen35-neuron-steering-20261025/.venv/lib/python3.11/site-packages/transformers/models/qwen3_5/modeling_qwen3_5.py", line 1642, in forward
+    outputs = self.language_model(
+              ^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/miniconda/envs/amic-q3/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1739, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/miniconda/envs/amic-q3/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1750, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/claude-jump/qwen35-neuron-steering-20261025/.venv/lib/python3.11/site-packages/transformers/utils/generic.py", line 1081, in wrapper
+    output = func(self, *args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/claude-jump/qwen35-neuron-steering-20261025/.venv/lib/python3.11/site-packages/transformers/utils/output_capturing.py", line 287, in wrapper
+    outputs = func(self, *args, **kwargs)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/claude-jump/qwen35-neuron-steering-20261025/.venv/lib/python3.11/site-packages/transformers/models/qwen3_5/modeling_qwen3_5.py", line 1278, in forward
+    hidden_states = decoder_layer(
+                    ^^^^^^^^^^^^^^
+  File "/workspace/claude-jump/qwen35-neuron-steering-20261025/.venv/lib/python3.11/site-packages/transformers/modeling_layers.py", line 111, in __call__
+    return super().__call__(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/miniconda/envs/amic-q3/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1739, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/miniconda/envs/amic-q3/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1750, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/claude-jump/qwen35-neuron-steering-20261025/.venv/lib/python3.11/site-packages/transformers/models/qwen3_5/modeling_qwen3_5.py", line 875, in forward
+    hidden_states = self.linear_attn(
+                    ^^^^^^^^^^^^^^^^^
+  File "/workspace/miniconda/envs/amic-q3/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1739, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/miniconda/envs/amic-q3/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1845, in _call_impl
+    return inner()
+           ^^^^^^^
+  File "/workspace/miniconda/envs/amic-q3/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1793, in inner
+    result = forward_call(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/claude-jump/qwen35-neuron-steering-20261025/.venv/lib/python3.11/site-packages/transformers/integrations/accelerate.py", line 1010, in wrapped
+    output = forward_func(self, *args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/claude-jump/qwen35-neuron-steering-20261025/.venv/lib/python3.11/site-packages/transformers/models/qwen3_5/modeling_qwen3_5.py", line 612, in forward
+    core_attn_out, last_recurrent_state = torch_recurrent_gated_delta_rule(
+                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/acupuncture/experiments/cache-write-signal-background-v1-2026-11-11/wsb_run.py", line 147, in kern
+    assert not kw, ('unexpected kernel kwargs', kw)
+           ^^^^^^
+AssertionError: ('unexpected kernel kwargs', {'cu_seqlens': None, 'use_cache': True})

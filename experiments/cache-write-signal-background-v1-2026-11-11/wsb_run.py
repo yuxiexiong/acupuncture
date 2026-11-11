@@ -144,6 +144,8 @@ class WriteHook:
                 return b.orig_k(query, key, value, g=g, beta=beta, initial_state=initial_state,
                                 output_final_state=output_final_state,
                                 use_qk_l2norm_in_kernel=use_qk_l2norm_in_kernel, **kw)
+            assert kw.pop('cu_seqlens', None) is None, 'packed sequences are outside this contract'
+            assert kw.pop('use_cache', True) is True, 'persistent cache is required'
             assert not kw, ('unexpected kernel kwargs', kw)
             assert b.layer not in self.calls
             self.calls.append(b.layer)

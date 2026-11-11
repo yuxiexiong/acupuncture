@@ -90,7 +90,7 @@ class Tests(unittest.TestCase):
         self.assertTrue(torch.equal(zero_o, original_o) and torch.equal(zero_s, original_s))
         if UPSTREAM:
             qm = V.gdn_module()
-            actual, actual_s = qm.torch_recurrent_gated_delta_rule(**a)
+            actual, actual_s = qm.torch_recurrent_gated_delta_rule(**a, cu_seqlens=None, use_cache=True)
             self.assertTrue(V.bit_equal(zero_o, actual)[0] and V.bit_equal(zero_s, actual_s)[0])
 
     def test_tensor_rejects_bad_mode_shape_precision_and_nan(self):
@@ -113,13 +113,14 @@ class Tests(unittest.TestCase):
             key_dim = value_dim = 4
             head_k_dim = head_v_dim = 2
             num_v_heads = num_k_heads = 2
-            def forward(self, drive):
+            def forward(self, drive, **kernel_kwargs):
                 b = torch.arange(48).reshape(1, 12, 4).float()/100
                 y = qm.causal_conv1d_update(torch.ones(1, 12, 1)*drive, b, None)
                 q, k, v = [x.reshape(1, 1, 2, 2) for x in y.transpose(1, 2).split(4, -1)]
                 return qm.torch_recurrent_gated_delta_rule(q, k, v, g=-torch.ones(1, 1, 2),
                     beta=torch.ones(1, 1, 2)*.5, initial_state=torch.ones(1, 2, 2, 2),
-                    output_final_state=True, use_qk_l2norm_in_kernel=True)
+                    output_final_state=True, use_qk_l2norm_in_kernel=True,
+                    **({'cu_seqlens': None, 'use_cache': True} | kernel_kwargs))
         layers = [NS(linear_attn=Layer()) for _ in range(32)]
         donor = {i: torch.ones(1, 12, 4)*.9 for i in K.G}
         donor_before = copy.deepcopy(donor)
@@ -142,6 +143,10 @@ class Tests(unittest.TestCase):
             self.assertEqual(replay.base.n_shadow, 0)
             self.assertEqual(set(source.deltas), set(K.G))
             self.assertTrue(all(torch.equal(donor[i], donor_before[i]) for i in donor))
+            for bad in ({'use_cache': False}, {'cu_seqlens': torch.tensor([0, 1])}, {'unknown': True}):
+                with self.assertRaises(AssertionError):
+                    with R.WriteHook(V, object(), zero=True):
+                        layers[13].linear_attn(1., **bad)
             broken = R.WriteHook(V, object(), zero=True)
             with self.assertRaisesRegex(RuntimeError, 'injected'):
                 with broken:
