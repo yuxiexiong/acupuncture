@@ -1,5 +1,7 @@
 # Acupuncture：研究状态与后续方向
 
+**2026-11-11｜ICML S2 设计完成，未运行。** [WSB-01 最小四格](../experiments/cache-write-signal-background-v1-2026-11-11/PLAN.zh-CN.md)和[作者自查](../experiments/cache-write-signal-background-v1-2026-11-11/SELF_CHECK.zh-CN.md)固定实际写入差值来源与接收背景的交叉，检验效力是否随信号迁移、固定信号后是否仍有背景差；不把接收总响应叫纯读取。4B、N4146、48 已见输入，正式含来源采集／重放共 2184 自然轨迹及 96 零差检查。逻辑与 CPU 设计核对通过；模型实现、数值验收及运行授权未完成。估计全包 1–2 GPUh，拟硬上限 3；本次实际 0 模型调用、0 GPUh。日程进入待实施的 S3，不启动预检或旧任务。下方 S2 待设计条目保留历史身份。
+
 **2026-11-11｜ICML 下一阶段正式排程，S1 完成。** 用户确认继续推进并要求写日程、开始第一步。现行入口为 [schedule](cache-icml-schedule-2026-11-11.zh-CN.md)；[首轮证据审查](cache-icml-first-step-2026-11-11.zh-CN.md)完成 37 项引用数值核对，保留 NGC 阴性及已有写读贡献，明确“相同供体不等于相同实际写入信号”的可比性要求。下一项为最小可判别设计，未启动模型、GPU 或旧 CWR9；不再重复库存盘点。下方旧建议按日期保留。
 
 **2026-11-11｜NGC完成，现有论文定位已复核。** [claim、框架与主要证据说明](cache-paper-claim-evidence-2026-11-11.zh-CN.md)及[数字复核](cache-paper-claim-evidence-2026-11-11.audit.json)保留条件性写入—读取贡献、DWC新材料确认和NMT修复结果，并纳入[NGC四方向零修复](../experiments/cache-native-gain-v1-2026-11-08/REPORT.zh-CN.md)。NGC含预检0.329 GPU进程小时，已停止，无追加队列；不将其阴性扩成全部机制无效。下方11-08待机与历史优先级不覆盖本条。本次无新模型运行或实验设计。
