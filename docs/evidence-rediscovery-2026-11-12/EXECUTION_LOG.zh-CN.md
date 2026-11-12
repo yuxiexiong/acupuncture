@@ -50,3 +50,8 @@
 交付[主报告](round-02/REPORT.zh-CN.md)、[证据补读](round-02/EVIDENCE_REVIEW.zh-CN.md)、[文献与查询](round-02/LITERATURE.zh-CN.md)、[反方自查](round-02/REVIEW.zh-CN.md)及来源／字段核对附件。建议A“推理记忆失效的可恢复性”为主问题，B“问题条件下的信息选择修复”为备选暂缓；第一轮三个推荐降为线索。协议升级v1.1，增加科研问题价值闸门。
 
 未新增模型、GPU、训练、候选搜索或语义评分；没有提交未来实验设计，不把提问成功当贡献成立。第一轮全量索引与旧原件保留，未改论文或其他工作区内容。第二轮交付检查见[delivery-check](round-02/delivery-check.json)。
+
+
+## 2026-11-12：辅导师流程接入
+
+用户新增每次方向性建议、实验方案和阶段推进建议均咨询辅导师的要求。新增项目skill、当前状态和决策账，并将执行协议升为v1.2。采用独立上下文子agent，作者自查、辅导师意见和处理分别保留。参见[入口](../research-advisor/STATE.zh-CN.md)及[验证记录](../research-advisor/VALIDATION.zh-CN.md)。WSP退出当前推荐；旧A/B排序不再作为现行推荐。历史试用中NGC发生系统摘要泄漏，不能称盲测；不修改旧实验原件，无新模型/GPU工作。
