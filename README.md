@@ -1,5 +1,7 @@
 # Acupuncture｜少数通道干预：缓存机制与稳定副作用控制
 
+**2026-11-12｜A002 原线问题重新排序，已咨询辅导师并复核。** 首选“稀疏干预怎样改变模型对历史信息的选择性依赖”；DWC提供最强科学可行性证据，WSB提供条件约束。明确延续旧Q1，不称强论文已成立；共同原生病因仍不优先、WSP不恢复。[正面推荐与依据](docs/research-advisor/2026-11-12-mainline-recommendation.zh-CN.md) · [审查与处理](docs/research-advisor/reviews/2026-11-12-02-disposition.md)。没有新实验设计或模型/GPU运行。下方旧方向判断保留历史身份。
+
 **2026-11-12｜辅导师前置咨询已接入。** 用户要求方向性建议、实验方案及下一阶段建议交付前，先咨询独立上下文的科研辅导师并处理纠正。入口：[当前状态](docs/research-advisor/STATE.zh-CN.md)、[决策账](docs/research-advisor/DECISIONS.zh-CN.md)、[试用与限制](docs/research-advisor/VALIDATION.zh-CN.md)。WSP不再推荐继续；“可恢复性”旧推荐已降为组织主题，首轮审查已采纳：共同计算失效保留为候选，暂缓升级为优先投入方向，保留已有条件性机制贡献。下方旧推荐保留历史身份，不能自动恢复执行。无新模型/GPU实验授权。
 
 **2026-11-12｜科研问题第二轮重审完成。** 用户指出第一轮偏向实验续集后，重新检查重点证据、16项一手来源及候选价值。[主报告](docs/evidence-rediscovery-2026-11-12/round-02/REPORT.zh-CN.md)建议以推理记忆失效的可恢复性为主问题，WSP的任务条件信息选择为暂缓备选；旧三条推荐降为线索。尚未识别新机制或证明强论文贡献，0新模型／GPU运行；[协议v1.1](docs/evidence-rediscovery-2026-11-12/EXECUTION.zh-CN.md)增加科研问题价值闸门。以下旧日期的“下一步”保留历史身份，不作为默认队列。
