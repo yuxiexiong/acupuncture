@@ -94,3 +94,7 @@
 约束来源：用户本轮指令、项目 AGENTS、[设计自查规范](../experiment-design-self-check.zh-CN.md)、[基础知识审计](../cache-mechanism-known-basics-audit-2026-10-31.zh-CN.md)、[历史原件索引](../experiment-history-2026-11-11/README.zh-CN.md)。本文件为 AI 协助整理的执行协议，不是独立科研认证。
 
 技能引用：Kassis, T., Agarwal, V., He, Y., Patel, D., & Brueckner, A. M. (2026). *Scientific Agent Skills: A Library of Procedural Knowledge for Research Agents*. [arXiv:2609.00065](https://arxiv.org/abs/2609.00065)。2026-11-12 核对公开记录，当前 v2，未见期刊引用；使用无版本 DOI https://doi.org/10.48550/arXiv.2609.00065。ARS 来源及角色仅作为程序指导，不作结果证据。
+
+## 10. 已执行批次入口
+
+2026-11-12第一轮：[交付总览](README.zh-CN.md)、[实际执行账](EXECUTION_LOG.zh-CN.md)、[问题卡](QUESTION_CARDS.zh-CN.md)。这组产物落实本协议；未来先查执行账的完成层级与剩余限制，不把旧待办自动恢复为运行队列。
