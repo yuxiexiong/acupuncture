@@ -1,5 +1,7 @@
 # Acupuncture｜少数通道干预：缓存机制与稳定副作用控制
 
+**2026-11-13｜A003 核心结论与证据距离已明确，已咨询Advisor。** 原线继续研究针后历史如何改变来源写入的最终选择效应；已有固定卷积恢复条件下的入口对照，具体计算解释尚未识别。保留DWC新材料成果及WSB成组约束，不拼接不同操作，不提高强论文信心。[主报告](docs/research-advisor/2026-11-13-core-claim-and-evidence-gap.zh-CN.md)。无新实验设计、评分或模型/GPU运行。
+
 **2026-11-12｜A002 原线问题重新排序，已咨询辅导师并复核。** 首选“稀疏干预怎样改变模型对历史信息的选择性依赖”；DWC提供最强科学可行性证据，WSB提供条件约束。明确延续旧Q1，不称强论文已成立；共同原生病因仍不优先、WSP不恢复。[正面推荐与依据](docs/research-advisor/2026-11-12-mainline-recommendation.zh-CN.md) · [审查与处理](docs/research-advisor/reviews/2026-11-12-02-disposition.md)。没有新实验设计或模型/GPU运行。下方旧方向判断保留历史身份。
 
 **2026-11-12｜辅导师前置咨询已接入。** 用户要求方向性建议、实验方案及下一阶段建议交付前，先咨询独立上下文的科研辅导师并处理纠正。入口：[当前状态](docs/research-advisor/STATE.zh-CN.md)、[决策账](docs/research-advisor/DECISIONS.zh-CN.md)、[试用与限制](docs/research-advisor/VALIDATION.zh-CN.md)。WSP不再推荐继续；“可恢复性”旧推荐已降为组织主题，首轮审查已采纳：共同计算失效保留为候选，暂缓升级为优先投入方向，保留已有条件性机制贡献。下方旧推荐保留历史身份，不能自动恢复执行。无新模型/GPU实验授权。
