@@ -1,5 +1,7 @@
 # SRT-01：任务结构迁移与直接读取系数的条件因果检验
 
+> **2026-11-13 / A010：本SRT v2已由两个独立判读的方案取代，不再作为下一阶段现行方案。** [BRC-01机制](../cache-background-read-coefficient-v1-2026-11-13/PLAN.zh-CN.md)、[WUS-01范围](../cache-write-use-scope-v1-2026-11-13/PLAN.zh-CN.md)、[协调与审查](../../docs/research-advisor/2026-11-13-split-experiment-plan.zh-CN.md)。下文及旧材料、自查、计数完整保留历史身份，旧9B依赖和预算不覆盖新方案。未运行。
+
 2026-11-13，设计v2／A007。来源提交`ea7148b15474cc8aec911e844b97d2925b8b70f1`。**用户只授权设计、Advisor审查、Git交付；明确先不开始。** 本目录无模型运行器、启动命令、授权文件或队列。只完成文本构造、计数、纯Python代数核对；tokenizer验收、模型接口和GPU验收均未完成。以下为拟执行合同的科学定义，不是运行许可。
 
 **交付状态：作者C01–C14修订自查与同一独立Advisor的v2聚焦复核已通过逻辑设计；原稿与纠正完整保留。实现、分词、真实模型数值和资源验收均待完成，未运行。** [审查与复核](../../docs/research-advisor/reviews/2026-11-13-07-review.md) · [逐项处理](../../docs/research-advisor/reviews/2026-11-13-07-disposition.md)。
