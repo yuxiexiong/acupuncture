@@ -2,7 +2,7 @@
 
 更新：2026-11-13。辅导师已改为跨项目 Advisor，全局调用 `$advisor`；本项目主线与约束仍保存在这里。最新用户指示优先；本文件同步当前判断，不改写历史报告。入口：[Advisor 发布副本](skill/advisor/SKILL.md) · [决策账](DECISIONS.zh-CN.md)。
 
-**当前有效决定（A006，保持A002主问题）：** 下一阶段建议修改后继续一轮有出口的研究：DWC为已支持关系锚，任务结构边界优先，WSB最小机制辨别同阶段处理，结构可比的另一规模有条件跟进。不另设新针扩张，不等4B完整机制闭合再看范围。下一实质交付为集中方案及设计自查，不重开全量审计；当前无新方案冻结或模型/GPU授权。见[阶段建议](2026-11-13-next-stage-recommendation.zh-CN.md)、[Advisor审查](reviews/2026-11-13-06-review.md)。
+**当前有效决定（A007，保持A002主问题）：** SRT-01设计v2已完成作者C01–C14及独立Advisor初审/同审查者复核，逻辑通过。4B两针、48基础情境的DIRECT/JOIN配对，供体编号重绑定，十臂同时检验来源关系与已知写入分量的D读取系数；只有JOIN关系与具体背景解释共同达标才满足9B科学进入条件，不另开新针搜索。已修背景差前提、机制交付、冲突恢复分母及交叉J存盘漏项。用户只授权设计/审查/推送，明确先不开始；实现、tokenizer/数值/资源验收待完成，0模型/GPU调用，无队列。[现行方案](../../experiments/cache-structure-read-transfer-v1-2026-11-13/PLAN.zh-CN.md) · [自查](../../experiments/cache-structure-read-transfer-v1-2026-11-13/SELF_CHECK.zh-CN.md) · [Advisor审查](reviews/2026-11-13-07-review.md) · [处理](reviews/2026-11-13-07-disposition.md)。A006阶段建议保留为设计依据。
 
 **A005范围判断仍有效：** 当前无法排除窄机制风险；DWC保留有限双针及固定六族新实例确认，不能借给WSB或跨模型机制。保留问题，但不从A004局部解释排序直接推荐持续细拆WSB；适用范围与科学增量现在就约束继续/停止判断。无新实验方案或运行。见[范围判断](2026-11-13-scope-and-generalization.zh-CN.md)、[Advisor审查](reviews/2026-11-13-05-review.md)及[处理](reviews/2026-11-13-05-disposition.md)。
 
