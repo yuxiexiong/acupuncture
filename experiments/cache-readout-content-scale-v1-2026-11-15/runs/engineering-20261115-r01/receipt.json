@@ -1,0 +1,43 @@
+{
+  "status": "failed",
+  "stage": "engineering",
+  "pid": 3158864,
+  "gpu": 0,
+  "counts": {
+    "formations": 2,
+    "prefix_prefills": 1,
+    "formation_token_forwards": 54,
+    "t1": 4,
+    "refs": 0,
+    "n_steps": 6,
+    "c_t2": 0,
+    "decode_forwards": 10,
+    "trajectories": 2,
+    "shadow": 0,
+    "t2_shadow": 0
+  },
+  "arm_counts": {
+    "baseline": 2,
+    "zero": 2,
+    "pair_t1": 0,
+    "continuation": 0
+  },
+  "files": {
+    "tensors/static.pt": "0252f299fc84605ca463be0beb156e5618a26a53cb87548b3481b83ab38f718e",
+    "raw/LVK-H-NA-NQ01-ABC-A/U_C-t1.json": "2c15cd14c7bb2c3fe820920e53afa7f89ea13487c547bc174d1638820f4aec4c",
+    "raw/LVK-H-NA-NQ01-ABC-A/U_C.json": "412dd14e07a2631e38e9188784f64b05ba3e0a47bc42a414cc66eb2224e43ce5",
+    "raw/LVK-H-NA-NQ01-ABC-A/U_H-t1.json": "8e7a427cbf2dfcdfbe84e5abdf13a1d373ad2946fe29badfc71eb8b6c59a0cca",
+    "raw/LVK-H-NA-NQ01-ABC-A/U_H.json": "31bd5516adabd52ccf85b6bbb76c5cae52c8aa0eb8b3ff86a3059fc55fc42bb1",
+    "records/LVK-H-NA-NQ01-ABC-A/bases.json": "b55d16ebcdc7815f993a514d457ea4da86bc831e2581169996ca8d9053de246e",
+    "failures/t1-pair.pt": "fafb8a5976589303e399140f508db08e98b5349109210c8387ce9ae384537c75"
+  },
+  "bytes": 6440823,
+  "prior_bytes": 0,
+  "source_package_bytes_reserved": 20608363032,
+  "attempted_model_forward_calls": 66,
+  "freeze_sha256": "a4d63acd9f0aa1d117975385debff38294eeb00c0c5349e8ae42a618d69146fe",
+  "authorization_sha256": "c92ec04264d5d423461a5f5beb3e5deb61578f99fb87171155fcec7d40efef4f",
+  "error": "Traceback (most recent call last):\n  File \"/workspace/acupuncture/experiments/cache-readout-content-scale-v1-2026-11-15/rcs_run.py\", line 403, in worker\n    execute(engine, V, args.stage, output, rc, meter, fr)\n  File \"/workspace/acupuncture/experiments/cache-readout-content-scale-v1-2026-11-15/rcs_run.py\", line 326, in execute\n    c1, z1, snap = first(cache, info, 'pair', wh)\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/acupuncture/experiments/cache-readout-content-scale-v1-2026-11-15/rcs_run.py\", line 263, in first\n    c, z = V.fwd(engine, copy.deepcopy(cache), info['last'], info['n']-1, counts, 't1', hook)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/acupuncture/experiments/cache-k-repair-dependence-v1-2026-11-03/krd_run.py\", line 132, in fwd\n    out = L.forward(engine.model, [tok], pos, cache)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/acupuncture/experiments/cache-readout-content-scale-v1-2026-11-15/rcs_run.py\", line 40, in forward\n    return self.original(model, tokens, start, cache, *a, **kw)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/acupuncture/experiments/early-state-localization-v1-2026-10-29/localize.py\", line 78, in forward\n    out = model(input_ids=ids, position_ids=positions, attention_mask=mask, past_key_values=cache,\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/miniconda/envs/amic-q3/lib/python3.11/site-packages/torch/nn/modules/module.py\", line 1739, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/miniconda/envs/amic-q3/lib/python3.11/site-packages/torch/nn/modules/module.py\", line 1750, in _call_impl\n    return forward_call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/claude-jump/qwen35-neuron-steering-20261025/.venv/lib/python3.11/site-packages/transformers/utils/generic.py\", line 943, in wrapper\n    output = func(self, *args, **kwargs)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/claude-jump/qwen35-neuron-steering-20261025/.venv/lib/python3.11/site-packages/transformers/models/qwen3_5/modeling_qwen3_5.py\", line 1850, in forward\n    outputs = self.model(\n              ^^^^^^^^^^^\n  File \"/workspace/miniconda/envs/amic-q3/lib/python3.11/site-packages/torch/nn/modules/module.py\", line 1739, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/miniconda/envs/amic-q3/lib/python3.11/site-packages/torch/nn/modules/module.py\", line 1750, in _call_impl\n    return forward_call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/claude-jump/qwen35-neuron-steering-20261025/.venv/lib/python3.11/site-packages/transformers/utils/generic.py\", line 943, in wrapper\n    output = func(self, *args, **kwargs)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/claude-jump/qwen35-neuron-steering-20261025/.venv/lib/python3.11/site-packages/transformers/models/qwen3_5/modeling_qwen3_5.py\", line 1642, in forward\n    outputs = self.language_model(\n              ^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/miniconda/envs/amic-q3/lib/python3.11/site-packages/torch/nn/modules/module.py\", line 1739, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/miniconda/envs/amic-q3/lib/python3.11/site-packages/torch/nn/modules/module.py\", line 1750, in _call_impl\n    return forward_call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/claude-jump/qwen35-neuron-steering-20261025/.venv/lib/python3.11/site-packages/transformers/utils/generic.py\", line 1081, in wrapper\n    output = func(self, *args, **kwargs)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/claude-jump/qwen35-neuron-steering-20261025/.venv/lib/python3.11/site-packages/transformers/utils/output_capturing.py\", line 287, in wrapper\n    outputs = func(self, *args, **kwargs)\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/claude-jump/qwen35-neuron-steering-20261025/.venv/lib/python3.11/site-packages/transformers/models/qwen3_5/modeling_qwen3_5.py\", line 1278, in forward\n    hidden_states = decoder_layer(\n                    ^^^^^^^^^^^^^^\n  File \"/workspace/claude-jump/qwen35-neuron-steering-20261025/.venv/lib/python3.11/site-packages/transformers/modeling_layers.py\", line 111, in __call__\n    return super().__call__(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/miniconda/envs/amic-q3/lib/python3.11/site-packages/torch/nn/modules/module.py\", line 1739, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/miniconda/envs/amic-q3/lib/python3.11/site-packages/torch/nn/modules/module.py\", line 1750, in _call_impl\n    return forward_call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/claude-jump/qwen35-neuron-steering-20261025/.venv/lib/python3.11/site-packages/transformers/models/qwen3_5/modeling_qwen3_5.py\", line 875, in forward\n    hidden_states = self.linear_attn(\n                    ^^^^^^^^^^^^^^^^^\n  File \"/workspace/miniconda/envs/amic-q3/lib/python3.11/site-packages/torch/nn/modules/module.py\", line 1739, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/miniconda/envs/amic-q3/lib/python3.11/site-packages/torch/nn/modules/module.py\", line 1845, in _call_impl\n    return inner()\n           ^^^^^^^\n  File \"/workspace/miniconda/envs/amic-q3/lib/python3.11/site-packages/torch/nn/modules/module.py\", line 1793, in inner\n    result = forward_call(*args, **kwargs)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/claude-jump/qwen35-neuron-steering-20261025/.venv/lib/python3.11/site-packages/transformers/integrations/accelerate.py\", line 1010, in wrapped\n    output = forward_func(self, *args, **kwargs)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/claude-jump/qwen35-neuron-steering-20261025/.venv/lib/python3.11/site-packages/transformers/models/qwen3_5/modeling_qwen3_5.py\", line 612, in forward\n    core_attn_out, last_recurrent_state = torch_recurrent_gated_delta_rule(\n                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/acupuncture/experiments/cache-readout-content-scale-v1-2026-11-15/rcs_hooks.py\", line 78, in kern\n    J_norm=float(J.norm()), request_actual_max_error=float((J-delta).abs().max()),\n                                                            ~^~~~~~\nRuntimeError: Expected all tensors to be on the same device, but found at least two devices, cuda:0 and cpu!\n",
+  "wall_seconds": 30.002457046881318,
+  "supervisor_returncode": 1
+}
