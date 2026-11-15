@@ -2,6 +2,8 @@
 
 更新：2026-11-16。辅导师已改为跨项目 Advisor，全局调用 `$advisor`；本项目主线与约束仍保存在这里。最新用户指示优先；本文件同步当前判断，不改写历史报告。入口：[Advisor 发布副本](skill/advisor/SKILL.md) · [决策账](DECISIONS.zh-CN.md)。
 
+**A020当前推进（2026-11-16）：** 用户要求优先旧数据辨别H响应增强，必要才提最小实验且先不跑。作者自查与同一Advisor初审后完成CPU旧数据复算：分子连续C1背景差5.430，剩余00−U差.803；净读数、门算子差与向量适配并存，简单统一尺度放大降级。已有记录仍缺门场用途交换后的任务结果，提出NGU两新条件并单列参考重放；不选L26热点，不以门阴性自动开净w/BRC。仅CPU、0模型/GPU，原证据/判据不改。[结果及审查](../../experiments/cache-readout-content-scale-v1-2026-11-15/analysis/background-response-r01/REPORT.zh-CN.md)／[最小方案](../../experiments/cache-numerator-gate-use-v1-2026-11-16/PLAN.zh-CN.md)。
+
 **A019当前解释（2026-11-16）：** 最新用户要求与Advisor深入讨论已有结果，先不追加实验。指定t2新增分子读数有强条件行为作用；H较弱参照余量与更大11−U总响应并存，但不是独立机制份额，也未由用途对比解释其背景差。原A016重要正向分母用途解释在本条件未获支持；不把分子/分母等同语义内容/控制，仅推进ΔH这一列。同一Advisor审查及主稿复核通过，旧方案、冻结统计和证据不改；本轮无新统计、设计或模型/GPU。[认识更新](2026-11-16-rcs-knowledge-update.zh-CN.md)／[审查处理](reviews/2026-11-16-19-disposition.md)。
 
 **A018执行与结果（2026-11-15—16）：** 最新用户授权实现、测试后上卡及按设计修bug。r01设备诊断bug已修、失败保留；26项CPU、工程r02和正式48/348/2880全部通过。H分子两项大阳性；分母当前同时区间排除预定+.10正向平均量级，但未通过±.05等效，严格分子优势未成立。总delta_e反对相同总logit位移搭配不同起始余量的窄解释，不定位背景机制。作者自查、同一Advisor结果审查及处理完成；总监督.724546小时、服务器资产约88.24GiB，停止自动追加。[报告](../../experiments/cache-readout-content-scale-v1-2026-11-15/REPORT.zh-CN.md)／[审查](../../experiments/cache-readout-content-scale-v1-2026-11-15/reviews/result-review.md)。
