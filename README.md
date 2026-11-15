@@ -1,6 +1,6 @@
 # Acupuncture｜少数通道干预：缓存机制与稳定副作用控制
 
-**2026-11-15｜A018：RCS-01实现与授权执行。** CPU验收及旧ΔH核验通过；首轮GPU工程发现设备诊断bug，失败记录保留并计费，修复后复验，正式尚未启动。[执行记录](experiments/cache-readout-content-scale-v1-2026-11-15/EXECUTION.zh-CN.md)。
+**2026-11-15｜A018：RCS-01实现与授权执行。** 26项CPU验收、348份旧ΔH核验及42对GPU工程验收通过；首轮设备诊断bug已修复，失败计费保留。正式48输入/348对已启动，尚无正式结果。[执行记录](experiments/cache-readout-content-scale-v1-2026-11-15/EXECUTION.zh-CN.md)。
 
 **2026-11-15｜A017：RCS-01历史读数的分子/分母用途设计。** 四臂×C/H沿用WSB旧面板和ΔH，检验基底调节、原生分母依赖及答案余量竞争；固定同一撤回对比与共同资格集合，允许有效阴性退出。作者C01–C14及Advisor初审修正已完成，同人复核逻辑通过；无实验/模型/GPU运行。 [方案、自查与审查](experiments/cache-readout-content-scale-v1-2026-11-15/PLAN.zh-CN.md)。
 
