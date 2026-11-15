@@ -1,8 +1,8 @@
 # 辅导师项目入口
 
-更新：2026-11-15。辅导师已改为跨项目 Advisor，全局调用 `$advisor`；本项目主线与约束仍保存在这里。最新用户指示优先；本文件同步当前判断，不改写历史报告。入口：[Advisor 发布副本](skill/advisor/SKILL.md) · [决策账](DECISIONS.zh-CN.md)。
+更新：2026-11-16。辅导师已改为跨项目 Advisor，全局调用 `$advisor`；本项目主线与约束仍保存在这里。最新用户指示优先；本文件同步当前判断，不改写历史报告。入口：[Advisor 发布副本](skill/advisor/SKILL.md) · [决策账](DECISIONS.zh-CN.md)。
 
-**A018执行授权（2026-11-15）：** 最新用户已明确授权RCS-01实现、测试后上卡及按设计修bug。首轮新增设备诊断bug已修复并保留失败（30.002秒）；26项CPU测试、348份ΔH来源核验及工程r02的42对八臂验收通过。实测预算门槛通过，正式48输入/348对已启动，尚无正式结果。执行门槛、两次工程/一次正式、6小时/160GiB上限不变。详见[执行记录](../../experiments/cache-readout-content-scale-v1-2026-11-15/EXECUTION.zh-CN.md)。
+**A018执行与结果（2026-11-15—16）：** 最新用户授权实现、测试后上卡及按设计修bug。r01设备诊断bug已修、失败保留；26项CPU、工程r02和正式48/348/2880全部通过。H分子两项大阳性；分母当前同时区间排除预定+.10正向平均量级，但未通过±.05等效，严格分子优势未成立。总delta_e反对相同总logit位移搭配不同起始余量的窄解释，不定位背景机制。作者自查、同一Advisor结果审查及处理完成；总监督.724546小时、服务器资产约88.24GiB，停止自动追加。[报告](../../experiments/cache-readout-content-scale-v1-2026-11-15/REPORT.zh-CN.md)／[审查](../../experiments/cache-readout-content-scale-v1-2026-11-15/reviews/result-review.md)。
 
 **A017设计（2026-11-15）：** 最新用户授权围绕A016设计实验，继续禁止运行。RCS-01四臂×C/H把实际J的t2读数用于分子/分母分开；S0基底调节与S1原生分母依赖分别判读，余量合取绑定同一撤回。Q不增但D_tr变化可为释放已有供体优势。作者自查及同一Advisor初审修正已完成，同人复核逻辑通过；旧BRC/WUS保持未运行、不构成合并队列。[方案](../../experiments/cache-readout-content-scale-v1-2026-11-15/PLAN.zh-CN.md)。
 
