@@ -1,5 +1,7 @@
 # Acupuncture：研究状态与后续方向
 
+**2026-11-15｜A017：RCS-01历史读数的分子/分母用途设计。** 四臂×C/H沿用WSB旧面板和ΔH，检验基底调节、原生分母依赖及答案余量竞争；固定同一撤回对比与共同资格集合，允许有效阴性退出。作者C01–C14及Advisor初审修正已完成，同人复核逻辑通过；无实验/模型/GPU运行。 [方案、自查与审查](../experiments/cache-readout-content-scale-v1-2026-11-15/PLAN.zh-CN.md)。
+
 **2026-11-13｜A010 两实验方案更新，Advisor复核逻辑通过，未开始。** 按A009拆为BRC原WSB背景差的具体读取系数检验、WUS写入—D用途—完整答案关系范围检验。前者沿旧面板八臂，后者新DIRECT/JOIN六臂，9B只依赖WUS自身关系结果，不再绑定BRC阳性。各有自查/退出及资源账；旧SRT保留历史。0模型/GPU调用。[当前方案与审查](research-advisor/2026-11-13-split-experiment-plan.zh-CN.md)。
 
 **2026-11-13｜A008 对话与设计一致性审计。** 同A007 Advisor复核：SRT局部逻辑判断保留，但有限任务范围、H3分支重心与唯一阳性后9B入口，未完整兑现A006阶段取舍；撤回路线完全对齐的笼统认可。本轮未改实验方案、未运行。[核对与纠正](research-advisor/2026-11-13-design-alignment-audit.zh-CN.md)。
