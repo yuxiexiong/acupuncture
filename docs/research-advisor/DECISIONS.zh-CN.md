@@ -32,4 +32,6 @@
 
 | 2026-11-16 / A024 | 优先旧梯度/中间记录与理论解释同方向H更强、NQ03/04误差，先不跑 | 非比例梯度的指定任务投影与正项增强得到CPU约束；终RMS径向与pre-h映射未分开，末端舍入单独不足 | 841来源/168投影，4项合成验收，CPU7.934秒/0模型GPU；采纳计权、机器VJP、撤回望远镜来源定位。交叉seed最小卡仅逻辑通过，未实现/运行。[报告](../../experiments/cache-task-gradient-v1-2026-11-16/analysis/downstream-response-r01/REPORT.zh-CN.md)／[采纳](../../experiments/cache-task-gradient-v1-2026-11-16/analysis/downstream-response-r01/reviews/disposition.md) |
 
+| 2026-11-16 / A025 | 用户要求回顾主线、判断偏移及细节/缺口位置 | 未换题但重心局部化；RCS/NGU补条件用途，TGA/A024有模型认识却不自动成为全局优先；先整合，不要求全机制 | 同一Advisor重新评估路线，采纳DWC已有机制、保留梯度价值与具体核心句；交叉seed卡逻辑身份保留但非默认续项。0新设计/统计/模型GPU。[主稿](2026-11-16-mainline-realignment.zh-CN.md)／[采纳](reviews/2026-11-16-25-disposition.md) |
+
 此前重要纠正：可恢复性从主问题推荐降为组织主题；WSP不再推荐继续，原目的为方法迁移且尚未有效；共同恢复响应不等于共同致错原因。以上来自用户与作者对话，不冒称辅导师已经审查。
