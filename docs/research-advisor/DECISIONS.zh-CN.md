@@ -26,4 +26,6 @@
 | 2026-11-16 / A020 | 优先旧数据解释H响应差，确缺测才提最小方案，先不跑 | 连续分子用途差已对齐；净读取与门转换并存。优先具体门场用途条件检验，保留净w竞争，不按热点选层 | CPU分析与原始审查留档，修正端点、样本、比率和数值身份；NGU仅设计，无模型/GPU。[结果](../../experiments/cache-readout-content-scale-v1-2026-11-15/analysis/background-response-r01/REPORT.zh-CN.md)／[方案](../../experiments/cache-numerator-gate-use-v1-2026-11-16/PLAN.zh-CN.md)／[采纳](reviews/2026-11-16-20-disposition.md) |
 | 2026-11-16 / A021 | 用户授权NGU实现、测试后GPU及结果解释 | 同一Advisor实现修正和结果审查完成；具体门用途对H有条件任务/行为作用，双向+1量级未成立，残差不分账 | 32项CPU、2工程及正式48/348/2088完成，第一次预算阻断/源码保留，优化全252轨迹逐位回放；总1973.147秒、1.444GiB。采纳政策效果/范围/余量/ΔH及不对称边界，收束不追加。[报告](../../experiments/cache-numerator-gate-use-v1-2026-11-16/REPORT.zh-CN.md)／[原审查与处理](../../experiments/cache-numerator-gate-use-v1-2026-11-16/reviews/result-disposition.md) |
 
+| 2026-11-16 / A022 | 解释H换C门与C换H门不对称，优先旧数据、先不跑 | 净读取幅度与同门差适配可区分，局部不等不能折算任务份额；有条件推荐可失败的任务VJP近似卡 | 673文件SHA与14权重核验，2352记录，CPU21.645秒/0模型GPU；采纳raw/cast分列与helper来源闭合。最小卡单列逻辑/工程身份，不追加运行。[报告](../../experiments/cache-numerator-gate-use-v1-2026-11-16/analysis/asymmetry-r01/REPORT.zh-CN.md)／[审查处理](../../experiments/cache-numerator-gate-use-v1-2026-11-16/analysis/asymmetry-r01/reviews/disposition.md) |
+
 此前重要纠正：可恢复性从主问题推荐降为组织主题；WSP不再推荐继续，原目的为方法迁移且尚未有效；共同恢复响应不等于共同致错原因。以上来自用户与作者对话，不冒称辅导师已经审查。
