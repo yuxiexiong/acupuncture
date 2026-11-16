@@ -1,0 +1,42 @@
+{
+  "status": "passed",
+  "model_forwards": 0,
+  "cuda_initialized": false,
+  "upstream_kernel_tested": true,
+  "torch_version": "2.6.0+cu124",
+  "tests": [
+    {
+      "command": [
+        "/workspace/claude-jump/qwen35-neuron-steering-20261025/.venv/bin/python",
+        "/workspace/acupuncture/experiments/cache-task-gradient-v1-2026-11-16/test_tg.py",
+        "--upstream"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": "...[transformers] `fused_recurrent_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.\n.....\n----------------------------------------------------------------------\nRan 8 tests in 2.300s\n\nOK\n"
+    },
+    {
+      "command": [
+        "/workspace/claude-jump/qwen35-neuron-steering-20261025/.venv/bin/python",
+        "/workspace/acupuncture/experiments/cache-readout-content-scale-v1-2026-11-15/test_rcs_hooks.py",
+        "--upstream"
+      ],
+      "returncode": 0,
+      "stdout": "{\"status\": \"passed\", \"model_forwards\": 0, \"cuda_initialized\": false, \"upstream_kernel_tested\": true, \"failure_state_tested\": false, \"torch_version\": \"2.6.0+cu124\", \"tests_run\": 7, \"skipped\": 0}\n",
+      "stderr": "test_all_cells_native_state_and_dynamic_scope (__main__.Tests.test_all_cells_native_state_and_dynamic_scope) ... ok\ntest_baseline_no_shadow_and_exception_cleanup (__main__.Tests.test_baseline_no_shadow_and_exception_cleanup) ... ok\ntest_corrupt_actual_state_rejected_and_cleaned (__main__.Tests.test_corrupt_actual_state_rejected_and_cleaned) ... ok\ntest_norm_dtype_order_and_zero_boundaries (__main__.Tests.test_norm_dtype_order_and_zero_boundaries) ... ok\ntest_real_head_dimensions_and_package_roundtrip (__main__.Tests.test_real_head_dimensions_and_package_roundtrip) ... ok\ntest_saved_package_device_boundary (__main__.Tests.test_saved_package_device_boundary) ... ok\ntest_write_actual_j_and_zero_replay (__main__.Tests.test_write_actual_j_and_zero_replay) ... ok\n\n----------------------------------------------------------------------\nRan 7 tests in 3.430s\n\nOK\n[transformers] `fused_recurrent_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.\n"
+    }
+  ],
+  "source_hashes": {
+    "tg_analysis.py": "0757c2ad84f02c1bc7fa87b1224bb48e0a834cfa3cb9f8791463f2c99da6acf2",
+    "cpu_accept.py": "b1fa56aaff0aeb60fec43c3878c7b9e1789aba27a91d2dc3da344ad36e1aab6e",
+    "tg_hooks.py": "5bca951163803d56ac43659b2fba646e377993b77c62b406fac8218546d3e2d5",
+    "tg_run.py": "4b1f881f4df2f6afb41e4dd88a5c2c697350157bbea3565053640c4e59269ee5",
+    "test_tg.py": "6f753a0adb01b758b3e6bab53f99b2d97302e8141e258a6e3070640e64bd930b"
+  },
+  "source_stable": true,
+  "external_sources": {
+    "/workspace/claude-jump/qwen35-neuron-steering-20261025/.venv/lib/python3.11/site-packages/transformers/models/qwen3_5/modeling_qwen3_5.py": "b4b17fe08d8d54da34a0fce78639666279ae7fd0a9e4ec06fce6602774707ca3",
+    "/workspace/claude-jump/qwen35-neuron-steering-20261025/.venv/lib/python3.11/site-packages/transformers/cache_utils.py": "17b4aff340ca287cd248d179819db77e775f857678f17088528f1e14227773c2"
+  },
+  "wall_seconds": 18.062182035297155
+}

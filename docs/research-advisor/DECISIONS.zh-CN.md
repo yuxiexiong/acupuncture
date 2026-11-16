@@ -28,4 +28,6 @@
 
 | 2026-11-16 / A022 | 解释H换C门与C换H门不对称，优先旧数据、先不跑 | 净读取幅度与同门差适配可区分，局部不等不能折算任务份额；有条件推荐可失败的任务VJP近似卡 | 673文件SHA与14权重核验，2352记录，CPU21.645秒/0模型GPU；采纳raw/cast分列与helper来源闭合。最小卡单列逻辑/工程身份，不追加运行。[报告](../../experiments/cache-numerator-gate-use-v1-2026-11-16/analysis/asymmetry-r01/REPORT.zh-CN.md)／[审查处理](../../experiments/cache-numerator-gate-use-v1-2026-11-16/analysis/asymmetry-r01/reviews/disposition.md) |
 
+| 2026-11-16 / A023 | 用户授权最小任务梯度实现、验收后GPU，判断一阶预测及不对称解释 | 原幅度双对角校准通过，限定已存P条件；指定方向的平均任务映射差可诊断，U表未有限验证；保留H局部不足并收束 | 15项服务器CPU、工程20对/正式168对成功；4060前向/376反向，总655.829秒。采纳范围/单位/实际P与原生d区别及无份额解释，0新自然回答、不追加。[报告](../../experiments/cache-task-gradient-v1-2026-11-16/REPORT.zh-CN.md)／[结果采纳](../../experiments/cache-task-gradient-v1-2026-11-16/reviews/result-disposition.md) |
+
 此前重要纠正：可恢复性从主问题推荐降为组织主题；WSP不再推荐继续，原目的为方法迁移且尚未有效；共同恢复响应不等于共同致错原因。以上来自用户与作者对话，不冒称辅导师已经审查。
